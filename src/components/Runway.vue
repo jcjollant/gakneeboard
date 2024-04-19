@@ -1,0 +1,148 @@
+<script setup>
+defineProps({
+    airportName: String,
+  })
+</script>
+
+<template>
+    <h1 id='airportName'>{{airportName}}</h1>
+    <div class="container">
+        <div class="corner top-left"><span id='weatherFreq'>xxx.xxx</span><br><span id="weatherType" class="label">xxxx</span></div>
+        <div class="corner top-right"><span id='trafficFreq'>xxx.xxx</span><br><span id='trafficType' class='label'>xxxx</span></div>
+        <div class="corner bottom-left"><span class='label'>Elev</span><br><span id='fieldElev'>x</span></div>
+        <div class="corner bottom-right"><span class='label'>TPA</span><br><span id='tpa'>xxxx</span></div>
+        <div>
+            <canvas id="myCanvas"></canvas>
+        </div>
+    </div>
+    <script>
+        
+        const rwy = {'airportCode':'KBVS', 'airportName':'Skagit Rgnl', 'elev':145, 'tpa':1100, 'weather':{'freq':'121.125','type':'AWOS-3'}, 'traffic':{'freq':'123.075','type':'CTAF'},'rwy1':{'name':'11','orientation':110,'pattern':'left'},'rwy2':{'name':'29','orientation':290,'pattern':'left'}}
+        const rwyB = {'airportCode':'RNT', 'airportName':'Renton Muni', 'elev':32, 'tpa':1000, 'weather':{'freq':'126.950','type':'ATIS'}, 'traffic':{'freq':'124.700','type':'TWR'},'rwy1':{'name':'16','orientation':159,'pattern':'left'},'rwy2':{'name':'34','orientation':349,'pattern':'right'}}
+        
+        
+        // sort out which rwy is north facing
+        // we will put it at the bottom for legibility
+        const r1o = rwy.rwy1.orientation;
+        var northRwy, southRwy;
+        if( r1o >= 90 && r1o <= 180 || r1o > 180 && r1o < 270) {
+            northRwy = rwy.rwy2;
+            southRwy = rwy.rwy1;
+        } else {
+            northRwy = rwy.rwy1;
+            southRwy = rwy.rwy2;
+        }
+        
+        var rwyOrientation = northRwy.orientation;
+        
+        // Airport Name
+        document.getElementById('airportName').innerHTML=rwy.airportCode + ' : ' + rwy.airportName;
+        
+        // weather freq
+        document.getElementById('weatherFreq').innerHTML = rwy.weather.freq;
+        document.getElementById('weatherType').innerHTML= rwy.weather.type;
+        
+        // traffic freq
+        document.getElementById('trafficFreq').innerHTML = rwy.traffic.freq;
+        document.getElementById('trafficType').innerHTML= rwy.traffic.type;
+        
+        // Elevation
+        document.getElementById('fieldElev').innerHTML=rwy.elev;
+        document.getElementById('tpa').innerHTML=rwy.tpa;
+        
+        const rwyNameOpp = (rwyOrientation + 180) % 360 / 10;
+
+        const canvas = document.getElementById('myCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 400;
+        canvas.height = 400;
+
+        const length = 220;
+        const width = 30;
+        const angleInRad = Math.PI / 180 * rwyOrientation; // Convert degrees to radians
+
+        // Move center to origin
+        ctx.translate((canvas.width) / 2, (canvas.height) / 2); // Move back to original position
+        ctx.rotate(angleInRad);
+        // draw runway
+        ctx.fillStyle = 'black';
+        ctx.fillRect( -width / 2, -length / 2, width, length);
+        // draw runway names
+        ctx.font = "20px Verdana"
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        // south facing runway goes on top
+        ctx.fillText( southRwy.name, 0, -length/2 + 20)
+        // north facing runway goes to the bottom
+        ctx.fillText( northRwy.name, 0, length/2 - 5);
+        
+        // Traffic pattern
+        ctx.lineWidth = 10;
+        ctx.strokeStyle = 'grey';
+        const tpDownwind = width * 2;
+        const tpBase = length / 2 + width;
+        
+        // north runway
+        ctx.beginPath();
+        if(northRwy.pattern == 'right') {
+            ctx.moveTo( tpDownwind, 0);
+            ctx.lineTo( tpDownwind, tpBase);
+        } else {
+            ctx.moveTo( -tpDownwind, 0);
+            ctx.lineTo( -tpDownwind, tpBase);
+        }
+        ctx.lineTo( 0, tpBase);
+        ctx.lineTo( 0, length / 2);
+        ctx.stroke()
+        
+        // Runway 2
+        ctx.beginPath();
+        if(southRwy.pattern == 'right') {
+            ctx.moveTo( -tpDownwind, 0);
+            ctx.lineTo( -tpDownwind, -tpBase);
+        } else {
+            ctx.moveTo( tpDownwind, 0);
+            ctx.lineTo( tpDownwind, -tpBase);
+        }
+        ctx.lineTo( 0, -tpBase);
+        ctx.lineTo( 0, -length / 2);
+        ctx.stroke();
+     </script>
+    
+</template>
+<style scoped>
+    .container {
+        width: 400px; /* Adjust width as needed */
+        height: 400px; /* Adjust height as needed */
+        border: 1px solid darkgrey;
+        position: relative; /* Needed for absolute positioning */
+    }
+    .corner {
+        position: absolute; /* Absolute positioning within container */
+        padding: 10px; /* Adjust padding for better visibility */
+        font-size: 36px; /* Adjust font size as desired */
+        font-family: Verdana, sans-serif;
+    }
+    .corner .label {
+        padding: 0;
+        font-size:18px;
+    }
+    .top-left {
+        top: 0;
+        left: 0;
+    }
+    .top-right {
+        top: 0;
+        right: 0;
+        text-align: right; /* Align text to the right */
+    }
+    .bottom-left {
+        bottom: 0;
+        left: 0;
+    }
+    .bottom-right {
+        bottom: 0;
+        right: 0;
+        text-align: right; /* Align text to the right */
+    }
+    </style>
