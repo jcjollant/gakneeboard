@@ -1,17 +1,15 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+// import HelloWorld from './components/HelloWorld.vue'
+import Runway from './components/Runway.vue';
+
+const rwyA = {'airportCode':'KBVS', 'airportName':'Skagit Rgnl', 'elev':145, 'tpa':1100, 'weather':{'freq':'121.125','type':'AWOS-3'}, 'traffic':{'freq':'123.075','type':'CTAF'},'rwy1':{'name':'11','orientation':110,'pattern':'left'},'rwy2':{'name':'29','orientation':290,'pattern':'left'}}
+const rwyB = {'airportCode':'RNT', 'airportName':'Renton Muni', 'elev':32, 'tpa':1000, 'weather':{'freq':'126.950','type':'ATIS'}, 'traffic':{'freq':'124.700','type':'TWR'},'rwy1':{'name':'16','orientation':159,'pattern':'left'},'rwy2':{'name':'34','orientation':349,'pattern':'right'}}
+
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+  <Runway :runway="rwyA"/>
+  <Runway :runway="rwyB"/>
 </template>
 
 <style scoped>

@@ -1,68 +1,53 @@
 <script setup>
-defineProps({
-    airportName: String,
-  })
-</script>
 
-<template>
-    <h1 id='airportName'>{{airportName}}</h1>
-    <div class="container">
-        <div class="corner top-left"><span id='weatherFreq'>xxx.xxx</span><br><span id="weatherType" class="label">xxxx</span></div>
-        <div class="corner top-right"><span id='trafficFreq'>xxx.xxx</span><br><span id='trafficType' class='label'>xxxx</span></div>
-        <div class="corner bottom-left"><span class='label'>Elev</span><br><span id='fieldElev'>x</span></div>
-        <div class="corner bottom-right"><span class='label'>TPA</span><br><span id='tpa'>xxxx</span></div>
-        <div>
-            <canvas id="myCanvas"></canvas>
-        </div>
-    </div>
-    <script>
-        
-        const rwy = {'airportCode':'KBVS', 'airportName':'Skagit Rgnl', 'elev':145, 'tpa':1100, 'weather':{'freq':'121.125','type':'AWOS-3'}, 'traffic':{'freq':'123.075','type':'CTAF'},'rwy1':{'name':'11','orientation':110,'pattern':'left'},'rwy2':{'name':'29','orientation':290,'pattern':'left'}}
-        const rwyB = {'airportCode':'RNT', 'airportName':'Renton Muni', 'elev':32, 'tpa':1000, 'weather':{'freq':'126.950','type':'ATIS'}, 'traffic':{'freq':'124.700','type':'TWR'},'rwy1':{'name':'16','orientation':159,'pattern':'left'},'rwy2':{'name':'34','orientation':349,'pattern':'right'}}
-        
-        
-        // sort out which rwy is north facing
-        // we will put it at the bottom for legibility
-        const r1o = rwy.rwy1.orientation;
+import {ref, onMounted} from 'vue';
+
+const props = defineProps({
+    runway: { type: Object, required: true}  
+})
+
+const airportName = ref()
+const weatherFreq = ref()
+const weatherType = ref()
+const trafficFreq = ref()
+const trafficType = ref()
+const elevation = ref()
+const tpa = ref()
+const myCanvas = ref()
+
+// add initialization code 
+onMounted(() => {
+    let runway = props.runway
+    console.log(runway)
+    airportName.value = runway.airportCode + ' : ' + runway.airportName
+    weatherFreq.value = runway.weather.freq;
+    weatherType.value = runway.weather.type
+    trafficFreq.value = runway.traffic.freq;
+    trafficType.value = runway.traffic.type;
+    elevation.value = runway.elev;
+    tpa.value = runway.tpa;
+
+    const r1o = runway.rwy1.orientation;
         var northRwy, southRwy;
         if( r1o >= 90 && r1o <= 180 || r1o > 180 && r1o < 270) {
-            northRwy = rwy.rwy2;
-            southRwy = rwy.rwy1;
+            northRwy = runway.rwy2;
+            southRwy = runway.rwy1;
         } else {
-            northRwy = rwy.rwy1;
-            southRwy = rwy.rwy2;
+            northRwy = runway.rwy1;
+            southRwy = runway.rwy2;
         }
-        
-        var rwyOrientation = northRwy.orientation;
-        
-        // Airport Name
-        document.getElementById('airportName').innerHTML=rwy.airportCode + ' : ' + rwy.airportName;
-        
-        // weather freq
-        document.getElementById('weatherFreq').innerHTML = rwy.weather.freq;
-        document.getElementById('weatherType').innerHTML= rwy.weather.type;
-        
-        // traffic freq
-        document.getElementById('trafficFreq').innerHTML = rwy.traffic.freq;
-        document.getElementById('trafficType').innerHTML= rwy.traffic.type;
-        
-        // Elevation
-        document.getElementById('fieldElev').innerHTML=rwy.elev;
-        document.getElementById('tpa').innerHTML=rwy.tpa;
-        
-        const rwyNameOpp = (rwyOrientation + 180) % 360 / 10;
 
-        const canvas = document.getElementById('myCanvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = 400;
-        canvas.height = 400;
+        // const canvas = document.getElementById('myCanvas');
+        const ctx = myCanvas.value.getContext('2d');
+        const canvasWidth = 400;
+        const canvasHeight = 400;
 
         const length = 220;
         const width = 30;
-        const angleInRad = Math.PI / 180 * rwyOrientation; // Convert degrees to radians
+        const angleInRad = Math.PI / 180 * northRwy.orientation; // Convert degrees to radians
 
         // Move center to origin
-        ctx.translate((canvas.width) / 2, (canvas.height) / 2); // Move back to original position
+        ctx.translate((canvasWidth) / 2, (canvasHeight) / 2); // Move back to original position
         ctx.rotate(angleInRad);
         // draw runway
         ctx.fillStyle = 'black';
@@ -71,9 +56,7 @@ defineProps({
         ctx.font = "20px Verdana"
         ctx.fillStyle = 'white';
         ctx.textAlign = 'center';
-        // south facing runway goes on top
         ctx.fillText( southRwy.name, 0, -length/2 + 20)
-        // north facing runway goes to the bottom
         ctx.fillText( northRwy.name, 0, length/2 - 5);
         
         // Traffic pattern
@@ -107,10 +90,29 @@ defineProps({
         ctx.lineTo( 0, -tpBase);
         ctx.lineTo( 0, -length / 2);
         ctx.stroke();
-     </script>
+})
+
+</script>
+
+
+<template>
+    <h1>{{airportName}}</h1>
+    <div class="container">
+        <div class="corner top left"><div>{{weatherFreq}}</div><div class="label">{{weatherType}}</div></div>
+        <div class="corner top right"><div>{{trafficFreq}}</div><div class='label'>{{trafficType}}</div></div>
+        <div class="corner bottom left"><div class='label'>Elev</div><div>{{ elevation }}</div></div>
+        <div class="corner bottom right"><div class='label'>TPA</div><div>{{ tpa }}</div></div>
+        <div>
+            <canvas ref="myCanvas"></canvas>
+        </div>
+    </div>
     
 </template>
 <style scoped>
+    h1 {
+        font-size: 24px;
+        text-align: left;
+    }
     .container {
         width: 400px; /* Adjust width as needed */
         height: 400px; /* Adjust height as needed */
@@ -127,21 +129,17 @@ defineProps({
         padding: 0;
         font-size:18px;
     }
-    .top-left {
+    .top {
         top: 0;
-        left: 0;
     }
-    .top-right {
-        top: 0;
-        right: 0;
-        text-align: right; /* Align text to the right */
-    }
-    .bottom-left {
+    .bottom {
         bottom: 0;
-        left: 0;
     }
-    .bottom-right {
-        bottom: 0;
+    .left{
+        left: 0;
+        text-align: left;
+    }
+    .right {
         right: 0;
         text-align: right; /* Align text to the right */
     }
