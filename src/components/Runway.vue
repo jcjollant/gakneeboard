@@ -18,7 +18,7 @@ const myCanvas = ref()
 // add initialization code 
 onMounted(() => {
     let runway = props.runway
-    console.log(runway)
+    // console.log(runway)
     airportName.value = runway.airportCode + ' : ' + runway.airportName
     weatherFreq.value = runway.weather.freq;
     weatherType.value = runway.weather.type
@@ -39,28 +39,29 @@ onMounted(() => {
 
         // const canvas = document.getElementById('myCanvas');
         const ctx = myCanvas.value.getContext('2d');
-        const canvasWidth = 400;
-        const canvasHeight = 400;
+        const referenceSize = 200;
+        myCanvas.value.width = referenceSize;
+        myCanvas.value.height = referenceSize;
 
-        const length = 220;
-        const width = 30;
+        const length = referenceSize * 0.55;
+        const width = referenceSize * 0.075;
         const angleInRad = Math.PI / 180 * northRwy.orientation; // Convert degrees to radians
 
         // Move center to origin
-        ctx.translate((canvasWidth) / 2, (canvasHeight) / 2); // Move back to original position
+        ctx.translate((referenceSize) / 2, (referenceSize) / 2); // Move back to original position
         ctx.rotate(angleInRad);
         // draw runway
         ctx.fillStyle = 'black';
         ctx.fillRect( -width / 2, -length / 2, width, length);
         // draw runway names
-        ctx.font = "20px Verdana"
+        ctx.font = "10px Verdana"
         ctx.fillStyle = 'white';
         ctx.textAlign = 'center';
-        ctx.fillText( southRwy.name, 0, -length/2 + 20)
-        ctx.fillText( northRwy.name, 0, length/2 - 5);
+        ctx.fillText( southRwy.name, 0, -length/2 + 10)
+        ctx.fillText( northRwy.name, 0, length/2 - 3);
         
         // Traffic pattern
-        ctx.lineWidth = 10;
+        ctx.lineWidth = referenceSize * 0.025;
         ctx.strokeStyle = 'grey';
         const tpDownwind = width * 2;
         const tpBase = length / 2 + width;
@@ -110,24 +111,24 @@ onMounted(() => {
 </template>
 <style scoped>
     h1 {
-        font-size: 24px;
+        font-size: 12px;
         text-align: left;
     }
     .container {
-        width: 400px; /* Adjust width as needed */
-        height: 400px; /* Adjust height as needed */
+        width: 200px; /* Adjust width as needed */
+        height: 200px; /* Adjust height as needed */
         border: 1px solid darkgrey;
         position: relative; /* Needed for absolute positioning */
     }
     .corner {
         position: absolute; /* Absolute positioning within container */
-        padding: 10px; /* Adjust padding for better visibility */
-        font-size: 36px; /* Adjust font size as desired */
+        padding: 5px; /* Adjust padding for better visibility */
+        font-size: 18px; /* Adjust font size as desired */
         font-family: Verdana, sans-serif;
     }
     .corner .label {
         padding: 0;
-        font-size:18px;
+        font-size:9px;
     }
     .top {
         top: 0;
