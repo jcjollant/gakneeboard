@@ -19,3 +19,14 @@ You can deploy your new Vite project with a single command from your terminal us
 ```shell
 $ vercel
 ```
+
+### TODO
+Read from external source
+Update Window title
+Border should include airport name
+Remove the dot
+Remove airports from the list
+
+## Done
+* 4/19 : Add arrow tip to TP
+* 4/19 : Automatically parse airport codes

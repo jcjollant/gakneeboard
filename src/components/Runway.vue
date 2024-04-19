@@ -43,53 +43,76 @@ onMounted(() => {
         myCanvas.value.width = referenceSize;
         myCanvas.value.height = referenceSize;
 
-        const length = referenceSize * 0.55;
-        const width = referenceSize * 0.075;
+        const rwyLength = referenceSize * 0.55;
+        const rwyHLength = rwyLength / 2;
+        const rwyWidth = referenceSize * 0.1;
+        const rwyHWidth = rwyWidth / 2;
+        const tpDownwindDist = referenceSize * 0.15;
+        const tpBaseDist = rwyLength / 2 + tpDownwindDist * 0.65;
+        const tpLineWidth = referenceSize * 0.01;
+        const tpArrowTip = referenceSize * 0.03;
+        const rwyFontSize = Math.round( referenceSize / 20);
+
         const angleInRad = Math.PI / 180 * northRwy.orientation; // Convert degrees to radians
 
         // Move center to origin
         ctx.translate((referenceSize) / 2, (referenceSize) / 2); // Move back to original position
         ctx.rotate(angleInRad);
-        // draw runway
+        // draw runway at the center
         ctx.fillStyle = 'black';
-        ctx.fillRect( -width / 2, -length / 2, width, length);
+        ctx.fillRect( -rwyHWidth, -rwyHLength, rwyWidth, rwyLength);
+
         // draw runway names
-        ctx.font = "10px Verdana"
+        ctx.font = rwyFontSize + "px Verdana"
+        // console.log(ctx.font);
         ctx.fillStyle = 'white';
         ctx.textAlign = 'center';
-        ctx.fillText( southRwy.name, 0, -length/2 + 10)
-        ctx.fillText( northRwy.name, 0, length/2 - 3);
+        ctx.fillText( southRwy.name, 0, -rwyHLength + rwyFontSize * 1.5)
+        ctx.fillText( northRwy.name, 0, rwyHLength - rwyFontSize * 0.5);
         
         // Traffic pattern
-        ctx.lineWidth = referenceSize * 0.025;
+        ctx.lineWidth = tpLineWidth;
         ctx.strokeStyle = 'grey';
-        const tpDownwind = width * 2;
-        const tpBase = length / 2 + width;
+        ctx.lineCap = 'round';
         
-        // north runway
+        // north runway 
         ctx.beginPath();
+        // TP downwind
         if(northRwy.pattern == 'right') {
-            ctx.moveTo( tpDownwind, 0);
-            ctx.lineTo( tpDownwind, tpBase);
+            ctx.moveTo( tpDownwindDist, 0);
+            ctx.lineTo( tpDownwindDist, tpBaseDist);
         } else {
-            ctx.moveTo( -tpDownwind, 0);
-            ctx.lineTo( -tpDownwind, tpBase);
+            ctx.moveTo( -tpDownwindDist, 0);
+            ctx.lineTo( -tpDownwindDist, tpBaseDist);
         }
-        ctx.lineTo( 0, tpBase);
-        ctx.lineTo( 0, length / 2);
+        // TP Base
+        ctx.lineTo( 0, tpBaseDist);
+        // TP final
+        ctx.lineTo( 0, rwyHLength);
+        // TP Tip
+        ctx.moveTo( -tpArrowTip, rwyHLength + tpArrowTip);
+        ctx.lineTo( 0, rwyHLength);
+        ctx.lineTo( tpArrowTip, rwyHLength + tpArrowTip);
         ctx.stroke()
         
-        // Runway 2
+        // South Runway
         ctx.beginPath();
+        // TP Downwind
         if(southRwy.pattern == 'right') {
-            ctx.moveTo( -tpDownwind, 0);
-            ctx.lineTo( -tpDownwind, -tpBase);
+            ctx.moveTo( -tpDownwindDist, 0);
+            ctx.lineTo( -tpDownwindDist, -tpBaseDist);
         } else {
-            ctx.moveTo( tpDownwind, 0);
-            ctx.lineTo( tpDownwind, -tpBase);
+            ctx.moveTo( tpDownwindDist, 0);
+            ctx.lineTo( tpDownwindDist, -tpBaseDist);
         }
-        ctx.lineTo( 0, -tpBase);
-        ctx.lineTo( 0, -length / 2);
+        // TP Base
+        ctx.lineTo( 0, -tpBaseDist);
+        // TP Final
+        ctx.lineTo( 0, -rwyHLength);
+        // TP Tip
+        ctx.moveTo( -tpArrowTip, -rwyHLength - tpArrowTip);
+        ctx.lineTo( 0, -rwyHLength);
+        ctx.lineTo( +tpArrowTip, -rwyHLength - tpArrowTip);
         ctx.stroke();
 })
 
