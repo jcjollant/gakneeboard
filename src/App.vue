@@ -7,10 +7,11 @@ import {ref} from 'vue';
 const airportCodes = defineModel()
 const airportsList = ref([])
 const airportsData = {
-  'kbvs':{'airportCode':'KBVS', 'airportName':'Skagit Rgnl', 'elev':145, 'tpa':1100, 'weather':{'freq':'121.125','type':'AWOS-3'}, 'traffic':{'freq':'123.075','type':'CTAF'},'rwy1':{'name':'11','orientation':110,'pattern':'left'},'rwy2':{'name':'29','orientation':290,'pattern':'left'}},
-  'krnt':{'airportCode':'KRNT', 'airportName':'Renton Muni', 'elev':32, 'tpa':1000, 'weather':{'freq':'126.950','type':'ATIS'}, 'traffic':{'freq':'124.700','type':'TWR'},'rwy1':{'name':'16','orientation':159,'pattern':'left'},'rwy2':{'name':'34','orientation':339,'pattern':'right'}},
-  's50':{'airportCode':'S50', 'airportName':'Auburn Muni', 'elev':63, 'tpa':1100, 'weather':{'freq':'128.000','type':'PTT3'}, 'traffic':{'freq':'122.975','type':'CTAF'},'rwy1':{'name':'16','orientation':160,'pattern':'right'},'rwy2':{'name':'34','orientation':340,'pattern':'left'}},
-  's43':{'airportCode':'S43', 'airportName':'Harvey Fld', 'elev':23, 'tpa':1000, 'weather':{'freq':'123.000','type':'PTT3'}, 'traffic':{'freq':'123.000','type':'CTAF'},'rwy1':{'name':'15L','orientation':150,'pattern':'right'},'rwy2':{'name':'33R','orientation':330,'pattern':'left'}}
+  'kbvs':{'airportCode':'KBVS', 'airportName':'Skagit Rgnl',    'elev':145, 'tpa':1100, 'weather':{'freq':'121.125','type':'AWOS-3'}, 'traffic':{'freq':'123.075','type':'CTAF'},'rwy':[{'name':'11-29',  'length':5480,'surface':{'type':'ASPH','condition':'EXCELLENT'},'11':{'orientation':110,'pattern':'left'},'29':{'orientation':290,'pattern':'left'}},{'name':'04-22','length':3000,'surface':{'type':'ASPH','condition':'POOR'},'04':{'orientation':40,'pattern':'left'},'22':{'orientation':220,'pattern':'left'}}]},
+  'kpae':{'airportCode':'KPAE', 'airportName':'Paine FLD INTL', 'elev':607, 'tpa':1600, 'weather':{'freq':'128.650','type':'ATIS'},   'traffic':{'freq':'122.200','type':'TWR'}, 'rwy':[{'name':'16L-34R','length':3004,'surface':{'type':'ASPH','condition':'GOOD'},'16L':{'orientation':164,'pattern':'left'},'34R':{'orientation':344,'pattern':'right'}},{'name':'16R-34L','length':9010, 'surface':{'type':'ASPH','condition':'GOOD'},'16R':{'orientation':163,'pattern':'right'},'34L':{'orientation':343,'pattern':'left'}}]},
+  'krnt':{'airportCode':'KRNT', 'airportName':'Renton Muni',    'elev':32,  'tpa':1000, 'weather':{'freq':'126.950','type':'ATIS'},   'traffic':{'freq':'124.700','type':'TWR'}, 'rwy':[{'name':'16-34',  'length':5382,'surface':{'type':'ASPH','condition':'GOOD'},'16':{'orientation':159,'pattern':'left'},'34':{'orientation':339,'pattern':'right'}}]},
+  's43': {'airportCode':'S43',  'airportName':'Harvey Fld',     'elev':23,  'tpa':1000, 'weather':{'freq':'123.000','type':'PTT3'},   'traffic':{'freq':'123.000','type':'CTAF'},'rwy':[{'name':'15L-33R','length':2672,'surface':{'type':'ASPH','condition':'EXCELLENT'},'15L':{'orientation':150,'pattern':'right'},'33R':{'orientation':330,'pattern':'left'}},{'name':'15R-33L','length':2430,'surface':{'type':'TURF','condition':'EXCELLENT'},'15R':{'orientation':150,'pattern':'right'},'33L':{'orientation':330,'pattern':'left'}}]},
+  's50': {'airportCode':'S50',  'airportName':'Auburn Muni',    'elev':63,  'tpa':1100, 'weather':{'freq':'128.000','type':'PTT3'},   'traffic':{'freq':'122.975','type':'CTAF'},'rwy':[{'name':'16-34',  'length':3842,'surface':{'type':'ASPH','condition':'GOOD'},'16':{'orientation':160,'pattern':'right'},'34':{'orientation':340,'pattern':'left'}}]},
 }
 
 // remove a code from the list
@@ -45,10 +46,10 @@ function onCodeUpdate(event) {
 </script>
 
 <template>
-  <input v-model="airportCodes" @input="onCodeUpdate" placeholder="Airport Code(s)" />
   <ul>
-    <li v-for="code in airportsList"><div @click="remove(code)"><Runway :runway="airportsData[code]"/></div></li>
+    <li v-for="code in airportsList"><div ><Runway :airport="airportsData[code]"/></div></li>
   </ul>
+  <input v-model="airportCodes" @input="onCodeUpdate" placeholder="Airport Code(s)" />
 </template>
 
 <style scoped>
@@ -66,5 +67,15 @@ function onCodeUpdate(event) {
 }
 ul {
     list-style-type: none;
+    columns: 2;
+    border: 1px solid red;
+    width: 500px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    
+}
+li {
+  margin: 5px;
 }
 </style>

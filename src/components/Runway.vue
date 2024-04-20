@@ -2,8 +2,9 @@
 
 import {ref, onMounted, watch, render} from 'vue';
 
+var rwyIndex;
 const props = defineProps({
-    runway: { type: Object, required: true}  
+    airport: { type: Object, required: true},
 })
 
 const airportName = ref()
@@ -15,32 +16,48 @@ const elevation = ref()
 const tpa = ref()
 const myCanvas = ref()
 
+function cycleRunway() {
+    // console.log( "Rwy Count " + props.airport.rwy.length);
+    rwyIndex = ( rwyIndex + 1) % props.airport.rwy.length
+    // console.log('rwyIndex ' + rwyIndex)
+    show( props.airport)
+}
+
 // add initialization code 
-onMounted(() => {
-    show( props.runway)
+onMounted(() => {    
+    rwyIndex = 0
+    show( props.airport)
 })
 
-function show( runway) {
+function show( airport) {
     // console.log(runway)
-    airportName.value = runway.airportCode + ' : ' + runway.airportName
-    weatherFreq.value = runway.weather.freq;
-    weatherType.value = runway.weather.type
-    trafficFreq.value = runway.traffic.freq;
-    trafficType.value = runway.traffic.type;
-    elevation.value = runway.elev;
-    tpa.value = runway.tpa;
+    airportName.value = airport.airportCode + ' : ' + airport.airportName
+    weatherFreq.value = airport.weather.freq;
+    weatherType.value = airport.weather.type
+    trafficFreq.value = airport.traffic.freq;
+    trafficType.value = airport.traffic.type;
+    elevation.value = airport.elev;
+    tpa.value = airport.tpa;
 
-    const r1o = runway.rwy1.orientation;
+    // Runway name will look like 16-34, we extract the first part
+    const runway = airport.rwy[rwyIndex];
+    // console.log('runway ' + JSON.stringify(runway))
+    const [firstRwyName,secondRwyName] = runway.name.split('-');
+    const r1o = runway[firstRwyName].orientation;
     var northRwy, southRwy;
+    var northRwyName, southRwyName;
     if( r1o >= 90 && r1o <= 180 || r1o > 180 && r1o < 270) {
-        northRwy = runway.rwy2;
-        southRwy = runway.rwy1;
+        northRwyName = secondRwyName;
+        southRwyName = firstRwyName;
     } else {
-        northRwy = runway.rwy1;
-        southRwy = runway.rwy2;
+        northRwyName = firstRwyName;
+        southRwyName = secondRwyName;
     }
+    northRwy = runway[northRwyName];
+    southRwy = runway[southRwyName];
+    // console.log('North runway ' + JSON.stringify(northRwy))
+    // console.log('South runway ' + JSON.stringify(southRwy))
 
-    // const canvas = document.getElementById('myCanvas');
     const ctx = myCanvas.value.getContext('2d');
     const referenceSize = 200;
     myCanvas.value.width = referenceSize;
@@ -62,7 +79,7 @@ function show( runway) {
     ctx.translate((referenceSize) / 2, (referenceSize) / 2); // Move back to original position
     ctx.rotate(angleInRad);
     // draw runway at the center
-    ctx.fillStyle = 'black';
+    ctx.fillStyle = ( runway.surface.type=='TURF' ? 'darkgreen' : 'black');
     ctx.fillRect( -rwyHWidth, -rwyHLength, rwyWidth, rwyLength);
 
     // draw runway names
@@ -70,8 +87,8 @@ function show( runway) {
     // console.log(ctx.font);
     ctx.fillStyle = 'white';
     ctx.textAlign = 'center';
-    ctx.fillText( southRwy.name, 0, -rwyHLength + rwyFontSize * 1.5)
-    ctx.fillText( northRwy.name, 0, rwyHLength - rwyFontSize * 0.5);
+    ctx.fillText( southRwyName, 0, -rwyHLength + rwyFontSize * 1.5)
+    ctx.fillText( northRwyName, 0, rwyHLength - rwyFontSize * 0.5);
     
     // Traffic pattern
     ctx.lineWidth = tpLineWidth;
@@ -121,15 +138,16 @@ function show( runway) {
 
 watch( props, async() => {
     // console.log("props changed");
-    show(props.runway)
+    show(props.airport)
 })
 
 </script>
 
 
 <template>
-    <h1>{{airportName}}</h1>
     <div class="container">
+        <h1 @click="cycleRunway()">{{airportName}}</h1>
+    <div class="square">
         <div class="corner top left"><div>{{weatherFreq}}</div><div class="label">{{weatherType}}</div></div>
         <div class="corner top right"><div>{{trafficFreq}}</div><div class='label'>{{trafficType}}</div></div>
         <div class="corner bottom left"><div class='label'>Elev</div><div>{{ elevation }}</div></div>
@@ -138,17 +156,21 @@ watch( props, async() => {
             <canvas ref="myCanvas"></canvas>
         </div>
     </div>
-    
+</div>    
 </template>
 <style scoped>
     h1 {
-        font-size: 12px;
+        font-size: 14px;
+        font-family: Verdana, sans-serif;
         text-align: left;
+        padding-left: 10px;
     }
     .container {
+        border: 1px solid darkgrey;
+    }
+    .square {
         width: 200px; /* Adjust width as needed */
         height: 200px; /* Adjust height as needed */
-        border: 1px solid darkgrey;
         position: relative; /* Needed for absolute positioning */
     }
     .corner {
