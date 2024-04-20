@@ -20,13 +20,17 @@ You can deploy your new Vite project with a single command from your terminal us
 $ vercel
 ```
 
-### TODO
-Read from external source
-Update Window title
-Border should include airport name
-Remove the dot
-Remove airports from the list
+## TODO
+* Rearrange layout for optimal print on half letter format
+* Read from external source
+* Border should include airport name (airport information should be in the same visua block)
+* Rearrange the layout with Input on top amd matching airport size
+* Change favicon
 
-## Done
-* 4/19 : Add arrow tip to TP
-* 4/19 : Automatically parse airport codes
+# Done
+## 4/19/2024
+* Remove airport(s) from the list
+* Remove the dot
+* Add arrow tip to TP
+* Automatically parse airport codes
+* Update Window title
