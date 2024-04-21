@@ -21,7 +21,6 @@ $ vercel
 ```
 
 ## TODO
-* I want a usable solution to fly to KBVS
 * Blank state show individual airport selectors
 * User can save template
 * Users can edit airport information
@@ -31,6 +30,8 @@ $ vercel
 * Change favicon
 
 # Done
+## 4/21/2024
+* I want a flexible solution to fly to KBVS or Seattle Skyline
 ## 4/20/2024
 * Rearrange layout for optimal print on half letter format. Consider 2x2x3 layout to display 12 airports
 * Add all airports for a full route to KBVS and KELN : KAWO, KELN, KESW

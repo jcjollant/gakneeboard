@@ -3,10 +3,9 @@
 import Atis from './components/Atis.vue'
 import Runway from './components/Runway.vue';
 import Notes from './components/Notes.vue'
+import Menu from './components/Menu.vue'
 import {ref} from 'vue';
 
-
-const airportCodes = defineModel()
 const airportsList = ref([])
 const airportsData = {
   'kawo':{'airportCode':'KAWO', 'airportName':'Arlington Muni', 'elev':142, 'tpa':1100, 'weather':{'freq':'135.625','type':'AWOS-3PT'}, 'traffic':{'freq':'122.725','type':'CTAF'},'rwy':[{'name':'11-29',  'length':3498,'surface':{'type':'ASPH','condition':'EXCELLENT'},'11':{'orientation':110,'pattern':'right'},'29':{'orientation':290,'pattern':'left'}},{'name':'16-34',  'length':5332,'surface':{'type':'ASPH','condition':'EXCELLENT'},'16':{'orientation':162,'pattern':'right'},'34':{'orientation':343,'pattern':'left'}}]},
@@ -20,19 +19,7 @@ const airportsData = {
   's43': {'airportCode':'S43',  'airportName':'Harvey Fld',     'elev':23,  'tpa':1000, 'weather':{'freq':'-.-','type':'n/a'},          'traffic':{'freq':'123.000','type':'CTAF'},'rwy':[{'name':'15L-33R','length':2672,'surface':{'type':'ASPH','condition':'EXCELLENT'},'15L':{'orientation':150,'pattern':'right'},'33R':{'orientation':330,'pattern':'left'}},{'name':'15R-33L','length':2430,'surface':{'type':'TURF','condition':'EXCELLENT'},'15R':{'orientation':150,'pattern':'right'},'33L':{'orientation':330,'pattern':'left'}}]},
   's50': {'airportCode':'S50',  'airportName':'Auburn Muni',    'elev':63,  'tpa':1100, 'weather':{'freq':'128.000','type':'PTT3'},     'traffic':{'freq':'122.975','type':'CTAF'},'rwy':[{'name':'16-34',  'length':3842,'surface':{'type':'ASPH','condition':'GOOD'},'16':{'orientation':160,'pattern':'right'},'34':{'orientation':340,'pattern':'left'}}]},
 }
-
-// remove a code from the list
-function remove(code) {
-  // console.log( "Remove " + code);
-  var array = airportsList.value;
-  const index = array.indexOf(code);
-  // console.log( "index of code " + index)
-  if (index > -1) { // only splice array when item is found
-    array.splice(index, 1); // 2nd parameter means remove one item only
-    airportsList.value = array;
-    // console.log(array)
-  }
-}
+const template = ref('KBVS')
 
 function testKey(key, code) {
   if( !(key in airportsData[code])) console.log( key +' missing from ' + code);
@@ -80,18 +67,24 @@ function validateAirportData() {
       testRunway(rwyB, rwys, code);
     })
   })
-  console.log('Data validation complete')
+  console.log('Airport data validation complete')
+}
+
+function onLoadTemplate(name) {
+  // console.log( 'loadTemplate ' + name)
+  template.value = name;
 }
 
 </script>
 
 <template>
-  <div class="twoPages">
+  <div class="menuContainer"><Menu class="menu" @load-template="onLoadTemplate"></Menu></div>
+  <div class="twoPages" v-if="template=='KBVS'">
     <div class="onePage">
       <div><Runway :airport="airportsData['krnt']" :rwyIndex="0"/></div>
       <div><Runway :airport="airportsData['s43']" :rwyIndex="0"/></div>
       <div><Runway :airport="airportsData['kawo']" :rwyIndex="0"/></div>
-      <div><Runway :airport="airportsData['kbfi']" :rwyIndex="0"/></div>
+      <div><Runway :airport="airportsData['kbvs']" :rwyIndex="0"/></div>
       <div><Atis/></div>
       <div><Notes/></div>
     </div>
@@ -104,11 +97,24 @@ function validateAirportData() {
       <div><Notes @click="validateAirportData"/></div>
     </div>
   </div>
-
-  <!-- <ul>
-    <li v-for="code in airportsList"><div ><Runway :airport="airportsData[code]"/></div></li>
-  </ul> -->
-  <!-- <input v-model="airportCodes" @input="onCodeUpdate" placeholder="Airport Code(s)" /> -->
+  <div class="twoPages" v-if="template=='KBFI'">
+    <div class="onePage">
+      <div><Runway :airport="airportsData['krnt']" :rwyIndex="0"/></div>
+      <div><Runway :airport="airportsData['kbfi']" :rwyIndex="0"/></div>
+      <div><Atis/></div>
+      <div><Atis/></div>
+      <div><Notes/></div>
+      <div><Notes/></div>
+    </div>
+    <div class="onePage">
+      <div><Notes/></div>
+      <div><Notes/></div>
+      <div><Notes/></div>
+      <div><Notes/></div>
+      <div><Notes/></div>
+      <div><Notes @click="validateAirportData"/></div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -133,5 +139,10 @@ function validateAirportData() {
   display: grid;
   grid-template-columns: auto auto;
   gap: 5px;
+}
+.menu {
+  position: absolute;
+  left:5px;
+  top:5px;
 }
 </style>

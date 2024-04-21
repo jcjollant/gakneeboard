@@ -38,8 +38,8 @@
 }
 .label {
     position: absolute;
-    left: 5;
-    top: 2;
+    left: 3px;
+    top: 0;
     font-size: 10px;
 }
 .box {
