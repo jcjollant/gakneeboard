@@ -5,6 +5,7 @@ import {ref, onMounted, watch, render} from 'vue';
 var rwyIndex;
 const props = defineProps({
     airport: { type: Object, required: true},
+    rwyIndex: {type:Number, default: 0}
 })
 
 const airportName = ref()
@@ -25,22 +26,22 @@ function cycleRunway() {
 
 // add initialization code 
 onMounted(() => {    
-    rwyIndex = 0
+    rwyIndex = props.rwyIndex;
     show( props.airport)
 })
 
 function show( airport) {
-    // console.log(runway)
+    const runway = airport.rwy[rwyIndex];
+
     airportName.value = airport.airportCode + ' : ' + airport.airportName
     weatherFreq.value = airport.weather.freq;
     weatherType.value = airport.weather.type
-    trafficFreq.value = airport.traffic.freq;
+    // If traffic is runway specific, it will be specified in the runway data
+    trafficFreq.value = ('freq' in runway) ? runway.freq : airport.traffic.freq;
     trafficType.value = airport.traffic.type;
     elevation.value = airport.elev;
     tpa.value = airport.tpa;
 
-    // Runway name will look like 16-34, we extract the first part
-    const runway = airport.rwy[rwyIndex];
     // console.log('runway ' + JSON.stringify(runway))
     const [firstRwyName,secondRwyName] = runway.name.split('-');
     const r1o = runway[firstRwyName].orientation;
@@ -145,39 +146,23 @@ watch( props, async() => {
 
 
 <template>
-    <div class="container">
-        <h1 @click="cycleRunway()">{{airportName}}</h1>
-    <div class="square">
-        <div class="corner top left"><div>{{weatherFreq}}</div><div class="label">{{weatherType}}</div></div>
-        <div class="corner top right"><div>{{trafficFreq}}</div><div class='label'>{{trafficType}}</div></div>
-        <div class="corner bottom left"><div class='label'>Elev</div><div>{{ elevation }}</div></div>
-        <div class="corner bottom right"><div class='label'>TPA</div><div>{{ tpa }}</div></div>
-        <div>
-            <canvas ref="myCanvas"></canvas>
+    <div class="widget">
+        <div class="widgetTitle" @click="cycleRunway()">{{airportName}}</div>
+        <div class="square">
+            <div class="corner top left"><div>{{weatherFreq}}</div><div class="label">{{weatherType}}</div></div>
+            <div class="corner top right"><div>{{trafficFreq}}</div><div class='label'>{{trafficType}}</div></div>
+            <div class="corner bottom left"><div class='label'>Elev</div><div>{{ elevation }}</div></div>
+            <div class="corner bottom right"><div class='label'>TPA</div><div>{{ tpa }}</div></div>
+            <div>
+                <canvas ref="myCanvas"></canvas>
+            </div>
         </div>
-    </div>
-</div>    
+    </div>    
 </template>
 <style scoped>
-    h1 {
-        font-size: 14px;
-        font-family: Verdana, sans-serif;
-        text-align: left;
-        padding-left: 10px;
-    }
-    .container {
-        border: 1px solid darkgrey;
-    }
-    .square {
-        width: 200px; /* Adjust width as needed */
-        height: 200px; /* Adjust height as needed */
-        position: relative; /* Needed for absolute positioning */
-    }
     .corner {
         position: absolute; /* Absolute positioning within container */
         padding: 5px; /* Adjust padding for better visibility */
-        font-size: 18px; /* Adjust font size as desired */
-        font-family: Verdana, sans-serif;
     }
     .corner .label {
         padding: 0;

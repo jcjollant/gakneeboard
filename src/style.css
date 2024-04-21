@@ -87,3 +87,19 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.square {
+  width: 240px; /* Adjust width as needed */
+  height: 200px; /* Adjust height as needed */
+  position: relative; /* Needed for absolute positioning */
+  /* border: 1px solid red; */
+}
+.widgetTitle {
+  text-align: center;
+  padding: 5px;
+  border-bottom: 1px dashed darkgrey;
+}
+.widget {
+  border: 1px solid darkgrey;
+  font-family: Verdana, sans-serif;
+}

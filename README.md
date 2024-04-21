@@ -21,15 +21,19 @@ $ vercel
 ```
 
 ## TODO
-* Add all airports for a full route to KBVS and KELN : KAWO, KELN, KESW
-* Rearrange layout for optimal print on half letter format
-* Add 2x2x3 layout to display 12 airports
+* I want a usable solution to fly to KBVS
+* Blank state show individual airport selectors
+* User can save template
+* Users can edit airport information
+* Users can confirm airport information
 * Read from external source
 * Rearrange the layout with Input on top amd matching airport size
 * Change favicon
 
 # Done
 ## 4/20/2024
+* Rearrange layout for optimal print on half letter format. Consider 2x2x3 layout to display 12 airports
+* Add all airports for a full route to KBVS and KELN : KAWO, KELN, KESW
 * Border should include airport name (airport information should be in the same visua block)
 ## 4/19/2024
 * Remove airport(s) from the list
