@@ -1,7 +1,7 @@
 <template>
     <div class="widget">
         <div class="widgetTitle"><div class="info"></div>ATIS</div>
-        <div class="square atis">
+        <div class="content atis">
             <div class="wind box">
                 <div class="label">Wind</div>
             </div>

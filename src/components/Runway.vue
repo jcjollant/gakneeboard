@@ -1,11 +1,11 @@
 <script setup>
 
-import {ref, onMounted, watch, render} from 'vue';
+import {ref, onMounted, watch} from 'vue';
 
 var rwyIndex;
 const props = defineProps({
     airport: { type: Object, required: true},
-    rwyIndex: {type:Number, default: 0}
+    rwyIndex: { type: Number, default: 0}
 })
 
 const airportName = ref()
@@ -16,6 +16,7 @@ const trafficType = ref()
 const elevation = ref()
 const tpa = ref()
 const myCanvas = ref()
+const multipleRunways = ref(false)
 
 function cycleRunway() {
     // console.log( "Rwy Count " + props.airport.rwy.length);
@@ -27,8 +28,16 @@ function cycleRunway() {
 // add initialization code 
 onMounted(() => {    
     rwyIndex = props.rwyIndex;
+    multipleRunways.value = props.airport.rwy.length > 1
     show( props.airport)
 })
+
+watch( props, async() => {
+    // console.log("props changed");
+    multipleRunways.value = props.airport.rwy.length > 1
+    show(props.airport)
+})
+
 
 function show( airport) {
     const runway = airport.rwy[rwyIndex];
@@ -137,23 +146,18 @@ function show( airport) {
     ctx.stroke();
 }
 
-watch( props, async() => {
-    // console.log("props changed");
-    show(props.airport)
-})
-
 </script>
 
 
 <template>
     <div class="widget">
-        <div class="widgetTitle" @click="cycleRunway()">{{airportName}}</div>
-        <div class="square">
+        <div class="widgetTitle">{{airportName}}</div>
+        <div class="content">
             <div class="corner top left"><div>{{weatherFreq}}</div><div class="label">{{weatherType}}</div></div>
             <div class="corner top right"><div>{{trafficFreq}}</div><div class='label'>{{trafficType}}</div></div>
             <div class="corner bottom left"><div class='label'>Elev</div><div>{{ elevation }}</div></div>
             <div class="corner bottom right"><div class='label'>TPA</div><div>{{ tpa }}</div></div>
-            <div>
+            <div @click="cycleRunway()" :class="{clickable: multipleRunways}">
                 <canvas ref="myCanvas"></canvas>
             </div>
         </div>
@@ -182,4 +186,7 @@ watch( props, async() => {
         right: 0;
         text-align: right; /* Align text to the right */
     }
-    </style>
+    .clickable {
+        cursor: pointer;
+    }
+</style>

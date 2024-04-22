@@ -88,7 +88,7 @@ button:focus-visible {
   }
 }
 
-.square {
+.content {
   width: 240px; /* Adjust width as needed */
   height: 200px; /* Adjust height as needed */
   position: relative; /* Needed for absolute positioning */
