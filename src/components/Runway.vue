@@ -1,48 +1,78 @@
 <script setup>
 
 import {ref, onMounted, watch} from 'vue';
+import RunwayViewer from './RunwayViewer.vue'
+import * as data from '../assets/data.js'
 
-var rwyIndex;
+var currentRwyIndex
+var currentAirportCode
 const props = defineProps({
-    airport: { type: Object, required: true},
+    airport: { type: Object, default: null},
     rwyIndex: { type: Number, default: 0}
 })
 
-const airportName = ref()
+const title = ref('Runway Selection')
 const weatherFreq = ref()
 const weatherType = ref()
 const trafficFreq = ref()
 const trafficType = ref()
 const elevation = ref()
 const tpa = ref()
-const myCanvas = ref()
-const multipleRunways = ref(false)
+const runwayCount = ref(0)
+const initMode = ref(false)
+const airportCode = ref() // used during runway selection
+const rwys = ref([]) // used during runway selection
+const selectedRunway = ref(null)
 
 function cycleRunway() {
     // console.log( "Rwy Count " + props.airport.rwy.length);
-    rwyIndex = ( rwyIndex + 1) % props.airport.rwy.length
-    // console.log('rwyIndex ' + rwyIndex)
-    show( props.airport)
+    if( runwayCount.value > 1) {
+        currentRwyIndex = ( currentRwyIndex + 1) % runwayCount.value
+        // console.log('rwyIndex ' + rwyIndex)
+        show( props.airport, currentRwyIndex)
+    }
 }
 
 // add initialization code 
-onMounted(() => {    
-    rwyIndex = props.rwyIndex;
-    multipleRunways.value = props.airport.rwy.length > 1
-    show( props.airport)
+onMounted(() => {   
+    show( props.airport, props.rwyIndex)
 })
 
-watch( props, async() => {
-    // console.log("props changed");
-    multipleRunways.value = props.airport.rwy.length > 1
-    show(props.airport)
-})
+// watch( props, async() => {
+//     // console.log("props changed");
+//     show(props.airport, props.rwyIndex)
+// })
 
+function onCodeUpdate() {
+    // console.log(airportCode.value)
+    const code = airportCode.value.toLowerCase();
+    if( code in data.airports) {
+        rwys.value = data.airports[code].rwy
+        currentAirportCode = code
+    }
+}
 
-function show( airport) {
-    const runway = airport.rwy[rwyIndex];
+function selectRunway(index) {
+    initMode.value = false
+    selectedRunway.value = data.airports[currentAirportCode].rwy[index];
+    show( data.airports[currentAirportCode], index)
+}
 
-    airportName.value = airport.airportCode + ' : ' + airport.airportName
+function show( airport, rwyIndexParam) {
+    // console.log( "airport " + JSON.stringify(airport) + " rwyIndex " + rwyIndexParam)
+    if( airport == null) {
+        initMode.value = true
+        return
+    } else {
+        initMode.value = false
+        currentRwyIndex = rwyIndexParam
+        selectedRunway.value = airport.rwy[currentRwyIndex]
+    }
+    
+    runwayCount.value = airport.rwy.length
+    const runway = airport.rwy[currentRwyIndex];
+
+    title.value = airport.airportCode + ' : ' + airport.airportName
     weatherFreq.value = airport.weather.freq;
     weatherType.value = airport.weather.type
     // If traffic is runway specific, it will be specified in the runway data
@@ -50,119 +80,28 @@ function show( airport) {
     trafficType.value = airport.traffic.type;
     elevation.value = airport.elev;
     tpa.value = airport.tpa;
-
-    // console.log('runway ' + JSON.stringify(runway))
-    const [firstRwyName,secondRwyName] = runway.name.split('-');
-    const r1o = runway[firstRwyName].orientation;
-    var northRwy, southRwy;
-    var northRwyName, southRwyName;
-    if( r1o >= 90 && r1o <= 180 || r1o > 180 && r1o < 270) {
-        northRwyName = secondRwyName;
-        southRwyName = firstRwyName;
-    } else {
-        northRwyName = firstRwyName;
-        southRwyName = secondRwyName;
-    }
-    northRwy = runway[northRwyName];
-    southRwy = runway[southRwyName];
-    // console.log('North runway ' + JSON.stringify(northRwy))
-    // console.log('South runway ' + JSON.stringify(southRwy))
-
-    const ctx = myCanvas.value.getContext('2d');
-    const referenceSize = 200;
-    myCanvas.value.width = referenceSize;
-    myCanvas.value.height = referenceSize;
-
-    const rwyLength = referenceSize * 0.55;
-    const rwyHLength = rwyLength / 2;
-    const rwyWidth = referenceSize * 0.1;
-    const rwyHWidth = rwyWidth / 2;
-    const tpDownwindDist = referenceSize * 0.15;
-    const tpBaseDist = rwyLength / 2 + tpDownwindDist * 0.65;
-    const tpLineWidth = referenceSize * 0.01;
-    const tpArrowTip = referenceSize * 0.03;
-    const rwyFontSize = Math.round( referenceSize / 20);
-
-    const angleInRad = Math.PI / 180 * northRwy.orientation; // Convert degrees to radians
-
-    // Move center to origin
-    ctx.translate((referenceSize) / 2, (referenceSize) / 2); // Move back to original position
-    ctx.rotate(angleInRad);
-    // draw runway at the center
-    ctx.fillStyle = ( runway.surface.type=='TURF' ? 'darkgreen' : 'black');
-    ctx.fillRect( -rwyHWidth, -rwyHLength, rwyWidth, rwyLength);
-
-    // draw runway names
-    ctx.font = rwyFontSize + "px Verdana"
-    // console.log(ctx.font);
-    ctx.fillStyle = 'white';
-    ctx.textAlign = 'center';
-    ctx.fillText( southRwyName, 0, -rwyHLength + rwyFontSize * 1.5)
-    ctx.fillText( northRwyName, 0, rwyHLength - rwyFontSize * 0.5);
-    
-    // Traffic pattern
-    ctx.lineWidth = tpLineWidth;
-    ctx.strokeStyle = 'grey';
-    ctx.lineCap = 'round';
-    
-    // north runway 
-    ctx.beginPath();
-    // TP downwind
-    if(northRwy.pattern == 'right') {
-        ctx.moveTo( tpDownwindDist, 0);
-        ctx.lineTo( tpDownwindDist, tpBaseDist);
-    } else {
-        ctx.moveTo( -tpDownwindDist, 0);
-        ctx.lineTo( -tpDownwindDist, tpBaseDist);
-    }
-    // TP Base
-    ctx.lineTo( 0, tpBaseDist);
-    // TP final
-    ctx.lineTo( 0, rwyHLength);
-    // TP Tip
-    ctx.moveTo( -tpArrowTip, rwyHLength + tpArrowTip);
-    ctx.lineTo( 0, rwyHLength);
-    ctx.lineTo( tpArrowTip, rwyHLength + tpArrowTip);
-    ctx.stroke()
-    
-    // South Runway
-    ctx.beginPath();
-    // TP Downwind
-    if(southRwy.pattern == 'right') {
-        ctx.moveTo( -tpDownwindDist, 0);
-        ctx.lineTo( -tpDownwindDist, -tpBaseDist);
-    } else {
-        ctx.moveTo( tpDownwindDist, 0);
-        ctx.lineTo( tpDownwindDist, -tpBaseDist);
-    }
-    // TP Base
-    ctx.lineTo( 0, -tpBaseDist);
-    // TP Final
-    ctx.lineTo( 0, -rwyHLength);
-    // TP Tip
-    ctx.moveTo( -tpArrowTip, -rwyHLength - tpArrowTip);
-    ctx.lineTo( 0, -rwyHLength);
-    ctx.lineTo( +tpArrowTip, -rwyHLength - tpArrowTip);
-    ctx.stroke();
 }
-
 </script>
-
 
 <template>
     <div class="widget">
-        <div class="widgetTitle">{{airportName}}</div>
-        <div class="content">
+        <div class="widgetTitle">{{title}}</div>
+        <div class="content" v-if="!initMode">
             <div class="corner top left"><div>{{weatherFreq}}</div><div class="label">{{weatherType}}</div></div>
             <div class="corner top right"><div>{{trafficFreq}}</div><div class='label'>{{trafficType}}</div></div>
             <div class="corner bottom left"><div class='label'>Elev</div><div>{{ elevation }}</div></div>
             <div class="corner bottom right"><div class='label'>TPA</div><div>{{ tpa }}</div></div>
-            <div @click="cycleRunway()" :class="{clickable: multipleRunways}">
-                <canvas ref="myCanvas"></canvas>
-            </div>
+            <RunwayViewer @click="cycleRunway()" :class="{clickable: runwayCount > 1}" :runway="selectedRunway" />
+        </div>
+        <div class="content" v-if="initMode">
+            <div class="label">Airport Code</div>
+            <input class="airportCode" v-model="airportCode" @input="onCodeUpdate" />
+            <div class="label">Runway</div>
+            <div class="rwySelector" v-for="(rwy, index) in rwys"><button @click="selectRunway(index)">{{rwy.name}}</button></div>
         </div>
     </div>    
 </template>
+
 <style scoped>
     .corner {
         position: absolute; /* Absolute positioning within container */
@@ -188,5 +127,17 @@ function show( airport) {
     }
     .clickable {
         cursor: pointer;
+    }
+    .label {
+        font-size: 12px;
+        padding-top: 15px;
+    }
+    .airportCode {
+        text-align: center;
+        width: 90px;
+    }
+    .rwySelector {
+        font-size: 12px;
+        margin:5px;
     }
 </style>

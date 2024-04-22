@@ -28,24 +28,24 @@ function onLoadWidget(name) {
     <div class="onePage">
       <div><Runway :airport="data.airports['krnt']"/></div>
       <div><Runway :airport="data.airports['s43']"/></div>
-      <div><Runway :airport="data.airports['kawo']" :rwyIndex="0"/></div>
-      <div><Runway :airport="data.airports['kbvs']" :rwyIndex="0"/></div>
+      <div><Runway :airport="data.airports['kawo']"/></div>
+      <div><Runway :airport="data.airports['kbvs']"/></div>
       <div><Atis/></div>
       <div><Notes/></div>
     </div>
     <div class="onePage">
-      <div><Runway :airport="data.airports['kbvs']" :rwyIndex="0"/></div>
-      <div><Runway :airport="data.airports['kawo']" :rwyIndex="0"/></div>
-      <div><Runway :airport="data.airports['s43']" :rwyIndex="0"/></div>
-      <div><Runway :airport="data.airports['krnt']" :rwyIndex="0"/></div>
+      <div><Runway :airport="data.airports['kbvs']"/></div>
+      <div><Runway :airport="data.airports['kawo']"/></div>
+      <div><Runway :airport="data.airports['s43']"/></div>
+      <div><Runway :airport="data.airports['krnt']"/></div>
       <div><Atis/></div>
       <div><Notes @click="data.validate()"/></div>
     </div>
   </div>
   <div class="twoPages" v-if="template=='KBFI'">
     <div class="onePage">
-      <div><Runway :airport="data.airports['krnt']" :rwyIndex="0"/></div>
-      <div><Runway :airport="data.airports['kbfi']" :rwyIndex="0"/></div>
+      <div><Runway :airport="data.airports['krnt']"/></div>
+      <div><Runway :airport="data.airports['kbfi']"/></div>
       <div><Atis/></div>
       <div><Atis/></div>
       <div><List :title="'Approach'" :items="'ATIS,Altimeter,Comms,Calls,Brief'"/></div>

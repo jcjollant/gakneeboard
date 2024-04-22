@@ -1,23 +1,29 @@
 <!-- This component allows the user to pick a widget -->
 <script setup>
 import {ref} from 'vue';
+import Runway from './Runway.vue';
 
 const items = ref(['Runway','ATIS','List','Notes'])
 const emits = defineEmits(['loadWidget'])
+const widget = ref('')
 
 function loadWidget(name) {
     // console.log('load widget ' + name)
-    emits('loadWidget', name)
+    // emits('loadWidget', name)
+    widget.value = name;
 }
 
 </script>
 
 <template>
-    <div class="widget">
+    <div v-if="widget==''" class="widget">
         <div class="widgetTitle">Widget Selection</div>
         <div class="content list">
             <button v-for="item in items" class="item" @click="loadWidget(item)">{{ item }}</button>
         </div>
+    </div>
+    <div v-if="widget=='Runway'">
+        <Runway></Runway>
     </div>
 </template>
 
