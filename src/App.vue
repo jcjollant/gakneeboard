@@ -1,7 +1,7 @@
 <script setup>
 // import HelloWorld from './components/HelloWorld.vue'
 import Atis from './components/Atis.vue'
-import Runway from './components/Runway.vue'
+import Airport from './components/Airport.vue'
 import Notes from './components/Notes.vue'
 import Menu from './components/Menu.vue'
 import List from './components/List.vue'
@@ -26,26 +26,26 @@ function onLoadWidget(name) {
   <div class="menuContainer"><Menu class="menu" @load-template="onLoadTemplate"></Menu></div>
   <div class="twoPages" v-if="template=='KBVS'">
     <div class="onePage">
-      <div><Runway :airport="data.airports['krnt']"/></div>
-      <div><Runway :airport="data.airports['s43']"/></div>
-      <div><Runway :airport="data.airports['kawo']"/></div>
-      <div><Runway :airport="data.airports['kbvs']"/></div>
+      <div><Airport :airport="data.airports['krnt']"/></div>
+      <div><Airport :airport="data.airports['s43']"/></div>
+      <div><Airport :airport="data.airports['kawo']"/></div>
+      <div><Airport :airport="data.airports['kbvs']"/></div>
       <div><Atis/></div>
-      <div><Notes/></div>
+      <div><Atis/></div>
     </div>
     <div class="onePage">
-      <div><Runway :airport="data.airports['kbvs']"/></div>
-      <div><Runway :airport="data.airports['kawo']"/></div>
-      <div><Runway :airport="data.airports['s43']"/></div>
-      <div><Runway :airport="data.airports['krnt']"/></div>
+      <div><Airport :airport="data.airports['kbvs']"/></div>
+      <div><Airport :airport="data.airports['kawo']"/></div>
+      <div><Airport :airport="data.airports['s43']"/></div>
+      <div><Airport :airport="data.airports['krnt']"/></div>
       <div><Atis/></div>
-      <div><Notes @click="data.validate()"/></div>
+      <div><Atis/></div>
     </div>
   </div>
   <div class="twoPages" v-if="template=='KBFI'">
     <div class="onePage">
-      <div><Runway :airport="data.airports['krnt']"/></div>
-      <div><Runway :airport="data.airports['kbfi']"/></div>
+      <div><Airport :airport="data.airports['krnt']"/></div>
+      <div><Airport :airport="data.airports['kbfi']"/></div>
       <div><Atis/></div>
       <div><Atis/></div>
       <div><List :title="'Approach'" :items="'ATIS,Altimeter,Comms,Calls,Brief'"/></div>
