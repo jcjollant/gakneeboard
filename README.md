@@ -21,15 +21,22 @@ $ vercel
 ```
 
 ## TODO
-* Blank state show individual airport selectors
-* User can save template
-* Users can edit airport information
-* Users can confirm airport information
-* Read from external source
+* Show traffic patterns using dashed line
+* Rename KBVS to Demo 1 page.
+* Edit mode allows to change existing widgets content
+* Update Selector layout to not look like a widget (no borders, just buttons)
+* Add blank widget, which could be the non edit state of Selector
+* Reset feature sets all widget to Selector
+* Page configuration is saved in browser
+* User can create own airport data
+* Users can override airport information
+* Read airport data from external source
 * Rearrange the layout with Input on top amd matching airport size
 * Change favicon
 
 # Done
+## 4/22/2204
+* Improved ATIS with Rwy number
 ## 4/21/2024
 * I want a flexible solution to fly to KBVS or Seattle Skyline
 ## 4/20/2024
