@@ -1,11 +1,16 @@
 <!-- This component allows the user to pick a widget -->
 <script setup>
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
 import Airport from './Airport.vue';
+import Atis from './Atis.vue'
 
-const items = ref(['Airport','ATIS','List','Notes'])
+const props = defineProps({
+    name: { type: String, default: ''},
+    data: { type: Object, default: null}
+})
+
+const items = ref(['airport','atis','List','Notes'])
 const emits = defineEmits(['loadWidget'])
-const widget = ref('')
 
 function loadWidget(name) {
     // console.log('load widget ' + name)
@@ -13,18 +18,21 @@ function loadWidget(name) {
     widget.value = name;
 }
 
+// onMounted(() => (
+//     // console.log('Widget mounted')
+// ))
+
 </script>
 
 <template>
-    <div v-if="widget==''" class="widget">
+    <div v-if="name==''" class="widget">
         <div class="widgetTitle">Widget Selection</div>
         <div class="content list">
             <button v-for="item in items" class="item" @click="loadWidget(item)">{{ item }}</button>
         </div>
     </div>
-    <div v-if="widget=='Airport'">
-        <Airport></Airport>
-    </div>
+    <Airport v-else-if="name=='airport'" :params="data" />
+    <Atis v-else-if="name=='atis'"/>
 </template>
 
 <style scoped>

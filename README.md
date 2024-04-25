@@ -21,8 +21,6 @@ $ vercel
 ```
 
 ## TODO
-* Show traffic patterns using dashed line
-* Rename KBVS to Demo 1 page.
 * Edit mode allows to change existing widgets content
 * Update Selector layout to not look like a widget (no borders, just buttons)
 * Add blank widget, which could be the non edit state of Selector
@@ -35,7 +33,10 @@ $ vercel
 * Change favicon
 
 # Done
-## 4/22/2204
+## 4/24/2024
+* Show traffic patterns using dashed line
+* Rename KBVS to Demo 1 page.
+## 4/22/2024
 * Improved ATIS with Rwy number
 ## 4/21/2024
 * I want a flexible solution to fly to KBVS or Seattle Skyline

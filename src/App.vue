@@ -5,44 +5,94 @@ import Airport from './components/Airport.vue'
 import Notes from './components/Notes.vue'
 import Menu from './components/Menu.vue'
 import List from './components/List.vue'
-import Selector from './components/Selector.vue'
-import {ref} from 'vue'
+import Widget from './components/Widget.vue'
+import {onMounted, ref} from 'vue'
 import * as data from './assets/data.js'
 
-const template = ref('KBVS')
+const demoPage = [
+  {'name':'airport','data':{'code':'krnt','rwy':'16-34'}},
+  {'name':'airport','data':{'code':'s43','rwy':'15L-33R'}},
+  {'name':'airport','data':{'code':'kawo','rwy':'11-29'}},
+  {'name':'airport','data':{'code':'kbvs','rwy':'11-29'}},
+  {'name':'atis','data':{}},
+  {'name':'atis','data':{}},
+  {'name':'airport','data':{'code':'kbvs','rwy':'11-29'}},
+  {'name':'airport','data':{'code':'kawo','rwy':'11-29'}},
+  {'name':'airport','data':{'code':'s43','rwy':'15L-33R'}},
+  {'name':'airport','data':{'code':'krnt','rwy':'16-34'}},
+  {'name':'atis','data':{}},
+  {'name':'atis','data':{}},
+]
+const page = ref(demoPage)
+const mode = ref('')
 
-function onLoadTemplate(name) {
-  // console.log( 'loadTemplate ' + name)
-  template.value = name;
+
+function onLoadPage(name) {
+  // console.log( 'loadPage ' + name)
+  if( name == 'Demo') {
+    page.value = demoPage;
+  } else if( name='') {
+    const blankPage = [];
+    for( n in 12) blankPage.push({'name':'','data':{}})
+    console.log(blankPage)
+    page.value = blankPage;
+  }
 }
 
-function onLoadWidget(name) {
-  console.log('Load widget ' + name)
+function onEditPage() {
+  console.log('Edit mode')
+  if(mode.value == 'edit')
+    mode.value = ''
+  else
+    mode.value = 'edit'
 }
+
+// onMounted(() =>(
+//   // load first page
+//   // onLoadPage('Demo')
+// ))
 
 </script>
 
 <template>
-  <div class="menuContainer"><Menu class="menu" @load-template="onLoadTemplate"></Menu></div>
-  <div class="twoPages" v-if="template=='KBVS'">
+  <div class="menuContainer"><Menu class="menu" @load-page="onLoadPage" @edit-page="onEditPage"></Menu></div>
+  <div class="twoPages">
     <div class="onePage">
-      <div><Airport :airport="data.airports['krnt']"/></div>
-      <div><Airport :airport="data.airports['s43']"/></div>
-      <div><Airport :airport="data.airports['kawo']"/></div>
-      <div><Airport :airport="data.airports['kbvs']"/></div>
-      <div><Atis/></div>
-      <div><Atis/></div>
+      <Widget :name="page[0].name" :data="page[0].data" :mode="mode"/>
+      <Widget :name="page[1].name" :data="page[1].data" :mode="mode"/>
+      <Widget :name="page[2].name" :data="page[2].data" :mode="mode"/>
+      <Widget :name="page[3].name" :data="page[3].data" :mode="mode"/>
+      <Widget :name="page[4].name" :data="page[4].data" :mode="mode"/>
+      <Widget :name="page[5].name" :data="page[5].data" :mode="mode"/>
     </div>
     <div class="onePage">
-      <div><Airport :airport="data.airports['kbvs']"/></div>
-      <div><Airport :airport="data.airports['kawo']"/></div>
-      <div><Airport :airport="data.airports['s43']"/></div>
-      <div><Airport :airport="data.airports['krnt']"/></div>
-      <div><Atis/></div>
-      <div><Atis/></div>
+      <Widget :name="page[6].name" :data="page[6].data" :mode="mode"/>
+      <Widget :name="page[7].name" :data="page[7].data" :mode="mode"/>
+      <Widget :name="page[8].name" :data="page[8].data" :mode="mode"/>
+      <Widget :name="page[9].name" :data="page[9].data" :mode="mode"/>
+      <Widget :name="page[10].name" :data="page[10].data" :mode="mode"/>
+      <Widget :name="page[11].name" :data="page[11].data" :mode="mode"/>
     </div>
   </div>
-  <div class="twoPages" v-if="template=='KBFI'">
+  <!-- <div class="twoPages">
+    <div class="onePage">
+      <div><Airport :params="demoPage[0].data" :mode="mode"/></div>
+      <div><Airport :params="demoPage[1].data"/></div>
+      <div><Airport :params="demoPage[2].data"/></div>
+      <div><Airport :params="demoPage[3].data"/></div>
+      <div><Atis/></div>
+      <div><Atis/></div>
+    </div>
+    <div class="onePage">
+      <div><Airport :airport="data.airports['kbvs']"/></div>
+      <div><Airport :airport="data.airports['kawo']"/></div>
+      <div><Airport :airport="data.airports['s43']"/></div>
+      <div><Airport :airport="data.airports['krnt']"/></div>
+      <div><Atis/></div>
+      <div><Atis/></div>
+    </div>
+  </div> -->
+  <!-- <div class="twoPages" v-if="false">
     <div class="onePage">
       <div><Airport :airport="data.airports['krnt']"/></div>
       <div><Airport :airport="data.airports['kbfi']"/></div>
@@ -52,14 +102,14 @@ function onLoadWidget(name) {
       <div><Notes/></div>
     </div>
     <div class="onePage">
-      <div><Selector @load-widget="onLoadWidget"/></div>
+      <div><Widget @load-widget="onLoadWidget" :mode="mode"/></div>
       <div><Notes/></div>
       <div><Notes/></div>
       <div><Notes/></div>
       <div><Notes/></div>
       <div><Notes @click="data.validate()"/></div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <style scoped>

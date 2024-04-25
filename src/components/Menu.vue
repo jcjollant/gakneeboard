@@ -1,7 +1,7 @@
 <script setup>
 import {ref} from 'vue';
 
-const emits = defineEmits(['loadTemplate'])
+const emits = defineEmits(['loadPage'])
 const displayMenu = ref(false)
 
 // Toggle menu visibility which will update component layout
@@ -9,8 +9,12 @@ function toggleMenu() {
     displayMenu.value = !displayMenu.value;
 }
 
-function onLoadTemplate( name) {
-    emits('loadTemplate',name)    
+// function onEditPage() {
+//   emits('editPage');
+// }
+
+function onLoadPage( name) {
+    emits('loadPage',name)    
 }
 </script>
 
@@ -22,8 +26,9 @@ function onLoadTemplate( name) {
             <div class="bar3"></div>
         </div>
         <div v-show="displayMenu" class="buttonsList">
-            <button @click="onLoadTemplate('KBVS')">KBVS</button>
-            <button @click="onLoadTemplate('KBFI')">KBFI</button>
+            <button @click="onLoadPage('Demo')">Demo</button>
+            <button @click="onLoadPage('KBFI')">KBFI</button>
+            <!-- <button @click="onLoadPage('')">Reset</button> -->
         </div>
     </div>
 </template>

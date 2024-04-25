@@ -71,42 +71,46 @@ function show(runway) {
     ctx.lineWidth = tpLineWidth;
     ctx.strokeStyle = 'grey';
     ctx.lineCap = 'round';
-    
-    // north runway 
+
+    // north runway TP (Dashed stroke)
     ctx.beginPath();
-    // TP downwind
-    if(northRwy.pattern == 'right') {
-        ctx.moveTo( tpDownwindDist, 0);
-        ctx.lineTo( tpDownwindDist, tpBaseDist);
-    } else {
-        ctx.moveTo( -tpDownwindDist, 0);
-        ctx.lineTo( -tpDownwindDist, tpBaseDist);
-    }
-    // TP Base
+    ctx.setLineDash([10,5])
+    // Final
+    ctx.moveTo( 0, rwyHLength);
+    // Base
     ctx.lineTo( 0, tpBaseDist);
-    // TP final
-    ctx.lineTo( 0, rwyHLength);
-    // TP Tip
+    // Downwind
+    if(northRwy.pattern == 'right') {
+        ctx.lineTo( tpDownwindDist, tpBaseDist);
+        ctx.lineTo( tpDownwindDist, 0);
+    } else {
+        ctx.lineTo( -tpDownwindDist, tpBaseDist);
+        ctx.lineTo( -tpDownwindDist, 0);
+    }
+
+    // South Runway TP
+    // Final
+    ctx.moveTo( 0, -rwyHLength);
+    // TP Base
+    ctx.lineTo( 0, -tpBaseDist);
+    // Downwind
+    if(southRwy.pattern == 'right') {
+        ctx.lineTo( -tpDownwindDist, -tpBaseDist);
+        ctx.lineTo( -tpDownwindDist, 0);
+    } else {
+        ctx.lineTo( tpDownwindDist, -tpBaseDist);
+        ctx.lineTo( tpDownwindDist, 0);
+    }
+    ctx.stroke()
+
+    // TP Arrow Tips (full stroke)
+    // North Rwy
+    ctx.beginPath()
+    ctx.setLineDash([])
     ctx.moveTo( -tpArrowTip, rwyHLength + tpArrowTip);
     ctx.lineTo( 0, rwyHLength);
     ctx.lineTo( tpArrowTip, rwyHLength + tpArrowTip);
-    ctx.stroke()
     
-    // South Runway
-    ctx.beginPath();
-    // TP Downwind
-    if(southRwy.pattern == 'right') {
-        ctx.moveTo( -tpDownwindDist, 0);
-        ctx.lineTo( -tpDownwindDist, -tpBaseDist);
-    } else {
-        ctx.moveTo( tpDownwindDist, 0);
-        ctx.lineTo( tpDownwindDist, -tpBaseDist);
-    }
-    // TP Base
-    ctx.lineTo( 0, -tpBaseDist);
-    // TP Final
-    ctx.lineTo( 0, -rwyHLength);
-    // TP Tip
     ctx.moveTo( -tpArrowTip, -rwyHLength - tpArrowTip);
     ctx.lineTo( 0, -rwyHLength);
     ctx.lineTo( +tpArrowTip, -rwyHLength - tpArrowTip);
