@@ -1,5 +1,6 @@
 <script setup>
 import {ref} from 'vue';
+import {validate} from '../assets/data.js'
 
 const emits = defineEmits(['loadPage'])
 const displayMenu = ref(false)
@@ -9,12 +10,14 @@ function toggleMenu() {
     displayMenu.value = !displayMenu.value;
 }
 
-// function onEditPage() {
-//   emits('editPage');
-// }
-
 function onLoadPage( name) {
-    emits('loadPage',name)    
+  emits('loadPage')
+  toggleMenu()
+}
+
+function validateData() {
+  validate()
+  toggleMenu()
 }
 </script>
 
@@ -26,8 +29,9 @@ function onLoadPage( name) {
             <div class="bar3"></div>
         </div>
         <div v-show="displayMenu" class="buttonsList">
-            <button @click="onLoadPage('Demo')">Demo</button>
-            <button @click="onLoadPage('KBFI')">KBFI</button>
+            <button @click="onLoadPage('Demo')">Demo Page</button>
+            <!-- <button @click="onLoadPage('KBFI')">KBFI</button> -->
+            <button @click="validateData">Validate Data</button>
             <!-- <button @click="onLoadPage('')">Reset</button> -->
         </div>
     </div>
