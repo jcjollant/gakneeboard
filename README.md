@@ -21,19 +21,17 @@ $ vercel
 ```
 
 ## TODO
-* Edit mode allows to change existing widgets content
-* Update Selector layout to not look like a widget (no borders, just buttons)
-* Add blank widget, which could be the non edit state of Selector
-* Reset feature sets all widget to Selector
-* Page configuration is saved in browser
-* User can create own airport data
-* Users can override airport information
+* Users can send feedback through the menu
+* Users can override airport information with their own data
 * Read airport data from external source
-* Rearrange the layout with Input on top amd matching airport size
 * Change favicon
 
 # Done
+## 4/25/2024
+* Page configuration is saved in browser
+* Default widget can be reset to the blank state
 ## 4/24/2024
+* Edit mode allows to change existing widgets content
 * Show traffic patterns using dashed line
 * Rename KBVS to Demo 1 page.
 ## 4/22/2024
