@@ -5,11 +5,14 @@ import WidgetTitle from './WidgetTitle.vue'
 import Runway from './Runway.vue'
 import * as data from '../assets/data.js'
 
+const emits = defineEmits(['reset'])
+
+
 var currentAirport
 var currentRwyIndex;
 const props = defineProps({
     params: { type: Object, default: null},
-    mode: { type: String, default: ''}
+    mode: { type: String, default: ''}  // used for edit mode
 })
 
 const mode = ref('')
@@ -34,6 +37,15 @@ function cycleRunway() {
     showRunway(newIndex);
 }
 
+function editMode() {
+    title.value = 'Airport'
+    mode.value = 'edit'
+}
+
+function resetWidget() {
+    emits('reset');
+}
+
 // gets invoked as airport code it typed into the input field
 function onCodeUpdate() {
     // console.log(airportCode.value)
@@ -46,22 +58,30 @@ function onCodeUpdate() {
     }
 }
 
+function loadAirportByCode(code) {
+    const airport = data.airports[code];
+    if( airport != undefined && 'rwy' in airport) {
+        showAirport(airport)
+        showRunway(airport.rwy.findIndex((rwy) => rwy.name == props.params.rwy));
+    } else {
+        editMode()
+    }
+}
+
 // add initialization code 
 onMounted(() => {   
     // console.log('Airport mounted with ' + JSON.stringify(props.params))
     // get this airport data from parameters
-    const airport = data.airports[props.params.code];
-    showAirport( airport)
-    showRunway(airport.rwy.findIndex((rwy) => rwy.name == props.params.rwy));
+    loadAirportByCode(props.params.code)
 })
 
 watch( props, async() => {
-    // console.log("props changed " + JSON.stringify(props));
+    // console.log("Airport props changed " + JSON.stringify(props));
     mode.value = props.mode;
     if(props.mode == 'edit') {
-        title.value = 'Airport'
+        editMode()
     } else {
-        showAirport(props.params)
+        loadAirportByCode(props.params.code)
     }
 })
 
@@ -75,6 +95,7 @@ function showAirport( airport) {
     // console.log( "Showing airport " + JSON.stringify(airport))
     if( airport == null) {
         console.log( 'Airport data missing')
+        mode.value = 'edit';
         return
     }
     currentAirport = airport;
@@ -111,6 +132,7 @@ function showRunway(index) {
             <input class="airportCode" v-model="airportCode" @input="onCodeUpdate" />
             <div class="label">Runway</div>
             <div class="rwySelector" v-for="(rwy, index) in rwys"><button @click="selectRunway(index)">{{rwy.name}}</button></div>
+            <button class="deleteButton" @click="resetWidget()">Reset</button>
         </div>
         <div class="content" v-else="">
             <div class="corner top left"><div>{{weatherFreq}}</div><div class="label">{{weatherType}}</div></div>
@@ -131,6 +153,12 @@ function showRunway(index) {
         padding: 0;
         font-size:9px;
     }
+    .deleteButton {
+        position: absolute;
+        font-size: 8px;
+        bottom: 2px;
+        right: 2px;
+    }
     .top {
         top: 0;
     }
@@ -144,9 +172,6 @@ function showRunway(index) {
     .right {
         right: 0;
         text-align: right; /* Align text to the right */
-    }
-    .clickable {
-        cursor: pointer;
     }
     .label {
         font-size: 12px;
