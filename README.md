@@ -20,6 +20,11 @@ You can deploy your new Vite project with a single command from your terminal us
 $ vercel
 ```
 
+## Pending
+* Rename App to Kneeboard
+* Add kb.jollant.net domain
+* Save updated airport params
+
 ## TODO
 * Edit mode allows to change existing widgets content
 * Update Selector layout to not look like a widget (no borders, just buttons)
