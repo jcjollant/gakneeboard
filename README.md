@@ -20,6 +20,11 @@ You can deploy your new Vite project with a single command from your terminal us
 $ vercel
 ```
 
+## Pending
+* Rename App to Kneeboard
+* Add kb.jollant.net domain
+* Save updated airport params
+
 ## TODO
 * Users can send feedback through the menu
 * Users can override airport information with their own data
