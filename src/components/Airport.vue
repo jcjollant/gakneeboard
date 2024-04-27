@@ -171,6 +171,9 @@ function showRunway(index) {
 </template>
 
 <style scoped>
+    .content {
+        position: relative;
+    }
     .corner {
         position: absolute; /* Absolute positioning within container */
         padding: 5px; /* Adjust padding for better visibility */
@@ -219,13 +222,14 @@ function showRunway(index) {
         padding: 2px 8px 2px 8px;
     }
     .airportCode {
-        /* writing-mode: vertical-rl;
-        text-orientation: mixed; */
+        transform: rotate(270deg);
         font-weight: 900;
         font-size: 36px;
         opacity: 0.10;
         position: absolute;
-        bottom: 0;
+        top: 0;
+        left: -30px;
         width: 100%;
+        height: 100%;
     }
 </style>
