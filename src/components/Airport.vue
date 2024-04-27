@@ -5,13 +5,13 @@ import WidgetTitle from './WidgetTitle.vue'
 import Runway from './Runway.vue'
 import * as data from '../assets/data.js'
 
-const emits = defineEmits(['reset'])
+const emits = defineEmits(['reset','update'])
 
 
 var currentAirport
 var currentRwyIndex;
 const props = defineProps({
-    params: { type: Object, default: null},
+    params: { type: Object, default: null}, // expects {'code':'ICAO','rwy':'XX-YY'}
     mode: { type: String, default: ''}  // used for edit mode
 })
 
@@ -30,11 +30,12 @@ const selectedRunway = ref(null)
 
 function cycleRunway() {
     // console.log( "cycleRunway rwy Count " + runwayCount.value);
-    if( runwayCount.value < 1) return;
+    if( runwayCount.value < 2) return;
 
     const newIndex = (currentRwyIndex + 1) % currentAirport.rwy.length;
     // console.log('Cycling runway to ' + newIndex)
     showRunway(newIndex);
+    updateWidget();
 }
 
 function editMode() {
@@ -46,6 +47,13 @@ function resetWidget() {
     emits('reset');
 }
 
+// invoked whenever we want to save the current state
+function updateWidget() {
+    const airportParam = {'code':airportCode.value.toLowerCase(),'rwy':currentAirport.rwy[currentRwyIndex].name};
+    // console.log( 'Widget updated with ' + JSON.stringify(airportParam));
+    emits('update', JSON.stringify(airportParam));
+}
+
 // gets invoked as airport code it typed into the input field
 function onCodeUpdate() {
     // console.log(airportCode.value)
@@ -53,6 +61,10 @@ function onCodeUpdate() {
     if( code in data.airports) {
         rwys.value = data.airports[code].rwy
         currentAirport = data.airports[code]
+    } else if( ('k'+code) in data.airports) {
+        let longCode = 'k'+code;
+        rwys.value = data.airports[longCode].rwy
+        currentAirport = data.airports[longCode]
     } else { // reset runways list
         rwys.value = [];
     }
@@ -85,10 +97,13 @@ watch( props, async() => {
     }
 })
 
+// A runway has been selected from the list
 function selectRunway(index) {
+    console.log("selectRunway " + index)
     mode.value = '';
     showAirport(currentAirport)
     showRunway(index);
+    updateWidget()
 }
 
 function showAirport( airport) {
@@ -100,16 +115,22 @@ function showAirport( airport) {
     }
     currentAirport = airport;
     runwayCount.value = airport.rwy.length
-    airportCode.value = airport.airportCode
+    airportCode.value = airport.code
     rwys.value = airport.rwy;
     
-    title.value = airport.airportCode + ' : ' + airport.airportName
+    title.value = airport.name
     weatherFreq.value = airport.weather.freq
     weatherType.value = airport.weather.type
     // If traffic is runway specific, it will be overriden by showRunway
-    trafficFreq.value = airport.traffic.freq
-    trafficType.value = airport.traffic.type
-    elevation.value = airport.elev;
+    if( 'ctaf' in airport) {
+        trafficFreq.value = airport.ctaf
+        if( airport.twr == 'Y') {
+            trafficType.value = 'TWR/CTAF'
+        } else {
+            trafficType.value = 'CTAF'
+        }
+    }
+    elevation.value = Math.round(airport.elev);
     tpa.value = airport.tpa;
 }
 // Show a runway from its index in the airport
@@ -119,7 +140,10 @@ function showRunway(index) {
     var runway = currentAirport.rwy[index]
     selectedRunway.value = runway
     // Override traffice frequency if needed
-    if('freq' in runway) trafficFreq.value = runway.freq;
+    if('freq' in runway) {
+        trafficFreq.value = runway.freq;
+        trafficType.value = 'TWR';
+    }
 }
 
 </script>
@@ -182,7 +206,14 @@ function showRunway(index) {
         width: 90px;
     }
     .rwySelector {
-        font-size: 12px;
+        font-size: 14px;
         margin:5px;
+    }
+    .rwySelector button{
+        background: red;
+        color:white;
+        border-radius: 2px;
+        border: 1px solid black;
+        padding: 2px 8px 2px 8px;
     }
 </style>

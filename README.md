@@ -20,18 +20,29 @@ You can deploy your new Vite project with a single command from your terminal us
 $ vercel
 ```
 
-## Pending
-* Rename App to Kneeboard
-* Add kb.jollant.net domain
-* Save updated airport params
-
 ## TODO
 * Users can send feedback through the menu
-* Users can override airport information with their own data
 * Read airport data from external source
+* Show airport code in title
+* Show runway length next to runway
+* remove fetch
+* Show version number in menu
 * Change favicon
+* Add synopsis widget
 
 # Done
+## 4/26/2024
+* Water runway rendered as blue
+* offer at least 25 airports
+* Show tower frequency when no CTAF (kbfi) or when there is a tower (krnt)
+* Round up elevation figure
+* Users can use 3 letters code to pick airport
+* show rwy selection as a runway sign
+* Show wather frequency when there is not Atis
+* fix data validation
+* Save updated airport params
+* Rename App to Kneeboard
+* Add kb.jollant.net domain
 ## 4/25/2024
 * Page configuration is saved in browser
 * Default widget can be reset to the blank state

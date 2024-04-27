@@ -56,7 +56,7 @@ function show(runway) {
     ctx.translate((referenceSize) / 2, (referenceSize) / 2); // Move back to original position
     ctx.rotate(angleInRad);
     // draw runway at the center
-    ctx.fillStyle = ( runway.surface.type=='TURF' ? 'darkgreen' : 'black');
+    ctx.fillStyle = ( runway.surface.type=='TURF' ? 'darkgreen' : runway.surface.type=='WATER' ? 'darkblue' : 'black');
     ctx.fillRect( -rwyHWidth, -rwyHLength, rwyWidth, rwyLength);
 
     // draw runway names

@@ -6,15 +6,15 @@ import {onMounted,ref} from 'vue'
 
 const demoPage = [
   {'id':0,'name':'airport','data':{'code':'krnt','rwy':'16-34'}},
-  {'id':1,'name':'airport','data':{'code':'s43','rwy':'15L-33R'}},
-  {'id':2,'name':'airport','data':{'code':'kawo','rwy':'11-29'}},
-  {'id':3,'name':'airport','data':{'code':'kbvs','rwy':'11-29'}},
+  {'id':1,'name':'airport','data':{'code':'s36','rwy':'15-33'}},
+  {'id':2,'name':'airport','data':{'code':'w39','rwy':'NE-SW'}},
+  {'id':3,'name':'airport','data':{'code':'kplu','rwy':'17-35'}},
   {'id':4,'name':'atis','data':{}},
   {'id':5,'name':'atis','data':{}},
   {'id':6,'name':'airport','data':{'code':'kbvs','rwy':'11-29'}},
   {'id':7,'name':'airport','data':{'code':'kawo','rwy':'11-29'}},
-  {'id':8,'name':'airport','data':{'code':'s43','rwy':'15L-33R'}},
-  {'id':9,'name':'airport','data':{'code':'krnt','rwy':'16-34'}},
+  {'id':8,'name':'airport','data':{'code':'s43','rwy':'15R-33L'}},
+  {'id':9,'name':'airport','data':{'code':'kpae','rwy':'16L-34R'}},
   {'id':10,'name':'atis','data':{}},
   {'id':11,'name':'atis','data':{}},
 ]
@@ -80,10 +80,10 @@ function updateWidget(widget) {
   <div class="menuContainer"><Menu class="menu" @load-page="onLoadDemo"></Menu></div>
   <div class="twoPages">
     <div class="onePage">
-      <Widget v-for='widget in widgetsOne' :widget="widget.value" @load-widget="updateWidget"/>
+      <Widget v-for='widget in widgetsOne' :widget="widget.value" @update="updateWidget"/>
     </div>
     <div class="onePage">
-      <Widget v-for='widget in widgetsTwo' :widget="widget.value" @load-widget="updateWidget"/>
+      <Widget v-for='widget in widgetsTwo' :widget="widget.value" @update="updateWidget"/>
     </div>
   </div>
 </template>

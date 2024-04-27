@@ -1,9 +1,47 @@
 <script setup>
 import {ref} from 'vue';
 import {validate} from '../assets/data.js'
+import axios from 'axios'
 
 const emits = defineEmits(['loadPage'])
 const displayMenu = ref(false)
+
+const requestOptions = {
+    method: "POST",
+    headers: { "Authorization":"Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP"},
+    mode : "no-cors",
+    body: '{ locId: CLS }'
+};
+
+function fetchData() {
+  axios.post('https://adip.faa.gov/agisServices/public-api/getAirportDetails',
+    "{'locId':'CLS'}",
+    { 
+      headers:{ 
+        'Authorization':'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP',
+        "Content-Type": "text/plain"      
+      },
+      body:'{ locId: CLS }'
+    })
+    .then( response => console.log( response))
+    .catch( error => console.log( error))
+
+  // fetch('https://adip.faa.gov/agisServices/public-api/getAirportDetails', {
+  //   method: 'POST',
+  //   headers: { 
+  //     'Authorization':'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP',
+  //     "Content-Type": "text/plain"      
+  //   },
+  //   mode : "no-cors",
+  //   body: '{ "locId": "CLS" }'
+
+  // })
+  //   .then( response => response.json()
+  //     .then(data => console.log(data))
+  //   )
+  //   .catch( () => console.error("Could not fetch data"))
+
+ }
 
 // Toggle menu visibility which will update component layout
 function toggleMenu() {
@@ -31,7 +69,8 @@ function validateData() {
         <div v-show="displayMenu" class="buttonsList">
             <button @click="onLoadPage('Demo')">Demo Page</button>
             <!-- <button @click="onLoadPage('KBFI')">KBFI</button> -->
-            <button @click="validateData">Validate Data</button>
+            <!-- <button @click="validateData">Validate Data</button>
+            <button @click="fetchData">Fetch</button> -->
             <!-- <button @click="onLoadPage('')">Reset</button> -->
         </div>
     </div>
