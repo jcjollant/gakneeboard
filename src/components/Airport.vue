@@ -154,7 +154,7 @@ function showRunway(index) {
         <WidgetTitle :title="title" @edit-mode="mode='edit'" />
         <div class="content" v-if="mode=='edit'">
             <div class="label">Code</div>
-            <input class="airportCode" v-model="airportCode" @input="onCodeUpdate" />
+            <input class="airportCodeInput" v-model="airportCode" @input="onCodeUpdate" />
             <div class="label">Runway</div>
             <div class="rwySelector" v-for="(rwy, index) in rwys"><button @click="selectRunway(index)">{{rwy.name}}</button></div>
             <button class="deleteButton" @click="resetWidget()">Reset</button>
@@ -203,7 +203,7 @@ function showRunway(index) {
         font-size: 12px;
         padding-top: 15px;
     }
-    .airportCode {
+    .airportCodeInput {
         text-align: center;
         width: 90px;
     }
