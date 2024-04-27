@@ -26,10 +26,12 @@ $ vercel
 * Change favicon
 * Add synopsis widget
 * Add clearance widget
+* User can choose if runway should be oriented or straight
+* USer can choose to show 45 entry magnetic course
 
 # Done
 ## 4/27/2024
-* Add Magnetic course for 45 with visual cue
+* Add Magnetic course for 45 with visual cue (Trenton Lipscomb)
 * Show version number in Feedback
 * Show airport code in title
 * Users can switch between their page and the demo page
