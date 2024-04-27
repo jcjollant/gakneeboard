@@ -7,6 +7,11 @@ const props = defineProps({
 
 const myCanvas = ref()
 
+function getFourtyFive( orientation) {
+    if(orientation < 0) orientation += 360;
+    return orientation;
+}
+
 onMounted(() => {    
     show( props.runway)
 })
@@ -64,7 +69,7 @@ function show(runway) {
     // console.log(ctx.font);
     ctx.fillStyle = 'white';
     ctx.textAlign = 'center';
-    ctx.fillText( southRwyName, 0, -rwyHLength + rwyFontSize * 1.5)
+    ctx.fillText( southRwyName, 0, -rwyHLength + rwyFontSize * 1.5);
     ctx.fillText( northRwyName, 0, rwyHLength - rwyFontSize * 0.5);
     
     // Traffic pattern
@@ -83,9 +88,15 @@ function show(runway) {
     if(northRwy.pattern == 'right') {
         ctx.lineTo( tpDownwindDist, tpBaseDist);
         ctx.lineTo( tpDownwindDist, 0);
+        ctx.lineTo( tpDownwindDist * 2, -tpDownwindDist);
+        ctx.stroke();
+        ctx.fillText( getFourtyFive(northRwy.orientation - 135), tpDownwindDist * 2, -tpDownwindDist);
     } else {
         ctx.lineTo( -tpDownwindDist, tpBaseDist);
         ctx.lineTo( -tpDownwindDist, 0);
+        ctx.lineTo( -tpDownwindDist * 2, -tpDownwindDist);
+        ctx.stroke();
+        ctx.fillText( getFourtyFive(northRwy.orientation - 225), -tpDownwindDist * 2, -tpDownwindDist);
     }
 
     // South Runway TP
@@ -97,11 +108,16 @@ function show(runway) {
     if(southRwy.pattern == 'right') {
         ctx.lineTo( -tpDownwindDist, -tpBaseDist);
         ctx.lineTo( -tpDownwindDist, 0);
+        ctx.lineTo( -tpDownwindDist * 2, tpDownwindDist);
+        ctx.stroke()
+        ctx.fillText( getFourtyFive(southRwy.orientation - 135), -tpDownwindDist * 2, tpDownwindDist);
     } else {
         ctx.lineTo( tpDownwindDist, -tpBaseDist);
         ctx.lineTo( tpDownwindDist, 0);
+        ctx.lineTo( tpDownwindDist * 2, tpDownwindDist);
+        ctx.stroke()
+        ctx.fillText( getFourtyFive(southRwy.orientation - 225), tpDownwindDist * 2, tpDownwindDist);
     }
-    ctx.stroke()
 
     // TP Arrow Tips (full stroke)
     // North Rwy

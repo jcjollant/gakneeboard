@@ -29,6 +29,7 @@ $ vercel
 
 # Done
 ## 4/27/2024
+* Add Magnetic course for 45 with visual cue
 * Show version number in Feedback
 * Show airport code in title
 * Users can switch between their page and the demo page
