@@ -2,24 +2,13 @@
 // import HelloWorld from './components/HelloWorld.vue'
 import Menu from './components/Menu.vue'
 import Widget from './components/Widget.vue'
+import Feedback from './components/Feedback.vue';
+import About from './components/About.vue';
 import {onMounted,ref} from 'vue'
-
-const demoPage = [
-  {'id':0,'name':'airport','data':{'code':'krnt','rwy':'16-34'}},
-  {'id':1,'name':'airport','data':{'code':'s36','rwy':'15-33'}},
-  {'id':2,'name':'airport','data':{'code':'w39','rwy':'NE-SW'}},
-  {'id':3,'name':'airport','data':{'code':'kplu','rwy':'17-35'}},
-  {'id':4,'name':'atis','data':{}},
-  {'id':5,'name':'atis','data':{}},
-  {'id':6,'name':'airport','data':{'code':'kbvs','rwy':'11-29'}},
-  {'id':7,'name':'airport','data':{'code':'kawo','rwy':'11-29'}},
-  {'id':8,'name':'airport','data':{'code':'s43','rwy':'15R-33L'}},
-  {'id':9,'name':'airport','data':{'code':'kpae','rwy':'16L-34R'}},
-  {'id':10,'name':'atis','data':{}},
-  {'id':11,'name':'atis','data':{}},
-]
+import {demoPage,blankPage, airports} from './assets/data.js'
 
 var pageData = null;
+var currentPage = 'page1';
 const widget0 = ref({})
 const widget1 = ref({})
 const widget2 = ref({})
@@ -34,14 +23,30 @@ const widget10 = ref({})
 const widget11 = ref({})
 const widgetsOne = [widget0,widget1,widget2,widget3,widget4,widget5]
 const widgetsTwo = [widget6,widget7,widget8,widget9,widget10,widget11]
+const showFeedback = ref()
+const showAbout = ref()
 
-function onLoadDemo() {
-  onLoadPage( demoPage)
+function onLoadPage(name) {
+  // console.log('onLoadPage ' + JSON.stringify(name))
+  let newPageData = blankPage
+  if( name=='page1' || name =='page2') {
+    currentPage = name;
+    let data = localStorage.getItem(currentPage);
+    if( data == null) { // first time around, default to demo
+      newPageData = demoPage
+    } else {
+      newPageData = JSON.parse(data)
+    }
+
+  } else if( name == 'demo') {
+    newPageData = demoPage;
+  }
+  onLoadPageData(newPageData)
   savePageData();
 }
 
-function onLoadPage(data = demoPage) {
-  // console.log( 'App loadPage ' + JSON.stringify(data))
+function onLoadPageData(data) {
+  // console.log( 'App loadPageData ' + JSON.stringify(data))
   if( data == null) data = demoPage;
   widget0.value = data[0]
   widget1.value = data[1];
@@ -59,13 +64,13 @@ function onLoadPage(data = demoPage) {
 }
 
 onMounted(() => {
-  pageData = JSON.parse(localStorage.getItem('myPage'))
-  // console.log('local storage page ' + JSON.stringify(pageData))
-  onLoadPage(pageData)
+  onLoadPage(currentPage)
+ 
+  // console.log( Object.keys(airports).join(', ').toUpperCase());
 })
 
 function savePageData() {
-  localStorage.setItem('myPage', JSON.stringify( pageData))
+  localStorage.setItem(currentPage, JSON.stringify( pageData))
 }
 
 function updateWidget(widget) {
@@ -77,7 +82,12 @@ function updateWidget(widget) {
 </script>
 
 <template>
-  <div class="menuContainer"><Menu class="menu" @load-page="onLoadDemo"></Menu></div>
+  <div class="menuContainer">
+    <Menu class="menu" @load-page="onLoadPage" 
+      @show-feedback="showFeedback=true" 
+      @show-about="showAbout=true">
+    </Menu>
+  </div>
   <div class="twoPages">
     <div class="onePage">
       <Widget v-for='widget in widgetsOne' :widget="widget.value" @update="updateWidget"/>
@@ -86,6 +96,8 @@ function updateWidget(widget) {
       <Widget v-for='widget in widgetsTwo' :widget="widget.value" @update="updateWidget"/>
     </div>
   </div>
+  <Feedback :v-if="showFeedback" :isOpen="showFeedback" name='feedback-modal' @close="showFeedback=false"/>
+  <About :v-if="showAbout" :isOpen="showAbout" name='about-modal' @close="showAbout=false"/>
 </template>
 
 <style scoped>

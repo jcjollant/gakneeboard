@@ -12,7 +12,7 @@ const props = defineProps({
     widget: { type: Object, default: null},
 })
 
-const knownWidgets = ref(['Airport','ATIS','List','Notes'])
+const knownWidgets = ref(['Airport','ATIS','Notes'])
 const widget = ref({})
 
 function updateWidgetName(newName = '') {
@@ -42,7 +42,7 @@ watch( props, async() => {
 
 <template>
     <div v-if="!widget || widget.name==''" class="widget">
-        <div class="widgetTitle">Widget Selection</div>
+        <div class="widgetTitle">Tile Selection</div>
         <div class="content list">
             <button v-for="widget in knownWidgets" class="item" @click="updateWidgetName(widget)">{{ widget }}</button>
         </div>

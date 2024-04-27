@@ -21,16 +21,19 @@ $ vercel
 ```
 
 ## TODO
-* Users can send feedback through the menu
 * Read airport data from external source
-* Show airport code in title
 * Show runway length next to runway
-* remove fetch
-* Show version number in menu
 * Change favicon
 * Add synopsis widget
+* Add clearance widget
 
 # Done
+## 4/27/2024
+* Show version number in Feedback
+* Show airport code in title
+* Users can switch between their page and the demo page
+* Users can send feedback through the menu
+* remove fetch
 ## 4/26/2024
 * Water runway rendered as blue
 * offer at least 25 airports

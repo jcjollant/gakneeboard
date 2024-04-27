@@ -1,3 +1,35 @@
+export const version = '427'
+
+export const demoPage = [
+  {'id':0,'name':'airport','data':{'code':'krnt','rwy':'16-34'}},
+  {'id':1,'name':'airport','data':{'code':'s36','rwy':'15-33'}},
+  {'id':2,'name':'airport','data':{'code':'w39','rwy':'NE-SW'}},
+  {'id':3,'name':'airport','data':{'code':'kplu','rwy':'17-35'}},
+  {'id':4,'name':'atis','data':{}},
+  {'id':5,'name':'notes','data':{}},
+  {'id':6,'name':'airport','data':{'code':'kbvs','rwy':'11-29'}},
+  {'id':7,'name':'airport','data':{'code':'kawo','rwy':'11-29'}},
+  {'id':8,'name':'airport','data':{'code':'s43','rwy':'15R-33L'}},
+  {'id':9,'name':'airport','data':{'code':'kpae','rwy':'16L-34R'}},
+  {'id':10,'name':'atis','data':{}},
+  {'id':11,'name':'atis','data':{}},
+]
+
+export const blankPage = [
+  {'id':0,'name':'','data':{}},
+  {'id':1,'name':'','data':{}},
+  {'id':2,'name':'','data':{}},
+  {'id':3,'name':'','data':{}},
+  {'id':4,'name':'','data':{}},
+  {'id':5,'name':'','data':{}},
+  {'id':6,'name':'','data':{}},
+  {'id':7,'name':'','data':{}},
+  {'id':8,'name':'','data':{}},
+  {'id':9,'name':'','data':{}},
+  {'id':10,'name':'','data':{}},
+  {'id':11,'name':'','data':{}},
+]
+
 export let airports = {
     "0s9":{"code":"0S9","name":"Jefferson County Intl","ctaf":"123.000","twr":"N","elev":110.1,"tpa":1100,"weather":{"freq":119.025,"type":"AWOS-3P"},"rwy":[{"27":{"orientation":268,"pattern":"left"},"name":"09-27","length":3000,"width":75,"surface":{"type":"ASPH","condition":"E"},"09":{"orientation":88,"pattern":"right"}}]},
     "13w":{"code":"13W","name":"Camano Island Airfield","ctaf":"122.900","twr":"N","elev":145,"tpa":1100,"weather":{"freq":132.775,"type":"AWOS-3"},"rwy":[{"16":{"orientation":159,"pattern":"right"},"34":{"orientation":-21,"pattern":"right"},"name":"16-34","length":1750,"width":24,"surface":{"type":"ASPH","condition":"F"}}]},

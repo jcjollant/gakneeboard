@@ -54,6 +54,7 @@ function onEdit() {
         padding: 5px;
         border-bottom: 1px dashed darkgrey;
         position: relative;
+        overflow: hidden;
     }
 
 </style>

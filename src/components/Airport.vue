@@ -118,6 +118,7 @@ function showAirport( airport) {
     airportCode.value = airport.code
     rwys.value = airport.rwy;
     
+    // title.value = airport.code + ":" + airport.name
     title.value = airport.name
     weatherFreq.value = airport.weather.freq
     weatherType.value = airport.weather.type
@@ -164,6 +165,7 @@ function showRunway(index) {
             <div class="corner bottom left"><div class='label'>Elev</div><div>{{ elevation }}</div></div>
             <div class="corner bottom right"><div class='label'>TPA</div><div>{{ tpa }}</div></div>
             <Runway @click="cycleRunway()" :class="{clickable: runwayCount > 1}" :runway="selectedRunway" />
+            <div class="airportCode">{{airportCode}}</div>
         </div>
     </div>    
 </template>
@@ -215,5 +217,15 @@ function showRunway(index) {
         border-radius: 2px;
         border: 1px solid black;
         padding: 2px 8px 2px 8px;
+    }
+    .airportCode {
+        /* writing-mode: vertical-rl;
+        text-orientation: mixed; */
+        font-weight: 900;
+        font-size: 36px;
+        opacity: 0.10;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
     }
 </style>

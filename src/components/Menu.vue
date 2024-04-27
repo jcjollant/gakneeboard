@@ -1,10 +1,9 @@
 <script setup>
 import {ref} from 'vue';
 import {validate} from '../assets/data.js'
-import axios from 'axios'
 
-const emits = defineEmits(['loadPage'])
-const displayMenu = ref(false)
+const emits = defineEmits(['loadPage','showFeedback','showAbout'])
+const showMenu = ref(false)
 
 const requestOptions = {
     method: "POST",
@@ -13,67 +12,49 @@ const requestOptions = {
     body: '{ locId: CLS }'
 };
 
-function fetchData() {
-  axios.post('https://adip.faa.gov/agisServices/public-api/getAirportDetails',
-    "{'locId':'CLS'}",
-    { 
-      headers:{ 
-        'Authorization':'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP',
-        "Content-Type": "text/plain"      
-      },
-      body:'{ locId: CLS }'
-    })
-    .then( response => console.log( response))
-    .catch( error => console.log( error))
-
-  // fetch('https://adip.faa.gov/agisServices/public-api/getAirportDetails', {
-  //   method: 'POST',
-  //   headers: { 
-  //     'Authorization':'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP',
-  //     "Content-Type": "text/plain"      
-  //   },
-  //   mode : "no-cors",
-  //   body: '{ "locId": "CLS" }'
-
-  // })
-  //   .then( response => response.json()
-  //     .then(data => console.log(data))
-  //   )
-  //   .catch( () => console.error("Could not fetch data"))
-
- }
-
 // Toggle menu visibility which will update component layout
 function toggleMenu() {
-    displayMenu.value = !displayMenu.value;
+    showMenu.value = !showMenu.value;
 }
 
 function onLoadPage( name) {
-  emits('loadPage')
-  toggleMenu()
+  emits('loadPage', name)
+  showMenu.value = false
 }
 
 function validateData() {
   validate()
-  toggleMenu()
+  showMenu.value = false
 }
+
+function emitAndClose(message) {
+  console.log('emitAndClose ' + message)
+  emits(message)
+  showMenu.value = false
+}
+
 </script>
 
 <template>
-    <div class="container">
-        <div class="menuIcon" :class="{change: displayMenu}" @click="toggleMenu">
-            <div class="bar1"></div>
-            <div class="bar2"></div>
-            <div class="bar3"></div>
-        </div>
-        <div v-show="displayMenu" class="buttonsList">
-            <button @click="onLoadPage('Demo')">Demo Page</button>
-            <!-- <button @click="onLoadPage('KBFI')">KBFI</button> -->
-            <!-- <button @click="validateData">Validate Data</button>
-            <button @click="fetchData">Fetch</button> -->
-            <!-- <button @click="onLoadPage('')">Reset</button> -->
-        </div>
+  <div class="container">
+    <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
     </div>
+    <div v-show="showMenu" class="expandedMenu">
+      <div class="buttonsList">
+        <button @click="onLoadPage('page1')">Page 1</button>
+        <button @click="onLoadPage('page2')">Page 2</button>
+        <div class="separator"></div>
+        <button @click="onLoadPage('demo')">Demo Tiles</button>
+        <button @click="onLoadPage('reset')">Reset Tiles</button>
+        <div class="separator"></div>
+        <button @click="emitAndClose('showFeedback')">Feedback</button>
+        <button @click="emitAndClose('showAbout')">About</button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -83,6 +64,7 @@ function validateData() {
     gap: 40px;
 }
 .buttonsList {
+  text-align: left;
     display: flex;
     flex-flow: row;
     gap:20px;
@@ -90,6 +72,25 @@ function validateData() {
 .menuIcon {
   display: inline-block;
   cursor: pointer;
+}
+.expandedMenu {
+  position: relative;
+  width: 100%;
+}
+.version {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  font-size: 8px;
+  margin:auto;
+}
+
+.separator {
+  border-left: 1px solid darkgrey;
+  border-right: 1px solid darkgrey;
+  width:2px;
+  height: 25px;
+  margin:auto;
 }
 
 .bar1, .bar2, .bar3 {
