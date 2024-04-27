@@ -31,6 +31,7 @@ $ vercel
 
 # Done
 ## 4/27/2024
+* Removed runway orientation angle for legibility
 * Add Magnetic course for 45 with visual cue (Trenton Lipscomb)
 * Show version number in Feedback
 * Show airport code in title

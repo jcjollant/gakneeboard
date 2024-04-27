@@ -90,13 +90,13 @@ function show(runway) {
         ctx.lineTo( tpDownwindDist, 0);
         ctx.lineTo( tpDownwindDist * 2, -tpDownwindDist);
         ctx.stroke();
-        ctx.fillText( getFourtyFive(northRwy.orientation - 135), tpDownwindDist * 2, -tpDownwindDist);
+        ctx.fillText( getFourtyFive(northRwy.orientation - 135)+'°', tpDownwindDist * 2.5, -tpDownwindDist);
     } else {
         ctx.lineTo( -tpDownwindDist, tpBaseDist);
         ctx.lineTo( -tpDownwindDist, 0);
         ctx.lineTo( -tpDownwindDist * 2, -tpDownwindDist);
         ctx.stroke();
-        ctx.fillText( getFourtyFive(northRwy.orientation - 225), -tpDownwindDist * 2, -tpDownwindDist);
+        ctx.fillText( getFourtyFive(northRwy.orientation - 225)+'°', -tpDownwindDist * 2.5, -tpDownwindDist);
     }
 
     // South Runway TP
@@ -110,13 +110,13 @@ function show(runway) {
         ctx.lineTo( -tpDownwindDist, 0);
         ctx.lineTo( -tpDownwindDist * 2, tpDownwindDist);
         ctx.stroke()
-        ctx.fillText( getFourtyFive(southRwy.orientation - 135), -tpDownwindDist * 2, tpDownwindDist);
+        ctx.fillText( getFourtyFive(southRwy.orientation - 135)+'°', -tpDownwindDist * 2.5, tpDownwindDist);
     } else {
         ctx.lineTo( tpDownwindDist, -tpBaseDist);
         ctx.lineTo( tpDownwindDist, 0);
         ctx.lineTo( tpDownwindDist * 2, tpDownwindDist);
         ctx.stroke()
-        ctx.fillText( getFourtyFive(southRwy.orientation - 225), tpDownwindDist * 2, tpDownwindDist);
+        ctx.fillText( getFourtyFive(southRwy.orientation - 225)+'°', tpDownwindDist * 2.5, tpDownwindDist);
     }
 
     // TP Arrow Tips (full stroke)
