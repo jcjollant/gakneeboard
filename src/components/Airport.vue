@@ -239,6 +239,6 @@ function showRunway(index) {
         /* height:; */
         /* text-align: center; */
         /* vertical-align: middle; */
-        border: 1px solid red;
+        /* border: 1px solid red; */
     }
 </style>
