@@ -21,7 +21,7 @@ const target = ref(null)
           <slot name="header"> About </slot>
         </div>
         <div class="modal-body">
-          <slot name="content">Airport data may not be current. Cross checking with an official source before you fly.</slot>
+          <slot name="content">Airport data may not be current. Cross check with an official source before you fly to reduce risks of discrepancy.</slot>
         </div>
         <div class="modal-footer">
           <slot name="footer">
