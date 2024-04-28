@@ -21,7 +21,7 @@ function validateData() {
 }
 
 function emitAndClose(message) {
-  console.log('emitAndClose ' + message)
+  // console.log('emitAndClose ' + message)
   emits(message)
   showMenu.value = false
 }
