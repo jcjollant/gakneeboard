@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "run `vercel dev` to run the local service",
   "main": "index.js",
-  "type":"module",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,6 +14,7 @@
     "@vercel/node": "^3.0.27",
     "@vercel/postgres": "^0.8.0",
     "axios": "^1.6.8",
+    "cors": "^2.8.5",
     "express": "^4.19.2",
     "postgres": "^3.4.4"
   },
