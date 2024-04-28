@@ -31,9 +31,9 @@ app.get("/airport/:id", async (req,res) => {
     if( airport) {
         res.send(airport)
     } else {
-        console.log( airportCode + " not found in ADIP");
+        console.log( airportCode + " unknown");
         // TODO, create a record in postgres for this code
-        res.status(404).send("Airport not found in DB nor ADIP");
+        res.status(404).send("Airport not found");
     }
 })
 
@@ -42,25 +42,34 @@ app.listen(port, () => console.log("Server ready on port " + port));
 export default app;
 
 async function getAirport(airportCode,icaoCode) {
-    console.log( "getAirport DB for " + airportCode + "/" + icaoCode);
-    let airport = null;
+    // console.log( "getAirport DB for " + airportCode + "/" + icaoCode);
+    let result = null;
     if( icaoCode) { // try locId and icao
         const icaoCode = 'K'+airportCode;
-        airport = await sql`SELECT Data FROM Airports WHERE Code in (${airportCode},${icaoCode})`;
+        result = await sql`SELECT Data FROM Airports WHERE Code in (${airportCode},${icaoCode})`;
     } else {
-        airport = await sql`SELECT Data FROM Airports WHERE Code= ${airportCode}`;
+        result = await sql`SELECT Data FROM Airports WHERE Code= ${airportCode}`;
     }
 
-    if( airport.rows.length > 0) { // happy path, airport was not found in postgres
-        console.log( "found " + airportCode + ' in DB');
+    let airport = null;
+    if( result.rows.length > 0) { // happy path, airport was not found in postgres
         // console.log( JSON.stringify(result.rows[0]))
-        airport = JSON.parse(airport.rows[0].data);
-    } else {
+        if(result.rows[0].data != '{}') {
+            console.log( "found " + airportCode + ' in DB');
+            airport = JSON.parse(result.rows[0].data);
+        } else {
+            console.log( airportCode + " found but it's a lemon")
+            airport = null;
+        }
+    } else { // Try ADIP
         airport = await fetch(airportCode);
         if(airport) { // adip saves the day, persist this airport in postrgres
             console.log( "found " + airportCode + ' in ADIP');
             // console.log( JSON.stringify(airport));
             await sql`INSERT INTO Airports (Code, Data) VALUES (${airport['code']}, ${airport})`;
+        } else { // not found ADIP either, memorize to avoid asking this over and over
+            console.log( "Saving " + airportCode + ' in DB as lemon');
+            sql`INSERT INTO Airports (Code, Data) VALUES (${airportCode}, '{}')`;
         }
 
     }
