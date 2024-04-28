@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, defineEmits, ref } from "vue";
+import { defineEmits, ref } from "vue";
 import {version} from '../assets/data.js'
 
 const props = defineProps({

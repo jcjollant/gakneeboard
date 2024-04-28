@@ -1,16 +1,9 @@
 <script setup>
 import {ref} from 'vue';
-import {validate} from '../assets/data.js'
+import {validate, getAirport} from '../assets/data.js'
 
 const emits = defineEmits(['loadPage','showFeedback','showAbout'])
 const showMenu = ref(false)
-
-const requestOptions = {
-    method: "POST",
-    headers: { "Authorization":"Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP"},
-    mode : "no-cors",
-    body: '{ locId: CLS }'
-};
 
 // Toggle menu visibility which will update component layout
 function toggleMenu() {
@@ -52,6 +45,8 @@ function emitAndClose(message) {
         <div class="separator"></div>
         <button @click="emitAndClose('showFeedback')">Feedback</button>
         <button @click="emitAndClose('showAbout')">About</button>
+        <!-- <div class="separator"></div>
+        <button @click="getAirport('krnt')">Fetch</button> -->
       </div>
     </div>
   </div>

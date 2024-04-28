@@ -5,7 +5,7 @@ import Widget from './components/Widget.vue'
 import Feedback from './components/Feedback.vue';
 import About from './components/About.vue';
 import {onMounted,ref} from 'vue'
-import {demoPage,blankPage, airports} from './assets/data.js'
+import {demoPage,blankPage} from './assets/data.js'
 
 var pageData = null;
 var currentPage = 'page1';

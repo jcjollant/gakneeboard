@@ -22,15 +22,18 @@ $ vercel
 
 ## TODO
 * Read airport data from external source
-* Show runway length next to runway
-* Change favicon
+* 4 rwys shows funny
 * Add synopsis widget
 * Add clearance widget
-* User can choose if runway should be oriented or straight
-* USer can choose to show 45 entry magnetic course
+* Add settings
+* Show runway length next to runway
+* User setting wether runway should be oriented or straight
+* User settings whether to show 45 entry magnetic course
+* Change favicon
 
 # Done
 ## 4/27/2024
+
 * Removed runway orientation angle for legibility
 * Add Magnetic course for 45 with visual cue (Trenton Lipscomb)
 * Show version number in Feedback

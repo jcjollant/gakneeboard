@@ -25,7 +25,7 @@ const elevation = ref()
 const tpa = ref()
 const runwayCount = ref(0)
 const airportCode = ref() // used during edit mode
-const rwys = ref([]) // used during runway selection
+const allRunways = ref([]) // used during runway selection
 const selectedRunway = ref(null)
 
 function cycleRunway() {
@@ -57,27 +57,29 @@ function updateWidget() {
 // gets invoked as airport code it typed into the input field
 function onCodeUpdate() {
     // console.log(airportCode.value)
-    const code = airportCode.value.toLowerCase();
-    if( code in data.airports) {
-        rwys.value = data.airports[code].rwy
-        currentAirport = data.airports[code]
-    } else if( ('k'+code) in data.airports) {
-        let longCode = 'k'+code;
-        rwys.value = data.airports[longCode].rwy
-        currentAirport = data.airports[longCode]
-    } else { // reset runways list
-        rwys.value = [];
-    }
+    data.getAirport( airportCode.value.toUpperCase())
+        .then( airport => {
+            if( airport) {
+            // console.log("onCodeUpdate airport " + JSON.stringify(airport))
+            currentAirport = airport;
+            allRunways.value = airport.rwy
+        } else {
+            allRunways.value = [];
+        }
+    })
 }
 
 function loadAirportByCode(code) {
-    const airport = data.airports[code];
-    if( airport != undefined && 'rwy' in airport) {
-        showAirport(airport)
-        showRunway(airport.rwy.findIndex((rwy) => rwy.name == props.params.rwy));
-    } else {
-        editMode()
-    }
+    title.value = "Loading " + code + '...'
+    data.getAirport( code)
+        .then(airport => {
+            if( airport && 'rwy' in airport) {
+            showAirport(airport)
+            showRunway(airport.rwy.findIndex((rwy) => rwy.name == props.params.rwy));
+        } else {
+            editMode()
+        }
+    })
 }
 
 // add initialization code 
@@ -99,7 +101,7 @@ watch( props, async() => {
 
 // A runway has been selected from the list
 function selectRunway(index) {
-    console.log("selectRunway " + index)
+    // console.log("selectRunway " + index)
     mode.value = '';
     showAirport(currentAirport)
     showRunway(index);
@@ -116,7 +118,7 @@ function showAirport( airport) {
     currentAirport = airport;
     runwayCount.value = airport.rwy.length
     airportCode.value = airport.code
-    rwys.value = airport.rwy;
+    allRunways.value = airport.rwy;
     
     // title.value = airport.code + ":" + airport.name
     title.value = airport.name
@@ -156,7 +158,7 @@ function showRunway(index) {
             <div class="label">Code</div>
             <input class="airportCodeInput" v-model="airportCode" @input="onCodeUpdate" />
             <div class="label">Runway</div>
-            <div class="rwySelector" v-for="(rwy, index) in rwys"><button @click="selectRunway(index)">{{rwy.name}}</button></div>
+            <div class="rwySelector" v-for="(rwy, index) in allRunways"><button @click="selectRunway(index)">{{rwy.name}}</button></div>
             <button class="deleteButton" @click="resetWidget()">Reset</button>
         </div>
         <div class="content" v-else="">
@@ -222,14 +224,21 @@ function showRunway(index) {
         padding: 2px 8px 2px 8px;
     }
     .airportCode {
-        transform: rotate(270deg);
+        /* transform: rotate(270deg); */
         font-weight: 900;
-        font-size: 36px;
+        font-size: 72px;
         opacity: 0.10;
         position: absolute;
-        top: 0;
-        left: -30px;
-        width: 100%;
-        height: 100%;
+        margin: 0;
+        bottom: 0;
+        /* left: 0; */
+        /* width: 36px;
+        height: 100px; */
+        width:100%;
+        height: 90px;
+        /* height:; */
+        /* text-align: center; */
+        /* vertical-align: middle; */
+        border: 1px solid red;
     }
 </style>
