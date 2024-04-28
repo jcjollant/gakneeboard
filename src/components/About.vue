@@ -21,7 +21,7 @@ const target = ref(null)
           <slot name="header"> About </slot>
         </div>
         <div class="modal-body">
-          <slot name="content">This version includes 0S9, 13W, 21W, 2S9, 4W0, 8W5, KAWO, KCLS, KBFI, KBVS, KELN, KFHR, KHQM, KOLM, KPAE, KPLU, KPWT, KRNT, KTIW, S36, S43, S50, W10, W36, W39.<br>This data is hard coded and should not be used without cross checking with an official source</slot>
+          <slot name="content">Airport data may not be current. Cross checking with an official source before you fly.</slot>
         </div>
         <div class="modal-footer">
           <slot name="footer">
