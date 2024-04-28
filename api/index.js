@@ -1,9 +1,13 @@
 import express from "express";
-const app = express();
-const port = 3001
+import cors from "cors";
 import {airports} from '../assets/data.js'
 import { sql } from '@vercel/postgres';
 import { fetch } from './adip.js'
+
+const app = express();
+const port = 3001
+
+app.use(cors());
 
 app.get("/", (req, res) => res.send("Express on Vercel"));
 
