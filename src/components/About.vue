@@ -18,7 +18,7 @@ const target = ref(null)
     <div class="modal-wrapper">
       <div class="modal-container" ref="target">
         <div class="modal-header">
-          <slot name="header"> About </slot>
+          <slot name="header"> Warning </slot>
         </div>
         <div class="modal-body">
           <slot name="content">Airport data may not be current. Cross check with an official source before you fly to reduce risks of discrepancy.</slot>

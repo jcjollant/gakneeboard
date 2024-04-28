@@ -44,7 +44,7 @@ function emitAndClose(message) {
         <button @click="onLoadPage('reset')">Reset Tiles</button>
         <div class="separator"></div>
         <button @click="emitAndClose('showFeedback')">Feedback</button>
-        <button @click="emitAndClose('showAbout')">About</button>
+        <button @click="emitAndClose('showAbout')">Warning</button>
         <!-- <div class="separator"></div>
         <button @click="getAirport('krnt')">Fetch</button> -->
       </div>
