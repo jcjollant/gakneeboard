@@ -34,7 +34,7 @@ app.get("/airport/:id", async (req,res) => {
 
 app.listen(3004, () => console.log("Server ready on port 3000."));
 
-module.exports = app;
+export default app;
 
 async function getAirport(airportCode,icaoCode) {
     console.log( "getAirport DB for " + airportCode + "/" + icaoCode);
