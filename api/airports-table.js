@@ -1,5 +1,4 @@
 import { sql } from '@vercel/postgres';
-import { airports } from '../assets/data';
  
 export default async function handler(
   request,
@@ -7,7 +6,6 @@ export default async function handler(
 ) {
   try {
     const code = 'bfi';
-    const data = airports['krnt'];
     const result =
     // await sql`DROP TABLE Airports;`;
     // await sql`CREATE TABLE Airports ( Code varchar(5), Data varchar(1024) );`;
