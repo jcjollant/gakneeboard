@@ -1,7 +1,8 @@
-const express = require("express");
+import express from "express";
 const app = express();
+const port = 3001
 import {airports} from '../assets/data.js'
-import { sql } from "@vercel/postgres";
+import { sql } from '@vercel/postgres';
 import { fetch } from './adip.js'
 
 app.get("/", (req, res) => res.send("Express on Vercel"));
@@ -32,7 +33,7 @@ app.get("/airport/:id", async (req,res) => {
     }
 })
 
-app.listen(3004, () => console.log("Server ready on port 3000."));
+app.listen(port, () => console.log("Server ready on port " + port));
 
 export default app;
 
