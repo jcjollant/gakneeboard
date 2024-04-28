@@ -13,7 +13,8 @@ export default async function handler(
     // await sql`CREATE TABLE Airports ( Code varchar(5), Data varchar(1024) );`;
     // await sql`SELECT column_name, data_type, character_maximum_length FROM information_schema. columns WHERE table_name = 'Airports';`
     // await sql`SELECT * FROM Airports WHERE Code=${code};`
-    await sql`SELECT * FROM Airports;`
+    // await sql`SELECT * FROM Airports;`
+    await sql`SELECT count(*) FROM Airports;`
     // await sql`INSERT into Airports (Code, Data) VALUES(${code},${data})`
     console.log( 200 + " at " + Date.now())
     return response.status(200).json({ result });
