@@ -1,6 +1,5 @@
 <script setup>
 import {ref} from 'vue';
-import {validate, getAirport} from '../assets/data.js'
 
 const emits = defineEmits(['loadPage','showFeedback','showAbout'])
 const showMenu = ref(false)
@@ -12,11 +11,6 @@ function toggleMenu() {
 
 function onLoadPage( name) {
   emits('loadPage', name)
-  showMenu.value = false
-}
-
-function validateData() {
-  validate()
   showMenu.value = false
 }
 
