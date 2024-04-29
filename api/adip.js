@@ -1,8 +1,6 @@
 import axios from 'axios'
 
 
-const args = process.argv.slice(2);
-
 export async function fetch( code) {
     // console.log( 'ADIP fetching ' + code);
     let airport = null
@@ -60,6 +58,18 @@ function getSurface( rwy) {
     return {'type':rwyType, 'condition':rwyCondition}
 }
 
+// split frequency from the rest of the field data
+// Example : "117.7 ;ARR-NE"
+function getFrequency(freq) {
+    let output = null
+    if(freq.includes(' ;')) {
+        output = freq.split(" ;")[0]
+    } else {
+        output = freq
+    }
+    return output
+}
+
 function getName( name) {
     let words = name.split(' ')
     for (let i = 0; i < words.length; i++) {
@@ -99,7 +109,7 @@ function getRunwayFrequency(adip, identifier) {
         adip.facility.frequencies.forEach( freq => {
             // pattern is "120.2 ;RWY 16L/34R"
             if(freq.frequency.includes(identifier)) {
-                output = freq.frequency.split(" ;")[0]
+                output = getFrequency(freq.frequency)
             }
         })
     }
@@ -119,9 +129,10 @@ function getWeather(adip) {
     let frequency = '-.-'
     if( 'facility' in adip && 'frequencies' in adip.facility) {
         adip.facility.frequencies.forEach( freq => {
-            if(freq.frequencyUse == 'ATIS') {
-                frequency = freq.frequency
-                type = 'ATIS'
+            // frequencyUse can be ATIS or D-ATIS (KJFK)
+            if(freq.frequencyUse.includes('ATIS')) {
+                frequency = getFrequency(freq.frequency)
+                type = freq.frequencyUse
             }
         })
     }
@@ -133,7 +144,7 @@ function getWeather(adip) {
     return {'freq':frequency,'type':type}
 }
 
-function fromAdip( adip) {
+export function fromAdip( adip) {
     var data = {}
     var uniqueCode = ''
     if( 'icaoId' in adip) {
@@ -171,7 +182,3 @@ function fromAdip( adip) {
 
     return data
 }
-
-// import * as aadip from './adip.js'
-// console.log( JSON.stringify(fromAdip(aadip.pae)))
-fetch(args[0])
