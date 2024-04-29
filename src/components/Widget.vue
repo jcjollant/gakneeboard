@@ -48,7 +48,7 @@ watch( props, async() => {
             <button v-for="widget in knownWidgets" class="item" @click="updateWidgetName(widget)">{{ widget }}</button>
         </div>
     </div>
-    <Airport v-else-if="widget.name=='airport'" :params="widget.data" @reset="updateWidgetName" @update="updateWidgetParam" />
+    <Airport v-else-if="widget.name=='airport'" :params="widget.data" @replace="updateWidgetName" @update="updateWidgetParam" />
     <Atis v-else-if="widget.name=='atis'" @replace="updateWidgetName"/>
     <Clearance v-else-if="widget.name=='clearance'" @replace="updateWidgetName"/>
     <Notes v-else-if="widget.name=='notes'" @replace="updateWidgetName" />
