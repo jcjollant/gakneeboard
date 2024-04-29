@@ -23,11 +23,12 @@ $ vercel
 ## TODO
 * Add synopsis widget
 * Add settings
-* Show runway length and width next to runway
 * User setting wether runway should be oriented or straight
 * User settings whether to show 45 entry magnetic course
 
 # Done
+## 4/29/2024
+* Show runway length and width next to runway
 ## 4/28/2024
 * Change favicon
 * Add clearance widget
