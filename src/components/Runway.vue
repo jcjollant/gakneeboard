@@ -6,6 +6,7 @@ const props = defineProps({
 })
 
 const myCanvas = ref()
+const dimensions = ref('')
 
 function getFourtyFive( orientation) {
     if(orientation < 0) orientation += 360;
@@ -40,6 +41,16 @@ function show(runway) {
     // console.log('North runway ' + JSON.stringify(northRwy))
     // console.log('South runway ' + JSON.stringify(southRwy))
 
+    if( 'length' in runway) {
+        if( 'width' in runway) {
+            dimensions.value = runway['length'] + 'x' + runway['width'];
+        } else {
+            dimensions.value = runway['length'] + 'x' + runway['width'];
+        }
+    } else {
+        dimension.value = '';
+    }
+
     const ctx = myCanvas.value.getContext('2d');
     const referenceSize = 200;
     myCanvas.value.width = referenceSize;
@@ -55,10 +66,10 @@ function show(runway) {
     const tpArrowTip = referenceSize * 0.03;
     const rwyFontSize = Math.round( referenceSize / 20);
 
-    const angleInRad = Math.PI / 180 * northRwy.orientation; // Convert degrees to radians
 
     // Move center to origin
     ctx.translate((referenceSize) / 2, (referenceSize) / 2); // Move back to original position
+    // const angleInRad = Math.PI / 180 * northRwy.orientation; // Convert degrees to radians
     // ctx.rotate(angleInRad);
     // draw runway at the center
     ctx.fillStyle = ( runway.surface.type=='TURF' ? 'darkgreen' : runway.surface.type=='WATER' ? 'darkblue' : 'black');
@@ -136,7 +147,21 @@ function show(runway) {
 </script>
 
 <template>
-    <div>
+    <div class="container">
         <canvas ref="myCanvas"></canvas>
+        <div class="dimensions">{{ dimensions }}</div>
     </div>
 </template>
+
+<style scoped>
+.container {
+    position: relative;
+}
+.dimensions {
+    font-size: 10px;
+    position: absolute;
+    bottom: 4px;
+    width: 100%;
+    text-align: center;
+}
+</style>
