@@ -44,6 +44,7 @@ function getVariation( adip) {
     }
 }
 
+// pattern for surfaceCondition is (G) for Good
 function getSurface( rwy) {
     let rwyType = '?'
     let rwyCondition = '?'
@@ -70,6 +71,7 @@ function getFrequency(freq) {
     return output
 }
 
+// capitalize first letter of each word for airport name
 function getName( name) {
     let words = name.split(' ')
     for (let i = 0; i < words.length; i++) {
@@ -144,7 +146,7 @@ function getWeather(adip) {
     return {'freq':frequency,'type':type}
 }
 
-export function fromAdip( adip) {
+function fromAdip( adip) {
     var data = {}
     var uniqueCode = ''
     if( 'icaoId' in adip) {
@@ -182,3 +184,4 @@ export function fromAdip( adip) {
 
     return data
 }
+
