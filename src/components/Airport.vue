@@ -161,7 +161,7 @@ function showRunway(index) {
             <div class="rwySelector">
                 <button v-for="(rwy, index) in allRunways" @click="selectRunway(index)">{{rwy.name}}</button>
             </div>
-            <button class="deleteButton" @click="replace()">Swap</button>
+            <button class="deleteButton" @click="replaceMe()">Reset</button>
         </div>
         <div class="content" v-else="">
             <div class="corner top left"><div>{{weatherFreq}}</div><div class="label">{{weatherType}}</div></div>
