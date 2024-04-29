@@ -231,11 +231,14 @@ function showRunway(index) {
     .airportCode {
         font-weight: 900;
         font-size: 68px;
+        line-height: 200px;
         opacity: 0.10;
         position: absolute;
-        margin: 0;
-        bottom: 0;
+        top: 0;
         width:100%;
-        height: 90px;
+        height: 100%;
+        /* height: 90px; */
+        text-align: center;
+        vertical-align: middle;
     }
 </style>

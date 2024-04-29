@@ -160,7 +160,7 @@ function show(runway) {
 .dimensions {
     font-size: 10px;
     position: absolute;
-    bottom: 4px;
+    bottom: 6px;
     width: 100%;
     text-align: center;
 }
