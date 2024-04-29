@@ -230,7 +230,7 @@ function showRunway(index) {
     }
     .airportCode {
         font-weight: 900;
-        font-size: 72px;
+        font-size: 68px;
         opacity: 0.10;
         position: absolute;
         margin: 0;
