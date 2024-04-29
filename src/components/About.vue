@@ -18,10 +18,14 @@ const target = ref(null)
     <div class="modal-wrapper">
       <div class="modal-container" ref="target">
         <div class="modal-header">
-          <slot name="header"> Warning </slot>
+          <slot name="header"> Warnings </slot>
         </div>
         <div class="modal-body">
-          <slot name="content">Airport data may not be current. Cross check with an official source before you fly to reduce risks of discrepancy.</slot>
+          <div class="bullet"><b>Airport information</b> may not be current. Cross check with an official source before you fly.</div>
+          <div class="bullet"><b>Traffic Pattern</b> Is calculated by rounding field elevation + 1,000ft. This may not be true for your situation</div>
+          <div class="bullet"><b>Weather Frequency</b> Does not account for aircraft direction. Check chart supplements.</div>
+          <div class="bullet"><b>Runway Frequency</b> May not be displayed for airport that have a complex frequency allocation.</div>
+          <div class="bullet"><b>Magnetic Headings</b> Are calculated with FAA variation data which can be quite old at some locations</div>
         </div>
         <div class="modal-footer">
           <slot name="footer">
@@ -47,7 +51,7 @@ const target = ref(null)
   background-color: rgba(0, 0, 0, 0.5);
 }
 .modal-container {
-  width: 300px;
+  width: 400px;
   margin: 150px auto;
   padding: 20px 30px;
   background-color: #fff;
