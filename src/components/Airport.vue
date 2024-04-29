@@ -5,7 +5,7 @@ import WidgetTitle from './WidgetTitle.vue'
 import Runway from './Runway.vue'
 import * as data from '../assets/data.js'
 
-const emits = defineEmits(['reset','update'])
+const emits = defineEmits(['replace','update'])
 
 
 var currentAirport
@@ -43,8 +43,8 @@ function editMode() {
     mode.value = 'edit'
 }
 
-function resetWidget() {
-    emits('reset');
+function replaceMe() {
+    emits('replace');
 }
 
 // invoked whenever we want to save the current state
@@ -158,8 +158,10 @@ function showRunway(index) {
             <div class="label">Code</div>
             <input class="airportCodeInput" v-model="airportCode" @input="onCodeUpdate" />
             <div class="label">Runway</div>
-            <div class="rwySelector" v-for="(rwy, index) in allRunways"><button @click="selectRunway(index)">{{rwy.name}}</button></div>
-            <button class="deleteButton" @click="resetWidget()">Reset</button>
+            <div class="rwySelector">
+                <button v-for="(rwy, index) in allRunways" @click="selectRunway(index)">{{rwy.name}}</button>
+            </div>
+            <button class="deleteButton" @click="replace()">Swap</button>
         </div>
         <div class="content" v-else="">
             <div class="corner top left"><div>{{weatherFreq}}</div><div class="label">{{weatherType}}</div></div>
@@ -214,7 +216,10 @@ function showRunway(index) {
     }
     .rwySelector {
         font-size: 14px;
-        margin:5px;
+        margin:5px 20px; 
+        display:grid;
+        grid-template-columns: auto auto;
+        gap: 2px 20px;
     }
     .rwySelector button{
         background: red;
@@ -224,21 +229,13 @@ function showRunway(index) {
         padding: 2px 8px 2px 8px;
     }
     .airportCode {
-        /* transform: rotate(270deg); */
         font-weight: 900;
         font-size: 72px;
         opacity: 0.10;
         position: absolute;
         margin: 0;
         bottom: 0;
-        /* left: 0; */
-        /* width: 36px;
-        height: 100px; */
         width:100%;
         height: 90px;
-        /* height:; */
-        /* text-align: center; */
-        /* vertical-align: middle; */
-        /* border: 1px solid red; */
     }
 </style>

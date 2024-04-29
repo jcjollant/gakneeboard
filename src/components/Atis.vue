@@ -1,15 +1,12 @@
 <script setup>
 import WidgetTitle from './WidgetTitle.vue';
 
-const emits = defineEmits(['reset'])
+const emits = defineEmits(['replace'])
 
-function resetWidget() {
-    emits('reset')
-}
 </script>
 <template>
     <div class="widget">
-        <WidgetTitle :title="'ATIS'" :info="true" @click="resetWidget"/>
+        <WidgetTitle :title="'ATIS'" :info="true" @click="emits('replace')"/>
         <div class="content atis">
             <div class="wind box">
                 <div class="label">Wind</div>
@@ -33,18 +30,19 @@ function resetWidget() {
     </div>
 </template>
 <style scoped>
+.label {
+  position: absolute;
+  left: 3px;
+  top: 0;
+  font-size: 10px;
+}
+.box {
+  position: relative;
+}
+
 .atis {
     display: grid;
     grid-template-columns: auto auto auto auto;
-}
-.label {
-    position: absolute;
-    left: 3px;
-    top: 0;
-    font-size: 10px;
-}
-.box {
-    position: relative;
 }
 .wind {
     grid-column: 1 / span 3;

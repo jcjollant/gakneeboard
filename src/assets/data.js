@@ -8,13 +8,13 @@ export const demoPage = [
   {'id':2,'name':'airport','data':{'code':'w39','rwy':'NE-SW'}},
   {'id':3,'name':'airport','data':{'code':'kplu','rwy':'17-35'}},
   {'id':4,'name':'atis','data':{}},
-  {'id':5,'name':'notes','data':{}},
+  {'id':5,'name':'clearance','data':{}},
   {'id':6,'name':'airport','data':{'code':'kbvs','rwy':'11-29'}},
   {'id':7,'name':'airport','data':{'code':'kawo','rwy':'11-29'}},
   {'id':8,'name':'airport','data':{'code':'s43','rwy':'15R-33L'}},
   {'id':9,'name':'airport','data':{'code':'kpae','rwy':'16L-34R'}},
   {'id':10,'name':'atis','data':{}},
-  {'id':11,'name':'atis','data':{}},
+  {'id':11,'name':'notes','data':{}},
 ]
 
 export const blankPage = [

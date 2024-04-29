@@ -1,0 +1,92 @@
+<script setup>
+import WidgetTitle from './WidgetTitle.vue';
+
+const emits = defineEmits(['replace'])
+
+</script>
+<template>
+    <div class="widget">
+        <WidgetTitle :title="'Clearance'" @click="emits('replace')"/>
+        <div class="content clearance">
+            <div class="cleared box">
+                <div class="label">To</div>
+                <div class="watermrk">C</div>
+            </div>
+            <div class="route box">
+                <div class="label">Route</div>
+                <div class="watermrk">R</div>
+            </div>
+            <div class="altitude box">
+                <div class="label">Altitude</div>
+                <div class="watermrk">A</div>
+            </div>
+            <div class="expect box">
+                <div class="label">Exp.</div>
+            </div>
+            <div class="frequency box">
+                <div class="label">Freq.</div>
+                <div class="watermrk">F</div>
+            </div>
+            <div class="transponder box">
+                <div class="label">Xpdr</div>
+                <div class="watermrk">T</div>
+            </div>
+        </div>
+    </div>
+
+</template>
+<style scoped>
+.label {
+  position: absolute;
+  left: 3px;
+  top: 0;
+  font-size: 10px;
+}
+.box {
+  position: relative;
+}
+
+
+.clearance {
+    display: grid;
+    grid-template-columns: auto auto;
+}
+.watermrk {
+    line-height: 1;
+    font-weight:600;
+    font-size: 30px;
+    position:absolute;
+    left: 2px;
+    bottom: 2px;
+    opacity: 0.07;
+}
+.cleared {
+    grid-column: 1;
+    border-bottom: 1px dashed darkgrey;
+    border-right: 1px dashed darkgrey;
+}
+.route {
+    grid-column: 1 / span 2;
+    border-bottom: 1px dashed darkgrey;
+}
+.altitude {
+    grid-row: 3;
+    grid-column: 1;
+    border-bottom: 1px dashed darkgrey;
+}
+.expect {
+    grid-row: 3;
+    grid-column: 2;
+    border-bottom: 1px dashed darkgrey;
+}
+.frequency{
+    grid-row: 4;
+    grid-column: 1;
+    border-right: 1px dashed darkgrey;
+}
+.transponder{
+    grid-row: 4;
+    grid-column: 2;
+}
+
+</style>

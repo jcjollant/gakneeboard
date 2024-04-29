@@ -1,17 +1,17 @@
 <script setup>
 import WidgetTitle from './WidgetTitle.vue';
 
-const emits = defineEmits(['reset'])
+const emits = defineEmits(['replace'])
 
-function resetWidget() {
-    emits('reset')
+function replaceMe() {
+    emits('replace')
 }
 
 
 </script>
 <template>
     <div class="widget">
-        <WidgetTitle :title="'Notes'" @click="resetWidget"/>
+        <WidgetTitle :title="'Notes'" @click="replaceMe"/>
         <div class="content"></div>
     </div>
 </template>

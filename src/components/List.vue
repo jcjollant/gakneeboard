@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 import WidgetTitle from './WidgetTitle.vue';
 
-const emits = defineEmits(['reset'])
+const emits = defineEmits(['replace'])
 
 const props = defineProps({
     title: { type: String, default: 'List'},
@@ -10,8 +10,8 @@ const props = defineProps({
 })
 const items=ref([])
 
-function resetWidget() {
-    emits('reset')
+function replaceMe() {
+    emits('replace')
 }
 
 onMounted(()=> {
@@ -22,7 +22,7 @@ onMounted(()=> {
 
 <template>
     <div class="widget">
-        <WidgetTitle :title="title" @click="resetWidget" />
+        <WidgetTitle :title="title" @click="replaceMe" />
         <div class="content list">
             <div v-for="item in items">{{ item }}</div>
         </div>

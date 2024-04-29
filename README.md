@@ -21,17 +21,17 @@ $ vercel
 ```
 
 ## TODO
-* 4 rwys shows funny
 * Add synopsis widget
-* Add clearance widget
 * Add settings
 * Show runway length and width next to runway
 * User setting wether runway should be oriented or straight
 * User settings whether to show 45 entry magnetic course
-* Change favicon
 
 # Done
 ## 4/28/2024
+* Change favicon
+* Add clearance widget
+* Fixed runway selector layout
 * Read airport data from external source
 ## 4/27/2024
 * Removed runway orientation angle for legibility

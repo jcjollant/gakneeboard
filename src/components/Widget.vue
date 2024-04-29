@@ -4,7 +4,8 @@ import {onMounted, ref, watch} from 'vue';
 import Airport from './Airport.vue';
 import Atis from './Atis.vue'
 import Notes from './Notes.vue';
-import List from './List.vue';
+// import List from './List.vue';
+import Clearance from './Clearance.vue';
 
 const emits = defineEmits(['update'])
 
@@ -12,7 +13,7 @@ const props = defineProps({
     widget: { type: Object, default: null},
 })
 
-const knownWidgets = ref(['Airport','ATIS','Notes'])
+const knownWidgets = ref(['Airport','ATIS','Clearance','Notes'])
 const widget = ref({})
 
 function updateWidgetName(newName = '') {
@@ -48,9 +49,10 @@ watch( props, async() => {
         </div>
     </div>
     <Airport v-else-if="widget.name=='airport'" :params="widget.data" @reset="updateWidgetName" @update="updateWidgetParam" />
-    <Atis v-else-if="widget.name=='atis'" @reset="updateWidgetName"/>
-    <Notes v-else-if="widget.name=='notes'" @reset="updateWidgetName" />
-    <List v-else-if="widget.name=='list'" @reset="updateWidgetName"/>
+    <Atis v-else-if="widget.name=='atis'" @replace="updateWidgetName"/>
+    <Clearance v-else-if="widget.name=='clearance'" @replace="updateWidgetName"/>
+    <Notes v-else-if="widget.name=='notes'" @replace="updateWidgetName" />
+    <!-- <List v-else-if="widget.name=='list'" @replace="updateWidgetName"/> -->
 </template>
 
 <style scoped>
