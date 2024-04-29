@@ -6,6 +6,7 @@ import Feedback from './components/Feedback.vue';
 import About from './components/About.vue';
 import {onMounted,ref} from 'vue'
 import {demoPage,blankPage} from './assets/data.js'
+import { inject } from "@vercel/analytics"
 
 var pageData = null;
 var currentPage = 'page1';
@@ -65,7 +66,7 @@ function onLoadPageData(data) {
 
 onMounted(() => {
   onLoadPage(currentPage)
- 
+  inject();
   // console.log( Object.keys(airports).join(', ').toUpperCase());
 })
 
