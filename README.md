@@ -1,28 +1,45 @@
-# Vue 3 + Vite
+# Functional Testing
+* Open the app
+  * All tiles are loading
+  * reset tiles
+    * All tiles switch to selector
+  * Load demo tiles.
+    * All tiles are loading
+* Airport Tile
+  * Data Fields
+    * Select KRNT 16-34
+      * Name should be Renton Muni (centered)
+      * ATIS should be 126.950
+      * TWR should be 124.700
+      * Elev should be 32
+      * TPA should be 1032
+      * Waterars airport code should be KRNT
+      * Rwy should be displayed in the center
+  * Long airport names / select KTTA
+    * Airport name should be truncated
+  * Change Active Runway / Picking
+    * Click on title
+      * Should show a list of runways for the airport
+    * Select a different runway
+      * New runway should be selected
+  * Change active runway / cycle
+    * Click on the runway
+      * Should cycle through existing runways
+* ATIS Tile
+  * Check layout showing 7 fields : Information, Wind, Rwy, Visiblity, Tempreature, Atimeter and Sky
+* Clearance Tile
+  * CRAFT is showing
+* Notes Tiles
+  * Check Layout
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
-
-While this project uses Vue.js, Vite supports many popular JS frameworks. [See all the supported frameworks](https://vitejs.dev/guide/#scaffolding-your-first-vite-project).
-
-## Deploy Your Own
-
-Deploy your own Vite project with Vercel.
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/vercel/tree/main/examples/vite&template=vite)
-
-_Live Example: https://vite-vue-template.vercel.app_
-
-### Deploying From Your Terminal
-
-You can deploy your new Vite project with a single command from your terminal using [Vercel CLI](https://vercel.com/download):
-
-```shell
-$ vercel
-```
-
-## TODO
-* Add synopsis widget
+# TODO
+* Fix bug for long airport name KTTA
+* Do not round TPA
+* Add Airport tile which shows all rwy information without chart (TP direction, Rwy Dimensions, Freq)
+* New Tile Radio flow
+* New Tiles Synopsis
 * Add settings
+* Notes tile should not have a title, the whole tile should be clickable to replace
 * User setting wether runway should be oriented or straight
 * User settings whether to show 45 entry magnetic course
 
