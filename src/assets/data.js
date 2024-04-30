@@ -1,4 +1,8 @@
 export const version = '429'
+// const apiRootUrl = 'https://ga-api-seven.vercel.app/'
+const apiRootUrl = 'http://localhost:3000/'
+
+
 
 import axios from 'axios'
 
@@ -66,7 +70,43 @@ export const blankPage = [
 let airports = {}
 let pendingCodes = []
 
-export async function getAirport( code) {
+// get a list of airports in one pass
+export async function preloadAirports(codes) {
+    console.log( 'preloadAirports ' + JSON.stringify(codes))
+
+    // filter out those we already know
+    const newCodes = codes.filter( code => {
+      return !((code in airports) || pendingCodes.includes(code)) 
+    })
+
+    // TODO: Remove
+    // Artifically adds all airports in the cache to prevent further requests
+    newCodes.forEach( code => {
+      airports[code] = {'data':''}
+    })
+
+    // if we don't have anything left, we stop here
+    if( newCodes.length == 0) return;
+
+    console.log( 'fetching airports ' + JSON.stringify(newCodes))
+
+    const url = apiRootUrl + 'airports/';
+    axios.post(url, JSON.stringify(newCodes))
+      .then( response => {
+          // console.log( JSON.stringify(response.data))
+          airportList = response.data
+          airportList.forEach( airport => {
+            // reply should be a list of codes and data
+            // [{'code':'xyz','data':{...}}]
+            airports[airport.code] = airport.data
+          })
+      })
+      .catch( error => {
+        console.log( 'error ' + error)
+      })
+}
+
+export async function getOneAirport( code) {
     // console.log( 'fetching ' + code);
     let airport = null
 
@@ -102,8 +142,7 @@ export async function getAirport( code) {
 
     // console.log( pendingCodes.length + " queries in the queue")
 
-    // const url = 'http://localhost:3000/airport/'
-    const url = 'https://ga-api-seven.vercel.app/airport/';
+    const url = apiRootUrl + 'airport/';
     await axios.get(url + code)
       .then( response => {
           // console.log( JSON.stringify(response.data))
