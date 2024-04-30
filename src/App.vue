@@ -5,7 +5,7 @@ import Widget from './components/Widget.vue'
 import Feedback from './components/Feedback.vue';
 import About from './components/About.vue';
 import {onMounted,ref} from 'vue'
-import {demoPage,blankPage} from './assets/data.js'
+import {demoPage,blankPage,preloadAirports} from './assets/data.js'
 import { inject } from "@vercel/analytics"
 
 var pageData = null;
@@ -24,6 +24,7 @@ const widget10 = ref({})
 const widget11 = ref({})
 const widgetsOne = [widget0,widget1,widget2,widget3,widget4,widget5]
 const widgetsTwo = [widget6,widget7,widget8,widget9,widget10,widget11]
+const allWidgets = widgetsOne.concat(widgetsTwo)
 const showFeedback = ref()
 const showAbout = ref()
 
@@ -43,25 +44,29 @@ function onLoadPage(name) {
     newPageData = demoPage;
   }
   onLoadPageData(newPageData)
-  savePageData();
+    .then(() => {
+      savePageData();
+    })
 }
 
-function onLoadPageData(data) {
+// update all widgets with data from the page
+async function onLoadPageData(data) {
   // console.log( 'App loadPageData ' + JSON.stringify(data))
   if( data == null) data = demoPage;
-  widget0.value = data[0]
-  widget1.value = data[1];
-  widget2.value = data[2];
-  widget3.value = data[3];
-  widget4.value = data[4];
-  widget5.value = data[5];
-  widget6.value = data[6];
-  widget7.value = data[7];
-  widget8.value = data[8];
-  widget9.value = data[9];
-  widget10.value = data[10];
-  widget11.value = data[11];
-  pageData = data;
+
+  // extract airport codes from widgets list
+  const airportCodes = data
+    .filter( widget => {return widget.name == 'airport'})
+    .map( widget => {return widget.data.code})
+  // console.log(airportCodes)
+  preloadAirports( airportCodes)
+    .then( () => {
+      allWidgets.forEach((widget, index) => {
+        widget.value = data[index];
+      });
+      pageData = data;
+    })
+
 }
 
 onMounted(() => {

@@ -57,7 +57,7 @@ function updateWidget() {
 // gets invoked as airport code it typed into the input field
 function onCodeUpdate() {
     // console.log(airportCode.value)
-    data.getAirport( airportCode.value.toUpperCase())
+    data.getOneAirport( airportCode.value.toUpperCase())
         .then( airport => {
             if( airport) {
             // console.log("onCodeUpdate airport " + JSON.stringify(airport))
@@ -71,7 +71,7 @@ function onCodeUpdate() {
 
 function loadAirportByCode(code) {
     title.value = "Loading " + code + '...'
-    data.getAirport( code)
+    data.getOneAirport( code)
         .then(airport => {
             if( airport && 'rwy' in airport) {
             showAirport(airport)
