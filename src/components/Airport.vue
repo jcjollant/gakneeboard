@@ -168,8 +168,8 @@ function showRunway(index) {
             <div class="corner top right"><div>{{trafficFreq}}</div><div class='label'>{{trafficType}}</div></div>
             <div class="corner bottom left"><div class='label'>Elev</div><div>{{ elevation }}</div></div>
             <div class="corner bottom right"><div class='label'>TPA</div><div>{{ tpa }}</div></div>
-            <Runway @click="cycleRunway()" :class="{clickable: runwayCount > 1}" :runway="selectedRunway" />
             <div class="airportCode">{{airportCode}}</div>
+            <Runway @click="cycleRunway()" :class="{clickable: runwayCount > 1}" :runway="selectedRunway" />
         </div>
     </div>    
 </template>
