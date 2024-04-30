@@ -23,6 +23,7 @@ $ vercel
 ## TODO
 * Fix bug for long airport name KTTA
 * Do not round TPA
+* Add Airport tile which shows all rwy information without chart (TP direction, Rwy Dimensions, Freq)
 * Add widget Radio flow
 * Add synopsis widget
 * Add settings
