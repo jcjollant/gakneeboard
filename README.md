@@ -21,6 +21,9 @@ $ vercel
 ```
 
 ## TODO
+* Fix bug for long airport name KTTA
+* Do not round TPA
+* Add widget Radio flow
 * Add synopsis widget
 * Add settings
 * User setting wether runway should be oriented or straight
