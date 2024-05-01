@@ -1,29 +1,32 @@
 <script setup>
-import WidgetTitle from './WidgetTitle.vue';
+import Title from './Header.vue';
 
 const emits = defineEmits(['replace'])
 
 </script>
 <template>
     <div class="widget">
-        <WidgetTitle :title="'ATIS'" :info="true" @click="emits('replace')"/>
+        <Title :title="'ATIS'" :info="true" @click="emits('replace')"/>
         <div class="content atis">
-            <div class="wind box">
+            <div class="info">
+                <div class="label">Info</div>
+            </div>
+            <div class="wind">
                 <div class="label">Wind</div>
             </div>
-            <div class="runway box">
+            <div class="runway">
                 <div class="label">Rwy</div>
             </div>
-            <div class="visibility box">
+            <div class="visibility">
                 <div class="label">Vis</div>
             </div>
-            <div class="sky box">
+            <div class="sky">
                 <div class="label">Sky</div>
             </div>
-            <div class="temp box">
+            <div class="temperature">
                 <div class="label">Temp</div>
             </div>
-            <div class="altitude box">
+            <div class="altitude">
                 <div class="label">Alt</div>
             </div>
         </div>
@@ -36,41 +39,47 @@ const emits = defineEmits(['replace'])
   top: 0;
   font-size: 10px;
 }
-.box {
-  position: relative;
-}
-
 .atis {
     display: grid;
-    grid-template-columns: auto auto auto auto;
+    grid-template-columns: 20% 30% 25% 25%;
+}
+.info {
+    grid-column: 1;
+    position: relative;
+    border-right: 1px dashed darkgrey;
 }
 .wind {
-    grid-column: 1 / span 3;
-    /* border: 1px solid blue; */
-    border-bottom: 1px dashed darkgrey;
+    grid-column: 2 / span 2;
+    position: relative;
     border-right: 1px dashed darkgrey;
 }
 .runway {
-    border-bottom: 1px dashed darkgrey;
+    grid-column: 4;
+    position: relative;
 }
 .sky {
     grid-column: 3 / span 2;
     grid-row: 2 / span 3;
-    /* border: 1px solid yellow; */
+    position: relative;
+    border-top: 1px dashed darkgrey;
     border-left: 1px dashed darkgrey;
 }
 .visibility {
     grid-row: 2;
     grid-column: 1 / span 2;
+    position: relative;
+    border-top: 1px dashed darkgrey;
     border-bottom: 1px dashed darkgrey;
 }
-.temp {
+.temperature {
     grid-row: 3;
     grid-column: 1 / span 2;
+    position: relative;
     border-bottom: 1px dashed darkgrey;
 }
 .altitude {
     grid-row: 4;
     grid-column: 1 / span 2;
+    position: relative;
 }
 </style>
