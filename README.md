@@ -39,6 +39,7 @@
   * Check Layout
 
 # TODO
+* Airport title should toggle normal > edit mode then edit > tile selection if clicked again. Remove reset button.
 * New Tile Radio flow
 * New Tiles Synopsis
 * Add settings
