@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import WidgetTitle from './WidgetTitle.vue';
+import Header from './Header.vue';
 
 const emits = defineEmits(['replace'])
 
@@ -22,7 +22,7 @@ onMounted(()=> {
 
 <template>
     <div class="widget">
-        <WidgetTitle :title="title" @click="replaceMe" />
+        <Header :title="title" @click="replaceMe" />
         <div class="content list">
             <div v-for="item in items">{{ item }}</div>
         </div>

@@ -1,7 +1,7 @@
 <!-- This component allows the user to pick a widget -->
 <script setup>
 import {onMounted, ref, watch} from 'vue';
-import WidgetTitle from './Header.vue';
+import Header from './Header.vue';
 import Airport from './Airport.vue';
 import Atis from './Atis.vue'
 import Notes from './Notes.vue';
@@ -51,7 +51,7 @@ watch( props, async() => {
 
 <template>
     <div v-if="!widget || widget.name==''" class="widget">
-        <WidgetTitle :title="'Tile Selection'" />
+        <Header :title="'Tile Selection'" :clickable="false"></Header>
         <!-- <div class="widgetTitle">Tile Selection</div> -->
         <div class="content list">
             <button v-for="widget in knownWidgets" class="item" @click="updateWidgetName(widget.tile)">{{ widget.name }}</button>

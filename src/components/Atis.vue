@@ -1,12 +1,12 @@
 <script setup>
-import Title from './Header.vue';
+import Header from './Header.vue';
 
 const emits = defineEmits(['replace'])
 
 </script>
 <template>
     <div class="widget">
-        <Title :title="'ATIS'" :info="true" @click="emits('replace')"/>
+        <Header :title="'ATIS'" :info="true" @click="emits('replace')"/>
         <div class="content atis">
             <div class="info">
                 <div class="label">Info</div>
