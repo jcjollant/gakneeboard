@@ -1,5 +1,5 @@
 # Background
-As a GA pilot, I rely on my kneeboard for at glance information about the flight. Something that is simple, fail safe and customizable, that can be printed and snapped on the board.
+As a GA pilot, I rely on my kneeboard to get just in time information about the flight. For example, I need to see traffic pattern orientation, rwy length, frequencies or ATIS. I want a solution to customize this data, print it and snap it on the board so it's right there when I need it.
 I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
