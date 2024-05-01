@@ -230,8 +230,14 @@ watch( props, async() => {
                     <div class="runwayListItem">{{ end.freq }}</div>
                 </div>
             </div>
-            <div class="corner bottom left"><div class='label'>Elev</div><div>{{ elevation }}</div></div>
-            <div class="corner bottom right"><div class="label">{{weatherType}}</div><div>{{weatherFreq}}</div></div>
+            <div class="footer">
+                <div class='label'>Elev</div>
+                <div class='label'>TPA</div>
+                <div class='label'>{{ weatherType }}</div>
+                <div>{{ elevation }}</div>
+                <div>{{ tpa }}</div>
+                <div>{{ weatherFreq }}</div>
+            </div>
         </div>
         <div class="content" v-else="">
             <div class="corner top left"><div>{{weatherFreq}}</div><div class="label">{{weatherType}}</div></div>
@@ -253,7 +259,7 @@ watch( props, async() => {
         position: absolute; /* Absolute positioning within container */
         padding: 5px; /* Adjust padding for better visibility */
     }
-    .corner .label {
+    .label {
         padding: 0;
         font-size:9px;
     }
@@ -276,10 +282,6 @@ watch( props, async() => {
     .right {
         right: 0;
         text-align: right; /* Align text to the right */
-    }
-    .label {
-        font-size: 12px;
-        padding-top: 15px;
     }
     .airportCodeInput {
         text-align: center;
@@ -344,5 +346,13 @@ watch( props, async() => {
     .runwayListHeader {
         font-size: 10px;
         /* text-align: center; */
+    }
+
+    .footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto auto auto;
     }
 </style>

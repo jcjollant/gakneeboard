@@ -3,7 +3,6 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
-* Airport title should toggle normal > edit mode then edit > tile selection if clicked again. Remove reset button.
 * New Tile Radio flow
 * New Tiles Synopsis
 * Add settings
@@ -12,6 +11,9 @@ I couldn't find anything I liked, so I scratched my own itch.
 * User settings whether to show 45 entry magnetic course
 
 # Done
+## 5/01/2024
+* Airport title navigation normal > edit > tile selection. Removed reset button.
+* Added tpa to airport rwy list
 ## 4/30/2024
 * Add Airport tile which shows all rwy information without chart (TP direction, Rwy Dimensions, Freq)
 * Do not round TPA
