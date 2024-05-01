@@ -1,5 +1,7 @@
 # Functional Testing
 * Open the app
+  * Open console
+    * Nothing should be showing during the test
   * All tiles are loading
   * reset tiles
     * All tiles switch to selector
@@ -13,7 +15,7 @@
       * TWR should be 124.700
       * Elev should be 32
       * TPA should be 1032
-      * Waterars airport code should be KRNT
+      * Watermark airport code should be KRNT
       * Rwy should be displayed in the center
   * Long airport names / select KTTA
     * Airport name should be truncated
@@ -25,6 +27,10 @@
   * Change active runway / cycle
     * Click on the runway
       * Should cycle through existing runways
+* State is saved locally
+  * Change Harvey runway
+  * Toggle All runways on KPAE
+  * Reload page -> Runway and KPAE mode should have been saved
 * ATIS Tile
   * Check layout showing 7 fields : Information, Wind, Rwy, Visiblity, Tempreature, Atimeter and Sky
 * Clearance Tile
@@ -33,9 +39,6 @@
   * Check Layout
 
 # TODO
-* Fix bug for long airport name KTTA
-* Do not round TPA
-* Add Airport tile which shows all rwy information without chart (TP direction, Rwy Dimensions, Freq)
 * New Tile Radio flow
 * New Tiles Synopsis
 * Add settings
@@ -44,6 +47,10 @@
 * User settings whether to show 45 entry magnetic course
 
 # Done
+## 4/30/2024
+* Add Airport tile which shows all rwy information without chart (TP direction, Rwy Dimensions, Freq)
+* Do not round TPA
+* Fix bug for long airport name KTTA
 ## 4/29/2024
 * Show runway length and width next to runway
 ## 4/28/2024

@@ -1,8 +1,8 @@
 <script setup>
 
 import {ref, onMounted, watch} from 'vue';
-import WidgetTitle from './WidgetTitle.vue'
-import Runway from './Runway.vue'
+import Title from './Header.vue'
+import Runway from './RunwayView.vue'
 import * as data from '../assets/data.js'
 
 const emits = defineEmits(['replace','update'])
@@ -26,6 +26,7 @@ const tpa = ref()
 const runwayCount = ref(0)
 const airportCode = ref() // used during edit mode
 const allRunways = ref([]) // used during runway selection
+const allEndings = ref([]) // used when displaying all runways
 const selectedRunway = ref(null)
 
 function cycleRunway() {
@@ -39,7 +40,7 @@ function cycleRunway() {
 }
 
 function editMode() {
-    title.value = 'Airport'
+    title.value = 'Runway'
     mode.value = 'edit'
 }
 
@@ -49,24 +50,59 @@ function replaceMe() {
 
 // invoked whenever we want to save the current state
 function updateWidget() {
-    const airportParam = {'code':airportCode.value.toLowerCase(),'rwy':currentAirport.rwy[currentRwyIndex].name};
+    const rwyName = (currentRwyIndex == -1) ? 'all' : currentAirport.rwy[currentRwyIndex].name;
+    const airportParam = {'code':airportCode.value.toLowerCase(),'rwy':rwyName};
     // console.log( 'Widget updated with ' + JSON.stringify(airportParam));
     emits('update', JSON.stringify(airportParam));
 }
 
-// gets invoked as airport code it typed into the input field
+// gets invoked as airport code is typed into the input field
 function onCodeUpdate() {
     // console.log(airportCode.value)
     data.getOneAirport( airportCode.value.toUpperCase())
         .then( airport => {
             if( airport) {
-            // console.log("onCodeUpdate airport " + JSON.stringify(airport))
-            currentAirport = airport;
-            allRunways.value = airport.rwy
-        } else {
-            allRunways.value = [];
-        }
+                // console.log("onCodeUpdate airport " + JSON.stringify(airport))
+                currentAirport = airport;
+                allRunways.value = airport.rwy
+                runwayCount.value = airport.rwy.length
+            } else {
+                allRunways.value = [];
+                runwayCount.value = 0
+            }
+        })
+}
+
+function getEnding(rwy, ending, freq) {
+    // console.log('getEnding ' + JSON.stringify(rwy) + ' / ' + ending)
+    const output = {}
+    if( !(ending in rwy)) return output;
+
+    output['name'] = ending
+    output['width'] = rwy.width
+    output['length'] = rwy.length
+    output['pattern'] = rwy[ending].pattern == 'left' ? 'LP' : 'RP'
+    if( 'freq' in rwy) {
+        output['freq'] = rwy.freq;
+    } 
+    else if( freq) {
+        output['freq'] = freq
+    }
+
+    return output
+}
+
+function getEndings(rwys, freq) {
+    const output = []
+    if( !rwys) return output;
+
+    rwys.forEach((rwy) => {
+        const [nameA,nameB] = rwy.name.split('-')
+        output.push( getEnding(rwy,nameA,freq))
+        output.push( getEnding(rwy,nameB,freq))
     })
+    output.sort( (a,b) => { return a.name.localeCompare( b.name)})
+    return output
 }
 
 function loadAirportByCode(code) {
@@ -74,11 +110,17 @@ function loadAirportByCode(code) {
     data.getOneAirport( code)
         .then(airport => {
             if( airport && 'rwy' in airport) {
-            showAirport(airport)
-            showRunway(airport.rwy.findIndex((rwy) => rwy.name == props.params.rwy));
-        } else {
-            editMode()
-        }
+                showAirport(airport)
+                if( props.params.rwy == 'all') {
+                    mode.value = 'list'
+                    showRunway(-1)
+                } else {
+                    mode.value = ''
+                    showRunway(airport.rwy.findIndex((rwy) => rwy.name == props.params.rwy));
+                }
+            } else {
+                editMode()
+            }
     })
 }
 
@@ -89,21 +131,11 @@ onMounted(() => {
     loadAirportByCode(props.params.code)
 })
 
-watch( props, async() => {
-    // console.log("Airport props changed " + JSON.stringify(props));
-    mode.value = props.mode;
-    if(props.mode == 'edit') {
-        editMode()
-    } else {
-        loadAirportByCode(props.params.code)
-    }
-})
-
 // A runway has been selected from the list
 function selectRunway(index) {
     // console.log("selectRunway " + index)
-    mode.value = '';
     showAirport(currentAirport)
+    mode.value = (index == -1) ? 'list' : ''
     showRunway(index);
     updateWidget()
 }
@@ -111,6 +143,7 @@ function selectRunway(index) {
 function showAirport( airport) {
     // console.log( "Showing airport " + JSON.stringify(airport))
     if( airport == null) {
+        // if airport data is missing, we switch to edit mode
         console.log( 'Airport data missing')
         mode.value = 'edit';
         return
@@ -119,6 +152,7 @@ function showAirport( airport) {
     runwayCount.value = airport.rwy.length
     airportCode.value = airport.code
     allRunways.value = airport.rwy;
+    allEndings.value = getEndings(airport.rwy, airport.ctaf);
     
     // title.value = airport.code + ":" + airport.name
     title.value = airport.name
@@ -134,12 +168,15 @@ function showAirport( airport) {
         }
     }
     elevation.value = Math.round(airport.elev);
-    tpa.value = airport.tpa;
+    tpa.value = Math.round(airport.elev + 1000);
 }
+
 // Show a runway from its index in the airport
 function showRunway(index) {
     // console.log( 'Showing runway ' + index)
     currentRwyIndex = index
+    if( currentRwyIndex == -1) return
+    
     var runway = currentAirport.rwy[index]
     selectedRunway.value = runway
     // Override traffice frequency if needed
@@ -149,19 +186,49 @@ function showRunway(index) {
     }
 }
 
+watch( props, async() => {
+    // console.log("Airport props changed " + JSON.stringify(props));
+    mode.value = props.mode;
+    if(props.mode == 'edit') {
+        editMode()
+    } else {
+        loadAirportByCode(props.params.code)
+    }
+})
+
 </script>
 
 <template>
     <div class="widget">
-        <WidgetTitle :title="title" @edit-mode="mode='edit'" />
+        <Title :title="title" @edit-mode="mode='edit'" />
         <div class="content" v-if="mode=='edit'">
-            <div class="label">Code</div>
+            <div class="label">Airport Code</div>
             <input class="airportCodeInput" v-model="airportCode" @input="onCodeUpdate" />
             <div class="label">Runway</div>
             <div class="rwySelector">
-                <button v-for="(rwy, index) in allRunways" @click="selectRunway(index)">{{rwy.name}}</button>
+                <button class="runwaySign" v-for="(rwy, index) in allRunways" @click="selectRunway(index)">{{rwy.name}}</button>
+                <button class="sign" @click="selectRunway(-1)">All Rwys</button>
             </div>
             <button class="deleteButton" @click="replaceMe()">Reset</button>
+        </div>
+        <div class="content" v-else-if="mode=='list'">
+            <div class="airportCode">{{airportCode}}</div>
+            <div class="runwayList">
+                <div class="runwayListRow">
+                    <div class="runwayListHeader">Rwy</div>
+                    <div class="runwayListHeader">TP</div>
+                    <div class="runwayListHeader">Len</div>
+                    <div class="runwayListHeader">Freq</div>
+                </div>
+                <div class="runwayListRow"  v-for="(end) in allEndings">
+                    <div class="runwayListItemRunway">{{end.name}}</div>
+                    <div class="runwayListItem">{{ end.pattern }}</div>
+                    <div class="runwayListItem">{{ Math.round(end.length / 100) }}</div>
+                    <div class="runwayListItem">{{ end.freq }}</div>
+                </div>
+            </div>
+            <div class="corner bottom left"><div class='label'>Elev</div><div>{{ elevation }}</div></div>
+            <div class="corner bottom right"><div class="label">{{weatherType}}</div><div>{{weatherFreq}}</div></div>
         </div>
         <div class="content" v-else="">
             <div class="corner top left"><div>{{weatherFreq}}</div><div class="label">{{weatherType}}</div></div>
@@ -177,6 +244,7 @@ function showRunway(index) {
 <style scoped>
     .content {
         position: relative;
+        overflow: hidden;
     }
     .corner {
         position: absolute; /* Absolute positioning within container */
@@ -221,9 +289,27 @@ function showRunway(index) {
         grid-template-columns: auto auto;
         gap: 2px 20px;
     }
-    .rwySelector button{
+    .runwaySign {
         background: red;
         color:white;
+        border-radius: 2px;
+        border: 1px solid black;
+        padding: 2px 8px;
+        font-weight: 500;
+    }
+    .runwayListItem {
+        text-align: center;
+        font-size: 14px;
+        padding: 2px 4px;
+    }
+    .runwayListItemRunway{
+        font-size: 14px;
+        padding: 2px 4px;
+        font-weight: 600;
+    }
+    .sign {
+        background: #ffbb00;
+        color:black;
         border-radius: 2px;
         border: 1px solid black;
         padding: 2px 8px 2px 8px;
@@ -240,5 +326,20 @@ function showRunway(index) {
         /* height: 90px; */
         text-align: center;
         vertical-align: middle;
+    }
+    .runwayList {
+        /* padding: 10px 10px; */
+        width:240px;
+    }
+    .runwayListRow {
+        display: grid;
+        grid-template-columns: 30% 20% 20% 30%;
+        /* grid-template-columns: auto auto auto auto; */
+        /* margin-bottom: 2px; */
+    }
+
+    .runwayListHeader {
+        font-size: 10px;
+        /* text-align: center; */
     }
 </style>

@@ -1,7 +1,7 @@
 <script setup>
 // import HelloWorld from './components/HelloWorld.vue'
 import Menu from './components/Menu.vue'
-import Widget from './components/Widget.vue'
+import Widget from './components/Tile.vue'
 import Feedback from './components/Feedback.vue';
 import About from './components/About.vue';
 import {onMounted,ref} from 'vue'
@@ -55,18 +55,15 @@ async function onLoadPageData(data) {
   if( data == null) data = demoPage;
 
   // extract airport codes from widgets list
-  const airportCodes = data
-    .filter( widget => {return widget.name == 'airport'})
-    .map( widget => {return widget.data.code})
-  // console.log(airportCodes)
-  preloadAirports( airportCodes)
-    .then( () => {
-      allWidgets.forEach((widget, index) => {
-        widget.value = data[index];
-      });
-      pageData = data;
-    })
-
+  // const airportCodes = data
+  //   .filter( widget => {return widget.name == 'airport'})
+  //   .map( widget => {return widget.data.code})
+  // // console.log(airportCodes)
+  // preloadAirports( airportCodes)
+  allWidgets.forEach((widget, index) => {
+      widget.value = data[index];
+  });
+  pageData = data;
 }
 
 onMounted(() => {
