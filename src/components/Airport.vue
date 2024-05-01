@@ -1,7 +1,7 @@
 <script setup>
 
 import {ref, onMounted, watch} from 'vue';
-import Title from './Header.vue'
+import Header from './Header.vue'
 import Runway from './RunwayView.vue'
 import * as data from '../assets/data.js'
 
@@ -42,10 +42,6 @@ function cycleRunway() {
 function editMode() {
     title.value = 'Runway'
     mode.value = 'edit'
-}
-
-function replaceMe() {
-    emits('replace');
 }
 
 // invoked whenever we want to save the current state
@@ -124,6 +120,14 @@ function loadAirportByCode(code) {
     })
 }
 
+function onHeaderClick() {
+    if( mode.value == '') {
+        mode.value = 'edit'
+    } else {
+        emits('replace')
+    }
+}
+
 // add initialization code 
 onMounted(() => {   
     // console.log('Airport mounted with ' + JSON.stringify(props.params))
@@ -200,16 +204,15 @@ watch( props, async() => {
 
 <template>
     <div class="widget">
-        <Title :title="title" @edit-mode="mode='edit'" />
+        <Header :title="title" @click="onHeaderClick" />
         <div class="content" v-if="mode=='edit'">
             <div class="label">Airport Code</div>
             <input class="airportCodeInput" v-model="airportCode" @input="onCodeUpdate" />
             <div class="label">Runway</div>
             <div class="rwySelector">
                 <button class="runwaySign" v-for="(rwy, index) in allRunways" @click="selectRunway(index)">{{rwy.name}}</button>
-                <button class="sign" @click="selectRunway(-1)">All Rwys</button>
+                <button class="sign" v-if="allRunways.length > 0" @click="selectRunway(-1)">All Rwys</button>
             </div>
-            <button class="deleteButton" @click="replaceMe()">Reset</button>
         </div>
         <div class="content" v-else-if="mode=='list'">
             <div class="airportCode">{{airportCode}}</div>
