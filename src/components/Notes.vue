@@ -1,5 +1,5 @@
 <script setup>
-import WidgetTitle from './WidgetTitle.vue';
+import WidgetTitle from './Header.vue';
 
 const emits = defineEmits(['replace'])
 
