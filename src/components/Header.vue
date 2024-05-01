@@ -1,31 +1,29 @@
 <script setup>
 import { onMounted,ref, watch } from 'vue';
 
-const emits = defineEmits(['editMode'])
-
 const props = defineProps({
     title: { type: String, required:true},
+    clickable: { type: Boolean, default:true}
 })
 
 const title=ref('');
+const clickable=ref(false)
 
 onMounted( () => {
     title.value = props.title
+    clickable.value = props.clickable
 })
 
 watch( props, async() => {
     title.value = props.title
+    clickable.value = props.clickable
 })
-
-function onEdit() {
-    emits('editMode');
-}
 
 </script>
 
 
 <template>
-    <div class="header clickable" @click="onEdit">
+    <div class="header" :class="{ clickable: clickable }">
         <div>{{ title }}</div>
     </div>
 </template>
