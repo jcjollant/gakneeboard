@@ -121,7 +121,7 @@ function loadAirportByCode(code) {
 }
 
 function onHeaderClick() {
-    if( mode.value == '') {
+    if( mode.value == '' || mode.value =='list') {
         mode.value = 'edit'
     } else {
         emits('replace')
