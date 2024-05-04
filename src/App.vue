@@ -28,46 +28,41 @@ const allWidgets = widgetsOne.concat(widgetsTwo)
 const showFeedback = ref()
 const showAbout = ref()
 
-function onLoadPage(name) {
-  // console.log('onLoadPage ' + JSON.stringify(name))
-  let newPageData = blankPage
-  if( name=='page1' || name =='page2') {
-    currentPage = name;
-    let data = localStorage.getItem(currentPage);
-    if( data == null) { // first time around, default to demo
-      newPageData = demoPage
-    } else {
-      newPageData = JSON.parse(data)
-    }
-
-  } else if( name == 'demo') {
-    newPageData = demoPage;
-  }
-  onLoadPageData(newPageData)
-    .then(() => {
-      savePageData();
-    })
-}
-
-// update all widgets with data from the page
-async function onLoadPageData(data) {
+// update all widgets with provided data
+async function loadPageData(data) {
   // console.log( 'App loadPageData ' + JSON.stringify(data))
-  if( data == null) data = demoPage;
+  // if we don't know what to show, we load a copy of the demo page
+  if( data == null) data = JSON.parse( JSON.stringify(demoPage));
 
-  // extract airport codes from widgets list
-  // const airportCodes = data
-  //   .filter( widget => {return widget.name == 'airport'})
-  //   .map( widget => {return widget.data.code})
-  // // console.log(airportCodes)
-  // preloadAirports( airportCodes)
   allWidgets.forEach((widget, index) => {
       widget.value = data[index];
   });
   pageData = data;
 }
 
+function onMenuLoadPage(name) {
+  // console.log('onLoadPage ' + JSON.stringify(name))
+  let newPageData = null
+  if( name=='page1' || name =='page2') {
+    currentPage = name;
+    let data = localStorage.getItem(currentPage);
+    if( data) { // first time around
+      newPageData = JSON.parse(data)
+    }
+  } else if( name=='reset') {
+    // all widgets are Tile selectors
+    newPageData = JSON.parse( JSON.stringify( blankPage))
+  }
+
+  // load corresponding data into the page
+  loadPageData(newPageData)
+    .then(() => {
+      savePageData();
+    })
+}
+
 onMounted(() => {
-  onLoadPage(currentPage)
+  onMenuLoadPage(currentPage)
   inject();
   // console.log( Object.keys(airports).join(', ').toUpperCase());
 })
@@ -86,7 +81,7 @@ function updateWidget(widget) {
 
 <template>
   <div class="menuContainer">
-    <Menu class="menu" @load-page="onLoadPage" 
+    <Menu class="menu" @load-page="onMenuLoadPage" 
       @show-feedback="showFeedback=true" 
       @show-about="showAbout=true">
     </Menu>
