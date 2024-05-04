@@ -1,13 +1,21 @@
 <script setup>
-import WidgetTitle from './Header.vue';
+import { ref } from 'vue'
+import Header from './Header.vue';
+import NoSettings from './NoSettings.vue';
 
 const emits = defineEmits(['replace'])
+const mode = ref('')
+
+function onMenuClick() {
+    mode.value = (mode.value == '' ? 'edit' : '')
+}
 
 </script>
 <template>
     <div class="widget">
-        <WidgetTitle :title="'Clearance'" @click="emits('replace')"/>
-        <div class="content clearance">
+        <Header :title="'Clearance @'" :replace="mode=='edit'" :left="true"
+            @click="onMenuClick" @replace="emits('replace')"></Header>
+        <div v-if="mode==''" class="content clearance">
             <div class="cleared box">
                 <div class="label">To</div>
                 <div class="watermrk">C</div>
@@ -32,6 +40,7 @@ const emits = defineEmits(['replace'])
                 <div class="watermrk">T</div>
             </div>
         </div>
+        <NoSettings v-else></NoSettings>
     </div>
 
 </template>

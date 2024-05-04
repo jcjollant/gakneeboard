@@ -10,9 +10,9 @@ const emits = defineEmits(['replace','update'])
 
 var currentAirport
 var currentRwyIndex;
+var previousMode;
 const props = defineProps({
     params: { type: Object, default: null}, // expects {'code':'ICAO','rwy':'XX-YY'}
-    mode: { type: String, default: ''}  // used for edit mode
 })
 
 const mode = ref('')
@@ -39,17 +39,55 @@ function cycleRunway() {
     updateWidget();
 }
 
-function editMode() {
-    title.value = 'Runway'
-    mode.value = 'edit'
+function getEnding(rwy, ending, freq) {
+    // console.log('getEnding ' + JSON.stringify(rwy) + ' / ' + ending)
+    const output = {}
+    if( !(ending in rwy)) return output;
+    
+    output['name'] = ending
+    output['width'] = rwy.width
+    output['length'] = rwy.length
+    output['pattern'] = rwy[ending].pattern == 'left' ? 'LP' : 'RP'
+    if( 'freq' in rwy) {
+        output['freq'] = rwy.freq;
+    } 
+    else if( freq) {
+        output['freq'] = freq
+    }
+
+    return output
 }
 
-// invoked whenever we want to save the current state
-function updateWidget() {
-    const rwyName = (currentRwyIndex == -1) ? 'all' : currentAirport.rwy[currentRwyIndex].name;
-    const airportParam = {'code':airportCode.value.toLowerCase(),'rwy':rwyName};
-    // console.log( 'Widget updated with ' + JSON.stringify(airportParam));
-    emits('update', JSON.stringify(airportParam));
+function getEndings(rwys, freq) {
+    const output = []
+    if( !rwys) return output;
+    
+    rwys.forEach((rwy) => {
+        const [nameA,nameB] = rwy.name.split('-')
+        output.push( getEnding(rwy,nameA,freq))
+        output.push( getEnding(rwy,nameB,freq))
+    })
+    output.sort( (a,b) => { return a.name.localeCompare( b.name)})
+    return output
+}
+
+function loadAirportByCode(code) {
+    title.value = "Loading " + code + '...'
+    data.getOneAirport( code)
+    .then(airport => {
+        if( airport && 'rwy' in airport) {
+                showAirport(airport)
+                if( props.params.rwy == 'all') {
+                    mode.value = 'list'
+                    showRunway(-1)
+                } else {
+                    mode.value = ''
+                    showRunway(airport.rwy.findIndex((rwy) => rwy.name == props.params.rwy));
+                }
+        } else {
+            mode.value = 'edit'
+        }
+    })
 }
 
 // gets invoked as airport code is typed into the input field
@@ -69,71 +107,20 @@ function onCodeUpdate() {
         })
 }
 
-function getEnding(rwy, ending, freq) {
-    // console.log('getEnding ' + JSON.stringify(rwy) + ' / ' + ending)
-    const output = {}
-    if( !(ending in rwy)) return output;
-
-    output['name'] = ending
-    output['width'] = rwy.width
-    output['length'] = rwy.length
-    output['pattern'] = rwy[ending].pattern == 'left' ? 'LP' : 'RP'
-    if( 'freq' in rwy) {
-        output['freq'] = rwy.freq;
-    } 
-    else if( freq) {
-        output['freq'] = freq
-    }
-
-    return output
-}
-
-function getEndings(rwys, freq) {
-    const output = []
-    if( !rwys) return output;
-
-    rwys.forEach((rwy) => {
-        const [nameA,nameB] = rwy.name.split('-')
-        output.push( getEnding(rwy,nameA,freq))
-        output.push( getEnding(rwy,nameB,freq))
-    })
-    output.sort( (a,b) => { return a.name.localeCompare( b.name)})
-    return output
-}
-
-function loadAirportByCode(code) {
-    title.value = "Loading " + code + '...'
-    data.getOneAirport( code)
-        .then(airport => {
-            if( airport && 'rwy' in airport) {
-                showAirport(airport)
-                if( props.params.rwy == 'all') {
-                    mode.value = 'list'
-                    showRunway(-1)
-                } else {
-                    mode.value = ''
-                    showRunway(airport.rwy.findIndex((rwy) => rwy.name == props.params.rwy));
-                }
-            } else {
-                editMode()
-            }
-    })
-}
-
 function onHeaderClick() {
     if( mode.value == '' || mode.value =='list') {
+        previousMode = mode.value;
         mode.value = 'edit'
     } else {
-        emits('replace')
-    }
-}
+        mode.value = previousMode;
+    }    
+}    
 
-// add initialization code 
 onMounted(() => {   
     // console.log('Airport mounted with ' + JSON.stringify(props.params))
     // get this airport data from parameters
     loadAirportByCode(props.params.code)
-})
+})    
 
 // A runway has been selected from the list
 function selectRunway(index) {
@@ -190,25 +177,30 @@ function showRunway(index) {
     }
 }
 
+// invoked whenever we want to save the current state
+function updateWidget() {
+    const rwyName = (currentRwyIndex == -1) ? 'all' : currentAirport.rwy[currentRwyIndex].name;
+    const airportParam = {'code':airportCode.value.toLowerCase(),'rwy':rwyName};
+    // console.log( 'Widget updated with ' + JSON.stringify(airportParam));
+    emits('update', airportParam);
+}
+
+
 watch( props, async() => {
     // console.log("Airport props changed " + JSON.stringify(props));
-    mode.value = props.mode;
-    if(props.mode == 'edit') {
-        editMode()
-    } else {
-        loadAirportByCode(props.params.code)
-    }
+    loadAirportByCode(props.params.code)
 })
 
 </script>
 
 <template>
     <div class="widget">
-        <Header :title="title" @click="onHeaderClick" />
+        <Header :title="title" :replace="mode=='edit'"
+            @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div class="content" v-if="mode=='edit'">
             <div class="label">Airport Code</div>
             <input class="airportCodeInput" v-model="airportCode" @input="onCodeUpdate" />
-            <div class="label">Runway</div>
+            <div class="label" v-if="allRunways.length > 0">Select Runway</div>
             <div class="rwySelector">
                 <button class="runwaySign" v-for="(rwy, index) in allRunways" @click="selectRunway(index)">{{rwy.name}}</button>
                 <button class="sign" v-if="allRunways.length > 0" @click="selectRunway(-1)">All Rwys</button>
@@ -286,6 +278,7 @@ watch( props, async() => {
     .airportCodeInput {
         text-align: center;
         width: 90px;
+        margin-bottom: 10px;
     }
     .rwySelector {
         font-size: 14px;

@@ -1,13 +1,26 @@
 <script setup>
+import { ref } from 'vue'
 import Header from './Header.vue';
+import NoSettings from './NoSettings.vue'
 
 const emits = defineEmits(['replace'])
+
+const mode = ref('')
+
+function onClick() {
+    if(mode.value == 'edit') {
+        mode.value = ''
+    } else {
+        mode.value = 'edit'
+    }
+}
 
 </script>
 <template>
     <div class="widget">
-        <Header :title="'ATIS'" :info="true" @click="emits('replace')"/>
-        <div class="content atis">
+        <Header :title="'ATIS @'" :replace="mode=='edit'" :left="true" 
+            @click="onClick" @replace="emits('replace')"></Header>
+        <div v-if="mode==''" class="content atis">
             <div class="info">
                 <div class="label">Info</div>
             </div>
@@ -30,6 +43,7 @@ const emits = defineEmits(['replace'])
                 <div class="label">Alt</div>
             </div>
         </div>
+        <NoSettings v-else />
     </div>
 </template>
 <style scoped>
