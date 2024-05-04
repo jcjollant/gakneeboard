@@ -3,14 +3,18 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
-* New Tile Radio flow
+* Atis title left aling to make room for airport name
+* Clearance title left aling to make room for airport name
 * New Tiles Synopsis
-* Add settings
 * Notes tile should not have a title, the whole tile should be clickable to replace
 * User setting wether runway should be oriented or straight
 * User settings whether to show 45 entry magnetic course
 
 # Done
+## 5/03/2024
+* Navigation update: clicking the title now toggles settings mode. Clicking the trash can replaced the tile
+* New Tile Radio flow
+* Notes using new title 'stealth' mode
 ## 5/01/2024
 * Airport title navigation normal > edit > tile selection. Removed reset button.
 * Added tpa to airport rwy list
