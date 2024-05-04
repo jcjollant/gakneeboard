@@ -1,14 +1,11 @@
 // import { adipJfk } from './testData.js'
 // import { fetch, fromAdip } from '../api/adip.js'
-const adip = require('../api/adip')
+const adip = require('../datasource/adip')
 
-// const adip = fromAdip(adipJfk)
-// const adip = await fetch('dfw')
-// console.log(JSON.stringify(adip))
-test('TPA should be 1000 above and rounded to 100',() =>{
+test('TPA should be 1000 above elevation',() =>{
     expect(adip.getTpa(0)).toBe(1000)
-    expect(adip.getTpa(440)).toBe(1400)
-    expect(adip.getTpa(450)).toBe(1500)
+    expect(adip.getTpa(440)).toBe(1440)
+    expect(adip.getTpa(450)).toBe(1450)
     expect(adip.getTpa(500)).toBe(1500)
     expect(adip.getTpa(1100)).toBe(2100)
 })
@@ -31,4 +28,16 @@ test('Frequency',() => {
 
 test('Name', () => {
     expect(adip.getName('THIS IS A NAME')).toBe('This Is A Name')    
+})
+
+test('Renton fields ',async () =>{
+    const before = Date.now()
+    const airport = await adip.fetchAirport('RNT')
+    // console.log(airport)
+    expect(airport.code).toBe('KRNT')
+    // effectiveDate should be defined
+    expect(airport.effectiveDate).toBeDefined()
+    // ICAO should be defined
+    // Fecth time should be higer
+    expect(airport.fetchTime).toBeGreaterThan(before)
 })

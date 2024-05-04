@@ -1,20 +1,21 @@
-import axios from 'axios'
+const axios = require('axios')
 
-
-export async function fetch( code) {
+async function fetchAirport(code) {
     // console.log( 'ADIP fetching ' + code);
     let airport = null
-    await axios.post('https://adip.faa.gov/agisServices/public-api/getAirportDetails',
-    '{ "locId": "' + code + '" }',
-    { 
-    headers:{ 
-        'Authorization':'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP',
-        "Content-Type": "text/plain"      
-    },
+    await axios.post(
+        'https://adip.faa.gov/agisServices/public-api/getAirportDetails',
+        '{ "locId": "' + code + '" }',
+        { 
+            headers:{ 
+            'Authorization':'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP',
+            "Content-Type": "text/plain"      
+        },
     })
     .then( response => {
         // console.log( JSON.stringify(response.data))
-        airport = fromAdip( response.data)
+        airport = getAirport( response.data)
+        airport['fetchTime'] = Date.now();
         // console.log( JSON.stringify(airport))
     })
     .catch( error => {
@@ -24,11 +25,12 @@ export async function fetch( code) {
             console.log(error.response.headers);
           }
     })
-    return airport
+    return airport;
 }
 
+
 function getTpa(from) {
-    return Math.round(from / 100) * 100 + 1000
+    return Math.round(from  + 1000)
 }
 
 // 16E => -16
@@ -146,7 +148,7 @@ function getWeather(adip) {
     return {'freq':frequency,'type':type}
 }
 
-function fromAdip( adip) {
+function getAirport( adip) {
     var data = {}
     var uniqueCode = ''
     if( 'icaoId' in adip) {
@@ -164,6 +166,8 @@ function fromAdip( adip) {
     data['elev'] = adip.elevation
     data['tpa'] = getTpa(adip.elevation)
     data['weather'] = getWeather(adip)
+    data['effectiveDate'] = adip.effectiveDate
+    data['version'] = 2;
 
     data['rwy'] = []
     adip.runways.forEach( (rwy) => {
@@ -185,3 +189,5 @@ function fromAdip( adip) {
     return data
 }
 
+
+module.exports = { fetchAirport, getTpa, getAirport, getFrequency, getVariation, getName }
