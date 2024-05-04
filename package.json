@@ -12,6 +12,8 @@
     "axios": "^1.6.8",
     "nodejs": "^0.0.0",
     "pnpm": "^9.0.4",
+    "primeicons": "^7.0.0",
+    "primevue": "^3.52.0",
     "vue": "^3.2.45"
   },
   "devDependencies": {
