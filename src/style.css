@@ -98,3 +98,14 @@ button:focus-visible {
   position: relative; /* Needed for absolute positioning */
   /* border: 1px solid red; */
 }
+
+.actionBar {
+  position:absolute;
+  display: flex;
+  bottom: 5px;
+  right:0;
+  gap:5px;
+  padding: 0 20px;
+  font-size: 12px;
+  justify-content: flex-end;
+}
