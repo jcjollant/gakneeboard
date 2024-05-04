@@ -8,6 +8,7 @@ import Notes from './Notes.vue';
 
 // import List from './List.vue';
 import Clearance from './Clearance.vue';
+import RadioFlow from './RadioFlow.vue';
 
 const emits = defineEmits(['update'])
 
@@ -20,6 +21,7 @@ const knownWidgets = ref([
     {'name':'ATIS','tile':'atis'},
     {'name':'Clearance','tile':'clearance'},
     {'name':'Notes','tile':'notes'},
+    {'name':'Radio flow','tile':'radios'},
 ])
 const widget = ref({})
 
@@ -32,7 +34,7 @@ function updateWidgetName(newName = '') {
 // when a tile notifies us of an update, we notify the parent to save values
 function onUpdate(params = '') {
     // keep same id and name, just refresh the param
-    widget.value = { 'id':widget.value.id,'name': widget.value.name, 'data':JSON.parse(params)}
+    widget.value = { 'id':widget.value.id,'name': widget.value.name, 'data':params}
     emits('update',widget.value)
 }
 
@@ -57,25 +59,34 @@ watch( props, async() => {
             <button v-for="widget in knownWidgets" class="item" @click="updateWidgetName(widget.tile)">{{ widget.name }}</button>
         </div>
     </div>
-    <Airport v-else-if="widget.name=='airport'" :params="widget.data" @replace="updateWidgetName" @update="onUpdate" />
+    <Airport v-else-if="widget.name=='airport'" :params="widget.data" 
+        @replace="updateWidgetName" @update="onUpdate" />
     <Atis v-else-if="widget.name=='atis'" @replace="updateWidgetName"/>
     <Clearance v-else-if="widget.name=='clearance'" @replace="updateWidgetName"/>
     <Notes v-else-if="widget.name=='notes'" @replace="updateWidgetName" />
+    <RadioFlow v-else-if="widget.name=='radios'" :params="widget.data" 
+        @replace="updateWidgetName" @update="onUpdate" />
     <!-- <List v-else-if="widget.name=='list'" @replace="updateWidgetName"/> -->
 </template>
 
 <style scoped>
 .list {
     display: grid;
-    grid-template-columns: 50% 50%;
+    padding: 10px;
+    gap:10px;
+    grid-template-columns: 105px 105px;
+    grid-template-rows: auto auto auto;
+    /* width:220px; */
+    height: 186px;
 }
 .item {
-    margin: 5px;
+    font-size: 12px;
 }
 .widget {
   border: 1px solid darkgrey;
   font-family: Verdana, sans-serif;
-  width: 242px;
+  width: 240px;
+  height: 240px;
 }
 
 </style>
