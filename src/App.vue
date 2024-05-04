@@ -9,7 +9,7 @@ import {demoPage,blankPage,preloadAirports} from './assets/data.js'
 import { inject } from "@vercel/analytics"
 
 var pageData = null;
-var currentPage = 'page1';
+const currentPage = ref('page1')
 const widget0 = ref({})
 const widget1 = ref({})
 const widget2 = ref({})
@@ -28,6 +28,11 @@ const allWidgets = widgetsOne.concat(widgetsTwo)
 const showFeedback = ref()
 const showAbout = ref()
 
+
+function editablePage() {
+  return currentPage.value == 'page1' || currentPage.value == 'page2'
+}
+
 // update all widgets with provided data
 async function loadPageData(data) {
   // console.log( 'App loadPageData ' + JSON.stringify(data))
@@ -44,14 +49,21 @@ function onMenuLoadPage(name) {
   // console.log('onLoadPage ' + JSON.stringify(name))
   let newPageData = null
   if( name=='page1' || name =='page2') {
-    currentPage = name;
-    let data = localStorage.getItem(currentPage);
+    currentPage.value = name;
+    let data = localStorage.getItem(name);
     if( data) { // first time around
       newPageData = JSON.parse(data)
     }
+  } else if( name=='demo') {
+    currentPage.value = name
+    newPageData = JSON.parse( JSON.stringify( demoPage))
   } else if( name=='reset') {
-    // all widgets are Tile selectors
-    newPageData = JSON.parse( JSON.stringify( blankPage))
+    if( editablePage()) {
+      // all widgets are Tile selectors
+      newPageData = JSON.parse( JSON.stringify( blankPage))
+    } else {
+      console.log('This page is read only')
+    }
   }
 
   // load corresponding data into the page
@@ -62,13 +74,16 @@ function onMenuLoadPage(name) {
 }
 
 onMounted(() => {
-  onMenuLoadPage(currentPage)
+  onMenuLoadPage(currentPage.value)
   inject();
   // console.log( Object.keys(airports).join(', ').toUpperCase());
 })
 
+// save page data if it's page 1 or 2
 function savePageData() {
-  localStorage.setItem(currentPage, JSON.stringify( pageData))
+  if( editablePage()) {
+    localStorage.setItem(currentPage.value, JSON.stringify( pageData))
+  }
 }
 
 function updateWidget(widget) {
@@ -80,12 +95,6 @@ function updateWidget(widget) {
 </script>
 
 <template>
-  <div class="menuContainer">
-    <Menu class="menu" @load-page="onMenuLoadPage" 
-      @show-feedback="showFeedback=true" 
-      @show-about="showAbout=true">
-    </Menu>
-  </div>
   <div class="twoPages">
     <div class="onePage">
       <Widget v-for='widget in widgetsOne' :widget="widget.value" @update="updateWidget"/>
@@ -96,6 +105,13 @@ function updateWidget(widget) {
   </div>
   <Feedback :v-if="showFeedback" :isOpen="showFeedback" name='feedback-modal' @close="showFeedback=false"/>
   <About :v-if="showAbout" :isOpen="showAbout" name='about-modal' @close="showAbout=false"/>
+  <div class="menuContainer">
+    <Menu class="menu" :page="currentPage"
+      @load-page="onMenuLoadPage" 
+      @show-feedback="showFeedback=true" 
+      @show-about="showAbout=true">
+    </Menu>
+  </div>
 </template>
 
 <style scoped>

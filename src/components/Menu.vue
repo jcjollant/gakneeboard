@@ -1,12 +1,24 @@
 <script setup>
-import {ref} from 'vue';
+import { watch } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const emits = defineEmits(['loadPage','showFeedback','showAbout'])
 const showMenu = ref(false)
+const activePage = ref('')
+
+const props = defineProps({
+    page: { type: String, default: null}, // expects {'code':'ICAO','rwy':'XX-YY'}
+})
+
 
 // Toggle menu visibility which will update component layout
 function toggleMenu() {
     showMenu.value = !showMenu.value;
+}
+
+function loadProps() {
+  // console.log('Menu loadProps ' + props.page)
+  activePage.value = props.page;
 }
 
 function onLoadPage( name) {
@@ -14,16 +26,24 @@ function onLoadPage( name) {
   showMenu.value = false
 }
 
+onMounted(() => {
+  loadProps(props)
+})
+
 function emitAndClose(message) {
   // console.log('emitAndClose ' + message)
   emits(message)
   showMenu.value = false
 }
 
+watch( props, async() => {
+  loadProps( props)
+})
+
 </script>
 
 <template>
-  <div class="container">
+  <div class="container" :class="{grow: showMenu}">
     <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu">
         <div class="bar1"></div>
         <div class="bar2"></div>
@@ -31,10 +51,10 @@ function emitAndClose(message) {
     </div>
     <div v-show="showMenu" class="expandedMenu">
       <div class="buttonsList">
-        <button @click="onLoadPage('page1')">Page 1</button>
-        <button @click="onLoadPage('page2')">Page 2</button>
+        <button @click="onLoadPage('page1')" :class="{active: activePage == 'page1'}">Page 1</button>
+        <button @click="onLoadPage('page2')" :class="{active: activePage == 'page2'}">Page 2</button>
+        <button @click="onLoadPage('demo')" :class="{active: activePage == 'demo'}">Demo Page</button>
         <div class="separator"></div>
-        <button @click="onLoadPage('demo')">Demo Tiles</button>
         <button @click="onLoadPage('reset')">Reset Tiles</button>
         <div class="separator"></div>
         <button @click="emitAndClose('showFeedback')">Feedback</button>
@@ -51,7 +71,13 @@ function emitAndClose(message) {
     display: flex;
     flex-flow: row;
     gap: 40px;
+    padding-right: 10px;
 }
+.grow {
+  background-color: darkslategray;
+  opacity: 1;
+}
+
 .buttonsList {
   text-align: left;
     display: flex;
@@ -59,12 +85,15 @@ function emitAndClose(message) {
     gap:20px;
 }
 .menuIcon {
+  padding-left: 5px;
+  padding-top: 5px;
   display: inline-block;
   cursor: pointer;
 }
 .expandedMenu {
   position: relative;
   width: 100%;
+  padding: 5px;
 }
 .version {
   position: absolute;
@@ -99,5 +128,10 @@ function emitAndClose(message) {
 
 .change .bar3 {
   transform: translate(0, -11px) rotate(45deg);
+}
+
+.active {
+  background: white;
+  color: black;
 }
 </style>
