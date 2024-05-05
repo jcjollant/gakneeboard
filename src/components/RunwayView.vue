@@ -96,6 +96,7 @@ function show(runway) {
     // Base
     ctx.lineTo( 0, tpBaseDist);
     // Downwind
+    ctx.fillStyle = 'black';
     if(northRwy.pattern == 'right') {
         ctx.lineTo( tpDownwindDist, tpBaseDist);
         ctx.lineTo( tpDownwindDist, 0);
