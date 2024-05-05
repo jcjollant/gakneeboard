@@ -3,15 +3,22 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
-* Atis title left aling to make room for airport name
-* Clearance title left aling to make room for airport name
+* 
 * New Tiles Synopsis
 * Notes tile should not have a title, the whole tile should be clickable to replace
 * User setting wether runway should be oriented or straight
 * User settings whether to show 45 entry magnetic course
 
 # Done
+## 5/05/2024
+* Bulk loading on page load
+* Fixed pacific/alaska airports
+* Improved menu
+* Fixed 45 entry color not showing on printer
+* Switched UI to clear mode to match paper version
 ## 5/03/2024
+* Clearance title left aling to make room for airport name
+* Atis title left aling to make room for airport name
 * Navigation update: clicking the title now toggles settings mode. Clicking the trash can replaced the tile
 * New Tile Radio flow
 * Notes using new title 'stealth' mode
