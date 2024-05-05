@@ -1,34 +1,57 @@
 const postgres = require('@vercel/postgres')
 
-// Looks for an airport in the database
-// @return {Object} airport object, null if not found or {} if it is a known unknown
-async function fetchAirport( airportCode, icaoCode) {
-    let airport = null;
-    let result = null;
+/**
+ * adds a known unknown to the DB
+ * @param {*} code whatever was recevied from the caller
+ */
+async function addKnownUnknown(code) {
+    console.log( '[db] addKnownUnknown ' + code)
+    await postgres.sql`INSERT INTO Unknowns (Code) VALUES (${code})`;
+}
 
-    if( icaoCode) { // try locId and icao
-        const icaoCode = 'K'+airportCode;
-        result = await postgres.sql`SELECT Data FROM Airports WHERE Code in (${airportCode},${icaoCode})`;
-    } else {
-        result = await postgres.sql`SELECT Data FROM Airports WHERE Code= ${airportCode}`;
-    }
+/**
+ * gets an airport from the DB
+ * @param {*} code a four letter icao code
+ * @returns {Object} airport object or null if not found
+ */
+async function fetchAirport( code1, code2) {
+    // console.log( '[db] fetchAirport ' + code)
+    const airports = await fetchAirportList([code1, code2])
+    // console.log('[db] airports list output ' + JSON.stringify(airports))
+    if(airports && airports.length > 0) return airports[0]
+    return null
+}
 
-    if( result.rows.length > 0) { // happy path, airport was not found in postgres
-        // console.log( JSON.stringify(result.rows[0]))
-        if(result.rows[0].data != '{}') {
-            console.log( "found " + airportCode + ' in DB');
-            airport = JSON.parse(result.rows[0].data);
-        } else {
-            console.log( airportCode + " is a known unknown")
-            airport = {};
-        }
-    }
+async function fetchAirportList(list) {
+    // console.log( '[db] fetchAirportList ' + JSON.stringify(list))
 
-    return airport
+    const result = await postgres.sql`SELECT Data FROM Airports WHERE Code = ANY(${list})`;
+    // console.log( '[db] fetchAirportList result ' + JSON.stringify(result))
+
+    const output = []
+    result.rows.forEach( row => {
+        // console.log( "found on DB entry " + JSON.stringify(row))
+        const airport = JSON.parse(row.data);
+        output.push(airport)
+    })
+
+    return output
+}
+
+/**
+ * Figure out if a code is already unknown
+ * @param {*} code 
+ * @returns 
+ */
+async function isKnownUnknown(code) {
+    const result = await postgres.sql`SELECT * FROM Unknowns WHERE Code = ${code}`;
+
+    return result.rowCount > 0
 }
 
 async function saveAirport(code, data) {
     await postgres.sql`INSERT INTO Airports (Code, Data) VALUES (${code}, ${data})`;
+    console.log( '[db] saveAirport ' + code)
 }
 
-module.exports = { fetchAirport, saveAirport };
+module.exports = { addKnownUnknown, fetchAirport, fetchAirportList, isKnownUnknown, saveAirport };
