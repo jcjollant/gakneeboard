@@ -52,7 +52,8 @@ watch( props, async() => {
         border-bottom: 1px dashed darkgrey;
         position: relative;
         overflow: hidden;
-        height: 24px;
+        height: 36px;
+        line-height: 26px;
     }
     .replace {
         position:absolute;
