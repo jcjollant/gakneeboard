@@ -4,13 +4,14 @@ import {ref, onMounted, watch} from 'vue';
 import Header from './Header.vue'
 import Runway from './RunwayView.vue'
 import * as data from '../assets/data.js'
+import Button from 'primevue/button'
 
 const emits = defineEmits(['replace','update'])
 
 
 var currentAirport
 var currentRwyIndex;
-var previousMode;
+var previousMode = '';
 const props = defineProps({
     params: { type: Object, default: null}, // expects {'code':'ICAO','rwy':'XX-YY'}
 })
@@ -71,9 +72,16 @@ function getEndings(rwys, freq) {
     return output
 }
 
-function loadAirportByCode(code) {
+function loadProps(newProps) {
+    const code = newProps.params.code
+    if( !code) {
+        title.value = 'Airport'
+        mode.value = 'edit'
+        return
+    }
+
     title.value = "Loading " + code + '...'
-    data.getOneAirport( code)
+    data.getAirport( code, true)
     .then(airport => {
         if( airport && 'rwy' in airport) {
                 showAirport(airport)
@@ -91,9 +99,10 @@ function loadAirportByCode(code) {
 }
 
 // gets invoked as airport code is typed into the input field
+// We are after runways
 function onCodeUpdate() {
     // console.log(airportCode.value)
-    data.getOneAirport( airportCode.value.toUpperCase())
+    data.getAirport( airportCode.value)
         .then( airport => {
             if( airport) {
                 // console.log("onCodeUpdate airport " + JSON.stringify(airport))
@@ -119,7 +128,7 @@ function onHeaderClick() {
 onMounted(() => {   
     // console.log('Airport mounted with ' + JSON.stringify(props.params))
     // get this airport data from parameters
-    loadAirportByCode(props.params.code)
+    loadProps(props)
 })    
 
 // A runway has been selected from the list
@@ -188,7 +197,7 @@ function updateWidget() {
 
 watch( props, async() => {
     // console.log("Airport props changed " + JSON.stringify(props));
-    loadAirportByCode(props.params.code)
+    loadProps(props)
 })
 
 </script>
@@ -202,8 +211,8 @@ watch( props, async() => {
             <input class="airportCodeInput" v-model="airportCode" @input="onCodeUpdate" />
             <div class="label" v-if="allRunways.length > 0">Select Runway</div>
             <div class="rwySelector">
-                <button class="runwaySign" v-for="(rwy, index) in allRunways" @click="selectRunway(index)">{{rwy.name}}</button>
-                <button class="sign" v-if="allRunways.length > 0" @click="selectRunway(-1)">All Rwys</button>
+                <Button :label="rwy.name" class="runwaySign" v-for="(rwy, index) in allRunways" @click="selectRunway(index)"></Button>
+                <Button label="All Rwys" class="sign" v-if="allRunways.length > 0" @click="selectRunway(-1)"></Button>
             </div>
         </div>
         <div class="content" v-else-if="mode=='list'">
@@ -290,7 +299,7 @@ watch( props, async() => {
     .runwaySign {
         background: red;
         color:white;
-        border-radius: 2px;
+        border-radius: 4px;
         border: 1px solid black;
         padding: 2px 8px;
         font-weight: 500;
@@ -308,7 +317,7 @@ watch( props, async() => {
     .sign {
         background: #ffbb00;
         color:black;
-        border-radius: 2px;
+        border-radius: 4px;
         border: 1px solid black;
         padding: 2px 8px 2px 8px;
     }
