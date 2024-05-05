@@ -85,12 +85,12 @@ function show(runway) {
     
     // Traffic pattern
     ctx.lineWidth = tpLineWidth;
-    ctx.strokeStyle = 'grey';
     ctx.lineCap = 'round';
 
     // north runway TP (Dashed stroke)
     ctx.beginPath();
     ctx.setLineDash([10,5])
+    ctx.strokeStyle = '#FF9999';
     // Final
     ctx.moveTo( 0, rwyHLength);
     // Base
@@ -101,18 +101,28 @@ function show(runway) {
         ctx.lineTo( tpDownwindDist, tpBaseDist);
         ctx.lineTo( tpDownwindDist, 0);
         ctx.lineTo( tpDownwindDist * 2, -tpDownwindDist);
-        ctx.stroke();
         ctx.fillText( getFourtyFive(northRwy.orientation - 135)+'°', tpDownwindDist * 2.5, -tpDownwindDist);
+        ctx.stroke();
     } else {
         ctx.lineTo( -tpDownwindDist, tpBaseDist);
         ctx.lineTo( -tpDownwindDist, 0);
         ctx.lineTo( -tpDownwindDist * 2, -tpDownwindDist);
-        ctx.stroke();
         ctx.fillText( getFourtyFive(northRwy.orientation - 225)+'°', -tpDownwindDist * 2.5, -tpDownwindDist);
+        ctx.stroke();
     }
+    // TP Arrow Tips (full stroke)
+    ctx.beginPath();
+    ctx.setLineDash([])
+    ctx.moveTo( -tpArrowTip, rwyHLength + tpArrowTip);
+    ctx.lineTo( 0, rwyHLength);
+    ctx.lineTo( tpArrowTip, rwyHLength + tpArrowTip);
+    ctx.stroke();
 
     // South Runway TP
     // Final
+    ctx.beginPath();
+    ctx.setLineDash([10,5])
+    ctx.strokeStyle = '#9999FF';
     ctx.moveTo( 0, -rwyHLength);
     // TP Base
     ctx.lineTo( 0, -tpBaseDist);
@@ -130,15 +140,9 @@ function show(runway) {
         ctx.stroke()
         ctx.fillText( getFourtyFive(southRwy.orientation - 225)+'°', tpDownwindDist * 2.5, tpDownwindDist);
     }
-
-    // TP Arrow Tips (full stroke)
-    // North Rwy
+    // TP Arrow Tip (no dash)
     ctx.beginPath()
     ctx.setLineDash([])
-    ctx.moveTo( -tpArrowTip, rwyHLength + tpArrowTip);
-    ctx.lineTo( 0, rwyHLength);
-    ctx.lineTo( tpArrowTip, rwyHLength + tpArrowTip);
-    
     ctx.moveTo( -tpArrowTip, -rwyHLength - tpArrowTip);
     ctx.lineTo( 0, -rwyHLength);
     ctx.lineTo( +tpArrowTip, -rwyHLength - tpArrowTip);
