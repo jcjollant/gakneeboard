@@ -1,14 +1,44 @@
 const axios = require('axios')
 
+const basicAuth = 'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP'
+
 async function fetchAirport(code) {
     // console.log( 'ADIP fetching ' + code);
+
+    let locId = null
+    // if the code is 4 digits, try to turn it into locId
+    if( code.length == 4) {
+        console.log( 'ADIP fetching locId for ' + code);
+        await axios.post(
+            'https://adip.faa.gov/agisServices/api/nq',
+            { query: "autoLookupPublicAirportList", param1: code},
+            { 
+                headers:{ 
+                'Authorization': basicAuth,
+                "Content-Type": 'application/json'
+            },
+        })
+        .then( response => {
+            // console.log( JSON.stringify(response.data))
+            locId = response.data[0].locId
+            // console.log( "ADIP locId found " + locId)
+        })
+        .catch( error => {
+            if (error.response) {
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+              }
+        })
+        }
+
     let airport = null
     await axios.post(
         'https://adip.faa.gov/agisServices/public-api/getAirportDetails',
-        '{ "locId": "' + code + '" }',
+        '{ "locId": "' + (locId == null ? code : locId) + '" }',
         { 
             headers:{ 
-            'Authorization':'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP',
+            'Authorization': basicAuth,
             "Content-Type": "text/plain"      
         },
     })
@@ -150,16 +180,15 @@ function getWeather(adip) {
 
 function getAirport( adip) {
     var data = {}
-    var uniqueCode = ''
+    if('locId' in adip){
+        data['locId'] = adip.locId
+        data['code'] = adip.locId
+    }
     if( 'icaoId' in adip) {
-        uniqueCode = adip.icaoId
-    } else if('locId' in adip){
-        uniqueCode = adip.locId
-    } else {
-        // console.error('No unique code found in ' + JSON.stringify(adip))
+        data['icaoId'] = adip.icaoId
+        data['code'] = adip.icaoId
     }
 
-    data['code'] = uniqueCode.toUpperCase()
     data['name'] = getName(adip.name)
     data['ctaf'] = adip.ctaf
     data['twr'] = getTower(adip)
@@ -167,7 +196,7 @@ function getAirport( adip) {
     data['tpa'] = getTpa(adip.elevation)
     data['weather'] = getWeather(adip)
     data['effectiveDate'] = adip.effectiveDate
-    data['version'] = 2;
+    data['version'] = 3;
 
     data['rwy'] = []
     adip.runways.forEach( (rwy) => {
