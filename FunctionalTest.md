@@ -32,9 +32,8 @@
   * Test Edit mode toggle
   * Test replace
 * State is saved locally
-  * Change Harvey runway
-  * Toggle All runways on KPAE
-  * Reload page -> Runway and KPAE mode should have been saved
+  * Change anything on page 1
+  * Reload page -> changes should be recalled
 * ATIS Tile
   * Check layout showing 7 fields : Information, Wind, Rwy, Visiblity, Tempreature, Atimeter and Sky
   * Test Settings mode toggle
@@ -50,6 +49,7 @@
 * Radio Flow
   * Load Demo Page
     * Should show 8 frequencies
+  * Copy data to Page 1
   * Replace first frequency and last name
     * Both should be updated
   * reload page => should remember 2 updates
