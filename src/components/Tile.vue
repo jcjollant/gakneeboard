@@ -5,10 +5,9 @@ import Header from './Header.vue';
 import Airport from './Airport.vue';
 import Atis from './Atis.vue'
 import Notes from './Notes.vue';
-
-// import List from './List.vue';
 import Clearance from './Clearance.vue';
 import RadioFlow from './RadioFlow.vue';
+import Button from 'primevue/button'
 
 const emits = defineEmits(['update'])
 
@@ -56,7 +55,8 @@ watch( props, async() => {
         <Header :title="'Tile Selection'" :clickable="false"></Header>
         <!-- <div class="widgetTitle">Tile Selection</div> -->
         <div class="content list">
-            <button v-for="widget in knownWidgets" class="item" @click="updateWidgetName(widget.tile)">{{ widget.name }}</button>
+            <Button v-for="widget in knownWidgets" class="item" :label="widget.name"
+                @click="updateWidgetName(widget.tile)"></Button>
         </div>
     </div>
     <Airport v-else-if="widget.name=='airport'" :params="widget.data" 
