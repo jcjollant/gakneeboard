@@ -2,6 +2,7 @@
 import { onMounted, ref, watch } from 'vue'
 import Header from './Header.vue';
 import RadioBox from './RadioBox.vue';
+import Button from 'primevue/button'
 
 const emits = defineEmits(['replace','update'])
 
@@ -109,7 +110,7 @@ watch( props, async() => {
             <div>Format: COM1,124.7,TWR</div>
             <textarea v-model="textData" rows="8" cols="24">Blah</textarea>
             <div class="actionBar">
-                <button @click="onApply">Apply</button>
+                <Button icon="pi pi-check" @click="onApply" label="Apply"></Button>
             </div>
         </div>
     </div>
