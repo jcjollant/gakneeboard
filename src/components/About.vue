@@ -22,7 +22,7 @@ const target = ref(null)
         </div>
         <div class="modal-body">
           <div class="bullet"><b>Airport information</b> may not be current. Cross check with an official source before you fly.</div>
-          <div class="bullet"><b>Traffic Pattern</b> Is calculated by rounding field elevation + 1,000ft. This may not be true for your situation</div>
+          <div class="bullet"><b>Traffic Pattern</b> Is calculated by adding 1000ft to field elevation. This may not be true for your situation.</div>
           <div class="bullet"><b>Weather Frequency</b> Does not account for aircraft direction. Check chart supplements.</div>
           <div class="bullet"><b>Runway Frequency</b> May not be displayed for airport that have a complex frequency allocation.</div>
           <div class="bullet"><b>Magnetic Headings</b> Are calculated with FAA variation data which can be quite old at some locations</div>
