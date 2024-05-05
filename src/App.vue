@@ -5,7 +5,7 @@ import Widget from './components/Tile.vue'
 import Feedback from './components/Feedback.vue';
 import About from './components/About.vue';
 import {onMounted,ref} from 'vue'
-import {demoPage,blankPage,preloadAirports} from './assets/data.js'
+import { getDemoPage, getBlankPage } from './assets/data.js'
 import { inject } from "@vercel/analytics"
 
 var pageData = null;
@@ -36,8 +36,9 @@ function editablePage() {
 // update all widgets with provided data
 async function loadPageData(data) {
   // console.log( 'App loadPageData ' + JSON.stringify(data))
+
   // if we don't know what to show, we load a copy of the demo page
-  if( data == null) data = JSON.parse( JSON.stringify(demoPage));
+  if( data == null) data = getDemoPage();
 
   allWidgets.forEach((widget, index) => {
       widget.value = data[index];
@@ -56,11 +57,11 @@ function onMenuLoadPage(name) {
     }
   } else if( name=='demo') {
     currentPage.value = name
-    newPageData = JSON.parse( JSON.stringify( demoPage))
+    newPageData = getDemoPage()
   } else if( name=='reset') {
     if( editablePage()) {
       // all widgets are Tile selectors
-      newPageData = JSON.parse( JSON.stringify( blankPage))
+      newPageData = getBlankPage()
     } else {
       console.log('This page is read only')
     }
