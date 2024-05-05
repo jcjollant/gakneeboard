@@ -1,6 +1,7 @@
 <script setup>
 import { watch } from 'vue';
 import { ref, onMounted } from 'vue';
+import Button from 'primevue/button'
 
 const emits = defineEmits(['loadPage','showFeedback','showAbout'])
 const showMenu = ref(false)
@@ -16,9 +17,9 @@ function toggleMenu() {
     showMenu.value = !showMenu.value;
 }
 
-function loadProps() {
+function loadProps( newProps) {
   // console.log('Menu loadProps ' + props.page)
-  activePage.value = props.page;
+  activePage.value = newProps.page;
 }
 
 function onLoadPage( name) {
@@ -51,14 +52,20 @@ watch( props, async() => {
     </div>
     <div v-show="showMenu" class="expandedMenu">
       <div class="buttonsList">
-        <button @click="onLoadPage('page1')" :class="{active: activePage == 'page1'}">Page 1</button>
-        <button @click="onLoadPage('page2')" :class="{active: activePage == 'page2'}">Page 2</button>
-        <button @click="onLoadPage('demo')" :class="{active: activePage == 'demo'}">Demo Page</button>
+        <Button label="1" icon="pi pi-clipboard" class="menuButton"
+          @click="onLoadPage('page1')" :class="{active: activePage == 'page1'}"></Button>
+        <Button label="2" icon="pi pi-clipboard" class="menuButton"
+          @click="onLoadPage('page2')" :class="{active: activePage == 'page2'}"></Button>
+        <Button label="Demo" icon="pi pi-clipboard" class="menuButton"
+          @click="onLoadPage('demo')" :class="{active: activePage == 'demo'}"></Button>
         <div class="separator"></div>
-        <button @click="onLoadPage('reset')">Reset Tiles</button>
+        <Button label="Reset" icon="pi pi-trash"  class="menuButton"
+          @click="onLoadPage('reset')" />
         <div class="separator"></div>
-        <button @click="emitAndClose('showFeedback')">Feedback</button>
-        <button @click="emitAndClose('showAbout')">Warning</button>
+        <Button label="Feedback" icon="pi pi-megaphone" class="menuButton"
+          @click="emitAndClose('showFeedback')" ></Button>
+        <Button label="Warning" icon="pi pi-exclamation-triangle" class="menuButton"
+          @click="emitAndClose('showAbout')"></Button>
         <!-- <div class="separator"></div>
         <button @click="getAirport('krnt')">Fetch</button> -->
       </div>
@@ -73,16 +80,21 @@ watch( props, async() => {
     gap: 40px;
     padding-right: 10px;
 }
+.menuButton {
+  color:white;
+}
 .grow {
-  background-color: darkslategray;
+  background-color: lightgrey;
   opacity: 1;
+  border-radius: 10px;
 }
 
 .buttonsList {
   text-align: left;
-    display: flex;
-    flex-flow: row;
-    gap:20px;
+  display: flex;
+  flex-flow: row;
+  gap:20px;
+  color: white;
 }
 .menuIcon {
   padding-left: 5px;
