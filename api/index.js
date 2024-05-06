@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-const gapi = require('../datasource/gapi.js');
+const gapi = require('../backend/gapi.js');
 
 const app = express();
 const port = 3002
