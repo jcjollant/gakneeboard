@@ -5,6 +5,8 @@ import Header from './Header.vue'
 import Runway from './RunwayView.vue'
 import * as data from '../assets/data.js'
 import Button from 'primevue/button'
+import Corner from './Corner.vue';
+import CornerStatic from './CornerStatic.vue';
 
 const emits = defineEmits(['replace','update'])
 
@@ -20,8 +22,6 @@ const mode = ref('')
 const title = ref('')
 const weatherFreq = ref()
 const weatherType = ref()
-const trafficFreq = ref()
-const trafficType = ref()
 const elevation = ref()
 const tpa = ref()
 const runwayCount = ref(0)
@@ -29,6 +29,14 @@ const airportCode = ref() // used during edit mode
 const allRunways = ref([]) // used during runway selection
 const allEndings = ref([]) // used when displaying all runways
 const selectedRunway = ref(null)
+const airportData = ref()
+const corner0 = ref({'id':0,'field':'weather'})
+const corner1 = ref({'id':1,'field':'twr'})
+const corner2 = ref({'id':2,'field':'field'})
+const corner3 = ref({'id':3,'field':'tpa'})
+const defaultCornerFields = ['weather','twr','field','tpa']
+// const corner5 = ref('tpa')
+const corners = [corner0,corner1,corner2,corner3]
 
 function cycleRunway() {
     // console.log( "cycleRunway rwy Count " + runwayCount.value);
@@ -80,22 +88,32 @@ function loadProps(newProps) {
         return
     }
 
+    let cornerFields = newProps.params.corners
+    if( !cornerFields) {
+        // console.log('Airport loading default cornerFields')
+        cornerFields = defaultCornerFields;
+    } 
+    cornerFields.forEach( (field, index) => {
+        corners[index].value = {'id':index,'field':field}
+    })
+    // console.log('Airport loaded corners ' + JSON.stringify(corners))
+
     title.value = "Loading " + code + '...'
     data.getAirport( code, true)
-    .then(airport => {
-        if( airport && 'rwy' in airport) {
-                showAirport(airport)
-                if( props.params.rwy == 'all') {
-                    mode.value = 'list'
-                    showRunway(-1)
-                } else {
-                    mode.value = ''
-                    showRunway(airport.rwy.findIndex((rwy) => rwy.name == props.params.rwy));
-                }
-        } else {
-            mode.value = 'edit'
-        }
-    })
+        .then(airport => {
+            if( airport && 'rwy' in airport) {
+                    showAirport(airport)
+                    if( props.params.rwy == 'all') {
+                        mode.value = 'list'
+                        showRunway(-1)
+                    } else {
+                        mode.value = ''
+                        showRunway(airport.rwy.findIndex((rwy) => rwy.name == props.params.rwy));
+                    }
+            } else {
+                mode.value = 'edit'
+            }
+        })
 }
 
 // gets invoked as airport code is typed into the input field
@@ -116,6 +134,20 @@ function onCodeUpdate() {
         })
 }
 
+/**
+ * An update has happened in a corner, memorize the value and bubble it up
+ * @param {*} data 
+ */
+function onCornerUpdate( data) {
+    // console.log( 'onCornerUpdate ' + JSON.stringify(data))
+    if( data && 'id' in data && 'field' in data) {
+        corners[data.id].value.field = data.field
+        updateWidget();
+    } else {
+        console.log('Missing data from corner update')
+    }
+}
+
 function onHeaderClick() {
     if( mode.value == '' || mode.value =='list') {
         previousMode = mode.value;
@@ -129,7 +161,7 @@ onMounted(() => {
     // console.log('Airport mounted with ' + JSON.stringify(props.params))
     // get this airport data from parameters
     loadProps(props)
-})    
+})
 
 // A runway has been selected from the list
 function selectRunway(index) {
@@ -149,6 +181,7 @@ function showAirport( airport) {
         return
     }
     currentAirport = airport;
+    airportData.value = airport;
     runwayCount.value = airport.rwy.length
     airportCode.value = airport.code
     allRunways.value = airport.rwy;
@@ -156,19 +189,12 @@ function showAirport( airport) {
     
     // title.value = airport.code + ":" + airport.name
     title.value = airport.name
-    weatherFreq.value = airport.weather.freq
+    weatherFreq.value = airport.weather.freq.toString()
     weatherType.value = airport.weather.type
+
     // If traffic is runway specific, it will be overriden by showRunway
-    if( 'ctaf' in airport) {
-        trafficFreq.value = airport.ctaf
-        if( airport.twr == 'Y') {
-            trafficType.value = 'TWR/CTAF'
-        } else {
-            trafficType.value = 'CTAF'
-        }
-    }
-    elevation.value = Math.round(airport.elev);
-    tpa.value = Math.round(airport.elev + 1000);
+    elevation.value = Math.round(airport.elev).toString()
+    tpa.value = Math.round(airport.elev + 1000).toString()
 }
 
 // Show a runway from its index in the airport
@@ -179,21 +205,16 @@ function showRunway(index) {
     
     var runway = currentAirport.rwy[index]
     selectedRunway.value = runway
-    // Override traffice frequency if needed
-    if('freq' in runway) {
-        trafficFreq.value = runway.freq;
-        trafficType.value = 'TWR';
-    }
 }
 
 // invoked whenever we want to save the current state
 function updateWidget() {
     const rwyName = (currentRwyIndex == -1) ? 'all' : currentAirport.rwy[currentRwyIndex].name;
-    const airportParam = {'code':airportCode.value.toLowerCase(),'rwy':rwyName};
+    const cornersList = corners.map( corner => corner.value.field)
+    const airportParam = {'code':airportCode.value.toLowerCase(),'rwy':rwyName,'corners':cornersList};
     // console.log( 'Widget updated with ' + JSON.stringify(airportParam));
     emits('update', airportParam);
 }
-
 
 watch( props, async() => {
     // console.log("Airport props changed " + JSON.stringify(props));
@@ -232,21 +253,19 @@ watch( props, async() => {
                 </div>
             </div>
             <div class="footer">
-                <div class='label'>Elev</div>
-                <div class='label'>TPA</div>
-                <div class='label'>{{ weatherType }}</div>
-                <div>{{ elevation }}</div>
-                <div>{{ tpa }}</div>
-                <div>{{ weatherFreq }}</div>
+                <CornerStatic label="Elev" :value="elevation" position="bottom"/>
+                <CornerStatic label="TPA" :value="tpa" position="bottom"/>
+                <CornerStatic :label="weatherType" :value="weatherFreq" position="bottom"/>
             </div>
         </div>
         <div class="content" v-else="">
-            <div class="corner top left"><div>{{weatherFreq}}</div><div class="label">{{weatherType}}</div></div>
-            <div class="corner top right"><div>{{trafficFreq}}</div><div class='label'>{{trafficType}}</div></div>
-            <div class="corner bottom left"><div class='label'>Elev</div><div>{{ elevation }}</div></div>
-            <div class="corner bottom right"><div class='label'>TPA</div><div>{{ tpa }}</div></div>
             <Runway :runway="selectedRunway" />
             <div class="airportCode" @click="cycleRunway()" :class="{clickable: runwayCount > 1}" >{{airportCode}}</div>
+            <Corner class="corner top left" :airport="airportData" :data="corner0" :runway="selectedRunway" 
+                @update="onCornerUpdate" />
+            <Corner class="corner top right" :airport="airportData" :data="corner1"  :runway="selectedRunway" @update="onCornerUpdate"/>
+            <Corner class="corner bottom left" :airport="airportData" :data="corner2"  :runway="selectedRunway" :flip="true"  @update="onCornerUpdate"/>
+            <Corner class="corner bottom right" :airport="airportData" :data="corner3"  :runway="selectedRunway" :flip="true"  @update="onCornerUpdate"/>
         </div>
     </div>    
 </template>
@@ -335,14 +354,11 @@ watch( props, async() => {
         vertical-align: middle;
     }
     .runwayList {
-        /* padding: 10px 10px; */
         width:240px;
     }
     .runwayListRow {
         display: grid;
         grid-template-columns: 30% 20% 20% 30%;
-        /* grid-template-columns: auto auto auto auto; */
-        /* margin-bottom: 2px; */
     }
 
     .runwayListHeader {
