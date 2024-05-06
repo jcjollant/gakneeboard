@@ -1,6 +1,7 @@
 // import { adipJfk } from './testData.js'
 // import { fetch, fromAdip } from '../api/adip.js'
-const adip = require('../datasource/adip')
+const adip = require('../backend/adip')
+const fs = require('fs')
 
 test('TPA should be 1000 above elevation',() =>{
     expect(adip.getTpa(0)).toBe(1000)
@@ -30,7 +31,7 @@ test('Names are capitalized', () => {
     expect(adip.getName('THIS IS A NAME')).toBe('This Is A Name')    
 })
 
-test('Renton fields from Adip are populated',async () =>{
+test('Fetch Renton and check fields',async () =>{
     const before = Date.now()
     const airport = await adip.fetchAirport('RNT')
     console.log(JSON.stringify(airport))
@@ -39,6 +40,7 @@ test('Renton fields from Adip are populated',async () =>{
     expect(airport.icaoId).toBe('KRNT')
     expect(airport.name).toBe('Renton Muni')
     expect(airport.ctaf).toBe('124.700')
+    expect(airport.gnd).toBe('121.6')
     expect(airport.twr).toBe('Y')
     expect(airport.elev).toBe(32)
     expect(airport.tpa).toBe(1032)
@@ -62,5 +64,6 @@ test('Renton fields from Adip are populated',async () =>{
     // ICAO should be defined
     // Fecth time should be higer
     expect(airport.fetchTime).toBeGreaterThan(before)
-    expect(airport.version).toBe(3)
+    expect(airport.version).toBe(4)
 })
+
