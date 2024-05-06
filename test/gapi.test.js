@@ -1,4 +1,4 @@
-const gapi = require( '../datasource/gapi')
+const gapi = require( '../backend/gapi')
 
 process.env.POSTGRES_URL="postgres://default:94chrayEvOLG@ep-shrill-silence-a6ypne6y-pooler.us-west-2.aws.neon.tech/verceldb?sslmode=require"
 
