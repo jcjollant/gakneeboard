@@ -4,7 +4,8 @@ I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
 * Show a spiner when the airport request data is sent
-* Change the Tile header when the airport data is received (runway selection)
+* Airport : When leaving exit mode without applying, selector should revert back to current airport
+* Airport : Add cancel button at the bottom of Rwy selector
 * Add "nothing" in possible corner data
 * Add Rwy Length in corner data
 * Add separators in Corner data selectors
