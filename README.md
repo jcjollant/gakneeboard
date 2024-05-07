@@ -3,9 +3,13 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
+* Show a spiner when the airport request data is sent
+* Change the Tile header when the airport data is received (runway selection)
 * Add "nothing" in possible corner data
 * Add Rwy Length in corner data
-* Make Rwy dimension configurable
+* Add separators in Corner data selectors
+* Show -.- if gnd frequency is unknown
+* User setting to show rwy dimension at the bottom
 * Pattern color should be blue for left and red for right
 * New Tiles Synopsis => capture altitude and fuel level
 * User setting wether runway should be oriented or straight
