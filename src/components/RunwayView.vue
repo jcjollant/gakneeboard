@@ -7,6 +7,8 @@ const props = defineProps({
 
 const myCanvas = ref()
 const dimensions = ref('')
+const rightTpColor = '#FF9999'
+const leftTpColor = '#9999FF'
 
 function getFourtyFive( orientation) {
     if(orientation < 0) orientation += 360;
@@ -90,7 +92,7 @@ function show(runway) {
     // north runway TP (Dashed stroke)
     ctx.beginPath();
     ctx.setLineDash([10,5])
-    ctx.strokeStyle = '#FF9999';
+    ctx.strokeStyle = northRwy.pattern == 'left' ? leftTpColor : rightTpColor;
     // Final
     ctx.moveTo( 0, rwyHLength);
     // Base
@@ -122,7 +124,7 @@ function show(runway) {
     // Final
     ctx.beginPath();
     ctx.setLineDash([10,5])
-    ctx.strokeStyle = '#9999FF';
+    ctx.strokeStyle = southRwy.pattern == 'left' ? leftTpColor : rightTpColor;
     ctx.moveTo( 0, -rwyHLength);
     // TP Base
     ctx.lineTo( 0, -tpBaseDist);
