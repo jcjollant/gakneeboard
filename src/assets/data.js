@@ -1,4 +1,4 @@
-export const version = '505-2'
+export const version = '506'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'http://localhost:3000/'
 
@@ -168,6 +168,16 @@ async function requestOneAirport( code) {
     })
 
   return airport
+}
+
+export async function sendFeedback(data) {
+  axios.post(apiRootUrl + 'feedback', data, {headers: {'Content-Type': 'text/plain',}})
+    .then( response => {
+      // console.log( '[data] feedback sent')
+    })
+    .catch( error => {
+      console.log( '[data] feedback error ' + error)
+    })
 }
 
 /**
