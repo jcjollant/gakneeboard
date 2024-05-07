@@ -9,7 +9,7 @@ const app = express();
 
 // app.use(cors({origin:'https://kb.jollant.net'}))
 app.use(cors())
-
+app.use(express.json())
 /*
 let requestCntr = 0;
 app.use((req, res, next) => {
@@ -50,7 +50,7 @@ app.get('/airports/:list', async (req, res) => {
 })
 
 app.post('/feedback', async(req,res) => {
-    console.log( "API feedback request " + JSON.stringify(req));
+    console.log( "API feedback request " + req);
     console.log( "API feedback body " + req.body);
     // insert feedback in DB
     await db.saveFeedback(JSON.parse(req.body))
