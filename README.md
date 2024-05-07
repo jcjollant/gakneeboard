@@ -9,6 +9,7 @@ I couldn't find anything I liked, so I scratched my own itch.
 * User settings whether to show 45 entry magnetic course
 
 # Done
+## 5/05/2024-2
 * Added confogurable corners
 * Added colors to traffic pattern
 ## 5/05/2024

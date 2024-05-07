@@ -7,7 +7,7 @@
     * All tiles switch to selector
   * Load demo tiles.
     * All tiles are loading
-* Airport Tile
+## Airport Tile
   * Data Fields
     * Select KRNT 16-34
       * Name should be Renton Muni (centered)
@@ -26,27 +26,28 @@
       * Should show a list of runways for the airport
     * Select a different runway
       * New runway should be selected
-  * Change active runway / cycle
-    * Click on the runway
-      * Should cycle through existing runways
+  * Pick KBFI on one Airport tile
+    * Cycle runway should work
+    * change one corner value to something else
+    * reload window => Should see the new settings with RWY and Corner
   * Test Edit mode toggle
   * Test replace
 * State is saved locally
   * Change anything on page 1
   * Reload page -> changes should be recalled
-* ATIS Tile
+## ATIS Tile
   * Check layout showing 7 fields : Information, Wind, Rwy, Visiblity, Tempreature, Atimeter and Sky
   * Test Settings mode toggle
   * Test replace
-* Clearance Tile
+## Clearance Tile
   * CRAFT is showing
   * Test Edit mode toggle
   * Test replace
-* Notes Tiles
+## Notes Tiles
   * Check Layout
   * Test Edit mode toggle
   * Test replace
-* Radio Flow
+## Radio Flow
   * Load Demo Page
     * Should show 8 frequencies
   * Copy data to Page 1
