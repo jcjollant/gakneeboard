@@ -4,16 +4,28 @@ import { ref, onMounted } from 'vue';
 import Button from 'primevue/button'
 import { useConfirm } from 'primevue/useconfirm'
 import ConfirmDialog from 'primevue/confirmdialog';
+import Feedback from './Feedback.vue';
+import { useToast } from 'primevue/usetoast'
+import Toast from 'primevue/toast';
 
 
 const emits = defineEmits(['loadPage','showFeedback','showAbout'])
+
 const showMenu = ref(false)
 const activePage = ref('')
+const showFeedback = ref(false)
+const toast = useToast()
+const confirm = useConfirm()
 
 const props = defineProps({
-    page: { type: String, default: null}, // expects {'code':'ICAO','rwy':'XX-YY'}
+  page: { type: String, default: null},
 })
-const confirm = useConfirm()
+
+function emitAndClose(message) {
+  // console.log('emitAndClose ' + message)
+  emits(message)
+  showMenu.value = false
+}
 
 function getConfirmation(headerParam, pageName) {
   confirm.require({
@@ -28,11 +40,6 @@ function getConfirmation(headerParam, pageName) {
 
 }
 
-
-// Toggle menu visibility which will update component layout
-function toggleMenu() {
-    showMenu.value = !showMenu.value;
-}
 
 function loadProps( newProps) {
   // console.log('Menu loadProps ' + props.page)
@@ -52,14 +59,21 @@ onMounted(() => {
   loadProps(props)
 })
 
+function onFeedbackSent() {
+  // console.log('[menu] onFeedbackSent')
+  showMenu.value = false;
+  showFeedback.value = false
+  toast.add({ severity: 'info', summary: 'Thank you', detail: 'Feedback sent', life: 3000});  
+}
+
 function onReset() {
   getConfirmation('Reset All Tiles', 'reset')
 }
 
-function emitAndClose(message) {
-  // console.log('emitAndClose ' + message)
-  emits(message)
-  showMenu.value = false
+
+// Toggle menu visibility which will update component layout
+function toggleMenu() {
+    showMenu.value = !showMenu.value;
 }
 
 watch( props, async() => {
@@ -69,12 +83,15 @@ watch( props, async() => {
 </script>
 
 <template>
+
   <div class="container" :class="{grow: showMenu}">
     <ConfirmDialog></ConfirmDialog>
+    <Toast />
+    <Feedback v-model:visible="showFeedback" @sent="onFeedbackSent"></Feedback>
     <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu">
-        <div class="bar1"></div>
-        <div class="bar2"></div>
-        <div class="bar3"></div>
+      <div class="bar1"></div>
+      <div class="bar2"></div>
+      <div class="bar3"></div>
     </div>
     <div v-show="showMenu" class="expandedMenu">
       <div class="buttonsList">
@@ -89,7 +106,7 @@ watch( props, async() => {
           @click="onReset"></Button>
         <div class="separator"></div>
         <Button label="Feedback" icon="pi pi-megaphone" class="menuButton"
-          @click="emitAndClose('showFeedback')" ></Button>
+          @click="showFeedback=true" ></Button>
         <Button label="Warnings" icon="pi pi-exclamation-triangle" class="menuButton"
           @click="emitAndClose('showAbout')"></Button>
         <!-- <div class="separator"></div>

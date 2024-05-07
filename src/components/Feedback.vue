@@ -1,81 +1,50 @@
 <script setup>
-import { ref } from "vue";
-import {version} from '../assets/data.js'
+// import { defineEmits } from "vue";
+import { ref } from 'vue'
+import {version, sendFeedback} from '../assets/data.js'
+import Dialog from "primevue/dialog";
+import Button from "primevue/button";
+import Textarea from "primevue/textarea";
+import FloatLabel from "primevue/floatlabel"
 
 const props = defineProps({
   isOpen: Boolean,
 });
 
-const emit = defineEmits(["close"]);
+const emits = defineEmits(["sent"]);
 
-const target1 = ref(null)
-// onClickOutside(target, ()=>emit('modal-close'))
+const feedbackText = ref('')
+
+/**
+ * Send the feedback
+ */
+async function send() {
+  // console.log( 'send feedback')
+  const data = {version:version,feedback:feedbackText.value}
+  await sendFeedback(data);
+  emits('sent')
+}
 
 </script>
 
 <template>
-  <div v-if="isOpen" class="modal-mask">
-    <div class="modal-wrapper">
-      <div class="modal-container" ref="target1">
-        <div class="modal-header">
-          <slot name="header"> Share Feedback </slot>
-        </div>
-        <div class="modal-body">
-          <slot name="content">Kneeboard primary goal is to help us pilots focusing on Aviate, Navigate and Communicate. Please share how we can improve this at <a href="mailto:jc@jollant.net">jc@jollant.net</a>. <br>I would love to hear your opinion.</slot>
-        </div>
-        <div class="modal-footer">
-          <slot name="footer">
-            <div>
-              <button @click.stop="emit('close')">Close</button>
-            </div>
-          </slot>
-        </div>
-        <div class="version">{{ version }}</div>
-      </div>
+  <Dialog modal header="Send Feedback">
+    <div class="mb-5">
+      <span>We'd love to hear about your experience. Please share your thoughts</span>
     </div>
-  </div>
+    <div class="mb-5">
+      <FloatLabel>
+        <Textarea rows="10" cols="80" autoResize v-model:modelValue="feedbackText"></Textarea>
+        <label>What did we miss? What would you change?</label>
+      </FloatLabel>
+    </div>
+    <div class="action gap-2"><Button label="Send" @click="send"></Button></div>
+  </Dialog>
 </template>
 
 <style scoped>
-.modal-mask {
-  position: fixed;
-  z-index: 9998;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+.action {
+  display: flex;
+  justify-content: end;
 }
-.modal-container {
-  width: 300px;
-  margin: 150px auto;
-  padding: 20px 30px;
-  background-color: #fff;
-  border-radius: 2px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
-  position: relative;
-}
-
-.modal-header {
-    color: black;
-    font-weight: 500;
-    font-size: 18px;
-    text-decoration: underline;
-}
-
-.modal-body {
-    text-align: left;
-    padding: 15px 0 30px 0;
-    font-size: 12px;
-    color: #040404;
-}
-
-.version {
-  position: absolute;
-  right: 5px;
-  bottom: 5px;
-  font-size: 8px;
-  color: darkslategrey;
-}
-
 </style>
