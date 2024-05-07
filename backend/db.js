@@ -54,10 +54,15 @@ async function saveAirport(code, data) {
     console.log( '[db] saveAirport ' + code)
 }
 
+async function saveFeedback(data) {
+    await postgres.sql`INSERT INTO Feedback (Version,Text) VALUES (${data.version},${data.feedback})`;
+    console.log( '[db] saveFeedback ')
+}
+
 async function updateAirport(id, data, version) {
     // console.log( '[db] updateAirport ' + id + ' ' + JSON.stringify(data) + ' ' + version)
     await postgres.sql`UPDATE Airports SET Data=${data}, Version = ${version} WHERE id=${id}`;
 }
 
 
-module.exports = { addKnownUnknown, fetchAirport, fetchAirportList, isKnownUnknown, saveAirport, updateAirport };
+module.exports = { addKnownUnknown, fetchAirport, fetchAirportList, isKnownUnknown, saveAirport, saveFeedback, updateAirport };

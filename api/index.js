@@ -1,22 +1,26 @@
 import express from "express";
-import cors from "cors";
+// import cors from "cors";
+const cors = require('cors');
+const db = require('../backend/db.js');
 const gapi = require('../backend/gapi.js');
 
-const app = express();
 const port = 3002
+const app = express();
 
-app.use(cors());
+app.use(cors())
 
-// let requestCntr = 0;
-// app.use((req, res, next) => {
-//     let thisRequest = requestCntr++;
-//     console.log(`${thisRequest}: ${req.method}, ${req.originalUrl}, `, req.headers);
-    // watch for end of theresponse
-    // res.on('close', () => {
-    //     console.log(`${thisRequest}: close response, res.statusCode = ${res.statusCode}, outbound headers: `, res.getHeaders());
-    // });
-//     next();
-// });
+/*
+let requestCntr = 0;
+app.use((req, res, next) => {
+    let thisRequest = requestCntr++;
+    console.log(`${thisRequest}: ${req.method}, ${req.originalUrl}, `, req.headers);
+    // watchs for end of theresponse
+    res.on('close', () => {
+        console.log(`${thisRequest}: close response, res.statusCode = ${res.statusCode}, outbound headers: `, res.getHeaders());
+    });
+    next();
+});
+*/
 
 app.get("/", (req, res) => res.send("Express on Vercel"));
 
@@ -42,6 +46,13 @@ app.get('/airports/:list', async (req, res) => {
     const airports = await gapi.getAirportsList(req.params.list.split('-'));
     // console.log( "[index] Returning airports " + JSON.stringify(airports));
     res.send(airports)
+})
+
+app.post('/feedback', async(req,res) => {
+    // console.log( "API feedback request " + req.body);
+    // insert feedback in DB
+    await db.saveFeedback(JSON.parse(req.body))
+    res.send("Thank you for your feedback")
 })
 
 app.listen(port, () => console.log("Server ready on port " + port));
