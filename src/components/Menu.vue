@@ -2,6 +2,9 @@
 import { watch } from 'vue';
 import { ref, onMounted } from 'vue';
 import Button from 'primevue/button'
+import { useConfirm } from 'primevue/useconfirm'
+import ConfirmDialog from 'primevue/confirmdialog';
+
 
 const emits = defineEmits(['loadPage','showFeedback','showAbout'])
 const showMenu = ref(false)
@@ -10,6 +13,20 @@ const activePage = ref('')
 const props = defineProps({
     page: { type: String, default: null}, // expects {'code':'ICAO','rwy':'XX-YY'}
 })
+const confirm = useConfirm()
+
+function getConfirmation(headerParam, pageName) {
+  confirm.require({
+      message: 'Do you want to replace all tiles in this page?',
+      header: headerParam,
+      rejectLabel: 'No',
+      acceptLabel: 'Yes, Replace',
+      accept: () => {
+        onLoadPage(pageName)
+      }
+    })
+
+}
 
 
 // Toggle menu visibility which will update component layout
@@ -22,6 +39,10 @@ function loadProps( newProps) {
   activePage.value = newProps.page;
 }
 
+function onDemo() {
+  getConfirmation('Load Demo Tiles', 'demo')
+}
+
 function onLoadPage( name) {
   emits('loadPage', name)
   showMenu.value = false
@@ -30,6 +51,10 @@ function onLoadPage( name) {
 onMounted(() => {
   loadProps(props)
 })
+
+function onReset() {
+  getConfirmation('Reset All Tiles', 'reset')
+}
 
 function emitAndClose(message) {
   // console.log('emitAndClose ' + message)
@@ -45,6 +70,7 @@ watch( props, async() => {
 
 <template>
   <div class="container" :class="{grow: showMenu}">
+    <ConfirmDialog></ConfirmDialog>
     <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu">
         <div class="bar1"></div>
         <div class="bar2"></div>
@@ -56,15 +82,15 @@ watch( props, async() => {
           @click="onLoadPage('page1')" :class="{active: activePage == 'page1'}"></Button>
         <Button label="2" icon="pi pi-clipboard" class="menuButton"
           @click="onLoadPage('page2')" :class="{active: activePage == 'page2'}"></Button>
+          <div class="separator"></div>
         <Button label="Demo" icon="pi pi-clipboard" class="menuButton"
-          @click="onLoadPage('demo')" :class="{active: activePage == 'demo'}"></Button>
-        <div class="separator"></div>
+          @click="onDemo" :class="{active: activePage == 'demo'}"></Button>
         <Button label="Reset" icon="pi pi-trash"  class="menuButton"
-          @click="onLoadPage('reset')" />
+          @click="onReset"></Button>
         <div class="separator"></div>
         <Button label="Feedback" icon="pi pi-megaphone" class="menuButton"
           @click="emitAndClose('showFeedback')" ></Button>
-        <Button label="Warning" icon="pi pi-exclamation-triangle" class="menuButton"
+        <Button label="Warnings" icon="pi pi-exclamation-triangle" class="menuButton"
           @click="emitAndClose('showAbout')"></Button>
         <!-- <div class="separator"></div>
         <button @click="getAirport('krnt')">Fetch</button> -->
