@@ -53,7 +53,7 @@ app.post('/feedback', async(req,res) => {
     // console.log( "API feedback request " + req);
     // console.log( "API feedback body " + req.body);
     // insert feedback in DB
-    await db.saveFeedback(req.body)
+    await db.saveFeedback(JSON.parse(req.body))
     res.send("Thank you for your feedback")
 })
 
