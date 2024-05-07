@@ -1,12 +1,13 @@
 <script setup>
 import { ref } from "vue";
 import {version} from '../assets/data.js'
+import Button from "primevue/button";
 
 const props = defineProps({
   isOpen: Boolean,
 });
 
-const emit = defineEmits(["sent"]);
+const emits = defineEmits(["close"]);
 
 const target = ref(null)
 // onClickOutside(target, ()=>emit('modal-close'))
@@ -30,7 +31,7 @@ const target = ref(null)
         <div class="modal-footer">
           <slot name="footer">
             <div>
-              <button @click.stop="emit('sent')">Close</button>
+              <Button label="Close" @click="emits('close')"></Button>
             </div>
           </slot>
         </div>
