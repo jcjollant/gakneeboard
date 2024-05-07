@@ -28,11 +28,6 @@ const allWidgets = widgetsOne.concat(widgetsTwo)
 const showFeedback = ref()
 const showAbout = ref()
 
-
-function editablePage() {
-  return currentPage.value == 'page1' || currentPage.value == 'page2'
-}
-
 // update all widgets with provided data
 async function loadPageData(data) {
   // console.log( 'App loadPageData ' + JSON.stringify(data))
@@ -44,6 +39,7 @@ async function loadPageData(data) {
       widget.value = data[index];
   });
   pageData = data;
+  savePageData();
 }
 
 function onMenuLoadPage(name) {
@@ -52,26 +48,18 @@ function onMenuLoadPage(name) {
   if( name=='page1' || name =='page2') {
     currentPage.value = name;
     let data = localStorage.getItem(name);
-    if( data) { // first time around
-      newPageData = JSON.parse(data)
+    if( data && data != 'undefined') { // first time around
+      loadPageData( JSON.parse(data))
+    } else {
+      loadPageData( getDemoPage())
     }
   } else if( name=='demo') {
-    currentPage.value = name
-    newPageData = getDemoPage()
+    loadPageData( getDemoPage())
   } else if( name=='reset') {
-    if( editablePage()) {
-      // all widgets are Tile selectors
-      newPageData = getBlankPage()
-    } else {
-      console.log('This page is read only')
-    }
+    loadPageData( getBlankPage())
+  } else {
+    console.log('unknown page ' + name)
   }
-
-  // load corresponding data into the page
-  loadPageData(newPageData)
-    .then(() => {
-      savePageData();
-    })
 }
 
 onMounted(() => {
@@ -82,9 +70,7 @@ onMounted(() => {
 
 // save page data if it's page 1 or 2
 function savePageData() {
-  if( editablePage()) {
-    localStorage.setItem(currentPage.value, JSON.stringify( pageData))
-  }
+  localStorage.setItem(currentPage.value, JSON.stringify( pageData))
 }
 
 function updateWidget(widget) {
