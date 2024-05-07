@@ -18,15 +18,15 @@ const demoRadioData = [
 ]
  const demoPage = [
   {'id':0,'name':'airport','data':{'code':'krnt','rwy':'16-34'}},
-  {'id':1,'name':'airport','data':{'code':'s36','rwy':'15-33'}},
+  {'id':1,'name':'airport','data':{'code':'kbfi','rwy':'14L-32R'}},
   {'id':2,'name':'airport','data':{'code':'w39','rwy':'NE-SW'}},
-  {'id':3,'name':'airport','data':{'code':'kplu','rwy':'17-35'}},
+  {'id':3,'name':'airport','data':{'code':'ktta','rwy':'03-21'}},
   {'id':4,'name':'atis','data':{}},
   {'id':5,'name':'clearance','data':{}},
   {'id':6,'name':'airport','data':{'code':'kbvs','rwy':'11-29'}},
   {'id':7,'name':'airport','data':{'code':'kawo','rwy':'11-29'}},
   {'id':8,'name':'airport','data':{'code':'s43','rwy':'15R-33L'}},
-  {'id':9,'name':'airport','data':{'code':'kpae','rwy':'16L-34R'}},
+  {'id':9,'name':'airport','data':{'code':'kpae','rwy':'all'}},
   {'id':10,'name':'radios','data':demoRadioData},
   {'id':11,'name':'notes','data':{}},
 ]
