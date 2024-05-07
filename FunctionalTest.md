@@ -3,45 +3,39 @@
   * Open console
     * Nothing should be showing during the test
   * All tiles are loading
+## Bulk Page Edit
   * reset tiles
+    * Should get a confirmation => No then yes
     * All tiles switch to selector
   * Load demo tiles.
+    * Should get a confirmation => No then Yes
     * All tiles are loading
 ## Airport Tile
-  * Data Fields
-    * Select KRNT 16-34
-      * Name should be Renton Muni (centered)
-      * ATIS should be 126.950
-      * TWR should be 124.700
-      * Elev should be 32
-      * TPA should be 1032
-      * Rwy Lengthxwidth should be 5382x200
-      * Watermark airport code should be KRNT
-      * Rwy should be displayed in the center
-      * Traffic Pattern should be 16LP 34RP
-  * Long airport names / select KTTA
-    * Airport name should be truncated
-  * Change Active Runway / Picking
-    * Click on title
-      * Should show a list of runways for the airport
-    * Select a different runway
-      * New runway should be selected
-  * Pick KBFI on one Airport tile
-    * Cycle runway should work
-    * change one corner value to something else
-    * reload window => Should see the new settings with RWY and Corner
+  * Data Fields @ Renton Muni
+    * Name should be Renton Muni (centered)
+    * ATIS should be 126.950
+    * TWR should be 124.700 Label should be TWR/CTAF
+    * Elev should be 32
+    * TPA should be 1032
+    * Rwy Lengthxwidth should be 5382x200
+    * Watermark airport code should be KRNT
+    * Rwy should be vertical
+    * Traffic Pattern => should be 16LP (blue/292) 34RP (red/202)
+  * Boeing field cycle runway 
+    * 14L-32R frequency=118.3 label=TWR 14L-32R 
+    * 14R-32L frequency=120.6 label=TWR 14R-32L 
+  * Raleigh Exec name should be truncated
   * Test Edit mode toggle
   * Test replace
-* State is saved locally
-  * Change anything on page 1
-  * Reload page -> changes should be recalled
 ## ATIS Tile
   * Check layout showing 7 fields : Information, Wind, Rwy, Visiblity, Tempreature, Atimeter and Sky
-  * Test Settings mode toggle
+  * Title is offset to the left
+  * Test Settings mode toggle => no settings
   * Test replace
 ## Clearance Tile
   * CRAFT is showing
-  * Test Edit mode toggle
+  * Title is offset to the left
+  * Test Edit mode toggle => No settings
   * Test replace
 ## Notes Tiles
   * Check Layout
@@ -50,8 +44,19 @@
 ## Radio Flow
   * Load Demo Page
     * Should show 8 frequencies
-  * Copy data to Page 1
   * Replace first frequency and last name
     * Both should be updated
-  * reload page => should remember 2 updates
   * Erase all frequencies and apply => Should show all nordo
+  * Test replace
+## Persistance
+ * Tweak demo page content
+   * Change Renton to S50 
+   * Change KBFI rwy to 14R-32L
+   * Change Roche Harbor corners to Elev, TPA, GND and Weather 
+   * Change Raleigh to all runways
+   * Remove last 4 freq from Radio Flows
+ * switch to page 2, reload
+ * (Page1) Check content matches list above
+## Popups
+ * Check Feedback
+ * Check Warning

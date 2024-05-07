@@ -3,12 +3,21 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
-* New Tiles Synopsis
-* Notes tile should not have a title, the whole tile should be clickable to replace
+* Add "nothing" in possible corner data
+* Add Rwy Length in corner data
+* Make Rwy dimension configurable
+* Pattern color should be blue for left and red for right
+* New Tiles Synopsis => capture altitude and fuel level
 * User setting wether runway should be oriented or straight
 * User settings whether to show 45 entry magnetic course
 
 # Done
+## 5/06/2024
+* Capture feedback with API
+* Load demo tiles into current page.
+* Add confirmation to load demo tiles and reset tiles
+* Updated demo page to help functional testing
+* Left traffic pattern is blue, right is red
 ## 5/05/2024-2
 * Added confogurable corners
 * Added colors to traffic pattern
