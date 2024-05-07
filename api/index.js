@@ -50,7 +50,8 @@ app.get('/airports/:list', async (req, res) => {
 })
 
 app.post('/feedback', async(req,res) => {
-    console.log( "API feedback request " + req.body);
+    console.log( "API feedback request " + JSON.stringify(req));
+    console.log( "API feedback body " + req.body);
     // insert feedback in DB
     await db.saveFeedback(JSON.parse(req.body))
     res.send("Thank you for your feedback")
