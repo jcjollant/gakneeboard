@@ -7,7 +7,8 @@ const gapi = require('../backend/gapi.js');
 const port = 3002
 const app = express();
 
-app.use(cors({origin:'https://kb.jollant.net'}))
+// app.use(cors({origin:'https://kb.jollant.net'}))
+app.use(cors())
 
 /*
 let requestCntr = 0;
@@ -49,7 +50,7 @@ app.get('/airports/:list', async (req, res) => {
 })
 
 app.post('/feedback', async(req,res) => {
-    // console.log( "API feedback request " + req.body);
+    console.log( "API feedback request " + req.body);
     // insert feedback in DB
     await db.saveFeedback(JSON.parse(req.body))
     res.send("Thank you for your feedback")
