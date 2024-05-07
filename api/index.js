@@ -7,7 +7,7 @@ const gapi = require('../backend/gapi.js');
 const port = 3002
 const app = express();
 
-app.use(cors())
+app.use(cors({origin:'https://kb.jollant.net'}))
 
 /*
 let requestCntr = 0;
