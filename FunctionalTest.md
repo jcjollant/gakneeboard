@@ -1,4 +1,6 @@
 # Functional Testing
+* Check version number => Should be latest 
+* Check data source => Should be remote
 * Open the app
   * Open console
     * Nothing should be showing during the test
@@ -12,18 +14,17 @@
     * All tiles are loading
 ## Airport Tile
   * Data Fields @ Renton Muni
-    * Name should be Renton Muni (centered)
-    * ATIS should be 126.950
-    * TWR should be 124.700 Label should be TWR/CTAF
-    * Elev should be 32
-    * TPA should be 1032
-    * Rwy Lengthxwidth should be 5382x200
-    * Watermark airport code should be KRNT
-    * Rwy should be vertical
-    * Traffic Pattern => should be 16LP (blue/292) 34RP (red/202)
+    * Name = Renton Muni (centered), ATIS = 126.950, TWR = 124.700, Label = TWR/CTAF
+    * Elev = 32, TPA = 1032, Rwy dimension = 5382x200
+    * Watermark airport code = KRNT, Rwy orientation = vertical
+    * Traffic Pattern = 16LP (blue/292) 34RP (red/202)
   * Boeing field cycle runway 
     * 14L-32R frequency=118.3 label=TWR 14L-32R 
     * 14R-32L frequency=120.6 label=TWR 14R-32L 
+  * Pending Airport in Edit mode
+    * Skagit : Edit mode, Type BFI without selecting a rwy then toggle normal and back to edit
+    * Should show Skagit with ryw 04-22 and 11-29
+    * Pick 04-22 should work
   * Raleigh Exec name should be truncated
   * Test Edit mode toggle
   * Test replace

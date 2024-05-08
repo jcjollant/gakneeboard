@@ -7,13 +7,16 @@ import * as data from '../assets/data.js'
 import Button from 'primevue/button'
 import Corner from './Corner.vue';
 import CornerStatic from './CornerStatic.vue';
+import ProgressSpinner from 'primevue/progressspinner'
 
 const emits = defineEmits(['replace','update'])
 
 
 var currentAirport
+var pendingAirport
 var currentRwyIndex;
 var previousMode = '';
+
 const props = defineProps({
     params: { type: Object, default: null}, // expects {'code':'ICAO','rwy':'XX-YY'}
 })
@@ -26,7 +29,7 @@ const elevation = ref()
 const tpa = ref()
 const runwayCount = ref(0)
 const airportCode = ref() // used during edit mode
-const allRunways = ref([]) // used during runway selection
+const rwyList = ref([]) // used during runway selection
 const allEndings = ref([]) // used when displaying all runways
 const selectedRunway = ref(null)
 const airportData = ref()
@@ -35,6 +38,7 @@ const corner1 = ref({'id':1,'field':'twr'})
 const corner2 = ref({'id':2,'field':'field'})
 const corner3 = ref({'id':3,'field':'tpa'})
 const defaultCornerFields = ['weather','twr','field','tpa']
+const loading = ref(false)
 // const corner5 = ref('tpa')
 const corners = [corner0,corner1,corner2,corner3]
 
@@ -120,16 +124,19 @@ function loadProps(newProps) {
 // We are after runways
 function onCodeUpdate() {
     // console.log(airportCode.value)
+    loading.value = true
     data.getAirport( airportCode.value)
         .then( airport => {
             if( airport) {
                 // console.log("onCodeUpdate airport " + JSON.stringify(airport))
-                currentAirport = airport;
-                allRunways.value = airport.rwy
+                loading.value = false;
+                pendingAirport = airport
+                rwyList.value = airport.rwy
                 runwayCount.value = airport.rwy.length
             } else {
-                allRunways.value = [];
+                rwyList.value = [];
                 runwayCount.value = 0
+                loading.value = false
             }
         })
 }
@@ -151,8 +158,12 @@ function onCornerUpdate( data) {
 function onHeaderClick() {
     if( mode.value == '' || mode.value =='list') {
         previousMode = mode.value;
+        pendingAirport = currentAirport
         mode.value = 'edit'
     } else {
+        // when switching back to normal mode, adjust variables affected by edit
+        rwyList.value = currentAirport.rwy
+        airportCode.value = currentAirport.code
         mode.value = previousMode;
     }    
 }    
@@ -166,6 +177,7 @@ onMounted(() => {
 // A runway has been selected from the list
 function selectRunway(index) {
     // console.log("selectRunway " + index)
+    currentAirport = pendingAirport
     showAirport(currentAirport)
     mode.value = (index == -1) ? 'list' : ''
     showRunway(index);
@@ -184,7 +196,7 @@ function showAirport( airport) {
     airportData.value = airport;
     runwayCount.value = airport.rwy.length
     airportCode.value = airport.code
-    allRunways.value = airport.rwy;
+    rwyList.value = airport.rwy;
     allEndings.value = getEndings(airport.rwy, airport.ctaf);
     
     // title.value = airport.code + ":" + airport.name
@@ -230,10 +242,13 @@ watch( props, async() => {
         <div class="content" v-if="mode=='edit'">
             <div class="label">Airport Code</div>
             <input class="airportCodeInput" v-model="airportCode" @input="onCodeUpdate" />
-            <div class="label" v-if="allRunways.length > 0">Select Runway</div>
-            <div class="rwySelector">
-                <Button :label="rwy.name" class="runwaySign" v-for="(rwy, index) in allRunways" @click="selectRunway(index)"></Button>
-                <Button label="All Rwys" class="sign" v-if="allRunways.length > 0" @click="selectRunway(-1)"></Button>
+            <div class="label" v-if="rwyList.length > 0">Select Runway</div>
+            <div>
+                <ProgressSpinner v-if="loading" />
+                <div class="rwySelector" v-else>
+                    <Button :label="rwy.name" class="runwaySign" v-for="(rwy, index) in rwyList" @click="selectRunway(index)"></Button>
+                    <Button label="All Rwys" class="sign" v-if="rwyList.length > 0" @click="selectRunway(-1)"></Button>
+                </div>
             </div>
         </div>
         <div class="content" v-else-if="mode=='list'">

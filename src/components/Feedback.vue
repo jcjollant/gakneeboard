@@ -22,6 +22,7 @@ async function send() {
   // console.log( 'send feedback')
   const data = {version:version,feedback:feedbackText.value}
   await sendFeedback(data);
+  feedbackText.value = ''
   emits('sent')
 }
 

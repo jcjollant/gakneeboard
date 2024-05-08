@@ -3,20 +3,21 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
-* Show a spiner when the airport request data is sent
-* Airport : When leaving exit mode without applying, selector should revert back to current airport
+* Show -.- if gnd frequency is unknown
 * Airport : Add cancel button at the bottom of Rwy selector
 * Add "nothing" in possible corner data
 * Add Rwy Length in corner data
 * Add separators in Corner data selectors
-* Show -.- if gnd frequency is unknown
 * User setting to show rwy dimension at the bottom
-* Pattern color should be blue for left and red for right
 * New Tiles Synopsis => capture altitude and fuel level
 * User setting wether runway should be oriented or straight
 * User settings whether to show 45 entry magnetic course
 
 # Done
+## 05/08/2024 508
+* Show a spiner when the airport request data is sent
+* Fixed feedback
+* Airport : When leaving edit mode without applying, selector should revert back to current airport
 ## 5/06/2024
 * Capture feedback with API
 * Load demo tiles into current page.
