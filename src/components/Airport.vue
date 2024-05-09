@@ -39,6 +39,7 @@ const corner2 = ref({'id':2,'field':'field'})
 const corner3 = ref({'id':3,'field':'tpa'})
 const defaultCornerFields = ['weather','twr','field','tpa']
 const loading = ref(false)
+const defaultTitle = 'Airport'
 // const corner5 = ref('tpa')
 const corners = [corner0,corner1,corner2,corner3]
 
@@ -87,7 +88,7 @@ function getEndings(rwys, freq) {
 function loadProps(newProps) {
     const code = newProps.params.code
     if( !code) {
-        title.value = 'Airport'
+        title.value = defaultTitle
         mode.value = 'edit'
         return
     }
@@ -159,12 +160,14 @@ function onHeaderClick() {
     if( mode.value == '' || mode.value =='list') {
         previousMode = mode.value;
         pendingAirport = currentAirport
+        title.value = defaultTitle
         mode.value = 'edit'
-    } else {
+    } else if( currentAirport){
         // when switching back to normal mode, adjust variables affected by edit
         rwyList.value = currentAirport.rwy
         airportCode.value = currentAirport.code
         mode.value = previousMode;
+        title.value = currentAirport.name
     }    
 }    
 
@@ -246,8 +249,9 @@ watch( props, async() => {
             <div>
                 <ProgressSpinner v-if="loading" />
                 <div class="rwySelector" v-else>
-                    <Button :label="rwy.name" class="runwaySign" v-for="(rwy, index) in rwyList" @click="selectRunway(index)"></Button>
-                    <Button label="All Rwys" class="sign" v-if="rwyList.length > 0" @click="selectRunway(-1)"></Button>
+                    <Button :label="rwy.name" class="sign runway" v-for="(rwy, index) in rwyList" @click="selectRunway(index)"></Button>
+                    <Button label="All Rwys" class="sign location" v-if="rwyList.length > 0" @click="selectRunway(-1)"></Button>
+                    <Button label="Cancel" class="sign taxi" v-if="rwyList.length > 0 && currentAirport != null" @click="onHeaderClick"></Button>
                 </div>
             </div>
         </div>
@@ -330,14 +334,6 @@ watch( props, async() => {
         grid-template-columns: auto auto;
         gap: 2px 20px;
     }
-    .runwaySign {
-        background: red;
-        color:white;
-        border-radius: 4px;
-        border: 1px solid black;
-        padding: 2px 8px;
-        font-weight: 500;
-    }
     .runwayListItem {
         text-align: center;
         font-size: 14px;
@@ -349,11 +345,22 @@ watch( props, async() => {
         font-weight: 600;
     }
     .sign {
-        background: #ffbb00;
-        color:black;
         border-radius: 4px;
         border: 1px solid black;
         padding: 2px 8px 2px 8px;
+    }
+    .location {
+        background: #ffbb00;
+        color:black;
+    }
+    .runway {
+        background: red;
+        color:white;
+        border-radius: 4px;
+    }
+    .taxi {
+        color: white;
+        background: black;
     }
     .airportCode {
         font-weight: 900;
