@@ -3,6 +3,7 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
+* Use different dash styles for each pattern
 * Show version number in the feedback box
 * Pick rwy orientation by clicking
 * Select whether pattern entry should have midfield
