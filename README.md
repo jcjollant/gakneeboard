@@ -3,6 +3,13 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
+* Cannot get AA25
+* AK5 should fit (rwy # in width)
+* Use different dash styles for left and right pattern
+* Show version number in the feedback box
+* Pick rwy orientation by clicking
+* User setting for overfly + mag direction
+* User setting one direction (anticipated wind) hide the other side
 * Show -.- if gnd frequency is unknown
 * Airport : Add cancel button at the bottom of Rwy selector
 * Add "nothing" in possible corner data
