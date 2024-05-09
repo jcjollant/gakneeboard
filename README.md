@@ -3,6 +3,9 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
+* Show version number in the feedback box
+* Pick rwy orientation by clicking
+* Select whether pattern entry should have midfield
 * Show -.- if gnd frequency is unknown
 * Airport : Add cancel button at the bottom of Rwy selector
 * Add "nothing" in possible corner data
