@@ -3,6 +3,7 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
+* Cannot get AA25
 * AK5 should fit (rwy # in width)
 * Use different dash styles for left and right pattern
 * Show version number in the feedback box
