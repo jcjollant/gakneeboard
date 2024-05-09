@@ -3,11 +3,7 @@ const adip = require('./adip')
 
 function isValidCode(source) {
     if(source) {
-        if(source.length == 4) {
-            const firstLetter = source.toUpperCase()[0];
-            return firstLetter == 'K' || firstLetter == 'P';
-        } 
-        return source.length == 3;
+        return source.length == 3 || source.length == 4;
     }
 
     return false;
