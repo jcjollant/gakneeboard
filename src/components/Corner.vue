@@ -22,6 +22,7 @@ const props = defineProps({
 let airport = null
 let runway = null
 let cornerId = -1
+const noFrequency = '-.-'
 const selectedCornerType = ref('weather')
 const cornerTypes = ref([
     { name: 'Weather Frequency', key: 'weather' },
@@ -29,6 +30,8 @@ const cornerTypes = ref([
     { name: 'Ground Frequency', key: 'gnd' },
     { name: 'Field Elevation', key: 'field' },
     { name: 'Traffic Pattern Altitude', key: 'tpa' },
+    { name: 'Runway Information', key: 'rwyinfo' },
+    { name: 'Nothing', key: 'blank' },
 ]);
 
 
@@ -79,7 +82,7 @@ function showField( field) {
                     label.value = 'CTAF'
                 }
             } else {
-                value.value = '-'
+                value.value = noFrequency
             }
             break
         case 'field':
@@ -91,17 +94,24 @@ function showField( field) {
             label.value = 'TPA'
             break
         case 'gnd':
-            if( 'gnd' in airport) {
+            if( 'gnd' in airport && airport.gnd != null) {
                 value.value = airport.gnd
             } else {
-                value.value = '-'
+                value.value = noFrequency
             }
             label.value = 'GND'
             break;
-        // TODO get that data from airport
+        case 'rwyinfo':
+            value.value = runway.length + 'x' + runway.width
+            label.value = runway.surface.condition + '/' + runway.surface.type
+            break;
+        case 'blank':
+            value.value = '.'
+            label.value = ''
+            break;
         default:
-            value.value = '-'
-            label.value = '-'
+            value.value = '?'
+            label.value = '?'
     }
 }
 
@@ -119,7 +129,7 @@ watch( props, () => {
 
 <template>
     <div>
-        <div @click="toggleSelection" class="clickable">
+        <div @click="toggleSelection" class="clickable" :class="{faded: value=='.'}">
             <div v-if="labelUnder">
                 <div>{{value}}</div>
                 <div class="label">{{label}}</div>
@@ -155,8 +165,8 @@ watch( props, () => {
         display: flex;
         align-items: center;
     }
-    .ml-2 {
-        margin-left: 0.5rem;
+    .faded {
+        opacity: 0.3;
     }
 
 </style>
