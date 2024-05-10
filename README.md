@@ -3,14 +3,12 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
-* Pick rwy orientation by clicking
-* User setting one direction (anticipated wind) hide the other side
-* Add Rwy Length in corner data
+* New Tile mode for ATIS that shows several lines
 * Add separators in Corner data selectors
 * User setting to show rwy dimension at the bottom
-* New Tiles Synopsis => capture altitude and fuel level
 * User setting wether runway should be oriented or straight
 * User settings whether to show 45 entry magnetic course
+* New Tiles Synopsis => capture altitude and fuel level
 
 # Done
 ## 5/09/2024 509
