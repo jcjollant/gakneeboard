@@ -1,4 +1,5 @@
 # Functional Testing
+## data.js
 * Check version number => Should be latest 
 * Check data source => Should be remote
 * Open the app
@@ -14,10 +15,15 @@
     * All tiles are loading
 ## Airport Tile
   * Data Fields @ Renton Muni
-    * Name = Renton Muni (centered), ATIS = 126.950, TWR = 124.700, Label = TWR/CTAF
+    * Name = Renton Muni (centered), ATIS = 126.95, TWR = 124.700, Label = TWR/CTAF
     * Elev = 32, TPA = 1032, Rwy dimension = 5382x200
     * Watermark airport code = KRNT, Rwy orientation = vertical
-    * Traffic Pattern = 16LP (blue/292) 34RP (red/202)
+    * 16 LP, blue, symetric pattern stroke 
+    * 34 RP, red, asymetric pattern stroke
+    * rwy click => 16 LP only 292 entry
+    * rwy click => 16 midfield only 67 entry
+    * rwy click => 34 RP only 202 entry
+    * rwy click => 34 midfield 67 entry
   * Boeing field cycle runway 
     * 14L-32R frequency=118.3 label=TWR 14L-32R 
     * 14R-32L frequency=120.6 label=TWR 14R-32L 
@@ -39,7 +45,7 @@
   * Test Edit mode toggle => No settings
   * Test replace
 ## Notes Tiles
-  * Check Layout
+  * Check Layout title should be faded
   * Test Edit mode toggle
   * Test replace
 ## Radio Flow
@@ -49,15 +55,17 @@
     * Both should be updated
   * Erase all frequencies and apply => Should show all nordo
   * Test replace
+## Feedback
+  * Dialog should show version number in bottom right corner
+  * Enter feedback => Should show in the DB
 ## Persistance
  * Tweak demo page content
    * Change Renton to S50 
    * Change KBFI rwy to 14R-32L
-   * Change Roche Harbor corners to Elev, TPA, GND and Weather 
-   * Change Raleigh to all runways
+   * Change Roche Harbor corners to Elev
+   * Change Death Valley to all runways
    * Remove last 4 freq from Radio Flows
  * switch to page 2, reload
  * (Page1) Check content matches list above
-## Popups
- * Check Feedback
- * Check Warning
+## Warning
+ * Check Layout
