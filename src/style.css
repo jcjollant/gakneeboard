@@ -32,6 +32,14 @@ body {
   cursor: pointer;
 }
 
+.version {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  font-size: 8px;
+  color: darkslategrey;
+}
+
 .content {
   width: 240px; /* Adjust width as needed */
   height: 200px; /* Adjust height as needed */
@@ -58,7 +66,9 @@ body {
   margin-left: 0.5rem;
 }
 
-
+.mr-3 {
+  margin-right: 1rem;
+}
 
 .mb-5 {
   margin-bottom: 2rem;
