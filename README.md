@@ -3,6 +3,7 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
+* clear mode on browser messes up buttons format
 * Add new "dense" mode to ATIS
 * Add site to google search
 * Add SEO tags
