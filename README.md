@@ -3,16 +3,8 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
-* Cannot get AA25
-* AK5 should fit (rwy # in width)
-* Use different dash styles for left and right pattern
-* Show version number in the feedback box
 * Pick rwy orientation by clicking
-* User setting for overfly + mag direction
 * User setting one direction (anticipated wind) hide the other side
-* Show -.- if gnd frequency is unknown
-* Airport : Add cancel button at the bottom of Rwy selector
-* Add "nothing" in possible corner data
 * Add Rwy Length in corner data
 * Add separators in Corner data selectors
 * User setting to show rwy dimension at the bottom
@@ -21,6 +13,17 @@ I couldn't find anything I liked, so I scratched my own itch.
 * User settings whether to show 45 entry magnetic course
 
 # Done
+## 5/09/2024 509
+* Improved Warning Legibility
+* Clicking on the rwy will cycle through combinations of TP display
+* Show version number in the feedback box
+* Use different dash styles for left and right pattern
+* Cannot get AA25
+* Showing dirt strips and gravel strips with their own color
+* AK5 should fit (rwy # in width)
+* Show -.- if gnd frequency is unknown
+* Airport : Add cancel button at the bottom of Rwy selector
+* Add "nothing" in possible corner data
 ## 05/08/2024 508
 * Show a spiner when the airport request data is sent
 * Fixed feedback
