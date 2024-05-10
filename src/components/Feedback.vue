@@ -7,10 +7,6 @@ import Button from "primevue/button";
 import Textarea from "primevue/textarea";
 import FloatLabel from "primevue/floatlabel"
 
-const props = defineProps({
-  isOpen: Boolean,
-});
-
 const emits = defineEmits(["sent"]);
 
 const feedbackText = ref('')
@@ -40,6 +36,7 @@ async function send() {
       </FloatLabel>
     </div>
     <div class="action gap-2"><Button label="Send" @click="send"></Button></div>
+    <div class="version">{{ version }}</div>
   </Dialog>
 </template>
 
