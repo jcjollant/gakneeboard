@@ -3,6 +3,8 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
+* Add site to google search
+* Add SEO tags
 * New Tile mode for ATIS that shows several lines
 * Add separators in Corner data selectors
 * User setting to show rwy dimension at the bottom
