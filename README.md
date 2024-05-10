@@ -3,7 +3,6 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
-* clear mode on browser messes up buttons format
 * Add new "dense" mode to ATIS
 * Add site to google search
 * Add SEO tags
@@ -15,6 +14,8 @@ I couldn't find anything I liked, so I scratched my own itch.
 * New Tiles Synopsis => capture altitude and fuel level
 
 # Done
+## 5/09/2024 510
+* clear mode on browser messes up buttons format
 ## 5/09/2024 509
 * Improved Warning Legibility
 * Clicking on the rwy will cycle through combinations of TP display
