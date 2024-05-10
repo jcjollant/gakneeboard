@@ -2,8 +2,6 @@
 // import HelloWorld from './components/HelloWorld.vue'
 import Menu from './components/Menu.vue'
 import Widget from './components/Tile.vue'
-import Feedback from './components/Feedback.vue';
-import About from './components/About.vue';
 import {onMounted,ref} from 'vue'
 import { getDemoPage, getBlankPage } from './assets/data.js'
 import { inject } from "@vercel/analytics"
@@ -25,8 +23,6 @@ const widget11 = ref({})
 const widgetsOne = [widget0,widget1,widget2,widget3,widget4,widget5]
 const widgetsTwo = [widget6,widget7,widget8,widget9,widget10,widget11]
 const allWidgets = widgetsOne.concat(widgetsTwo)
-const showFeedback = ref()
-const showAbout = ref()
 
 // update all widgets with provided data
 async function loadPageData(data) {
@@ -90,8 +86,6 @@ function updateWidget(widget) {
       <Widget v-for='widget in widgetsTwo' :widget="widget.value" @update="updateWidget"/>
     </div>
   </div>
-  <Feedback :v-if="showFeedback" :isOpen="showFeedback" name='feedback-modal' @close="showFeedback=false"/>
-  <About :v-if="showAbout" :isOpen="showAbout" name='about-modal' @close="showAbout=false"/>
   <div class="menuContainer">
     <Menu class="menu" :page="currentPage"
       @load-page="onMenuLoadPage" 
