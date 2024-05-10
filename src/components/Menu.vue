@@ -5,6 +5,7 @@ import Button from 'primevue/button'
 import { useConfirm } from 'primevue/useconfirm'
 import ConfirmDialog from 'primevue/confirmdialog';
 import Feedback from './Feedback.vue';
+import Warning from './Warning.vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
 
@@ -14,6 +15,7 @@ const emits = defineEmits(['loadPage','showFeedback','showAbout'])
 const showMenu = ref(false)
 const activePage = ref('')
 const showFeedback = ref(false)
+const showWarning = ref(false)
 const toast = useToast()
 const confirm = useConfirm()
 
@@ -88,6 +90,7 @@ watch( props, async() => {
     <ConfirmDialog></ConfirmDialog>
     <Toast />
     <Feedback v-model:visible="showFeedback" @sent="onFeedbackSent"></Feedback>
+    <Warning v-model:visible="showWarning" @close="showWarning=false"></Warning>
     <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu">
       <div class="bar1"></div>
       <div class="bar2"></div>
@@ -108,7 +111,7 @@ watch( props, async() => {
         <Button label="Feedback" icon="pi pi-megaphone" class="menuButton"
           @click="showFeedback=true" ></Button>
         <Button label="Warnings" icon="pi pi-exclamation-triangle" class="menuButton"
-          @click="emitAndClose('showAbout')"></Button>
+          @click="showWarning=true"></Button>
         <!-- <div class="separator"></div>
         <button @click="getAirport('krnt')">Fetch</button> -->
       </div>
