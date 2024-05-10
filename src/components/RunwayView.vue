@@ -5,14 +5,33 @@ const props = defineProps({
     runway: { type: Object, default: null}
 })
 
+let patternMode = 0
+let showNorthMidField = false
+let showNorthTp = true
+let showSouthMidField = false
+let showSouthTp = true
+
 const myCanvas = ref()
 const dimensions = ref('')
 const rightTpColor = '#FF9999'
 const leftTpColor = '#9999FF'
+const leftTpPattern = [10,5]
+const rightTpPattern = [10,5,2,5]
 
-function getFourtyFive( orientation) {
+function getAngle( orientation) {
     if(orientation < 0) orientation += 360;
-    return orientation;
+    return orientation % 360;
+}
+
+function onClick() {
+    patternMode = (patternMode + 1) % 5
+    // console.log( 'patternMode = ' + patternMode)
+    showNorthMidField = (patternMode == 4)
+    showNorthTp = (patternMode == 0 || patternMode == 3 || patternMode == 4)
+    showSouthMidField = (patternMode == 2)
+    showSouthTp = (patternMode == 0 || patternMode == 1 || patternMode == 2)
+    // console.log( 'NMF ' + showNorthMidField + ' NTP ' + showNorthTp + ' SMF '+ showSouthMidField + ' STP ' + showSouthTp)
+    show(props.runway)
 }
 
 onMounted(() => {    
@@ -60,7 +79,7 @@ function show(runway) {
 
     const rwyLength = referenceSize * 0.55;
     const rwyHLength = rwyLength / 2;
-    const rwyWidth = referenceSize * 0.1;
+    const rwyWidth = referenceSize * 0.12;
     const rwyHWidth = rwyWidth / 2;
     const tpDownwindDist = referenceSize * 0.15;
     const tpBaseDist = rwyLength / 2 + tpDownwindDist * 0.65;
@@ -74,7 +93,15 @@ function show(runway) {
     // const angleInRad = Math.PI / 180 * northRwy.orientation; // Convert degrees to radians
     // ctx.rotate(angleInRad);
     // draw runway at the center
-    ctx.fillStyle = ( runway.surface.type=='TURF' ? 'darkgreen' : runway.surface.type=='WATER' ? 'darkblue' : 'black');
+    let rwyColor = 'black'
+    switch( runway.surface.type) {
+        case 'TURF': rwyColor = 'darkgreen'; break
+        case 'WATER': rwyColor = 'darkblue'; break
+        case 'GRVL':
+        case 'GRAVEL': rwyColor = '#777777'; break
+        case 'DIRT': rwyColor = '#5C4033'; break
+    }
+    ctx.fillStyle = rwyColor
     ctx.fillRect( -rwyHWidth, -rwyHLength, rwyWidth, rwyLength);
 
     // draw runway names
@@ -88,73 +115,122 @@ function show(runway) {
     // Traffic pattern
     ctx.lineWidth = tpLineWidth;
     ctx.lineCap = 'round';
-
-    // north runway TP (Dashed stroke)
-    ctx.beginPath();
-    ctx.setLineDash([10,5])
-    ctx.strokeStyle = northRwy.pattern == 'left' ? leftTpColor : rightTpColor;
-    // Final
-    ctx.moveTo( 0, rwyHLength);
-    // Base
-    ctx.lineTo( 0, tpBaseDist);
-    // Downwind
     ctx.fillStyle = 'black';
-    if(northRwy.pattern == 'right') {
-        ctx.lineTo( tpDownwindDist, tpBaseDist);
-        ctx.lineTo( tpDownwindDist, 0);
-        ctx.lineTo( tpDownwindDist * 2, -tpDownwindDist);
-        ctx.fillText( getFourtyFive(northRwy.orientation - 135)+'°', tpDownwindDist * 2.5, -tpDownwindDist);
-        ctx.stroke();
-    } else {
-        ctx.lineTo( -tpDownwindDist, tpBaseDist);
-        ctx.lineTo( -tpDownwindDist, 0);
-        ctx.lineTo( -tpDownwindDist * 2, -tpDownwindDist);
-        ctx.fillText( getFourtyFive(northRwy.orientation - 225)+'°', -tpDownwindDist * 2.5, -tpDownwindDist);
-        ctx.stroke();
-    }
-    // TP Arrow Tips (full stroke)
-    ctx.beginPath();
-    ctx.setLineDash([])
-    ctx.moveTo( -tpArrowTip, rwyHLength + tpArrowTip);
-    ctx.lineTo( 0, rwyHLength);
-    ctx.lineTo( tpArrowTip, rwyHLength + tpArrowTip);
-    ctx.stroke();
 
-    // South Runway TP
-    // Final
-    ctx.beginPath();
-    ctx.setLineDash([10,5])
-    ctx.strokeStyle = southRwy.pattern == 'left' ? leftTpColor : rightTpColor;
-    ctx.moveTo( 0, -rwyHLength);
-    // TP Base
-    ctx.lineTo( 0, -tpBaseDist);
-    // Downwind
-    if(southRwy.pattern == 'right') {
-        ctx.lineTo( -tpDownwindDist, -tpBaseDist);
-        ctx.lineTo( -tpDownwindDist, 0);
-        ctx.lineTo( -tpDownwindDist * 2, tpDownwindDist);
-        ctx.stroke()
-        ctx.fillText( getFourtyFive(southRwy.orientation - 135)+'°', -tpDownwindDist * 2.5, tpDownwindDist);
-    } else {
-        ctx.lineTo( tpDownwindDist, -tpBaseDist);
-        ctx.lineTo( tpDownwindDist, 0);
-        ctx.lineTo( tpDownwindDist * 2, tpDownwindDist);
-        ctx.stroke()
-        ctx.fillText( getFourtyFive(southRwy.orientation - 225)+'°', tpDownwindDist * 2.5, tpDownwindDist);
+    const radius = tpDownwindDist / ( 1.707)
+
+    if( showNorthTp) {
+        const centerY = -radius
+        // north runway TP (Dashed stroke)
+        ctx.beginPath();
+        const leftTp = (northRwy.pattern == 'left') 
+        ctx.setLineDash( leftTp ? leftTpPattern : rightTpPattern)
+        ctx.strokeStyle = leftTp ? leftTpColor : rightTpColor;
+        // Rwy Threshold
+        ctx.moveTo( 0, rwyHLength);
+        // Final
+        ctx.lineTo( 0, tpBaseDist);
+        if(leftTp) {
+            // Crosswind
+            ctx.lineTo( -tpDownwindDist, tpBaseDist);
+            // Downwind
+            ctx.lineTo( -tpDownwindDist, 0);
+            // 45 entry
+            ctx.lineTo( -tpDownwindDist * 2, -tpDownwindDist);
+            // 45 entry label
+            ctx.fillText( getAngle(northRwy.orientation - 225)+'°', -tpDownwindDist * 2.5, -tpDownwindDist - 10);
+            if(showNorthMidField) {
+                const startingAngle = - Math.PI / 4
+                const endingAngle = Math.PI / 2
+                const centerX = -2 * tpDownwindDist - 0.707 * radius
+                ctx.arc( centerX, centerY, radius, startingAngle, endingAngle, true);
+                ctx.lineTo( 2 * tpDownwindDist, 0)
+                // mid field entry
+                ctx.fillText( getAngle(northRwy.orientation - 90)+'°', tpDownwindDist * 2.5, 0);
+            }
+        } else {
+            ctx.lineTo( tpDownwindDist, tpBaseDist);
+            ctx.lineTo( tpDownwindDist, 0);
+            ctx.lineTo( tpDownwindDist * 2, -tpDownwindDist);
+            ctx.fillText( getAngle(northRwy.orientation - 135)+'°', tpDownwindDist * 2.5, -tpDownwindDist - 10);
+            if(showNorthMidField) {
+                const startingAngle = - 3 * Math.PI / 4
+                const endingAngle = Math.PI / 2
+                const centerX = 2 * tpDownwindDist + 0.707 * radius
+                ctx.arc( centerX, centerY, radius, startingAngle, endingAngle, false);
+                ctx.lineTo( -2 * tpDownwindDist, 0)
+                // mid field entry
+                ctx.fillText( getAngle(northRwy.orientation + 90)+'°', -tpDownwindDist * 2.5, 0);
+            }
+        }
+        ctx.stroke();
+
+        // TP Arrow Tips (full stroke)
+        ctx.beginPath();
+        ctx.setLineDash([])
+        ctx.moveTo( -tpArrowTip, rwyHLength + tpArrowTip);
+        ctx.lineTo( 0, rwyHLength);
+        ctx.lineTo( tpArrowTip, rwyHLength + tpArrowTip);
+        ctx.stroke();
     }
-    // TP Arrow Tip (no dash)
-    ctx.beginPath()
-    ctx.setLineDash([])
-    ctx.moveTo( -tpArrowTip, -rwyHLength - tpArrowTip);
-    ctx.lineTo( 0, -rwyHLength);
-    ctx.lineTo( +tpArrowTip, -rwyHLength - tpArrowTip);
-    ctx.stroke();
+
+    if( showSouthTp) {
+        const centerY = radius
+        // South Runway TP
+        // Final
+        ctx.beginPath();
+        const leftTp = (southRwy.pattern == 'left')
+        ctx.setLineDash(leftTp ? leftTpPattern : rightTpPattern)
+        ctx.strokeStyle = leftTp ? leftTpColor : rightTpColor;
+        ctx.moveTo( 0, -rwyHLength);
+        // TP Base
+        ctx.lineTo( 0, -tpBaseDist);
+        // Downwind
+        if(leftTp) {
+            ctx.lineTo( tpDownwindDist, -tpBaseDist);
+            ctx.lineTo( tpDownwindDist, 0);
+            ctx.lineTo( tpDownwindDist * 2, tpDownwindDist);
+            ctx.fillText( getAngle(southRwy.orientation - 225)+'°', tpDownwindDist * 2.5, tpDownwindDist + 15);
+            if(showSouthMidField) {
+                const startingAngle = 3 * Math.PI / 4
+                const endingAngle = -Math.PI / 2
+                const centerX = 2 * tpDownwindDist + 0.707 * radius
+                ctx.arc( centerX, centerY, radius, startingAngle, endingAngle, true);
+                ctx.lineTo( -2 * tpDownwindDist, 0)
+                // mid field entry
+                ctx.fillText( getAngle(northRwy.orientation + 90)+'°', -tpDownwindDist * 2.5, 0);
+            }
+        } else {
+            ctx.lineTo( -tpDownwindDist, -tpBaseDist);
+            ctx.lineTo( -tpDownwindDist, 0);
+            ctx.lineTo( -tpDownwindDist * 2, tpDownwindDist);
+            ctx.fillText( getAngle(southRwy.orientation - 135)+'°', -tpDownwindDist * 2.5, tpDownwindDist + 15);
+            if(showSouthMidField) {
+                const startingAngle = Math.PI / 4
+                const endingAngle = -Math.PI / 2
+                const centerX = -2 * tpDownwindDist - 0.707 * radius
+                ctx.arc( centerX, centerY, radius, startingAngle, endingAngle, false);
+                ctx.lineTo( 2 * tpDownwindDist, 0)
+                // mid field entry
+                ctx.fillText( getAngle(northRwy.orientation - 90)+'°', tpDownwindDist * 2.5, 0);
+            }
+        }
+        ctx.stroke()
+
+        // TP Arrow Tip (no dash)
+        ctx.beginPath()
+        ctx.setLineDash([])
+        ctx.moveTo( -tpArrowTip, -rwyHLength - tpArrowTip);
+        ctx.lineTo( 0, -rwyHLength);
+        ctx.lineTo( +tpArrowTip, -rwyHLength - tpArrowTip);
+        ctx.stroke();
+    }
 
 }
 </script>
 
 <template>
-    <div class="container">
+    <div class="container clickable" @click="onClick">
         <canvas ref="myCanvas"></canvas>
         <div class="dimensions">{{ dimensions }}</div>
     </div>

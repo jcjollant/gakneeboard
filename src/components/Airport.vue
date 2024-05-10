@@ -278,8 +278,8 @@ watch( props, async() => {
             </div>
         </div>
         <div class="content" v-else="">
+            <div class="airportCode" :class="{clickable: runwayCount > 1}" >{{airportCode}}</div>
             <Runway :runway="selectedRunway" />
-            <div class="airportCode" @click="cycleRunway()" :class="{clickable: runwayCount > 1}" >{{airportCode}}</div>
             <Corner class="corner top left" :airport="airportData" :data="corner0" :runway="selectedRunway" 
                 @update="onCornerUpdate" />
             <Corner class="corner top right" :airport="airportData" :data="corner1"  :runway="selectedRunway" @update="onCornerUpdate"/>
