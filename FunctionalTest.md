@@ -27,6 +27,8 @@
   * Boeing field cycle runway 
     * 14L-32R frequency=118.3 label=TWR 14L-32R 
     * 14R-32L frequency=120.6 label=TWR 14R-32L 
+  * Magnetic orientation
+    * Enable then disable magnetic orientation
   * Pending Airport in Edit mode
     * Skagit : Edit mode, Type BFI without selecting a rwy then toggle normal and back to edit
     * Should show Skagit with ryw 04-22 and 11-29
@@ -37,7 +39,8 @@
 ## ATIS Tile
   * Check layout showing 7 fields : Information, Wind, Rwy, Visiblity, Tempreature, Atimeter and Sky
   * Title is offset to the left
-  * Test Settings mode toggle => no settings
+  * Test Settings mode toggle + pick compact
+  * Compact mode should show 4 row
   * Test replace
 ## Clearance Tile
   * CRAFT is showing
@@ -60,7 +63,7 @@
   * Enter feedback => Should show in the DB
 ## Persistance
  * Tweak demo page content
-   * Change Renton to S50 
+   * Change Renton to S50 change pattern mode
    * Change KBFI rwy to 14R-32L
    * Change Roche Harbor corners to Elev
    * Change Death Valley to all runways

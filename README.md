@@ -3,7 +3,7 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
-* Add new "dense" mode to ATIS
+* When an airport code is unknown, we should say so
 * Add site to google search
 * Add SEO tags
 * New Tile mode for ATIS that shows several lines
@@ -12,8 +12,13 @@ I couldn't find anything I liked, so I scratched my own itch.
 * User setting wether runway should be oriented or straight
 * User settings whether to show 45 entry magnetic course
 * New Tiles Synopsis => capture altitude and fuel level
+* Small indicator below runway is configurable
 
 # Done
+## 5/11/2024 511
+* Atis compact mode
+* patternMode is save with airport
+* User can configure magnetic orientation for runway
 ## 5/09/2024 510
 * clear mode on browser messes up buttons format
 ## 5/09/2024 509

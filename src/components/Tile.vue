@@ -2,7 +2,7 @@
 <script setup>
 import {onMounted, ref, watch} from 'vue';
 import Header from './Header.vue';
-import Airport from './Airport.vue';
+import Airport from './airport/Airport.vue';
 import Atis from './Atis.vue'
 import Notes from './Notes.vue';
 import Clearance from './Clearance.vue';
@@ -20,7 +20,7 @@ const knownWidgets = ref([
     {'name':'ATIS','tile':'atis'},
     {'name':'Clearance','tile':'clearance'},
     {'name':'Notes','tile':'notes'},
-    {'name':'Radio flow','tile':'radios'},
+    {'name':'Radios','tile':'radios'},
 ])
 const widget = ref({})
 
@@ -55,15 +55,18 @@ watch( props, async() => {
         <Header :title="'Tile Selection'" :clickable="false"></Header>
         <!-- <div class="widgetTitle">Tile Selection</div> -->
         <div class="content list">
-            <Button v-for="widget in knownWidgets" class="item" :label="widget.name"
+            <Button v-for="widget in knownWidgets" :label="widget.name"
                 @click="updateWidgetName(widget.tile)"></Button>
         </div>
     </div>
     <Airport v-else-if="widget.name=='airport'" :params="widget.data" 
         @replace="updateWidgetName" @update="onUpdate" />
-    <Atis v-else-if="widget.name=='atis'" @replace="updateWidgetName"/>
-    <Clearance v-else-if="widget.name=='clearance'" @replace="updateWidgetName"/>
-    <Notes v-else-if="widget.name=='notes'" @replace="updateWidgetName" />
+    <Atis v-else-if="widget.name=='atis'" :params="widget.data"
+        @replace="updateWidgetName" @update="onUpdate"/>
+    <Clearance v-else-if="widget.name=='clearance'" 
+        @replace="updateWidgetName"/>
+    <Notes v-else-if="widget.name=='notes'" 
+        @replace="updateWidgetName" />
     <RadioFlow v-else-if="widget.name=='radios'" :params="widget.data" 
         @replace="updateWidgetName" @update="onUpdate" />
     <!-- <List v-else-if="widget.name=='list'" @replace="updateWidgetName"/> -->
@@ -76,11 +79,7 @@ watch( props, async() => {
     gap:10px;
     grid-template-columns: 105px 105px;
     grid-template-rows: auto auto auto;
-    /* width:220px; */
     height: 186px;
-}
-.item {
-    font-size: 12px;
 }
 .widget {
   border: 1px solid darkgrey;
