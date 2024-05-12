@@ -59,3 +59,11 @@ test('Codes are valid', () => {
     expect(gapi.isValidCode('KRNT2')).toBe(false)
     expect(gapi.isValidCode('NT')).toBe(false)
 })
+
+test('Militrary frequencies', () => {
+    expect(gapi.isMilitary(null)).toBe(false)
+    expect(gapi.isMilitary('-.-')).toBe(false)
+    expect(gapi.isMilitary('')).toBe(false)
+    expect(gapi.isMilitary('121.6')).toBe(false)
+    expect(gapi.isMilitary('261.6')).toBe(true)
+})

@@ -90,4 +90,10 @@ function getLocId(code) {
     return null
 }
 
-module.exports = { getAirport, getAirportsList, getIcao, getLocId, isValidCode }
+function isMilitary(freq) {
+    if( freq == null) return false;
+    if( freq =='-.-') return false;
+    return !adip.isNotMilitary(freq)
+}
+
+module.exports = { getAirport, getAirportsList, getIcao, getLocId, isMilitary, isValidCode }
