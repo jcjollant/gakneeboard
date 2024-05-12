@@ -1,46 +1,102 @@
 <script setup>
-import { ref } from 'vue'
+import { ref,onMounted, watch } from 'vue'
 import Header from './Header.vue';
 import NoSettings from './NoSettings.vue'
+import Button from 'primevue/button'
 
-const emits = defineEmits(['replace'])
+const emits = defineEmits(['replace','update'])
 
-const mode = ref('')
+let previousMode = ''
 
-function onClick() {
-    if(mode.value == 'edit') {
-        mode.value = ''
+const defaultMode = ''
+const mode = ref(defaultMode)
+
+const props = defineProps({
+    params: { type: Object, default: null}, // expects {'mode':'compact'}
+})
+
+
+function changeMode(newMode) {
+    mode.value = newMode
+    const params = {mode:newMode}
+    emits('update', params)
+}
+
+function loadProps(props) {
+    // console.log('ATIS loadProps ' + JSON.stringify(props))
+    const newMode = props.params.mode
+    // load mode from params but defaults to full
+    if( newMode) {
+        mode.value = newMode
     } else {
+        mode.value = defaultMode
+    }
+}
+
+function onHeaderClick() {
+    if(mode.value == 'edit') {
+        mode.value = previousMode;
+    } else {
+        previousMode = mode.value;
         mode.value = 'edit'
     }
 }
 
+onMounted(() => {   
+    // console.log('ATIS mounted with ' + JSON.stringify(props.params))
+    loadProps(props)
+    // console.log('onMounted mode ' + mode.value)
+})
+
+watch( props, async() => {
+    // console.log("Airport props changed " + JSON.stringify(props));
+    loadProps(props)
+})
+
 </script>
 <template>
     <div class="widget">
-        <Header :title="'ATIS @'" :replace="mode=='edit'" :left="true" 
-            @click="onClick" @replace="emits('replace')"></Header>
-        <div v-if="mode==''" class="content atis">
-            <div class="info">
+        <Header :title="mode==''?'ATIS @':'ATIS'" :replace="mode=='edit'" :left="mode==''" 
+            @click="onHeaderClick" @replace="emits('replace')"></Header>
+        <div v-if="mode=='edit'" class="content list" >
+            <Button label="Full" @click="changeMode('')"></Button>
+            <Button label="Compact" @click="changeMode('compact')"></Button>
+        </div>
+        <div v-else-if="mode==''" class="content full">
+            <div class="info br">
                 <div class="label">Info</div>
             </div>
-            <div class="wind">
+            <div class="wind br">
                 <div class="label">Wind</div>
             </div>
             <div class="runway">
                 <div class="label">Rwy</div>
             </div>
-            <div class="visibility">
+            <div class="visibility bt bb">
                 <div class="label">Vis</div>
             </div>
-            <div class="sky">
+            <div class="sky bt bl">
                 <div class="label">Sky</div>
             </div>
-            <div class="temperature">
+            <div class="temperature bb">
                 <div class="label">Temp</div>
             </div>
-            <div class="altitude">
+            <div class="altimeter">
                 <div class="label">Alt</div>
+            </div>
+        </div>
+        <div v-else-if="mode=='compact'" class="content">
+            <div v-for="n in 4" class="compact">
+                <div class="info br" :class="{bb: n < 4 }">
+                    <div class="label">Info</div>
+                </div>
+                <div class="wind br" :class="{bb: n < 4 }">
+                    <div class="label">Wind</div>
+                </div>
+                <div class="altimeter" :class="{bb: n < 4 }">
+                    <div class="label">Alt</div>
+                </div>
+                
             </div>
         </div>
         <NoSettings v-else />
@@ -53,19 +109,36 @@ function onClick() {
   top: 0;
   font-size: 10px;
 }
-.atis {
+.content {
+    display: grid;
+}
+.list {
+    display: grid;
+    padding: 10px;
+    gap:10px;
+    grid-template-rows: 3rem 3rem;
+}
+
+.full {
     display: grid;
     grid-template-columns: 20% 30% 25% 25%;
+}
+.compact {
+    display: grid;
+    grid-template-columns: 15% 55% 30%;
 }
 .info {
     grid-column: 1;
     position: relative;
-    border-right: 1px dashed darkgrey;
 }
 .wind {
-    grid-column: 2 / span 2;
     position: relative;
-    border-right: 1px dashed darkgrey;
+}
+.full .wind {
+    grid-column: 2 / span 2;
+}
+.compact .wind {
+    grid-column: 2;
 }
 .runway {
     grid-column: 4;
@@ -75,25 +148,38 @@ function onClick() {
     grid-column: 3 / span 2;
     grid-row: 2 / span 3;
     position: relative;
-    border-top: 1px dashed darkgrey;
-    border-left: 1px dashed darkgrey;
 }
 .visibility {
     grid-row: 2;
     grid-column: 1 / span 2;
     position: relative;
-    border-top: 1px dashed darkgrey;
-    border-bottom: 1px dashed darkgrey;
 }
 .temperature {
     grid-row: 3;
     grid-column: 1 / span 2;
     position: relative;
-    border-bottom: 1px dashed darkgrey;
 }
-.altitude {
+.altimeter {
+    position: relative;
+}
+.full .altimeter {
     grid-row: 4;
     grid-column: 1 / span 2;
-    position: relative;
+}
+.compact .altimeter {
+    grid-column:3;
+}
+
+.bb {
+    border-bottom: 1px dashed darkgrey;
+}
+.bl {
+    border-left: 1px dashed darkgrey;
+}
+.br {
+    border-right: 1px dashed darkgrey;
+}
+.bt {
+    border-top: 1px dashed darkgrey;
 }
 </style>
