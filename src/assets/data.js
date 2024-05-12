@@ -1,4 +1,4 @@
-export const version = '510'
+export const version = '511'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'http://localhost:3000/'
 
@@ -126,6 +126,10 @@ export function getDemoPage() {
 
 async function requestAllAirports( codes) {
   // console.log( 'perform group request for ' + codes.length)
+  if( codes.length == 1) {
+    return requestOneAirport(codes[0])
+  }
+
   const url = apiRootUrl + 'airports/' + codes.join('-');
   await axios.get(url, codes)
     .then( response => {
