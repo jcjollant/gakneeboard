@@ -11,6 +11,11 @@ test('TPA should be 1000 above elevation',() =>{
     expect(adip.getTpa(1100)).toBe(2100)
 })
 
+test('Military frequencies', () => {
+    expect(adip.isNotMilitary('123.0')).toBe(true)
+    expect(adip.isNotMilitary('269.9')).toBe(false)
+})
+
 test('Variation should be <0 for East and >0 for west',() =>{
     let data = {'magneticVariation':'15E'}
     expect(adip.getVariation(data)).toBe(-15)
@@ -67,3 +72,9 @@ test('Fetch Renton and check fields',async () =>{
     expect(airport.version).toBe(4)
 })
 
+test('PDX frequencies', async () => {
+    const airport = await adip.fetchAirport('PDX')
+    expect(airport.weather.type).toBe('D-ATIS')
+    expect(airport.weather.freq).toBe('128.35')
+    expect(airport.gnd).toBe('121.9')
+})

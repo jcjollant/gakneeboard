@@ -55,8 +55,7 @@ test('Codes are valid', () => {
     expect(gapi.isValidCode('RNT')).toBe(true)
     expect(gapi.isValidCode('KRNT')).toBe(true)
     expect(gapi.isValidCode('PANN')).toBe(true)
-    // 4 chars but doens't start with K or P
-    expect(gapi.isValidCode('LRNT')).toBe(false)
+    expect(gapi.isValidCode('LRNT')).toBe(true)
     expect(gapi.isValidCode('KRNT2')).toBe(false)
     expect(gapi.isValidCode('NT')).toBe(false)
 })

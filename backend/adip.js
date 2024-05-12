@@ -111,8 +111,11 @@ function getGround( adip) {
     if( 'facility' in adip && 'frequencies' in adip.facility) {
         adip.facility.frequencies.some( freq => {
             if(freq.frequencyUse.includes('GND/P')) {
-                output = getFrequency(freq.frequency)
-                return true
+                const candidate = getFrequency(freq.frequency)
+                if( isNotMilitary( candidate)) {
+                    output = candidate
+                    return true
+                }
             }
         })
     }
@@ -156,12 +159,13 @@ function getRunway( input, magneticVariation) {
 function getRunwayFrequency(adip, identifier) {
     let output = null
     if( 'facility' in adip && 'frequencies' in adip.facility) {
-        adip.facility.frequencies.forEach( freq => {
-            // pattern is "120.2 ;RWY 16L/34R"
-            if(freq.frequency.includes(identifier)) {
-                output = getFrequency(freq.frequency)
-            }
-        })
+        const candidates = adip.facility.frequencies
+            .filter( freq => freq.frequency.includes(identifier))
+            .map(freq => getFrequency(freq.frequency))
+            .filter(freq => isNotMilitary(freq))
+        if(candidates.length > 0) {
+            output = candidates[0]
+        }
     }
     return output
 }
@@ -189,10 +193,12 @@ function getWeather(adip) {
     let frequency = '-.-'
     if( 'facility' in adip && 'frequencies' in adip.facility) {
         adip.facility.frequencies.forEach( freq => {
-            // frequencyUse can be ATIS or D-ATIS (KJFK)
             if(freq.frequencyUse.includes('ATIS')) {
-                frequency = getFrequency(freq.frequency)
-                type = freq.frequencyUse
+                const candidate = getFrequency(freq.frequency)
+                if( isNotMilitary(candidate)) {
+                    frequency = candidate
+                    type = freq.frequencyUse
+                }
             }
         })
     }
@@ -245,5 +251,9 @@ function getAirport( adip) {
     return data
 }
 
+function isNotMilitary(freq) {
+    return Number(freq) < 225
+}
 
-module.exports = { fetchAirport, getTpa, getAirport, getFrequency, getVariation, getName, modelVersion }
+
+module.exports = { fetchAirport, getTpa, getAirport, getFrequency, getVariation, getName, isNotMilitary, modelVersion }
