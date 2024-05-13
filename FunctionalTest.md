@@ -2,9 +2,8 @@
 ## data.js
 * Check version number => Should be latest 
 * Check data source => Should be remote
-* Open the app
-  * Open console
-    * Nothing should be showing during the test
+## Console
+* Show console, reload => Nothing should show
   * All tiles are loading
 ## Bulk Page Edit
   * reset tiles
@@ -20,27 +19,25 @@
     * Watermark airport code = KRNT, Rwy orientation = vertical
     * 16 LP, blue, symetric pattern stroke 
     * 34 RP, red, asymetric pattern stroke
-    * rwy click => 16 LP only 292 entry
-    * rwy click => 16 midfield only 67 entry
-    * rwy click => 34 RP only 202 entry
-    * rwy click => 34 midfield 67 entry
+    * patternmmode cycle => test 5 modes
+    * test headings 16 enrty=292 midfield=64 34 entry=202 midfield=67
   * Boeing field cycle runway 
     * 14L-32R frequency=118.3 label=TWR 14L-32R 
     * 14R-32L frequency=120.6 label=TWR 14R-32L 
   * Magnetic orientation
     * Enable then disable magnetic orientation
   * Pending Airport in Edit mode
-    * Skagit : Edit mode, Type BFI without selecting a rwy then toggle normal and back to edit
-    * Should show Skagit with ryw 04-22 and 11-29
+    * Skagit : Edit mode, Type BFI without selecting => Airport name should show below input field
+    * Toggle normal and back to edit => Should show Skagit with ryw 04-22 and 11-29
     * Pick 04-22 should work
-  * Raleigh Exec name should be truncated
+  * Raleigh Exec KTTA name should be truncated
   * Test Edit mode toggle
   * Test replace
 ## ATIS Tile
   * Check layout showing 7 fields : Information, Wind, Rwy, Visiblity, Tempreature, Atimeter and Sky
   * Title is offset to the left
   * Test Settings mode toggle + pick compact
-  * Compact mode should show 4 row
+  * Compact mode should show 4 row, title centered
   * Test replace
 ## Clearance Tile
   * CRAFT is showing

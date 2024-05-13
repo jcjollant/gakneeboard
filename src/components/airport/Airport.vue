@@ -50,6 +50,7 @@ const corner1 = ref({'id':1,'field':'twr'})
 const corner2 = ref({'id':2,'field':'field'})
 const corner3 = ref({'id':3,'field':'tpa'})
 const defaultCornerFields = ['weather','twr','field','tpa']
+const defaultRwyOrientation = 'vertical'
 const defaultTitle = 'Airport'
 const corners = [corner0,corner1,corner2,corner3]
 
@@ -126,6 +127,8 @@ function loadProps(newProps) {
     // #5 Rwy orientation
     if('rwyOrientation' in params && params.rwyOrientation) {
         rwyOrientation.value = params.rwyOrientation;
+    } else {
+        rwyOrientation.value = defaultRwyOrientation;
     }
 
     // load data for this airport

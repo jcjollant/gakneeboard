@@ -1,4 +1,4 @@
-export const version = '511'
+export const version = '512'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'http://localhost:3000/'
 
@@ -20,15 +20,15 @@ const demoRadioData = [
   {'id':0,'name':'airport','data':{'code':'krnt','rwy':'16-34'}},
   {'id':1,'name':'airport','data':{'code':'kbfi','rwy':'14L-32R'}},
   {'id':2,'name':'airport','data':{'code':'w39','rwy':'NE-SW'}},
-  {'id':3,'name':'airport','data':{'code':'CSR','rwy':'02-20'}},
+  {'id':3,'name':'airport','data':{'code':'O26','rwy':'13-31'}},
   {'id':4,'name':'atis','data':{}},
   {'id':5,'name':'clearance','data':{}},
   {'id':6,'name':'airport','data':{'code':'kbvs','rwy':'11-29'}},
   {'id':7,'name':'airport','data':{'code':'kawo','rwy':'all'}},
-  {'id':8,'name':'airport','data':{'code':'s43','rwy':'15R-33L'}},
-  {'id':9,'name':'airport','data':{'code':'O26','rwy':'13-31'}},
-  {'id':10,'name':'radios','data':demoRadioData},
-  {'id':11,'name':'notes','data':{}},
+  {'id':8,'name':'airport','data':{'code':'s43','rwy':'15R-33L','rwyOrientation':'magnetic'}},
+  {'id':9,'name':'airport','data':{'code':'s50','rwy':'16-34','pattern':4}},
+  {'id':10,'name':'notes','data':{}},
+  {'id':11,'name':'radios','data':demoRadioData},
 ]
 
  const blankPage = [
@@ -64,6 +64,13 @@ export async function getAirport( codeParam, group = false) {
     if( !code || code.length < 3 || code.length > 4) {
         // console.log( 'invalid code ' + code)
         return airport
+    }
+
+    // is this a test?
+    if( code == '???') {
+      // wait 5 seconds
+      await new Promise(r => setTimeout(r, 5000));
+      return null
     }
 
     // do we already know this code in the cache?

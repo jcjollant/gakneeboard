@@ -1,9 +1,10 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
+import * as data from '../../assets/data.js'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner';
-import * as data from '../../assets/data.js'
 import SelectButton from 'primevue/selectbutton'
+import InputText from 'primevue/inputtext'
 
 const emits = defineEmits(['close','selection'])
 
@@ -26,21 +27,29 @@ watch( props, async() => {
 
 
 let airport = null
-let settings = null
 const loading = ref(false)
 const rwyList = ref([])
 const airportCode = ref('')
+const airportName = ref('')
 const cancellable = ref(false)
 const applyable = ref(false)
+const validAirport = ref(false)
 const rwyOrientationModel = ref('Vertical')
 const selectedRwy = ref(null)
 const rwyOrientationOptions = ref(['Vertical','Magnetic'])
+
+function showAirport() {
+    rwyList.value = airport.rwy;
+    airportName.value = airport.name
+    validAirport.value = true;
+}
 
 function loadProps(props) {
     // console.log('AirportEdit loading props ' + JSON.stringify(props))
     if( props.airport) {
         airport = props.airport
-        rwyList.value = airport.rwy;
+        showAirport()
+        // update edit field value to reflect airport code
         airportCode.value = airport.code;
         // if we have an airport to start with, we can revert.
         cancellable.value = true;
@@ -69,19 +78,21 @@ function onApply() {
 function onCodeUpdate() {
     // console.log(airportCode.value)
     loading.value = true
+    airportName.value = ' '
+    
     data.getAirport( airportCode.value)
         .then( newAirport => {
+            loading.value = false;
             if( newAirport) {
                 // console.log("onCodeUpdate airport " + JSON.stringify(airport))
                 airport = newAirport
-                loading.value = false;
-                rwyList.value = airport.rwy
+                showAirport()
                 selectedRwy.value = null
                 // we cannot apply until we pick a runway
                 applyable.value = false
             } else { // airport is unknown
                 rwyList.value = [];
-                loading.value = false
+                validAirport.value = false
             }
         })
 }
@@ -101,26 +112,23 @@ function selectRunway(rwy) {
     <div class="content">
         <div class="settings">
             <div class="item">Code</div>
-            <input class="airportCodeInput" v-model="airportCode" @input="onCodeUpdate" />
+            <div class="airportInformation">
+                <InputText v-model="airportCode" @input="onCodeUpdate" aria-describedby="airport-name"/>
+                <small id="airport-name">{{airportName}}</small>
+            </div>
             <div class="item">Runway</div>
-            <ProgressSpinner v-if="loading"></ProgressSpinner>
+            <ProgressSpinner class="spinner" v-if="loading"></ProgressSpinner>
             <div v-else class="rwySelector">
+                <Button label="Unknown Airport" class="sign" v-if="!validAirport" disabled></Button>
                 <Button :label="rwy.name" class="sign" :severity="rwy.name == selectedRwy ? 'primary' : 'secondary'"
                     v-for="rwy in rwyList" 
                     @click="selectRunway(rwy.name)"></Button>
-                <!-- <Button :label="rwy.name" class="sign" :class="{runway: rwy.name == selectedRwy}"
-                    v-for="rwy in rwyList" 
-                    @click="selectRunway(rwy.name)"></Button> -->
                 <Button label="ALL" class="sign" v-if="rwyList.length > 0"  :severity="selectedRwy == 'all' ? 'primary' : 'secondary'"
                         @click="selectRunway('all')"></Button>
-                <!-- <Button label="Cancel" class="sign taxi" v-if="rwyList.length && cancellable" @click="emits('close')"></Button> -->
             </div>
-            <div class="item">Orientation</div>
-            <div class="rwyOrientation">
+            <div class="item" v-if="validAirport">Orientation</div>
+            <div class="rwyOrientation" v-if="validAirport">
                 <SelectButton v-model="rwyOrientationModel" :options="rwyOrientationOptions" aria-labelledby="basic" />
-                <!-- <label class="rwyOrientationChoice">Vertical</label>
-                <InputSwitch class="switch" v-model="rwyOrientiation"/>
-                <label class="rwyOrientationChoice">Magnetic</label> -->
             </div>
             <div class="actionBar">
                 <Button v-if="cancellable" icon="pi pi-times" label="Cancel" @click="emits('close')" severity="secondary"></Button>
@@ -135,14 +143,23 @@ function selectRunway(rwy) {
         display: grid;
         grid-template-columns: 3rem auto;
         font-size: 14px;
-        gap: 1rem 0.5rem;
+        gap: 0.5rem 0.5rem;
         padding: 0.5rem;
         line-height: 1.5rem;
+    }
+    #airport-name {
+        font-size: 0.6rem;
+        line-height: 0.6rem;
     }
     .item {
         font-size: 0.6rem;
         line-height: 1.5rem;
         text-align: right;
+    }
+    .airportInformation {
+        display: flex;
+        flex-flow: column;
+        gap: 2px;
     }
     .airportCodeInput {
         text-align: left;
@@ -191,10 +208,13 @@ function selectRunway(rwy) {
         line-height: 1.5rem;
         font-size: 0.8rem;
     }
-    :deep(.p-button) {
+    :deep(.p-component) {
         font-size: 0.8rem;
         /* line-height: 1.5rem; */
         height: 1.5rem;
         /* padding: 0.5rem 0 */
+    }
+    .spinner {
+        height: 1.5rem;
     }
 </style>

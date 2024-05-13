@@ -3,10 +3,6 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
-* When an airport code is unknown, we should say so
-* reduce size of the loading spiner
-* change rwy orientation choice to buttons
-* when demo is loaded, rwy orientation is not considered
 * Add SEO tags
 * Add separators in Corner data selectors
 * User setting to show rwy dimension at the bottom
@@ -15,6 +11,12 @@ I couldn't find anything I liked, so I scratched my own itch.
 * Small indicator below runway is configurable
 
 # Done
+* reduce size of the loading spiner
+* Show airport code in the edit window
+* Test code ??? to fake a loading airport
+* When an airport code is unknown, we should say so
+* when demo is loaded, rwy orientation is not considered
+* change rwy orientation choice to buttons
 * Add site to google search
 ## 5/11/2024 511
 * Atis compact mode
