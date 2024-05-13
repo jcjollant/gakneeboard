@@ -8,6 +8,7 @@ I couldn't find anything I liked, so I scratched my own itch.
 * Multitower airport stuggle : CYVR is not showing a frequency
 
 # TODO
+* Show list of frequencies for selection in corners list
 * Add SEO tags
 * Add separators in Corner data selectors
 * User setting to choose what to display as runway label
