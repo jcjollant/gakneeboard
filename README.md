@@ -5,6 +5,7 @@ I couldn't find anything I liked, so I scratched my own itch.
 # BUGS
 * You can deselect all options in runway orientation
 * ALL runways mode spills over tile height
+* Multitower airport stuggle : CYVR is not showing a frequency
 
 # TODO
 * Add SEO tags
