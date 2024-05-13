@@ -2,10 +2,14 @@
 As a GA pilot, I rely on my kneeboard to get just in time information about the flight. For example, I need to see traffic pattern orientation, rwy length, frequencies or ATIS. I want a solution to customize this data, print it and snap it on the board so it's right there when I need it.
 I couldn't find anything I liked, so I scratched my own itch.
 
+# BUGS
+* You can deselect all options in runway orientation
+* ALL runways mode spills over tile height
+
 # TODO
 * Add SEO tags
 * Add separators in Corner data selectors
-* User setting to show rwy dimension at the bottom
+* User setting to choose what to display as runway label
 * New Tiles Synopsis => capture altitude and fuel level
 * New Tile Fuel Bug
 * Small indicator below runway is configurable
