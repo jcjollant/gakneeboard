@@ -50,13 +50,15 @@ body {
 .actionBar {
   position:absolute;
   display: flex;
+  justify-content: center;
   /* justify-content: flex-; */
   bottom: 5px;
-  right: 5px;
+  /* right: 5px; */
   gap:5px;
   /* font-size: 10px; */
   height: 1.5rem;
   /* line-height: 1.5rem; */
+  width: 100%;
 }
 
 .actionBar .p-button {

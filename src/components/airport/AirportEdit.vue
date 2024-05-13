@@ -1,10 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import InputSwitch from 'primevue/inputswitch'
+import { ref, onMounted, watch } from 'vue'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner';
 import * as data from '../../assets/data.js'
-import { watch } from 'vue';
+import SelectButton from 'primevue/selectbutton'
 
 const emits = defineEmits(['close','selection'])
 
@@ -33,8 +32,9 @@ const rwyList = ref([])
 const airportCode = ref('')
 const cancellable = ref(false)
 const applyable = ref(false)
-const rwyOrientiation = ref(false)
+const rwyOrientationModel = ref('Vertical')
 const selectedRwy = ref(null)
+const rwyOrientationOptions = ref(['Vertical','Magnetic'])
 
 function loadProps(props) {
     // console.log('AirportEdit loading props ' + JSON.stringify(props))
@@ -54,14 +54,14 @@ function loadProps(props) {
             selectedRwy.value = airport.rwy[0].name
         }
 
-        rwyOrientiation.value = (props.rwyOrientation && props.rwyOrientation == 'magnetic')
+        rwyOrientationModel.value = (props.rwyOrientation && props.rwyOrientation == 'magnetic') ? 'Magnetic' : 'Vertical'
     }
 }
 
 // settings are applied
 function onApply() {
     // update settings with orientation
-    emits('selection', airport, selectedRwy.value, rwyOrientiation.value ? 'magnetic' : 'vertical')
+    emits('selection', airport, selectedRwy.value, rwyOrientationModel.value.toLowerCase())
 }
 
 // gets invoked as airport code is typed into the input field
@@ -105,20 +105,25 @@ function selectRunway(rwy) {
             <div class="item">Runway</div>
             <ProgressSpinner v-if="loading"></ProgressSpinner>
             <div v-else class="rwySelector">
-                <Button :label="rwy.name" class="sign" :class="{runway: rwy.name == selectedRwy}" v-for="rwy in rwyList" 
+                <Button :label="rwy.name" class="sign" :severity="rwy.name == selectedRwy ? 'primary' : 'secondary'"
+                    v-for="rwy in rwyList" 
                     @click="selectRunway(rwy.name)"></Button>
-                <Button label="ALL" class="sign" v-if="rwyList.length > 0"  :class="{runway: selectedRwy == 'all'}"
+                <!-- <Button :label="rwy.name" class="sign" :class="{runway: rwy.name == selectedRwy}"
+                    v-for="rwy in rwyList" 
+                    @click="selectRunway(rwy.name)"></Button> -->
+                <Button label="ALL" class="sign" v-if="rwyList.length > 0"  :severity="selectedRwy == 'all' ? 'primary' : 'secondary'"
                         @click="selectRunway('all')"></Button>
                 <!-- <Button label="Cancel" class="sign taxi" v-if="rwyList.length && cancellable" @click="emits('close')"></Button> -->
             </div>
             <div class="item">Orientation</div>
             <div class="rwyOrientation">
-                <label class="rwyOrientationChoice">Vertical</label>
+                <SelectButton v-model="rwyOrientationModel" :options="rwyOrientationOptions" aria-labelledby="basic" />
+                <!-- <label class="rwyOrientationChoice">Vertical</label>
                 <InputSwitch class="switch" v-model="rwyOrientiation"/>
-                <label class="rwyOrientationChoice">Magnetic</label>
+                <label class="rwyOrientationChoice">Magnetic</label> -->
             </div>
             <div class="actionBar">
-                <Button v-if="cancellable" icon="pi pi-times" label="Cancel" @click="emits('close')"></Button>
+                <Button v-if="cancellable" icon="pi pi-times" label="Cancel" @click="emits('close')" severity="secondary"></Button>
                 <Button icon="pi pi-check" label="Apply" @click="onApply" :disabled="!applyable" ></Button>
             </div>
         </div>
@@ -126,11 +131,6 @@ function selectRunway(rwy) {
 </template>
 
 <style scoped>
-    .item {
-        font-size: 0.6rem;
-        line-height: 1.5rem;
-        text-align: right;
-    }
     .settings {
         display: grid;
         grid-template-columns: 3rem auto;
@@ -138,6 +138,11 @@ function selectRunway(rwy) {
         gap: 1rem 0.5rem;
         padding: 0.5rem;
         line-height: 1.5rem;
+    }
+    .item {
+        font-size: 0.6rem;
+        line-height: 1.5rem;
+        text-align: right;
     }
     .airportCodeInput {
         text-align: left;
@@ -153,8 +158,8 @@ function selectRunway(rwy) {
 
     .sign {
         border-radius: 4px;
-        border: 1px solid black;
-        padding: 2px 4px;
+        /* border: 1px solid black; */
+        padding: 2px 2px;
         font-size: 0.7rem;
     }
     /* todo activate on long list of rwy */
@@ -175,13 +180,21 @@ function selectRunway(rwy) {
     }
     .rwyOrientation {
         display: flex;
-        justify-content: center;
-        gap: 0.5rem;
+        justify-content: flex-start;
+        /* gap: 0.5rem; */
     }
     .rwyOrientationChoice {
         font-size: 0.8rem;
     }
     .switch {
         height: 1.5rem;
+        line-height: 1.5rem;
+        font-size: 0.8rem;
+    }
+    :deep(.p-button) {
+        font-size: 0.8rem;
+        /* line-height: 1.5rem; */
+        height: 1.5rem;
+        /* padding: 0.5rem 0 */
     }
 </style>

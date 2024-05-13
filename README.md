@@ -4,17 +4,18 @@ I couldn't find anything I liked, so I scratched my own itch.
 
 # TODO
 * When an airport code is unknown, we should say so
-* Add site to google search
+* reduce size of the loading spiner
+* change rwy orientation choice to buttons
+* when demo is loaded, rwy orientation is not considered
 * Add SEO tags
-* New Tile mode for ATIS that shows several lines
 * Add separators in Corner data selectors
 * User setting to show rwy dimension at the bottom
-* User setting wether runway should be oriented or straight
-* User settings whether to show 45 entry magnetic course
 * New Tiles Synopsis => capture altitude and fuel level
+* New Tile Fuel Bug
 * Small indicator below runway is configurable
 
 # Done
+* Add site to google search
 ## 5/11/2024 511
 * Atis compact mode
 * patternMode is save with airport
@@ -43,7 +44,7 @@ I couldn't find anything I liked, so I scratched my own itch.
 * Updated demo page to help functional testing
 * Left traffic pattern is blue, right is red
 ## 5/05/2024-2
-* Added confogurable corners
+* Added configurable corners
 * Added colors to traffic pattern
 ## 5/05/2024
 * Bulk loading on page load

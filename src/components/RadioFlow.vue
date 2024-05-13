@@ -110,6 +110,7 @@ watch( props, async() => {
             <div>Format: COM1,124.7,TWR</div>
             <textarea v-model="textData" rows="8" cols="24">Blah</textarea>
             <div class="actionBar">
+                <Button icon="pi pi-times" @click="onHeaderClick" label="Cancel" severity="secondary"></Button>
                 <Button icon="pi pi-check" @click="onApply" label="Apply"></Button>
             </div>
         </div>
