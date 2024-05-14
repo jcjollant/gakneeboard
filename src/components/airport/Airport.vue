@@ -12,7 +12,8 @@ const emits = defineEmits(['replace','update'])
 
 
 var previousMode = '';
-var airportSettigns = null;
+// var airportSettigns = null;
+var state = {}
 
 const props = defineProps({
     params: { type: Object, default: null}, // expects {'code':'ICAO','rwy':'XX-YY'}
@@ -24,8 +25,9 @@ onMounted(() => {
     loadProps(props)
 })
 
-watch( props, async() => {
+watch( props, async(newP, oldP) => {
     // console.log("Airport props changed " + JSON.stringify(props));
+    mode.value = ''
     loadProps(props)
 })
 
@@ -51,6 +53,7 @@ const corner2 = ref({'id':2,'field':'field'})
 const corner3 = ref({'id':3,'field':'tpa'})
 const defaultCornerFields = ['weather','twr','field','tpa']
 const defaultRwyOrientation = 'vertical'
+const defaultPatternMode = 0
 const defaultTitle = 'Airport'
 const corners = [corner0,corner1,corner2,corner3]
 
@@ -90,13 +93,13 @@ function getEndings(rwys, freq) {
 // 1) Airport Code 2) Selected Runway 3) patternMode 4) Corners and 5) Runway orientation
 function loadProps(newProps) {
     // console.log('Airport loadProps ' + JSON.stringify(newProps))
-    const params = newProps.params;
-    if( !params) {
-        console.log( 'Cannot load params ' + JSON.stringify(params))
+    state = newProps.params;
+    if( !state) {
+        console.log( 'Airport cannot load params ' + JSON.stringify(state))
         return
     }
     // console.log('Airport loadProps ' + JSON.stringify(newProps))
-    const code = params.code
+    const code = state.code
     if( !code) {
         title.value = defaultTitle
         mode.value = 'edit'
@@ -104,17 +107,19 @@ function loadProps(newProps) {
     }
 
     // #2 Runway
-    if( 'rwy' in params && params.rwy) {
-        runwayName.value = params.rwy
+    if( 'rwy' in state && state.rwy) {
+        runwayName.value = state.rwy
     }
 
     // #3 Pattern mode
-    if('pattern' in params && params.pattern) {
-        patternMode.value = params.pattern
+    if('pattern' in state) {
+        patternMode.value = state.pattern
+    } else {
+        patternMode.value = defaultPatternMode
     }
 
     // #4 Restore corner fields
-    let cornerFields = params.corners
+    let cornerFields = state.corners
     if( !cornerFields) {
         // console.log('Airport loading default cornerFields')
         cornerFields = defaultCornerFields;
@@ -125,8 +130,8 @@ function loadProps(newProps) {
     // console.log('Airport loaded corners ' + JSON.stringify(corners))
 
     // #5 Rwy orientation
-    if('rwyOrientation' in params && params.rwyOrientation) {
-        rwyOrientation.value = params.rwyOrientation;
+    if('rwyOrientation' in state && state.rwyOrientation) {
+        rwyOrientation.value = state.rwyOrientation;
     } else {
         rwyOrientation.value = defaultRwyOrientation;
     }
@@ -137,12 +142,12 @@ function loadProps(newProps) {
         .then(airport => {
             if( airport && 'rwy' in airport) {
                 showAirport(airport)
-                if( 'rwy' in params) {
-                    if( params.rwy == 'all') {
+                if( 'rwy' in state) {
+                    if( state.rwy == 'all') {
                         mode.value = 'list'
                     } else {
                         mode.value = ''
-                        showRunway(params.rwy);
+                        showRunway(state.rwy);
                     }
                 } else { // default to first runway
                     mode.value = ''
@@ -186,8 +191,9 @@ function onHeaderClick() {
 
 function onPatternUpdate(newPatternMode) {
     // console.log('Airport onPatternUpdate ' + newPatternMode)
-    props.params.pattern = newPatternMode
-    patternMode.value = newPatternMode
+    state.pattern = newPatternMode
+    
+    // patternMode.value = newPatternMode
     updateWidget();
 }
 
@@ -247,13 +253,11 @@ function showRunway(name) {
 
 // invoked whenever we want to save the current state
 function updateWidget() {
-    const airportParam = props.params;
-
     if( corners) { 
-        airportParam['corners'] = corners.map( corner => corner.value.field)
+        state['corners'] = corners.map( corner => corner.value.field)
     }
     // console.log( 'Airport widget updated with ' + JSON.stringify(airportParam));
-    emits('update', airportParam);
+    emits('update', state);
 }
 
 </script>
@@ -292,9 +296,12 @@ function updateWidget() {
                 @update="onPatternUpdate" />
             <Corner class="corner top left" :airport="airportData" :data="corner0" :runway="selectedRunway" 
                 @update="onCornerUpdate" />
-            <Corner class="corner top right" :airport="airportData" :data="corner1"  :runway="selectedRunway" @update="onCornerUpdate"/>
-            <Corner class="corner bottom left" :airport="airportData" :data="corner2"  :runway="selectedRunway" :flip="true"  @update="onCornerUpdate"/>
-            <Corner class="corner bottom right" :airport="airportData" :data="corner3"  :runway="selectedRunway" :flip="true"  @update="onCornerUpdate"/>
+            <Corner class="corner top right" :airport="airportData" :data="corner1"  :runway="selectedRunway" 
+                @update="onCornerUpdate"/>
+            <Corner class="corner bottom left" :airport="airportData" :data="corner2"  :runway="selectedRunway" :flip="true"  
+                @update="onCornerUpdate"/>
+            <Corner class="corner bottom right" :airport="airportData" :data="corner3"  :runway="selectedRunway" :flip="true"  
+                @update="onCornerUpdate"/>
         </div>
     </div>    
 </template>

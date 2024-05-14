@@ -19,6 +19,12 @@ watch( props, async() => {
     loadProps(props)
 })
 
+function loadProps( props) {
+    // console.log( 'RunwayView loadProps ' + JSON.stringify(props))
+    magneticOrientation = (props.orientation && props.orientation == 'magnetic')
+    setNewPatternMode(props.pattern)
+}
+
 let patternMode = 0
 let showNorthMidField = false
 let showNorthTp = true
@@ -39,16 +45,11 @@ function getAngle( orientation) {
     return orientation % 360;
 }
 
-function loadProps( props) {
-    // console.log( 'RunwayView loadProps ' + JSON.stringify(props))
-    if( props.pattern != patternMode) setNewPatternMode(props.pattern)
-    magneticOrientation = props.orientation && props.orientation == 'magnetic'
-    show( props.runway)
-}
-
 function onClick() {
     // Save setting
-    emits('update', (patternMode + 1) % 5)
+    patternMode = (patternMode + 1) % 5
+    setNewPatternMode( patternMode)
+    emits('update', patternMode)
 }
 
 function setNewPatternMode( value) {
@@ -58,11 +59,13 @@ function setNewPatternMode( value) {
     showNorthTp = (patternMode == 0 || patternMode == 3 || patternMode == 4)
     showSouthMidField = (patternMode == 2)
     showSouthTp = (patternMode == 0 || patternMode == 1 || patternMode == 2)
+    show( props.runway)
 }
 
 function show(runway) {
-    // console.log('runway ' + JSON.stringify(runway))
-    if( runway == null || !('name' in runway)) return;
+    // console.log('RunwayView show ' + JSON.stringify(runway))
+    if( !( runway && ('name' in runway))) return;
+
     const [firstRwyName,secondRwyName] = runway.name.split('-');
     const r1o = runway[firstRwyName].orientation;
     var northRwy, southRwy;

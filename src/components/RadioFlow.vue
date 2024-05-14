@@ -96,13 +96,13 @@ watch( props, async() => {
         <Header :title="'Radio Flow'" :replace="mode=='edit'"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div class="radioList" v-if="mode==''">
-            <RadioBox class='right bottom' :radio="radio1"/>
-            <RadioBox class='bottom' :radio="radio2"/>
-            <RadioBox class='right bottom' :radio="radio3"/>
-            <RadioBox class='bottom' :radio="radio4"/>
-            <RadioBox class='right bottom' :radio="radio5"/>
-            <RadioBox class='bottom' :radio="radio6"/>
-            <RadioBox class='right' :radio="radio7"/>
+            <RadioBox class='br bb' :radio="radio1"/>
+            <RadioBox class='bb' :radio="radio2"/>
+            <RadioBox class='br bb' :radio="radio3"/>
+            <RadioBox class='bb' :radio="radio4"/>
+            <RadioBox class='br bb' :radio="radio5"/>
+            <RadioBox class='bb' :radio="radio6"/>
+            <RadioBox class='br' :radio="radio7"/>
             <RadioBox :radio="radio8"/>
         </div>
         <div v-else-if="mode=='edit'" class="edit">
@@ -110,7 +110,7 @@ watch( props, async() => {
             <div>Format: COM1,124.7,TWR</div>
             <textarea v-model="textData" rows="8" cols="24">Blah</textarea>
             <div class="actionBar">
-                <Button icon="pi pi-times" @click="onHeaderClick" label="Cancel" severity="secondary"></Button>
+                <Button @click="onHeaderClick" label="Cancel" link></Button>
                 <Button icon="pi pi-check" @click="onApply" label="Apply"></Button>
             </div>
         </div>
@@ -126,10 +126,10 @@ watch( props, async() => {
     height: 203px;
     /* border: 1px solid red; */
 }
-.right {
+.br {
     border-right: 1px dashed darkgrey;
 }
-.bottom {
+.bb {
     border-bottom: 1px dashed darkgrey;
 }
 

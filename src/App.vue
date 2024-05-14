@@ -31,16 +31,16 @@ async function loadPageData(data) {
   // if we don't know what to show, we load a copy of the demo page
   if( data == null) data = getDemoPage();
 
+  // assigns their values to all widgets
   allWidgets.forEach((widget, index) => {
       widget.value = data[index];
   });
   pageData = data;
-  savePageData();
+  // savePageData();
 }
 
 function onMenuLoadPage(name) {
   // console.log('onLoadPage ' + JSON.stringify(name))
-  let newPageData = null
   if( name=='page1' || name =='page2') {
     currentPage.value = name;
     let data = localStorage.getItem(name);
@@ -51,8 +51,10 @@ function onMenuLoadPage(name) {
     }
   } else if( name=='demo') {
     loadPageData( getDemoPage())
+    savePageData()
   } else if( name=='reset') {
     loadPageData( getBlankPage())
+    savePageData()
   } else {
     console.log('unknown page ' + name)
   }
@@ -69,9 +71,9 @@ function savePageData() {
   localStorage.setItem(currentPage.value, JSON.stringify( pageData))
 }
 
-function updateWidget(widget) {
-  // console.log('App : widget updated with ' + JSON.stringify(widget))
-  pageData[widget.id] = widget;
+function updateWidget(newWidgetData) {
+  // console.log('App : Tile updated with ' + JSON.stringify(newWidgetData))
+  pageData[newWidgetData.id] = newWidgetData;
   savePageData();
 }
 

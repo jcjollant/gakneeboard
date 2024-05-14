@@ -15,6 +15,7 @@ const props = defineProps({
     widget: { type: Object, default: null},
 })
 
+var state = {}
 const knownWidgets = ref([
     {'name':'Airport','tile':'airport'},
     {'name':'ATIS','tile':'atis'},
@@ -24,28 +25,39 @@ const knownWidgets = ref([
 ])
 const widget = ref({})
 
-function updateWidgetName(newName = '') {
-    widget.value = { 'id':widget.value.id,'name': newName.toLowerCase(), 'data':{}}
-    // console.log( "Widget emits update with " + JSON.stringify(widget.value))
-    emits('update',widget.value)
+onMounted(() => {
+    // console.log('Tile mounted')
+    loadProps(props)
+})
+
+watch( props, async (newP, oldP) => {
+    // console.log("Tile props changed " + JSON.stringify(props));
+    // console.log("old:" + JSON.stringify(oldP) + '\nnew:' + JSON.stringify(newP));
+    loadProps(props)
+})
+
+function loadProps( props) {
+    state = JSON.parse( JSON.stringify(props.widget));
+    // console.log( 'Tile loadProps ' + JSON.stringify(state  ))
+    widget.value = props.widget
 }
+
 
 // when a tile notifies us of an update, we notify the parent to save values
 function onUpdate(params = '') {
+    // console.log('Tile on update ' + JSON.stringify(params))
     // keep same id and name, just refresh the param
-    widget.value = { 'id':widget.value.id,'name': widget.value.name, 'data':params}
-    emits('update',widget.value)
+    state = { 'id':state.id,'name': state.name, 'data':params}
+    emits('update',state)
 }
 
-onMounted(() => {
-    // console.log('Widget mounted')
-    widget.value = props.widget
-})
-
-watch( props, async() => {
-    // console.log("Widget props changed " + JSON.stringify(props));
-    widget.value = props.widget
-})
+function replaceWidget(newName = '') {
+    // widget.value = { 'id':widget.value.id,'name': newName.toLowerCase(), 'data':{}}
+    state = { 'id':widget.value.id,'name': newName.toLowerCase(), 'data':{}}
+    widget.value = state
+    // console.log( "Widget emits update with " + JSON.stringify(widget.value))
+    emits('update',state)
+}
 
 
 </script>
@@ -56,19 +68,19 @@ watch( props, async() => {
         <!-- <div class="widgetTitle">Tile Selection</div> -->
         <div class="content list">
             <Button v-for="widget in knownWidgets" :label="widget.name"
-                @click="updateWidgetName(widget.tile)"></Button>
+                @click="replaceWidget(widget.tile)"></Button>
         </div>
     </div>
     <Airport v-else-if="widget.name=='airport'" :params="widget.data" 
-        @replace="updateWidgetName" @update="onUpdate" />
+        @replace="replaceWidget" @update="onUpdate" />
     <Atis v-else-if="widget.name=='atis'" :params="widget.data"
-        @replace="updateWidgetName" @update="onUpdate"/>
+        @replace="replaceWidget" @update="onUpdate"/>
     <Clearance v-else-if="widget.name=='clearance'" 
-        @replace="updateWidgetName"/>
+        @replace="replaceWidget"/>
     <Notes v-else-if="widget.name=='notes'" 
-        @replace="updateWidgetName" />
+        @replace="replaceWidget" />
     <RadioFlow v-else-if="widget.name=='radios'" :params="widget.data" 
-        @replace="updateWidgetName" @update="onUpdate" />
+        @replace="replaceWidget" @update="onUpdate" />
     <!-- <List v-else-if="widget.name=='list'" @replace="updateWidgetName"/> -->
 </template>
 
