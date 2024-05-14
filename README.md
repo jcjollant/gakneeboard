@@ -9,12 +9,13 @@ I couldn't find anything I liked, so I scratched my own itch.
 * Show list of frequencies for selection in corners list
 * Add SEO tags
 * Add separators in Corner data selectors
-* User setting to choose what to display as runway label
 * New Tiles Synopsis => capture altitude and fuel level
 * New Tile Fuel Bug
 * Small indicator below runway is configurable
 
 # Done
+* Fixed sticky patter mode between pages
+* improved replace button layout
 ## 5/13/2024 513
 * You can deselect all options in runway orientation
 * ALL runways mode spills over tile height

@@ -6,12 +6,11 @@
 * Show console, reload => Nothing should show
   * All tiles are loading
 ## Bulk Page Edit
-  * reset tiles
-    * Should get a confirmation => No then yes
-    * All tiles switch to selector
-  * Load demo tiles.
-    * Should get a confirmation => No then Yes
-    * All tiles are loading
+  * reset tiles => Confirmation => All tiles switch to selector
+  * Load demo tiles => Confirmation => All tiles are loading
+    * Renton, Boeing, Skagit, Arlington
+    * Roche Harbor, Death Valley, Harvey (Mag), Auburn 34 midfield
+    * ATIS, Clearance, Notes, Radios
 ## Airport Tile
   * Data Fields @ Renton Muni
     * Name = Renton Muni (centered), ATIS = 126.95, TWR = 124.700, Label = TWR/CTAF
@@ -26,12 +25,15 @@
     * 14R-32L frequency=120.6 label=TWR 14R-32L 
   * Magnetic orientation
     * Enable then disable magnetic orientation
-  * Pending Airport in Edit mode
-    * Skagit : Edit mode, Type BFI without selecting => Airport name should show below input field
-    * Toggle normal and back to edit => Should show Skagit with ryw 04-22 and 11-29
-    * Pick 04-22 should work
+  * Edit mode
+    * Pending Airport
+      * Skagit : Edit mode, Type BFI without selecting => Airport name should show below input field
+      * Toggle normal and back to edit => Should show Skagit with ryw 04-22 and 11-29
+      * Pick 04-22 should work
+    * Edit mode reverts on page change
+      * Edit airport, change page with edit active 
+      * come back => Edit mode should be gone
   * Raleigh Exec KTTA name should be truncated
-  * Test Edit mode toggle
   * Test replace
 ## ATIS Tile
   * Check layout showing 7 fields : Information, Wind, Rwy, Visiblity, Tempreature, Atimeter and Sky
@@ -67,5 +69,8 @@
    * Remove last 4 freq from Radio Flows
  * switch to page 2, reload
  * (Page1) Check content matches list above
-## Warning
- * Check Layout
+
+## Throurough test
+  * Reset + No should not reset tiles
+  * Demo + No should not load demo tiles
+  * Check warning layout
