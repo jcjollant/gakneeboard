@@ -66,6 +66,7 @@ watch( props, async() => {
         margin: 0;
         background-color: darkred;
         color: white;
+        border: 0
     }
     .left {
         text-align: left;
