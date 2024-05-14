@@ -37,8 +37,8 @@ watch( props, async() => {
             <div class="targetOne" :class="{targetActive: isOne}">1</div>
             <div class="targetTwo" :class="{targetActive: isTwo}">2</div>
         </div>
-        <div class="freq">{{ frequency }}</div>
-        <div class="name">{{ name }}</div>
+        <div class="freq" v-show="frequency!='-.-'">{{ frequency }}</div>
+        <div class="name" v-show="name!='-'">{{ name }}</div>
     </div>
 </template>
 

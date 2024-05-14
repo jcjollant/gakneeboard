@@ -34,9 +34,8 @@ const airportName = ref('')
 const cancellable = ref(false)
 const applyable = ref(false)
 const validAirport = ref(false)
-const rwyOrientationModel = ref('Vertical')
+const rwyOrientationModel = ref('vertical')
 const selectedRwy = ref(null)
-// const rwyOrientationOptions = ref(['Vertical','Magnetic'])
 
 function showAirport() {
     rwyList.value = airport.rwy;
@@ -136,8 +135,9 @@ function selectRunway(rwy) {
                 <!-- <SelectButton v-model="rwyOrientationModel" :options="rwyOrientationOptions" aria-labelledby="basic" /> -->
             </div>
             <div class="actionBar">
-                <Button v-if="cancellable" icon="pi pi-times" label="Cancel" @click="emits('close')" severity="secondary"></Button>
-                <Button icon="pi pi-check" label="Apply" @click="onApply" :disabled="!applyable" ></Button>
+                <Button v-if="cancellable" label="Cancel" link @click="emits('close')"></Button>
+                <Button icon="pi pi-check" label="Apply" 
+                    @click="onApply" :disabled="!applyable" ></Button>
             </div>
         </div>
     </div>
