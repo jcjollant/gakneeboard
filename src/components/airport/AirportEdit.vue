@@ -29,6 +29,7 @@ watch( props, async() => {
 let airport = null
 const loading = ref(false)
 const rwyList = ref([])
+const airportCode = ref('')
 const airportName = ref('')
 const cancellable = ref(false)
 const applyable = ref(false)
