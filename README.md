@@ -3,8 +3,6 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # BUGS
-* You can deselect all options in runway orientation
-* ALL runways mode spills over tile height
 * Multitower airport stuggle : CYVR is not showing a frequency
 
 # TODO
@@ -17,6 +15,10 @@ I couldn't find anything I liked, so I scratched my own itch.
 * Small indicator below runway is configurable
 
 # Done
+## 5/13/2024 513
+* You can deselect all options in runway orientation
+* ALL runways mode spills over tile height
+## 5/12/2024 512
 * reduce size of the loading spiner
 * Show airport code in the edit window
 * Test code ??? to fake a loading airport

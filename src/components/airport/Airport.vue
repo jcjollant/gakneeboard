@@ -354,9 +354,13 @@ function updateWidget() {
         /* height: 90px; */
         text-align: center;
         vertical-align: middle;
+        z-index: -1;
     }
     .runwayList {
         width:240px;
+        height:10.5rem;
+        overflow: auto;
+        overflow-y: scroll;
     }
     .runwayListRow {
         display: grid;

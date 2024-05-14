@@ -29,14 +29,13 @@ watch( props, async() => {
 let airport = null
 const loading = ref(false)
 const rwyList = ref([])
-const airportCode = ref('')
 const airportName = ref('')
 const cancellable = ref(false)
 const applyable = ref(false)
 const validAirport = ref(false)
 const rwyOrientationModel = ref('Vertical')
 const selectedRwy = ref(null)
-const rwyOrientationOptions = ref(['Vertical','Magnetic'])
+// const rwyOrientationOptions = ref(['Vertical','Magnetic'])
 
 function showAirport() {
     rwyList.value = airport.rwy;
@@ -63,7 +62,8 @@ function loadProps(props) {
             selectedRwy.value = airport.rwy[0].name
         }
 
-        rwyOrientationModel.value = (props.rwyOrientation && props.rwyOrientation == 'magnetic') ? 'Magnetic' : 'Vertical'
+        rwyOrientationModel.value = (props.rwyOrientation ? props.rwyOrientation : 'vertical')
+        // console.log( 'AirportEdit loadProps ' + props.rwyOrientation)
     }
 }
 
@@ -128,7 +128,11 @@ function selectRunway(rwy) {
             </div>
             <div class="item" v-if="validAirport">Orientation</div>
             <div class="rwyOrientation" v-if="validAirport">
-                <SelectButton v-model="rwyOrientationModel" :options="rwyOrientationOptions" aria-labelledby="basic" />
+                <Button label="Vertical" 
+                    @click="rwyOrientationModel='vertical'" :severity="rwyOrientationModel == 'vertical' ? 'primary' : 'secondary'"></Button>
+                <Button label="Magnetic" 
+                    @click="rwyOrientationModel='magnetic'" :severity="rwyOrientationModel == 'magnetic' ? 'primary' : 'secondary'"></Button>
+                <!-- <SelectButton v-model="rwyOrientationModel" :options="rwyOrientationOptions" aria-labelledby="basic" /> -->
             </div>
             <div class="actionBar">
                 <Button v-if="cancellable" icon="pi pi-times" label="Cancel" @click="emits('close')" severity="secondary"></Button>
@@ -197,8 +201,8 @@ function selectRunway(rwy) {
     }
     .rwyOrientation {
         display: flex;
-        justify-content: flex-start;
-        /* gap: 0.5rem; */
+        justify-content: center;
+        gap: 0.5rem;
     }
     .rwyOrientationChoice {
         font-size: 0.8rem;
