@@ -146,11 +146,11 @@ function selectRunway(rwy) {
 <style scoped>
     .settings {
         display: grid;
-        grid-template-columns: 3rem auto;
-        font-size: 14px;
-        gap: 0.5rem 0.5rem;
-        padding: 0.5rem;
-        line-height: 1.5rem;
+        grid-template-columns: auto auto;
+        /* font-size: 14px; */
+        gap: 5px;
+        padding: 5px;
+        /* line-height: 1.5rem; */
     }
     #airport-name {
         font-size: 0.6rem;
@@ -202,8 +202,12 @@ function selectRunway(rwy) {
     }
     .rwyOrientation {
         display: flex;
-        justify-content: center;
-        gap: 0.5rem;
+        justify-content: flex-start;
+        gap: 5px;
+    }
+
+    .rwyOrientation .p-button {
+        padding: 0.5rem
     }
     .rwyOrientationChoice {
         font-size: 0.8rem;
