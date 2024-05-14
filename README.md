@@ -4,6 +4,7 @@ I couldn't find anything I liked, so I scratched my own itch.
 
 # BUGS
 * Multitower airport stuggle : CYVR is not showing a frequency
+  replace airport edit .settings grid-template-columns: 50px 170px;
 
 # TODO
 * Show list of frequencies for selection in corners list
