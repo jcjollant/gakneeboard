@@ -114,8 +114,9 @@ watch( props, async() => {
             <RadioBox :radio="radio8"/>
         </div>
         <div v-else-if="mode=='edit'" class="edit">
-            <div>Enter up to 8 frequencies</div>
-            <div class="list">COM1,FREQ,NAME</div>
+            <!-- <div>Frequencies list</div> -->
+            <div class="list">Format: POSn,FREQ,NAME</div>
+            <div class="list">Ex: NAV2,116.8,SEA VOR</div>
             <!-- <div>Format: COM1,124.7,TWR</div> -->
             <!-- <textarea v-model="textData" rows="8" cols="24">Blah</textarea> -->
             <!-- <div class="helpers">
@@ -124,7 +125,8 @@ watch( props, async() => {
                 <Button label="NAV1" class="shortcut" @click="addFrequency('NAV1')"></Button>
                 <Button label="NAV2" class="shortcut" @click="addFrequency('NAV2')"></Button>
             </div> -->
-            <Textarea class='list' rows="8" cols="24" autoResize v-model="textData" placeholder="Enter Freq. or click above"></Textarea>
+            <Textarea class='list' rows="8" cols="24" autoResize v-model="textData" 
+                placeholder="Enter up to 8 freq."></Textarea>
 
             <div class="actionBar">
                 <Button @click="onHeaderClick" label="Cancel" link></Button>
