@@ -34,7 +34,7 @@ const airportName = ref('')
 const cancellable = ref(false)
 const applyable = ref(false)
 const validAirport = ref(false)
-const rwyOrientationModel = ref('vertical')
+const rwyOrientation = ref('vertical')
 const selectedRwy = ref(null)
 
 function showAirport() {
@@ -62,7 +62,7 @@ function loadProps(props) {
             selectedRwy.value = airport.rwy[0].name
         }
 
-        rwyOrientationModel.value = (props.rwyOrientation ? props.rwyOrientation : 'vertical')
+        rwyOrientation.value = (props.rwyOrientation ? props.rwyOrientation : 'vertical')
         // console.log( 'AirportEdit loadProps ' + props.rwyOrientation)
     }
 }
@@ -70,7 +70,7 @@ function loadProps(props) {
 // settings are applied
 function onApply() {
     // update settings with orientation
-    emits('selection', airport, selectedRwy.value, rwyOrientationModel.value.toLowerCase())
+    emits('selection', airport, selectedRwy.value, rwyOrientation.value.toLowerCase())
 }
 
 // gets invoked as airport code is typed into the input field
@@ -129,11 +129,19 @@ function selectRunway(rwy) {
             <div class="item" v-if="validAirport">Orientation</div>
             <div class="rwyOrientation" v-if="validAirport">
                 <Button label="Vertical" 
-                    @click="rwyOrientationModel='vertical'" :severity="rwyOrientationModel == 'vertical' ? 'primary' : 'secondary'"></Button>
+                    @click="rwyOrientation='vertical'" :severity="rwyOrientation == 'vertical' ? 'primary' : 'secondary'"></Button>
                 <Button label="Magnetic" 
-                    @click="rwyOrientationModel='magnetic'" :severity="rwyOrientationModel == 'magnetic' ? 'primary' : 'secondary'"></Button>
-                <!-- <SelectButton v-model="rwyOrientationModel" :options="rwyOrientationOptions" aria-labelledby="basic" /> -->
+                    @click="rwyOrientation='magnetic'" :severity="rwyOrientation == 'magnetic' ? 'primary' : 'secondary'"></Button>
             </div>
+            <!-- <div class="item">Label</div>
+            <div class="rwyOrientation" v-if="validAirport">
+                <Button label="LxW" 
+                    @click="rwyOrientation='vertical'" :severity="rwyOrientation == 'vertical' ? 'primary' : 'secondary'"></Button>
+                <Button label="GND" 
+                    @click="rwyOrientation='magnetic'" :severity="rwyOrientation == 'magnetic' ? 'primary' : 'secondary'"></Button>
+                <Button label="Blank" 
+                    @click="rwyOrientation='magnetic'" :severity="rwyOrientation == 'magnetic' ? 'primary' : 'secondary'"></Button>
+            </div> -->
             <div class="actionBar">
                 <Button v-if="cancellable" label="Cancel" link @click="emits('close')"></Button>
                 <Button icon="pi pi-check" label="Apply" 
@@ -146,7 +154,7 @@ function selectRunway(rwy) {
 <style scoped>
     .settings {
         display: grid;
-        grid-template-columns: auto auto;
+        grid-template-columns: 55px 170px;
         /* font-size: 14px; */
         gap: 5px;
         padding: 5px;
