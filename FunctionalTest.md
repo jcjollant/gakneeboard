@@ -8,9 +8,9 @@
 ## Bulk Page Edit
   * reset tiles => Confirmation => All tiles switch to selector
   * Load demo tiles => Confirmation => All tiles are loading
-    * Renton, Boeing, Skagit, Arlington
+    * Renton, Boeing 14L, Skagit 11, Arlington ALL
     * Roche Harbor, Death Valley, Harvey (Mag), Auburn 34 midfield
-    * ATIS, Clearance, Notes, Radios
+    * ATIS Full, Clearance, Notes, Radios
 ## Airport Tile
   * Data Fields @ Renton Muni
     * Name = Renton Muni (centered), ATIS = 126.95, TWR = 124.700, Label = TWR/CTAF
@@ -19,7 +19,7 @@
     * 16 LP, blue, symetric pattern stroke 
     * 34 RP, red, asymetric pattern stroke
     * patternmmode cycle => test 5 modes
-    * test headings 16 enrty=292 midfield=64 34 entry=202 midfield=67
+    * test headings 16 enrty=292 midfield=67 34 entry=202 midfield=67
   * Boeing field cycle runway 
     * 14L-32R frequency=118.3 label=TWR 14L-32R 
     * 14R-32L frequency=120.6 label=TWR 14R-32L 
