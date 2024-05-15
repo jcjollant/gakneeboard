@@ -4,20 +4,21 @@ I couldn't find anything I liked, so I scratched my own itch.
 
 # BUGS
 * Multitower airport stuggle : CYVR is not showing a frequency
-  replace airport edit .settings grid-template-columns: 50px 170px;
 
 # TODO
 * Show list of frequencies for selection in corners list
-* Add SEO tags
 * Add separators in Corner data selectors
 * New Tiles Synopsis => capture altitude and fuel level
 * New Tile Fuel Bug
 * Small indicator below runway is configurable
 
 # Done
-* Fixed sticky patter mode between pages
-* improved replace button layout
+## 5/14/2024 514
+* Added link to Blog
+* Firefox display bug replace airport edit .settings grid-template-columns: 50px 170px;
 ## 5/13/2024 513
+* Fixed sticky pattern mode between pages
+* improved replace button layout
 * You can deselect all options in runway orientation
 * ALL runways mode spills over tile height
 ## 5/12/2024 512

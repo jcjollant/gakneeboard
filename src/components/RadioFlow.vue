@@ -3,6 +3,8 @@ import { onMounted, ref, watch } from 'vue'
 import Header from './Header.vue';
 import RadioBox from './RadioBox.vue';
 import Button from 'primevue/button'
+import FloatLabel from 'primevue/floatlabel';
+import Textarea from 'primevue/textarea';
 
 const emits = defineEmits(['replace','update'])
 
@@ -44,6 +46,12 @@ function loadData(data) {
     } else {
         radio1.value = noRadio
     }
+}
+
+function addFrequency(name) {
+    const numLines = textData.value.split(/\r\n|\r|\n/).length
+    if(numLines >= 8) return;
+    textData.value += name + ',-.-,NAME\n'
 }
 
 // load data from text value
@@ -106,9 +114,18 @@ watch( props, async() => {
             <RadioBox :radio="radio8"/>
         </div>
         <div v-else-if="mode=='edit'" class="edit">
-            <div>One line per Freq, 8 max</div>
-            <div>Format: COM1,124.7,TWR</div>
-            <textarea v-model="textData" rows="8" cols="24">Blah</textarea>
+            <div>Enter up to 8 frequencies</div>
+            <div class="list">COM1,FREQ,NAME</div>
+            <!-- <div>Format: COM1,124.7,TWR</div> -->
+            <!-- <textarea v-model="textData" rows="8" cols="24">Blah</textarea> -->
+            <!-- <div class="helpers">
+                <Button label="COM1" class="shortcut" @click="addFrequency('COM1')"></Button>
+                <Button label="COM2" class="shortcut" @click="addFrequency('COM2')"></Button>
+                <Button label="NAV1" class="shortcut" @click="addFrequency('NAV1')"></Button>
+                <Button label="NAV2" class="shortcut" @click="addFrequency('NAV2')"></Button>
+            </div> -->
+            <Textarea class='list' rows="8" cols="24" autoResize v-model="textData" placeholder="Enter Freq. or click above"></Textarea>
+
             <div class="actionBar">
                 <Button @click="onHeaderClick" label="Cancel" link></Button>
                 <Button icon="pi pi-check" @click="onApply" label="Apply"></Button>
@@ -132,14 +149,33 @@ watch( props, async() => {
 .bb {
     border-bottom: 1px dashed darkgrey;
 }
+.label {
+    font-size: 0.8rem;
+    text-align: center;
+}
+.list {
 
-textarea {
-    resize: none;
+    font-size: 0.8rem;
+    padding: 0.2rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 600;
 }
 
 .edit {
     position: relative;
-    height:205px;
-    font-size: 13px;
+    height:200px;
+    font-size: 0.8rem;
+}
+.helpers {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin: 5px 0 2px 0;
+}
+.shortcut {
+    padding: 2px;
+    font-size: 0.8rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 400;
 }
 </style>
