@@ -45,4 +45,14 @@ async function send() {
   display: flex;
   justify-content: end;
 }
+
+.version {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  font-size: 8px;
+  margin:auto;
+}
+
+
 </style>

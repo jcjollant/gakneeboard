@@ -72,6 +72,9 @@ function onReset() {
   getConfirmation('Reset All Tiles', 'reset')
 }
 
+function openBlog() {
+  window.open('https://ga-kneeboard.blogspot.com/', '_blank');
+}
 
 // Toggle menu visibility which will update component layout
 function toggleMenu() {
@@ -98,22 +101,22 @@ watch( props, async() => {
     </div>
     <div v-show="showMenu" class="expandedMenu">
       <div class="buttonsList">
-        <Button label="1" icon="pi pi-clipboard" class="menuButton"
+        <Button label="1" icon="pi pi-clipboard"
           @click="onLoadPage('page1')" :class="{active: activePage == 'page1'}"></Button>
-        <Button label="2" icon="pi pi-clipboard" class="menuButton"
+        <Button label="2" icon="pi pi-clipboard"
           @click="onLoadPage('page2')" :class="{active: activePage == 'page2'}"></Button>
           <div class="separator"></div>
-        <Button label="Demo" icon="pi pi-clipboard" class="menuButton"
+        <Button label="Demo" icon="pi pi-clipboard"
           @click="onDemo" :class="{active: activePage == 'demo'}"></Button>
-        <Button label="Reset" icon="pi pi-trash"  class="menuButton"
+        <Button label="Reset" icon="pi pi-trash"
           @click="onReset"></Button>
         <div class="separator"></div>
-        <Button label="Feedback" icon="pi pi-megaphone" class="menuButton"
+        <Button label="Feedback" icon="pi pi-megaphone" 
           @click="showFeedback=true" ></Button>
-        <Button label="Warnings" icon="pi pi-exclamation-triangle" class="menuButton"
+        <Button label="Warnings" icon="pi pi-exclamation-triangle" severity="warning"
           @click="showWarning=true"></Button>
-        <!-- <div class="separator"></div>
-        <button @click="getAirport('krnt')">Fetch</button> -->
+        <div class="separator"></div>
+        <Button label="Blog" @click="openBlog" link></button>
       </div>
     </div>
   </div>
@@ -125,9 +128,6 @@ watch( props, async() => {
     flex-flow: row;
     gap: 40px;
     padding-right: 10px;
-}
-.menuButton {
-  color:white;
 }
 .grow {
   background-color: lightgrey;
@@ -153,14 +153,6 @@ watch( props, async() => {
   width: 100%;
   padding: 5px;
 }
-.version {
-  position: absolute;
-  right: 5px;
-  bottom: 5px;
-  font-size: 8px;
-  margin:auto;
-}
-
 .separator {
   border-left: 1px solid darkgrey;
   border-right: 1px solid darkgrey;
