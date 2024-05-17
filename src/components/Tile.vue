@@ -7,6 +7,7 @@ import Atis from './Atis.vue'
 import Notes from './Notes.vue';
 import Clearance from './Clearance.vue';
 import RadioFlow from './RadioFlow.vue';
+import FuelBug from './fuel/FuelBug.vue';
 import Button from 'primevue/button'
 
 const emits = defineEmits(['update'])
@@ -20,6 +21,7 @@ const knownWidgets = ref([
     {'name':'Airport','tile':'airport'},
     {'name':'ATIS','tile':'atis'},
     {'name':'Clearance','tile':'clearance'},
+    {'name':'Fuel','tile':'fuel'},
     {'name':'Notes','tile':'notes'},
     {'name':'Radios','tile':'radios'},
 ])
@@ -77,6 +79,7 @@ function replaceWidget(newName = '') {
         @replace="replaceWidget" @update="onUpdate"/>
     <Clearance v-else-if="widget.name=='clearance'" 
         @replace="replaceWidget"/>
+    <FuelBug v-else-if="widget.name=='fuel'" @replace="replaceWidget"/>  
     <Notes v-else-if="widget.name=='notes'" 
         @replace="replaceWidget" />
     <RadioFlow v-else-if="widget.name=='radios'" :params="widget.data" 

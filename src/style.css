@@ -80,3 +80,16 @@ body {
 .mb-5 {
   margin-bottom: 2rem;
 }
+
+.bb {
+  border-bottom: 1px dashed darkgrey;
+}
+.bl {
+  border-left: 1px dashed darkgrey;
+}
+.br {
+  border-right: 1px dashed darkgrey;
+}
+.bt {
+  border-top: 1px dashed darkgrey;
+}
