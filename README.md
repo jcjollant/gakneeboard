@@ -14,6 +14,8 @@ I couldn't find anything I liked, so I scratched my own itch.
 * Small indicator below runway is configurable
 
 # Done
+## 5/17/2024
+* Selecting first runway by default
 ## 5/16/2024 516
 * Initial Revision of Fuel Bug
 

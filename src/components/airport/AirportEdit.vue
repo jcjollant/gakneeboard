@@ -87,9 +87,10 @@ function onCodeUpdate() {
                 // console.log("onCodeUpdate airport " + JSON.stringify(airport))
                 airport = newAirport
                 showAirport()
-                selectedRwy.value = null
+                // select the first runway by default
+                selectedRwy.value = airport.rwy[0].name
                 // we cannot apply until we pick a runway
-                applyable.value = false
+                applyable.value = true
             } else { // airport is unknown
                 rwyList.value = [];
                 validAirport.value = false

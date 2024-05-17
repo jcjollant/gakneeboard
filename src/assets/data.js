@@ -1,4 +1,4 @@
-export const version = '516'
+export const version = '517'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'http://localhost:3000/'
 
