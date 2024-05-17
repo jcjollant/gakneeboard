@@ -53,7 +53,7 @@
 ## Radio Flow
   * Load Demo Page
     * Should show 8 frequencies
-  * Replace first frequency and last name
+  * Replace first frequency to 116.0 and last name to ZERO
     * Both should be updated
   * Erase all frequencies and apply => Should show all nordo
   * Test replace
