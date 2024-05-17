@@ -6,6 +6,7 @@ I couldn't find anything I liked, so I scratched my own itch.
 * Multitower airport stuggle : CYVR is not showing a frequency
 
 # TODO
+* Improve Radio Flow Selection with airport code and all frequancies
 * Show list of frequencies for selection in corners list
 * Add separators in Corner data selectors
 * New Tiles Synopsis => capture altitude and fuel level
@@ -13,6 +14,9 @@ I couldn't find anything I liked, so I scratched my own itch.
 * Small indicator below runway is configurable
 
 # Done
+## 5/16/2024 516
+* Initial Revision of Fuel Bug
+
 ## 5/14/2024 514
 * Added link to Blog
 * Firefox display bug replace airport edit .settings grid-template-columns: 50px 170px;

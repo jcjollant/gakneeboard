@@ -1,8 +1,6 @@
-export const version = '514'
+export const version = '516'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'http://localhost:3000/'
-
-
 
 import axios from 'axios'
 

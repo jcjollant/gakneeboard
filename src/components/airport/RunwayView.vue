@@ -33,7 +33,7 @@ let showSouthTp = true
 let magneticOrientation = false;
 
 const myCanvas = ref()
-const dimensions = ref('')
+const label = ref('')
 const rightTpColor = '#FF9999'
 const leftTpColor = '#9999FF'
 const leftTpPattern = [10,5]
@@ -84,9 +84,9 @@ function show(runway) {
 
     if( 'length' in runway) {
         if( 'width' in runway) {
-            dimensions.value = runway['length'] + 'x' + runway['width'];
+            label.value = runway['length'] + 'x' + runway['width'];
         } else {
-            dimensions.value = runway['length'] + 'x' + runway['width'];
+            label.value = runway['length'] + 'x' + runway['width'];
         }
     } else {
         dimension.value = '';
@@ -254,7 +254,7 @@ function show(runway) {
 <template>
     <div class="container clickable" @click="onClick">
         <canvas ref="myCanvas"></canvas>
-        <div class="dimensions">{{ dimensions }}</div>
+        <div class="label">{{ label }}</div>
     </div>
 </template>
 
@@ -262,7 +262,7 @@ function show(runway) {
 .container {
     position: relative;
 }
-.dimensions {
+.label {
     font-size: 10px;
     position: absolute;
     bottom: 6px;

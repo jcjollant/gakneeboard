@@ -40,7 +40,7 @@ function onMenuClick() {
                 <div class="watermrk">T</div>
             </div>
         </div>
-        <NoSettings v-else></NoSettings>
+        <NoSettings v-else />
     </div>
 
 </template>

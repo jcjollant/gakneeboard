@@ -52,14 +52,14 @@ watch( props, async() => {
         border-bottom: 1px dashed darkgrey;
         position: relative;
         overflow: hidden;
-        height: 36px;
-        line-height: 26px;
+        height: 39px;
+        line-height: 30px;
     }
     .replace {
         position:absolute;
         font-size: 15px;
         right: 3px;
-        top:3px;
+        top:5px;
         width: 28px;
         height: 28px;
         padding: 5px;

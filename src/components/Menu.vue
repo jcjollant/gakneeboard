@@ -74,7 +74,9 @@ function onReset() {
 
 function openBlog() {
   window.open('https://ga-kneeboard.blogspot.com/', '_blank');
+  // window.open('https://blogjollant.wordpress.com/', '_blank');  
 }
+
 
 // Toggle menu visibility which will update component layout
 function toggleMenu() {

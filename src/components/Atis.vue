@@ -170,16 +170,4 @@ watch( props, async() => {
     grid-column:3;
 }
 
-.bb {
-    border-bottom: 1px dashed darkgrey;
-}
-.bl {
-    border-left: 1px dashed darkgrey;
-}
-.br {
-    border-right: 1px dashed darkgrey;
-}
-.bt {
-    border-top: 1px dashed darkgrey;
-}
 </style>
