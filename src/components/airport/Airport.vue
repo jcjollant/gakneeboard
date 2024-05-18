@@ -37,7 +37,7 @@ const weatherFreq = ref()
 const weatherType = ref()
 const elevation = ref()
 const tpa = ref()
-const airportCode = ref() // used during edit mode
+const airportCode = ref('') // used during edit mode
 const rwyList = ref([]) // used during runway selection
 const allEndings = ref([]) // used when displaying all runways
 
@@ -269,7 +269,7 @@ function updateWidget() {
         <AirportEdit v-if="mode=='edit'" :airport="airportData" :rwyName="runwayName" :rwyOrientation="rwyOrientation"
             @close="onHeaderClick" @selection="onSettingsUpdate" />
         <div class="content" v-else-if="mode=='list'">
-            <div class="airportCode">{{airportCode}}</div>
+            <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
             <div class="runwayList">
                 <div class="runwayListRow">
                     <div class="runwayListHeader">Rwy</div>
@@ -291,7 +291,7 @@ function updateWidget() {
             </div>
         </div>
         <div class="content" v-else="">
-            <div class="airportCode">{{airportCode}}</div>
+            <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
             <Runway :runway="selectedRunway" :pattern="patternMode" :orientation="rwyOrientation"
                 @update="onPatternUpdate" />
             <Corner class="corner top left" :airport="airportData" :data="corner0" :runway="selectedRunway" 
@@ -351,7 +351,7 @@ function updateWidget() {
     }
     .airportCode {
         font-weight: 900;
-        font-size: 68px;
+        font-size: 4rem;
         line-height: 200px;
         opacity: 0.10;
         position: absolute;
@@ -362,6 +362,9 @@ function updateWidget() {
         text-align: center;
         vertical-align: middle;
         z-index: -1;
+    }
+    .shortAirportCode {
+        font-size: 6rem;
     }
     .runwayList {
         width:240px;
