@@ -56,6 +56,7 @@ const defaultRwyOrientation = 'vertical'
 const defaultPatternMode = 0
 const defaultTitle = 'Airport'
 const corners = [corner0,corner1,corner2,corner3]
+const unknownRunway = ref(false)
 
 function getEnding(rwy, ending, freq) {
     // console.log('getEnding ' + JSON.stringify(rwy) + ' / ' + ending)
@@ -248,6 +249,10 @@ function showRunway(name) {
     if( rwyData) {
         selectedRunway.value = rwyData
         runwayName.value = name
+        unknownRunway.value = false
+    } else {
+        // console.log( 'Unknown runway ' + name) 
+        unknownRunway.value = true
     }
 }
 
@@ -292,7 +297,8 @@ function updateWidget() {
         </div>
         <div class="content" v-else="">
             <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
-            <Runway :runway="selectedRunway" :pattern="patternMode" :orientation="rwyOrientation"
+            <div v-if="unknownRunway" class="unknownRwy">Unknown Runway</div>
+            <Runway v-else :runway="selectedRunway" :pattern="patternMode" :orientation="rwyOrientation"
                 @update="onPatternUpdate" />
             <Corner class="corner top left" :airport="airportData" :data="corner0" :runway="selectedRunway" 
                 @update="onCornerUpdate" />
@@ -382,6 +388,9 @@ function updateWidget() {
         /* text-align: center; */
     }
 
+    .unknownRwy{
+        line-height: 13rem;
+    }
     .footer {
         position: absolute;
         bottom: 0;
