@@ -10,15 +10,17 @@ I couldn't find anything I liked, so I scratched my own itch.
 * Show list of frequencies for selection in corners list
 * Add separators in Corner data selectors
 * New Tiles Synopsis => capture altitude and fuel level
-* New Tile Fuel Bug
 * Small indicator below runway is configurable
 
 # Done
+## 5/18/2024
+* Big watermark on 3 letter airports
+* Print mode flips the back page
+* Fuel Bug is now configurable
 ## 5/17/2024
 * Selecting first runway by default
 ## 5/16/2024 516
 * Initial Revision of Fuel Bug
-
 ## 5/14/2024 514
 * Added link to Blog
 * Firefox display bug replace airport edit .settings grid-template-columns: 50px 170px;

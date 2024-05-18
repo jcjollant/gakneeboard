@@ -1,4 +1,4 @@
-export const version = '517'
+export const version = '518'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'http://localhost:3000/'
 
@@ -21,10 +21,11 @@ const demoRadioData = [
   {'id':3,'name':'airport','data':{'code':'O26','rwy':'13-31'}},
   {'id':4,'name':'atis','data':{}},
   {'id':5,'name':'clearance','data':{}},
-  {'id':6,'name':'airport','data':{'code':'kbvs','rwy':'11-29'}},
+  {'id':6,'name':'airport','data':{'code':'ktta','rwy':'03-21','pattern':2}},
   {'id':7,'name':'airport','data':{'code':'kawo','rwy':'all'}},
   {'id':8,'name':'airport','data':{'code':'s43','rwy':'15R-33L','rwyOrientation':'magnetic'}},
-  {'id':9,'name':'airport','data':{'code':'s50','rwy':'16-34','pattern':4}},
+  // {'id':9,'name':'airport','data':{'code':'s50','rwy':'16-34','pattern':4}},
+  {'id':9,'name':'fuel'},
   {'id':10,'name':'notes','data':{}},
   {'id':11,'name':'radios','data':demoRadioData},
 ]
@@ -80,7 +81,7 @@ export async function getAirport( codeParam, group = false) {
 
     // if this code is already in the queue we'll just wait for the data
     if( pendingCodes.includes(code)) {
-      console.log( 'already in queue ' + code)
+      // console.log( 'already in queue ' + code)
       return await waitForAirportData( code)
     }
 
