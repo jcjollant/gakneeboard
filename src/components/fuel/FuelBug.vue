@@ -23,17 +23,17 @@ watch( props, async () => {
 
 function loadData(params) {
     // console.log('FuelBug loadData ' + JSON.stringify(params))
-    if( 'usable' in params) {
+    if( params && 'usable' in params) {
         usable.value = params.usable;
     } else {
         usable.value = 53;
     }
-    if('fuelFlow' in params) {
+    if(params && 'fuelFlow' in params) {
         fuelFlow.value = params.fuelFlow
     } else {
         fuelFlow.value = 9
     }
-    if('reserve' in params) {
+    if(params && 'reserve' in params) {
         reserve.value = params.reserve
     } else {
         reserve.value = 1
@@ -69,14 +69,14 @@ function onSettingsUpdate(newUsable, newFuelFlow, newReserve) {
         <FuelEdit v-if="editMode" :usable="usable" :fuelFlow="fuelFlow" :reserve="reserve"
             @close="onHeaderClick" @update="onSettingsUpdate"/>
         <div v-else class="fuelGrid">
-            <div class="bb left"><div class="dot"></div></div>
-            <div class="bb right"><div class="dot"></div></div>
-            <div class="bb left"><div class="dot"></div></div>
-            <div class="bb right"><div class="dot"></div></div>
-            <div class="bb left"><div class="dot"></div></div>
-            <div class="bb right"><div class="dot"></div></div>
-            <div class="left"><div class="dot"></div></div>
-            <div class="right"><div class="dot"></div></div>
+            <div class="bb left">1</div>
+            <div class="bb right">2</div>
+            <div class="bb left">3</div>
+            <div class="bb right">4</div>
+            <div class="bb left">5</div>
+            <div class="bb right">6</div>
+            <div class="left">7</div>
+            <div class="right">8</div>
             <FuelGauge class="gauge" :usable="usable" :fuelFlow="fuelFlow" :reserve="reserve" />
         </div>
     </div>
@@ -87,8 +87,9 @@ function onSettingsUpdate(newUsable, newFuelFlow, newReserve) {
     display:grid;
     grid-template-columns: 70px 99px 70px;
     grid-template-rows: 50px 50px 50px 50px;
-    /* grid-template-rows: auto auto auto auto; */
-    /* height: 196px; */
+    font-size:2.5rem;
+    font-weight: 900;
+    color: #eee;
 }
 .left {
     position: relative;
@@ -105,15 +106,5 @@ function onSettingsUpdate(newUsable, newFuelFlow, newReserve) {
 }
 .right .dot {
     left: -4px;
-}
-.dot {
-    position: absolute;
-    display: none;
-    width: 8px;
-    height: 8px;
-    border-radius: 4px;
-    background-color: #666666;
-    right: -5px;
-    top: 20px;
 }
 </style>
