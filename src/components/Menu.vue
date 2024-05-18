@@ -10,7 +10,7 @@ import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
 
 
-const emits = defineEmits(['loadPage','showFeedback','showAbout'])
+const emits = defineEmits(['loadPage','print','showFeedback','showAbout'])
 
 const showMenu = ref(false)
 const activePage = ref('')
@@ -103,22 +103,24 @@ watch( props, async() => {
     </div>
     <div v-show="showMenu" class="expandedMenu">
       <div class="buttonsList">
-        <Button label="1" icon="pi pi-clipboard"
+        <Button label="1" icon="pi pi-clipboard" title="Load Page 1 Tiles"
           @click="onLoadPage('page1')" :class="{active: activePage == 'page1'}"></Button>
-        <Button label="2" icon="pi pi-clipboard"
+        <Button label="2" icon="pi pi-clipboard" title="Load Page 2 Tiles"
           @click="onLoadPage('page2')" :class="{active: activePage == 'page2'}"></Button>
           <div class="separator"></div>
-        <Button label="Demo" icon="pi pi-clipboard"
-          @click="onDemo" :class="{active: activePage == 'demo'}"></Button>
-        <Button label="Reset" icon="pi pi-trash"
+        <Button icon="pi pi-print" title="Toggle Print Mode" @click="emits('print')"></Button>
+          <div class="separator"></div>
+        <Button label="Reset" icon="pi pi-trash" title="Replace All Tiles"
           @click="onReset"></Button>
+        <Button label="Demo" icon="pi pi-clipboard"  title="Replace all with Demo Tiles"
+          @click="onDemo" :class="{active: activePage == 'demo'}"></Button>
         <div class="separator"></div>
-        <Button label="Feedback" icon="pi pi-megaphone" 
+        <Button label="Feedback" icon="pi pi-megaphone" title="Send Feedback"
           @click="showFeedback=true" ></Button>
-        <Button label="Warnings" icon="pi pi-exclamation-triangle" severity="warning"
+        <Button label="Warnings" icon="pi pi-exclamation-triangle" title="Stuff You Should Know" severity="warning"
           @click="showWarning=true"></Button>
         <div class="separator"></div>
-        <Button label="Blog" @click="openBlog" link></button>
+        <Button label="Blog" @click="openBlog" title="Recent Features" link></button>
       </div>
     </div>
   </div>

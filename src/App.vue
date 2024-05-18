@@ -23,6 +23,7 @@ const widget11 = ref({})
 const widgetsOne = [widget0,widget1,widget2,widget3,widget4,widget5]
 const widgetsTwo = [widget6,widget7,widget8,widget9,widget10,widget11]
 const allWidgets = widgetsOne.concat(widgetsTwo)
+const printMode = ref(false)
 
 // update all widgets with provided data
 async function loadPageData(data) {
@@ -84,13 +85,14 @@ function updateWidget(newWidgetData) {
     <div class="onePage">
       <Widget v-for='widget in widgetsOne' :widget="widget.value" @update="updateWidget"/>
     </div>
-    <div class="onePage">
+    <div class="onePage" :class="{flipMode: printMode}">
       <Widget v-for='widget in widgetsTwo' :widget="widget.value" @update="updateWidget"/>
     </div>
   </div>
   <div class="menuContainer">
     <Menu class="menu" :page="currentPage"
       @load-page="onMenuLoadPage" 
+      @print="printMode=!printMode"
       @show-feedback="showFeedback=true" 
       @show-about="showAbout=true">
     </Menu>
@@ -124,5 +126,8 @@ function updateWidget(newWidgetData) {
   position: absolute;
   left:5px;
   top:5px;
+}
+.flipMode {
+  transform: scale(-1,-1);
 }
 </style>
