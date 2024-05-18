@@ -112,12 +112,12 @@ function selectRunway(rwy) {
 <template>
     <div class="content">
         <div class="settings">
-            <div class="item">Code</div>
+            <div class="editItem">Code</div>
             <div class="airportInformation">
                 <InputText v-model="airportCode" @input="onCodeUpdate" aria-describedby="airport-name"/>
                 <small id="airport-name">{{airportName}}</small>
             </div>
-            <div class="item">Runway</div>
+            <div class="editItem">Runway</div>
             <ProgressSpinner class="spinner" v-if="loading"></ProgressSpinner>
             <div v-else class="rwySelector">
                 <Button label="Unknown Airport" class="sign" v-if="!validAirport" disabled></Button>
@@ -127,14 +127,14 @@ function selectRunway(rwy) {
                 <Button label="ALL" class="sign" v-if="rwyList.length > 0"  :severity="selectedRwy == 'all' ? 'primary' : 'secondary'"
                         @click="selectRunway('all')"></Button>
             </div>
-            <div class="item" v-if="validAirport">Orientation</div>
+            <div class="editItem" v-if="validAirport">Orientation</div>
             <div class="rwyOrientation" v-if="validAirport">
                 <Button label="Vertical" 
                     @click="rwyOrientation='vertical'" :severity="rwyOrientation == 'vertical' ? 'primary' : 'secondary'"></Button>
                 <Button label="Magnetic" 
                     @click="rwyOrientation='magnetic'" :severity="rwyOrientation == 'magnetic' ? 'primary' : 'secondary'"></Button>
             </div>
-            <!-- <div class="item">Label</div>
+            <!-- <div class="editItem">Label</div>
             <div class="rwyOrientation" v-if="validAirport">
                 <Button label="LxW" 
                     @click="rwyOrientation='vertical'" :severity="rwyOrientation == 'vertical' ? 'primary' : 'secondary'"></Button>
@@ -156,19 +156,12 @@ function selectRunway(rwy) {
     .settings {
         display: grid;
         grid-template-columns: 55px 170px;
-        /* font-size: 14px; */
         gap: 5px;
         padding: 5px;
-        /* line-height: 1.5rem; */
     }
     #airport-name {
         font-size: 0.6rem;
         line-height: 0.6rem;
-    }
-    .item {
-        font-size: 0.6rem;
-        line-height: 1.5rem;
-        text-align: right;
     }
     .airportInformation {
         display: flex;
@@ -228,9 +221,7 @@ function selectRunway(rwy) {
     }
     :deep(.p-component) {
         font-size: 0.8rem;
-        /* line-height: 1.5rem; */
         height: 1.5rem;
-        /* padding: 0.5rem 0 */
     }
     .spinner {
         height: 1.5rem;

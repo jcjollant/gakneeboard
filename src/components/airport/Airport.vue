@@ -25,7 +25,7 @@ onMounted(() => {
     loadProps(props)
 })
 
-watch( props, async(newP, oldP) => {
+watch( props, async() => {
     // console.log("Airport props changed " + JSON.stringify(props));
     mode.value = ''
     loadProps(props)
