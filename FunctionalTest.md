@@ -27,7 +27,7 @@
     * Enable then disable magnetic orientation
   * Edit mode
     * Pending Airport
-      * Skagit : Edit mode, Type BFI without selecting => Airport name should show below input field
+      * Raleigh : Edit mode, Type BFI without selecting => Airport name should show below input field
       * Toggle normal and back to edit => Should show Skagit with ryw 04-22 and 11-29
       * Pick 04-22 should work
     * Edit mode reverts on page change
@@ -57,9 +57,20 @@
     * Both should be updated
   * Erase all frequencies and apply => Should show all nordo
   * Test replace
+## Fuel Bug
+  * Edit mode + change usable 53 to 43 + cancel edit => Should stay at 53
+  * Change default values to 52/8/0.75 + Apply
+  * Reload page should show saved values
+  * Edit mode should show warnings for 
+    * usable < 10 gal > 100 Gal
+    * fuel flow < 4
+    * reserve < 0.5
+    * reserve / fuel flow > usable
 ## Feedback
   * Dialog should show version number in bottom right corner
   * Enter feedback => Should show in the DB
+## Print Mode
+ * Pick Print from menu -> Should flip right page
 ## Persistance
  * Tweak demo page content
    * Change Renton to S50 change pattern mode

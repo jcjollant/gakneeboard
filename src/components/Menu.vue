@@ -52,21 +52,21 @@ function onDemo() {
   getConfirmation('Load Demo Tiles', 'demo')
 }
 
-function onLoadPage( name) {
-  emits('loadPage', name)
-  showMenu.value = false
-}
-
-onMounted(() => {
-  loadProps(props)
-})
-
 function onFeedbackSent() {
   // console.log('[menu] onFeedbackSent')
   showMenu.value = false;
   showFeedback.value = false
   toast.add({ severity: 'info', summary: 'Thank you', detail: 'Feedback sent', life: 3000});  
 }
+
+function onLoadPage( name) {
+  emits('loadPage', name)
+  showMenu.value = false
+}  
+
+onMounted(() => {
+  loadProps(props)
+})  
 
 function onReset() {
   getConfirmation('Reset All Tiles', 'reset')
@@ -108,7 +108,7 @@ watch( props, async() => {
         <Button label="2" icon="pi pi-clipboard" title="Load Page 2 Tiles"
           @click="onLoadPage('page2')" :class="{active: activePage == 'page2'}"></Button>
           <div class="separator"></div>
-        <Button icon="pi pi-print" title="Toggle Print Mode" @click="emits('print')"></Button>
+        <Button icon="pi pi-print" title="Toggle Print Mode" @click="emitAndClose('print')"></Button>
           <div class="separator"></div>
         <Button label="Reset" icon="pi pi-trash" title="Replace All Tiles"
           @click="onReset"></Button>
