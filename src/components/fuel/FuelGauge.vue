@@ -1,10 +1,31 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
+
+const props = defineProps({
+    usable: { type: Number, default: 53},
+    fuelFlow: { type: Number, default: 9},
+    reserve: { type: Number, default: 1},
+})
+
+var usable;
+var fuelFlow;
+var reserve;
 
 onMounted(() => {    
-    // loadProps(props)
-    draw()
+    loadProps(props)
 })
+
+watch(props, async() => {
+    loadProps(props)
+})
+
+function loadProps(props) {
+    // console.log('FuelGauge loadProps ' + JSON.stringify(props))
+    usable = props.usable
+    fuelFlow = props.fuelFlow
+    reserve = props.reserve
+    draw()
+}
 
 const myCanvas = ref()
 
@@ -13,13 +34,10 @@ function draw() {
     const ctx = myCanvas.value.getContext('2d');
     const height = 200;
     const barWidth = 20;
-    const width = 60
+    const width = 100
     myCanvas.value.width = width;
     myCanvas.value.height = height;
 
-    const gph = 9
-    const usable = 53
-    const reserveHrs = 1
     ctx.beginPath()
     ctx.strokeStyle = '#666666'
     ctx.fillStyle = ctx.strokeStyle
@@ -43,19 +61,31 @@ function draw() {
         ctx.fillText( gal, leftSide - tickMarkSize - 15, pos + 3)
     }
     // Hrs tick marks
-    const maxTime = usable / gph
+    const maxTime = usable / fuelFlow
+    const tickMarkSize = 5
     // console.log('FuelGauge maxTime ' + maxTime)
     for( let hour = 1; hour < maxTime; hour++) {
         const pos = height * (1 - hour / maxTime)
-        const tickMarkSize = 5
         ctx.moveTo(rightSide, pos)
         ctx.lineTo(rightSide + tickMarkSize, pos)
         ctx.fillText( hour, rightSide + tickMarkSize + 2, pos + 3)
     }
+
+    // boxes tick marks
+    for( let y = 25; y < height; y += 50) {
+        ctx.moveTo( 0, y)
+        ctx.lineTo( tickMarkSize, y)
+        ctx.moveTo( width - tickMarkSize, y)
+        ctx.lineTo( width, y)
+    }
     ctx.stroke()
 
+    // legends
+    ctx.fillText( "Gal", leftSide - 20, height - 3)
+    ctx.fillText( "Hrs", rightSide + 5, height - 3)
+
     // reserve fuel
-    const reserveGal = gph * reserveHrs
+    const reserveGal = fuelFlow * reserve
     const reserveHeight = reserveGal * height / usable 
     ctx.fillStyle = '#FFAAAA'
     ctx.fillRect( (width - barWidth) / 2, height - reserveHeight, barWidth, reserveHeight);
@@ -66,7 +96,7 @@ function draw() {
 <template>
     <div class="container">
         <canvas ref="myCanvas"></canvas>
-        <div class="label"><span>Gal</span><span>Hrs</span></div>
+        <!-- <div class="label"><span>Gal</span><span>Hrs</span></div> -->
     </div>
 </template>
 

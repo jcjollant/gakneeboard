@@ -79,7 +79,8 @@ function replaceWidget(newName = '') {
         @replace="replaceWidget" @update="onUpdate"/>
     <Clearance v-else-if="widget.name=='clearance'" 
         @replace="replaceWidget"/>
-    <FuelBug v-else-if="widget.name=='fuel'" @replace="replaceWidget"/>  
+    <FuelBug v-else-if="widget.name=='fuel'" :params="widget.data"
+        @replace="replaceWidget" @update="onUpdate"/>  
     <Notes v-else-if="widget.name=='notes'" 
         @replace="replaceWidget" />
     <RadioFlow v-else-if="widget.name=='radios'" :params="widget.data" 
