@@ -1,4 +1,4 @@
-export const version = '518'
+export const version = '518-2'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'http://localhost:3000/'
 
@@ -93,14 +93,15 @@ export async function getAirport( codeParam, group = false) {
       const beforeCount = pendingCodes.length
       await new Promise(r => setTimeout(r, 500));
       const afterCount = pendingCodes.length
-      if( beforeCount == afterCount) {
+      if( beforeCount == afterCount) { // no queries withing the last 500 ms
         await requestAllAirports( pendingCodes)
       }
       airport = await waitForAirportData( code)
       // remove ourselves from the list of pending queries
-      pendingCodes.splice( pendingCodes.indexOf(code), 1)
+      // pendingCodes.splice( pendingCodes.indexOf(code), 1)
 
-    } else {
+    } else { // grouping is not allowed
+
       // wait until we are in first position
       while( pendingCodes[0] != code) {
         // console.log( 'waiting for ' + pendingQueries[0])
@@ -130,6 +131,11 @@ export function getDemoPage() {
   return JSON.parse( JSON.stringify(demoPage))
 }  
 
+/**
+ * Request a list of airports by code
+ * @param {*} codes 
+ * @returns 
+ */
 async function requestAllAirports( codes) {
   // console.log( 'perform group request for ' + codes.length)
   if( codes.length == 1) {
@@ -142,11 +148,10 @@ async function requestAllAirports( codes) {
         // console.log( JSON.stringify(response.data))
         const airportList = response.data
         airportList.forEach( (airport,index) => {
-          // reply should be a list of codes and data
-          // [{'code':'xyz','data':{...}}]
-          // console.log('data received for ' + codes[index])
-          // console.log( JSON.stringify(airport))
-          airports[codes[index]] = airport
+          // memorize this airport
+          airports[airport.code] = airport
+          // remove this code from pending codes
+          pendingCodes.splice( pendingCodes.indexOf(airport.code), 1)
         })
     })
     .catch( error => {
