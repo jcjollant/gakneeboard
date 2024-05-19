@@ -1,7 +1,7 @@
 const axios = require('axios')
 
 const basicAuth = 'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP'
-const modelVersion = 4
+const modelVersion = 5
 
 async function fetchAirport(code) {
     // console.log( 'ADIP fetching ' + code);
