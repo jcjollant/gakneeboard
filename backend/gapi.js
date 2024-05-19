@@ -52,12 +52,29 @@ async function getAirport(codeParam,force=false) {
 
 async function getAirportsList(list) {
     // console.log( "[gapi] getAirportsList " + JSON.stringify(list));
-    const output = []
-    for( const code of list) {
-        const airport = await getAirport(code)
-        output.push(airport)
+    // const output = []
+    // for( const code of list) {
+    //     const airport = await getAirport(code)
+    //     output.push(airport)
+    // }
+    // return output
+
+    const airports = await db.fetchAirportList(list)
+    // console.log( "[gapi] getAirportsList output " + JSON.stringify(airports));
+    // is anything missing from the list
+    if( airports.length < list.length) {
+        console.log( "[gapi] getAirportsList missing " + JSON.stringify(list.filter( code => !airports.some( a => a.code == code))));
+        // await db.addKnownUnknown(list.filter( code => !airports.some( a => a.code == code)))
+        // build the list of missing airports
+        const missing = list.filter( code => !airports.some( a => a.code == code))
+        for( const code of missing) {
+            const airport = await getAirport(code)
+            airports.push(airport)
+        }
     }
-    return output
+    // console.log( "[gapi] getAirportsList output " + JSON.stringify(airports));
+
+    return airports
 }
 
 /**
