@@ -21,14 +21,23 @@ async function refreshAirport(code,id) {
 }
 
 async function upgradeVersion() {
-    const minVersion = 3;
-    const result = await postgres.sql`SELECT Code,Id FROM Airports WHERE version < ${minVersion} LIMIT 5`
+    const minVersion = adip.modelVersion;
+    // const result = await postgres.sql`SELECT Code,Id FROM Airports WHERE version < ${minVersion} LIMIT 10`
+    const result = await postgres.sql`SELECT Code,Id FROM Airports WHERE version < ${minVersion}`
 
     console.log( "Matching airports " + result.rowCount)
 
-    result.rows.forEach( async (row) => {
+    while( result.rows.length > 0) {
+        await new Promise(r => setTimeout(r, Math.random() * 3000 + 1000));
+        row = result.rows.pop()
         refreshAirport(row.code, row.id)
-    })
+    }
+
+    // result.rows.forEach( async (row) => {
+    //     // wait random time between 1 and 3 seconds
+    //     await new Promise(r => setTimeout(r, Math.random() * 3000 + 2000));
+    //     refreshAirport(row.code, row.id)
+    // })
 }
 
 async function findMilitaryFrequencies() {
@@ -61,5 +70,5 @@ async function findMilitaryFrequencies() {
 
 // return output
 
-// upgradeVersion()
-findMilitaryFrequencies()
+upgradeVersion()
+// findMilitaryFrequencies()
