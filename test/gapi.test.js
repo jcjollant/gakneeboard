@@ -3,7 +3,7 @@ const gapi = require( '../backend/gapi')
 process.env.POSTGRES_URL="postgres://default:94chrayEvOLG@ep-shrill-silence-a6ypne6y-pooler.us-west-2.aws.neon.tech/verceldb?sslmode=require"
 
 
-test('Renton is found', async () => {
+test('Renton is found with both codes', async () => {
     let airport = await gapi.getAirport('RNT')
     expect(airport.code).toBe('KRNT')
     let airport2 = await gapi.getAirport('KRNT')

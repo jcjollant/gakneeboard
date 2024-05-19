@@ -1,7 +1,7 @@
 // import { adipJfk } from './testData.js'
 // import { fetch, fromAdip } from '../api/adip.js'
 const adip = require('../backend/adip')
-const fs = require('fs')
+// const fs = require('fs')
 
 test('TPA should be 1000 above elevation',() =>{
     expect(adip.getTpa(0)).toBe(1000)
@@ -65,11 +65,11 @@ test('Fetch Renton and check fields',async () =>{
     expect(runway34.pattern).toBe('right')
 
     // effectiveDate should be defined
-    expect(airport.effectiveDate).toBe('2024-04-18T00:00:00')
+    expect(airport.effectiveDate).toBe('2024-05-16T00:00:00')
     // ICAO should be defined
     // Fecth time should be higer
     expect(airport.fetchTime).toBeGreaterThan(before)
-    expect(airport.version).toBe(4)
+    expect(airport.version).toBe(adip.modelVersion)
 })
 
 test('PDX frequencies', async () => {

@@ -26,6 +26,7 @@ async function fetchAirportList(list) {
     // console.log( '[db] fetchAirportList ' + JSON.stringify(list))
 
     const result = await postgres.sql`SELECT Data FROM Airports WHERE Code = ANY(${list})`;
+    // console.log( '[db] fetchAirportList found ' + result.rowCount + ' entries')
     // console.log( '[db] fetchAirportList result ' + JSON.stringify(result))
 
     const output = []
