@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import {version} from '../assets/data.js'
+import {version} from '../../assets/data.js'
 import Button from "primevue/button";
 import Dialog from 'primevue/dialog'
 

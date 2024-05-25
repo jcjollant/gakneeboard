@@ -11,6 +11,7 @@ I couldn't find anything I liked, so I scratched my own itch.
 * Add separators in Corner data selectors
 * New Tiles Synopsis => capture altitude and fuel level
 * Small indicator below runway is configurable
+* Users can authenticate with Google
 
 # Done
 ## 5/18/2024
@@ -134,3 +135,7 @@ I couldn't find anything I liked, so I scratched my own itch.
 * Add arrow tip to TP
 * Automatically parse airport codes
 * Update Window title
+
+
+##
+Google API CliendId : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent.com

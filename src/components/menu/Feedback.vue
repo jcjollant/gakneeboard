@@ -1,7 +1,7 @@
 <script setup>
 // import { defineEmits } from "vue";
 import { ref } from 'vue'
-import {version, sendFeedback} from '../assets/data.js'
+import {version, sendFeedback} from '../../assets/data.js'
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import Textarea from "primevue/textarea";

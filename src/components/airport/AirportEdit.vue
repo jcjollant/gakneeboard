@@ -3,8 +3,8 @@ import { ref, onMounted, watch } from 'vue'
 import * as data from '../../assets/data.js'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner';
-import SelectButton from 'primevue/selectbutton'
 import InputText from 'primevue/inputtext'
+import UnknownAirport from './UnknownAirport.vue';
 
 const emits = defineEmits(['close','selection'])
 
@@ -36,6 +36,7 @@ const applyable = ref(false)
 const validAirport = ref(false)
 const rwyOrientation = ref('vertical')
 const selectedRwy = ref(null)
+const showUnknownAirport = ref(false)
 
 function showAirport() {
     rwyList.value = airport.rwy;
@@ -120,7 +121,8 @@ function selectRunway(rwy) {
             <div class="editItem">Runway</div>
             <ProgressSpinner class="spinner" v-if="loading"></ProgressSpinner>
             <div v-else class="rwySelector">
-                <Button label="Unknown Airport" class="sign" v-if="!validAirport" disabled></Button>
+                <UnknownAirport v-model:visible="showUnknownAirport" @close="showUnknownAirport=false"></UnknownAirport>
+                <Button label="Unknown Airport" class="sign" v-if="!validAirport" @click="showUnknownAirport=true"></Button>
                 <Button :label="rwy.name" class="sign" :severity="rwy.name == selectedRwy ? 'primary' : 'secondary'"
                     v-for="rwy in rwyList" 
                     @click="selectRunway(rwy.name)"></Button>
