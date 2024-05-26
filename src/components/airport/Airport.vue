@@ -155,6 +155,8 @@ function loadProps(newProps) {
                     showRunway(airport.rwy[0].name)
                 }
             } else {
+                // console.log('No data came out of get airport ' + code)
+                title.value = 'Airport "' + code + '"'
                 mode.value = 'edit'
             }
         })

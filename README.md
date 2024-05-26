@@ -4,6 +4,7 @@ I couldn't find anything I liked, so I scratched my own itch.
 
 # BUGS
 * Multitower airport stuggle : CYVR is not showing a frequency
+* If the original requets fails, airports should switch to unknown
 
 # TODO
 * Improve Radio Flow Selection with airport code and all frequancies

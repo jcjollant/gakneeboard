@@ -1,7 +1,7 @@
 export const version = '518-2'
 // const apiRootUrl = 'https://ga-api-seven.vercel.app/'
-// const apiRootUrl = 'http://localhost:3000/'
-const apiRootUrl = 'https://ga-api-git-google-auth-jcjollants-projects.vercel.app/'
+const apiRootUrl = 'http://localhost:3000/'
+// const apiRootUrl = 'https://ga-api-git-google-auth-jcjollants-projects.vercel.app/'
 
 import axios from 'axios'
 
@@ -162,7 +162,11 @@ async function requestAllAirports( codes) {
         })
     })
     .catch( error => {
-      console.log( 'error ' + error)
+      // this request failed, cache all airports as invalid
+      codes.forEach( code => {
+        airports[code] = null
+      })
+      console.log( 'requestAllAirports error ' + error)
     })
 }
 
@@ -187,13 +191,14 @@ async function requestOneAirport( code) {
     .catch( error => {
       // cache this airport as invalid
       airports[code] = null
+      pendingCodes = []
     })
 
   return airport
 }
 
 export async function sendFeedback(data) {
-  axios.post(apiRootUrl + 'feedback', data,)
+  axios.post(apiRootUrl + 'feedback', data)
     .then( response => {
       // console.log( '[data] feedback sent')
     })
