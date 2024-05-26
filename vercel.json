@@ -4,6 +4,7 @@
     "headers": [       
         {
             "source": "/(.*)",
+            "methods":["POST","OPTIONS"],
             "headers": [
                 { "key": "Access-Control-Allow-Origin", "value": "*" }
             ]
