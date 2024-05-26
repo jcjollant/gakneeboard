@@ -1,6 +1,7 @@
 export const version = '518-2'
-const apiRootUrl = 'https://ga-api-seven.vercel.app/'
+// const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'http://localhost:3000/'
+const apiRootUrl = 'https://ga-api-git-google-auth-jcjollants-projects.vercel.app/'
 
 import axios from 'axios'
 
@@ -44,6 +45,12 @@ const demoRadioData = [
   {'id':10,'name':'','data':{}},
   {'id':11,'name':'','data':{}},
 ]  
+
+export async function authenticate( source, token) {
+  const url = apiRootUrl + 'authenticate'
+  const response = await axios.post(url, {source:source, token:token})
+  return response.data
+}
 
 let airports = {}
 let pendingCodes = []
@@ -186,9 +193,7 @@ async function requestOneAirport( code) {
 }
 
 export async function sendFeedback(data) {
-  axios.post(apiRootUrl + 'feedback', data, 
-    // {headers: {'Content-Type': 'text/plain'}}
-  )
+  axios.post(apiRootUrl + 'feedback', data, {})
     .then( response => {
       // console.log( '[data] feedback sent')
     })
