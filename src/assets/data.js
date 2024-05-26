@@ -1,7 +1,7 @@
 export const version = '518-2'
 // const apiRootUrl = 'https://ga-api-seven.vercel.app/'
-const apiRootUrl = 'http://localhost:3000/'
-// const apiRootUrl = 'https://ga-api-git-google-auth-jcjollants-projects.vercel.app/'
+// const apiRootUrl = 'http://localhost:3000/'
+const apiRootUrl = 'https://ga-api-git-google-auth-jcjollants-projects.vercel.app/'
 
 import axios from 'axios'
 
@@ -198,7 +198,7 @@ async function requestOneAirport( code) {
 }
 
 export async function sendFeedback(data) {
-  axios.post(apiRootUrl + 'feedback', data)
+  axios.post(apiRootUrl + 'feedback', data, { headers: {'Content-Type':null }})
     .then( response => {
       // console.log( '[data] feedback sent')
     })
