@@ -3,7 +3,7 @@ SELECT COUNT(*) FROM airports
 SELECT COUNT(*) FROM airports WHERE version=5
 
 # How many airports have not been upgraded
-SELECT COUNT(*) FROM airports WHERE version<4
+SELECT COUNT(*) FROM airports WHERE version<5
 
 SELECT * FROM airports WHERE version<5
 

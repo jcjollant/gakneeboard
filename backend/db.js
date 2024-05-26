@@ -56,8 +56,8 @@ async function saveAirport(code, data) {
 }
 
 async function saveFeedback(data) {
-    await postgres.sql`INSERT INTO Feedback (Version,Text) VALUES (${data.version},${data.feedback})`;
     console.log( '[db] saveFeedback ')
+    await postgres.sql`INSERT INTO Feedback (Version,Text) VALUES (${data.version},${data.feedback})`;
 }
 
 async function updateAirport(id, data, version) {
