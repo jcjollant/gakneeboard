@@ -1,5 +1,6 @@
 import express from "express";
 // import cors from "cors";
+import { version } from "../backend/data.js"
 const cors = require('cors');
 const db = require('../backend/db.js');
 const gapi = require('../backend/gapi.js');
@@ -37,7 +38,7 @@ app.use((req, res, next) => {
 app.use(express.json())
 
 
-app.get("/", (req, res) => res.send("Express on Vercel"));
+app.get("/", (req, res) => res.send("GA API version " + version));
 
 app.get("/airport/:id", async (req,res) => {
     console.log( "[index] airport request " + req.params.id);
