@@ -193,7 +193,7 @@ async function requestOneAirport( code) {
 }
 
 export async function sendFeedback(data) {
-  axios.post(apiRootUrl + 'feedback', data, {})
+  axios.post(apiRootUrl + 'feedback', data,)
     .then( response => {
       // console.log( '[data] feedback sent')
     })

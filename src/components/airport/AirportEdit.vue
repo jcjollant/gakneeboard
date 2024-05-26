@@ -59,7 +59,7 @@ function loadProps(props) {
         if( props.rwyName) {
             selectedRwy.value = props.rwyName
         } else {
-            console.log( "using first runway")
+            // console.log( "using first runway")
             selectedRwy.value = airport.rwy[0].name
         }
 
