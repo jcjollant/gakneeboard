@@ -5,6 +5,7 @@ import Button from 'primevue/button'
 import { useConfirm } from 'primevue/useconfirm'
 import ConfirmDialog from 'primevue/confirmdialog';
 import Feedback from './Feedback.vue';
+import SignIn from './SignIn.vue';
 import Warning from './Warning.vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
@@ -12,15 +13,19 @@ import Toast from 'primevue/toast';
 
 const emits = defineEmits(['loadPage','print','showFeedback','showAbout'])
 
-const showMenu = ref(false)
 const activePage = ref('')
+const confirm = useConfirm()
+const printMode = ref(false)
 const showFeedback = ref(false)
+const showMenu = ref(false)
+const showSignIn = ref(false)
 const showWarning = ref(false)
 const toast = useToast()
-const confirm = useConfirm()
+const user = ref(null)
 
 const props = defineProps({
   page: { type: String, default: null},
+  user: { type: Object, default: null},
 })
 
 function emitAndClose(message) {
@@ -39,7 +44,6 @@ function getConfirmation(headerParam, pageName) {
         onLoadPage(pageName)
       }
     })
-
 }
 
 
@@ -68,6 +72,11 @@ onMounted(() => {
   loadProps(props)
 })  
 
+function onPrint() {
+  printMode.value = !printMode.value
+  emitAndClose('print')  
+}
+
 function onReset() {
   getConfirmation('Reset All Tiles', 'reset')
 }
@@ -94,8 +103,9 @@ watch( props, async() => {
   <div class="container" :class="{grow: showMenu}">
     <ConfirmDialog></ConfirmDialog>
     <Toast />
-    <Feedback v-model:visible="showFeedback" @sent="onFeedbackSent"></Feedback>
-    <Warning v-model:visible="showWarning" @close="showWarning=false"></Warning>
+    <Feedback v-model:visible="showFeedback" @sent="onFeedbackSent" />
+    <Warning v-model:visible="showWarning" @close="showWarning=false" />
+    <SignIn v-model:visible="showSignIn" @close="showSignIn=false" />
     <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu">
       <div class="bar1"></div>
       <div class="bar2"></div>
@@ -103,17 +113,25 @@ watch( props, async() => {
     </div>
     <div v-show="showMenu" class="expandedMenu">
       <div class="buttonsList">
-        <Button label="1" icon="pi pi-clipboard" title="Load Page 1 Tiles"
+        <Button v-if="user" :label="user.name" icon="pi pi-user" title="Sign Out" class="active">
+        </Button>
+        <Button v-else label="Sign In" icon="pi pi-user" title="Sign In to enable custom data"
+          @click="showSignIn=true">
+        </Button>
+        <!-- <Button label="1" icon="pi pi-clipboard" title="Load Page 1 Tiles"
           @click="onLoadPage('page1')" :class="{active: activePage == 'page1'}"></Button>
         <Button label="2" icon="pi pi-clipboard" title="Load Page 2 Tiles"
-          @click="onLoadPage('page2')" :class="{active: activePage == 'page2'}"></Button>
-          <div class="separator"></div>
-        <Button icon="pi pi-print" title="Toggle Print Mode" @click="emitAndClose('print')"></Button>
-          <div class="separator"></div>
-        <Button label="Reset" icon="pi pi-trash" title="Replace All Tiles"
-          @click="onReset"></Button>
+          @click="onLoadPage('page2')" :class="{active: activePage == 'page2'}"></Button> -->
+        <div class="separator"></div>
+        <Button label="Print" icon="pi pi-print" title="Toggle Print Mode" :class="{active: printMode}" 
+          @click="onPrint">
+        </Button>
+        <div class="separator"></div>
+        <Button label="Reset" icon="pi pi-trash" title="Replace All Tiles" @click="onReset">
+        </Button>
         <Button label="Demo" icon="pi pi-clipboard"  title="Replace all with Demo Tiles"
-          @click="onDemo" :class="{active: activePage == 'demo'}"></Button>
+          @click="onDemo">
+        </Button>
         <div class="separator"></div>
         <Button label="Feedback" icon="pi pi-megaphone" title="Send Feedback"
           @click="showFeedback=true" ></Button>
