@@ -46,6 +46,8 @@ const demoRadioData = [
   {'id':11,'name':'','data':{}},
 ]  
 
+const miniHeader = { headers: {'Content-Type':null }}
+
 export async function authenticate( source, token) {
   const url = apiRootUrl + 'authenticate'
   const response = await axios.post(url, {source:source, token:token})
@@ -150,7 +152,7 @@ async function requestAllAirports( codes) {
   }
 
   const url = apiRootUrl + 'airports/' + codes.join('-');
-  await axios.get(url, codes)
+  await axios.get(url, codes, miniHeader)
     .then( response => {
         // console.log( JSON.stringify(response.data))
         const airportList = response.data
@@ -198,7 +200,7 @@ async function requestOneAirport( code) {
 }
 
 export async function sendFeedback(data) {
-  axios.post(apiRootUrl + 'feedback', data, { headers: {'Content-Type':null }})
+  axios.post(apiRootUrl + 'feedback', data, miniHeader)
     .then( response => {
       // console.log( '[data] feedback sent')
     })
