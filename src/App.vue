@@ -5,7 +5,6 @@ import Widget from './components/Tile.vue'
 import {onMounted,ref} from 'vue'
 import { getDemoPage, getBlankPage } from './assets/data.js'
 import { inject } from "@vercel/analytics"
-import { GoogleSignInButton, decodeCredential } from "vue3-google-signin"
 
 var pageData = null;
 const currentPage = ref('page1')
@@ -25,16 +24,6 @@ const widgetsOne = [widget0,widget1,widget2,widget3,widget4,widget5]
 const widgetsTwo = [widget6,widget7,widget8,widget9,widget10,widget11]
 const allWidgets = widgetsOne.concat(widgetsTwo)
 const printMode = ref(false)
-
-function handleLoginError() {
-  console.log("Login failed")
-}
-
-function handleLoginSuccess( response) {
-  const { credential } = response;
-  console.log( "Access Token", credential)
-console.log( "User:", decodeCredential(credential))
-}
 
 // update all widgets with provided data
 async function loadPageData(data) {
@@ -108,7 +97,6 @@ function updateWidget(newWidgetData) {
       @show-about="showAbout=true">
     </Menu>
   </div>
-  <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton>
 </template>
 
 <style scoped>
