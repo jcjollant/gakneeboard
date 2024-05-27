@@ -1,5 +1,5 @@
 const postgres = require('@vercel/postgres')
-
+const modelVersion = 1
 /**
  * adds a known unknown to the DB
  * @param {*} code whatever was recevied from the caller
@@ -43,21 +43,47 @@ async function fetchAirportList(list) {
  * Figure out if a code is already unknown
  * @param {*} code 
  * @returns 
- */
+*/
 async function isKnownUnknown(code) {
     const result = await postgres.sql`SELECT * FROM Unknowns WHERE Code = ${code}`;
-
+    
     return result.rowCount > 0
 }
 
 async function saveAirport(code, data) {
     await postgres.sql`INSERT INTO Airports (Code, Data, Version) VALUES (${code}, ${data},${data.version})`;
-    console.log( '[db] saveAirport ' + code)
+    console.log( '[db.saveAirport] ' + code)
 }
 
 async function saveFeedback(data) {
-    console.log( '[db] saveFeedback ')
-    await postgres.sql`INSERT INTO Feedback (Version,Text) VALUES (${data.version},${data.feedback})`;
+    console.log( '[db.saveFeedback] ')
+    if( 'user' in data) {
+        await postgres.sql`INSERT INTO Feedback (Version,Text,user256) VALUES (${data.version},${data.feedback},${data.user})`;
+    } else {
+        await postgres.sql`INSERT INTO Feedback (Version,Text) VALUES (${data.version},${data.feedback})`;
+    }
+
+}
+
+async function saveUser(user) {
+    console.log( '[db.saveUser]  ' + JSON.stringify(user))
+
+    try {
+        if( !user.sha256) throw new Error('sha256 missing')
+        const result = await postgres.sql`SELECT id from Users WHERE sha256 = ${user.sha256}`;
+        console.log( '[db.saveUser] match count ' + result.rowCount)
+        if(result.rowCount == 0) {
+            console.log( '[db.saveUser] adding ' + user.sha256)
+            await postgres.sql`INSERT INTO Users (sha256,data,version) VALUES (${user.sha256},${user},${modelVersion})`
+            // console.log( '[db.saveUser] ' + user.sha256)
+        } else {
+            console.log( '[db.saveUser] known user ' + user.sha256)
+        }
+        return user
+    } catch(e) {
+        console.log( '[db.saveUser] failed ' + e.message);
+        return null
+    }
 }
 
 async function updateAirport(id, data, version) {
@@ -66,4 +92,4 @@ async function updateAirport(id, data, version) {
 }
 
 
-module.exports = { addKnownUnknown, fetchAirport, fetchAirportList, isKnownUnknown, saveAirport, saveFeedback, updateAirport };
+module.exports = { addKnownUnknown, fetchAirport, fetchAirportList, isKnownUnknown, saveAirport, saveFeedback, saveUser, updateAirport };
