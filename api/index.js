@@ -40,7 +40,7 @@ if( process.env.NODE_ENV == 'development') {
     });
 
 }    
-app.use(express.json())
+// app.use(express.json())
 
 
 app.get("/", (req, res) => res.send("GA API version " + version));
