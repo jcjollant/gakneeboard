@@ -99,6 +99,10 @@ function onCodeUpdate() {
         })
 }
 
+function onUnknownAirport() {
+    showUnknownAirport=false    
+}
+
 // A runway has been selected from the list
 function selectRunway(rwy) {
     // console.log( "AirportEdit selectRunway " + rwy)
@@ -121,7 +125,7 @@ function selectRunway(rwy) {
             <div class="editItem">Runway</div>
             <ProgressSpinner class="spinner" v-if="loading"></ProgressSpinner>
             <div v-else class="rwySelector">
-                <UnknownAirport v-model:visible="showUnknownAirport" @close="showUnknownAirport=false"></UnknownAirport>
+                <UnknownAirport v-model:visible="showUnknownAirport" @close="onUnknownAirport"></UnknownAirport>
                 <Button label="Unknown Airport" class="sign" v-if="!validAirport" @click="showUnknownAirport=true"></Button>
                 <Button :label="rwy.name" class="sign" :severity="rwy.name == selectedRwy ? 'primary' : 'secondary'"
                     v-for="rwy in rwyList" 

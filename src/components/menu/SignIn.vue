@@ -4,18 +4,22 @@ import { GoogleSignInButton, decodeCredential } from "vue3-google-signin"
 import Button from 'primevue/button'; 
 import { authenticate } from '../../assets/data'
 
-const emits = defineEmits(["close"]);
+const emits = defineEmits(["close",'authentication']);
 
 function handleLoginError() {
   console.log("Login failed")
 }
 
-function handleLoginSuccess( response) {
+async function handleLoginSuccess( response) {
   const { credential } = response;
-  console.log( "Access Token", credential)
-  console.log( "User:", decodeCredential(credential))
-  authenticate( 'google', credential)
-  emits('close')
+  // console.log( "[SignIn.handleLoginSuccess] Access Token", credential)
+  // console.log( "[SignIn.handleLoginSuccess] User", decodeCredential(credential))
+  const user = await authenticate( 'google', credential)
+  // .then( user => {
+  //   console.log( "[SignIn.handleLoginSuccess] user ", JSON.stringify(user))
+  // })
+  emits('authentication', user)
+
 }
 
 </script>
@@ -26,7 +30,7 @@ function handleLoginSuccess( response) {
         <span>
           <ul>
             <li>Custom Airports Data</li>
-            <li>Feddback follow up</li>
+            <li>Feedback follow up</li>
           </ul>
         </span>
       </div>

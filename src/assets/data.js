@@ -1,7 +1,7 @@
 export const version = '518-2'
 // const apiRootUrl = 'https://ga-api-seven.vercel.app/'
-// const apiRootUrl = 'http://localhost:3000/'
-const apiRootUrl = 'https://ga-api-git-google-auth-jcjollants-projects.vercel.app/'
+const apiRootUrl = 'http://localhost:3000/'
+// const apiRootUrl = 'https://ga-api-git-google-auth-jcjollants-projects.vercel.app/'
 
 import axios from 'axios'
 
@@ -46,12 +46,18 @@ const demoRadioData = [
   {'id':11,'name':'','data':{}},
 ]  
 
-const miniHeader = { headers: {'Content-Type':null }}
+const miniHeader = { headers: {'Content-Type':null} }
 
+let currentUser = null
 export async function authenticate( source, token) {
   const url = apiRootUrl + 'authenticate'
-  const response = await axios.post(url, {source:source, token:token})
-  return response.data
+  const response = await axios.post(url, {source:source, token:token}, miniHeader)
+    .catch( e => {
+      console.log( '[data.authenticate] ' + e)
+      return null
+    })
+  currentUser = response.data
+  return currentUser
 }
 
 let airports = {}
@@ -65,12 +71,12 @@ let pendingCodes = []
 export async function getAirport( codeParam, group = false) {
     const code = codeParam.toUpperCase()
 
-    // console.log( 'fetching ' + code);
+    // console.log( '[data.getAirport] ' + code);
     let airport = null
 
     // weed out incomplete or invalid codes
     if( !code || code.length < 3 || code.length > 4) {
-        // console.log( 'invalid code ' + code)
+        // console.log( '[data.getAirport] invalid code ' + code)
         return airport
     }
 
@@ -84,13 +90,13 @@ export async function getAirport( codeParam, group = false) {
     // do we already know this code in the cache?
     if( code in airports) {
         airport = airports[code]
-        // console.log( 'found in cache ' + code)
+        // console.log( '[data.getAirport] found in cache ' + code)
         return airport
     }
 
     // if this code is already in the queue we'll just wait for the data
     if( pendingCodes.includes(code)) {
-      // console.log( 'already in queue ' + code)
+      // console.log( '[data.getAirport] already in queue ' + code)
       return await waitForAirportData( code)
     }
 
@@ -113,7 +119,7 @@ export async function getAirport( codeParam, group = false) {
 
       // wait until we are in first position
       while( pendingCodes[0] != code) {
-        // console.log( 'waiting for ' + pendingQueries[0])
+        // console.log( [data.getAirport] 'waiting for ' + pendingQueries[0])
         await new Promise(r => setTimeout(r, 100));
       }
 
@@ -134,6 +140,13 @@ export function getBlankPage() {
 }  
 
 /**
+ * @returns Whatever the current user is. Could be null if user is not authenticated
+ */
+export function getCurrentUser() {
+  return currentUser
+}
+
+/**
  * @returns a copy of demo page data 
  */
 export function getDemoPage() {
@@ -152,11 +165,11 @@ async function requestAllAirports( codes) {
   }
 
   const url = apiRootUrl + 'airports/' + codes.join('-');
-  await axios.get(url, codes, miniHeader)
+  await axios.get(url, miniHeader)
     .then( response => {
         // console.log( JSON.stringify(response.data))
         const airportList = response.data
-        airportList.forEach( (airport,index) => {
+        airportList.forEach( airport => {
           // memorize this airport
           airports[airport.code] = airport
           // remove this code from pending codes
@@ -207,6 +220,10 @@ export async function sendFeedback(data) {
     .catch( error => {
       console.log( '[data] feedback error ' + error)
     })
+}
+
+export function setCurrentUser( user) {
+  currentUser = user
 }
 
 /**

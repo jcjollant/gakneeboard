@@ -9,9 +9,9 @@ import SignIn from './SignIn.vue';
 import Warning from './Warning.vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
+import { getCurrentUser } from '../../assets/data'
 
-
-const emits = defineEmits(['loadPage','print','showFeedback','showAbout'])
+const emits = defineEmits(['authentication','loadPage','print','showFeedback','showAbout'])
 
 const activePage = ref('')
 const confirm = useConfirm()
@@ -52,6 +52,19 @@ function loadProps( newProps) {
   activePage.value = newProps.page;
 }
 
+function onAuthentication(userParam) {
+  console.log('[Menu.onAuthentication] ' + JSON.stringify(userParam))
+  showSignIn.value = false
+  if( userParam) {
+    user.value = userParam
+    toast.add({ severity: 'success', summary: 'Clear', detail: 'Welcome ' + userParam.name, life: 3000});  
+    showMenu.value = false
+    emits('authentication', userParam)
+  } else {
+    toast.add({ severity: 'warn', summary: 'Engine Roughness', detail: 'Authentication failed', life: 3000});  
+  }
+}
+
 function onDemo() {
   getConfirmation('Load Demo Tiles', 'demo')
 }
@@ -60,7 +73,7 @@ function onFeedbackSent() {
   // console.log('[menu] onFeedbackSent')
   showMenu.value = false;
   showFeedback.value = false
-  toast.add({ severity: 'info', summary: 'Thank you', detail: 'Feedback sent', life: 3000});  
+  toast.add({ severity: 'info', summary: 'Readback Correct', detail: 'Thanks for your feedback!', life: 3000});  
 }
 
 function onLoadPage( name) {
@@ -69,6 +82,7 @@ function onLoadPage( name) {
 }  
 
 onMounted(() => {
+  user.value = getCurrentUser()
   loadProps(props)
 })  
 
@@ -79,6 +93,11 @@ function onPrint() {
 
 function onReset() {
   getConfirmation('Reset All Tiles', 'reset')
+}
+
+function onSignOut() {
+  emits('authentication',null)
+  user.value = null
 }
 
 function openBlog() {
@@ -103,9 +122,9 @@ watch( props, async() => {
   <div class="container" :class="{grow: showMenu}">
     <ConfirmDialog></ConfirmDialog>
     <Toast />
-    <Feedback v-model:visible="showFeedback" @sent="onFeedbackSent" />
+    <Feedback v-model:visible="showFeedback" :user="user" @sent="onFeedbackSent" />
     <Warning v-model:visible="showWarning" @close="showWarning=false" />
-    <SignIn v-model:visible="showSignIn" @close="showSignIn=false" />
+    <SignIn v-model:visible="showSignIn" @close="showSignIn=false" @authentication="onAuthentication" />
     <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu">
       <div class="bar1"></div>
       <div class="bar2"></div>
@@ -113,7 +132,8 @@ watch( props, async() => {
     </div>
     <div v-show="showMenu" class="expandedMenu">
       <div class="buttonsList">
-        <Button v-if="user" :label="user.name" icon="pi pi-user" title="Sign Out" class="active">
+        <Button v-if="user" :label="user.name" icon="pi pi-user" title="Sign Out" class="active"
+          @click="onSignOut">
         </Button>
         <Button v-else label="Sign In" icon="pi pi-user" title="Sign In to enable custom data"
           @click="showSignIn=true">

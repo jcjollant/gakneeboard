@@ -2,9 +2,10 @@
 // import HelloWorld from './components/HelloWorld.vue'
 import Menu from './components/menu/Menu.vue'
 import Widget from './components/Tile.vue'
-import {onMounted,ref} from 'vue'
+import { onBeforeMount, onMounted,ref} from 'vue'
 import { getDemoPage, getBlankPage } from './assets/data.js'
 import { inject } from "@vercel/analytics"
+import { setCurrentUser} from './assets/data.js'
 
 var pageData = null;
 const currentPage = ref('page1')
@@ -24,6 +25,7 @@ const widgetsOne = [widget0,widget1,widget2,widget3,widget4,widget5]
 const widgetsTwo = [widget6,widget7,widget8,widget9,widget10,widget11]
 const allWidgets = widgetsOne.concat(widgetsTwo)
 const printMode = ref(false)
+const keyUser = 'kb-user'
 
 // update all widgets with provided data
 async function loadPageData(data) {
@@ -39,6 +41,19 @@ async function loadPageData(data) {
   pageData = data;
   // savePageData();
 }
+
+function onAuthentication(user) {
+  console.log('[App.onAuthentication] ' + JSON.stringify(user))
+  if( user) {
+    localStorage.setItem(keyUser,JSON.stringify(user))
+  } else {
+    localStorage.removeItem(keyUser)
+  }
+}
+
+onBeforeMount(()=>{
+  setCurrentUser( JSON.parse(localStorage.getItem(keyUser)))
+})
 
 function onMenuLoadPage(name) {
   // console.log('onLoadPage ' + JSON.stringify(name))
@@ -63,6 +78,7 @@ function onMenuLoadPage(name) {
 
 onMounted(() => {
   onMenuLoadPage(currentPage.value)
+  // Analytics
   inject();
   // console.log( Object.keys(airports).join(', ').toUpperCase());
 })
@@ -91,6 +107,7 @@ function updateWidget(newWidgetData) {
   </div>
   <div class="menuContainer">
     <Menu class="menu" :page="currentPage"
+      @authentication="onAuthentication"
       @load-page="onMenuLoadPage" 
       @print="printMode=!printMode"
       @show-feedback="showFeedback=true" 
