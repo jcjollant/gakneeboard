@@ -4,6 +4,7 @@ import { version } from "../backend/data.js"
 const cors = require('cors');
 const db = require('../backend/db.js');
 const gapi = require('../backend/gapi.js');
+const users = require('../backend/user.js');
 
 const port = 3002
 const app = express();
@@ -64,10 +65,18 @@ app.get('/airports/:list', async (req, res) => {
     res.send(airports)
 })
 
-app.post('/authenticate', async(req,red) => {
-    console.log( "API authenticate request " + req);
+/**
+ * User is autenticating
+ */
+app.post('/authenticate', async(req,res) => {
+    console.log( "API authenticate request ");
     console.log( "API authenticate body " + req.body);
-    res.send("OK")
+    const user = users.authenticate(req.body)
+    if( user) {
+        res.send(users)
+    } else {
+        res.status(400).send("SignIn failed")
+    }
 })
 
 app.post('/feedback', async(req,res) => {
