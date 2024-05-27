@@ -2,10 +2,14 @@
 run `vercel dev` to run the local service
 
 ## TODO
-* Initial load in one pass (airports)
-* Be able to refresh data when new publication is available
+* Automatically catch when new publication is available
+* Automatically refresh data when new publication is available
 
 # Done
+## 5/27/2024
+* Create Users test
+## ?
+* Initial load in one pass (airports)
 ## 5/11/2024
 * Removed all military frequencies from DBgith
 * We are now filtering militray frequencies for ground, weather and tower
