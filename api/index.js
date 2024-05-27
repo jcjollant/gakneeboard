@@ -9,13 +9,15 @@ const users = require('../backend/users.js');
 const port = 3002
 const app = express();
 
-// const corsOptions = {
-//     origin: "*",
-//     optionsSuccessStatus: 200
+const corsOptions = {
+    origin: "http://localhost:5173",
+    methods: "GET,POST",
+    credentials: true,
+    allowHeaders: 'Content-Type,Authorization'
 
-// }
-// app.use(cors(corsOptions))
-app.use(cors())
+}
+app.use(cors(corsOptions))
+// app.use(cors())
 
 if( process.env.NODE_ENV == 'development') {
     app.use((req, res, next) => {
