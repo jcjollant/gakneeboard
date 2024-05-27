@@ -11,9 +11,9 @@ const app = express();
 
 const corsOptions = {
     origin: ["http://localhost:5173","https://gapilot-git-google-auth-jcjollants-projects.vercel.app/","https://kb.jollant.net"],
-    methods: "GET,POST",
+    methods: "GET,POST,OPTIONS",
     credentials: true,
-    allowHeaders: 'Content-Type,Authorization'
+    allowHeaders: 'Authorization,X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
 
 }
 app.use(cors(corsOptions))
