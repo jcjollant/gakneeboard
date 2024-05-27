@@ -10,7 +10,7 @@ const port = 3002
 const app = express();
 
 const corsOptions = {
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173","https://gapilot-git-google-auth-jcjollants-projects.vercel.app/","https://kb.jollant.net"],
     methods: "GET,POST",
     credentials: true,
     allowHeaders: 'Content-Type,Authorization'
