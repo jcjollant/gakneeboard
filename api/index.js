@@ -4,7 +4,7 @@ import { version } from "../backend/data.js"
 const cors = require('cors');
 const db = require('../backend/db.js');
 const gapi = require('../backend/gapi.js');
-const users = require('../backend/user.js');
+const users = require('../backend/users.js');
 
 const port = 3002
 const app = express();
@@ -17,25 +17,27 @@ const app = express();
 // app.use(cors(corsOptions))
 app.use(cors())
 
-app.use((req, res, next) => {
-    const showHeaders = false;
-    let thisRequest = Date.now();
-    if( showHeaders ) {
-        console.log(`${thisRequest}: ${req.method}, ${req.originalUrl}, `, req.headers);
-    } else {
-        console.log(`${thisRequest}: ${req.method}, ${req.originalUrl}, `);
-    }
-    // watchs for end of theresponse
-    res.on('close', () => {
-        if( showHeaders) {
-            console.log(`${thisRequest}: close response, res.statusCode = ${res.statusCode}, outbound headers: `, res.getHeaders());
+if( process.env.NODE_ENV == 'development') {
+    app.use((req, res, next) => {
+        const showHeaders = false;
+        let thisRequest = Date.now();
+        if( showHeaders ) {
+            console.log(`${thisRequest}: ${req.method}, ${req.originalUrl}, `, req.headers);
         } else {
-            console.log(`${thisRequest}: close response, res.statusCode = ${res.statusCode}`);
+            console.log(`${thisRequest}: ${req.method}, ${req.originalUrl}, `);
         }
+        // watchs for end of theresponse
+        res.on('close', () => {
+            if( showHeaders) {
+                console.log(`${thisRequest}: close response, res.statusCode = ${res.statusCode}, outbound headers: `, res.getHeaders());
+            } else {
+                console.log(`${thisRequest}: close response, res.statusCode = ${res.statusCode}`);
+            }
+        });
+        next();
     });
-    next();
-});
 
+}    
 app.use(express.json())
 
 
@@ -69,11 +71,11 @@ app.get('/airports/:list', async (req, res) => {
  * User is autenticating
  */
 app.post('/authenticate', async(req,res) => {
-    console.log( "API authenticate request ");
-    console.log( "API authenticate body " + req.body);
-    const user = users.authenticate(req.body)
+    // console.log( "[index] authenticate request ");
+    // console.log( "[index] authenticate body " + req.body);
+    const user = await users.authenticate(req.body)
     if( user) {
-        res.send(users)
+        res.send(user)
     } else {
         res.status(400).send("SignIn failed")
     }
@@ -81,13 +83,13 @@ app.post('/authenticate', async(req,res) => {
 
 app.post('/feedback', async(req,res) => {
     // console.log( "API feedback request " + req);
-    console.log( "API feedback body " + JSON.stringify(req.body));
+    console.log( "[index] feedback body " + JSON.stringify(req.body));
     // insert feedback in DB
     const data = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
     await db.saveFeedback(data)
     res.send("Thank you for your feedback")
 })
 
-app.listen(port, () => console.log("Server ready on port " + port));
+app.listen(port, () => console.log("[index] Server ready on port " + port));
 
 export default app;
