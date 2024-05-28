@@ -12,7 +12,7 @@ const emits = defineEmits(["close"]);
 <template>
       <Dialog modal header="Unkown Airport">
             <div class="mb-5">
-                  <span>You need to be authenticated to create custom airports data</span>
+                  <span>Signed in users will soon be able to create custom airports data</span>
             </div>
             <div class="action gap-2"><Button label="Close" @click="emits('close')"></Button></div>
       </Dialog>
