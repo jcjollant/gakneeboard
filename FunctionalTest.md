@@ -8,8 +8,8 @@
 ## Bulk Page Edit
   * reset tiles => Confirmation => All tiles switch to selector
   * Load demo tiles => Confirmation => All tiles are loading
-    * Renton, Boeing 14L, Skagit 11, Arlington ALL
-    * Roche Harbor, Death Valley, Harvey (Mag), Auburn 34 midfield
+    * Renton, Boeing 14L, Raleigh, Arlington ALL
+    * Roche Harbor, Death Valley, Harvey (Mag), Fuel Bug
     * ATIS Full, Clearance, Notes, Radios
 ## Airport Tile
   * Data Fields @ Renton Muni
@@ -19,7 +19,6 @@
     * 16 LP, blue, symetric pattern stroke 
     * 34 RP, red, asymetric pattern stroke
     * patternmmode cycle => test 5 modes
-    * test headings 16 enrty=292 midfield=67 34 entry=202 midfield=67
   * Boeing field cycle runway 
     * 14L-32R frequency=118.3 label=TWR 14L-32R 
     * 14R-32L frequency=120.6 label=TWR 14R-32L 
@@ -35,6 +34,7 @@
       * come back => Edit mode should be gone
   * Raleigh Exec KTTA name should be truncated
   * Test replace
+  * Test Unknown Airport can be closed
 ## ATIS Tile
   * Check layout showing 7 fields : Information, Wind, Rwy, Visiblity, Tempreature, Atimeter and Sky
   * Title is offset to the left
@@ -68,7 +68,7 @@
     * reserve / fuel flow > usable
 ## Feedback
   * Dialog should show version number in bottom right corner
-  * Enter feedback => Should show in the DB
+  * Enter feedback singed out should not prompt for follow up => Should show in the DB without r
 ## Print Mode
  * Pick Print from menu -> Should flip right page
 ## Persistance
@@ -80,8 +80,15 @@
    * Remove last 4 freq from Radio Flows
  * switch to page 2, reload
  * (Page1) Check content matches list above
+## Authentication
+ * Sign In w/ Google => Should succeed => User name should show in sign in button
+ * Feedback should give the follow up option
+ * Sign Out => User name should be removed
 
 ## Throurough test
   * Reset + No should not reset tiles
   * Demo + No should not load demo tiles
   * Check warning layout
+  * Send Feedback, test "Do No Send" closes the window
+  * Send Feeback, try to send authenticated without follow up => DB should show null
+  * Airport, check headings 16 enrty=292 midfield=67 34 entry=202 midfield=67

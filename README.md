@@ -15,6 +15,10 @@ I couldn't find anything I liked, so I scratched my own itch.
 * Users can authenticate with Google
 
 # Done
+## 5/27/2024
+* Users can authenticate
+* Authenticatred users can get feedback follow up
+* Send Feedback is disabled if there is no text
 ## 5/18/2024
 * Big watermark on 3 letter airports
 * Print mode flips the back page
