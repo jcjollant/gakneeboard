@@ -165,7 +165,7 @@ async function requestAllAirports( codes) {
   }
 
   const url = apiRootUrl + 'airports/' + codes.join('-');
-  await axios.get(url, miniHeader)
+  await axios.get(url)
     .then( response => {
         // console.log( JSON.stringify(response.data))
         const airportList = response.data
