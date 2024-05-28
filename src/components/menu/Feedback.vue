@@ -8,7 +8,7 @@ import Textarea from "primevue/textarea";
 import FloatLabel from "primevue/floatlabel"
 import Checkbox from 'primevue/checkbox';
 
-const emits = defineEmits(["sent"]);
+const emits = defineEmits(["close","sent"]);
 
 const props = defineProps({
   user: { type: Object, default: null},
@@ -54,18 +54,21 @@ watch( props, async() => {
     <div class="mb-5">
       <span>We'd love to hear about your experience. Please share your thoughts</span>
     </div>
-    <div>
-      <FloatLabel>
-        <Textarea rows="10" cols="80" autoResize v-model:modelValue="feedbackText"></Textarea>
-        <label>What did we miss? What would you change?</label>
-      </FloatLabel>
-    </div>
-    <div v-if="user" class="flex align-items-center mb-5">
-        <Checkbox v-model="contactMeValue" inputId="contact" name="pizza" value="yes" />
-        <label for="contact" class="ml-2">It's ok to contact me with follow ups pursuant to this feedback</label>
+    <div class="mb-5">
+      <div>
+        <FloatLabel>
+          <Textarea rows="10" cols="80" autoResize v-model:modelValue="feedbackText"></Textarea>
+          <label>What did we miss? What would you change?</label>
+        </FloatLabel>
+      </div>
+      <div v-if="user" class="flex align-items-center">
+          <Checkbox v-model="contactMeValue" inputId="contact" name="pizza" value="yes" />
+          <label for="contact" class="ml-2">It's ok to contact me with follow ups pursuant to this feedback</label>
+      </div>
     </div>
     <div class="action gap-2">
-      <Button label="Send" @click="send"></Button>
+      <Button label="Do Not Send" @click="emits('close')" link></Button>
+      <Button label="Send" @click="send" :disabled="feedbackText.length==0"></Button>
     </div>
     <div class="version">{{ version }}</div>
   </Dialog>
