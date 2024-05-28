@@ -43,7 +43,7 @@ async function loadPageData(data) {
 }
 
 function onAuthentication(user) {
-  console.log('[App.onAuthentication] ' + JSON.stringify(user))
+  // console.log('[App.onAuthentication] ' + JSON.stringify(user))
   if( user) {
     localStorage.setItem(keyUser,JSON.stringify(user))
   } else {

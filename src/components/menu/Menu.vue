@@ -53,7 +53,7 @@ function loadProps( newProps) {
 }
 
 function onAuthentication(userParam) {
-  console.log('[Menu.onAuthentication] ' + JSON.stringify(userParam))
+  // console.log('[Menu.onAuthentication] ' + JSON.stringify(userParam))
   showSignIn.value = false
   if( userParam) {
     user.value = userParam
@@ -102,7 +102,6 @@ function onSignOut() {
 
 function openBlog() {
   window.open('https://ga-kneeboard.blogspot.com/', '_blank');
-  // window.open('https://blogjollant.wordpress.com/', '_blank');  
 }
 
 
@@ -122,7 +121,7 @@ watch( props, async() => {
   <div class="container" :class="{grow: showMenu}">
     <ConfirmDialog></ConfirmDialog>
     <Toast />
-    <Feedback v-model:visible="showFeedback" :user="user" @sent="onFeedbackSent" />
+    <Feedback v-model:visible="showFeedback" :user="user" @sent="onFeedbackSent" @close="showFeedback=false" />
     <Warning v-model:visible="showWarning" @close="showWarning=false" />
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" @authentication="onAuthentication" />
     <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu">
