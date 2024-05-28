@@ -9,18 +9,18 @@ const users = require('../backend/users.js');
 const port = 3002
 const app = express();
 
-const corsOptions = {
-    // origin: ["http://localhost:5173","https://gapilot-git-google-auth-jcjollants-projects.vercel.app","https://kb.jollant.net"],
-    // origin: 'https://gapilot-git-google-auth-jcjollants-projects.vercel.app',
-    origin: true,
-    // origin: "*",
-    // methods: "GET,POST,OPTIONS",
-    // credentials: true,
-    // allowHeaders: 'Authorization,X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
-    optionsSuccessStatus: 200
-}
-app.use(cors(corsOptions))
-// app.use(cors())
+// const corsOptions = {
+//     // origin: ["http://localhost:5173","https://gapilot-git-google-auth-jcjollants-projects.vercel.app","https://kb.jollant.net"],
+//     // origin: 'https://gapilot-git-google-auth-jcjollants-projects.vercel.app',
+//     origin: true,
+//     // origin: "*",
+//     // methods: "GET,POST,OPTIONS",
+//     // credentials: true,
+//     // allowHeaders: 'Authorization,X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
+//     optionsSuccessStatus: 200
+// }
+// app.use(cors(corsOptions))
+app.use(cors())
 
 if( process.env.NODE_ENV == 'development') {
     app.use((req, res, next) => {
