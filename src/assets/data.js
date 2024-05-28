@@ -46,7 +46,7 @@ const demoRadioData = [
   {'id':11,'name':'','data':{}},
 ]  
 
-const miniHeader = { headers: {'Content-Type':null} }
+const miniHeader = { headers: {'Content-Type':'application/json'} }
 
 let currentUser = null
 export async function authenticate( source, token) {
