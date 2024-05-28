@@ -11,7 +11,8 @@ const app = express();
 
 const corsOptions = {
     // origin: ["http://localhost:5173","https://gapilot-git-google-auth-jcjollants-projects.vercel.app","https://kb.jollant.net"],
-    origin: 'https://gapilot-git-google-auth-jcjollants-projects.vercel.app',
+    // origin: 'https://gapilot-git-google-auth-jcjollants-projects.vercel.app',
+    origin: true,
     // origin: "*",
     // methods: "GET,POST,OPTIONS",
     // credentials: true,
