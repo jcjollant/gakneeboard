@@ -6,19 +6,6 @@
   text-align: center;
 }
 
-/* @media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-} */
-
 body {
   margin: 0;
   display: flex;
@@ -32,13 +19,15 @@ body {
   cursor: pointer;
 }
 
-.version {
+.versionDialog {
   position: absolute;
   right: 5px;
   bottom: 5px;
   font-size: 8px;
+  margin:auto;
   color: darkslategrey;
 }
+
 
 .content {
   width: 240px; /* Adjust width as needed */
@@ -67,6 +56,12 @@ body {
 .actionBar .p-button {
   font-size: 0.8rem;
 }
+
+.actionDialog {
+  display: flex;
+  justify-content: end;
+}
+
 
 .gap-2 {
   gap: 0.5rem;

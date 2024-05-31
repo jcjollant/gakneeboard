@@ -66,27 +66,14 @@ watch( props, async() => {
           <label for="contact" class="ml-2">It's ok to contact me with follow ups pursuant to this feedback</label>
       </div>
     </div>
-    <div class="action gap-2">
+    <div class="actionDialog gap-2">
       <Button label="Do Not Send" @click="emits('close')" link></Button>
       <Button label="Send" @click="send" :disabled="feedbackText.length==0"></Button>
     </div>
-    <div class="version">{{ version }}</div>
+    <div class="versionDialog">{{ version }}</div>
   </Dialog>
 </template>
 
 <style scoped>
-.action {
-  display: flex;
-  justify-content: end;
-}
-
-.version {
-  position: absolute;
-  right: 5px;
-  bottom: 5px;
-  font-size: 8px;
-  margin:auto;
-}
-
 
 </style>

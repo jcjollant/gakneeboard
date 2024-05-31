@@ -27,16 +27,12 @@ const target = ref(null)
       <div class="item mr-3">Magnetic Headings</div>
       <div>Are calculated with FAA variation data which can be quite old at some locations</div>
     </div>    
-    <div class="action gap-2"><Button label="Got it" @click="emits('close')"></Button></div>
-    <div class="version">{{ version }}</div>
+    <div class="actionDialog gap-2"><Button label="Got it" @click="emits('close')"></Button></div>
+    <div class="versionDialog">{{ version }}</div>
   </Dialog>
 </template>
 
 <style scoped>
-.action {
-  display: flex;
-  justify-content: end;
-}
 .warning-content {
   display: grid;
   grid-template-columns: auto auto;
@@ -44,5 +40,6 @@ const target = ref(null)
 .item {
   font-weight: 700;
   text-align: right;
+  margin-bottom: 0.5rem;
 }
 </style>
