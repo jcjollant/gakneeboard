@@ -6,6 +6,7 @@ import { onBeforeMount, onMounted,ref} from 'vue'
 import { getDemoPage, getBlankPage } from './assets/data.js'
 import { inject } from "@vercel/analytics"
 import { setCurrentUser} from './assets/data.js'
+import HowDoesItWork from './components/HowDoesItWork.vue'
 
 var pageData = null;
 const currentPage = ref('page1')
@@ -26,6 +27,8 @@ const widgetsTwo = [widget6,widget7,widget8,widget9,widget10,widget11]
 const allWidgets = widgetsOne.concat(widgetsTwo)
 const printMode = ref(false)
 const keyUser = 'kb-user'
+const keyHowDoesItWork = 'howDoesItWork'
+const showHowDoesItWork = ref(true)
 
 // update all widgets with provided data
 async function loadPageData(data) {
@@ -51,8 +54,16 @@ function onAuthentication(user) {
   }
 }
 
+function onCloseHowDoesItWork() {
+  showHowDoesItWork.value =  false
+  localStorage.setItem(keyHowDoesItWork, "false")
+}
+
 onBeforeMount(()=>{
   setCurrentUser( JSON.parse(localStorage.getItem(keyUser)))
+  if( localStorage.getItem( keyHowDoesItWork) == 'false') {
+    showHowDoesItWork.value = false;
+  }
 })
 
 function onMenuLoadPage(name) {
@@ -97,6 +108,7 @@ function updateWidget(newWidgetData) {
 </script>
 
 <template>
+    <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
   <div class="twoPages">
     <div class="onePage">
       <Widget v-for='widget in widgetsOne' :widget="widget.value" @update="updateWidget"/>
@@ -110,8 +122,8 @@ function updateWidget(newWidgetData) {
       @authentication="onAuthentication"
       @load-page="onMenuLoadPage" 
       @print="printMode=!printMode"
-      @show-feedback="showFeedback=true" 
-      @show-about="showAbout=true">
+      @howDoesItWork="showHowDoesItWork=true"
+      >
     </Menu>
   </div>
 </template>

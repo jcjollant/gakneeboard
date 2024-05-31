@@ -11,7 +11,7 @@ import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
 import { getCurrentUser } from '../../assets/data'
 
-const emits = defineEmits(['authentication','loadPage','print','showFeedback','showAbout'])
+const emits = defineEmits(['authentication','loadPage','print','howDoesItWork'])
 
 const activePage = ref('')
 const confirm = useConfirm()
@@ -119,7 +119,7 @@ watch( props, async() => {
 <template>
 
   <div class="container" :class="{grow: showMenu}">
-    <ConfirmDialog></ConfirmDialog>
+    <ConfirmDialog />
     <Toast />
     <Feedback v-model:visible="showFeedback" :user="user" @sent="onFeedbackSent" @close="showFeedback=false" />
     <Warning v-model:visible="showWarning" @close="showWarning=false" />
@@ -150,6 +150,9 @@ watch( props, async() => {
         </Button>
         <Button label="Demo" icon="pi pi-clipboard"  title="Replace all with Demo Tiles"
           @click="onDemo">
+        </Button>
+        <Button icon="pi pi-question"  title="How does it work?"
+          @click="emits('howDoesItWork')">
         </Button>
         <div class="separator"></div>
         <Button label="Feedback" icon="pi pi-megaphone" title="Send Feedback"
