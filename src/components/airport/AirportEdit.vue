@@ -4,7 +4,7 @@ import * as data from '../../assets/data.js'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner';
 import InputText from 'primevue/inputtext'
-import UnknownAirport from './UnknownAirport.vue';
+import UnknownAirport from './CustomAirport.vue';
 
 const emits = defineEmits(['close','selection'])
 
