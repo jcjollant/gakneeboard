@@ -1,4 +1,4 @@
-export const version = '527'
+export const version = '530'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'http://localhost:3000/'
 // const apiRootUrl = 'https://ga-api-git-google-auth-jcjollants-projects.vercel.app/'
