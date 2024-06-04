@@ -7,10 +7,12 @@ I couldn't find anything I liked, so I scratched my own itch.
 * If the original requets fails, airports should switch to unknown
 
 # TODO
-* Improve Radio Flow Selection with airport code and all frequancies
+* Improve Radio Flow Selection with airport code and all frequencies
 * Show list of frequencies for selection in corners list
 * Add separators in Corner data selectors
 * New Tiles Synopsis => capture altitude and fuel level
+* New Tile Navlog
+* New Tile Emergency
 * Small indicator below runway is configurable
 * Users can authenticate with Google
 
