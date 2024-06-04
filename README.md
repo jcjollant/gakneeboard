@@ -2,6 +2,8 @@
 run `vercel dev` to run the local service
 
 ## TODO
+* Daily process captures #Airport, #Users, #Feedbacks and effective date for a given airport
+  * data is saved to the database and sent by email  
 * Automatically catch when new publication is available
 * Automatically refresh data when new publication is available
 
