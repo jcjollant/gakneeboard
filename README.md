@@ -14,7 +14,6 @@ I couldn't find anything I liked, so I scratched my own itch.
 * New Tile Navlog
 * New Tile Emergency
 * Small indicator below runway is configurable
-* Users can authenticate with Google
 
 # Done
 ## 5/27/2024
