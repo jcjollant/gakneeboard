@@ -1,6 +1,6 @@
 export const version = '530'
-const apiRootUrl = 'https://ga-api-seven.vercel.app/'
-// const apiRootUrl = 'http://localhost:3000/'
+// const apiRootUrl = 'https://ga-api-seven.vercel.app/'
+const apiRootUrl = 'http://localhost:3000/'
 // const apiRootUrl = 'https://ga-api-git-google-auth-jcjollants-projects.vercel.app/'
 
 import axios from 'axios'
@@ -46,12 +46,15 @@ const demoRadioData = [
   {'id':11,'name':'','data':{}},
 ]  
 
-const miniHeader = { headers: {'Content-Type':'application/json'} }
+const contentTypeJson = { headers: {'Content-Type':'application/json'} }
+const contentTypeTextPlain = { headers: {'Content-Type':'text/plain'} }
+// const contentTypeText = { headers: {'Content-Type':'text'} }
 
 let currentUser = null
 export async function authenticate( source, token) {
   const url = apiRootUrl + 'authenticate'
-  const response = await axios.post(url, {source:source, token:token}, miniHeader)
+  const payload = {source:source, token:token}
+  const response = await axios.post(url, payload, contentTypeJson)
     .catch( e => {
       console.log( '[data.authenticate] ' + e)
       return null
@@ -212,13 +215,21 @@ async function requestOneAirport( code) {
   return airport
 }
 
-export async function sendFeedback(data) {
-  axios.post(apiRootUrl + 'feedback', data, miniHeader)
+export async function sendFeedback(text,contactMe) {
+  // console.log( '[data] feedback ' + JSON.stringify(data))
+  const url = apiRootUrl + 'feedback'
+  const payload = {version:version,feedback:text}
+  if( contactMe) {
+    payload.user = currentUser.sha256;
+  }
+
+  axios.post( url, JSON.stringify(payload), contentTypeTextPlain)
+  // axios.post(apiRootUrl + 'feedback', data, contentTypeJson)
     .then( response => {
       // console.log( '[data] feedback sent')
     })
     .catch( error => {
-      console.log( '[data] feedback error ' + error)
+      console.log( '[data] feedback error ' + JSON.stringify(error))
     })
 }
 
@@ -238,4 +249,18 @@ async function waitForAirportData( code) {
   }
   // console.log( 'done waiting for ' + code)
   return airports[code]
+}
+
+export async function saveCustomAirport(airport) {
+  const url = apiRootUrl + 'airport'
+  const payload = {user:currentUser.sha256, airport:airport}
+  // const headers = { 'Content-Type':'text/plain', 'Authorization':'Bearer ' + currentUser.sha256}
+  axios.post( url, JSON.stringify(payload), contentTypeTextPlain)
+    .then( response => {
+      console.log( '[data] custom airport saved')
+    })
+    .catch( error => {
+      console.log( '[data] custom airport save error ' + error)
+    })
+
 }
