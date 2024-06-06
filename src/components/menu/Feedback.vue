@@ -33,12 +33,7 @@ onMounted( () => {
  */
 async function send() {
   // console.log( '[Feedback.send] ' + contactMeValue.value)
-  const data = {version:version,feedback:feedbackText.value}
-  if( contactMeValue.value == 'yes') {
-    data.user = user.value.sha256;
-  }
-  // console.log( '[Feedback.send] ' + JSON.stringify(data))
-  await sendFeedback(data);
+  await sendFeedback(feedbackText.value, contactMeValue.value == 'yes');
   feedbackText.value = ''
   emits('sent')
 }
