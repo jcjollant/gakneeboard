@@ -1,6 +1,6 @@
 import express from "express";
-// import cors from "cors";
 import { version } from "../backend/data.js"
+// import cors from "cors";
 const cors = require('cors');
 const db = require('../backend/db.js');
 const gapi = require('../backend/gapi.js');
@@ -10,20 +10,19 @@ const port = 3002
 const app = express();
 
 // const corsOptions = {
-//     // origin: ["http://localhost:5173","https://gapilot-git-google-auth-jcjollants-projects.vercel.app","https://kb.jollant.net"],
-//     // origin: 'https://gapilot-git-google-auth-jcjollants-projects.vercel.app',
-//     origin: true,
-//     // origin: "*",
-//     // methods: "GET,POST,OPTIONS",
-//     // credentials: true,
-//     // allowHeaders: 'Authorization,X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
+//     origin: "*",
+//     methods: "GET,POST,OPTIONS",
+//     credentials: true,
+//     allowHeaders: 'Authorization,X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
 //     optionsSuccessStatus: 200
 // }
 // app.use(cors(corsOptions))
-app.use(cors())
-app.use(express.json())
 
-if( process.env.NODE_ENV == 'development') {
+app.use(cors())
+// app.use(express.json())
+
+// if( process.env.NODE_ENV == 'development') {
+    // console.log("Dev Mode")
     app.use((req, res, next) => {
         const showHeaders = false;
         let thisRequest = Date.now();
@@ -43,8 +42,7 @@ if( process.env.NODE_ENV == 'development') {
         next();
     });
 
-}    
-// app.use(express.json())
+// }    
 
 
 app.get("/", (req, res) => res.send("GA API version " + version));
@@ -63,6 +61,20 @@ app.get("/airport/:id", async (req,res) => {
         res.send(airport)
     } else {
         res.status(404).send("Airport not found");
+    }
+})
+
+/**
+ * Create a new custom airport
+ */
+app.post("/airport", async (req,res) => {
+    const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+    // console.log("[index] POST airport payload " + JSON.stringify(payload))
+    try {
+        gapi.createCustomAirport(payload.user, payload.airport)
+        res.send(airport.code + ' created')
+    } catch( e) {
+        res.status(500).send( e)
     }
 })
 
@@ -89,10 +101,11 @@ app.post('/authenticate', async(req,res) => {
 
 app.post('/feedback', async(req,res) => {
     // console.log( "API feedback request " + req);
-    console.log( "[index] feedback body " + JSON.stringify(req.body));
+    // console.log( "[index] feedback body " + JSON.stringify(req.body));
+    // console.log( "[index] feedback body type " + typeof req.body);
     // insert feedback in DB
-    const data = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
-    await db.saveFeedback(data)
+    const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+    await db.saveFeedback(payload)
     res.send("Thank you for your feedback")
 })
 
