@@ -4,19 +4,19 @@ I couldn't find anything I liked, so I scratched my own itch.
 
 # BUGS
 * Multitower airport stuggle : CYVR is not showing a frequency
-* If the original requets fails, airports should switch to unknown
 
 # TODO
 * Improve Radio Flow Selection with airport code and all frequancies
 * Show list of frequencies for selection in corners list
+## Airport
 * Add separators in Corner data selectors
-* New Tiles Synopsis => capture altitude and fuel level
 * Small indicator below runway is configurable
-* Users can authenticate with Google
+## Synopsis (new tile)
+* New Tile : Synopsis => capture altitude and fuel level
 
 # Done
 ## 5/27/2024
-* Users can authenticate
+* Users can authenticate with Google
 * Authenticatred users can get feedback follow up
 * Send Feedback is disabled if there is no text
 ## 5/18/2024
