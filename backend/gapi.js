@@ -1,12 +1,23 @@
 const db = require('./db')
 const adip = require('./adip')
+import { User } from './User'
+import { CustomAirport } from './CustomAirport'
 
+// Google API key
+ 
 function isValidCode(source) {
     if(source) {
         return source.length == 3 || source.length == 4;
     }
 
     return false;
+}
+
+async function createCustomAirport(userSha256,airport) {
+    // resolve user
+    const userId = User.getId(userSha256)
+    // update record
+    CustomAirport.update(airport, userId)
 }
 
 // Get an airport either from postgres or ADIP
@@ -113,4 +124,4 @@ function isMilitary(freq) {
     return !adip.isNotMilitary(freq)
 }
 
-module.exports = { getAirport, getAirportsList, getIcao, getLocId, isMilitary, isValidCode }
+module.exports = { createCustomAirport, getAirport, getAirportsList, getIcao, getLocId, isMilitary, isValidCode }

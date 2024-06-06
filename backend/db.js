@@ -1,5 +1,5 @@
 const postgres = require('@vercel/postgres')
-const modelVersion = 1
+const userModelVersion = 1
 /**
  * adds a known unknown to the DB
  * @param {*} code whatever was recevied from the caller
@@ -74,7 +74,7 @@ async function saveUser(user) {
         console.log( '[db.saveUser] match count ' + result.rowCount)
         if(result.rowCount == 0) {
             console.log( '[db.saveUser] adding ' + user.sha256)
-            await postgres.sql`INSERT INTO Users (sha256,data,version) VALUES (${user.sha256},${user},${modelVersion})`
+            await postgres.sql`INSERT INTO Users (sha256,data,version) VALUES (${user.sha256},${user},${userModelVersion})`
             // console.log( '[db.saveUser] ' + user.sha256)
         } else {
             console.log( '[db.saveUser] known user ' + user.sha256)
@@ -91,5 +91,6 @@ async function updateAirport(id, data, version) {
     await postgres.sql`UPDATE Airports SET Data=${data}, Version = ${version} WHERE id=${id}`;
 }
 
-
-module.exports = { addKnownUnknown, fetchAirport, fetchAirportList, isKnownUnknown, saveAirport, saveFeedback, saveUser, updateAirport };
+module.exports = { addKnownUnknown, fetchAirport, fetchAirportList, isKnownUnknown, saveAirport, 
+    saveFeedback, saveUser, updateAirport, updateCustomAirport
+ };
