@@ -1,8 +1,6 @@
 
 import {describe, expect, test} from '@jest/globals';
-// require( '../src/assets/Airport'   )
-import { Airport, Runway } from "../backend/Airport"; 
-
+import { Airport, Runway } from "../backend/models/Airport"; 
 
 describe('Airport', () => {
     test ('Airport should be an object', () => {
@@ -73,5 +71,6 @@ describe('Airport', () => {
         // Because NW-SE
         expect(Runway.isValidName("NW-SE")).toBeFalsy()
     })
+
 });
 
