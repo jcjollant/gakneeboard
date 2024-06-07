@@ -1,7 +1,7 @@
 const db = require('./db')
 const adip = require('./adip')
-import { User } from './User'
-import { CustomAirport } from './CustomAirport'
+import { UserDao } from './UserDao'
+import { AirportDao } from './AirportDao'
 
 // Google API key
  
@@ -15,9 +15,13 @@ function isValidCode(source) {
 
 async function createCustomAirport(userSha256,airport) {
     // resolve user
-    const userId = User.getId(userSha256)
+    const userId = UserDao.find(userSha256)
     // update record
-    CustomAirport.update(airport, userId)
+    if( userId) {
+        AirportDao.createCustom(airport, userId)
+    } else {
+        throw new Error("User not found")
+    }
 }
 
 // Get an airport either from postgres or ADIP
