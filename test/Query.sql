@@ -1,3 +1,8 @@
+#########################################
+# Airports table
+SELECT * FROM airports
+
+# How many airports are there
 SELECT COUNT(*) FROM airports
 
 SELECT COUNT(*) FROM airports WHERE version=5
@@ -9,8 +14,14 @@ SELECT * FROM airports WHERE version<5
 
 SELECT * FROM airports WHERE Code='RNT'
 
-
 SELECT COUNT(*) as count, Code from Airports GROUP BY Code ORDER BY count DESC
+
+# Test airport
+SELECT * FROM airports WHERE Code='RNT'
+
+# Test airport
+SELECT * FROM airports WHERE Code='TEST'
+
 
 #########################################
 # Feedback table
