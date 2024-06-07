@@ -92,5 +92,5 @@ async function updateAirport(id, data, version) {
 }
 
 module.exports = { addKnownUnknown, fetchAirport, fetchAirportList, isKnownUnknown, saveAirport, 
-    saveFeedback, saveUser, updateAirport, updateCustomAirport
+    saveFeedback, saveUser, updateAirport
  };

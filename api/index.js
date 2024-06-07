@@ -9,17 +9,7 @@ const users = require('../backend/users.js');
 const port = 3002
 const app = express();
 
-// const corsOptions = {
-//     origin: "*",
-//     methods: "GET,POST,OPTIONS",
-//     credentials: true,
-//     allowHeaders: 'Authorization,X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
-//     optionsSuccessStatus: 200
-// }
-// app.use(cors(corsOptions))
-
 app.use(cors())
-// app.use(express.json())
 
 // if( process.env.NODE_ENV == 'development') {
     // console.log("Dev Mode")
@@ -71,10 +61,11 @@ app.post("/airport", async (req,res) => {
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
     // console.log("[index] POST airport payload " + JSON.stringify(payload))
     try {
-        gapi.createCustomAirport(payload.user, payload.airport)
-        res.send(airport.code + ' created')
+        const code = await gapi.createCustomAirport(payload.user, payload.airport)
+        res.send(code + ' created')
     } catch( e) {
-        res.status(500).send( e)
+        console.log( "[index] POST airport error " + e)
+        res.status(500).send(e)
     }
 })
 

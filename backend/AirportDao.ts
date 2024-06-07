@@ -6,22 +6,26 @@ export class AirportDao {
      * Create a new custom airport or update an existing one
      * @param airport 
      * @param creatorId 
+     * @returns the airport code
      */
-    public static async createCustom(airport:Airport, creatorId:number) {
+    public static async createCustom(airport:Airport, creatorId:number):Promise<string> {
+        // console.log( "[AirportDao] createCustom " + airport.code + " / " + creatorId);
         const customId:number|undefined = await AirportDao.findCustom( airport.code, creatorId)
-        const data:string = JSON.stringify(airport)
+        const data:string = JSON.stringify(airport);
         if( customId) {
+            // console.log( "[AirportDao] createCustom found " + customId);
             await sql`
-                UPDATE airports SET (data=${data}, version=${airport.version}) WHERE id=${customId}
-                VALUES (${airport.code}, ${data}, ${airport.version}, ${creatorId});
+                UPDATE airports SET data=${data}, version=${airport.version} WHERE id=${customId}
             `
 
         } else {
+            // console.log( "[AirportDao] createCustom net new");
             await sql`
                 INSERT INTO airports (code, data, version, creatorid)
                 VALUES (${airport.code}, ${data}, ${airport.version}, ${creatorId});
             `
         }
+        return airport.code
     }
 
     public static async findCustom(code:string, creatorId:number):Promise<number|undefined> {

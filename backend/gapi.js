@@ -15,10 +15,10 @@ function isValidCode(source) {
 
 async function createCustomAirport(userSha256,airport) {
     // resolve user
-    const userId = UserDao.find(userSha256)
+    const userId = await UserDao.find(userSha256)
     // update record
     if( userId) {
-        AirportDao.createCustom(airport, userId)
+        return await AirportDao.createCustom(airport, userId)
     } else {
         throw new Error("User not found")
     }
