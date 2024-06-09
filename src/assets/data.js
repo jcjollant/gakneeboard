@@ -46,7 +46,7 @@ const demoRadioData = [
   {'id':11,'name':'','data':{}},
 ]  
 
-const contentTypeJson = { headers: {'Content-Type':'application/json'} }
+// const contentTypeJson = { headers: {'Content-Type':'application/json'} }
 const contentTypeTextPlain = { headers: {'Content-Type':'text/plain'} }
 // const contentTypeText = { headers: {'Content-Type':'text'} }
 
@@ -54,13 +54,26 @@ let currentUser = null
 export async function authenticate( source, token) {
   const url = apiRootUrl + 'authenticate'
   const payload = {source:source, token:token}
-  const response = await axios.post(url, payload, contentTypeJson)
+  const response = await axios.post(url, JSON.stringify(payload), contentTypeTextPlain)
     .catch( e => {
       console.log( '[data.authenticate] ' + e)
       return null
     })
-  currentUser = response.data
+  setCurrentUser(response.data)
   return currentUser
+}
+
+/**
+ * Add user information to request header if user is known
+ * @param {*} url 
+ * @returns 
+ */
+async function axiosGet(url) {
+  if( currentUser) {
+    return axios.get(url,{params:{user:currentUser.sha256}})
+  } else {
+    return axios.get(url)
+  }
 }
 
 let airports = {}
@@ -74,7 +87,7 @@ let pendingCodes = []
 export async function getAirport( codeParam, group = false) {
     const code = codeParam.toUpperCase()
 
-    // console.log( '[data.getAirport] ' + code);
+    // console.log( '[data.getAirport]', code);
     let airport = null
 
     // weed out incomplete or invalid codes
@@ -104,7 +117,9 @@ export async function getAirport( codeParam, group = false) {
     }
 
     // add ourselves to the list of pending queries
+    // console.log( '[data.getAirport] adding to queue', code);
     pendingCodes.push(code)
+    console.log( '[data.getAirport]', code, 'added to queue, length', pendingCodes.length);
 
     if( group) {
       // wait until there are no more queries
@@ -121,15 +136,16 @@ export async function getAirport( codeParam, group = false) {
     } else { // grouping is not allowed
 
       // wait until we are in first position
-      while( pendingCodes[0] != code) {
-        // console.log( [data.getAirport] 'waiting for ' + pendingQueries[0])
-        await new Promise(r => setTimeout(r, 100));
+      while( pendingCodes.length > 0 && pendingCodes[0] != code) {
+        console.log( '[data.getAirport] waiting for', pendingCodes[0], pendingCodes.length)
+        await new Promise(r => setTimeout(r, 1000));
       }
 
       airport = await requestOneAirport( code)
 
       // remove ourselves from the first position in the queue
       pendingCodes.shift()
+      console.log( '[data.getAirport]', code, 'removed from queue, length', pendingCodes.length)
     }
 
     return airport
@@ -149,12 +165,29 @@ export function getCurrentUser() {
   return currentUser
 }
 
+export function getCtafFreq(freqList) {
+  return getFrequency(freqList, 'CTAF')
+}
+
 /**
  * @returns a copy of demo page data 
  */
 export function getDemoPage() {
   return JSON.parse( JSON.stringify(demoPage))
 }  
+
+export function getFrequency(freqList, name) {
+  return freqList.find( f => f.name.includes(name))
+}
+
+export function getGroundFrequency(freqList) {
+  return getFrequency(freqList, 'GND')
+}
+
+export function getWeatherFrequency(freqList) {
+  // match names that containt either 'ATIS', 'ASOS' or 'AWOS'
+  return freqList.find( f => f.name.includes('ATIS') || f.name.includes('ASOS') || f.name.includes('AWOS'))
+}
 
 /**
  * Request a list of airports by code
@@ -168,15 +201,16 @@ async function requestAllAirports( codes) {
   }
 
   const url = apiRootUrl + 'airports/' + codes.join('-');
-  await axios.get(url)
+  await axiosGet(url)
     .then( response => {
         // console.log( JSON.stringify(response.data))
         const airportList = response.data
         airportList.forEach( airport => {
-          // memorize this airport
-          airports[airport.code] = airport
-          // remove this code from pending codes
-          pendingCodes.splice( pendingCodes.indexOf(airport.code), 1)
+            // memorize this airport
+            airports[airport.code] = airport
+            // remove this code from pending codes
+            pendingCodes.splice( pendingCodes.indexOf(airport.code), 1)
+            console.log('[data.requestAllAirports]', airport.code,'removed, queue length',pendingCodes.length)
         })
     })
     .catch( error => {
@@ -197,8 +231,8 @@ async function requestOneAirport( code) {
   // console.log( pendingCodes.length + " queries in the queue")
   let airport = null
 
-  const url = apiRootUrl + 'airport/';
-  await axios.get(url + code)
+  const url = apiRootUrl + 'airport/' + code;
+  await axiosGet(url)
     .then( response => {
         // console.log( JSON.stringify(response.data))
         airport = response.data
@@ -215,6 +249,11 @@ async function requestOneAirport( code) {
   return airport
 }
 
+/**
+ * Send feedback to the backend with version and follow up flag
+ * @param {*} text feedback text
+ * @param {*} contactMe boolean
+ */
 export async function sendFeedback(text,contactMe) {
   // console.log( '[data] feedback ' + JSON.stringify(data))
   const url = apiRootUrl + 'feedback'
@@ -235,6 +274,7 @@ export async function sendFeedback(text,contactMe) {
 
 export function setCurrentUser( user) {
   currentUser = user
+  // axios.defaults.headers.common['Authorization'] = 'User ' + user.sha256;
 }
 
 /**

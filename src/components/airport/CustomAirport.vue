@@ -1,9 +1,8 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { Airport, Runway } from '../../assets/Airport'
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button'
-import InputMask from 'primevue/inputmask'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import FieldSet from 'primevue/fieldset'
@@ -12,9 +11,10 @@ import InputGroupAddon from 'primevue/inputgroupaddon'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
 import ToggleButton from 'primevue/togglebutton'
-import { saveCustomAirport } from '../../assets/data'
+import { saveCustomAirport, getCtafFreq, getGroundFrequency, getWeatherFrequency } from '../../assets/data'
 
-const emits = defineEmits(["close"]);
+const emits = defineEmits(["close","updated"]);
+
 const user = ref("JC")
 const code = ref("")
 const name = ref("")
@@ -32,6 +32,40 @@ const rwy1RightPattern = ref(false)
 const runways = ref([])
 const toast = useToast()
 
+/**
+ * Props management (defineProps, loadProps, onMounted, watch)
+ */
+const props = defineProps({
+    airport: { type: Object, default: null},
+})
+
+function loadProps(props) {
+      // console.log('[CustomAirport.loadProps] ' + JSON.stringify(props))
+      if( props.airport) {
+            code.value = props.airport.code;
+            name.value = props.airport.name;
+            elevation.value = props.airport.elev;
+            ctaf.value = getCtafFreq( props.airport.freq)
+            weather.value = getWeatherFrequency( props.airport.freq)
+            ground.value = getGroundFrequency( props.airport.freq)
+            runways.value = props.airport.rwys
+      }
+}
+
+onMounted(() => {
+    loadProps(props)
+})
+
+watch( props, async() => {
+    // console.log("Airport props changed " + JSON.stringify(props));
+    loadProps(props)
+})
+/**
+ * End of props management
+ */
+
+
+
 function errorToast( title, details) {
       toast.add({ 
             severity: 'error', 
@@ -42,6 +76,10 @@ function errorToast( title, details) {
 }
 
 function onAddRunway() {
+      // prepend with 0 on single value
+      if(rwyEnd0.value.length == 1) rwyEnd0.value = '0' + rwyEnd0.value
+      if(rwyEnd1.value.length == 1) rwyEnd1.value = '0' + rwyEnd1.value
+
       const rwyName = rwyEnd0.value + '-' + rwyEnd1.value
       if( Runway.isValidName(rwyName)) {
             const runway = new Runway(rwyName,rwyLength.value,rwyWidth.value)
@@ -78,6 +116,7 @@ async function onSave() {
 
       console.log( "[CustomAirport] onSave aiport " + JSON.stringify(airport))
       await saveCustomAirport( airport)
+      emits('updated',code.value)
 }
 
 </script>
@@ -113,14 +152,13 @@ async function onSave() {
                               />
                               <!-- <InputGroupAddon>Mhz</InputGroupAddon> -->
                         </InputGroup>
-                        <InputGroup class="frequency">
+                        <!-- <InputGroup class="frequency">
                               <InputGroupAddon>TWR</InputGroupAddon>
                               <InputNumber v-model="tower" 
                               :minFractionDigits="3" :maxFractionDigits="3"
                               :min="118.0" :max="136.975" :step="0.025"
                               />
-                              <!-- <InputGroupAddon>Mhz</InputGroupAddon> -->
-                        </InputGroup>
+                        </InputGroup> -->
                         <InputGroup class="frequency">
                               <InputGroupAddon>Wx</InputGroupAddon>
                               <InputNumber v-model="weather" 

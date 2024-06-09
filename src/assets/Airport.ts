@@ -25,11 +25,24 @@ export class RunwayEnd {
             this.tp = Runway.leftPattern
             this.name = name;
         }
-        this.mag = orientation;
+        this.setMagneticOrientation(orientation);
     }
-    // public getPattern():string {
-    //     return this.tp;
-    // }
+
+    setMagneticOrientation(value:number) {
+        this.mag = value % 360;
+    }
+    setRightPattern(really:boolean=true) {
+        this.tp = really ? Runway.rightPattern : Runway.leftPattern;
+    }
+}
+
+export class RunwaySurface {
+    type:string;
+    cond:string;
+    constructor(type:string, condition:string) {
+        this.type = type;
+        this.cond = condition;
+    }
 }
 
 export class Runway {
@@ -37,6 +50,8 @@ export class Runway {
     length: number;
     width: number;
     ends: RunwayEnd[];
+    surface: RunwaySurface;
+    freq: number;
     public static rightPattern:string = 'R';
     public static leftPattern:string = 'L';
 
@@ -52,6 +67,10 @@ export class Runway {
         return this.ends.find((end) => end.name === name)
     }
 
+    public getEndsName():string[] {
+        return this.ends.map((end) => end.name)
+    }
+
     public getOrientation(end:string):number|undefined {
         const rwyEnd:RunwayEnd|undefined = this.getEnd(end)
         if (rwyEnd) {
@@ -59,6 +78,7 @@ export class Runway {
         }
         return undefined
     }
+
     public getTrafficPattern(end:string):string|undefined {
         const rwyEnd:RunwayEnd|undefined = this.getEnd(end)
         if (rwyEnd) {
@@ -66,11 +86,13 @@ export class Runway {
         }
         return undefined
     }
+
     public setTrafficPattern(end:string, pattern:string) {
-        const rwyEnd:RunwayEnd|undefined = this.getEnd(end)
-        if (rwyEnd && (pattern == Runway.rightPattern || pattern == Runway.leftPattern)) {
-            rwyEnd.tp = pattern
-        }
+        this.getEnd(end)?.setRightPattern(pattern == Runway.rightPattern)
+    }
+
+    public setSurface(type:string, condition:string) {
+        this.surface = new RunwaySurface(type, condition)
     }
 
     static isValidEndName(name:string):boolean {
@@ -106,21 +128,29 @@ export class Airport {
     elev: number;
     freq: Frequency[];
     rwys: Runway[];
+    custom: boolean;
     version:number;
+    effectiveDate:string;
 
-    constructor(code, name, elevation) {
+    constructor(code:string, name:string, elevation:number) {
         this.code = code;
         this.name = name;
         this.elev = elevation;
         this.freq = [];
         this.rwys = [];
+        this.custom = false;
         this.version = modelVersion;
+        this.effectiveDate = '';
     }
 
     public static isValidCode(code:string):boolean {
         return code.length == 3 || code.length == 4
     }
 
+    public static isValidVersion(version):boolean {
+        return version == Airport.currentVersion
+    }
+    
     addFrequency(name:string, mhz:number) {
         this.freq.push(new Frequency(name,mhz));
     }
@@ -139,5 +169,22 @@ export class Airport {
      */
     addRunways(runways:Runway[]) {
         this.rwys.push(...runways);
+    }
+
+    getFreq(name:string):number|undefined {
+        return this.freq.find((freq) => freq.name == name)?.mhz
+    }
+
+    setEffectiveDate(date:string) {
+        this.effectiveDate = date;
+    }
+
+    setRunwayFrequency(rwyName:string, frequency:number) {
+        // console.log('[Airport.setRunwayFrequency]', rwyName, frequency)
+        const rwy:Runway|undefined = this.rwys.find((rwy) => rwy.name == rwyName)
+        if( rwy) {
+            rwy.freq = frequency;
+            this.addFrequency('RWY ' + rwyName, frequency)
+        }
     }
 }
