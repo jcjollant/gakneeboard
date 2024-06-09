@@ -17,21 +17,27 @@ test('Getting multiple Airports', async () => {
     expect(airports.length).toBe(list.length)
     expect(airports[0].code).toBe('KRNT')
     expect(airports[1].code).toBe('KJFK')
-    let list2 = ['pae','jc','jcj']
+
+    let list2 = ['jc','pae','jcj']
     airports = await gapi.getAirportsList(list2)
     expect(airports.length).toBe(list2.length)
-    expect(airports[0].code).toBe('KPAE')
-    expect(airports[1]).toBeNull()
-    expect(airports[2]).toBeNull()
+    expect(airports[0].code).toBe('JC')
+    expect(airports[0].version).toBe(-1)
+    expect(airports[1].code).toBe('KPAE')
+    expect(airports[1].version).toBe(6)
+    expect(airports[2].code).toBe('JCJ')
+    expect(airports[2].version).toBe(-1)
 })
 
-test('invalid airports are null', async() =>{
+test('Invalid airports', async() =>{
     let list = ['nt','fk']
     let airports = await gapi.getAirportsList(list)
     // console.log(airports)
     expect(airports.length).toBe(2)
-    expect(airports[0]).toBeNull()
-    expect(airports[1]).toBeNull()
+    expect(airports[0].code).toBe('NT')
+    expect(airports[0].version).toBe(-1)
+    expect(airports[1].code).toBe('FK')
+    expect(airports[1].version).toBe(-1)
 
     expect
 })

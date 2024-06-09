@@ -60,10 +60,6 @@ async function fetchAirport(code) {
 }
 
 
-function getTpa(from) {
-    return Math.round(from  + 1000)
-}
-
 // 16E => -16
 function getVariation( adip) {
     if( 'magneticVariation' in adip) {
@@ -226,7 +222,6 @@ function getAirport( adip) {
     data['twr'] = getTower(adip)
     data['gnd'] = getGround(adip)
     data['elev'] = adip.elevation
-    data['tpa'] = getTpa(adip.elevation)
     data['weather'] = getWeather(adip)
     data['effectiveDate'] = adip.effectiveDate
     data['version'] = modelVersion;
@@ -256,4 +251,4 @@ function isNotMilitary(freq) {
 }
 
 
-module.exports = { fetchAirport, getTpa, getAirport, getFrequency, getVariation, getName, isNotMilitary, modelVersion }
+module.exports = { fetchAirport, getAirport, getFrequency, getVariation, getName, isNotMilitary, modelVersion }

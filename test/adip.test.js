@@ -3,13 +3,13 @@
 const adip = require('../backend/adip')
 // const fs = require('fs')
 
-test('TPA should be 1000 above elevation',() =>{
-    expect(adip.getTpa(0)).toBe(1000)
-    expect(adip.getTpa(440)).toBe(1440)
-    expect(adip.getTpa(450)).toBe(1450)
-    expect(adip.getTpa(500)).toBe(1500)
-    expect(adip.getTpa(1100)).toBe(2100)
-})
+// test('TPA should be 1000 above elevation',() =>{
+//     expect(adip.getTpa(0)).toBe(1000)
+//     expect(adip.getTpa(440)).toBe(1440)
+//     expect(adip.getTpa(450)).toBe(1450)
+//     expect(adip.getTpa(500)).toBe(1500)
+//     expect(adip.getTpa(1100)).toBe(2100)
+// })
 
 test('Military frequencies', () => {
     expect(adip.isNotMilitary('123.0')).toBe(true)
@@ -39,7 +39,7 @@ test('Names are capitalized', () => {
 test('Fetch Renton and check fields',async () =>{
     const before = Date.now()
     const airport = await adip.fetchAirport('RNT')
-    console.log(JSON.stringify(airport))
+    // console.log(JSON.stringify(airport))
     expect(airport.code).toBe('KRNT')
     expect(airport.locId).toBe('RNT')
     expect(airport.icaoId).toBe('KRNT')
@@ -48,19 +48,18 @@ test('Fetch Renton and check fields',async () =>{
     expect(airport.gnd).toBe('121.6')
     expect(airport.twr).toBe('Y')
     expect(airport.elev).toBe(32)
-    expect(airport.tpa).toBe(1032)
     expect(airport.weather.type).toBe('ATIS')
     expect(airport.weather.freq).toBe('126.95')
-    runway = airport.rwy[0]
+    let runway = airport.rwy[0]
     expect(runway.name).toBe('16-34')
     expect(runway.length).toBe(5382)
     expect(runway.width).toBe(200)
     expect(runway.surface.type).toBe('ASPH-CONC')
     expect(runway.surface.condition).toBe('G')
-    runway16 = runway['16']
+    let runway16 = runway['16']
     expect(runway16.orientation).toBe(157)
     expect(runway16.pattern).toBe('left')
-    runway34 = runway['34']
+    let runway34 = runway['34']
     expect(runway34.orientation).toBe(337)
     expect(runway34.pattern).toBe('right')
 

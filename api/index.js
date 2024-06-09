@@ -1,56 +1,60 @@
-import express from "express";
-import { version } from "../backend/data.js"
-// import cors from "cors";
-const cors = require('cors');
+const express =require( "express")
+import cors from "cors";
+// const cors = require('cors');
 const db = require('../backend/db.js');
 const gapi = require('../backend/gapi.js');
-const users = require('../backend/users.js');
+import { UserTools } from '../backend/UserTools'
 
 const port = 3002
 const app = express();
+const version = 527
 
 app.use(cors())
 
-// if( process.env.NODE_ENV == 'development') {
-    // console.log("Dev Mode")
-    app.use((req, res, next) => {
-        const showHeaders = false;
-        let thisRequest = Date.now();
-        if( showHeaders ) {
-            console.log(`${thisRequest}: ${req.method}, ${req.originalUrl}, `, req.headers);
+console.log("Dev Mode")
+app.use((req, res, next) => {
+    const showHeaders = false;
+    let before = Date.now();
+    let thisRequest = before % 100;
+    if( showHeaders ) {
+        console.log(`${thisRequest}: ${req.method}, ${req.originalUrl}, `, req.headers);
+    } else {
+        console.log(`${thisRequest}: ${req.method}, ${req.originalUrl}, `);
+    }
+    // watchs for end of theresponse
+    res.on('close', () => {
+        let after = Date.now();
+        if( showHeaders) {
+            console.log(`${thisRequest}: status=${res.statusCode}, outbound headers: `, res.getHeaders());
         } else {
-            console.log(`${thisRequest}: ${req.method}, ${req.originalUrl}, `);
+            console.log(`${thisRequest}: status=${res.statusCode}, time=${after-before}`);
         }
-        // watchs for end of theresponse
-        res.on('close', () => {
-            if( showHeaders) {
-                console.log(`${thisRequest}: close response, res.statusCode = ${res.statusCode}, outbound headers: `, res.getHeaders());
-            } else {
-                console.log(`${thisRequest}: close response, res.statusCode = ${res.statusCode}`);
-            }
-        });
-        next();
     });
-
-// }    
+    next();
+});
 
 
 app.get("/", (req, res) => res.send("GA API version " + version));
 
 app.get("/airport/:id", async (req,res) => {
-    console.log( "[index] airport request " + req.params.id);
-    const airportCode = req.params.id.toUpperCase()
-    // basic code validation
-    if( !gapi.isValidCode(airportCode)) {
-        res.status(400).send("Invalid airport ID");
-        return;
-    }
+    // console.log( "[index.get.airport] " + req.params.id);
 
-    let airport = await gapi.getAirport(airportCode);
-    if( airport) {
-        res.send(airport)
-    } else {
-        res.status(404).send("Airport not found");
+    const userId = await UserTools.userFromRequest(req)
+
+    try {
+        let airport = await gapi.getAirport(req.params.id, userId);
+        if( airport) {
+            res.send(airport)
+        } else {
+            res.status(404).send("Airport not found");
+        }
+    } catch( e) {
+        console.log( "[index] airport error " + e)
+        if( 'status' in e) {
+            res.status(e.status).send(e.message)
+        } else {
+            res.status(500).send(e)
+        }
     }
 })
 
@@ -70,8 +74,10 @@ app.post("/airport", async (req,res) => {
 })
 
 app.get('/airports/:list', async (req, res) => {
-    // console.log( "API airports request");
-    const airports = await gapi.getAirportsList(req.params.list.split('-'));
+
+    const userId = await UserTools.userFromRequest(req)
+    // console.log( "[index] /airports/ " + req.params.list);
+    const airports = await gapi.getAirportsList(req.params.list.split('-'),userId);
     // console.log( "[index] Returning airports " + JSON.stringify(airports));
     res.send(airports)
 })
@@ -82,11 +88,11 @@ app.get('/airports/:list', async (req, res) => {
 app.post('/authenticate', async(req,res) => {
     // console.log( "[index] authenticate request ");
     // console.log( "[index] authenticate body " + req.body);
-    const user = await users.authenticate(req.body)
-    if( user) {
-        res.send(user)
-    } else {
-        res.status(400).send("SignIn failed")
+    try {
+        const user = await UserTools.authenticate(req.body)
+        res.send(user.getMini())
+    } catch( e) {
+        res.status(400).send("SignIn failed : " + e)
     }
 })
 

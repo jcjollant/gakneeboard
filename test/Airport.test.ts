@@ -1,6 +1,6 @@
 
 import {describe, expect, test} from '@jest/globals';
-import { Airport, Runway } from "../backend/models/Airport"; 
+import { Airport, Runway, RunwayEnd } from "../backend/models/Airport"; 
 
 describe('Airport', () => {
     test ('Airport should be an object', () => {
@@ -25,8 +25,13 @@ describe('Airport', () => {
 
     test('Frequencies', () => {
         const airport = new Airport("name", "JCJ", 32);
-        airport.addFrequency("CTAF", 124.7);
+        const ctafFreq = 124.7
+        const ctaf:string = "CTAF"
+        airport.addFrequency( ctaf, ctafFreq);
         expect(airport.freq.length).toBe(1)
+        // read back
+        const freq = airport.getFreq( ctaf)
+        expect(freq).toBe(ctafFreq)
     })
 
     test('Runways', () => {
@@ -42,9 +47,9 @@ describe('Airport', () => {
         // Should be able to change pattern
         rwy.setTrafficPattern('34', Runway.rightPattern)
         expect(rwy.getTrafficPattern("34")).toBe(Runway.rightPattern)
-        // Invalid pattern should not affect
+        // Invalid pattern should default to left
         rwy.setTrafficPattern('34', 'Random')
-        expect(rwy.getTrafficPattern("34")).toBe(Runway.rightPattern)
+        expect(rwy.getTrafficPattern("34")).toBe(Runway.leftPattern)
 
         // Add first runway
         airport.addRunway(rwy);
@@ -55,7 +60,21 @@ describe('Airport', () => {
         // add multiple runways
         airport.addRunways([rwy2,rwy3]);
         expect(airport.rwys.length).toBe(3)
+
+        // Ends name
+        const rwy2EndsName = rwy2.getEndsName()
+        expect(rwy2EndsName.length).toBe(2)
+        expect(rwy2EndsName[0]).toBe("17")
+        expect(rwy2EndsName[1]).toBe("35")
+        const end17 = rwy2.getEnd('17')
+        expect(end17?.mag).toBe(170)
+        expect(end17?.tp).toBe(Runway.leftPattern)
+        end17?.setRightPattern(false)
+        expect(end17?.tp).toBe(Runway.leftPattern)
+        end17?.setRightPattern()
+        expect(end17?.tp).toBe(Runway.rightPattern)
     })
+
 
     test('Runway name validation', () => {
         const rwy = new Runway("16-34", 5400, 150)

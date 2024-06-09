@@ -2,6 +2,7 @@ const db = require('./db')
 const adip = require('./adip')
 import { UserDao } from './UserDao'
 import { AirportDao } from './AirportDao'
+import { AirportTools } from './AirportTools'
 
 // Google API key
  
@@ -24,38 +25,45 @@ async function createCustomAirport(userSha256,airport) {
     }
 }
 
-// Get an airport either from postgres or ADIP
-// @return airport object or null if not found
-async function getAirport(codeParam,force=false) {
-    // console.log( "getAirport DB for " + code + (force ? ' forced' : ''));
+/**
+ * Get an airport either from postgres or ADIP
+ * @param {*} codeParam airport code
+ * @param {*} userId pass a value consider custom airports
+ * @param {*} force set to true to bypass postgres
+ * @returns airport object or undefined if not found
+ * @throws 400 if code is invalid 
+ */
+async function getAirport(codeParam,userId=undefined) {
+    // console.log( "[gapi.getAirport] " + codeParam + ' user=' + userId);
     // try postgres first unless we are in force mode
     let airport = null;
     const code = codeParam.toUpperCase()
 
     // weed out the crap
-    if( !isValidCode(code)) return null; 
+    if( !isValidCode(code)) throw { status:400,message:"Invalid code"}; 
 
-    if( force) {
-        console.log( "force mode, skipping DB");
-    } else {
-        if( await db.isKnownUnknown(code)) {
-            console.log( '[gapi] ' + code + ' is a known unknown');
-            return null;
-        }
-        airport = await db.fetchAirport(code); 
-        // console.log('[gapi] db.fetchAirport output ' + JSON.stringify(airport))
-        if(airport){
-            console.log( "[gapi] found " + code + ' in DB');
-            return airport
-        } 
+    const airports = await AirportDao.readList( [code], userId); 
+    if(airports.length > 0){
+        console.log( "[gapi] found " + code + ' in DB');
+        return AirportTools.format(airports[0])
+    } 
+
+    return getAirportFromAdip(code)
+}
+
+async function getAirportFromAdip(code) {
+    // console.log( "[gapi.getAirportFromAdip] " + code);
+
+    if( await db.isKnownUnknown(code)) {
+        console.log( '[gapi.getAirportFromAdip] ' + code + ' is a known unknown');
+        return undefined;
     }
 
-    // DB didn't help, try ADIP
     airport = await adip.fetchAirport(code);
     if(airport) { // adip saves the day, persist this airport in postrgres
-        console.log( "[gapi] found " + code + ' in ADIP');
+        console.log( "[gapi.getAirportFromAdip] found " + code + ' in ADIP');
         // console.log( '[gapi] ' + JSON.stringify(airport));
-        await db.saveAirport(code,airport);
+        await AirportDao.create(code,airport);
     } else { // not found ADIP either, memorize to avoid asking this over and over
         // console.log( "[gapi] Saving " + code + ' in DB as known unknown');
         await db.addKnownUnknown(code);
@@ -65,31 +73,18 @@ async function getAirport(codeParam,force=false) {
     return airport;
 }
 
-async function getAirportsList(list) {
-    // console.log( "[gapi] getAirportsList " + JSON.stringify(list));
-    // const output = []
-    // for( const code of list) {
-    //     const airport = await getAirport(code)
-    //     output.push(airport)
-    // }
-    // return output
+/**
+ * 
+ * @param {*} airportCodes A list of airport codes
+ * @returns a list of corresponding airport data, which may be undefined
+ */
+async function getAirportsList(airportCodes,userId=undefined) {
+    const searchCodes = airportCodes.map( code => code.toUpperCase()) 
 
-    const airports = await db.fetchAirportList(list)
-    // console.log( "[gapi] getAirportsList output " + JSON.stringify(airports));
-    // is anything missing from the list
-    if( airports.length < list.length) {
-        console.log( "[gapi] getAirportsList missing " + JSON.stringify(list.filter( code => !airports.some( a => a.code == code))));
-        // await db.addKnownUnknown(list.filter( code => !airports.some( a => a.code == code)))
-        // build the list of missing airports
-        const missing = list.filter( code => !airports.some( a => a.code == code))
-        for( const code of missing) {
-            const airport = await getAirport(code)
-            airports.push(airport)
-        }
-    }
-    // console.log( "[gapi] getAirportsList output " + JSON.stringify(airports));
+    const foundAirports = await AirportDao.readList(searchCodes,userId)
+    // console.log( "[gapi.getAirportsList] found " + JSON.stringify(foundAirports));
 
-    return airports
+    return foundAirports.map( airport => AirportTools.format(airport))
 }
 
 /**

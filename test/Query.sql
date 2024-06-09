@@ -12,12 +12,18 @@ SELECT COUNT(*) FROM airports WHERE version<5
 
 SELECT * FROM airports WHERE version<5
 
-SELECT * FROM airports WHERE Code='RNT'
+SELECT * FROM airports WHERE Code='JCJ'
+
+SELECT Data FROM Airports WHERE Code in('RNT') AND (creatorId = 1 OR creatorId IS NULL)
+
+SELECT * FROM airports WHERE Code IN ('RNT','JFK') AND creatorId is NULL
+
+SELECT Data FROM Airports WHERE creatorId = 1
 
 SELECT COUNT(*) as count, Code from Airports GROUP BY Code ORDER BY count DESC
 
 # Test airport
-SELECT * FROM airports WHERE Code='RNT'
+SELECT * FROM airports WHERE Code='KBFI'
 
 # Test airport
 SELECT * FROM airports WHERE Code='TEST'
