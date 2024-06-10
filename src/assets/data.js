@@ -119,7 +119,7 @@ export async function getAirport( codeParam, group = false) {
     // add ourselves to the list of pending queries
     // console.log( '[data.getAirport] adding to queue', code);
     pendingCodes.push(code)
-    console.log( '[data.getAirport]', code, 'added to queue, length', pendingCodes.length);
+    // console.log( '[data.getAirport]', code, 'added to queue, length', pendingCodes.length);
 
     if( group) {
       // wait until there are no more queries
@@ -210,7 +210,7 @@ async function requestAllAirports( codes) {
             airports[airport.code] = airport
             // remove this code from pending codes
             pendingCodes.splice( pendingCodes.indexOf(airport.code), 1)
-            console.log('[data.requestAllAirports]', airport.code,'removed, queue length',pendingCodes.length)
+            // console.log('[data.requestAllAirports]', airport.code,'removed, queue length',pendingCodes.length)
         })
     })
     .catch( error => {
@@ -218,7 +218,7 @@ async function requestAllAirports( codes) {
       codes.forEach( code => {
         airports[code] = null
       })
-      console.log( 'requestAllAirports error ' + error)
+      console.log( '[data.requestAllAirports] error ', error)
     })
 }
 
