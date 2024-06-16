@@ -144,7 +144,7 @@ export class Airport {
     }
 
     public static isValidCode(code:string):boolean {
-        return code.length == 3 || code.length == 4
+        return code != null && ( code.length == 3 || code.length == 4)
     }
 
     public static isValidVersion(version):boolean {
