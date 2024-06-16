@@ -47,9 +47,11 @@ describe('Airport', () => {
         // Should be able to change pattern
         rwy.setTrafficPattern('34', Runway.rightPattern)
         expect(rwy.getTrafficPattern("34")).toBe(Runway.rightPattern)
-        // Invalid pattern should default to left
-        rwy.setTrafficPattern('34', 'Random')
-        expect(rwy.getTrafficPattern("34")).toBe(Runway.leftPattern)
+        // Invalid pattern should not change
+        expect(() => {
+            rwy.setTrafficPattern('34', 'Random')
+        }).toThrow('Invalid traffic pattern Random')
+        expect(rwy.getTrafficPattern("34")).toBe(Runway.rightPattern)
 
         // Add first runway
         airport.addRunway(rwy);

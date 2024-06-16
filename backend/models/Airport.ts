@@ -88,7 +88,21 @@ export class Runway {
     }
 
     public setTrafficPattern(end:string, pattern:string) {
-        this.getEnd(end)?.setRightPattern(pattern == Runway.rightPattern)
+        const rwyEnd:RunwayEnd|undefined = this.getEnd(end)
+        if(rwyEnd) {
+            switch(pattern) {
+                case Runway.leftPattern:
+                    rwyEnd.setRightPattern(false)
+                    break;
+                case Runway.rightPattern:
+                    rwyEnd.setRightPattern(true)
+                    break;
+                default:
+                    throw new Error(`Invalid traffic pattern ${pattern}`)
+            }
+        } else {
+            throw new Error(`Runway end ${end} not found`)
+        }
     }
 
     public setSurface(type:string, condition:string) {
