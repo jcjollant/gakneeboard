@@ -41,7 +41,8 @@ const effectiveDateCheck = async function ():Promise<Check> {
 
 async function main() {
     await Promise.all([effectiveDateCheck()]).then( async allChecks => {
-        await HealthCheck.save(allChecks)    
+        const failedChecks = allChecks.filter((check) => check.status === Check.FAIL)
+        await HealthCheck.save(allChecks, failedChecks.length)
     })
 }
 
