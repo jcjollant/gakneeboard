@@ -2,8 +2,9 @@
 import {describe, expect, test} from '@jest/globals';
 import { Airport, Runway } from "../backend/models/Airport.ts"; 
 import { AirportDao } from '../backend/AirportDao.ts'
+import { postgresUrl } from './constants.ts';
 
-process.env.POSTGRES_URL="postgres://default:94chrayEvOLG@ep-shrill-silence-a6ypne6y-pooler.us-west-2.aws.neon.tech/verceldb?sslmode=require"
+process.env.POSTGRES_URL=postgresUrl
 
 describe('Custom Airports', () => {
     const userIdJc = 1; // JC

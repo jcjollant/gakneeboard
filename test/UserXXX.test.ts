@@ -1,9 +1,9 @@
 import {describe, expect, test} from '@jest/globals';
 import { User } from '../backend/models/User'
 import { UserTools } from '../backend/UserTools'
-import { hashJc } from './constants'
+import { hashJc, postgresUrl } from './constants'
 
-process.env.POSTGRES_URL="postgres://default:94chrayEvOLG@ep-shrill-silence-a6ypne6y-pooler.us-west-2.aws.neon.tech/verceldb?sslmode=require"
+process.env.POSTGRES_URL=postgresUrl
 
 const emailJc = 'jcjollant@gmail.com'
 const userIdJc = 1
