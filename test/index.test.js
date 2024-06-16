@@ -35,7 +35,7 @@ describe('index', () => {
             })
     })
 
-    test('Custom Airport', async () => {
+    test('Get Custom Airport', async () => {
         const result = await axios.get( 'http://localhost:3000/airport/TEST?user=' + hashJc)
             .then( (res) => {
                 expect(res.data).toBeDefined();

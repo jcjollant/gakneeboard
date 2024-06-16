@@ -20,14 +20,16 @@ SELECT * FROM airports WHERE Code IN ('RNT','JFK') AND creatorId is NULL
 
 SELECT Data FROM Airports WHERE creatorId = 1
 
-SELECT COUNT(*) as count, Code from Airports GROUP BY Code ORDER BY count DESC
+# Duplicates
+SELECT COUNT(*) as count, Code from Airports GROUP BY Code ORDER BY count DESC 
 
 # Test airport
-SELECT * FROM airports WHERE Code='KBFI'
+SELECT * FROM airports WHERE Code='KRNT'
 
 # Test airport
 SELECT * FROM airports WHERE Code='TEST'
 
+UPDATE airports SET data='{"code":"TEST","name":"Test Airport JC","elev":1000,"freq":[{"name":"CTAF","mhz":124.7},{"name":"TWR","mhz":null},{"name":"Weather","mhz":126.95},{"name":"GND","mhz":121.6}],"rwys":[{"name":"16-34","length":5400,"width":120,"ends":[null]}],"custom":false,"version":6,"effectiveDate":""}' , version=6 WHERE id=378
 
 #########################################
 # Feedback table
@@ -35,7 +37,7 @@ SELECT * FROM feedback
 
 DELETE FROM feedback WHERE Id in (56,57)
 
-SELECT * FROM Airports WHERE Code='CLS'
+SELECT * FROM Airports WHERE Code='INT'
 
 SELECT * FROM Unknowns
 
