@@ -2,7 +2,7 @@ const express =require( "express")
 import cors from "cors";
 // const cors = require('cors');
 const db = require('../backend/db.js');
-const gapi = require('../backend/gapi.js');
+import { GApi } from '../backend/gapi'
 import { UserTools } from '../backend/UserTools'
 
 const port = 3002
@@ -33,7 +33,6 @@ app.use((req, res, next) => {
     next();
 });
 
-
 app.get("/", (req, res) => res.send("GA API version " + version));
 
 app.get("/airport/:id", async (req,res) => {
@@ -42,7 +41,7 @@ app.get("/airport/:id", async (req,res) => {
     const userId = await UserTools.userFromRequest(req)
 
     try {
-        let airport = await gapi.getAirport(req.params.id, userId);
+        let airport = await GApi.getAirport(req.params.id, userId);
         if( airport) {
             res.send(airport)
         } else {
@@ -65,7 +64,7 @@ app.post("/airport", async (req,res) => {
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
     // console.log("[index] POST airport payload " + JSON.stringify(payload))
     try {
-        const code = await gapi.createCustomAirport(payload.user, payload.airport)
+        const code = await GApi.createCustomAirport(payload.user, payload.airport)
         res.send(code + ' created')
     } catch( e) {
         console.log( "[index] POST airport error " + e)
@@ -77,7 +76,7 @@ app.get('/airports/:list', async (req, res) => {
 
     const userId = await UserTools.userFromRequest(req)
     // console.log( "[index] /airports/ " + req.params.list);
-    const airports = await gapi.getAirportsList(req.params.list.split('-'),userId);
+    const airports = await GApi.getAirportsList(req.params.list.split('-'),userId);
     // console.log( "[index] Returning airports " + JSON.stringify(airports));
     res.send(airports)
 })
