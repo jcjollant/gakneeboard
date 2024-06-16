@@ -28,8 +28,8 @@ function loadProps(props) {
         // update edit field value to reflect airport code
         airportCode.value = airport.code;
         // if we have an airport to start with, we can revert.
-        cancellable.value = true;
-        applyable.value = true;
+        canCancel.value = true;
+        canApply.value = true;
         
         // select the first runway by default
         if( props.rwyName) {
@@ -44,6 +44,7 @@ function loadProps(props) {
 
         if('custom' in airport && airport.custom) {
             customAirport.value = airport;
+            canEdit.value = true
         }
     }
 }
@@ -61,17 +62,21 @@ watch( props, async() => {
 
 
 let airport = null
+let pendingCode = null // used during the short delay between code update and actual request
 const loading = ref(false)
 const rwyList = ref([])
 const airportCode = ref('')
 const airportName = ref('')
-const cancellable = ref(false)
-const applyable = ref(false)
+const canCancel = ref(false)
+const canApply = ref(false)
+const canCreate = ref(false)
+const canEdit = ref(false)
 const validAirport = ref(false)
 const rwyOrientation = ref('vertical')
 const selectedRwy = ref(null)
 const showCustomAirport = ref(false)
 const customAirport = ref(null)
+const currentUser = ref(null)
 
 function loadAirport( code) {
     data.getAirport( code)
@@ -86,21 +91,27 @@ function loadAirport( code) {
                 // console.log("[AirportEdit.loadAirport] runways", JSON.stringify(airport.rwys))
                 if('rwys' in airport && airport.rwys.length > 0) {
                     selectedRwy.value = airport.rwys[0]['name']
-                    applyable.value = true
+                    canApply.value = true
                 } else {
-                    applyable.value = false
+                    canApply.value = false
                 }
                 if( 'custom' in airport && airport.custom) {
                     customAirport.value = newAirport
+                    canEdit.value = true
                 } else {
                     customAirport.value = null
+                    canEdit.value = false
                 }
-
+                // canEdit.value = (customAirport.value != null)
+                canCreate.value = false
                 // we cannot apply until we pick a runway
             } else { // airport is unknown
                 rwyList.value = [];
                 airportName.value = "Unknown"
                 validAirport.value = false
+                canApply.value = false
+                canCreate.value = Airport.isValidCode(code)
+                canEdit.value = false
             }
         })
 }
@@ -115,34 +126,49 @@ function onApply() {
 // We are after runways
 function onCodeUpdate() {
     // console.log(airportCode.value)
+    // console.log('[AirportEdit.onCodeUpdate]',Date.now())
     loading.value = true
     airportName.value = ' '
 
-    loadAirport( airportCode.value)
+    pendingCode = airportCode.value
+    // only load the new code after a short delay to avoid sending useless query
+    if( pendingCode.length > 2) {
+        setTimeout( () => {
+            if( pendingCode == airportCode.value) {
+                pendingCode = null
+                loadAirport( airportCode.value)
+            }
+        }, 500)
+    }
 }
-        
+
                     
-function onCustomUpdated(code) {
+function onCustomUpdated(code, airportData) {
+    console.log('[AirportEdit.onCustomUpdated]', code)
     showCustomAirport.value=false
     airportCode.value = code
     
+    data.refreshAirport(code, airportData)
     loadAirport(code)
 }
 
 function onCustomCreate() {
-    const customAirport = new Airport( airportCode, "", 0)
-    customAirport.custom = true
-    showCustomAirport.value = true
+    // console.log('[AirportEdit.onCustomCreate]')
+    const newAirport = new Airport( airportCode.value, "", 0)
+    newAirport.custom = true
+    console.log('[AirportEdit.onCustomCreate] newAirport', JSON.stringify(newAirport))
+    customAirport.value = newAirport;
+    showCustomAirportDialog()
 }
 
 function onCustomEdit() {
-    showCustomAirport.value = true
+    showCustomAirportDialog();
 }
 
 // A runway has been selected from the list
 function selectRunway(rwy) {
-    console.log( "[AirportEdit.selectRunway]", rwy)
-    applyable.value = true
+    // console.log( "[AirportEdit.selectRunway]", rwy)
+    canApply.value = true
     selectedRwy.value = rwy
 }
 
@@ -152,10 +178,17 @@ function showAirport() {
     validAirport.value = true;
 }
                             
+function showCustomAirportDialog() {
+    currentUser.value = data.getCurrentUser()
+    showCustomAirport.value = true
+}
+
 </script>
 
 <template>
     <div class="content">
+        <CustomAirport v-model:visible="showCustomAirport"  :airport="customAirport" :user="currentUser"
+                        @close="showCustomAirport=false" @updated="onCustomUpdated" />
         <div class="settings">
             <div class="airportCode">
                 <InputGroup>
@@ -168,10 +201,6 @@ function showAirport() {
             <div v-else-if="validAirport">
                 <div class="miniHeader">Runway</div>
                 <div class="rwySelector">
-                    <CustomAirport v-model:visible="showCustomAirport"  :airport="customAirport"
-                        @close="showCustomAirport=false" @updated="onCustomUpdated" />
-                    <Button label="Unknown Airport" class="sign" v-if="!validAirport" 
-                        @click="onCustomCreate"></Button>
                     <Button :label="rwy.name" class="sign" :severity="rwy.name == selectedRwy ? 'primary' : 'secondary'"
                         v-for="rwy in rwyList" 
                         @click="selectRunway(rwy.name)"></Button>
@@ -187,13 +216,13 @@ function showAirport() {
                 </div>
             </div>
             <div class="actionBar">
-                <Button v-if="customAirport && validAirport" label="Edit" severity="secondary"
+                <Button v-if="canEdit" label="Edit" severity="secondary"
                     @click="onCustomEdit"></Button>
-                <Button v-if="customAirport && !validAirport" label="Create" severity="secondary"
+                <Button v-if="canCreate" label="Create" severity="secondary"
                     @click="onCustomCreate"></Button>
-                <Button v-if="cancellable" label="Cancel" link @click="emits('close')"></Button>
-                <Button icon="pi pi-check" label="Apply" 
-                    @click="onApply" :disabled="!applyable" ></Button>
+                <Button v-if="canCancel" label="Cancel" link @click="emits('close')"></Button>
+                <Button label="Apply" 
+                    @click="onApply" :disabled="!canApply" ></Button>
             </div>
         </div>
     </div>
