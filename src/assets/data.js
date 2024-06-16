@@ -1,8 +1,8 @@
 export const version = '615'
-// const apiRootUrl = 'https://ga-api-seven.vercel.app/'
+const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'http://localhost:3000/'
 // const apiRootUrl = 'https://ga-api-git-google-auth-jcjollants-projects.vercel.app/'
-const apiRootUrl = 'https://ga-api-git-custom-airports-jcjollants-projects.vercel.app/'
+// const apiRootUrl = 'https://ga-api-git-custom-airports-jcjollants-projects.vercel.app/'
 import { Airport } from './Airport.ts'
 import axios from 'axios'
 
