@@ -1,8 +1,8 @@
-export const version = '530'
+export const version = '615'
 // const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 const apiRootUrl = 'http://localhost:3000/'
 // const apiRootUrl = 'https://ga-api-git-google-auth-jcjollants-projects.vercel.app/'
-
+import { Airport } from './Airport.ts'
 import axios from 'axios'
 
 const demoRadioData = [
@@ -85,23 +85,24 @@ let pendingCodes = []
  * @returns airport data
  */
 export async function getAirport( codeParam, group = false) {
+    // console.log('[data.getAirport]', codeParam)
     const code = codeParam.toUpperCase()
 
     // console.log( '[data.getAirport]', code);
     let airport = null
 
     // weed out incomplete or invalid codes
-    if( !code || code.length < 3 || code.length > 4) {
+    if( !Airport.isValidCode( code)) {
         // console.log( '[data.getAirport] invalid code ' + code)
         return airport
     }
 
     // is this a test?
-    if( code == '???') {
-      // wait 5 seconds
-      await new Promise(r => setTimeout(r, 5000));
-      return null
-    }
+    // if( code == '???') {
+    //   // wait 5 seconds
+    //   await new Promise(r => setTimeout(r, 5000));
+    //   return null
+    // }
 
     // do we already know this code in the cache?
     if( code in airports) {
@@ -119,7 +120,7 @@ export async function getAirport( codeParam, group = false) {
     // add ourselves to the list of pending queries
     // console.log( '[data.getAirport] adding to queue', code);
     pendingCodes.push(code)
-    // console.log( '[data.getAirport]', code, 'added to queue, length', pendingCodes.length);
+    // console.log( '[data.getAirport]', code, 'enqueued', JSON.stringify(pendingCodes));
 
     if( group) {
       // wait until there are no more queries
@@ -145,7 +146,7 @@ export async function getAirport( codeParam, group = false) {
 
       // remove ourselves from the first position in the queue
       pendingCodes.shift()
-      console.log( '[data.getAirport]', code, 'removed from queue, length', pendingCodes.length)
+      // console.log( '[data.getAirport]', code, 'removed from queue', JSON.stringify(pendingCodes))
     }
 
     return airport
@@ -165,10 +166,6 @@ export function getCurrentUser() {
   return currentUser
 }
 
-export function getCtafFreq(freqList) {
-  return getFrequency(freqList, 'CTAF')
-}
-
 /**
  * @returns a copy of demo page data 
  */
@@ -180,13 +177,35 @@ export function getFrequency(freqList, name) {
   return freqList.find( f => f.name.includes(name))
 }
 
-export function getGroundFrequency(freqList) {
+export function getFreqCtaf(freqList) {
+  return getFrequency(freqList, 'CTAF')
+}
+
+export function getFreqGround(freqList) {
   return getFrequency(freqList, 'GND')
 }
 
-export function getWeatherFrequency(freqList) {
+/**
+ * Look for a weather frequency in the list
+ * @param {*} freqList 
+ * @returns corresponding frequency object (with name and mhz)
+ */
+export function getFreqWeather(freqList) {
   // match names that containt either 'ATIS', 'ASOS' or 'AWOS'
-  return freqList.find( f => f.name.includes('ATIS') || f.name.includes('ASOS') || f.name.includes('AWOS'))
+  return freqList.find( f => f.name.includes('ATIS') 
+    || f.name.includes('ASOS') 
+    || f.name.includes('AWOS')
+    || f.name.includes('Weather')
+  )
+}
+
+/**
+ * We have better data for a given airport code. For example when we are done editing
+ * @param {*} code 
+ * @param {*} data 
+ */
+export function refreshAirport(code, data) {
+  airports[code] = data
 }
 
 /**
@@ -196,10 +215,6 @@ export function getWeatherFrequency(freqList) {
  */
 async function requestAllAirports( codes) {
   // console.log( 'perform group request for ' + codes.length)
-  if( codes.length == 1) {
-    return requestOneAirport(codes[0])
-  }
-
   const url = apiRootUrl + 'airports/' + codes.join('-');
   await axiosGet(url)
     .then( response => {
@@ -210,7 +225,7 @@ async function requestAllAirports( codes) {
             airports[airport.code] = airport
             // remove this code from pending codes
             pendingCodes.splice( pendingCodes.indexOf(airport.code), 1)
-            // console.log('[data.requestAllAirports]', airport.code,'removed, queue length',pendingCodes.length)
+            // console.log('[data.requestAllAirports]', airport.code,'removed',JSON.stringify(pendingCodes))
         })
     })
     .catch( error => {
@@ -228,13 +243,13 @@ async function requestAllAirports( codes) {
  * @returns 
  */
 async function requestOneAirport( code) {
-  // console.log( pendingCodes.length + " queries in the queue")
+  // console.log( '[data.requestOneAirport]', code)
   let airport = null
 
   const url = apiRootUrl + 'airport/' + code;
   await axiosGet(url)
     .then( response => {
-        // console.log( JSON.stringify(response.data))
+        // console.log( '[data.requestOneAirport] received', JSON.stringify(response.data))
         airport = response.data
         // add this data to cache
         airports[code] = airport
@@ -295,9 +310,9 @@ export async function saveCustomAirport(airport) {
   const url = apiRootUrl + 'airport'
   const payload = {user:currentUser.sha256, airport:airport}
   // const headers = { 'Content-Type':'text/plain', 'Authorization':'Bearer ' + currentUser.sha256}
-  axios.post( url, JSON.stringify(payload), contentTypeTextPlain)
+  await axios.post( url, JSON.stringify(payload), contentTypeTextPlain)
     .then( response => {
-      console.log( '[data] custom airport saved')
+      // console.log( '[data] custom airport saved', airport.code)
     })
     .catch( error => {
       console.log( '[data] custom airport save error ' + error)
