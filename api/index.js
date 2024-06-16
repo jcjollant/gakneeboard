@@ -10,6 +10,7 @@ const app = express();
 const version = 615
 
 app.use(cors())
+app.use(express.json()) // for parsing application/json
 
 // console.log("Dev Mode")
 // app.use((req, res, next) => {
