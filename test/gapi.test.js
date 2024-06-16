@@ -1,69 +1,72 @@
-const gapi = require( '../backend/gapi')
+import { GApi } from '../backend/gapi'
+import { hashJc } from './constants'
 
 process.env.POSTGRES_URL="postgres://default:94chrayEvOLG@ep-shrill-silence-a6ypne6y-pooler.us-west-2.aws.neon.tech/verceldb?sslmode=require"
 
 
 test('Renton is found with both codes', async () => {
-    let airport = await gapi.getAirport('RNT')
+    let airport = await GApi.getAirport('RNT')
     expect(airport.code).toBe('KRNT')
-    let airport2 = await gapi.getAirport('KRNT')
+    let airport2 = await GApi.getAirport('KRNT')
     expect(airport2.code).toBe('KRNT')
 })
 
 test('Getting multiple Airports', async () => {
     let list = ['rnt','jfk']
-    let airports = await gapi.getAirportsList(list)
+    let airports = await GApi.getAirportsList(list)
     // console.log(airports)
     expect(airports.length).toBe(list.length)
     expect(airports[0].code).toBe('KRNT')
     expect(airports[1].code).toBe('KJFK')
-    let list2 = ['pae','jc','jcj']
-    airports = await gapi.getAirportsList(list2)
+
+    let list2 = ['jc','pae','jcj']
+    airports = await GApi.getAirportsList(list2)
     expect(airports.length).toBe(list2.length)
-    expect(airports[0].code).toBe('KPAE')
-    expect(airports[1]).toBeNull()
-    expect(airports[2]).toBeNull()
+    expect(airports[0].code).toBe('JC')
+    expect(airports[0].version).toBe(-1)
+    expect(airports[1].code).toBe('KPAE')
+    expect(airports[1].version).toBe(6)
+    expect(airports[2].code).toBe('JCJ')
+    expect(airports[2].version).toBe(-1)
 })
 
-test('invalid airports are null', async() =>{
+test('Invalid airports', async() =>{
     let list = ['nt','fk']
-    let airports = await gapi.getAirportsList(list)
+    let airports = await GApi.getAirportsList(list)
     // console.log(airports)
     expect(airports.length).toBe(2)
-    expect(airports[0]).toBeNull()
-    expect(airports[1]).toBeNull()
+    expect(airports[0].code).toBe('NT')
+    expect(airports[0].version).toBe(-1)
+    expect(airports[1].code).toBe('FK')
+    expect(airports[1].version).toBe(-1)
 
     expect
 })
 
 test('ICAOs are valid', () => {
-    expect(gapi.getIcao('KRNTA')).toBeNull()
-    expect(gapi.getIcao('KRNT')).toBe('KRNT')
-    expect(gapi.getIcao('RNT')).toBe('KRNT')
-    expect(gapi.getIcao('NT')).toBeNull()
+    expect(GApi.getIcao('KRNTA')).toBeNull()
+    expect(GApi.getIcao('KRNT')).toBe('KRNT')
+    expect(GApi.getIcao('RNT')).toBe('KRNT')
+    expect(GApi.getIcao('NT')).toBeNull()
 })
 
 test('locId are valid', () => {
-    expect(gapi.getLocId('KRNTA')).toBeNull()
-    expect(gapi.getLocId('KRNT')).toBe('RNT')
-    expect(gapi.getLocId('krnt')).toBe('RNT')
-    expect(gapi.getLocId('S43')).toBe('S43')
-    expect(gapi.getLocId('NT')).toBeNull()
-})
-
-test('Codes are valid', () => {
-    expect(gapi.isValidCode('RNT')).toBe(true)
-    expect(gapi.isValidCode('KRNT')).toBe(true)
-    expect(gapi.isValidCode('PANN')).toBe(true)
-    expect(gapi.isValidCode('LRNT')).toBe(true)
-    expect(gapi.isValidCode('KRNT2')).toBe(false)
-    expect(gapi.isValidCode('NT')).toBe(false)
+    expect(GApi.getLocId('KRNTA')).toBeNull()
+    expect(GApi.getLocId('KRNT')).toBe('RNT')
+    expect(GApi.getLocId('krnt')).toBe('RNT')
+    expect(GApi.getLocId('S43')).toBe('S43')
+    expect(GApi.getLocId('NT')).toBeNull()
 })
 
 test('Militrary frequencies', () => {
-    expect(gapi.isMilitary(null)).toBe(false)
-    expect(gapi.isMilitary('-.-')).toBe(false)
-    expect(gapi.isMilitary('')).toBe(false)
-    expect(gapi.isMilitary('121.6')).toBe(false)
-    expect(gapi.isMilitary('261.6')).toBe(true)
+    expect(GApi.isMilitary(null)).toBe(false)
+    expect(GApi.isMilitary('-.-')).toBe(false)
+    expect(GApi.isMilitary('')).toBe(false)
+    expect(GApi.isMilitary('121.6')).toBe(false)
+    expect(GApi.isMilitary('261.6')).toBe(true)
+})
+
+test('Update airport', async () => {
+    const customRnt = {"code":"TEST","name":"Test Airport JC","elev":1000,"freq":[{"name":"CTAF","mhz":124.7},{"name":"TWR","mhz":null},{"name":"Weather","mhz":126.95},{"name":"GND","mhz":121.6}],"rwys":[{"name":"16-34","length":5400,"width":120,"ends":[null]}],"custom":false,"version":6,"effectiveDate":""}
+    expect(await GApi.createCustomAirport(hashJc,customRnt)).toBe('TEST')
 })

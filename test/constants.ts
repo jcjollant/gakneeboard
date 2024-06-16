@@ -1,0 +1,1 @@
+export const hashJc = 'bfaa2eb49bf63f41c05a016e03653fe2d7f8bf196ba6fb3f3340d3dcd7016770'

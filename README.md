@@ -6,8 +6,11 @@ run `vercel dev` to run the local service
   * data is saved to the database and sent by email  
 * Automatically catch when new publication is available
 * Automatically refresh data when new publication is available
+* Automatically catch duplicates
 
 # Done
+## 6/15/2024
+* Custom airports creation
 ## 5/27/2024
 * Create Users test
 ## ?
