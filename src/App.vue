@@ -52,6 +52,9 @@ function onAuthentication(user) {
   } else {
     localStorage.removeItem(keyUser)
   }
+
+  // reload the page
+  location.reload
 }
 
 function onCloseHowDoesItWork() {

@@ -3,7 +3,7 @@
 import {ref, onMounted, watch} from 'vue';
 import Header from '../Header.vue'
 import Runway from './RunwayView.vue'
-import * as data from '../../assets/data.js'
+import { getAirport, getFreqCtaf, getFreqWeather} from '../../assets/data.js'
 import Corner from './Corner.vue';
 import CornerStatic from './CornerStatic.vue';
 import AirportEdit from './AirportEdit.vue';
@@ -33,7 +33,7 @@ watch( props, async() => {
 
 const mode = ref('')
 const title = ref('')
-const weatherFreq = ref()
+const weatherFreq = ref('')
 const weatherType = ref()
 const elevation = ref()
 const tpa = ref()
@@ -58,20 +58,23 @@ const defaultTitle = 'Airport'
 const corners = [corner0,corner1,corner2,corner3]
 const unknownRunway = ref(false)
 
-function getEnding(rwy, ending, freq) {
+function getEnding(rwy, endIndex, freq) {
     // console.log('getEnding ' + JSON.stringify(rwy) + ' / ' + ending)
     const output = {}
-    if( !(ending in rwy)) return output;
-    
-    output['name'] = ending
-    output['width'] = rwy.width
-    output['length'] = rwy.length
-    output['pattern'] = rwy[ending].pattern == 'left' ? 'LP' : 'RP'
-    if( 'freq' in rwy) {
-        output['freq'] = rwy.freq;
-    } 
-    else if( freq) {
-        output['freq'] = freq
+    try {
+        const end = rwy.ends[endIndex]    
+        output['name'] = end.name
+        output['width'] = rwy.width
+        output['length'] = rwy.length
+        output['pattern'] = end.tp == 'L' ? 'LP' : 'RP'
+        if( 'freq' in rwy) {
+            output['freq'] = rwy.freq;
+        } 
+        else if( freq) {
+            output['freq'] = freq ? freq.mhz : '-'
+        }
+    } catch( error) {
+        console.log('[Airport.getEnding]', error)
     }
 
     return output
@@ -82,9 +85,12 @@ function getEndings(rwys, freq) {
     if( !rwys) return output;
     
     rwys.forEach((rwy) => {
-        const [nameA,nameB] = rwy.name.split('-')
-        output.push( getEnding(rwy,nameA,freq))
-        output.push( getEnding(rwy,nameB,freq))
+        // console.log('[Airport.getEndings]', JSON.stringify(rwy))
+        if( rwy.ends.length == 2) {
+            // console.log('[Airport.getEndings]', JSON.stringify(rwy.ends))
+            output.push( getEnding(rwy,0,freq))
+            output.push( getEnding(rwy,1,freq))
+        }
     })
     output.sort( (a,b) => { return a.name.localeCompare( b.name)})
     return output
@@ -139,9 +145,9 @@ function loadProps(newProps) {
 
     // load data for this airport
     title.value = "Loading " + code + '...'
-    data.getAirport( code, true)
+    getAirport( code, true)
         .then(airport => {
-            if( airport && 'rwy' in airport) {
+            if( airport && 'rwys' in airport) {
                 showAirport(airport)
                 if( 'rwy' in state) {
                     if( state.rwy == 'all') {
@@ -152,7 +158,7 @@ function loadProps(newProps) {
                     }
                 } else { // default to first runway
                     mode.value = ''
-                    showRunway(airport.rwy[0].name)
+                    showRunway(airport.rwys[0].name)
                 }
             } else {
                 // console.log('No data came out of get airport ' + code)
@@ -202,7 +208,9 @@ function onPatternUpdate(newPatternMode) {
 
 // Settings have been updated in edit mode
 function onSettingsUpdate( newAirport, newRunway, newOrientation) {
-    // console.log( 'Airport onSettingsUpdate airport ' + JSON.stringify(newAirport) + ' settings ' + JSON.stringify(newSettings) )
+    // console.log( '[Airport.onSettingsUpdate] airport', JSON.stringify(newAirport))
+    // console.log( '[Airport.onSettingsUpdate] newRunway', JSON.stringify(newRunway))
+    // console.log( '[Airport.onSettingsUpdate] newOrientation', JSON.stringify(newOrientation))
     props.params.code = newAirport.code;
     airportData.value = newAirport;
     showAirport( newAirport)
@@ -230,13 +238,14 @@ function showAirport( airport) {
     }
     airportData.value = airport;
     airportCode.value = airport.code
-    rwyList.value = airport.rwy;
-    allEndings.value = getEndings(airport.rwy, airport.ctaf);
+    rwyList.value = airport.rwys;
+    allEndings.value = getEndings(airport.rwys, getFreqCtaf(airport.freq));
     
     // title.value = airport.code + ":" + airport.name
     title.value = airport.name
-    weatherFreq.value = airport.weather.freq.toString()
-    weatherType.value = airport.weather.type
+    const weather = getFreqWeather( airport.freq)
+    weatherFreq.value = weather ? weather.mhz.toString() : '-'
+    weatherType.value = weather ? weather.name : '-'
 
     // If traffic is runway specific, it will be overriden by showRunway
     elevation.value = Math.round(airport.elev).toString()
@@ -246,8 +255,8 @@ function showAirport( airport) {
 // Show a runway from its name in the airport
 function showRunway(name) {
     // console.log( 'Airport showRunway ' + name)
-    const rwyData = airportData.value.rwy.find((rwy) => rwy.name == name)
-    // console.log( 'Airport showing  ' + JSON.stringify(rwyData))
+    const rwyData = airportData.value.rwys.find((rwy) => rwy.name == name)
+    // console.log( '[Airport.showRunway]', JSON.stringify(rwyData))
     if( rwyData) {
         selectedRunway.value = rwyData
         runwayName.value = name
@@ -275,7 +284,7 @@ function updateWidget() {
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <AirportEdit v-if="mode=='edit'" :airport="airportData" :rwyName="runwayName" :rwyOrientation="rwyOrientation"
             @close="onHeaderClick" @selection="onSettingsUpdate" />
-        <div class="content" v-else-if="mode=='list'">
+        <div v-else-if="mode=='list'" class="content" >
             <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
             <div class="runwayList">
                 <div class="runwayListRow">

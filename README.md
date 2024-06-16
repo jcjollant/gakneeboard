@@ -4,20 +4,24 @@ I couldn't find anything I liked, so I scratched my own itch.
 
 # BUGS
 * Multitower airport stuggle : CYVR is not showing a frequency
-* If the original requets fails, airports should switch to unknown
 
 # TODO
 * Improve Radio Flow Selection with airport code and all frequencies
 * Show list of frequencies for selection in corners list
+## Airport
 * Add separators in Corner data selectors
 * New Tiles Synopsis => capture altitude and fuel level
 * New Tile Navlog
 * New Tile Emergency
 * Small indicator below runway is configurable
+## Synopsis (new tile)
+* New Tile : Synopsis => capture altitude and fuel level
 
 # Done
+Improved airport edit to avoid useless partial code request
+Improved airport edit UI to fit more runways
 ## 5/27/2024
-* Users can authenticate
+* Users can authenticate with Google
 * Authenticatred users can get feedback follow up
 * Send Feedback is disabled if there is no text
 ## 5/18/2024

@@ -58,6 +58,7 @@ body {
 }
 
 .actionDialog {
+  margin-top: 2rem;
   display: flex;
   justify-content: end;
 }
@@ -70,11 +71,20 @@ body {
 .ml-2 {
   margin-left: 0.5rem;
 }
+.ml-5 {
+  margin-left: 2rem;
+}
 
+.mr-2 {
+  margin-right: 0.5rem;
+}
 .mr-3 {
   margin-right: 1rem;
 }
 
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
 .mb-5 {
   margin-bottom: 2rem;
 }

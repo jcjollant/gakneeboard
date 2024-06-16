@@ -9,7 +9,7 @@ import SignIn from './SignIn.vue';
 import Warning from './Warning.vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
-import { getCurrentUser } from '../../assets/data'
+import { getCurrentUser, setCurrentUser } from '../../assets/data'
 
 const emits = defineEmits(['authentication','loadPage','print','howDoesItWork'])
 
@@ -96,8 +96,10 @@ function onReset() {
 }
 
 function onSignOut() {
-  emits('authentication',null)
+  setCurrentUser(null)
   user.value = null
+  // notifiy parent
+  emits('authentication',null)
 }
 
 function openBlog() {

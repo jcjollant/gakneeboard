@@ -4,15 +4,50 @@ import * as data from '../../assets/data.js'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner';
 import InputText from 'primevue/inputtext'
-import UnknownAirport from './CustomAirport.vue';
+import InputGroup from 'primevue/inputgroup'
+import InputGroupAddon from 'primevue/inputgroupaddon';
+import CustomAirport from './CustomAirport.vue';
+import { Airport } from '../../assets/Airport';
 
 const emits = defineEmits(['close','selection'])
 
-const props = defineProps({
+/**
+ * Props management (defineProps, loadProps, onMounted, watch)
+ */
+ const props = defineProps({
     airport: { type: Object, default: null},
     rwyName: { type: String, default: null},
     rwyOrientation: { type: String, default: null},
 })
+
+function loadProps(props) {
+    // console.log('AirportEdit loading props ' + JSON.stringify(props))
+    if( props.airport) {
+        airport = props.airport
+        showAirport()
+        // update edit field value to reflect airport code
+        airportCode.value = airport.code;
+        // if we have an airport to start with, we can revert.
+        canCancel.value = true;
+        canApply.value = true;
+        
+        // select the first runway by default
+        if( props.rwyName) {
+            selectedRwy.value = props.rwyName
+        } else {
+            // console.log( "using first runway")
+            selectedRwy.value = airport.rwys[0].name
+        }
+
+        rwyOrientation.value = (props.rwyOrientation ? props.rwyOrientation : 'vertical')
+        // console.log( 'AirportEdit loadProps ' + props.rwyOrientation)
+
+        if('custom' in airport && airport.custom) {
+            customAirport.value = airport;
+            canEdit.value = true
+        }
+    }
+}
 
 onMounted(() => {
     // console.log('Airport mounted with ' + JSON.stringify(props.params))
@@ -27,45 +62,58 @@ watch( props, async() => {
 
 
 let airport = null
+let pendingCode = null // used during the short delay between code update and actual request
 const loading = ref(false)
 const rwyList = ref([])
 const airportCode = ref('')
 const airportName = ref('')
-const cancellable = ref(false)
-const applyable = ref(false)
+const canCancel = ref(false)
+const canApply = ref(false)
+const canCreate = ref(false)
+const canEdit = ref(false)
 const validAirport = ref(false)
 const rwyOrientation = ref('vertical')
 const selectedRwy = ref(null)
-const showUnknownAirport = ref(false)
+const showCustomAirport = ref(false)
+const customAirport = ref(null)
+const currentUser = ref(null)
 
-function showAirport() {
-    rwyList.value = airport.rwy;
-    airportName.value = airport.name
-    validAirport.value = true;
-}
-
-function loadProps(props) {
-    // console.log('AirportEdit loading props ' + JSON.stringify(props))
-    if( props.airport) {
-        airport = props.airport
-        showAirport()
-        // update edit field value to reflect airport code
-        airportCode.value = airport.code;
-        // if we have an airport to start with, we can revert.
-        cancellable.value = true;
-        applyable.value = true;
-        
-        // select the first runway by default
-        if( props.rwyName) {
-            selectedRwy.value = props.rwyName
-        } else {
-            // console.log( "using first runway")
-            selectedRwy.value = airport.rwy[0].name
-        }
-
-        rwyOrientation.value = (props.rwyOrientation ? props.rwyOrientation : 'vertical')
-        // console.log( 'AirportEdit loadProps ' + props.rwyOrientation)
-    }
+function loadAirport( code) {
+    data.getAirport( code)
+        .then( newAirport => {
+            loading.value = false;
+            if( newAirport && newAirport.version != -1) {
+                // console.log("[AirportEdit.loadAirport] airport", JSON.stringify(airport))
+                // console.log("[AirportEdit.loadAirport] newAirport", JSON.stringify(newAirport))
+                airport = newAirport
+                showAirport()
+                // select the first runway by default
+                // console.log("[AirportEdit.loadAirport] runways", JSON.stringify(airport.rwys))
+                if('rwys' in airport && airport.rwys.length > 0) {
+                    selectedRwy.value = airport.rwys[0]['name']
+                    canApply.value = true
+                } else {
+                    canApply.value = false
+                }
+                if( 'custom' in airport && airport.custom) {
+                    customAirport.value = newAirport
+                    canEdit.value = true
+                } else {
+                    customAirport.value = null
+                    canEdit.value = false
+                }
+                // canEdit.value = (customAirport.value != null)
+                canCreate.value = false
+                // we cannot apply until we pick a runway
+            } else { // airport is unknown
+                rwyList.value = [];
+                airportName.value = "Unknown"
+                validAirport.value = false
+                canApply.value = false
+                canCreate.value = Airport.isValidCode(code)
+                canEdit.value = false
+            }
+        })
 }
 
 // settings are applied
@@ -73,140 +121,156 @@ function onApply() {
     // update settings with orientation
     emits('selection', airport, selectedRwy.value, rwyOrientation.value.toLowerCase())
 }
-
+    
 // gets invoked as airport code is typed into the input field
 // We are after runways
 function onCodeUpdate() {
     // console.log(airportCode.value)
+    // console.log('[AirportEdit.onCodeUpdate]',Date.now())
     loading.value = true
     airportName.value = ' '
-    
-    data.getAirport( airportCode.value)
-        .then( newAirport => {
-            loading.value = false;
-            if( newAirport) {
-                // console.log("onCodeUpdate airport " + JSON.stringify(airport))
-                airport = newAirport
-                showAirport()
-                // select the first runway by default
-                selectedRwy.value = airport.rwy[0].name
-                // we cannot apply until we pick a runway
-                applyable.value = true
-            } else { // airport is unknown
-                rwyList.value = [];
-                validAirport.value = false
+
+    pendingCode = airportCode.value
+    // only load the new code after a short delay to avoid sending useless query
+    if( pendingCode.length > 2) {
+        setTimeout( () => {
+            if( pendingCode == airportCode.value) {
+                pendingCode = null
+                loadAirport( airportCode.value)
             }
-        })
+        }, 500)
+    }
 }
 
-function onCloseUnknownAirport() {
-    showUnknownAirport.value=false    
+                    
+function onCustomUpdated(code, airportData) {
+    console.log('[AirportEdit.onCustomUpdated]', code)
+    showCustomAirport.value=false
+    airportCode.value = code
+    
+    data.refreshAirport(code, airportData)
+    loadAirport(code)
+}
+
+function onCustomCreate() {
+    // console.log('[AirportEdit.onCustomCreate]')
+    const newAirport = new Airport( airportCode.value, "", 0)
+    newAirport.custom = true
+    console.log('[AirportEdit.onCustomCreate] newAirport', JSON.stringify(newAirport))
+    customAirport.value = newAirport;
+    showCustomAirportDialog()
+}
+
+function onCustomEdit() {
+    showCustomAirportDialog();
 }
 
 // A runway has been selected from the list
 function selectRunway(rwy) {
-    // console.log( "AirportEdit selectRunway " + rwy)
-    applyable.value = true
+    // console.log( "[AirportEdit.selectRunway]", rwy)
+    canApply.value = true
     selectedRwy.value = rwy
 }
 
-
+function showAirport() {
+    rwyList.value = airport.rwys;
+    airportName.value = airport.name
+    validAirport.value = true;
+}
+                            
+function showCustomAirportDialog() {
+    currentUser.value = data.getCurrentUser()
+    showCustomAirport.value = true
+}
 
 </script>
 
 <template>
     <div class="content">
+        <CustomAirport v-model:visible="showCustomAirport"  :airport="customAirport" :user="currentUser"
+                        @close="showCustomAirport=false" @updated="onCustomUpdated" />
         <div class="settings">
-            <div class="editItem">Code</div>
-            <div class="airportInformation">
-                <InputText v-model="airportCode" @input="onCodeUpdate" aria-describedby="airport-name"/>
-                <small id="airport-name">{{airportName}}</small>
+            <div class="airportCode">
+                <InputGroup>
+                    <InputGroupAddon>Code</InputGroupAddon>
+                    <InputText v-model="airportCode" @input="onCodeUpdate"/>
+                </InputGroup>
+                <span class="airportName">{{  airportName }}</span>
             </div>
-            <div class="editItem">Runway</div>
-            <ProgressSpinner class="spinner" v-if="loading"></ProgressSpinner>
-            <div v-else class="rwySelector">
-                <UnknownAirport v-model:visible="showUnknownAirport" @close="onCloseUnknownAirport"></UnknownAirport>
-                <Button label="Unknown Airport" class="sign" v-if="!validAirport" @click="showUnknownAirport=true"></Button>
-                <Button :label="rwy.name" class="sign" :severity="rwy.name == selectedRwy ? 'primary' : 'secondary'"
-                    v-for="rwy in rwyList" 
-                    @click="selectRunway(rwy.name)"></Button>
-                <Button label="ALL" class="sign" v-if="rwyList.length > 0"  :severity="selectedRwy == 'all' ? 'primary' : 'secondary'"
-                        @click="selectRunway('all')"></Button>
+            <ProgressSpinner v-if="loading" class="spinner" ></ProgressSpinner>
+            <div v-else-if="validAirport">
+                <div class="miniHeader">Runway</div>
+                <div class="rwySelector">
+                    <Button :label="rwy.name" class="sign" :severity="rwy.name == selectedRwy ? 'primary' : 'secondary'"
+                        v-for="rwy in rwyList" 
+                        @click="selectRunway(rwy.name)"></Button>
+                    <Button label="ALL" class="sign" v-if="rwyList.length > 0"  :severity="selectedRwy == 'all' ? 'primary' : 'secondary'"
+                            @click="selectRunway('all')"></Button>
+                </div>
+                <div class="miniHeader" v-if="validAirport">Orientation</div>
+                <div class="rwyOrientation" v-if="validAirport">
+                    <Button label="Vertical" 
+                        @click="rwyOrientation='vertical'" :severity="rwyOrientation == 'vertical' ? 'primary' : 'secondary'"></Button>
+                    <Button label="Magnetic" 
+                        @click="rwyOrientation='magnetic'" :severity="rwyOrientation == 'magnetic' ? 'primary' : 'secondary'"></Button>
+                </div>
             </div>
-            <div class="editItem" v-if="validAirport">Orientation</div>
-            <div class="rwyOrientation" v-if="validAirport">
-                <Button label="Vertical" 
-                    @click="rwyOrientation='vertical'" :severity="rwyOrientation == 'vertical' ? 'primary' : 'secondary'"></Button>
-                <Button label="Magnetic" 
-                    @click="rwyOrientation='magnetic'" :severity="rwyOrientation == 'magnetic' ? 'primary' : 'secondary'"></Button>
-            </div>
-            <!-- <div class="editItem">Label</div>
-            <div class="rwyOrientation" v-if="validAirport">
-                <Button label="LxW" 
-                    @click="rwyOrientation='vertical'" :severity="rwyOrientation == 'vertical' ? 'primary' : 'secondary'"></Button>
-                <Button label="GND" 
-                    @click="rwyOrientation='magnetic'" :severity="rwyOrientation == 'magnetic' ? 'primary' : 'secondary'"></Button>
-                <Button label="Blank" 
-                    @click="rwyOrientation='magnetic'" :severity="rwyOrientation == 'magnetic' ? 'primary' : 'secondary'"></Button>
-            </div> -->
             <div class="actionBar">
-                <Button v-if="cancellable" label="Cancel" link @click="emits('close')"></Button>
-                <Button icon="pi pi-check" label="Apply" 
-                    @click="onApply" :disabled="!applyable" ></Button>
+                <Button v-if="canEdit" label="Edit" severity="secondary"
+                    @click="onCustomEdit"></Button>
+                <Button v-if="canCreate" label="Create" severity="secondary"
+                    @click="onCustomCreate"></Button>
+                <Button v-if="canCancel" label="Cancel" link @click="emits('close')"></Button>
+                <Button label="Apply" 
+                    @click="onApply" :disabled="!canApply" ></Button>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-    .settings {
+.settings{
+    display: flex;
+    flex-flow: column;
+    gap: 5px;    
+    font-size: 0.7rem;
+    margin: 5px
+}
+    .airportCode {
         display: grid;
-        grid-template-columns: 55px 170px;
-        gap: 5px;
-        padding: 5px;
-    }
-    #airport-name {
-        font-size: 0.6rem;
-        line-height: 0.6rem;
-    }
-    .airportInformation {
-        display: flex;
-        flex-flow: column;
-        gap: 2px;
-    }
-    .airportCodeInput {
+        grid-template-columns: 100px 140px;
+        font-size: 0.8rem;
+        line-height: 1.5rem;
         text-align: left;
-        /* width: 90px; */
+        gap:5px;
+    }
+    .airportName {
+        overflow: hidden;
+        line-height: 1.5rem;
+        height: 1.5rem;
+        font-size: 0.7rem;
     }
     .rwySelector {
-        /* font-size: 1rem; */
-        /* margin:0px 5px;  */
         display:grid;
         grid-template-columns: auto auto auto;
+        /* display: flex;
+        justify-content: center; */
         gap: 2px 5px;
     }
 
     .sign {
         border-radius: 4px;
         /* border: 1px solid black; */
-        padding: 2px 2px;
+        padding: 2px 5px;
         font-size: 0.7rem;
     }
-    /* todo activate on long list of rwy */
-    .dense {
-        font-size: 0.7rem;
-    }
-    .location {
-        background: #ffbb00;
-        color:black;
+    .miniHeader {
+        margin-top:5px;
+        text-align: left;
     }
     .runway {
         background: red;
         color:white;
-    }
-    .taxi {
-        color: white;
-        background: black;
     }
     .rwyOrientation {
         display: flex;
@@ -225,7 +289,7 @@ function selectRunway(rwy) {
         line-height: 1.5rem;
         font-size: 0.8rem;
     }
-    :deep(.p-component) {
+    :deep(.p-component), :deep(.p-inputgroup-addon) {
         font-size: 0.8rem;
         height: 1.5rem;
     }
