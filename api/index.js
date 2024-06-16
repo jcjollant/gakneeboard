@@ -96,9 +96,9 @@ app.post('/authenticate', async(req,res) => {
 })
 
 app.post('/feedback', async(req,res) => {
-    // console.log( "API feedback request " + req);
-    // console.log( "[index] feedback body " + JSON.stringify(req.body));
-    // console.log( "[index] feedback body type " + typeof req.body);
+    console.log( "API feedback request " + req);
+    console.log( "[index] feedback body " + JSON.stringify(req.body));
+    console.log( "[index] feedback body type " + typeof req.body);
     // insert feedback in DB
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
     await db.saveFeedback(payload)
