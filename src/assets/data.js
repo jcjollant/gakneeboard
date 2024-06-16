@@ -47,15 +47,17 @@ const demoRadioData = [
   {'id':11,'name':'','data':{}},
 ]  
 
-// const contentTypeJson = { headers: {'Content-Type':'application/json'} }
+const contentTypeJson = { headers: {'Content-Type':'application/json'} }
 const contentTypeTextPlain = { headers: {'Content-Type':'text/plain'} }
 // const contentTypeText = { headers: {'Content-Type':'text'} }
+const contentType = contentTypeJson;
 
 let currentUser = null
 export async function authenticate( source, token) {
   const url = apiRootUrl + 'authenticate'
   const payload = {source:source, token:token}
-  const response = await axios.post(url, JSON.stringify(payload), contentTypeTextPlain)
+  const response = await axios.post(url, payload, contentTypeJson)
+//  const response = await axios.post(url, JSON.stringify(payload), contentTypeTextPlain)
     .catch( e => {
       console.log( '[data.authenticate] ' + e)
       return null
@@ -278,8 +280,8 @@ export async function sendFeedback(text,contactMe) {
     payload.user = currentUser.sha256;
   }
 
-  axios.post( url, JSON.stringify(payload), contentTypeTextPlain)
-  // axios.post(apiRootUrl + 'feedback', data, contentTypeJson)
+  axios.post( url, payload, contentTypeJson)
+  // axios.post( url, JSON.stringify(payload), contentTypeTextPlain)
     .then( response => {
       // console.log( '[data] feedback sent')
     })
@@ -311,7 +313,8 @@ export async function saveCustomAirport(airport) {
   const url = apiRootUrl + 'airport'
   const payload = {user:currentUser.sha256, airport:airport}
   // const headers = { 'Content-Type':'text/plain', 'Authorization':'Bearer ' + currentUser.sha256}
-  await axios.post( url, JSON.stringify(payload), contentTypeTextPlain)
+//  await axios.post( url, JSON.stringify(payload), contentTypeTextPlain)
+  await axios.post( url, payload, contentType)
     .then( response => {
       // console.log( '[data] custom airport saved', airport.code)
     })
