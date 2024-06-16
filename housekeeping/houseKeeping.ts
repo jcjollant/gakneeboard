@@ -2,10 +2,12 @@
 
 
 const postgres = require('@vercel/postgres')
-process.env.POSTGRES_URL="postgres://default:94chrayEvOLG@ep-shrill-silence-a6ypne6y-pooler.us-west-2.aws.neon.tech/verceldb?sslmode=require"
 import { GApi } from "../backend/gapi"
-const adip = require( '../backend/adip')
-const db = require( '../backend/db')
+import adip from '../backend/adip'
+import db from '../backend/db'
+import { postgresUrl } from "../test/constants"
+
+process.env.POSTGRES_URL=postgresUrl
 
 async function checkEffectiveDates() {
     const result = await postgres.sql`SELECT data,id FROM Airports WHERE creatorId IS NULL`

@@ -1,7 +1,7 @@
 import { GApi } from '../backend/gapi'
-import { hashJc } from './constants'
+import { hashJc, postgresUrl } from './constants'
 
-process.env.POSTGRES_URL="postgres://default:94chrayEvOLG@ep-shrill-silence-a6ypne6y-pooler.us-west-2.aws.neon.tech/verceldb?sslmode=require"
+process.env.POSTGRES_URL=postgresUrl
 
 
 test('Renton is found with both codes', async () => {
