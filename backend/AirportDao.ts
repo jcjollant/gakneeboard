@@ -14,12 +14,12 @@ export class AirportDao {
      * @param creatorId 
      * @returns the airport code
      */
-    public static async createCustom(airport:Airport, creatorId:number):Promise<string> {
-        // console.log( "[AirportDao] createCustom " + airport.code + " / " + creatorId);
+    public static async createOrUpdateCustom(airport:Airport, creatorId:number):Promise<string> {
+        console.log( "[AirportDao] createOrUpdateCustom " + airport.code + " / " + creatorId);
         const customId:number|undefined = await AirportDao.findCustom( airport.code, creatorId)
         const data:string = JSON.stringify(airport);
         if( customId) {
-            // console.log( "[AirportDao] createCustom found " + customId);
+            console.log( "[AirportDao] createOrUpdateCustom updating", customId);
             await sql`
                 UPDATE airports SET data=${data}, version=${airport.version} WHERE id=${customId}
             `
