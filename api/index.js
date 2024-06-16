@@ -7,31 +7,31 @@ import { UserTools } from '../backend/UserTools'
 
 const port = 3002
 const app = express();
-const version = 527
+const version = 615
 
 app.use(cors())
 
-console.log("Dev Mode")
-app.use((req, res, next) => {
-    const showHeaders = false;
-    let before = Date.now();
-    let thisRequest = before % 100;
-    if( showHeaders ) {
-        console.log(`${thisRequest}: ${req.method}, ${req.originalUrl}, `, req.headers);
-    } else {
-        console.log(`${thisRequest}: ${req.method}, ${req.originalUrl}, `);
-    }
-    // watchs for end of theresponse
-    res.on('close', () => {
-        let after = Date.now();
-        if( showHeaders) {
-            console.log(`${thisRequest}: status=${res.statusCode}, outbound headers: `, res.getHeaders());
-        } else {
-            console.log(`${thisRequest}: status=${res.statusCode}, time=${after-before}`);
-        }
-    });
-    next();
-});
+// console.log("Dev Mode")
+// app.use((req, res, next) => {
+//     const showHeaders = false;
+//     let before = Date.now();
+//     let thisRequest = before % 100;
+//     if( showHeaders ) {
+//         console.log(`${thisRequest}: ${req.method}, ${req.originalUrl}, `, req.headers);
+//     } else {
+//         console.log(`${thisRequest}: ${req.method}, ${req.originalUrl}, `);
+//     }
+//     // watchs for end of theresponse
+//     res.on('close', () => {
+//         let after = Date.now();
+//         if( showHeaders) {
+//             console.log(`${thisRequest}: status=${res.statusCode}, outbound headers: `, res.getHeaders());
+//         } else {
+//             console.log(`${thisRequest}: status=${res.statusCode}, time=${after-before}`);
+//         }
+//     });
+//     next();
+// });
 
 app.get("/", (req, res) => res.send("GA API version " + version));
 
