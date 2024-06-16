@@ -25,11 +25,11 @@ export class RunwayEnd {
             this.tp = Runway.leftPattern
             this.name = name;
         }
-        this.setMagneticOrientation(orientation);
+        this.mag = orientation % 360;
+        // this.setMagneticOrientation(orientation);
     }
 
     setMagneticOrientation(value:number) {
-        this.mag = value % 360;
     }
     setRightPattern(really:boolean=true) {
         this.tp = really ? Runway.rightPattern : Runway.leftPattern;
@@ -50,8 +50,8 @@ export class Runway {
     length: number;
     width: number;
     ends: RunwayEnd[];
-    surface: RunwaySurface;
-    freq: number;
+    surface: RunwaySurface|undefined;
+    freq: number|undefined;
     public static rightPattern:string = 'R';
     public static leftPattern:string = 'L';
 
@@ -62,6 +62,8 @@ export class Runway {
         const ends:string[]  = name.split('-')
         this.ends = []
         this.ends.push( ...ends.map( (end) =>  new RunwayEnd(end, parseInt(end)*10) ) ); 
+        this.freq = undefined
+        this.surface = undefined
     }
     public getEnd(name:string):RunwayEnd|undefined {
         return this.ends.find((end) => end.name === name)
@@ -161,7 +163,7 @@ export class Airport {
         return code != null && ( code.length == 3 || code.length == 4)
     }
 
-    public static isValidVersion(version):boolean {
+    public static isValidVersion(version:number):boolean {
         return version == Airport.currentVersion
     }
     
