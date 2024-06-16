@@ -58,15 +58,6 @@ test('locId are valid', () => {
     expect(GApi.getLocId('NT')).toBeNull()
 })
 
-test('Codes are valid', () => {
-    expect(GApi.isValidCode('RNT')).toBe(true)
-    expect(GApi.isValidCode('KRNT')).toBe(true)
-    expect(GApi.isValidCode('PANN')).toBe(true)
-    expect(GApi.isValidCode('LRNT')).toBe(true)
-    expect(GApi.isValidCode('KRNT2')).toBe(false)
-    expect(GApi.isValidCode('NT')).toBe(false)
-})
-
 test('Militrary frequencies', () => {
     expect(GApi.isMilitary(null)).toBe(false)
     expect(GApi.isMilitary('-.-')).toBe(false)

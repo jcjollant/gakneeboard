@@ -64,7 +64,7 @@ test('Fetch Renton and check fields',async () =>{
     expect(runway34.pattern).toBe('right')
 
     // effectiveDate should be defined
-    expect(airport.effectiveDate).toBe('2024-05-16T00:00:00')
+    expect(airport.effectiveDate).toBe('2024-06-13T00:00:00')
     // ICAO should be defined
     // Fecth time should be higer
     expect(airport.fetchTime).toBeGreaterThan(before)

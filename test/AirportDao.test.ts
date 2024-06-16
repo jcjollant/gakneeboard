@@ -18,7 +18,7 @@ describe('Custom Airports', () => {
         await AirportDao.deleteCustom( customCode, userIdJc)
 
         // Test creation
-        await AirportDao.createCustom( airport, userIdJc)
+        await AirportDao.createOrUpdateCustom( airport, userIdJc)
         const customAirportString = await AirportDao.readCustom(customCode, userIdJc)
         expect(customAirportString).toBeDefined()
         if(customAirportString !== undefined) {
@@ -40,8 +40,8 @@ describe('Custom Airports', () => {
         const userIdAs = 2;
         const airportJc:Airport = new Airport(customCode,customNameJC, 1000)
         const airportAs:Airport = new Airport(customCode,customNameAS, 1000)
-        await AirportDao.createCustom( airportJc, userIdJc)
-        await AirportDao.createCustom( airportAs, userIdAs)
+        await AirportDao.createOrUpdateCustom( airportJc, userIdJc)
+        await AirportDao.createOrUpdateCustom( airportAs, userIdAs)
         // Read for JC
         const listJc = await AirportDao.readList([customCode],userIdJc)
         expect(listJc.length).toBe(1)
