@@ -1,6 +1,7 @@
 const db = require('./db')
 const adip = require('./adip')
 import { UserDao } from './UserDao'
+import { Airport } from './models/Airport'
 import { AirportDao } from './AirportDao'
 import { AirportTools } from './AirportTools'
 
@@ -8,7 +9,7 @@ import { AirportTools } from './AirportTools'
  
 export class GApi {
 
-    public static async createCustomAirport(userSha256,airport) {
+    public static async createCustomAirport(userSha256:string,airport:any) {
         // console.log('[gapi.createCustomAirport]', userSha256, airport)
         // resolve user
         const userId = await UserDao.find(userSha256)
@@ -28,7 +29,7 @@ export class GApi {
      * @returns airport object or undefined if not found
      * @throws 400 if code is invalid 
     */
-    public static async getAirport(codeParam,userId=undefined) {
+    public static async getAirport(codeParam:string,userId: any=undefined):Promise<Airport|undefined> {
         // console.log( "[gapi.getAirport] " + codeParam + ' user=' + userId);
         // try postgres first unless we are in force mode
         let airport = null;
@@ -40,13 +41,13 @@ export class GApi {
         const airports = await AirportDao.readList( [code], userId); 
         if(airports.length > 0){
             console.log( "[gapi] found " + code + ' in DB');
-        return AirportTools.format(airports[0])
+            return AirportTools.format(airports[0])
         } 
 
         return GApi.getAirportFromAdip(code)
     }
 
-    public static async getAirportFromAdip(code) {
+    public static async getAirportFromAdip(code:string):Promise<Airport|undefined> {
         // console.log( "[gapi.getAirportFromAdip] " + code);
 
         if( await db.isKnownUnknown(code)) {
@@ -73,10 +74,10 @@ export class GApi {
      * @param {*} airportCodes A list of airport codes
      * @returns a list of corresponding airport data, which may be undefined
     */
-    public static async getAirportsList(airportCodes,userId=undefined) {
+    public static async getAirportsList(airportCodes:string[],userId=undefined) {
         const searchCodes = airportCodes.map( code => code.toUpperCase()) 
 
-        const foundAirports = await AirportDao.readList(searchCodes,userId)
+        const foundAirports:any[] = await AirportDao.readList(searchCodes,userId)
         // console.log( "[gapi.getAirportsList] found " + JSON.stringify(foundAirports));
 
         return foundAirports.map( airport => AirportTools.format(airport))
@@ -87,7 +88,7 @@ export class GApi {
      * @param {*} code anything to be turned into an ICAO code
      * @returns a four letter icao code or null if not valid
     */
-    public static getIcao(code):string|null {
+    public static getIcao(code:string):string|null {
         const output = null
         if( AirportTools.isValidAirportCode(code)) {
             if( code.length == 3) {
@@ -99,7 +100,7 @@ export class GApi {
         return null
     }
 
-    static getLocId(code) {
+    static getLocId(code:string) {
         const output = null
 
         if( AirportTools.isValidAirportCode(code)) {
@@ -112,7 +113,7 @@ export class GApi {
         return null
     }
 
-    public static isMilitary(freq) {
+    public static isMilitary(freq:string) {
         if( freq == null) return false;
         if( freq =='-.-') return false;
         return !adip.isNotMilitary(freq)
