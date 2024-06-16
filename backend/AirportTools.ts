@@ -42,4 +42,8 @@ export class AirportTools {
 
         return output
     }
+
+    public static isValidAirportCode(code:string):boolean {
+        return Airport.isValidCode(code)
+    }
 }
