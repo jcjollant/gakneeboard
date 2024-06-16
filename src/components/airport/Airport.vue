@@ -3,7 +3,7 @@
 import {ref, onMounted, watch} from 'vue';
 import Header from '../Header.vue'
 import Runway from './RunwayView.vue'
-import { getAirport, getCtafFreq, getWeatherFrequency} from '../../assets/data.js'
+import { getAirport, getFreqCtaf, getFreqWeather} from '../../assets/data.js'
 import Corner from './Corner.vue';
 import CornerStatic from './CornerStatic.vue';
 import AirportEdit from './AirportEdit.vue';
@@ -61,16 +61,20 @@ const unknownRunway = ref(false)
 function getEnding(rwy, endIndex, freq) {
     // console.log('getEnding ' + JSON.stringify(rwy) + ' / ' + ending)
     const output = {}
-    const end = rwy.ends[endIndex]    
-    output['name'] = end.name
-    output['width'] = rwy.width
-    output['length'] = rwy.length
-    output['pattern'] = end.tp == 'L' ? 'LP' : 'RP'
-    if( 'freq' in rwy) {
-        output['freq'] = rwy.freq;
-    } 
-    else if( freq) {
-        output['freq'] = freq ? freq.mhz : '-'
+    try {
+        const end = rwy.ends[endIndex]    
+        output['name'] = end.name
+        output['width'] = rwy.width
+        output['length'] = rwy.length
+        output['pattern'] = end.tp == 'L' ? 'LP' : 'RP'
+        if( 'freq' in rwy) {
+            output['freq'] = rwy.freq;
+        } 
+        else if( freq) {
+            output['freq'] = freq ? freq.mhz : '-'
+        }
+    } catch( error) {
+        console.log('[Airport.getEnding]', error)
     }
 
     return output
@@ -81,8 +85,12 @@ function getEndings(rwys, freq) {
     if( !rwys) return output;
     
     rwys.forEach((rwy) => {
-        output.push( getEnding(rwy,0,freq))
-        output.push( getEnding(rwy,1,freq))
+        // console.log('[Airport.getEndings]', JSON.stringify(rwy))
+        if( rwy.ends.length == 2) {
+            // console.log('[Airport.getEndings]', JSON.stringify(rwy.ends))
+            output.push( getEnding(rwy,0,freq))
+            output.push( getEnding(rwy,1,freq))
+        }
     })
     output.sort( (a,b) => { return a.name.localeCompare( b.name)})
     return output
@@ -231,11 +239,11 @@ function showAirport( airport) {
     airportData.value = airport;
     airportCode.value = airport.code
     rwyList.value = airport.rwys;
-    allEndings.value = getEndings(airport.rwys, getCtafFreq(airport.freq));
+    allEndings.value = getEndings(airport.rwys, getFreqCtaf(airport.freq));
     
     // title.value = airport.code + ":" + airport.name
     title.value = airport.name
-    const weather = getWeatherFrequency( airport.freq)
+    const weather = getFreqWeather( airport.freq)
     weatherFreq.value = weather ? weather.mhz.toString() : '-'
     weatherType.value = weather ? weather.name : '-'
 

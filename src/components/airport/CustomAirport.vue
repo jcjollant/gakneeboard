@@ -3,6 +3,7 @@ import { ref, onMounted, watch } from 'vue'
 import { Airport, Runway } from '../../assets/Airport'
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button'
+import Checkbox from 'primevue/checkbox'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import FieldSet from 'primevue/fieldset'
@@ -11,11 +12,11 @@ import InputGroupAddon from 'primevue/inputgroupaddon'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
 import ToggleButton from 'primevue/togglebutton'
-import { saveCustomAirport, getCtafFreq, getGroundFrequency, getWeatherFrequency } from '../../assets/data'
+import { saveCustomAirport, getFreqCtaf, getFreqWeather, getFreqGround } from '../../assets/data'
 
 const emits = defineEmits(["close","updated"]);
 
-const user = ref("JC")
+const user = ref(null)
 const code = ref("")
 const name = ref("")
 const elevation = ref(0)
@@ -31,12 +32,14 @@ const rwy0RightPattern = ref(false)
 const rwy1RightPattern = ref(false)
 const runways = ref([])
 const toast = useToast()
+let originalProps = null // used to remember original props
 
 /**
  * Props management (defineProps, loadProps, onMounted, watch)
  */
 const props = defineProps({
     airport: { type: Object, default: null},
+    user: { type: Object, default: null},
 })
 
 function loadProps(props) {
@@ -45,11 +48,13 @@ function loadProps(props) {
             code.value = props.airport.code;
             name.value = props.airport.name;
             elevation.value = props.airport.elev;
-            ctaf.value = getCtafFreq( props.airport.freq)
-            weather.value = getWeatherFrequency( props.airport.freq)
-            ground.value = getGroundFrequency( props.airport.freq)
+            ctaf.value = getFreqCtaf( props.airport.freq)?.mhz
+            weather.value = getFreqWeather( props.airport.freq)?.mhz
+            ground.value = getFreqGround( props.airport.freq)?.mhz
             runways.value = props.airport.rwys
+            originalProps = props
       }
+      user.value = props.user;
 }
 
 onMounted(() => {
@@ -66,29 +71,38 @@ watch( props, async() => {
 
 
 
-function errorToast( title, details) {
-      toast.add({ 
-            severity: 'error', 
-            summary: title, 
-            detail: details, 
-            life: 3000
-      });  
-}
-
 function onAddRunway() {
-      // prepend with 0 on single value
+      // prepend with 0 on single digit runway name
       if(rwyEnd0.value.length == 1) rwyEnd0.value = '0' + rwyEnd0.value
       if(rwyEnd1.value.length == 1) rwyEnd1.value = '0' + rwyEnd1.value
 
       const rwyName = rwyEnd0.value + '-' + rwyEnd1.value
       if( Runway.isValidName(rwyName)) {
             const runway = new Runway(rwyName,rwyLength.value,rwyWidth.value)
-            runway.setTrafficPattern( rwyEnd0.value, rwy0RightPattern)
-            runway.setTrafficPattern( rwyEnd1.value, rwy1RightPattern)
+            // console.log( "[CustomAirport.onAddRunway] Traffic patterns", rwyEnd0.value, rwy0RightPattern.value, rwyEnd1.value, rwy1RightPattern.value)
+            runway.setTrafficPattern( rwyEnd0.value, rwy0RightPattern.value ? Runway.rightPattern : Runway.leftPattern)
+            runway.setTrafficPattern( rwyEnd1.value, rwy1RightPattern.value ? Runway.rightPattern : Runway.leftPattern)
             runways.value.push(runway)
+
+            rwyEnd0.value = ''
+            rwy0RightPattern.value = false
+            rwyEnd1.value = ''
+            rwy1RightPattern.value = false
+            rwyLength.value = 0
+            rwyWidth.value = 0
       } else {
-            errorToast( 'Cannot Add Runway', 'Invalid runway name ' + rwyName);  
+            addToast( 'error', 'Cannot Add Runway', 'Invalid runway name ' + rwyName);  
       }
+}
+
+function onDoNotSave() {
+      // we reload original properties to forget recent changes
+      loadProps(originalProps)
+      emits('close')
+}
+
+function onRemoveRunway(name) {
+      runways.value = runways.value.filter( rwy => rwy.name != name);
 }
 
 async function onSave() {
@@ -97,13 +111,13 @@ async function onSave() {
       const errorTitle = "Cannot Save Airport"
 
       if( !Airport.isValidCode( code.value)) {
-            errorToast(errorTitle, "Invalid airport code (" + code.value + ")")
+            addToast( 'error', errorTitle, "Invalid airport code (" + code.value + ")")
             return
       }
 
-      // make
+      // Check we are not creating an airport without runways
       if( runways.value.length == 0) {
-            errorToast(errorTitle, "Please add at least one runway to the airport")
+            addToast( 'error', errorTitle, "Please add at least one runway to the airport")
             return
       }
 
@@ -114,9 +128,20 @@ async function onSave() {
       airport.addFrequency( 'GND', ground.value)
       airport.addRunways(runways.value)
 
-      console.log( "[CustomAirport] onSave aiport " + JSON.stringify(airport))
+      // console.log( "[CustomAirport] onSave aiport " + JSON.stringify(airport))
+      addToast('info', 'Saving Custom Airport', airport.code + ' is being saved')
       await saveCustomAirport( airport)
-      emits('updated',code.value)
+      addToast('success', 'Saved!', 'Custom Airport ' + airport.code + ' has been saved')
+      emits('updated',code.value, airport)
+}
+
+function addToast( severity, title, details) {
+      toast.add({ 
+            severity: severity, 
+            summary: title, 
+            detail: details, 
+            life: 3000
+      });  
 }
 
 </script>
@@ -135,7 +160,7 @@ async function onSave() {
                               <InputGroupAddon>Name</InputGroupAddon>
                               <InputText v-model="name"></InputText>
                         </InputGroup>
-                        <InputGroup class="airportElevation">
+                        <InputGroup class="rem15">
                               <InputGroupAddon>Elev.</InputGroupAddon>
                               <InputNumber v-model="elevation"></InputNumber>
                               <InputGroupAddon>ft</InputGroupAddon>
@@ -144,7 +169,7 @@ async function onSave() {
             </FieldSet>
             <FieldSet legend="Frequencies" class="mb-2">
                   <div class="row">
-                        <InputGroup class="frequency">
+                        <InputGroup class="rem15">
                               <InputGroupAddon>CTAF</InputGroupAddon>
                               <InputNumber v-model="ctaf" 
                               :minFractionDigits="3" :maxFractionDigits="3"
@@ -152,14 +177,14 @@ async function onSave() {
                               />
                               <!-- <InputGroupAddon>Mhz</InputGroupAddon> -->
                         </InputGroup>
-                        <!-- <InputGroup class="frequency">
+                        <!-- <InputGroup class="rem15">
                               <InputGroupAddon>TWR</InputGroupAddon>
                               <InputNumber v-model="tower" 
                               :minFractionDigits="3" :maxFractionDigits="3"
                               :min="118.0" :max="136.975" :step="0.025"
                               />
                         </InputGroup> -->
-                        <InputGroup class="frequency">
+                        <InputGroup class="rem15">
                               <InputGroupAddon>Wx</InputGroupAddon>
                               <InputNumber v-model="weather" 
                               :minFractionDigits="3" :maxFractionDigits="3"
@@ -167,7 +192,7 @@ async function onSave() {
                               />
                               <!-- <InputGroupAddon>Mhz</InputGroupAddon> -->
                         </InputGroup>
-                        <InputGroup class="frequency">
+                        <InputGroup class="rem15">
                               <InputGroupAddon>GND</InputGroupAddon>
                               <InputNumber v-model="ground" 
                               :minFractionDigits="3" :maxFractionDigits="3"
@@ -185,55 +210,56 @@ async function onSave() {
                               />
                               <label for="runwayName">Name</label>
                         </FloatLabel> -->
-                        <InputGroup class="rwyName">
-                              <InputGroupAddon>Name</InputGroupAddon>
+                        <InputGroup class="rwyEnd">
+                              <InputGroupAddon>End1</InputGroupAddon>
                               <InputText v-model="rwyEnd0"/>
-                              <InputGroupAddon>-</InputGroupAddon>
-                              <InputText v-model="rwyEnd1"/>
-                        </InputGroup>
-                        <div class="rwyEnd">
-                              <!-- <div class="rwy">{{ rwy0name }}</div> -->
                               <ToggleButton v-model="rwy0RightPattern" 
                                     :title="(rwy0RightPattern?'Right':'Left')+' Traffic Pattern Runway '+rwyEnd0"
-                                    :onLabel="'RP'+rwyEnd0" onIcon="pi pi-arrow-right" 
-                                    :offLabel="rwyEnd0" offIcon="pi pi-arrow-left" 
+                                    onLabel="RP" onIcon="pi pi-arrow-right" 
+                                    offLabel="LP" offIcon="pi pi-arrow-left" 
                                     class="w-9rem" />
-                        </div>
-                        <div class="rwyEnd">
-                              <!-- <div class="rwy">{{ rwy1name }}</div> -->
-                              <!-- <label class="label">left pattern</label> -->
+                        </InputGroup>
+                        <InputGroup class="rwyEnd">
+                              <InputGroupAddon>End2</InputGroupAddon>
+                              <InputText v-model="rwyEnd1"/>
                               <ToggleButton v-model="rwy1RightPattern" 
                                     :title="(rwy1RightPattern?'Right':'Left')+' Traffic Pattern Runway '+rwyEnd1"
-                                    :onLabel="'RP'+rwyEnd1" onIcon="pi pi-arrow-right" 
-                                    :offLabel="rwyEnd1" offIcon="pi pi-arrow-left" 
+                                    onLabel="RP" onIcon="pi pi-arrow-right" 
+                                    offLabel="LP" offIcon="pi pi-arrow-left" 
                                     class="w-9rem" />
-                        </div>
-                        <InputGroup class="airportElevation">
+                        </InputGroup>
+                        <InputGroup class="rem15">
                               <InputGroupAddon>Length</InputGroupAddon>
                               <InputNumber v-model="rwyLength"></InputNumber>
                               <InputGroupAddon>ft</InputGroupAddon>
                         </InputGroup>
-                        <InputGroup class="airportElevation">
+                        <InputGroup class="rem15">
                               <InputGroupAddon>Width</InputGroupAddon>
                               <InputNumber v-model="rwyWidth"></InputNumber>
                               <InputGroupAddon>ft</InputGroupAddon>
                         </InputGroup>
-                        <Button label="Add Runway" severity="secondary" @click="onAddRunway"></Button>
+                        <Button label="Save" severity="secondary" @click="onAddRunway"></Button>
                   </div>
                   <div class="row mb-2">
-                        <div class="rwy" v-for="runway in runways">{{runway.name}}</div>     
+                        <div class="label">List :</div>
+                        <Button class="rwy" v-for="runway in runways" 
+                              :title="'Remove Runway ' + runway.name" 
+                              :label="runway.name"
+                              severity="danger" 
+                              icon="pi pi-times"
+                              @click="onRemoveRunway(runway.name)"></Button>
                   </div>
             </FieldSet>
             <div class="actionDialog gap-2">
-                  <Button label="Do Not Save" @click="emits('close')" link></Button>
+                  <Button label="Do Not Save" @click="onDoNotSave()" link></Button>
                   <Button label="Save Custom Airport" @click="onSave()"></Button>
             </div>
       </Dialog>
       <Dialog v-else modal header="Custom Airport">
             <div class="mb-5">
-                  <span>You must be signed to create custom airports</span>
+                  <span>You must be signed in to create custom airports<br>This can be done via the menu</span>
             </div>
-            <div class="actionDialog gap-2"><Button label="Close" @click="emits('close')"></Button></div>
+            <div class="actionDialog gap-2"><Button label="Roger" @click="emits('close')"></Button></div>
       </Dialog>
 </template>
 
@@ -242,14 +268,11 @@ async function onSave() {
       width: 20rem;
 }
 
-.airportElevation {
-      width: 15rem;
-}
-.frequency {
+.rem15 {
       width: 15rem;
 }
 .label {
-      line-height: 1.5rem;
+      line-height: 2rem;
 }
 .row {
       display: flex;
@@ -266,20 +289,16 @@ async function onSave() {
       font-weight: 600;
       /* text-align: center; */
       line-height: 1.5rem;
+      cursor: pointer;
 }
-.rwyName {
-      width: 12rem;
+.rwyEnd {
+      width: 10.5rem;
 }
 .rwyRow {
       display: flex;
       flex-flow: row;
       justify-content: space-between;
       line-height: 1rem;
-}
-
-.rwyEnd {
-      display: flex;
-      gap: 0.5rem;
 }
 
 :deep(.p-fieldset-legend) {

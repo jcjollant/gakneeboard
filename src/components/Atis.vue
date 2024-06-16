@@ -59,8 +59,8 @@ watch( props, async() => {
         <Header :title="mode==''?'ATIS @':'ATIS'" :replace="mode=='edit'" :left="mode==''" 
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div v-if="mode=='edit'" class="content list" >
-            <Button label="Full" @click="changeMode('')"></Button>
-            <Button label="Compact" @click="changeMode('compact')"></Button>
+            <Button label="Full Size" @click="changeMode('')"></Button>
+            <Button label="Compact (x4)" @click="changeMode('compact')"></Button>
         </div>
         <div v-else-if="mode==''" class="content full">
             <div class="info br">

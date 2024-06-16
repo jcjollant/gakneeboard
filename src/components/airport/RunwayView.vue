@@ -64,7 +64,8 @@ function setNewPatternMode( value) {
 
 function show(runway) {
     // console.log('RunwayView show', JSON.stringify(runway))
-    if( !( runway && ('name' in runway))) return;
+    // Filter out runway with invalid data
+    if( !runway || !('name' in runway) || !('ends' in runway) || (runway.ends.length != 2)) return;
 
     const end0Mag = runway.ends[0].mag;
     var northEnd, southEnd;

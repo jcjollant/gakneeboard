@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from 'vue';
 import OverlayPanel from 'primevue/overlaypanel'
 import RadioButton from 'primevue/radiobutton'
-import { getCtafFreq, getWeatherFrequency } from '../../assets/data';
+import { getFreqCtaf, getFreqWeather, getFreqGround } from '../../assets/data';
 
 
 const emits = defineEmits(['update'])
@@ -66,7 +66,7 @@ function showField( field) {
     // console.log('showField ' + field)
     switch( field) {
         case 'weather':
-            const weather = getWeatherFrequency(airport.freq)
+            const weather = getFreqWeather(airport.freq)
             value.value = weather?.mhz
             label.value = weather?.name
             break
@@ -77,7 +77,7 @@ function showField( field) {
                 value.value = runway.freq
             } else {
                 // assign mhz or '-' if the frequency is undefined
-                const ctafFreq = getCtafFreq(airport.freq)
+                const ctafFreq = getFreqCtaf(airport.freq)
                 value.value = ctafFreq ? ctafFreq.mhz : '-'
                 label.value = 'CTAF'
             }
@@ -91,11 +91,8 @@ function showField( field) {
             label.value = 'TPA'
             break
         case 'gnd':
-            if( 'gnd' in airport && airport.gnd != null) {
-                value.value = airport.gnd
-            } else {
-                value.value = noFrequency
-            }
+            const ground = getFreqGround(airport.freq)
+            value.value = ground ? ground.mhz : '-'
             label.value = 'GND'
             break;
         case 'rwyinfo':
