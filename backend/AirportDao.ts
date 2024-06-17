@@ -106,4 +106,9 @@ export class AirportDao {
             DELETE FROM airports WHERE code=${code} AND creatorid=${creatorId};
         `
     }
+
+    public static async countDuplicates():Promise<number> {
+        const result = await sql`SELECT COUNT(*) as count, Code from Airports WHERE creatorid IS NULL GROUP BY Code HAVING COUNT(*) > 1 ORDER BY count DESC`;
+        return result.rowCount
+    }
 }

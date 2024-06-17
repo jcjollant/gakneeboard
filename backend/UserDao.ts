@@ -39,4 +39,9 @@ export class UserDao {
             // console.log( '[UserDao.save] known user ' + user.sha256)
         }
     }
+
+    public static async count():Promise<number> {
+        const result = await sql`SELECT count(*) FROM Users`;
+        return result.rows[0].count
+    }
 }
