@@ -43,7 +43,7 @@ export class HealthCheck {
         const dataCheck:Check = new Check('effectiveDate')
         const rentonCode:string = "KRNT"
 
-        await Promise.all([GApi.getAirport(rentonCode),GApi.getAirportFromAdip(rentonCode)]).then((results) => {
+        await Promise.all([GApi.getAirport(rentonCode),GApi.getAirportFromAdip(rentonCode,false)]).then((results) => {
             try {
                 const rentonDb:Airport|undefined = results[0]
                 const rentonAdip:Airport|undefined = results[1]

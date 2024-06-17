@@ -40,14 +40,14 @@ export class GApi {
 
         const airports = await AirportDao.readList( [code], userId); 
         if(airports.length > 0){
-            console.log( "[gapi] found " + code + ' in DB');
+            // console.log( "[gapi] found " + code + ' in DB');
             return AirportTools.format(airports[0])
         } 
 
         return GApi.getAirportFromAdip(code)
     }
 
-    public static async getAirportFromAdip(code:string):Promise<Airport|undefined> {
+    public static async getAirportFromAdip(code:string,save:boolean=true):Promise<Airport|undefined> {
         // console.log( "[gapi.getAirportFromAdip] " + code);
 
         if( await db.isKnownUnknown(code)) {
@@ -56,13 +56,15 @@ export class GApi {
         }
 
         const airport = await adip.fetchAirport(code);
-        if(airport) { // adip saves the day, persist this airport in postrgres
-            console.log( "[gapi.getAirportFromAdip] found " + code + ' in ADIP');
-            // console.log( '[gapi] ' + JSON.stringify(airport));
-            await AirportDao.create(code,airport);
-        } else { // not found ADIP either, memorize to avoid asking this over and over
-            // console.log( "[gapi] Saving " + code + ' in DB as known unknown');
-            await db.addKnownUnknown(code);
+        if(save) {
+            if(airport) { // adip saves the day, persist this airport in postrgres
+                // console.log( "[gapi.getAirportFromAdip] found " + code + ' in ADIP');
+                // console.log( '[gapi] ' + JSON.stringify(airport));
+                await AirportDao.create(code,airport);
+            } else { // not found ADIP either, memorize to avoid asking this over and over
+                // console.log( "[gapi] Saving " + code + ' in DB as known unknown');
+                await db.addKnownUnknown(code);
+            }
         }
 
         // return the airport, even if it's empty
