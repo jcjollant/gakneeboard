@@ -21,10 +21,10 @@ SELECT * FROM airports WHERE Code IN ('RNT','JFK') AND creatorId is NULL
 SELECT Data FROM Airports WHERE creatorId = 1
 
 # Duplicates
-SELECT COUNT(*) as count, Code from Airports GROUP BY Code ORDER BY count DESC 
+SELECT COUNT(*) as count, Code from Airports WHERE creatorid IS NULL GROUP BY Code ORDER BY count DESC 
 
 # Test airport
-SELECT * FROM airports WHERE Code='KRNT'
+SELECT * FROM airports WHERE Code='RNT'
 
 # Test airport
 SELECT * FROM airports WHERE Code='TEST'

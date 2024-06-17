@@ -4,6 +4,7 @@ import cors from "cors";
 const db = require('../backend/db.js');
 import { GApi } from '../backend/gapi'
 import { UserTools } from '../backend/UserTools'
+import { HealthCheck } from "../backend/HealthChecks";
 
 const port = 3002
 const app = express();
@@ -80,6 +81,12 @@ app.get('/airports/:list', async (req, res) => {
     const airports = await GApi.getAirportsList(req.params.list.split('-'),userId);
     // console.log( "[index] Returning airports " + JSON.stringify(airports));
     res.send(airports)
+})
+
+app.get('/housekeeping/willie', async (req,res) => {
+    await HealthCheck.perform().then( (result) => {
+        res.send(result)
+    })
 })
 
 /**
