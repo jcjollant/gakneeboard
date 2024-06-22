@@ -1,5 +1,5 @@
 import { describe, expect, test} from '@jest/globals';
-import { GApi, GApiError } from '../backend/GApi'
+import { GApi, GApiError } from '../backend/GGApi'
 import { jcHash, postgresUrl, jcUserId, jcDemoSheet, jcToken, jcName } from './constants'
 
 process.env.POSTGRES_URL=postgresUrl
