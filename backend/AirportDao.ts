@@ -15,11 +15,11 @@ export class AirportDao {
      * @returns the airport code
      */
     public static async createOrUpdateCustom(airport:Airport, creatorId:number):Promise<string> {
-        console.log( "[AirportDao] createOrUpdateCustom " + airport.code + " / " + creatorId);
+        // console.log( "[AirportDao] createOrUpdateCustom " + airport.code + " / " + creatorId);
         const customId:number|undefined = await AirportDao.findCustom( airport.code, creatorId)
         const data:string = JSON.stringify(airport);
         if( customId) {
-            console.log( "[AirportDao] createOrUpdateCustom updating", customId);
+            // console.log( "[AirportDao] createOrUpdateCustom updating", customId);
             await sql`
                 UPDATE airports SET data=${data}, version=${airport.version} WHERE id=${customId}
             `
