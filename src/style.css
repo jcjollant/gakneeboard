@@ -20,7 +20,7 @@ body {
 }
 
 .versionDialog {
-  position: absolute;
+  position: fixed;
   right: 5px;
   bottom: 5px;
   font-size: 8px;
@@ -101,3 +101,4 @@ body {
 .bt {
   border-top: 1px dashed darkgrey;
 }
+

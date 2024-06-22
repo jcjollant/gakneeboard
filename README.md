@@ -18,8 +18,11 @@ I couldn't find anything I liked, so I scratched my own itch.
 * New Tile : Synopsis => capture altitude and fuel level
 
 # Done
-Improved airport edit to avoid useless partial code request
-Improved airport edit UI to fit more runways
+* Added saved sheets support
+## 06/15/2024 615
+* Custom Airport
+* Improved airport edit to avoid useless partial code request
+* Improved airport edit UI to fit more runways
 ## 5/27/2024
 * Users can authenticate with Google
 * Authenticatred users can get feedback follow up

@@ -6,6 +6,10 @@ const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 import { Airport } from './Airport.ts'
 import axios from 'axios'
 
+export const sheetNameDemo = 'default-demo'
+export const sheetNameReset = 'default-reset'
+export const sheetNameLocal = 'default-sheet'
+
 const demoRadioData = [
   {'target':'NAV1','freq':'116.8','name':'SEA VOR'},
   {'target':'NAV2','freq':'124.7','name':'OLM VOR'},
@@ -16,7 +20,7 @@ const demoRadioData = [
   {'target':'COM1','freq':'120.2','name':'PAE TWR 34R'},
   {'target':'COM1','freq':'132.95','name':'PAE TWR 34L'}
 ]
- const demoPage = [
+ const demoSheet = [
   {'id':0,'name':'airport','data':{'code':'krnt','rwy':'16-34'}},
   {'id':1,'name':'airport','data':{'code':'kbfi','rwy':'14L-32R'}},
   {'id':2,'name':'airport','data':{'code':'w39','rwy':'NE-SW'}},
@@ -32,7 +36,7 @@ const demoRadioData = [
   {'id':11,'name':'radios','data':demoRadioData},
 ]
 
- const blankPage = [
+ const blankSheet = [
   {'id':0,'name':'','data':{}},
   {'id':1,'name':'','data':{}},
   {'id':2,'name':'','data':{}},
@@ -156,10 +160,10 @@ export async function getAirport( codeParam, group = false) {
   }
 
 /**
- * @returns a copy of blank page data
+ * @returns a copy of blank sheet data
  */
-export function getBlankPage() {
-  return JSON.parse( JSON.stringify(blankPage))
+export function getBlankSheet() {
+  return JSON.parse( JSON.stringify(blankSheet))
 }  
 
 /**
@@ -170,10 +174,10 @@ export function getCurrentUser() {
 }
 
 /**
- * @returns a copy of demo page data 
+ * @returns a copy of demo sheet data 
  */
-export function getDemoPage() {
-  return JSON.parse( JSON.stringify(demoPage))
+export function getDemoSheet() {
+  return JSON.parse( JSON.stringify(demoSheet))
 }  
 
 export function getFrequency(freqList, name) {
@@ -265,6 +269,31 @@ async function requestOneAirport( code) {
     })
 
   return airport
+}
+
+/**
+ * Save custom sheet to the backend
+ * @param {*} name 
+ * @param {*} data 
+ */
+export async function saveCustomSheet(name, data) {
+  const url = apiRootUrl + 'sheet'
+  if( !currentUser) {
+    throw new Error('Cannot save sheet without user')
+  }
+  if( name in [sheetNameDemo, sheetNameReset, sheetNameLocal]) {
+    throw new Error('Cannot overwrite a built-in sheet')
+  }
+  const payload = {name:name, user:currentUser.sha256, data:data}
+  await axios.post(url, payload, contentTypeJson)
+    .then( response => {
+      console.log('[data.saveCustomSheet] sheet saved', name)
+      return true
+    })
+    .catch( error => {
+      console.log( '[data.saveCustomSheet]  error', error)
+      return false
+    })
 }
 
 /**

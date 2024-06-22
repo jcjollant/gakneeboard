@@ -3,10 +3,13 @@
 import Menu from './components/menu/Menu.vue'
 import Widget from './components/Tile.vue'
 import { onBeforeMount, onMounted,ref} from 'vue'
-import { getDemoPage, getBlankPage, version } from './assets/data.js'
+import { getDemoSheet, getBlankSheet, version, saveCustomSheet } from './assets/data.js'
 import { inject } from "@vercel/analytics"
-import { setCurrentUser} from './assets/data.js'
+import { setCurrentUser, sheetNameDemo, sheetNameReset, sheetNameLocal} from './assets/data.js'
 import HowDoesItWork from './components/HowDoesItWork.vue'
+import { useToast } from 'primevue/usetoast'
+import Toast from 'primevue/toast';
+
 
 var pageData = null;
 const currentPage = ref('page1')
@@ -29,13 +32,14 @@ const printMode = ref(false)
 const keyUser = 'kb-user'
 const keyHowDoesItWork = 'howDoesItWork'
 const showHowDoesItWork = ref(true)
+const toast = useToast()
 
 // update all widgets with provided data
-async function loadPageData(data) {
+async function loadSheetData(data) {
   // console.log( 'App loadPageData ' + JSON.stringify(data))
 
   // if we don't know what to show, we load a copy of the demo page
-  if( data == null) data = getDemoPage();
+  if( data == null) data = getDemoSheet();
 
   // assigns their values to all widgets
   allWidgets.forEach((widget, index) => {
@@ -49,6 +53,7 @@ function onAuthentication(user) {
   // console.log('[App.onAuthentication] ' + JSON.stringify(user))
   if( user) {
     localStorage.setItem(keyUser,JSON.stringify(user))
+    toast.add({ severity: 'success', summary: 'Clear', detail: 'Welcome ' + user.name, life: 3000});  
   } else {
     localStorage.removeItem(keyUser)
   }
@@ -63,35 +68,45 @@ function onCloseHowDoesItWork() {
 }
 
 onBeforeMount(()=>{
+  // activate the last known user
   setCurrentUser( JSON.parse(localStorage.getItem(keyUser)))
   if( localStorage.getItem( keyHowDoesItWork) == 'false') {
     showHowDoesItWork.value = false;
   }
 })
 
-function onMenuLoadPage(name) {
+function onMenuLoadSheet(name) {
   // console.log('onLoadPage ' + JSON.stringify(name))
-  if( name=='page1' || name =='page2') {
+  // page 1 and page 2 come from localstorage
+  if( name=='page1' || name==sheetNameLocal) {
     currentPage.value = name;
     let data = localStorage.getItem(name);
     if( data && data != 'undefined') { // first time around
-      loadPageData( JSON.parse(data))
+      loadSheetData( JSON.parse(data))
     } else {
-      loadPageData( getDemoPage())
+      loadSheetData( getDemoSheet())
     }
-  } else if( name=='demo') {
-    loadPageData( getDemoPage())
+  } else if( name==sheetNameDemo) {
+    loadSheetData( getDemoSheet())
     savePageData()
-  } else if( name=='reset') {
-    loadPageData( getBlankPage())
+  } else if( name==sheetNameReset) {
+    loadSheetData( getBlankSheet())
     savePageData()
   } else {
-    console.log('unknown page ' + name)
+    console.log('unknown sheet ' + name)
   }
 }
 
+async function onMenuSaveSheet(name) {
+  await saveCustomSheet(name, pageData).then(() => {
+    toast.add({ severity: 'success', summary: 'Roger', detail: 'Sheet "' + name + '" saved successfully', life: 3000});  
+  }).catch((e) => {
+    toast.add({ severity: 'error', summary: 'Save Page', detail: 'Could not save sheet "' + name + '"', life: 3000});  
+  })
+}
+
 onMounted(() => {
-  onMenuLoadPage(currentPage.value)
+  onMenuLoadSheet(currentPage.value)
   // Analytics
   inject();
   // console.log( Object.keys(airports).join(', ').toUpperCase());
@@ -111,7 +126,8 @@ function updateWidget(newWidgetData) {
 </script>
 
 <template>
-    <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
+  <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
+  <Toast />
   <div class="twoPages">
     <div class="onePage">
       <Widget v-for='widget in widgetsOne' :widget="widget.value" @update="updateWidget"/>
@@ -123,7 +139,8 @@ function updateWidget(newWidgetData) {
   <div class="menuContainer">
     <Menu class="menu" :page="currentPage"
       @authentication="onAuthentication"
-      @load-page="onMenuLoadPage" 
+      @load-page="onMenuLoadSheet" 
+      @save-page="onMenuSaveSheet"
       @print="printMode=!printMode"
       @howDoesItWork="showHowDoesItWork=true"
       >

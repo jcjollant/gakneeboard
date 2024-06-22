@@ -5,13 +5,15 @@ import Button from 'primevue/button'
 import { useConfirm } from 'primevue/useconfirm'
 import ConfirmDialog from 'primevue/confirmdialog';
 import Feedback from './Feedback.vue';
+import Pages from './Pages.vue'
 import SignIn from './SignIn.vue';
 import Warning from './Warning.vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
 import { getCurrentUser, setCurrentUser } from '../../assets/data'
+import { sheetNameDemo, sheetNameReset } from '../../assets/data'
 
-const emits = defineEmits(['authentication','loadPage','print','howDoesItWork'])
+const emits = defineEmits(['authentication','loadPage','print','savePage','howDoesItWork'])
 
 const activePage = ref('')
 const confirm = useConfirm()
@@ -20,14 +22,20 @@ const showFeedback = ref(false)
 const showMenu = ref(false)
 const showSignIn = ref(false)
 const showWarning = ref(false)
+const showPages = ref(false)
 const toast = useToast()
 const user = ref(null)
+const pageMode = ref('load')
 
 const props = defineProps({
   page: { type: String, default: null},
   user: { type: Object, default: null},
 })
 
+/**
+ * Sends a message and hide the menu
+ * @param {*} message 
+ */
 function emitAndClose(message) {
   // console.log('emitAndClose ' + message)
   emits(message)
@@ -36,12 +44,13 @@ function emitAndClose(message) {
 
 function getConfirmation(headerParam, pageName) {
   confirm.require({
-      message: 'Do you want to replace all tiles in this page?',
+      message: 'Do you want to replace all tiles in the current sheet?',
       header: headerParam,
       rejectLabel: 'No',
       acceptLabel: 'Yes, Replace',
       accept: () => {
-        onLoadPage(pageName)
+        emits('loadPage', pageName)
+        showMenu.value = false
       }
     })
 }
@@ -57,16 +66,11 @@ function onAuthentication(userParam) {
   showSignIn.value = false
   if( userParam) {
     user.value = userParam
-    toast.add({ severity: 'success', summary: 'Clear', detail: 'Welcome ' + userParam.name, life: 3000});  
     showMenu.value = false
     emits('authentication', userParam)
   } else {
     toast.add({ severity: 'warn', summary: 'Engine Roughness', detail: 'Authentication failed', life: 3000});  
   }
-}
-
-function onDemo() {
-  getConfirmation('Load Demo Tiles', 'demo')
 }
 
 function onFeedbackSent() {
@@ -76,11 +80,31 @@ function onFeedbackSent() {
   toast.add({ severity: 'info', summary: 'Readback Correct', detail: 'Thanks for your feedback!', life: 3000});  
 }
 
-function onLoadPage( name) {
-  emits('loadPage', name)
-  showMenu.value = false
-}  
+function onLoad() {
+  showPages.value = true
+  pageMode.value = 'load'
+}
 
+/**
+ * Page dialog wants us to save the page
+ * @param {*} pageName 
+ */
+function onPageLoad(pageName) {
+  // console.log('[menu.onPageLoad]',pageName)
+  showPages.value = false
+  const title = (pageName == sheetNameDemo ? 'Load Demo Tiles' : pageName == sheetNameReset ? 'Reset All Tiles' : 'Load "' + pageName + '" Sheet')
+  getConfirmation( title, pageName)
+}
+
+/**
+ * Page Dialog wants to save a page
+ * @param {*} pageName 
+ */
+function onPageSave(pageName) {
+  // console.log('[menu.onPageSave]',pageName)
+  showPages.value = false;
+  emits('savePage', pageName)
+}
 onMounted(() => {
   user.value = getCurrentUser()
   loadProps(props)
@@ -91,8 +115,14 @@ function onPrint() {
   emitAndClose('print')  
 }
 
-function onReset() {
-  getConfirmation('Reset All Tiles', 'reset')
+function onSaveAs() {
+  if( user.value) {
+    // console.log("[Menu.onSaveAs] valid request")
+    showPages.value = true;
+    pageMode.value = 'save'
+  } else {
+    toast.add({ severity: 'warn', summary: 'Squawk and Ident', detail: 'Please sign in to save your pages', life: 3000});  
+  }
 }
 
 function onSignOut() {
@@ -123,9 +153,13 @@ watch( props, async() => {
   <div class="container" :class="{grow: showMenu}">
     <ConfirmDialog />
     <Toast />
-    <Feedback v-model:visible="showFeedback" :user="user" @sent="onFeedbackSent" @close="showFeedback=false" />
+    <Feedback v-model:visible="showFeedback" :user="user" 
+      @sent="onFeedbackSent" @close="showFeedback=false" />
     <Warning v-model:visible="showWarning" @close="showWarning=false" />
-    <SignIn v-model:visible="showSignIn" @close="showSignIn=false" @authentication="onAuthentication" />
+    <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
+      @authentication="onAuthentication" />
+    <Pages v-model:visible="showPages" :mode="pageMode" 
+      @load="onPageLoad" @save="onPageSave" />
     <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu">
       <div class="bar1"></div>
       <div class="bar2"></div>
@@ -134,35 +168,26 @@ watch( props, async() => {
     <div v-show="showMenu" class="expandedMenu">
       <div class="buttonsList">
         <Button v-if="user" :label="user.name" icon="pi pi-user" title="Sign Out" class="active"
-          @click="onSignOut">
-        </Button>
+          @click="onSignOut"></Button>
         <Button v-else label="Sign In" icon="pi pi-user" title="Sign In to enable custom data"
-          @click="showSignIn=true">
-        </Button>
-        <!-- <Button label="1" icon="pi pi-clipboard" title="Load Page 1 Tiles"
-          @click="onLoadPage('page1')" :class="{active: activePage == 'page1'}"></Button>
-        <Button label="2" icon="pi pi-clipboard" title="Load Page 2 Tiles"
-          @click="onLoadPage('page2')" :class="{active: activePage == 'page2'}"></Button> -->
+          @click="showSignIn=true"></Button>
         <div class="separator"></div>
+        <Button v-if="!user" label="Demo" icon="pi pi-clipboard"  title="Replace all with Demo Tiles" @click="onPageLoad(sheetNameDemo)"></Button>
+        <Button v-if="!user" label="Reset" icon="pi pi-trash" title="Reset all tiles on the sheet" @click="onPageLoad(sheetNameReset)"></Button>
+        <Button v-else="user" label="Load" icon="pi pi-folder-open" title="Open existing sheet" @click="onLoad"></Button>
+        <Button label="Save" icon="pi pi-save" title="Save this sheet" @click="onSaveAs"></Button>
+          <div class="separator"></div>
         <Button label="Print" icon="pi pi-print" title="Toggle Print Mode" :class="{active: printMode}" 
-          @click="onPrint">
-        </Button>
-        <div class="separator"></div>
-        <Button label="Reset" icon="pi pi-trash" title="Replace All Tiles" @click="onReset">
-        </Button>
-        <Button label="Demo" icon="pi pi-clipboard"  title="Replace all with Demo Tiles"
-          @click="onDemo">
-        </Button>
-        <Button icon="pi pi-question"  title="How does it work?"
-          @click="emits('howDoesItWork')">
-        </Button>
+          @click="onPrint"></Button>
         <div class="separator"></div>
         <Button label="Feedback" icon="pi pi-megaphone" title="Send Feedback"
           @click="showFeedback=true" ></Button>
         <Button label="Warnings" icon="pi pi-exclamation-triangle" title="Stuff You Should Know" severity="warning"
           @click="showWarning=true"></Button>
+        <Button icon="pi pi-question"  title="How does it work?"
+          @click="emits('howDoesItWork')"></Button>
         <div class="separator"></div>
-        <Button label="Blog" @click="openBlog" title="Recent Features" link></button>
+        <Button label="Blog" @click="openBlog" title="Recent Features and Annoucements" link></button>
       </div>
     </div>
   </div>
@@ -170,10 +195,11 @@ watch( props, async() => {
 
 <style scoped>
 .container {
-    display: flex;
-    flex-flow: row;
-    gap: 40px;
-    padding-right: 10px;
+  position:relative;
+  display: flex;
+  flex-flow: row;
+  gap: 40px;
+  padding-right: 10px;
 }
 .grow {
   background-color: lightgrey;
@@ -229,5 +255,9 @@ watch( props, async() => {
 .active {
   background: white;
   color: black;
+}
+
+.version {
+  position:absolute;
 }
 </style>
