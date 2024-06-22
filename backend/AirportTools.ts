@@ -21,8 +21,10 @@ export class AirportTools {
                 const endsName = runway.getEndsName()
                 for(const endName of endsName) {
                     const rwyEnd = runway.getEnd(endName)
-                    rwyEnd?.setMagneticOrientation( rwy[endName].orientation)
-                    rwyEnd?.setRightPattern(rwy[endName].pattern == 'right')
+                    if( rwyEnd) {
+                        rwyEnd.setMagneticOrientation( rwy[endName].orientation)
+                        rwyEnd.setRightPattern(rwy[endName].pattern == 'right')
+                    }
                 }
                 if( 'surface' in rwy) {
                     runway.setSurface(rwy.surface.type, rwy.surface.condition)
