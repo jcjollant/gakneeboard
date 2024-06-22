@@ -1,4 +1,4 @@
-export const version = '615'
+export const version = '622'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'http://localhost:3000/'
 // const apiRootUrl = 'https://ga-api-git-google-auth-jcjollants-projects.vercel.app/'
@@ -53,7 +53,6 @@ const demoRadioData = [
 
 const contentTypeJson = { headers: {'Content-Type':'application/json'} }
 const contentTypeTextPlain = { headers: {'Content-Type':'text/plain'} }
-// const contentTypeText = { headers: {'Content-Type':'text'} }
 const contentType = contentTypeJson;
 
 let currentUser = null
