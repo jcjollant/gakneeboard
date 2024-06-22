@@ -8,13 +8,13 @@ export class SheetDao {
         const pageId:number|undefined = await SheetDao.find( name, userId)
         const data:string = (typeof pageData === 'string' ? pageData : JSON.stringify(pageData));
         if( pageId) {
-            console.log( "[PageDao.createOrUpdate] updating", pageId);
+            // console.log( "[SheetDao.createOrUpdate] updating", pageId);
             await sql`
                 UPDATE sheets SET data=${data} WHERE id=${pageId}
             `
 
         } else {
-            console.log( "[PageDao.createOrUpdate] net new");
+            console.log( "[SheetDao.createOrUpdate] net new");
             await sql`
                 INSERT INTO sheets (name, data, version, user_id)
                 VALUES (${name}, ${data}, ${this.modelVersion}, ${userId});
