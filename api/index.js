@@ -2,7 +2,7 @@ const express =require( "express")
 import cors from "cors";
 // const cors = require('cors');
 const db = require('../backend/db.js');
-import { GApi } from '../backend/gapi'
+import { GApi, GApiError } from '../backend/GApi.ts'
 import { UserTools } from '../backend/UserTools'
 import { HealthCheck } from "../backend/HealthChecks";
 
@@ -38,40 +38,33 @@ app.use(express.json()) // for parsing application/json
 app.get("/", (req, res) => res.send("GA API version " + version));
 
 app.get("/airport/:id", async (req,res) => {
-    // console.log( "[index.get.airport] " + req.params.id);
-
     const userId = await UserTools.userFromRequest(req)
+    // console.log( "[index.get.airport]", req.params.id, userId);
 
-    try {
-        let airport = await GApi.getAirport(req.params.id, userId);
-        if( airport) {
+    GApi.getAirport(req.params.id, userId)
+        .then( (airport) => {
             res.send(airport)
-        } else {
-            res.status(404).send("Airport not found");
-        }
-    } catch( e) {
-        console.log( "[index] airport error " + e)
-        if( 'status' in e) {
-            res.status(e.status).send(e.message)
-        } else {
-            res.status(500).send(e)
-        }
-    }
+        }).catch( (e) => {
+            catchError(res, e, 'GET /airport/:id')
+        })
 })
 
 /**
  * Create a new custom airport
  */
 app.post("/airport", async (req,res) => {
+    console.log('[index.post.airport]', typeof req.body)
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
     // console.log("[index] POST airport payload " + JSON.stringify(payload))
-    try {
-        const code = await GApi.createCustomAirport(payload.user, payload.airport)
-        res.send(code + ' created')
-    } catch( e) {
-        console.log( "[index] POST airport error " + e)
-        res.status(500).send(e)
+    if( !payload.user || !payload.airport ) {
+        res.status(400).send('Invalid request')
+        return
     }
+    await GApi.createCustomAirport(payload.user, payload.airport).then( (code) => {
+        res.status(201).send(code + ' created')
+    }).catch( (e) => {
+        catchError(res, e, 'POST /airport')
+    })
 })
 
 app.get('/airports/:list', async (req, res) => {
@@ -89,18 +82,49 @@ app.get('/housekeeping/willie', async (req,res) => {
     })
 })
 
+app.get('/page/:id', async (req, res) => {
+    const userId = await UserTools.userFromRequest(req)
+    try {
+        let page = await GApi.getPage(req.params.id, userId);
+        res.send(page)
+    } catch( e) {
+        catchError(res, e, 'GET /page/:id')
+    }
+})
+
+app.post('/page', async (req, res) => {
+    const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+    GApi.savePage(payload.user, payload.name, payload.data).then( (name) => {
+        res.send(name + ' created')
+    }).catch( (e) => {
+        catchError(res, e, 'POST /page')
+    })
+    // try {
+    //     const name = await GApi.savePage(payload.user, payload.name, payload.data)
+    //     res.send(name + ' created')
+    // } catch( e) {
+    //     catchError(res, e, 'POST /page')
+    // }
+
+})
+
+app.get('/pages', async (req,res) => {
+    GApi.getPages().then( (pages) => {
+        res.send(pages)
+    })
+})
+
 /**
  * User is autenticating
  */
 app.post('/authenticate', async(req,res) => {
     // console.log( "[index] authenticate request ");
     // console.log( "[index] authenticate body " + req.body);
-    try {
-        const user = await UserTools.authenticate(req.body)
-        res.send(user.getMini())
-    } catch( e) {
-        res.status(400).send("SignIn failed : " + e)
-    }
+    await GApi.authenticate(req.body).then( (user) => {
+        res.send(user)
+    }).catch( (e) => {
+        catchError(res, e, 'POST /authenticate')
+    })
 })
 
 app.post('/feedback', async(req,res) => {
@@ -114,5 +138,21 @@ app.post('/feedback', async(req,res) => {
 })
 
 app.listen(port, () => console.log("[index] Server ready on port " + port));
+
+/**
+ * Prints an error in the console and send an error response
+ * @param {*} res 
+ * @param {*} e 
+ * @param {*} msg 
+ */
+function catchError(res, e, msg) {
+    // console.log( "[index] " + msg + " error " + JSON.stringify(e))
+    if( e instanceof GApiError) {
+        res.status(e.status).send(e.message)
+    } else {
+        res.status(500).send(e)
+    }
+}
+
 
 export default app;
