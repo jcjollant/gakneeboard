@@ -82,35 +82,22 @@ app.get('/housekeeping/willie', async (req,res) => {
     })
 })
 
-app.get('/page/:id', async (req, res) => {
+app.get('/sheet/:id', async (req, res) => {
     const userId = await UserTools.userFromRequest(req)
     try {
-        let page = await GApi.getPage(req.params.id, userId);
-        res.send(page)
+        let sheet = await GApi.sheetGet(req.params.id, userId);
+        res.send(sheet)
     } catch( e) {
-        catchError(res, e, 'GET /page/:id')
+        catchError(res, e, 'GET /sheet/:id')
     }
 })
 
-app.post('/page', async (req, res) => {
+app.post('/sheet', async (req, res) => {
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
-    GApi.savePage(payload.user, payload.name, payload.data).then( (name) => {
+    GApi.sheetSave(payload.user, payload.name, payload.data).then( (name) => {
         res.send(name + ' created')
     }).catch( (e) => {
-        catchError(res, e, 'POST /page')
-    })
-    // try {
-    //     const name = await GApi.savePage(payload.user, payload.name, payload.data)
-    //     res.send(name + ' created')
-    // } catch( e) {
-    //     catchError(res, e, 'POST /page')
-    // }
-
-})
-
-app.get('/pages', async (req,res) => {
-    GApi.getPages().then( (pages) => {
-        res.send(pages)
+        catchError(res, e, 'POST /sheet')
     })
 })
 
