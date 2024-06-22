@@ -6,7 +6,7 @@ import { UserTools } from './UserTools'
 import { Airport } from './models/Airport'
 import { AirportDao } from './AirportDao'
 import { AirportTools } from './AirportTools'
-import { PageDao } from './PageDao'
+import { SheetDao } from './SheetDao'
 
 // Google API key
 
@@ -25,7 +25,7 @@ export class GApi {
         try {
             const user:User = await UserTools.authenticate(body);
             const output:any = user.getMini();
-            output.pages = await PageDao.getListForUser(user.id);
+            output.sheets = await SheetDao.getListForUser(user.id);
             return output;
         } catch(e) {
             throw new GApiError(400, e.message)
@@ -137,13 +137,6 @@ export class GApi {
     }
 
 
-    public static async getPage(pageId:number,userId:number):Promise<string> {
-        const output:string|undefined = await PageDao.readById(pageId, userId)
-        // console.log( '[gapi.getPage] ' + pageId + ' -> ' + output)
-        if( output) return output
-        throw new GApiError(404, 'Page not found')
-    }
-
     public static isMilitary(freq:string) {
         if( freq == null) return false;
         if( freq =='-.-') return false;
@@ -151,20 +144,34 @@ export class GApi {
     }
 
     /**
-     * Save a new page in DB or update it if it's existing
+     * Gets a sheet by id and user id
+     * @param sheetId 
+     * @param userId 
+     * @returns 
+     * @throws 404 if not found
+     */
+    public static async sheetGet(sheetId:number,userId:number):Promise<string> {
+        const output:string|undefined = await SheetDao.readById(sheetId, userId)
+        // console.log( '[gapi.sheetGet] ' + sheetId + ' -> ' + output)
+        if( output) return output
+        throw new GApiError(404, 'Sheet not found')
+    }
+
+    /**
+     * Save a new sheet in DB or update it if it's existing
      * @param userSha256 
      * @param name 
      * @param data 
-     * @returns Page name
+     * @returns Sheet name
      * @throws
      */
-    public static async savePage(userSha256:string, name:string, data:any):Promise<string> {
-        // console.log( '[gapi.savePage]', user, name, data);
+    public static async sheetSave(userSha256:string, name:string, data:any):Promise<string> {
+        // console.log( '[gapi.sheetSave]', user, name, data);
         const userId:number|undefined = await UserDao.find(userSha256)
         // update record
         if( !userId) throw new GApiError( 400,"Invalid user");
 
-        await PageDao.createOrUpdate(name, data, userId)
+        await SheetDao.createOrUpdate(name, data, userId)
         return name
     }
 }

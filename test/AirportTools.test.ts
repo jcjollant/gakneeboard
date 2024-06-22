@@ -26,11 +26,15 @@ describe( 'Airport Tools', () => {
             expect(rwy0.name).toBe("16-34")
             expect(rwy0.length).toBe(5382)
             expect(rwy0.width).toBe(200)
-            expect(rwy0.surface.type).toBe("ASPH-CONC")
-            expect(rwy0.surface.cond).toBe("G")
+            expect(rwy0.surface?.type).toBe("ASPH-CONC")
+            expect(rwy0.surface?.cond).toBe("G")
+            // check ends
             const end0 = rwy0.getEnd('16')
             expect(end0?.mag).toBe(157)
             expect(end0?.tp).toBe(Runway.leftPattern)
+            const end1 = rwy0.getEnd('34')
+            expect(end1?.mag).toBe(337)
+            expect(end1?.tp).toBe(Runway.rightPattern)
         }
     })
 

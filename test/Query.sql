@@ -56,6 +56,12 @@ SELECT * FROM Users WHERE sha256 = 'f731afac9fc850681158ed35a3e289d577770c104fe0
 
 SELECT COUNT(*) FROM custom_airports
 
-###
-# 
+#########################################
+# Table health_checks
+SELECT * FROM health_checks
+
 INSERT INTO health_checks (data,failures) VALUES ("TEST",1)
+
+#########################################
+# Table Pages
+SELECT * FROM pages

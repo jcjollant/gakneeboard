@@ -30,7 +30,9 @@ export class RunwayEnd {
     }
 
     setMagneticOrientation(value:number) {
+        this.mag = value % 360;
     }
+
     setRightPattern(really:boolean=true) {
         this.tp = really ? Runway.rightPattern : Runway.leftPattern;
     }

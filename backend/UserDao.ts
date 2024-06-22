@@ -25,7 +25,7 @@ export class UserDao {
      * @throws Error if sha256 is missing
      */
 
-    public static async save(user:User) {
+    public static async save(user:User):Promise<User> {
         // console.log( '[UserDao.save]  ' + JSON.stringify(user))
     
         if( !user.sha256) throw new Error('sha256 missing')
@@ -33,11 +33,14 @@ export class UserDao {
         // console.log( '[UserDao.save] match count ' + result.rowCount)
         if(result.rowCount == 0) {
             // console.log( '[UserDao.save] adding ' + user.sha256)
-            await sql`INSERT INTO Users (sha256,data,version) VALUES (${user.sha256},${JSON.stringify(user)},${this.modelVersion})`
+            const insert = await sql`INSERT INTO Users (sha256,data,version) VALUES (${user.sha256},${JSON.stringify(user)},${this.modelVersion}) RETURNING id`
+            user.id = insert.rows[0].id
             // console.log( '[UserDao.save] ' + user.sha256)
-        } else {
+        } else { // this user is known
             // console.log( '[UserDao.save] known user ' + user.sha256)
+            await sql`UPDATE Users SET data = ${JSON.stringify(user)}, version=${this.modelVersion} WHERE id = ${result.rows[0].id}`
         }
+        return user
     }
 
     public static async count():Promise<number> {

@@ -1,12 +1,14 @@
 import { createHash } from 'crypto'
 
 export class User {
+    id:number;
     source:string;
     email:string;
     sha256:string;
     name:string;
 
     constructor( source:string, email:string) {
+        this.id = 0;
         this.source = source;
         this.email = email;
         const user = {

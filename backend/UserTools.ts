@@ -1,3 +1,4 @@
+import { GApiError } from './GApi';
 import { User } from './models/User'
 import { UserDao } from './UserDao'
 
@@ -10,10 +11,10 @@ export class UserTools {
         if( body.source != 'google') throw new Error('Invalid source');
         // decode user email
         if( !('token' in body)) throw new Error('Missing token');
-        const user = UserTools.decodeGoogle( body.token);
+        const user:User = UserTools.decodeGoogle( body.token);
+        if( !user) throw new Error('Invalid User');
         await UserDao.save(user);
         // console.log('[user.authenticate] decoded ' + JSON.stringify(user))
-        if( !user) throw new Error('Invalid User');
         // console.log('[user.authenticate] ' + user.sha256)
         return user
     }

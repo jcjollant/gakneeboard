@@ -53,6 +53,25 @@ describe('Airport', () => {
         }).toThrow('Invalid traffic pattern Random')
         expect(rwy.getTrafficPattern("34")).toBe(Runway.rightPattern)
 
+        // ends name
+        const endsName:string[] = rwy.getEndsName()
+        expect(endsName.length).toBe(2)
+        expect(endsName[0]).toBe("16")
+        expect(endsName[1]).toBe("34")
+
+        // ends
+        const end16:RunwayEnd|undefined = rwy.getEnd('16')
+        expect(end16).toBeDefined()
+        expect(end16?.mag).toBe(160)
+        expect(end16?.name).toBe("16")
+        expect(end16?.tp).toBe("L")
+
+        const end34:RunwayEnd|undefined = rwy.getEnd('34')
+        expect(end34).toBeDefined()
+        expect(end34?.mag).toBe(340)
+        expect(end34?.name).toBe("34")
+        expect(end34?.tp).toBe("R")
+
         // Add first runway
         airport.addRunway(rwy);
         expect(airport.rwys.length).toBe(1)

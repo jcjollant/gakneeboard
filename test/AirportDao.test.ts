@@ -2,12 +2,11 @@
 import {describe, expect, test} from '@jest/globals';
 import { Airport, Runway } from "../backend/models/Airport.ts"; 
 import { AirportDao } from '../backend/AirportDao.ts'
-import { postgresUrl } from './constants.ts';
+import { postgresUrl, jcUserId } from './constants.ts';
 
 process.env.POSTGRES_URL=postgresUrl
 
 describe('Custom Airports', () => {
-    const userIdJc = 1; // JC
     const customCode:string = 'TEST'
     const customNameJC:string = 'Test Airport JC'
 
@@ -16,11 +15,11 @@ describe('Custom Airports', () => {
         const airport:Airport = new Airport(customCode,customNameJC, customElevation)
         
         // Prepare the test by deleting test airports
-        await AirportDao.deleteCustom( customCode, userIdJc)
+        await AirportDao.deleteCustom( customCode, jcUserId)
 
         // Test creation
-        await AirportDao.createOrUpdateCustom( airport, userIdJc)
-        const customAirportString = await AirportDao.readCustom(customCode, userIdJc)
+        await AirportDao.createOrUpdateCustom( airport, jcUserId)
+        const customAirportString = await AirportDao.readCustom(customCode, jcUserId)
         expect(customAirportString).toBeDefined()
         if(customAirportString !== undefined) {
             let customAirport = JSON.parse(customAirportString)
@@ -41,10 +40,10 @@ describe('Custom Airports', () => {
         const userIdAs = 2;
         const airportJc:Airport = new Airport(customCode,customNameJC, 1000)
         const airportAs:Airport = new Airport(customCode,customNameAS, 1000)
-        await AirportDao.createOrUpdateCustom( airportJc, userIdJc)
+        await AirportDao.createOrUpdateCustom( airportJc, jcUserId)
         await AirportDao.createOrUpdateCustom( airportAs, userIdAs)
         // Read for JC
-        const listJc = await AirportDao.readList([customCode],userIdJc)
+        const listJc = await AirportDao.readList([customCode],jcUserId)
         expect(listJc.length).toBe(1)
         expect(listJc[0].name).toBe(customNameJC)
         // Read for AS
