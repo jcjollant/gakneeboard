@@ -65,7 +65,6 @@ watch( props, async() => {
       <Button label="Do Not Send" @click="emits('close')" link></Button>
       <Button label="Send" @click="send" :disabled="feedbackText.length==0"></Button>
     </div>
-    <div class="versionDialog">{{ version }}</div>
   </Dialog>
 </template>
 

@@ -3,7 +3,7 @@
 import Menu from './components/menu/Menu.vue'
 import Widget from './components/Tile.vue'
 import { onBeforeMount, onMounted,ref} from 'vue'
-import { getDemoPage, getBlankPage } from './assets/data.js'
+import { getDemoPage, getBlankPage, version } from './assets/data.js'
 import { inject } from "@vercel/analytics"
 import { setCurrentUser} from './assets/data.js'
 import HowDoesItWork from './components/HowDoesItWork.vue'
@@ -129,6 +129,7 @@ function updateWidget(newWidgetData) {
       >
     </Menu>
   </div>
+  <div class="versionDialog">{{ version }}</div>
 </template>
 
 <style scoped>
