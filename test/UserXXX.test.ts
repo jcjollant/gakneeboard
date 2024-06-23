@@ -3,6 +3,7 @@ import { User } from '../backend/models/User'
 import { UserTools } from '../backend/UserTools'
 import { postgresUrl } from './constants'
 import { jcHash, jcUserId, jcToken, jcName, jcEmail } from './constants'
+import { UserDao } from '../backend/UserDao';
 
 process.env.POSTGRES_URL=postgresUrl
 
@@ -61,6 +62,11 @@ describe('UserTool', () => {
 
     })
         
-    
+    test('Save', async () => {
+        const input:User = new User('google', jcEmail)
+        // Saving an existing user should return its id
+        const output = await UserDao.save(input)
+        expect(output.id).toBe(jcUserId)
+    })
 })
 
