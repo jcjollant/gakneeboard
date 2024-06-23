@@ -1,6 +1,6 @@
 import { sql } from  "@vercel/postgres";
 import { Airport } from "./models/Airport";
-import { GApi } from "./GAApi"
+import { GApi } from "./GApi"
 import { UserDao } from "./UserDao"
 import { FeedbackDao } from "./FeedbackDao"
 import { AirportDao } from "./AirportDao";
