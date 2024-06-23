@@ -38,7 +38,8 @@ export class UserDao {
             // console.log( '[UserDao.save] ' + user.sha256)
         } else { // this user is known
             // console.log( '[UserDao.save] known user ' + user.sha256)
-            await sql`UPDATE Users SET data = ${JSON.stringify(user)}, version=${this.modelVersion} WHERE id = ${result.rows[0].id}`
+            user.id = result.rows[0].id
+            await sql`UPDATE Users SET data = ${JSON.stringify(user)}, version=${this.modelVersion} WHERE id = ${user.id}`
         }
         return user
     }
