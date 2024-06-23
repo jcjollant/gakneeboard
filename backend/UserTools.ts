@@ -12,10 +12,9 @@ export class UserTools {
         if( !('token' in body)) throw new Error('Missing token');
         const user:User = UserTools.decodeGoogle( body.token);
         if( !user) throw new Error('Invalid User');
-        await UserDao.save(user);
         // console.log('[user.authenticate] decoded ' + JSON.stringify(user))
         // console.log('[user.authenticate] ' + user.sha256)
-        return user
+        return await UserDao.save(user);
     }
     
     /**
