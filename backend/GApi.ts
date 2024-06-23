@@ -6,6 +6,7 @@ import { UserTools } from './UserTools'
 import { Airport } from './models/Airport'
 import { AirportDao } from './AirportDao'
 import { AirportTools } from './AirportTools'
+import { Sheet } from './models/Sheet'
 import { SheetDao } from './SheetDao'
 
 // Google API key
@@ -25,7 +26,9 @@ export class GApi {
         try {
             const user:User = await UserTools.authenticate(body);
             const output:any = user.getMini();
+            // console.log('[gapi.authenticate]', JSON.stringify(output))
             output.sheets = await SheetDao.getListForUser(user.id);
+            // console.log('[gapi.authenticate]', JSON.stringify(output))
             return output;
         } catch(e) {
             throw new GApiError(400, e.message)
@@ -150,11 +153,17 @@ export class GApi {
      * @returns 
      * @throws 404 if not found
      */
-    public static async sheetGet(sheetId:number,userId:number):Promise<string> {
-        const output:string|undefined = await SheetDao.readById(sheetId, userId)
+    public static async sheetGetData(sheetId:number,userId:number):Promise<any> {
+        const sheet:Sheet|undefined = await SheetDao.readById(sheetId, userId)
         // console.log( '[gapi.sheetGet] ' + sheetId + ' -> ' + output)
-        if( output) return output
+        if( sheet) return sheet.data
         throw new GApiError(404, 'Sheet not found')
+    }
+
+    public static async sheetGetList(userId:number):Promise<Sheet[]> {
+        const sheets:Sheet[] = await SheetDao.getListForUser(userId)
+        // console.log( '[gapi.sheetGetList] ' + output)
+        return sheets
     }
 
     /**
