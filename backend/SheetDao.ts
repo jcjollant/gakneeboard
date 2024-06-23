@@ -4,9 +4,9 @@ import { Sheet } from "./models/Sheet";
 export class SheetDao {
     static modelVersion:number = 1;
 
-    public static async createOrUpdate(name:string,pageData:any,userId:number):Promise<string> {
+    public static async createOrUpdate(name:string,sheetData:any,userId:number):Promise<string> {
         const pageId:number|undefined = await SheetDao.find( name, userId)
-        const data:string = (typeof pageData === 'string' ? pageData : JSON.stringify(pageData));
+        const data:string = (typeof sheetData === 'string' ? sheetData : JSON.stringify(sheetData));
         if( pageId) {
             // console.log( "[SheetDao.createOrUpdate] updating", pageId);
             await sql`
@@ -65,21 +65,23 @@ export class SheetDao {
      * @param userId 
      * @returns a string representing the page data if found, undefined otherwise
      */
-    public static async readByName(pageName:string, userId:number):Promise<string|undefined> {
+    public static async readByName(pageName:string, userId:number):Promise<Sheet|undefined> {
         const result = await sql`
-            SELECT data FROM sheets WHERE name=${pageName} AND user_id=${userId};
+            SELECT id,data FROM sheets WHERE name=${pageName} AND user_id=${userId};
         `
         if( result.rowCount == 0) return undefined
 
-        return result.rows[0]['data'];
+        const row = result.rows[0];
+        return new Sheet( row['id'], pageName, row['data']);
     }
 
-    public static async readById(pageId:number, userId:number):Promise<string|undefined> {
+    public static async readById(pageId:number, userId:number):Promise<Sheet|undefined> {
         const result = await sql`
-            SELECT data FROM sheets WHERE id=${pageId} AND user_id=${userId};
+            SELECT data,name FROM sheets WHERE id=${pageId} AND user_id=${userId};
         `
         if( result.rowCount == 0) return undefined
 
-        return result.rows[0]['data'];
+        const row = result.rows[0];
+        return new Sheet( pageId, row['name'], row['data']);
     }
 }
