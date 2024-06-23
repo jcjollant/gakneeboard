@@ -46,9 +46,11 @@ export class SheetDao {
      * @returns list of found sheets
      */
     public static async getListForUser(userId:number):Promise<Sheet[]> {
+        // console.log('[SheetDao.getListForUser] user', userId)
         return await sql`
             SELECT id,name,data FROM sheets WHERE user_id=${userId};
         `.then( (result) => {
+            // console.log('[SheetDao.getListForUser]', result.rowCount)
             if(result.rowCount) {
                 return result.rows.map( (row) => new Sheet(row['id'], row['name'], row['data']))
             } else {
