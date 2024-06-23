@@ -64,4 +64,4 @@ INSERT INTO health_checks (data,failures) VALUES ("TEST",1)
 
 #########################################
 # Table Pages
-SELECT * FROM pages
+SELECT * FROM sheets
