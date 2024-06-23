@@ -102,10 +102,13 @@ app.get('/sheets', async (req, res) => {
     }
 })
 
+/**
+ * The expected payload is a user and a sheet
+ */
 app.post('/sheet', async (req, res) => {
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
-    GApi.sheetSave(payload.user, payload.name, payload.data).then( (name) => {
-        res.send(name + ' created')
+    GApi.sheetSave(payload.user, payload.sheet).then( (sheet) => {
+        res.send(sheet.name + ' created')
     }).catch( (e) => {
         catchError(res, e, 'POST /sheet')
     })

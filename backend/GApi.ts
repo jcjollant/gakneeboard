@@ -174,13 +174,12 @@ export class GApi {
      * @returns Sheet name
      * @throws
      */
-    public static async sheetSave(userSha256:string, name:string, data:any):Promise<string> {
+    public static async sheetSave(userSha256:string, sheet:Sheet):Promise<Sheet> {
         // console.log( '[gapi.sheetSave]', user, name, data);
         const userId:number|undefined = await UserDao.find(userSha256)
         // update record
         if( !userId) throw new GApiError( 400,"Invalid user");
 
-        await SheetDao.createOrUpdate(name, data, userId)
-        return name
+        return SheetDao.createOrUpdate(sheet, userId)
     }
 }
