@@ -3,9 +3,14 @@ export class Sheet {
     name:string;
     data:any;
 
-    constructor(id:number, name:string, strData:string) {
+    constructor(id:number, name:string, dataParam:any) {
         this.id = id;
         this.name = name;
-        this.data = JSON.parse(strData);
+        // whatever is passed, we want data to be an object
+        if( typeof dataParam == 'string') {
+            this.data = JSON.parse(dataParam);
+        } else {
+            this.data = dataParam;
+        }
     }
 }
