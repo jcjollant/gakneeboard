@@ -1,11 +1,11 @@
 export class Sheet {
     id:number;
     name:string;
-    data:string;
+    data:any;
 
-    constructor(id:number, name:string, data:string) {
+    constructor(id:number, name:string, strData:string) {
         this.id = id;
         this.name = name;
-        this.data = data;
+        this.data = JSON.parse(strData);
     }
 }
