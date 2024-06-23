@@ -2,7 +2,7 @@ const express =require( "express")
 import cors from "cors";
 // const cors = require('cors');
 const db = require('../backend/db.js');
-import { GApi, GApiError } from '../backend/GGApi.ts'
+import { GApi, GApiError } from '../GApi.ts'
 import { UserTools } from '../backend/UserTools'
 import { HealthCheck } from "../backend/HealthChecks";
 

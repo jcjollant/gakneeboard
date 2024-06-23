@@ -1,4 +1,3 @@
-import { GApiError } from './GGApi';
 import { User } from './models/User'
 import { UserDao } from './UserDao'
 
