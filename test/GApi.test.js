@@ -93,11 +93,13 @@ describe( 'GApi Tests', () => {
     })
 
     test('Read custom sheet', async () => {
-        const sheet = await GApi.sheetGet( 1, jcUserId)
+        const sheet = await GApi.sheetGetData( 1, jcUserId)
+        // console.log(JSON.stringify(sheet))
+        // console.log(JSON.stringify(jcDemoSheet))
         expect(sheet).toEqual(jcDemoSheet)
 
         // invalid pageId should throw error
-        await GApi.sheetGet(0,jcUserId).then( () => {
+        await GApi.sheetGetData(0,jcUserId).then( () => {
             expect(true).toBe(false) // should not get here
         }).catch( e => {
             expect(e).toBeInstanceOf(GApiError)
@@ -107,14 +109,15 @@ describe( 'GApi Tests', () => {
     test('Authenticate', async () => {
         const body = { 'source':'google', 'token':jcToken}
         await GApi.authenticate(body).then( user => {
+            // console.log(JSON.stringify(user))
             expect(user.id).toBeUndefined()
             expect(user.name).toBe(jcName)
             expect(user.sha256).toBe(jcHash)
             expect(user.sheets).toBeDefined()
             expect(user.sheets.length).toBeGreaterThan(1)
-        // }).catch( (e) => {
-        //     console.log(e)
-        //     expect(true).toBe(false) // should not get here
+        }).catch( (e) => {
+            console.log(e)
+            expect(true).toBe(false) // should not get here
         })
     })
 })

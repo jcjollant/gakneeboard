@@ -1,5 +1,6 @@
 
 import { describe, expect, test} from '@jest/globals';
+import { Sheet } from '../backend/models/Sheet.ts'
 import { SheetDao } from '../backend/SheetDao.ts'
 import { postgresUrl, jcUserId } from './constants.ts';
 
@@ -20,14 +21,15 @@ describe('Custom Sheets', () => {
         expect(sheetId).toBeDefined()
 
         // Test read
-        const readSheetData:any = await SheetDao.readByName(sheetName, jcUserId)
-        expect(readSheetData).toEqual(JSON.stringify(sheetData))
+        const readSheet:Sheet|undefined = await SheetDao.readByName(sheetName, jcUserId)
+        expect(readSheet).toBeDefined()
+        expect(readSheet?.data).toEqual(sheetData)
 
         // Modify data and read
         const returnName1:string = await SheetDao.createOrUpdate( sheetName, sheetData2, jcUserId)
         expect(returnName1).toBe(sheetName)
-        const readSheetData2:any = await SheetDao.readByName(sheetName, jcUserId)
-        expect(readSheetData2).toEqual(JSON.stringify(sheetData2))
+        const readSheet2:any = await SheetDao.readByName(sheetName, jcUserId)
+        expect(readSheet2.data).toEqual(sheetData2)
         // Id should be the same
         const sheetId2:number|undefined = await SheetDao.find(sheetName, jcUserId)
         expect(sheetId2).toEqual(sheetId)
