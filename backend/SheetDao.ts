@@ -4,24 +4,37 @@ import { Sheet } from "./models/Sheet";
 export class SheetDao {
     static modelVersion:number = 1;
 
-    public static async createOrUpdate(name:string,sheetData:any,userId:number):Promise<string> {
-        const pageId:number|undefined = await SheetDao.find( name, userId)
-        const data:string = (typeof sheetData === 'string' ? sheetData : JSON.stringify(sheetData));
-        if( pageId) {
+    /**
+     * Create a new Sheet or update and existing one for a given user.
+     * @param sheet 
+     * @param userId 
+     * @returns 
+     */
+    public static async createOrUpdate(sheet:Sheet,userId:number):Promise<Sheet> {
+        if(!sheet) throw new Error("No sheet provided");
+        // Figure out a sheet id if it's not readily provided
+        if(!sheet.id) {
+            const pageId:number|undefined = await SheetDao.findByName( sheet.name, userId)
+            if( pageId) {
+                sheet.id = pageId;
+            }    
+        }
+        const data:string = JSON.stringify(sheet.data);
+        if( sheet.id) {
             // console.log( "[SheetDao.createOrUpdate] updating", pageId);
             await sql`
-                UPDATE sheets SET data=${data} WHERE id=${pageId}
+                UPDATE sheets SET data=${data},name=${sheet.name} WHERE id=${sheet.id}
             `
-
         } else {
             console.log( "[SheetDao.createOrUpdate] net new");
-            await sql`
+            const result = await sql`
                 INSERT INTO sheets (name, data, version, user_id)
-                VALUES (${name}, ${data}, ${this.modelVersion}, ${userId});
+                VALUES (${sheet.name}, ${data}, ${this.modelVersion}, ${userId})
+                RETURNING id;
             `
+            sheet.id = result.rows[0]['id']
         }
-        return name
-
+        return sheet
     }
 
     /**
@@ -30,7 +43,7 @@ export class SheetDao {
      * @param userId 
      * @returns page Id if found, undefined otherwise
      */
-    public static async find(pageName:string, userId:number):Promise<number|undefined> {
+    public static async findByName(pageName:string, userId:number):Promise<number|undefined> {
         const result = await sql`
             SELECT id FROM sheets WHERE name=${pageName} AND user_id=${userId};
         `
@@ -60,21 +73,11 @@ export class SheetDao {
     }
 
     /**
-     * Reads a user page from its name and owner id
-     * @param pageName 
+     * Find sheet by it's Id and user
+     * @param pageId 
      * @param userId 
-     * @returns a string representing the page data if found, undefined otherwise
+     * @returns 
      */
-    public static async readByName(pageName:string, userId:number):Promise<Sheet|undefined> {
-        const result = await sql`
-            SELECT id,data FROM sheets WHERE name=${pageName} AND user_id=${userId};
-        `
-        if( result.rowCount == 0) return undefined
-
-        const row = result.rows[0];
-        return new Sheet( row['id'], pageName, row['data']);
-    }
-
     public static async readById(pageId:number, userId:number):Promise<Sheet|undefined> {
         const result = await sql`
             SELECT data,name FROM sheets WHERE id=${pageId} AND user_id=${userId};
