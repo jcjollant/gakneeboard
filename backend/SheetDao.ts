@@ -10,7 +10,7 @@ export class SheetDao {
      * @param userId 
      * @returns 
      */
-    public static async createOrUpdate(sheet:Sheet,userId:number):Promise<Sheet> {
+    public static async createOrUpdate(sheet:Sheet,userId:number,maxSheets:number=5):Promise<Sheet> {
         if(!sheet) throw new Error("No sheet provided");
         // Figure out a sheet id if it's not readily provided
         if(!sheet.id) {
@@ -26,7 +26,11 @@ export class SheetDao {
                 UPDATE sheets SET data=${data},name=${sheet.name} WHERE id=${sheet.id}
             `
         } else {
-            console.log( "[SheetDao.createOrUpdate] net new");
+            // console.log( "[SheetDao.createOrUpdate] net new");
+            // count the number of sheets for this user
+            const r1 = await sql`SELECT COUNT(*) AS count FROM sheets WHERE user_id=${userId};`
+            const count = r1.rows[0]['count'] as number;
+            if( count >= maxSheets) throw new Error("Maximum number of sheets reached");
             const result = await sql`
                 INSERT INTO sheets (name, data, version, user_id)
                 VALUES (${sheet.name}, ${data}, ${this.modelVersion}, ${userId})
@@ -35,6 +39,18 @@ export class SheetDao {
             sheet.id = result.rows[0]['id']
         }
         return sheet
+    }
+
+    /**
+     * Delete a sheet for a given user
+     * @param sheetId 
+     * @param userId 
+     */
+    public static async delete(sheetId:number, userId:number):Promise<number> {
+        sql`
+            DELETE FROM sheets WHERE id=${sheetId} AND user_id=${userId};
+        `
+        return sheetId
     }
 
     /**
