@@ -115,13 +115,12 @@ app.post('/sheet', async (req, res) => {
 })
 
 app.delete('/sheet/:id', async (req, res) => {
-    const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
     const sheetId = req.params.id
+    const userId = await UserTools.userFromRequest(req)
     try {
-        if(!payload || !payload.user || !sheetId || !payload.sheetId) throw new GApiError(400, 'Invalid request')
-        const userId = await GApi.userShaToId(payload.user)
-        if( !userId ) throw new GApiError(401, 'Unauthorized')
-        if( sheetId !== payload.sheetId ) throw new GApiError(400, 'Invalid request');
+        if( !sheetId || !userId) { 
+            throw new GApiError(400, 'Invalid request')
+        }
         await GApi.sheetDelete(sheetId, userId).then( (sheet) => {
             res.send(sheet.name + ' deleted')
         })
