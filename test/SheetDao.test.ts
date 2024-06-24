@@ -92,5 +92,21 @@ describe('Custom Sheets', () => {
             expect(false).toBe(true)
         })
     })
+
+    test('Create and Delete', async() => {
+        const sheetName:string = 'TempSheetThatProbablyDoesntExist'
+        await SheetDao.createOrUpdate(new Sheet(0, sheetName, jcDemoSheet), jcUserId)
+            .then( sheet => {
+                expect(sheet).toBeDefined()
+                expect(sheet.id).toBeDefined()
+                expect(sheet.name).toBe(sheetName)
+                SheetDao.delete(sheet.id, jcUserId).then( id => {
+                    expect(id).toBe(sheet.id)
+                })
+            }).catch( err => {
+                console.log(err)
+                expect(false).toBe(true)
+            })
+    })
 });
 

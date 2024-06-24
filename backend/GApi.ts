@@ -147,6 +147,22 @@ export class GApi {
     }
 
     /**
+     * Delete a sheet by id and user id
+     * @param sheetId 
+     * @param userId 
+     * @returns 
+     */
+    public static async sheetDelete(sheetId:number, userId:number):Promise<string> {
+        const sheet:Sheet|undefined = await SheetDao.readById(sheetId, userId)
+        // console.log( '[gapi.sheetDelete] ' + sheetId + ' -> ' + output)
+        if( sheet) {
+            await SheetDao.delete(sheetId, userId)
+            return sheet.name
+        }
+        throw new GApiError(404, 'Sheet not found');
+    }
+
+    /**
      * Gets a sheet by id and user id
      * @param sheetId 
      * @param userId 
@@ -181,5 +197,14 @@ export class GApi {
         if( !userId) throw new GApiError( 400,"Invalid user");
 
         return SheetDao.createOrUpdate(sheet, userId)
+    }
+
+    /**
+     * Finds a user id by it's sha256
+     * @param sha256 User sha256
+     * @returns User Id or undefined if not found
+     */
+    public static async userShaToId(sha256:string):Promise<number|undefined> {
+        return await UserDao.find(sha256)
     }
 }
