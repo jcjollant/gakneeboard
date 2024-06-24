@@ -13,7 +13,7 @@ import Toast from 'primevue/toast';
 import { getBlankSheet, getCurrentUser, getDemoSheet, setCurrentUser, customSheetSave } from '../../assets/data'
 import { sheetNameDemo, sheetNameReset } from '../../assets/data'
 
-const emits = defineEmits(['authentication','copy','load','print','howDoesItWork'])
+const emits = defineEmits(['authentication','copy','load','flip','howDoesItWork'])
 
 const confirm = useConfirm()
 const printMode = ref(false)
@@ -32,16 +32,6 @@ const props = defineProps({
   user: { type: Object, default: null},
 })
 
-/**
- * Sends a message and hide the menu
- * @param {*} message 
- */
-function emitAndClose(message) {
-  // console.log('emitAndClose ' + message)
-  emits(message)
-  showMenu.value = false
-}
-
 function confirmAndLoad(title, sheet) {
   confirm.require({
       message: 'Do you want to replace all tiles in the current sheet?',
@@ -50,7 +40,6 @@ function confirmAndLoad(title, sheet) {
       acceptLabel: 'Yes, Replace',
       accept: () => {
         emits('load', sheet)
-        showMenu.value = false
       }
     })
 }
@@ -65,7 +54,6 @@ function onAuthentication(userParam) {
   showSignIn.value = false
   if( userParam) {
     user.value = userParam
-    showMenu.value = false
     emits('authentication', userParam)
   } else {
     toast.add({ severity: 'warn', summary: 'Engine Roughness', detail: 'Authentication failed', life: 3000});  
@@ -74,7 +62,6 @@ function onAuthentication(userParam) {
 
 function onFeedbackSent() {
   // console.log('[menu] onFeedbackSent')
-  showMenu.value = false;
   showFeedback.value = false
   toast.add({ severity: 'info', summary: 'Readback Correct', detail: 'Thanks for your feedback!', life: 3000});  
 }
@@ -86,7 +73,7 @@ onMounted(() => {
 
 function onPrint() {
   printMode.value = !printMode.value
-  emitAndClose('print')  
+  emits('flip')  
 }
 
 function onSheet(mode) {
@@ -207,7 +194,7 @@ watch( props, async() => {
         <Button label="Demo" icon="pi pi-clipboard"  title="Replace all with Demo Tiles" @click="onSheetLoadDefault(sheetNameDemo)"></Button>
         <div class="separator"></div>
         <Button label="Mirror" icon="pi pi-sign-out" title="Copy left page onto right" 
-          @click="emitAndClose('copy')"></Button>
+          @click="emits('copy')"></Button>
         <Button label="Flip" icon="pi pi-sort-alt" title="Flip right page vertically" :class="{active: printMode}" 
           @click="onPrint"></Button>
         <div class="separator"></div>
