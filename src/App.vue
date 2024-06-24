@@ -1,18 +1,16 @@
 <script setup>
 // import HelloWorld from './components/HelloWorld.vue'
+import { onBeforeMount, onMounted,ref} from 'vue'
+import { inject } from "@vercel/analytics"
 import Menu from './components/menu/Menu.vue'
 import Widget from './components/Tile.vue'
-import { onBeforeMount, onMounted,ref} from 'vue'
-import { getDemoSheet, getBlankSheet, version, saveCustomSheet } from './assets/data.js'
-import { inject } from "@vercel/analytics"
-import { setCurrentUser, sheetNameDemo, sheetNameReset, sheetNameLocal} from './assets/data.js'
+import { getDemoSheet, version } from './assets/data.js'
+import { setCurrentUser, sheetNameLocal} from './assets/data.js'
 import HowDoesItWork from './components/HowDoesItWork.vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
 
-
-var pageData = null;
-const currentPage = ref('page1')
+const pageData = ref(null)
 const widget0 = ref({})
 const widget1 = ref({})
 const widget2 = ref({})
@@ -28,38 +26,37 @@ const widget11 = ref({})
 const widgetsOne = [widget0,widget1,widget2,widget3,widget4,widget5]
 const widgetsTwo = [widget6,widget7,widget8,widget9,widget10,widget11]
 const allWidgets = widgetsOne.concat(widgetsTwo)
-const printMode = ref(false)
+const flipMode = ref(false)
 const keyUser = 'kb-user'
 const keyHowDoesItWork = 'howDoesItWork'
 const showHowDoesItWork = ref(true)
 const toast = useToast()
 
 // update all widgets with provided data
-async function loadSheetData(data) {
-  // console.log( 'App loadPageData ' + JSON.stringify(data))
+function loadSheetData(data) {
+  // console.log( '[App.loadSheetData]', typeof data, JSON.stringify(data))
 
   // if we don't know what to show, we load a copy of the demo page
-  if( data == null) data = getDemoSheet();
+  if( !data) data = getDemoSheet();
+  if( typeof data == 'string') data = JSON.parse(data)
 
   // assigns their values to all widgets
   allWidgets.forEach((widget, index) => {
       widget.value = data[index];
   });
-  pageData = data;
-  // savePageData();
+  pageData.value = data;
 }
 
 function onAuthentication(user) {
-  // console.log('[App.onAuthentication] ' + JSON.stringify(user))
+  // console.log('[App.onAuthentication] user', JSON.stringify(user))
   if( user) {
     localStorage.setItem(keyUser,JSON.stringify(user))
-    toast.add({ severity: 'success', summary: 'Clear', detail: 'Welcome ' + user.name, life: 3000});  
+    showToastSuccess('Clear','Welcome ' + user.name)
   } else {
     localStorage.removeItem(keyUser)
+    // reload the page
+    location.reload()
   }
-
-  // reload the page
-  location.reload
 }
 
 function onCloseHowDoesItWork() {
@@ -69,58 +66,70 @@ function onCloseHowDoesItWork() {
 
 onBeforeMount(()=>{
   // activate the last known user
-  setCurrentUser( JSON.parse(localStorage.getItem(keyUser)))
+  const user = JSON.parse(localStorage.getItem(keyUser))
+  if( user) setCurrentUser( user, true)
+
+  // How does it work popup check
   if( localStorage.getItem( keyHowDoesItWork) == 'false') {
     showHowDoesItWork.value = false;
   }
 })
 
-function onMenuLoadSheet(name) {
-  // console.log('onLoadPage ' + JSON.stringify(name))
-  // page 1 and page 2 come from localstorage
-  if( name=='page1' || name==sheetNameLocal) {
-    currentPage.value = name;
-    let data = localStorage.getItem(name);
-    if( data && data != 'undefined') { // first time around
-      loadSheetData( JSON.parse(data))
-    } else {
-      loadSheetData( getDemoSheet())
-    }
-  } else if( name==sheetNameDemo) {
-    loadSheetData( getDemoSheet())
-    savePageData()
-  } else if( name==sheetNameReset) {
-    loadSheetData( getBlankSheet())
-    savePageData()
+/**
+ * Copy all left tiles from left to right
+ */
+function onMenuCopy() {
+  // console.log('[App.onMenuCopy]', JSON.stringify(pageData.value))
+  const newPageData = pageData.value;
+  const list = [{from:0,to:6},{from:1,to:7},{from:2,to:8},{from:3,to:9},{from:4,to:10},{from:5,to:11}]
+  for(const entry of list) {
+    newPageData[entry.to].name = newPageData[entry.from].name 
+    newPageData[entry.to].data = newPageData[entry.from].data
+  }
+  loadSheetData(newPageData)
+  saveSheetData()
+}
+
+function onMenuLoad(sheet) {
+  // console.log('[App.onMenuLoad]', JSON.stringify(sheet))
+  if(sheet && sheet.data) {
+    loadSheetData(sheet.data)
+    saveSheetData()
   } else {
-    console.log('unknown sheet ' + name)
+    console.log('[App.onMenuLoad] could not load', JSON.stringify(sheet))
   }
 }
 
-async function onMenuSaveSheet(name) {
-  await saveCustomSheet(name, pageData).then(() => {
-    toast.add({ severity: 'success', summary: 'Roger', detail: 'Sheet "' + name + '" saved successfully', life: 3000});  
-  }).catch((e) => {
-    toast.add({ severity: 'error', summary: 'Save Page', detail: 'Could not save sheet "' + name + '"', life: 3000});  
-  })
-}
-
 onMounted(() => {
-  onMenuLoadSheet(currentPage.value)
+  try {
+    let data = JSON.parse(localStorage.getItem(sheetNameLocal))
+    loadSheetData(data)
+  } catch(e) {
+    console.log('[App.onMounted] local data is corrupted')
+    loadSheetData(null)
+    saveSheetData()
+  }
   // Analytics
   inject();
-  // console.log( Object.keys(airports).join(', ').toUpperCase());
 })
 
-// save page data if it's page 1 or 2
-function savePageData() {
-  localStorage.setItem(currentPage.value, JSON.stringify( pageData))
+/**
+ * Some widget data has been updated, we want to save this at least locally
+ * @param {*} newWidgetData 
+ */
+ function onWidgetUpdated(newWidgetData) {
+  // console.log('App : Tile updated with ' + JSON.stringify(newWidgetData))
+  pageData.value[newWidgetData.id] = newWidgetData;
+  saveSheetData();
 }
 
-function updateWidget(newWidgetData) {
-  // console.log('App : Tile updated with ' + JSON.stringify(newWidgetData))
-  pageData[newWidgetData.id] = newWidgetData;
-  savePageData();
+// save page data if it's page 1 or 2
+function saveSheetData() {
+  localStorage.setItem(sheetNameLocal, JSON.stringify( pageData.value))
+}
+
+function showToastSuccess( summary, detail) {
+  toast.add({ severity: 'success', summary: summary, detail: detail, life: 2500});  
 }
 
 </script>
@@ -130,18 +139,18 @@ function updateWidget(newWidgetData) {
   <Toast />
   <div class="twoPages">
     <div class="onePage">
-      <Widget v-for='widget in widgetsOne' :widget="widget.value" @update="updateWidget"/>
+      <Widget v-for='widget in widgetsOne' :widget="widget.value" @update="onWidgetUpdated"/>
     </div>
-    <div class="onePage" :class="{flipMode: printMode}">
-      <Widget v-for='widget in widgetsTwo' :widget="widget.value" @update="updateWidget"/>
+    <div class="onePage" :class="{flipMode: flipMode}">
+      <Widget v-for='widget in widgetsTwo' :widget="widget.value" @update="onWidgetUpdated"/>
     </div>
   </div>
   <div class="menuContainer">
-    <Menu class="menu" :page="currentPage"
+    <Menu class="menu" :pageData="pageData"
       @authentication="onAuthentication"
-      @load-page="onMenuLoadSheet" 
-      @save-page="onMenuSaveSheet"
-      @print="printMode=!printMode"
+      @load="onMenuLoad" 
+      @flip="flipMode=!flipMode"
+      @copy="onMenuCopy"
       @howDoesItWork="showHowDoesItWork=true"
       >
     </Menu>

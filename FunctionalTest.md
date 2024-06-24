@@ -29,7 +29,6 @@
       * Raleigh : Edit mode, Type BFI without selecting => Airport name should show below input field
       * Cancel and back to edit => Should show Raleigh with ryw 03-21
       * Pick 03-21 should work
-  * Raleigh Exec KTTA name should be truncated
   * Test replace
   * Test Unknown Airport can be Cancelled
   * Sign out
@@ -81,8 +80,13 @@
 ## Feedback
   * Dialog should show version number in bottom right corner
   * Enter feedback singed out should not prompt for follow up => Should show in the DB without r
-## Print Mode
- * Pick Print from menu -> Should flip right page
+## Page Management
+ * Pick Flip from menu -> Should flip right page
+ * Test Page copy
+ * Save A New Page
+ * Load that page
+ * delete that page
+ * Save an update to an existing page
 ## Persistance
  * Tweak demo page content
    * Change Renton to S50 change pattern mode
@@ -102,3 +106,5 @@
   * Send Feedback, test "Do No Send" closes the window
   * Send Feeback, try to send authenticated without follow up => DB should show null
   * Airport, check headings 16 enrty=292 midfield=67 34 entry=202 midfield=67
+  * Raleigh Exec KTTA name should be truncated
+  * Make sure page copy is persisted (reload)
