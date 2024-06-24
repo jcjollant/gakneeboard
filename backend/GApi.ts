@@ -62,8 +62,9 @@ export class GApi {
         // weed out the crap
         if( !AirportTools.isValidAirportCode(code)) throw new GApiError(400,"Invalid Airport Code"); 
 
-        const airports = await AirportDao.readList( [code], userId); 
-        if(airports.length > 0){
+        // this list will always return one entry per code
+        const airports = await AirportDao.readList( [code], userId);
+        if( airports.length == 1 && airports[0].version != -1) {
             // console.log( "[gapi] found " + code + ' in DB');
             return AirportTools.format(airports[0])
         } 
@@ -72,7 +73,7 @@ export class GApi {
     }
 
     public static async getAirportFromAdip(code:string,save:boolean=true):Promise<Airport|undefined> {
-        // console.log( "[gapi.getAirportFromAdip] " + code);
+        // console.log( "[gapi.getAirportFromAdip]", code);
 
         if( await db.isKnownUnknown(code)) {
             console.log( '[gapi.getAirportFromAdip] ' + code + ' is a known unknown');
@@ -82,7 +83,7 @@ export class GApi {
         const airport = await adip.fetchAirport(code);
         if(save) {
             if(airport) { // adip saves the day, persist this airport in postrgres
-                // console.log( "[gapi.getAirportFromAdip] found " + code + ' in ADIP');
+                // console.log( "[gapi.getAirportFromAdip] found in ADIP", code);
                 // console.log( '[gapi] ' + JSON.stringify(airport));
                 await AirportDao.create(code,airport);
             } else { // not found ADIP either, memorize to avoid asking this over and over

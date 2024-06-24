@@ -78,9 +78,10 @@ export class AirportDao {
         } else { // do not include creatorId
             result = await sql`SELECT code,data,creatorId FROM airports WHERE Code = ANY (${list}) AND creatorId is NULL`;
         }
-        // console.log( '[AirportDoa.readList] found ' + result.rowCount + ' entries for ' + JSON.stringify(list))
+        // console.log( '[AirportDoa.readList] found', result.rowCount, 'entries for', JSON.stringify(list))
     
         const output:any[] = []
+
         list.forEach( (code:string) => {
             // did we find that code in DB ?
             const found = result.rows.find( row => row.code == code)
@@ -93,7 +94,7 @@ export class AirportDao {
                 output.push(AirportDao.undefinedAirport(code))
             }
         })
-    
+        // console.log('[AirportDao.readList] returning', output.length, 'records')
         return output
     }
 
