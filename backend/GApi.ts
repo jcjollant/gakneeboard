@@ -56,7 +56,6 @@ export class GApi {
     public static async getAirport(codeParam:string,userId: any=undefined):Promise<Airport|undefined> {
         // console.log( "[gapi.getAirport] " + codeParam + ' user=' + userId);
         // try postgres first unless we are in force mode
-        let airport = null;
         const code = codeParam.toUpperCase()
 
         // weed out the crap
@@ -64,12 +63,15 @@ export class GApi {
 
         // this list will always return one entry per code
         const airports = await AirportDao.readList( [code], userId);
+        let airport:Airport|undefined;
         if( airports.length == 1 && airports[0].version != -1) {
             // console.log( "[gapi] found " + code + ' in DB');
-            return AirportTools.format(airports[0])
-        } 
+            airport = airports[0]
+        } else {
+            airport = await GApi.getAirportFromAdip(code)
+        }
 
-        return GApi.getAirportFromAdip(code)
+        return AirportTools.format(airport)
     }
 
     public static async getAirportFromAdip(code:string,save:boolean=true):Promise<Airport|undefined> {
