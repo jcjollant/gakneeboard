@@ -1,4 +1,4 @@
-export const version = '622'
+export const version = '623'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'http://localhost:3000/'
 // const apiRootUrl = 'https://ga-api-git-google-auth-jcjollants-projects.vercel.app/'
@@ -8,7 +8,7 @@ import axios from 'axios'
 
 export const sheetNameDemo = 'default-demo'
 export const sheetNameReset = 'default-reset'
-export const sheetNameLocal = 'default-sheet'
+export const sheetNameLocal = 'page1'
 
 const demoRadioData = [
   {'target':'NAV1','freq':'116.8','name':'SEA VOR'},
@@ -54,17 +54,25 @@ const demoRadioData = [
 const contentTypeJson = { headers: {'Content-Type':'application/json'} }
 const contentTypeTextPlain = { headers: {'Content-Type':'text/plain'} }
 const contentType = contentTypeJson;
-
 let currentUser = null
+let airports = {}
+let pendingCodes = []
+
 export async function authenticate( source, token) {
   const url = apiRootUrl + 'authenticate'
   const payload = {source:source, token:token}
   const response = await axios.post(url, payload, contentTypeJson)
-//  const response = await axios.post(url, JSON.stringify(payload), contentTypeTextPlain)
     .catch( e => {
       console.log( '[data.authenticate] ' + e)
       return null
     })
+  // remove unknown airports because some may be due to unauhtenticated user
+  for( const code in airports) {
+    if( airports[code] == null) {
+      delete airports[code]
+    }
+  }
+
   setCurrentUser(response.data)
   return currentUser
 }
@@ -74,7 +82,7 @@ export async function authenticate( source, token) {
  * @param {*} url 
  * @returns 
  */
-async function axiosGet(url) {
+async function axiosGetForUser(url) {
   if( currentUser) {
     return axios.get(url,{params:{user:currentUser.sha256}})
   } else {
@@ -82,8 +90,70 @@ async function axiosGet(url) {
   }
 }
 
-let airports = {}
-let pendingCodes = []
+/**
+ * Delete custom sheet
+ * @param {*} sheet 
+ */
+export async function customSheetDelete(sheet) {
+  const url = apiRootUrl + 'sheet/' + sheet.id
+  if( !currentUser) {
+    throw new Error('Cannot delete sheet without user')
+  }
+  await axios.delete(url,{params:{user:currentUser.sha256}})
+    .then( response => {
+      // console.log('[data.customSheetDelete] sheet deleted', sheet.id)
+      currentUser.sheets = currentUser.sheets.filter( s => s.id != sheet.id)
+      return sheet
+    })
+    .catch( error => {
+      console.log('[data.customSheetDelete] error ' + JSON.stringify(error))
+      return null
+    })
+}
+
+/**
+ * Save custom sheet to the backend
+ * @param {*} name 
+ * @param {*} data 
+ * @returns Created sheet on success or null on failure
+ */
+export async function customSheetSave(sheet) {
+  const url = apiRootUrl + 'sheet'
+  if( !currentUser) {
+    throw new Error('Cannot save sheet without user')
+  }
+  if( sheet.name in [sheetNameDemo, sheetNameReset, sheetNameLocal]) {
+    throw new Error('Sheet name conflicts with defaults')
+  }
+  const payload = {user:currentUser.sha256, sheet:sheet}
+  await axios.post(url, payload, contentTypeJson)
+    .then( response => {
+      const responseSheet = response.data
+      // console.log('[data.customSheetSave] sheet saved', sheet, responseSheet)
+      // update that sheet in currentUser.sheets if it exists
+      let index = -1
+      if( sheet.id != 0 && currentUser.sheets.length > 0) {
+        index = currentUser.sheets.findIndex( s => s.id == sheet.id)
+        // console.log('[data.customSheetSave] index', index)
+      }
+      if( index == -1) {
+        currentUser.sheets.push(responseSheet)
+      } else {
+        // update existing entry
+        currentUser.sheets[index].name = sheet.name
+        currentUser.sheets[index].data = sheet.data
+      }
+      userSortSheets()
+      return sheet
+    })
+    .catch( error => {
+      console.log('[data.customSheetSave] error ' + JSON.stringify(error))
+      return null
+    })
+}
+
+
+
 /**
  * Query airport data backend
  * @param {*} codeParam airport code, case doesn't matter
@@ -222,7 +292,7 @@ export function refreshAirport(code, data) {
 async function requestAllAirports( codes) {
   // console.log( 'perform group request for ' + codes.length)
   const url = apiRootUrl + 'airports/' + codes.join('-');
-  await axiosGet(url)
+  await axiosGetForUser(url)
     .then( response => {
         // console.log( JSON.stringify(response.data))
         const airportList = response.data
@@ -253,7 +323,7 @@ async function requestOneAirport( code) {
   let airport = null
 
   const url = apiRootUrl + 'airport/' + code;
-  await axiosGet(url)
+  await axiosGetForUser(url)
     .then( response => {
         // console.log( '[data.requestOneAirport] received', JSON.stringify(response.data))
         airport = response.data
@@ -268,31 +338,6 @@ async function requestOneAirport( code) {
     })
 
   return airport
-}
-
-/**
- * Save custom sheet to the backend
- * @param {*} name 
- * @param {*} data 
- */
-export async function saveCustomSheet(name, data) {
-  const url = apiRootUrl + 'sheet'
-  if( !currentUser) {
-    throw new Error('Cannot save sheet without user')
-  }
-  if( name in [sheetNameDemo, sheetNameReset, sheetNameLocal]) {
-    throw new Error('Cannot overwrite a built-in sheet')
-  }
-  const payload = {name:name, user:currentUser.sha256, data:data}
-  await axios.post(url, payload, contentTypeJson)
-    .then( response => {
-      console.log('[data.saveCustomSheet] sheet saved', name)
-      return true
-    })
-    .catch( error => {
-      console.log( '[data.saveCustomSheet]  error', error)
-      return false
-    })
 }
 
 /**
@@ -318,9 +363,36 @@ export async function sendFeedback(text,contactMe) {
     })
 }
 
-export function setCurrentUser( user) {
+/**
+ * Memorize the current user and refresh all sheets if requested
+ * @param {*} user 
+ * @param {*} refreshSheets 
+ */
+export function setCurrentUser( user, refreshSheets=false) {
+  // console.log('[data.setCurrentUser]', JSON.stringify(user))
   currentUser = user
-  // axios.defaults.headers.common['Authorization'] = 'User ' + user.sha256;
+  if( refreshSheets) {
+    // request sheets after waiting 2 seconds
+    setTimeout( () => {
+      const url = apiRootUrl + 'sheets'
+      axiosGetForUser(url).then( sheets => {
+        // console.log( '[data.setCurrentUser] sheets received', sheets)
+        if( currentUser) {
+          currentUser.sheets = sheets.data;
+          userSortSheets()
+        }
+      })
+      }, 2000)
+  }
+}
+
+/**
+ * 
+ * @returns Sorts sheets for a user
+ */
+function userSortSheets() {
+  if(!currentUser || !currentUser.sheets || !currentUser.sheets.length) return
+  currentUser.sheets.sort( (a,b) => a.name.localeCompare(b.name))
 }
 
 /**

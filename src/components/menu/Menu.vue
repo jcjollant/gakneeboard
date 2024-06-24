@@ -5,30 +5,30 @@ import Button from 'primevue/button'
 import { useConfirm } from 'primevue/useconfirm'
 import ConfirmDialog from 'primevue/confirmdialog';
 import Feedback from './Feedback.vue';
-import Pages from './Pages.vue'
+import Sheets from './Sheets.vue'
 import SignIn from './SignIn.vue';
 import Warning from './Warning.vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
-import { getCurrentUser, setCurrentUser } from '../../assets/data'
+import { getBlankSheet, getCurrentUser, getDemoSheet, setCurrentUser, customSheetSave } from '../../assets/data'
 import { sheetNameDemo, sheetNameReset } from '../../assets/data'
 
-const emits = defineEmits(['authentication','loadPage','print','savePage','howDoesItWork'])
+const emits = defineEmits(['authentication','copy','load','print','howDoesItWork'])
 
-const activePage = ref('')
 const confirm = useConfirm()
 const printMode = ref(false)
 const showFeedback = ref(false)
 const showMenu = ref(false)
 const showSignIn = ref(false)
 const showWarning = ref(false)
-const showPages = ref(false)
+const showSheets = ref(false)
 const toast = useToast()
 const user = ref(null)
 const pageMode = ref('load')
+let pageData = null;
 
 const props = defineProps({
-  page: { type: String, default: null},
+  pageData: { type: Object, default: null},
   user: { type: Object, default: null},
 })
 
@@ -42,23 +42,22 @@ function emitAndClose(message) {
   showMenu.value = false
 }
 
-function getConfirmation(headerParam, pageName) {
+function confirmAndLoad(title, sheet) {
   confirm.require({
       message: 'Do you want to replace all tiles in the current sheet?',
-      header: headerParam,
+      header: title,
       rejectLabel: 'No',
       acceptLabel: 'Yes, Replace',
       accept: () => {
-        emits('loadPage', pageName)
+        emits('load', sheet)
         showMenu.value = false
       }
     })
 }
 
-
-function loadProps( newProps) {
-  // console.log('Menu loadProps ' + props.page)
-  activePage.value = newProps.page;
+function loadProps( props) {
+  // console.log('Menu loadProps', JSON.stringify(props))
+  pageData = props.pageData;
 }
 
 function onAuthentication(userParam) {
@@ -80,31 +79,6 @@ function onFeedbackSent() {
   toast.add({ severity: 'info', summary: 'Readback Correct', detail: 'Thanks for your feedback!', life: 3000});  
 }
 
-function onLoad() {
-  showPages.value = true
-  pageMode.value = 'load'
-}
-
-/**
- * Page dialog wants us to save the page
- * @param {*} pageName 
- */
-function onPageLoad(pageName) {
-  // console.log('[menu.onPageLoad]',pageName)
-  showPages.value = false
-  const title = (pageName == sheetNameDemo ? 'Load Demo Tiles' : pageName == sheetNameReset ? 'Reset All Tiles' : 'Load "' + pageName + '" Sheet')
-  getConfirmation( title, pageName)
-}
-
-/**
- * Page Dialog wants to save a page
- * @param {*} pageName 
- */
-function onPageSave(pageName) {
-  // console.log('[menu.onPageSave]',pageName)
-  showPages.value = false;
-  emits('savePage', pageName)
-}
 onMounted(() => {
   user.value = getCurrentUser()
   loadProps(props)
@@ -115,13 +89,58 @@ function onPrint() {
   emitAndClose('print')  
 }
 
-function onSaveAs() {
+function onSheet(mode) {
   if( user.value) {
     // console.log("[Menu.onSaveAs] valid request")
-    showPages.value = true;
-    pageMode.value = 'save'
+    showSheets.value = true;
+    pageMode.value = mode
   } else {
-    toast.add({ severity: 'warn', summary: 'Squawk and Ident', detail: 'Please sign in to save your pages', life: 3000});  
+    showToast('warn','Squawk and Ident','Please sign in to use custom sheets')
+  }
+}
+
+function onSheetDelete(sheet) {
+  showToast('success', 'Clear', 'Sheet "' + sheet.name + '" deleted')
+}
+
+/**
+ * Page dialog wants us to save the page
+ * @param {*} sheet 
+ */
+ function onSheetLoad(sheet) {
+  // console.log('[menu.onPageLoad]',pageName)
+  showSheets.value = false
+  const title = 'Load "' + sheet.name + '" Sheet'
+  confirmAndLoad( title, sheet)
+}
+
+/**
+ * Load demo or blank sheet
+ * @param {*} sheetName 
+ */
+function onSheetLoadDefault(sheetName) {
+  showSheets.value = false
+  const title = (sheetName == sheetNameDemo ? 'Load Demo Tiles' : 'Reset All Tiles')
+  const sheetData = sheetName == sheetNameDemo ? getDemoSheet() : getBlankSheet()
+  const sheet = {name:sheetName,data:sheetData}
+  confirmAndLoad( title, sheet)
+}
+
+/**
+ * Page Dialog wants to save a page
+ * @param {*} sheet 
+ */
+ function onSheetSave(sheet) {
+  // console.log('[menu.onPageSave]',pageName)
+  showSheets.value = false;
+  try {
+      sheet.data = pageData;
+      customSheetSave(sheet).then(() => {
+        showToast('success','Clear','Sheet "' + sheet.name + '" saved')
+      })
+  } catch( e) {
+    console.log('[Menu.onSheetSave]', e)
+    showToast('error','Save Page','Could not save sheet "' + sheet.name + '"')
   }
 }
 
@@ -137,11 +156,18 @@ function openBlog() {
 }
 
 
+function showToast(severity, summary, detail) {
+  toast.add({ severity: severity, summary: summary, detail: detail, life: 3000});  
+}
+
 // Toggle menu visibility which will update component layout
 function toggleMenu() {
     showMenu.value = !showMenu.value;
 }
 
+/**
+ * Something has changed in the props
+ */
 watch( props, async() => {
   loadProps( props)
 })
@@ -158,8 +184,11 @@ watch( props, async() => {
     <Warning v-model:visible="showWarning" @close="showWarning=false" />
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
       @authentication="onAuthentication" />
-    <Pages v-model:visible="showPages" :mode="pageMode" 
-      @load="onPageLoad" @save="onPageSave" />
+    <Sheets v-model:visible="showSheets" :mode="pageMode" :user="user"
+      @delete="onSheetDelete"
+      @load="onSheetLoad" 
+      @load-default="onSheetLoadDefault"
+      @save="onSheetSave" />
     <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu">
       <div class="bar1"></div>
       <div class="bar2"></div>
@@ -172,17 +201,19 @@ watch( props, async() => {
         <Button v-else label="Sign In" icon="pi pi-user" title="Sign In to enable custom data"
           @click="showSignIn=true"></Button>
         <div class="separator"></div>
-        <Button v-if="!user" label="Demo" icon="pi pi-clipboard"  title="Replace all with Demo Tiles" @click="onPageLoad(sheetNameDemo)"></Button>
-        <Button v-if="!user" label="Reset" icon="pi pi-trash" title="Reset all tiles on the sheet" @click="onPageLoad(sheetNameReset)"></Button>
-        <Button v-else="user" label="Load" icon="pi pi-folder-open" title="Open existing sheet" @click="onLoad"></Button>
-        <Button label="Save" icon="pi pi-save" title="Save this sheet" @click="onSaveAs"></Button>
-          <div class="separator"></div>
-        <Button label="Print" icon="pi pi-print" title="Toggle Print Mode" :class="{active: printMode}" 
+        <Button label="New" icon="pi pi-file" title="Reset all tiles on the sheet" @click="onSheetLoadDefault(sheetNameReset)"></Button>
+        <Button label="Load" icon="pi pi-folder-open" title="Open existing sheet" @click="onSheet('load')"></Button>
+        <Button label="Save" icon="pi pi-save" title="Save this sheet" @click="onSheet('save')"></Button>
+        <Button label="Demo" icon="pi pi-clipboard"  title="Replace all with Demo Tiles" @click="onSheetLoadDefault(sheetNameDemo)"></Button>
+        <div class="separator"></div>
+        <Button label="Mirror" icon="pi pi-sign-out" title="Copy left page onto right" 
+          @click="emitAndClose('copy')"></Button>
+        <Button label="Flip" icon="pi pi-sort-alt" title="Flip right page vertically" :class="{active: printMode}" 
           @click="onPrint"></Button>
         <div class="separator"></div>
-        <Button label="Feedback" icon="pi pi-megaphone" title="Send Feedback"
+        <Button icon="pi pi-megaphone" title="Send Feedback"
           @click="showFeedback=true" ></Button>
-        <Button label="Warnings" icon="pi pi-exclamation-triangle" title="Stuff You Should Know" severity="warning"
+        <Button icon="pi pi-exclamation-triangle" title="Warnings" severity="warning"
           @click="showWarning=true"></Button>
         <Button icon="pi pi-question"  title="How does it work?"
           @click="emits('howDoesItWork')"></Button>
