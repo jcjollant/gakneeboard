@@ -7,6 +7,7 @@ run `vercel dev` to run the local service
 * Automatically catch when new publication is available
 * Automatically refresh data when new publication is available
 * Automatically catch duplicates
+* Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
 ## 6/15/2024
