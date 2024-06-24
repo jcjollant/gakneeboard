@@ -144,7 +144,7 @@ function onCodeUpdate() {
 
                     
 function onCustomUpdated(code, airportData) {
-    console.log('[AirportEdit.onCustomUpdated]', code)
+    // console.log('[AirportEdit.onCustomUpdated]', code)
     showCustomAirport.value=false
     airportCode.value = code
     
@@ -156,7 +156,7 @@ function onCustomCreate() {
     // console.log('[AirportEdit.onCustomCreate]')
     const newAirport = new Airport( airportCode.value, "", 0)
     newAirport.custom = true
-    console.log('[AirportEdit.onCustomCreate] newAirport', JSON.stringify(newAirport))
+    // console.log('[AirportEdit.onCustomCreate] newAirport', JSON.stringify(newAirport))
     customAirport.value = newAirport;
     showCustomAirportDialog()
 }
