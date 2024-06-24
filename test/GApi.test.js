@@ -120,4 +120,20 @@ describe( 'GApi Tests', () => {
             expect(true).toBe(false) // should not get here
         })
     })
+
+    test('shaToid', async () => {
+        await GApi.userShaToId(jcHash).then( id => {
+            expect(id).toBe(jcUserId)
+        }).catch( (e) => {
+            console.log(e)
+            expect(true).toBe(false) // should not get here
+        })
+        // Bogus Hash should return undefined
+        await GApi.userShaToId('bogusHash').then( id => {
+            expect(id).toBeUndefined()
+        }).catch( (e) => {
+            console.log(e)
+            expect(true).toBe(false) // should not get here
+        })
+    })
 })
