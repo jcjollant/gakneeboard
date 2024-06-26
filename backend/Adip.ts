@@ -81,9 +81,9 @@ export class Adip {
 
         // read frequencies
         if(adip && adip.facility && adip.facility.frequencies) {
-            const frequencyMapping = {'GND/P':'GND','LCL/P':'TWR'}
+            const frequencyMapping:Record<string,string> = {'GND/P':'GND','LCL/P':'TWR'}
             const frequencies:Frequency[] = adip.facility.frequencies.map( (f:any) => {
-                let name = f.frequencyUse
+                let name:string = f.frequencyUse
                 if( name in frequencyMapping) {
                     name = frequencyMapping[name]
                 }
@@ -167,7 +167,7 @@ export class Adip {
             const candidates = adip.facility.frequencies
                 .filter( (freq:any) => freq.frequency.includes(rwy.identifier))
                 .map((freq:any) => Adip.parseFrequency(freq.frequency))
-                .filter(freq => !Adip.isMilitary(freq))
+                .filter((freq:number) => !Adip.isMilitary(freq))
             if(candidates.length > 0) {
                 output = candidates[0]
             }

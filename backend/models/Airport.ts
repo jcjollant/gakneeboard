@@ -198,6 +198,10 @@ export class Airport {
         return this.freq.find((freq) => freq.name == name)?.mhz
     }
 
+    getVersion():number {
+        return this.version
+    }
+
     setEffectiveDate(date:string) {
         this.effectiveDate = date;
     }

@@ -16,7 +16,7 @@ export class User {
             email: email,
         }
         this.sha256 = User.createSha256(user)
-    
+        this.name = ""
     };
 
     // public getSha256():string {

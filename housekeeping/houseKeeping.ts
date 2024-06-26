@@ -1,17 +1,15 @@
-// force pull the data for all airports that have an old version
-
-
-const postgres = require('@vercel/postgres')
-import { GApi } from "../backend/gapi"
-import adip from '../backend/adip'
-import db from '../backend/db'
+import { sql } from '@vercel/postgres'
+import { GApi } from "../backend/GApi"
+import { Adip } from "../backend/Adip"
 import { postgresUrl } from "../test/constants"
+import { Airport } from "../backend/models/Airport"
+import { AirportDao } from '../backend/AirportDao'
 
 process.env.POSTGRES_URL=postgresUrl
 
 async function checkEffectiveDates() {
-    const result = await postgres.sql`SELECT data,id FROM Airports WHERE creatorId IS NULL`
-    const effectiveDates = {}
+    const result = await sql`SELECT data,id FROM Airports WHERE creatorId IS NULL`
+    const effectiveDates:any = {}
     for(const row of result.rows) {
         const data = JSON.parse(row['data']);
         if( 'effectiveDate' in data) {
@@ -27,13 +25,13 @@ async function checkEffectiveDates() {
     console.log( JSON.stringify(effectiveDates))
 }
 
-async function refreshAirport(code,id) {
+async function refreshAirport(code:string,id:number) {
     console.log( "refreshing " + code + ' at id ' + id)
-    const airport = await adip.fetchAirport(code);
+    const airport:Airport|undefined = await Adip.fetchAirport(code);
     if(airport) { // adip saves the day, persist this airport in postrgres
         console.log( "[gapi] found " + code + ' in ADIP');
         // console.log( '[gapi] ' + JSON.stringify(airport));
-        await db.updateAirport(id,airport,adip.modelVersion);
+        await AirportDao.updateAirport(id,airport);
         console.log( 'upgraded ' + code + ' at id ' + id)
     } else {
         console.log( "Upgrade failed for " + code);
@@ -42,28 +40,28 @@ async function refreshAirport(code,id) {
 }
 
 async function refreshAllAirports() {
-    const result = await postgres.sql`SELECT Code,Id FROM Airports WHERE creatorId IS NULL`
+    const result = await sql`SELECT Code,Id FROM Airports WHERE creatorId IS NULL`
 
     console.log( "Matching airports " + result.rowCount)
 
     while( result.rows.length > 0) {
         await new Promise(r => setTimeout(r, Math.random() * 3000 + 1000));
         const row = result.rows.pop()
-        refreshAirport(row.code, row.id)
+        refreshAirport(row?.code, row?.id)
     }
 }
 
 async function upgradeVersion() {
-    const minVersion = adip.modelVersion;
-    // const result = await postgres.sql`SELECT Code,Id FROM Airports WHERE version < ${minVersion} LIMIT 10`
-    const result = await postgres.sql`SELECT Code,Id FROM Airports WHERE version < ${minVersion}`
+    const minVersion = Airport.currentVersion;
+    // const result = await sql`SELECT Code,Id FROM Airports WHERE version < ${minVersion} LIMIT 10`
+    const result = await sql`SELECT Code,Id FROM Airports WHERE version < ${minVersion}`
 
     console.log( "Matching airports " + result.rowCount)
 
     while( result.rows.length > 0) {
         await new Promise(r => setTimeout(r, Math.random() * 3000 + 1000));
         const row = result.rows.pop()
-        refreshAirport(row.code, row.id)
+        refreshAirport(row?.code, row?.id)
     }
 
     // result.rows.forEach( async (row) => {
@@ -74,7 +72,7 @@ async function upgradeVersion() {
 }
 
 async function findMilitaryFrequencies() {
-    const result = await postgres.sql`SELECT * FROM Airports`
+    const result = await sql`SELECT * FROM Airports`
     const candidate = result.rows.filter( row => {
         const airport = JSON.parse(row.data);
         let gndIsMilitary = GApi.isMilitary( airport.gnd)
@@ -105,5 +103,7 @@ async function findMilitaryFrequencies() {
 
 // upgradeVersion()
 // refreshAllAirports()
+refreshAirport("KRNT",48)
+
 // findMilitaryFrequencies()
-checkEffectiveDates()
+// checkEffectiveDates()

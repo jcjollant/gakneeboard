@@ -32,7 +32,11 @@ export class GApi {
             // console.log('[gapi.authenticate]', JSON.stringify(output))
             return output;
         } catch(e) {
-            throw new GApiError(400, e.message)
+            let message = ''
+            if(e instanceof Error) {
+                message = e.message
+            }
+            throw new GApiError(400, message)
         }
     }
 
@@ -83,13 +87,8 @@ export class GApi {
             return undefined;
         }
 
-        let airport:Airport|undefined = undefined;
-        if( code == "KJCJ") {
-            airport = await Adip.fetchAirport("KRNT");
-            save=false;
-        } else {
-            airport = await adipOld.fetchAirport(code);
-        }
+        const airport = await Adip.fetchAirport("RNT");
+
         if(save) {
             if(airport) { // adip saves the day, persist this airport in postrgres
                 // console.log( "[gapi.getAirportFromAdip] found in ADIP", code);
