@@ -30,9 +30,4 @@ async function saveFeedback(data) {
 
 }
 
-async function updateAirport(id, data, version) {
-    // console.log( '[db] updateAirport ' + id + ' ' + JSON.stringify(data) + ' ' + version)
-    await postgres.sql`UPDATE Airports SET Data=${data}, Version = ${version} WHERE id=${id}`;
-}
-
-module.exports = { addKnownUnknown, isKnownUnknown, saveFeedback, updateAirport };
+module.exports = { addKnownUnknown, isKnownUnknown, saveFeedback};

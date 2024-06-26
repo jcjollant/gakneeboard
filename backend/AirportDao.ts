@@ -102,6 +102,14 @@ export class AirportDao {
         return { code : code, version : -1}
     }
 
+    static async updateAirport(id:number, airport:Airport) {
+        const data:string = JSON.stringify(airport)
+        // console.log( '[db] updateAirport ' + id + ' ' + JSON.stringify(data) + ' ' + version)
+        return sql`UPDATE Airports SET Data=${data}, Version = ${airport.version} WHERE id=${id}`;
+    }
+    
+    
+
     public static async deleteCustom(code:string, creatorId:number) {
         await sql`
             DELETE FROM airports WHERE code=${code} AND creatorid=${creatorId};
