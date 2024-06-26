@@ -1,5 +1,6 @@
 const db = require('./db')
-const adip = require('./adipOld')
+const adipOld = require('./adipOld')
+import { Adip } from '../backend/Adip'
 import { User } from './models/User'
 import { UserDao } from './UserDao'
 import { UserTools } from './UserTools'
@@ -84,10 +85,10 @@ export class GApi {
 
         const airport = null;
         if( code == "KJCJ") {
-            await adip.fetchAirport("KRNT");
+            await Adip.fetchAirport("KRNT");
             save=false;
         } else {
-            await adip.fetchAirport(code);
+            await adipOld.fetchAirport(code);
         }
         if(save) {
             if(airport) { // adip saves the day, persist this airport in postrgres
@@ -152,7 +153,7 @@ export class GApi {
     public static isMilitary(freq:string) {
         if( freq == null) return false;
         if( freq =='-.-') return false;
-        return !adip.isNotMilitary(freq)
+        return Adip.isMilitary(Number(freq))
     }
 
     /**
