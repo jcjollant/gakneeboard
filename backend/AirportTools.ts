@@ -38,7 +38,7 @@ export class AirportTools {
             input.rwy
         } else if ( input.version == 6 || input.version == -1) {
             output = input
-        } else {
+        } else { // unknown version
             output = undefined
         }
 

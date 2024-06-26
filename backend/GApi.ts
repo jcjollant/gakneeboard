@@ -68,11 +68,7 @@ export class GApi {
             // console.log( "[gapi] found " + code + ' in DB');
             airport = airports[0]
         } else {
-            if(code=="KJCJ") {
-                airport = await GApi.getAirportFromAdip("KRNT",false)
-            } else {
-                airport = await adip.getAirportFromAdip(code)
-            }
+            airport = await GApi.getAirportFromAdip(code)
         }
 
         return AirportTools.format(airport)
@@ -86,7 +82,13 @@ export class GApi {
             return undefined;
         }
 
-        const airport = await adip.fetchAirport(code);
+        const airport = null;
+        if( code == "KJCJ") {
+            await adip.fetchAirport("KRNT");
+            save=false;
+        } else {
+            await adip.fetchAirport(code);
+        }
         if(save) {
             if(airport) { // adip saves the day, persist this airport in postrgres
                 // console.log( "[gapi.getAirportFromAdip] found in ADIP", code);

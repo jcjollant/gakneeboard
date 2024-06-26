@@ -8,7 +8,7 @@ import { HealthCheck } from "../backend/HealthChecks";
 
 const port = 3002
 const app = express();
-const version = 615
+const version = 625
 
 app.use(cors())
 app.use(express.json()) // for parsing application/json
