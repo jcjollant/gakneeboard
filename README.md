@@ -3,13 +3,11 @@ As a GA pilot, I rely on my kneeboard to get just in time information about the 
 I couldn't find anything I liked, so I scratched my own itch.
 
 # BUGS
-* Multitower airport stuggle : CYVR is not showing a frequency
+* Custom Airport is not editable after update
 
 # TODO
 * Improve Radio Flow Selection with airport code and all frequencies
-* Show list of frequencies for selection in corners list
 ## Airport
-* Add separators in Corner data selectors
 * New Tiles Synopsis => capture altitude and fuel level
 * New Tile Navlog
 * New Tile Emergency
@@ -18,7 +16,13 @@ I couldn't find anything I liked, so I scratched my own itch.
 * New Tile : Synopsis => capture altitude and fuel level
 
 # Done
-* Added saved sheets support
+## 06/26/2024 626
+* Show list of frequencies for selection in corners list
+* Add separators in Corner data selectors
+## 06/23/2024 623
+* Added Copy from left to right
+* renamed Print to Flip
+* Added Custom sheets support
 ## 06/15/2024 615
 * Custom Airport
 * Improved airport edit to avoid useless partial code request

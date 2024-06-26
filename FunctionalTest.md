@@ -13,7 +13,7 @@
     * ATIS Full, Clearance, Notes, Radios
 ## Airport Tile
   * Data Fields @ Renton Muni
-    * Name = Renton Muni (centered), ATIS = 126.95, CTAF = 124.700, Label = CTAF
+    * Name = Renton Muni (centered), ATIS = 126.950, CTAF = 124.700, Label = TWR
     * Elev = 32, TPA = 1032, Rwy dimension = 5382x200
     * Watermark airport code = KRNT, Rwy orientation = vertical
     * 16 LP, blue, symetric pattern stroke 
