@@ -1,3 +1,5 @@
+const version = 626
+
 const express =require( "express")
 import cors from "cors";
 // const cors = require('cors');
@@ -8,7 +10,6 @@ import { HealthCheck } from "../backend/HealthChecks";
 
 const port = 3002
 const app = express();
-const version = 625
 
 app.use(cors())
 app.use(express.json()) // for parsing application/json
