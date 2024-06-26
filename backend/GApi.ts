@@ -1,5 +1,5 @@
 const db = require('./db')
-const adip = require('./adip')
+const adip = require('./adipOld')
 import { User } from './models/User'
 import { UserDao } from './UserDao'
 import { UserTools } from './UserTools'
@@ -68,7 +68,11 @@ export class GApi {
             // console.log( "[gapi] found " + code + ' in DB');
             airport = airports[0]
         } else {
-            airport = await GApi.getAirportFromAdip(code)
+            if(code=="KJCJ") {
+                airport = await GApi.getAirportFromAdip("KRNT",false)
+            } else {
+                airport = await adip.getAirportFromAdip(code)
+            }
         }
 
         return AirportTools.format(airport)
@@ -78,7 +82,7 @@ export class GApi {
         // console.log( "[gapi.getAirportFromAdip]", code);
 
         if( await db.isKnownUnknown(code)) {
-            console.log( '[gapi.getAirportFromAdip] ' + code + ' is a known unknown');
+            // console.log( '[gapi.getAirportFromAdip] ' + code + ' is a known unknown');
             return undefined;
         }
 

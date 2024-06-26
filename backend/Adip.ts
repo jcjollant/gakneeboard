@@ -1,0 +1,237 @@
+import { run } from 'node:test'
+import { Airport, Frequency, Runway, RunwaySurface, RunwayEnd, PatternDirection } from './models/Airport'
+import axios from 'axios'
+
+
+export class Adip {
+    static basicAuth:string = 'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP'
+
+    public static async fetchAirport(code:string):Promise<Airport|undefined>{
+        let locId = null
+        // if the code is 4 digits, try to turn it into locId
+        if( code.length == 4) {
+            // console.log( 'ADIP fetching locId for ' + code);
+            await axios.post(
+                'https://adip.faa.gov/agisServices/api/nq',
+                { query: "autoLookupPublicAirportList", param1: code},
+                { 
+                    headers:{ 
+                    'Authorization': Adip.basicAuth,
+                    "Content-Type": 'application/json'
+                },
+            })
+            .then( response => {
+                // console.log( JSON.stringify(response.data))
+                locId = response.data[0].locId
+                // console.log( "ADIP locId found " + locId)
+            })
+            .catch( error => {
+                if (error.response) {
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                }
+            })
+        }
+
+        let airport:Airport|undefined = undefined
+        await axios.post(
+            'https://adip.faa.gov/agisServices/public-api/getAirportDetails',
+            '{ "locId": "' + (locId == null ? code : locId) + '" }',
+            { 
+                headers:{ 
+                'Authorization': Adip.basicAuth,
+                "Content-Type": "text/plain"      
+            },
+        })
+        .then( response => {
+            // console.log( JSON.stringify(response.data))
+            airport = Adip.airportFromData( response.data)
+            airport.fetchTime = Date.now();
+            // console.log( JSON.stringify(airport))
+        })
+        .catch( error => {
+            if (error.response) {
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+            }
+        })
+        return airport;
+    }
+
+    static airportFromData( adip:any):Airport {
+        const code:string = ('icaoId' in adip ? adip.icaoId : 'locId' in adip ? adip.codeId : '?')
+        const name:string = Adip.getName(adip)
+        const elevation:number = adip.elevation
+        const airport = new Airport(code,name, elevation)
+
+        // Scan adip.facility.frequencies
+        if(adip && adip.ctaf) {
+            airport.addFrequency( 'CTAF', Adip.parseFrequency(adip.ctaf))
+        }
+        if(adip && adip.unicom) {
+            airport.addFrequency( 'UNICOM', Adip.parseFrequency(adip.unicom))
+        }
+        if(adip && adip.effectiveDate) {
+            airport.effectiveDate = adip.effectiveDate
+        }
+
+        var data = {}
+
+        // read frequencies
+        if(adip && adip.facility && adip.facility.frequencies) {
+            const frequencyMapping = {'GND/P':'GND','LCL/P':'TWR'}
+            const frequencies:Frequency[] = adip.facility.frequencies.map( (f:any) => {
+                let name = f.frequencyUse
+                if( name in frequencyMapping) {
+                    name = frequencyMapping[name]
+                }
+                // Augment the name with Rwy Name
+                return new Frequency(name, Adip.parseFrequency(f.frequency))
+            })
+            // console.log('[Adip.airportFromData]',JSON.stringify(frequencies))
+            // add frequencies if they are not military
+            airport.addFrequencies( frequencies.filter(f => !Adip.isMilitary(f.mhz)))
+        }
+
+        // read runways
+        if(adip && adip.runways) {
+            const runways:Runway[] = adip.runways.map( (rwy:any) => {
+                const name:string = rwy.runwayIdentifier.replace('/','-')
+                const length:number = Number(rwy.length)
+                const width:number = Number(rwy.width)
+                const runway:Runway = new Runway(name, length, width)
+                runway.setRunwaySurface(Adip.getRunwaySurface(rwy))
+                // runway frequency
+                runway.freq = Adip.getRunwayFrequency(adip,rwy)
+                // ends
+                const magneticVariation:number = Adip.getVariation(adip)
+                for( const rwyEnd of [rwy.baseEnd,rwy.reciprocalEnd]) {
+                    const end:RunwayEnd|undefined = Adip.getRunwayEnd(runway, rwyEnd)
+                    if(!end) continue
+                    const orientation:number = Adip.getOrientation(rwyEnd, magneticVariation)
+                    end.setMagneticOrientation(orientation)
+                    const tp:PatternDirection = Adip.parseTrafficPattern(rwyEnd)
+                    end.setTrafficPattern(tp)
+                }
+                return runway
+            }) 
+            airport.addRunways(runways)
+        }
+    
+        return airport
+    }
+
+    
+
+    // capitalize first letter of each word for airport name
+    public static getName( adip:any):string {
+        if(!adip || !adip.name) return '?'
+        const name:string = adip.name
+        let words = name.split(' ')
+        const output:string[] = name.split(' ').map( word => word[0].toUpperCase() + word.substring(1).toLowerCase())
+        return output.join(' ')
+    }
+
+    static getOrientation( end:any, magneticVariation:number):number {
+        if( !end) return 0
+        let orientation = 0
+        if( 'trueHeading' in end) {
+            orientation = end.trueHeading + magneticVariation
+        } else if( end.runwayEndId){
+            if(end.runwayEndId =='NE') {
+                orientation = 45
+            } else if(end.runwayEndId =='SE') {
+                orientation = 135
+            } else if(end.runwayEndId =='SW') {
+                orientation = 225
+            } else if(end.runwayEndId =='NW') {
+                orientation = 315
+            } else {
+                orientation = parseInt(end.runwayEndId) * 10
+            }
+        }
+    
+        return orientation
+    }
+    
+    static getRunwayEnd(runway:Runway, end:any):RunwayEnd|undefined {
+        if(!runway || !end || !end.runwayEndId) return undefined;
+        return runway.getEnd(end.runwayEndId)
+    }
+
+    static getRunwayFrequency(adip:any, rwy:any):number|undefined {
+        let output = undefined
+        if( adip && adip.facility && adip.facility.frequencies && rwy && rwy.identifier) {
+            const candidates = adip.facility.frequencies
+                .filter( (freq:any) => freq.frequency.includes(rwy.identifier))
+                .map((freq:any) => Adip.parseFrequency(freq.frequency))
+                .filter(freq => !Adip.isMilitary(freq))
+            if(candidates.length > 0) {
+                output = candidates[0]
+            }
+        }
+        return output
+    }
+
+    // Build a runway surface from adip rwy object
+    static getRunwaySurface( rwy:any):RunwaySurface {
+        let rwyType = '?'
+        let rwyCondition = '?'
+        if( rwy) {
+            if( rwy.surfaceType) {
+                rwyType = rwy.surfaceType
+            } else if( rwy.surfaceTypeCondition) {
+                rwyType = rwy.surfaceTypeCondition
+            }
+            if( rwy.surfaceCondition) {
+                rwyCondition = rwy.surfaceCondition
+            } else if( rwy.surfaceTypeCondition) {
+                rwyCondition = rwy.surfaceTypeCondition
+            }
+        }
+
+        return new RunwaySurface(rwyType, rwyCondition)
+    }
+    
+    // 16E => -16
+    static getVariation( adip:any):number {
+        if( adip && adip.magneticVariation) {
+            let output = parseInt(adip.magneticVariation.substring(0, adip.magneticVariation.length - 1))
+            if(adip.magneticVariation.slice(-1) =='E') {
+                output = -output;
+            }
+            return output
+        } else {
+            return 0
+        }
+    }
+
+    // checks whether a frequency is military
+    public static isMilitary(freq:number):boolean {
+        return freq >= 225
+    }
+    
+
+    /**
+     * Extract frequency from the rest of the field data
+     * Example : "117.7 ;ARR-NE"
+     */
+    public static parseFrequency(freq:string):number {
+        let output:number;
+        if(freq.includes(' ;')) {
+            output = parseFloat(freq.split(" ;")[0])
+        } else {
+            output = parseFloat(freq)
+        }
+        return output
+    }
+
+    static parseTrafficPattern( end:any):PatternDirection {
+        if( !end) throw new Error("Invalid end for traffic pattern")
+        if( end.rightHandTrafficFlag && end.rightHandTrafficFlag == 'YES') return PatternDirection.Right
+        return PatternDirection.Left
+    }
+
+}

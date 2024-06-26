@@ -1,4 +1,11 @@
 #########################################
+# uknowns
+SELECT COUNT(*) FROM unknowns
+
+SELECT * FROM unknowns
+
+
+#########################################
 # Airports table
 SELECT * FROM airports
 
@@ -18,7 +25,11 @@ SELECT Data FROM Airports WHERE Code in('RNT') AND (creatorId = 1 OR creatorId I
 
 SELECT * FROM airports WHERE Code IN ('RNT','JFK') AND creatorId is NULL
 
+# Custom airports fir JC
 SELECT Data FROM Airports WHERE creatorId = 1
+
+# Custom airports from anyone
+SELECT 'code',creatorId FROM Airports WHERE creatorId IS NOT NULL
 
 # Duplicates
 SELECT COUNT(*) as count, Code from Airports WHERE creatorid IS NULL GROUP BY Code HAVING COUNT(*) > 1 ORDER BY count DESC 
@@ -27,7 +38,7 @@ SELECT COUNT(*) as count, Code from Airports WHERE creatorid IS NULL GROUP BY Co
 SELECT * FROM airports WHERE Code='KRNT'
 
 # Test airport
-SELECT * FROM airports WHERE Code='TEST'
+SELECT * FROM airports WHERE Code='12S'
 
 UPDATE airports SET data='{"code":"TEST","name":"Test Airport JC","elev":1000,"freq":[{"name":"CTAF","mhz":124.7},{"name":"TWR","mhz":null},{"name":"Weather","mhz":126.95},{"name":"GND","mhz":121.6}],"rwys":[{"name":"16-34","length":5400,"width":120,"ends":[null]}],"custom":false,"version":6,"effectiveDate":""}' , version=6 WHERE id=378
 
@@ -39,7 +50,11 @@ DELETE FROM feedback WHERE Id in (56,57)
 
 SELECT * FROM Airports WHERE Code='INT'
 
+#########################################
+# Unknowns
 SELECT * FROM Unknowns
+
+SELECT * FROM Unknowns WHERE code='KJCJ'
 
 SELECT count(*) FROM Unknowns
 
@@ -63,5 +78,8 @@ SELECT * FROM health_checks
 INSERT INTO health_checks (data,failures) VALUES ("TEST",1)
 
 #########################################
-# Table Pages
+# Sheets Pages
 SELECT * FROM sheets
+
+# Count of JC sheets
+SELECT COUNT(*) FROM sheets WHERE user_Id=1
