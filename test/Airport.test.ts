@@ -1,6 +1,6 @@
 
 import {describe, expect, test} from '@jest/globals';
-import { Airport, Runway, RunwayEnd } from "../backend/models/Airport"; 
+import { Airport, PatternDirection, Runway, RunwayEnd } from "../backend/models/Airport"; 
 
 describe('Airport', () => {
     test ('Airport should be an object', () => {
@@ -42,16 +42,16 @@ describe('Airport', () => {
         expect(rwy.getOrientation("XX")).toBeUndefined()
 
         // Patterns should default to left
-        expect(rwy.getTrafficPattern("16")).toBe(Runway.leftPattern)
-        expect(rwy.getTrafficPattern("34")).toBe(Runway.leftPattern)
+        expect(rwy.getTrafficPattern("16")).toBe(PatternDirection.Left)
+        expect(rwy.getTrafficPattern("34")).toBe(PatternDirection.Left)
         // Should be able to change pattern
-        rwy.setTrafficPattern('34', Runway.rightPattern)
-        expect(rwy.getTrafficPattern("34")).toBe(Runway.rightPattern)
+        rwy.setTrafficPattern('34', PatternDirection.Right)
+        expect(rwy.getTrafficPattern("34")).toBe(PatternDirection.Right)
         // Invalid pattern should not change
         expect(() => {
-            rwy.setTrafficPattern('34', 'Random')
-        }).toThrow('Invalid traffic pattern Random')
-        expect(rwy.getTrafficPattern("34")).toBe(Runway.rightPattern)
+            rwy.setTrafficPattern('', PatternDirection.Left)
+        }).toThrow('Runway end [] not found')
+        expect(rwy.getTrafficPattern("34")).toBe(PatternDirection.Right)
 
         // ends name
         const endsName:string[] = rwy.getEndsName()
@@ -89,11 +89,11 @@ describe('Airport', () => {
         expect(rwy2EndsName[1]).toBe("35")
         const end17 = rwy2.getEnd('17')
         expect(end17?.mag).toBe(170)
-        expect(end17?.tp).toBe(Runway.leftPattern)
-        end17?.setRightPattern(false)
-        expect(end17?.tp).toBe(Runway.leftPattern)
-        end17?.setRightPattern()
-        expect(end17?.tp).toBe(Runway.rightPattern)
+        expect(end17?.tp).toBe(PatternDirection.Left)
+        end17?.setTrafficPattern(PatternDirection.Left)
+        expect(end17?.tp).toBe(PatternDirection.Left)
+        end17?.setTrafficPattern(PatternDirection.Right)
+        expect(end17?.tp).toBe(PatternDirection.Right)
     })
 
 

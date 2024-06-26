@@ -1,4 +1,4 @@
-import { Airport, Runway, RunwayEnd } from "./models/Airport"
+import { Airport, Runway, RunwayEnd, PatternDirection } from "./models/Airport"
 
 export class AirportTools {
     /**
@@ -20,10 +20,10 @@ export class AirportTools {
                 const runway = new Runway( rwy.name, rwy.length, rwy.width)
                 const endsName = runway.getEndsName()
                 for(const endName of endsName) {
-                    const rwyEnd = runway.getEnd(endName)
+                    const rwyEnd:RunwayEnd|undefined = runway.getEnd(endName)
                     if( rwyEnd) {
                         rwyEnd.setMagneticOrientation( rwy[endName].orientation)
-                        rwyEnd.setRightPattern(rwy[endName].pattern == 'right')
+                        rwyEnd.setTrafficPattern(rwy[endName].pattern == 'right' ? PatternDirection.Right : PatternDirection.Left)
                     }
                 }
                 if( 'surface' in rwy) {

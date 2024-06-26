@@ -1,6 +1,6 @@
 const modelVersion:number = 6;
 
-class Frequency {
+export class Frequency {
     name: string;
     mhz: number;
     constructor(name:string, frequency:number) {
@@ -9,20 +9,25 @@ class Frequency {
     }
 }
 
+export enum PatternDirection {
+    Left = 'L',
+    Right = 'R'
+}
+
 export class RunwayEnd {
     name: string;
     mag: number;
-    tp: string; 
+    tp: PatternDirection; 
     /**
      * @param name This runway end name, should start with RP if this is a Right pattern 
      * @param orientation Magnetic orientation of the runway
      */
     constructor(name:string, orientation:number) {
         if( name.startsWith('RP')) {
-            this.tp = Runway.rightPattern
+            this.tp = PatternDirection.Right
             this.name = name.substring(2);
         } else {
-            this.tp = Runway.leftPattern
+            this.tp = PatternDirection.Left
             this.name = name;
         }
         this.mag = orientation % 360;
@@ -33,8 +38,8 @@ export class RunwayEnd {
         this.mag = value % 360;
     }
 
-    setRightPattern(really:boolean=true) {
-        this.tp = really ? Runway.rightPattern : Runway.leftPattern;
+    setTrafficPattern(direction:PatternDirection) {
+        this.tp = direction
     }
 }
 
@@ -54,8 +59,8 @@ export class Runway {
     ends: RunwayEnd[];
     surface: RunwaySurface|undefined;
     freq: number|undefined;
-    public static rightPattern:string = 'R';
-    public static leftPattern:string = 'L';
+    // public static rightPattern:string = 'R';
+    // public static leftPattern:string = 'L';
 
     constructor(name:string, length:number, width:number) {
         this.name = name;
@@ -91,26 +96,19 @@ export class Runway {
         return undefined
     }
 
-    public setTrafficPattern(end:string, pattern:string) {
+    public setTrafficPattern(end:string, pattern:PatternDirection) {
         const rwyEnd:RunwayEnd|undefined = this.getEnd(end)
-        if(rwyEnd) {
-            switch(pattern) {
-                case Runway.leftPattern:
-                    rwyEnd.setRightPattern(false)
-                    break;
-                case Runway.rightPattern:
-                    rwyEnd.setRightPattern(true)
-                    break;
-                default:
-                    throw new Error(`Invalid traffic pattern ${pattern}`)
-            }
-        } else {
-            throw new Error(`Runway end ${end} not found`)
-        }
+        if(!rwyEnd) throw new Error(`Runway end [${end}] not found`)
+
+        rwyEnd.setTrafficPattern(pattern)
     }
 
     public setSurface(type:string, condition:string) {
         this.surface = new RunwaySurface(type, condition)
+    }
+
+    public setRunwaySurface(rwySurface:RunwaySurface) {
+        this.surface = rwySurface
     }
 
     static isValidEndName(name:string):boolean {
@@ -149,6 +147,7 @@ export class Airport {
     custom: boolean;
     version:number;
     effectiveDate:string;
+    fetchTime:number;
 
     constructor(code:string, name:string, elevation:number) {
         this.code = code;
@@ -159,6 +158,7 @@ export class Airport {
         this.custom = false;
         this.version = modelVersion;
         this.effectiveDate = '';
+        this.fetchTime = 0;
     }
 
     public static isValidCode(code:string):boolean {
@@ -169,6 +169,11 @@ export class Airport {
         return version == Airport.currentVersion
     }
     
+    // add several frequencies at th end of existing frequencies
+    addFrequencies(frequencies:Frequency[]) {
+        this.freq.push(...frequencies);
+    }
+
     addFrequency(name:string, mhz:number) {
         this.freq.push(new Frequency(name,mhz));
     }
