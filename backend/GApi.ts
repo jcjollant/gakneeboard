@@ -83,12 +83,12 @@ export class GApi {
             return undefined;
         }
 
-        const airport = null;
+        let airport:Airport|undefined = undefined;
         if( code == "KJCJ") {
-            await Adip.fetchAirport("KRNT");
+            airport = await Adip.fetchAirport("KRNT");
             save=false;
         } else {
-            await adipOld.fetchAirport(code);
+            airport = await adipOld.fetchAirport(code);
         }
         if(save) {
             if(airport) { // adip saves the day, persist this airport in postrgres
