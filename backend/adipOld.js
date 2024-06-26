@@ -31,7 +31,7 @@ async function fetchAirport(code) {
                 console.log(error.response.headers);
               }
         })
-        }
+    }
 
     let airport = null
     await axios.post(
