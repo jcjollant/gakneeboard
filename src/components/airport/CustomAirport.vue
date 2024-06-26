@@ -3,7 +3,6 @@ import { ref, onMounted, watch } from 'vue'
 import { Airport, Runway } from '../../assets/Airport'
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button'
-import Checkbox from 'primevue/checkbox'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import FieldSet from 'primevue/fieldset'
