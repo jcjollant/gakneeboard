@@ -4,7 +4,8 @@ I couldn't find anything I liked, so I scratched my own itch.
 
 # BUGS
 * Custom Airport is not editable after update
-
+* Delete custom page +> success + reload => page still there
+  
 # TODO
 * Improve Radio Flow Selection with airport code and all frequencies
 ## Airport
