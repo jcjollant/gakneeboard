@@ -1,4 +1,6 @@
-export const version = '626'
+export const version = '627'
+export const blogUrl = 'https://gakneeboard.wordpress.com/'
+// export const blogUrl = 'https://ga-kneeboard.blogspot.com/'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'http://localhost:3000/'
 // const apiRootUrl = 'https://ga-api-git-google-auth-jcjollants-projects.vercel.app/'

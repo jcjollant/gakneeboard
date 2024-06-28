@@ -12,6 +12,7 @@ import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
 import { getBlankSheet, getCurrentUser, getDemoSheet, setCurrentUser, customSheetSave } from '../../assets/data'
 import { sheetNameDemo, sheetNameReset } from '../../assets/data'
+import { blogUrl } from '../../assets/data'
 
 const emits = defineEmits(['authentication','copy','load','flip','howDoesItWork'])
 
@@ -139,7 +140,7 @@ function onSignOut() {
 }
 
 function openBlog() {
-  window.open('https://ga-kneeboard.blogspot.com/', '_blank');
+  window.open( blogUrl, '_blank');
 }
 
 
