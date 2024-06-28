@@ -1,6 +1,9 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import Fieldset from 'primevue/fieldset'
+import InputGroup from 'primevue/inputgroup'
+import InputGroupAddon from 'primevue/inputgroupaddon'
+import InputText from 'primevue/inputtext'
 import OverlayPanel from 'primevue/overlaypanel'
 import RadioButton from 'primevue/radiobutton'
 import { getFreqCtaf, getFreqWeather, getFreqGround, getFrequency } from '../../assets/data';
@@ -34,6 +37,8 @@ const cornerTypes = ref([
     { name: 'Runway Information', key: 'rwyinfo' },
     { name: 'Nothing', key: 'blank' },
 ]);
+const customLabel = ref('')
+const customValue = ref('')
 
 const frequencies = ref([])
 
@@ -44,10 +49,9 @@ function formatFrequency(freq) {
 }
 
 function loadProps(newProps) {
-    // console.log( 'Corner loadProps ' + JSON.stringify(newProps))
+    // console.log( '[Corner.loadProps]', JSON.stringify(newProps))
     if( newProps == undefined || newProps.airport == null || newProps.data == null) {
-        label.value = '-'
-        value.value = '-'
+        unknownValues()
         labelUnder.value = true
         frequencies.value = []
     } else {
@@ -67,7 +71,7 @@ function loadProps(newProps) {
 }
 
 function onChange(field) {
-    // console.log('onChange ' + JSON.stringify(field))
+    // console.log('[Corner.onChange] ' + JSON.stringify(field))
     showField(field)
     emits('update', {'id':cornerId,'field':field})
 }
@@ -84,6 +88,18 @@ function showField( field) {
         value.value = formatFrequency( getFrequency( airport.freq, freqName))
         label.value = freqName
         // console.log('[Corner.showField]', label.value)
+    } else if( field.length > 0 && field[0] == '?') {
+        // custom labels '?' as marker and separator
+        // Field should look like '?label?value'
+        const tokens = field.split('?')
+        if(tokens.length < 3) {
+            unknownValues()
+        } else {
+            label.value = tokens[1]
+            value.value = tokens[2]
+            customLabel.value = label.value
+            customValue.value = value.value
+        }
     } else {
         switch( field) {
             case 'weather':
@@ -130,8 +146,7 @@ function showField( field) {
                 label.value = ''
                 break;
             default:
-                value.value = '?'
-                label.value = '?'
+                unknownValues()
         }
     }
 }
@@ -140,6 +155,11 @@ const op = ref()
 function toggleSelection(event) {
     // console.log( 'Toggle Overlay')
     op.value.toggle(event)
+}
+
+function unknownValues() {
+    label.value = '-'
+    value.value = '-'
 }
 
 watch( props, () => {
@@ -176,6 +196,17 @@ watch( props, () => {
                         </div> -->
                     </div>
                 </Fieldset>
+                <div class="ctItem">
+                    <RadioButton v-model="selectedCornerType" inputId="custom" :value="'?'+customLabel+'?'+customValue" 
+                        @click="onChange('?'+customLabel+'?'+customValue)"/>
+                        <label for="custom" class="ml-2">Custom</label>
+                    <InputGroup class="customGroup ml-2">
+                        <!-- <InputGroupAddon>Custom</InputGroupAddon> -->
+                        <InputText placeholder="label" v-model="customLabel"></InputText>
+                        <InputGroupAddon>:</InputGroupAddon>
+                        <InputText placeholder="value" v-model="customValue"></InputText>
+                    </InputGroup>
+                </div>
                 <div v-for="ct in cornerTypes" class="ctItem" >
                     <RadioButton v-model="selectedCornerType" :inputId="ct.key" :value="ct.key" 
                         @change="onChange(ct.key)"/>
@@ -201,6 +232,10 @@ watch( props, () => {
         display: flex;
         align-items: center;
     }
+    .customGroup {
+      width: 12rem;
+}
+
     .faded {
         opacity: 0.3;
     }
@@ -215,6 +250,10 @@ watch( props, () => {
     }
     :deep(.p-fieldset-content) {
         padding: 0;
+    }
+    :deep(.p-input-group-addon) {
+        padding: 0;
+        min-width: 0;
     }
 
 </style>
