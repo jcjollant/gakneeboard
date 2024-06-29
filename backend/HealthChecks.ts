@@ -4,6 +4,7 @@ import { GApi } from "./GApi"
 import { UserDao } from "./UserDao"
 import { FeedbackDao } from "./FeedbackDao"
 import { AirportDao } from "./AirportDao";
+import { createTransport } from 'nodemailer'
 
 export class Check {
     name:string;
@@ -76,6 +77,38 @@ export class HealthCheck {
         return feedbackCheck
     }
 
+    static async sendMail(data:any, failedChecks:number) {
+        const transporter = createTransport({
+            service: 'gmail',
+            auth: {
+              user: 'gakneeboardapp@gmail.com',
+              pass: 'dbasyjebihqekmrs'
+            }
+          });
+
+          const message = 'Health Check result\n\n' + data + '\n\nfailed checks: ' + failedChecks;
+
+          const mailOptions = {
+            from: 'Willie',
+            to: 'jc@jollant.net',
+            subject: 'Housekeeping',
+            text: message
+          };
+          
+          return new Promise( (resolve, reject) => {
+            transporter.sendMail(mailOptions, function(error:any, info:any){
+                if (error) {
+                  console.log('[HealthChecks.sendMail]', error);
+                  resolve(false)
+                } else {
+                  console.log('[HealthChecks.sendMail] Email sent:', info.response);
+                  resolve(true)
+                }
+              });
+          })
+
+    }
+
     static async usersCheck():Promise<Check> {
         const userCheck:Check = new Check('users')
         const userCount:number = await UserDao.count()
@@ -93,9 +126,11 @@ export class HealthCheck {
             const failedChecks:number = allChecks.filter((check) => check.status === Check.FAIL).length
             const data:string = JSON.stringify(allChecks)
 
-            // console.log( '[HealthCheck.save]', data, 'failures', failedChecks)
+            console.log( '[HealthCheck.perform]', data, 'failures', failedChecks)
             await sql`INSERT INTO health_checks (data,failures) VALUES (${data},${failedChecks})`;
     
+            console.log( '[HealthCheck.perform] sending email')
+            await HealthCheck.sendMail( data, failedChecks)
             return allChecks
         })
     
