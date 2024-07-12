@@ -76,6 +76,9 @@ export class Adip {
         if(adip && adip.effectiveDate) {
             airport.effectiveDate = adip.effectiveDate
         }
+        if(adip && adip.arp) {
+            airport.setLocation(adip.arp)
+        }
 
         var data = {}
 

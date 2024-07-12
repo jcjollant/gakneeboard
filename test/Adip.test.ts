@@ -2,7 +2,6 @@ import {describe, expect, test} from '@jest/globals';
 import { Adip } from '../backend/Adip'
 import { Airport, Frequency, PatternDirection, RunwaySurface } from '../backend/models/Airport';
 import { krntData } from './krntData'
-import { run } from 'node:test';
 
 describe('Adip', () => {
 
@@ -75,6 +74,8 @@ describe('Adip', () => {
             expect(freq).toBe(Number(pair[1]))
 
         }
+        expect(airport?.location?.lat).toBeCloseTo(47.493138888)
+        expect(airport?.location?.lon).toBeCloseTo(-122.21575)
         expect(airport.elev).toBe(32)
         expect(airport.rwys).toHaveLength(1)
         const runway = airport.rwys[0]

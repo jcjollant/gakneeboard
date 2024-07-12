@@ -69,7 +69,7 @@ export class GApi {
         // this list will always return one entry per code
         const airports = await AirportDao.readList( [code], userId);
         let airport:Airport|undefined;
-        if( airports.length == 1 && airports[0].version != -1) {
+        if( airports.length == 1 && airports[0].version == Airport.currentVersion) {
             // console.log( "[gapi] found " + code + ' in DB');
             airport = airports[0]
         } else {

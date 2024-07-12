@@ -1,4 +1,4 @@
-const modelVersion:number = 6;
+const modelVersion:number = 7;
 
 export class Frequency {
     name: string;
@@ -148,6 +148,7 @@ export class Airport {
     version:number;
     effectiveDate:string;
     fetchTime:number;
+    location: { lat: number; lon: number }|undefined;
 
     constructor(code:string, name:string, elevation:number) {
         this.code = code;
@@ -159,6 +160,7 @@ export class Airport {
         this.version = modelVersion;
         this.effectiveDate = '';
         this.fetchTime = 0;
+        this.location = undefined;
     }
 
     public static isValidCode(code:string):boolean {
@@ -206,6 +208,15 @@ export class Airport {
         this.effectiveDate = date;
     }
 
+    setLocation(spatialReference:string) {
+        if( spatialReference.startsWith('SRID=4326;POINT')) {
+            const point:string[] = spatialReference.substring(16).split(' ')
+            this.location = { lat: parseFloat(point[1]), lon: parseFloat(point[0]) }
+        } else {
+            this.location = undefined
+        }
+    }
+    
     setRunwayFrequency(rwyName:string, frequency:number) {
         // console.log('[Airport.setRunwayFrequency]', rwyName, frequency)
         const rwy:Runway|undefined = this.rwys.find((rwy) => rwy.name == rwyName)
