@@ -87,7 +87,7 @@ export class GApi {
             return undefined;
         }
 
-        const airport = await Adip.fetchAirport("RNT");
+        const airport = await Adip.fetchAirport(code);
 
         if(save) {
             if(airport) { // adip saves the day, persist this airport in postrgres
