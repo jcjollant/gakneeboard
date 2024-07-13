@@ -12,14 +12,21 @@ SELECT * FROM airports
 # How many airports are there
 SELECT COUNT(*) FROM airports
 
-SELECT COUNT(*) FROM airports WHERE version=5
+SELECT COUNT(*) FROM airports WHERE version=6
+
+SELECT COUNT(*) FROM airports WHERE version=7
+
 
 # How many airports have not been upgraded
-SELECT COUNT(*) FROM airports WHERE version<5
+SELECT COUNT(*) FROM airports WHERE version<6
 
-SELECT * FROM airports WHERE version<5
+SELECT * FROM airports WHERE version=7
 
 SELECT * FROM airports WHERE Code='JCJ'
+
+SELECT * FROM airports WHERE Code='PAE'
+
+SELECT * FROM airports WHERE Id=52
 
 SELECT Data FROM Airports WHERE Code in('RNT') AND (creatorId = 1 OR creatorId IS NULL)
 
