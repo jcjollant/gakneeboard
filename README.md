@@ -5,6 +5,10 @@ run `vercel dev` to run the local service
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
+## 7/13
+* Fixed runway frequency bug
+## 7/12
+* Backend is now dynamically loading new FAA data when effective date is changed
 ## 6/29/2024
 * Added emails to housekeeping
 ## 6/16/2024
