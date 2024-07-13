@@ -164,9 +164,9 @@ export class Adip {
 
     static getRunwayFrequency(adip:any, rwy:any):number|undefined {
         let output = undefined
-        if( adip && adip.facility && adip.facility.frequencies && rwy && rwy.identifier) {
+        if( adip && adip.facility && adip.facility.frequencies && rwy && rwy.runwayIdentifier) {
             const candidates = adip.facility.frequencies
-                .filter( (freq:any) => freq.frequency.includes(rwy.identifier))
+                .filter( (freq:any) => freq.frequency.includes(rwy.runwayIdentifier))
                 .map((freq:any) => Adip.parseFrequency(freq.frequency))
                 .filter((freq:number) => !Adip.isMilitary(freq))
             if(candidates.length > 0) {
