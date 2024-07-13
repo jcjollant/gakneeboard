@@ -8,7 +8,7 @@ describe('Airport', () => {
         expect(typeof airport).toBe('object');
         expect(airport.freq.length).toBe(0)
         expect(airport.rwys.length).toBe(0)
-        expect(airport.version).toBe(6)
+        expect(airport.version).toBe(Airport.currentVersion)
     })
 
     test('Airport code validation', () => {
