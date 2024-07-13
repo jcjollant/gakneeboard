@@ -1,5 +1,4 @@
 const db = require('./db')
-const adipOld = require('./adipOld')
 import { Adip } from '../backend/Adip'
 import { User } from './models/User'
 import { UserDao } from './UserDao'
@@ -7,6 +6,7 @@ import { UserTools } from './UserTools'
 import { Airport } from './models/Airport'
 import { AirportDao } from './AirportDao'
 import { AirportTools } from './AirportTools'
+import { AirportView } from './models/AirportView'
 import { Sheet } from './models/Sheet'
 import { SheetDao } from './SheetDao'
 
@@ -58,7 +58,7 @@ export class GApi {
      * @returns airport object or undefined if not found
      * @throws 400 if code is invalid 
     */
-    public static async getAirport(codeParam:string,userId: any=undefined):Promise<Airport|undefined> {
+    public static async getAirport(codeParam:string,userId: any=undefined):Promise<AirportView|undefined> {
         // console.log( "[gapi.getAirport] " + codeParam + ' user=' + userId);
         // try postgres first unless we are in force mode
         const code = codeParam.toUpperCase()
@@ -69,10 +69,9 @@ export class GApi {
         // this list will always return one entry per code
         const airports = await AirportDao.readList( [code], userId);
         let airport:Airport|undefined;
-        if( airports.length == 1 && airports[0].version == Airport.currentVersion) {
-            // console.log( "[gapi] found " + code + ' in DB');
-            airport = airports[0]
-        } else {
+        if( airports.length == 1 && airports[0].version != -1) { // we found something
+            airport = await GApi.sanitize(airports[0])
+        } else { // nothing was found in DB
             airport = await GApi.getAirportFromAdip(code)
         }
 
@@ -80,14 +79,14 @@ export class GApi {
     }
 
     public static async getAirportFromAdip(code:string,save:boolean=true):Promise<Airport|undefined> {
-        // console.log( "[gapi.getAirportFromAdip]", code);
+        // console.log( "[gapi.getAirportFromAdip] code =", code, ", save =", save);
 
         if( await db.isKnownUnknown(code)) {
             // console.log( '[gapi.getAirportFromAdip] ' + code + ' is a known unknown');
             return undefined;
         }
 
-        const airport = await Adip.fetchAirport(code);
+        const airport:Airport|undefined = await Adip.fetchAirport(code);
 
         if(save) {
             if(airport) { // adip saves the day, persist this airport in postrgres
@@ -115,7 +114,17 @@ export class GApi {
         const foundAirports:any[] = await AirportDao.readList(searchCodes,userId)
         // console.log( "[gapi.getAirportsList] found " + JSON.stringify(foundAirports));
 
-        return foundAirports.map( airport => AirportTools.format(airport))
+        let output:(AirportView|undefined)[] = []
+        for( let airport of foundAirports) {
+            let view:AirportView|undefined = undefined
+            if( airport.version != -1) {
+                view = AirportTools.format(await GApi.sanitize(airport))
+            } else {
+                view = AirportView.getUndefined(airport.code)
+            }
+            output.push(view)
+        }
+        return output
     }
 
     /**
@@ -153,6 +162,34 @@ export class GApi {
         if( freq == null) return false;
         if( freq =='-.-') return false;
         return Adip.isMilitary(Number(freq))
+    }
+
+    static async sanitize( input:any):Promise<Airport | undefined> {
+        // console.log( "[GApi.getAirport] found " + code + ' in DB');
+        if(!input || !input.code || !input.id || !input.version) {
+            console.log("[GApi.sanitize] cannot sanitize airport=", JSON.stringify(input))
+            return undefined;
+        }
+        const versionCurrent:boolean = (input.version == Airport.currentVersion);
+        const airportId:number = input.id
+        const custom:boolean = input.custom
+        const dateCurrent:boolean = (input.effectiveDate == Adip.currentEffectiveDate)
+        let output:Airport|undefined = undefined
+        // Check whether data is current
+        if( custom || versionCurrent && dateCurrent) {
+            // console.log("[GApi.sanitize] ", airportId, "sane")
+            output = input
+        } else {
+            console.log( "[GApi.sanitize] refreshing", input.code, "at", airportId, "because version =", versionCurrent, "and effectiveDate =", dateCurrent)
+            output = await GApi.getAirportFromAdip(input.code, false)
+            if(output) {
+                await AirportDao.updateAirport( airportId, output)
+            } else {
+                console.log("[GApi.sanitize] not found in ADIP for refresh", input.code)
+            }
+        }
+
+        return output
     }
 
     /**

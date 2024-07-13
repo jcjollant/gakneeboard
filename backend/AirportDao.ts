@@ -74,9 +74,9 @@ export class AirportDao {
 
         let result:QueryResult;
         if( creatorId) {
-            result = await sql`SELECT code,data,creatorId FROM airports WHERE Code = ANY (${list}) AND (creatorId =${creatorId} OR creatorId IS NULL) `;
+            result = await sql`SELECT id,code,data,creatorId,version FROM airports WHERE Code = ANY (${list}) AND (creatorId =${creatorId} OR creatorId IS NULL) `;
         } else { // do not include creatorId
-            result = await sql`SELECT code,data,creatorId FROM airports WHERE Code = ANY (${list}) AND creatorId is NULL`;
+            result = await sql`SELECT id, code,data,creatorId,version FROM airports WHERE Code = ANY (${list}) AND creatorId is NULL`;
         }
         // console.log( '[AirportDoa.readList] found', result.rowCount, 'entries for', JSON.stringify(list))
     
@@ -87,8 +87,11 @@ export class AirportDao {
             const found = result.rows.find( row => row.code == code)
             if( found) {
                 const airport:Airport = JSON.parse(found.data);
+                if(!airport.code) airport.code = code;
                 // console.log('[AirportDao.readList] found.creatorId', found.creatorId)
                 airport.custom = ( creatorId ? (creatorId == found.creatorid) : false)
+                airport.id = found.id;
+                airport.version = found.version;
                 output.push(airport)
             } else {
                 output.push(AirportDao.undefinedAirport(code))
@@ -104,7 +107,7 @@ export class AirportDao {
 
     static async updateAirport(id:number, airport:Airport) {
         const data:string = JSON.stringify(airport)
-        // console.log( '[db] updateAirport ' + id + ' ' + JSON.stringify(data) + ' ' + version)
+        // console.log( '[AirportDao.updateAirport] id =', id, ', data =',  data)
         return sql`UPDATE Airports SET Data=${data}, Version = ${airport.version} WHERE id=${id}`;
     }
     
