@@ -180,7 +180,7 @@ export class GApi {
             // console.log("[GApi.sanitize] ", airportId, "sane")
             output = input
         } else {
-            console.log( "[GApi.sanitize] refreshing", input.code, "at", airportId, "because version =", versionCurrent, "and effectiveDate =", dateCurrent)
+            // console.log( "[GApi.sanitize] refreshing", input.code, "at", airportId, "because version =", versionCurrent, "and effectiveDate =", dateCurrent)
             output = await GApi.getAirportFromAdip(input.code, false)
             if(output) {
                 await AirportDao.updateAirport( airportId, output)
