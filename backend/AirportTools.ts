@@ -1,16 +1,21 @@
-import { Airport, Runway, RunwayEnd, PatternDirection } from "./models/Airport"
+import { Airport, Runway, RunwayEnd, PatternDirection, Frequency } from "./models/Airport"
+import { AirportView } from "./models/AirportView"
 
 export class AirportTools {
+    static getFrequency(freq:Frequency[], name: string) {
+        return freq.find((freq) => freq.name == name)?.mhz
+    }
     /**
-     * Transform the input to an airport object for UI use
+     * Transform the input to an AirportView object for UI use
      * @param input 
      * @returns 
      */
-    public static format(input:any):Airport|undefined {
+    public static format(input:any):AirportView|undefined {
         if(input == undefined || input.version == undefined) return undefined
-        let output:Airport|undefined = undefined
+        let output:any = undefined
 
         if(input.version == 5) {
+            // Version 5 needs to be reworked
             output = new Airport(input.code, input.name, input.elev);
             if('ctaf' in input) output.addFrequency( 'CTAF', parseFloat(input.ctaf));
             if('gnd' in input) output.addFrequency( 'GND', parseFloat(input.gnd));
@@ -35,11 +40,11 @@ export class AirportTools {
                 }
 
             }
-            input.rwy
-        } else if ( input.version == 6 || input.version == -1) {
+            output = new AirportView(output)
+        } else if ( input.version == 7 || input.version == 6) {
+            output = new AirportView(input)
+        } else if ( input.version == -1) {
             output = input
-        } else { // unknown version
-            output = undefined
         }
 
         return output
