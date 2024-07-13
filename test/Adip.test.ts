@@ -1,7 +1,7 @@
 import {describe, expect, test} from '@jest/globals';
 import { Adip } from '../backend/Adip'
 import { Airport, Frequency, PatternDirection, RunwaySurface } from '../backend/models/Airport';
-import { krntData } from './krntData'
+import { krntData, s43Data } from './adipData'
 
 describe('Adip', () => {
 
@@ -62,8 +62,8 @@ describe('Adip', () => {
         const before = Date.now()
         const airport = Adip.airportFromData(krntData)
         console.log(JSON.stringify(airport))
-        expect(airport?.code).toBe('KRNT')
-        expect(airport?.name).toBe('Renton Muni')
+        expect(airport.code).toBe('KRNT')
+        expect(airport.name).toBe('Renton Muni')
         const allFreq = [['CTAF','124.7'],['GND','121.6'],['ATIS','126.95'],['TWR','124.7'],['UNICOM','122.95']]
         expect(airport.freq).toHaveLength(allFreq.length)
         // Test all frequencies
@@ -105,4 +105,13 @@ describe('Adip', () => {
         expect(airport.version).toBe(Airport.currentVersion)
     })
 
+    test('S43 fields',async () =>{
+        const before = Date.now()
+        const airport = Adip.airportFromData(s43Data)
+        expect(airport.code).toBe('S43')
+        expect(airport.name).toBe('Harvey Fld')
+        expect(airport.elev).toBe(22.8)
+        expect(airport.rwys).toHaveLength(2)
+        expect(airport.version).toBe(Airport.currentVersion)
+    })
 })
