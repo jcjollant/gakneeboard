@@ -5,6 +5,7 @@ import axios from 'axios'
 
 export class Adip {
     static basicAuth:string = 'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP'
+    static currentEffectiveDate: string = "2024-07-11T00:00:00"
 
     public static async fetchAirport(code:string):Promise<Airport|undefined>{
         let locId = null
@@ -61,7 +62,7 @@ export class Adip {
     }
 
     static airportFromData( adip:any):Airport {
-        const code:string = ('icaoId' in adip ? adip.icaoId : 'locId' in adip ? adip.codeId : '?')
+        const code:string = ('icaoId' in adip ? adip.icaoId : 'locId' in adip ? adip.locId : '?')
         const name:string = Adip.getName(adip)
         const elevation:number = adip.elevation
         const airport = new Airport(code,name, elevation)
@@ -79,8 +80,6 @@ export class Adip {
         if(adip && adip.arp) {
             airport.setLocation(adip.arp)
         }
-
-        var data = {}
 
         // read frequencies
         if(adip && adip.facility && adip.facility.frequencies) {
