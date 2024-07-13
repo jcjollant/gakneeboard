@@ -139,6 +139,7 @@ export class Runway {
 
 export class Airport {
     static currentVersion:number = modelVersion;
+    id:number|undefined;
     code: string;
     name: string;
     elev: number;
@@ -151,6 +152,7 @@ export class Airport {
     location: { lat: number; lon: number }|undefined;
 
     constructor(code:string, name:string, elevation:number) {
+        this.id = undefined;
         this.code = code;
         this.name = name;
         this.elev = elevation;
@@ -216,7 +218,7 @@ export class Airport {
             this.location = undefined
         }
     }
-    
+
     setRunwayFrequency(rwyName:string, frequency:number) {
         // console.log('[Airport.setRunwayFrequency]', rwyName, frequency)
         const rwy:Runway|undefined = this.rwys.find((rwy) => rwy.name == rwyName)
