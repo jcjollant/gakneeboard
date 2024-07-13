@@ -1,4 +1,3 @@
-import { run } from 'node:test'
 import { Airport, Frequency, Runway, RunwaySurface, RunwayEnd, PatternDirection } from './models/Airport'
 import axios from 'axios'
 
