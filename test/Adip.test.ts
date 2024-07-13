@@ -1,7 +1,7 @@
 import {describe, expect, test} from '@jest/globals';
 import { Adip } from '../backend/Adip'
-import { Airport, Frequency, PatternDirection, RunwaySurface } from '../backend/models/Airport';
-import { krntData, s43Data } from './adipData'
+import { Airport, Frequency, PatternDirection, Runway, RunwaySurface } from '../backend/models/Airport';
+import { kbfiData, krntData, s43Data } from './adipData'
 
 describe('Adip', () => {
 
@@ -49,6 +49,12 @@ describe('Adip', () => {
         expect(airport.getFreq('GND')).toBe(121.6)
         expect(airport.getFreq('ATIS')).toBe(126.95)
         expect(airport.getFreq('TWR')).toBe(124.7)
+    })
+
+    test('Runway Frequency', () => {
+        const rwy:Runway = new Runway('14L/32R', 3709, 100)        
+        expect(Adip.getRunwayFrequency(kbfiData, kbfiData.runways[0])).toBe(118.3)
+        expect(Adip.getRunwayFrequency(kbfiData, kbfiData.runways[1])).toBe(120.6)
     })
 
     test('Names are capitalized', () => {
@@ -105,7 +111,7 @@ describe('Adip', () => {
         expect(airport.version).toBe(Airport.currentVersion)
     })
 
-    test('S43 fields',async () =>{
+    test('S43 fields', () =>{
         const before = Date.now()
         const airport = Adip.airportFromData(s43Data)
         expect(airport.code).toBe('S43')
@@ -113,5 +119,14 @@ describe('Adip', () => {
         expect(airport.elev).toBe(22.8)
         expect(airport.rwys).toHaveLength(2)
         expect(airport.version).toBe(Airport.currentVersion)
+    })
+
+    test('KBFI fields', () => {
+        const airport = Adip.airportFromData(kbfiData)
+        expect(airport.code).toBe('KBFI')
+        expect(airport.rwys).toHaveLength(2)
+        expect(airport.rwys[0].freq).toBeDefined()
+        expect(airport.rwys[1].freq).toBeDefined()
+        expect(airport.freq).toHaveLength(6)
     })
 })
