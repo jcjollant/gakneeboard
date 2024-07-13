@@ -1,6 +1,7 @@
 import { describe, expect, test} from '@jest/globals';
 import { GApi, GApiError } from '../backend/GApi'
 import { jcHash, postgresUrl, jcUserId, jcDemoSheet, jcToken, jcName } from './constants'
+import { AirportView } from '../backend/models/AirportView'
 
 process.env.POSTGRES_URL=postgresUrl
 
@@ -27,7 +28,7 @@ describe( 'GApi Tests', () => {
         expect(airports[0].code).toBe('JC')
         expect(airports[0].version).toBe(-1)
         expect(airports[1].code).toBe('KPAE')
-        expect(airports[1].version).toBe(6)
+        expect(airports[1].version).toBe(AirportView.currentVersion)
         expect(airports[2].code).toBe('JCJ')
         expect(airports[2].version).toBe(-1)
     })

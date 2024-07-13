@@ -43,6 +43,7 @@ describe('index', () => {
                 expect(res.data.code).toBe('TEST')
             })
             .catch( (error) => {
+                console.log(error)
                 expect(true).toBe(false)
                 // expect(error.response.status).toBe(400);
             })
