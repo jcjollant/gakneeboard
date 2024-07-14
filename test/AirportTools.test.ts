@@ -1,6 +1,6 @@
 import {describe, expect, test} from '@jest/globals';
 import { AirportTools } from '../backend/AirportTools';
-import { Airport, PatternDirection, Runway } from '../backend/models/Airport';
+import { PatternDirection } from '../backend/models/Airport';
 import { AirportView } from '../backend/models/AirportView';
 
 const rentonV5 = {"locId":"RNT","code":"KRNT","icaoId":"KRNT","name":"Renton Muni","ctaf":"124.700","twr":"Y","gnd":"121.6","elev":32,"tpa":1032,"weather":{"freq":"126.95","type":"ATIS"},"effectiveDate":"2024-05-16T00:00:00","version":5,"rwy":[{"16":{"orientation":157,"pattern":"left"},"34":{"orientation":337,"pattern":"right"},"name":"16-34","length":5382,"width":200,"surface":{"type":"ASPH-CONC","condition":"G"}}],"fetchTime":1716070694266}

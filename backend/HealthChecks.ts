@@ -1,5 +1,6 @@
 import { sql } from  "@vercel/postgres";
 import { Airport } from "./models/Airport";
+import { AirportView } from "./models/AirportView";
 import { GApi } from "./GApi"
 import { UserDao } from "./UserDao"
 import { FeedbackDao } from "./FeedbackDao"
@@ -23,6 +24,11 @@ export class Check {
         this.status = Check.FAIL
         this.msg = msg;
     }
+
+    pass(msg:string) {
+        this.status = Check.SUCCESS
+        this.msg = msg
+    }
 }
 
 export class HealthCheck {
@@ -33,7 +39,7 @@ export class HealthCheck {
             if( count > 0) {
                 check.fail("Found " + count + " duplicates")
             } else {
-                check.msg = "No duplicates found"
+                check.pass( "No duplicates found")
             }
         })
         return check
@@ -41,55 +47,63 @@ export class HealthCheck {
 
     // figure out if the data is stale
     static async effectiveDateCheck():Promise<Check> {
-        const dataCheck:Check = new Check('effectiveDate')
+        const check:Check = new Check('effectiveDate')
         const rentonCode:string = "KRNT"
 
-        await Promise.all([GApi.getAirport(rentonCode),GApi.getAirportFromAdip(rentonCode,false)]).then((results) => {
+        await Promise.all([AirportDao.readList( [rentonCode]),GApi.getAirportFromAdip(rentonCode,false)]).then((results) => {
             try {
-                const rentonDb:Airport|undefined = results[0]
+                const rentonDb:AirportView|undefined = results[0][0]
                 const rentonAdip:Airport|undefined = results[1]
 
                 if( !rentonDb || !rentonAdip) {
-                    dataCheck.fail(rentonCode + " is not in the database")
+                    check.fail(rentonCode + " is not in the database")
                 } else if( !rentonAdip) {
-                    dataCheck.fail(rentonCode + " is not in ADIP")
+                    check.fail(rentonCode + " is not in ADIP")
                 } else if( !('effectiveDate' in rentonDb)){
-                    dataCheck.fail(rentonCode + " does not have effectiveDate in database")
+                    check.fail(rentonCode + " does not have effectiveDate in database")
                 } else if( !('effectiveDate' in rentonAdip)){
-                    dataCheck.fail(rentonCode + " does not have effectiveDate in ADIP")
+                    check.fail(rentonCode + " does not have effectiveDate in ADIP")
                 } else if(rentonDb.effectiveDate != rentonAdip.effectiveDate) {
-                    dataCheck.fail("effective date mismatch db=" + rentonDb.effectiveDate + ", ADIP=" + rentonAdip.effectiveDate)
+                    check.fail("effective date mismatch db=" + rentonDb.effectiveDate + ", ADIP=" + rentonAdip.effectiveDate)
                 } else {
+                    check.pass("effective date check match : " + rentonDb.effectiveDate)
                     // console.log("effective date check match : " + rentonDb.effectiveDate)
                 }
             } catch(e) {
-                dataCheck.fail(JSON.stringify(e))
+                check.fail(JSON.stringify(e))
             }
         })
-        return dataCheck    
+        return check    
 
     }
 
     static async feedbackCheck():Promise<Check> {
-        const feedbackCheck:Check = new Check('feedback')
+        const check:Check = new Check('feedback')
         const feedbackCount:number = await FeedbackDao.count()
-        feedbackCheck.msg = "We have " + feedbackCount + " feedbacks"
-        return feedbackCheck
+        check.pass( "We have " + feedbackCount + " feedbacks")
+        return check
     }
 
+    /**
+     * Sends an email with the outcome of all checks
+     * This methods requires a password that seems to expire ona regular bas
+     * @param data 
+     * @param failedChecks 
+     * @returns 
+     */
     static async sendMail(data:any, failedChecks:number) {
         const transporter = createTransport({
             service: 'gmail',
             auth: {
-              user: 'gakneeboardapp@gmail.com',
-              pass: 'dbasyjebihqekmrs'
+              user: 'jeancedric.jollant@gmail.com',
+              pass: 'xzluolxqgtqlzzlh'
             }
           });
 
           const message = 'Health Check result\n\n' + data + '\n\nfailed checks: ' + failedChecks;
 
           const mailOptions = {
-            from: 'Willie',
+            from: 'Willie <jeancedric.jollant@gmail.com>',
             to: 'jc@jollant.net',
             subject: 'Housekeeping',
             text: message
@@ -110,10 +124,16 @@ export class HealthCheck {
     }
 
     static async usersCheck():Promise<Check> {
-        const userCheck:Check = new Check('users')
+        const check:Check = new Check('users')
         const userCount:number = await UserDao.count()
-        userCheck.msg = "We have " + userCount + " users"
-        return userCheck
+
+        if( userCount < 14) {
+            check.fail("Only " + userCount + " users")
+        } else {
+            check.pass( "We have " + userCount + " users")
+        }
+
+        return check
     }
 
     public static async perform():Promise<Check[]> {

@@ -1,5 +1,17 @@
-##
+## Local Debugging
 run `vercel dev` to run the local service
+
+## Unit testing
+To test everything use `npm test`
+
+Otherwise use `npm test script.test.ts`
+
+## Houskeeper Willie
+Housekeeper willie is a script that checks system heath . It is invoked everyday via a cron entry in `vercel.json`. To run the script locally use
+```
+cd housekeeping
+ts-node .\wiliie.ts
+```
 
 ## TODO
 * Struggling airports : KATL, KDNN, KCHA, KGVL
