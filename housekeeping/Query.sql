@@ -44,6 +44,9 @@ SELECT COUNT(*) as count, Code from Airports WHERE creatorid IS NULL GROUP BY Co
 # Test airport
 SELECT * FROM airports WHERE Code='KRNT'
 
+SELECT * FROM airports WHERE Code in ('KDZJ','KRZR','KDNN')
+
+
 SELECT * FROM airports WHERE Code='KBFI'
 
 # Test airport

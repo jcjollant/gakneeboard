@@ -6,6 +6,7 @@ import { UserDao } from "./UserDao"
 import { FeedbackDao } from "./FeedbackDao"
 import { AirportDao } from "./AirportDao";
 import { createTransport } from 'nodemailer'
+import { fail } from "assert";
 
 export class Check {
     name:string;
@@ -100,7 +101,7 @@ export class HealthCheck {
             }
           });
 
-          const message = 'Health Check result\n\n' + data + '\n\nfailed checks: ' + failedChecks;
+          const message = 'Found ' + failedChecks + ' fail(s)\n\n' + data;
 
           const mailOptions = {
             from: 'Willie <jeancedric.jollant@gmail.com>',
