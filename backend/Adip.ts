@@ -61,39 +61,45 @@ export class Adip {
     }
 
     static airportFromData( adip:any):Airport {
+        if(!adip) return Airport.getUnknownAirport()
         const code:string = ('icaoId' in adip ? adip.icaoId : 'locId' in adip ? adip.locId : '?')
         const name:string = Adip.getName(adip)
         const elevation:number = adip.elevation
         const airport = new Airport(code,name, elevation)
 
         // Scan adip.facility.frequencies
-        if(adip && adip.ctaf) {
+        if( adip.ctaf) {
             airport.addFrequency( 'CTAF', Adip.parseFrequency(adip.ctaf))
         }
-        if(adip && adip.unicom) {
+        if( adip.unicom) {
             airport.addFrequency( 'UNICOM', Adip.parseFrequency(adip.unicom))
         }
-        if(adip && adip.effectiveDate) {
+        if( adip.effectiveDate) {
             airport.effectiveDate = adip.effectiveDate
         }
-        if(adip && adip.arp) {
+        if( adip.arp) {
             airport.setLocation(adip.arp)
         }
 
         // read frequencies
-        if(adip && adip.facility && adip.facility.frequencies) {
+        let weatherFound:boolean = false
+        if( adip.facility && adip.facility.frequencies) {
             const frequencyMapping:Record<string,string> = {'GND/P':'GND','LCL/P':'TWR'}
             const frequencies:Frequency[] = adip.facility.frequencies.map( (f:any) => {
                 let name:string = f.frequencyUse
                 if( name in frequencyMapping) {
                     name = frequencyMapping[name]
                 }
+                if( name == 'ATIS') weatherFound = true
                 // Augment the name with Rwy Name
                 return new Frequency(name, Adip.parseFrequency(f.frequency))
             })
             // console.log('[Adip.airportFromData]',JSON.stringify(frequencies))
             // add frequencies if they are not military
             airport.addFrequencies( frequencies.filter(f => !Adip.isMilitary(f.mhz)))
+        }
+        if( !weatherFound && adip.asosAwos && adip.asosAwos[0].frequency) { // second chance to get weather from asosAwos
+            airport.addFrequency( adip.asosAwos[0].sensorType, adip.asosAwos[0].frequency)
         }
 
         // read runways
