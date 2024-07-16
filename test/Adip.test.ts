@@ -1,7 +1,7 @@
 import {describe, expect, test} from '@jest/globals';
 import { Adip } from '../backend/Adip'
 import { Airport, Frequency, PatternDirection, Runway, RunwaySurface } from '../backend/models/Airport';
-import { kbfiData, krntData, s43Data } from './adipData'
+import { kbfiData, krntData, s43Data, kdzjData } from './adipData'
 
 describe('Adip', () => {
 
@@ -119,6 +119,7 @@ describe('Adip', () => {
         expect(airport.elev).toBe(22.8)
         expect(airport.rwys).toHaveLength(2)
         expect(airport.version).toBe(Airport.currentVersion)
+        expect(airport.freq).toHaveLength(2)
     })
 
     test('KBFI fields', () => {
@@ -128,5 +129,17 @@ describe('Adip', () => {
         expect(airport.rwys[0].freq).toBeDefined()
         expect(airport.rwys[1].freq).toBeDefined()
         expect(airport.freq).toHaveLength(6)
+    })
+
+    test('KDZJ fields', () => {
+        const airport = Adip.airportFromData(kdzjData)
+        expect(airport.code).toBe('KDZJ')
+        expect(airport.freq).toHaveLength(3)
+        expect(airport.freq[0].name).toBe('CTAF')
+        expect(airport.freq[0].mhz).toBe(122.8)
+        expect(airport.freq[1].name).toBe('UNICOM')
+        expect(airport.freq[1].mhz).toBe(122.8)
+        expect(airport.freq[2].name).toBe('AWOS-3PT')
+        expect(airport.freq[2].mhz).toBe(119.325)
     })
 })
