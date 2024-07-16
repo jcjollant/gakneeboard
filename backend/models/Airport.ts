@@ -206,6 +206,10 @@ export class Airport {
         return this.version
     }
 
+    static getUnknownAirport():Airport {
+        return new Airport('???', 'Unknown airport', 0)
+    }
+
     setEffectiveDate(date:string) {
         this.effectiveDate = date;
     }
