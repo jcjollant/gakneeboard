@@ -30,9 +30,9 @@ body {
 
 
 .content {
-  width: 240px; /* Adjust width as needed */
-  height: 200px; /* Adjust height as needed */
-  position: relative; /* Needed for absolute positioning */
+  width: 240px; 
+  height: 200px;
+  position: relative; /* Needed for absolute positioning fo children */
   /* border: 1px solid red; */
 }
 
