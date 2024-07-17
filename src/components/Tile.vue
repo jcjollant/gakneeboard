@@ -1,14 +1,16 @@
 <!-- This component allows the user to pick a widget -->
 <script setup>
 import {onMounted, ref, watch} from 'vue';
-import Header from './Header.vue';
+import Header from './shared/Header.vue';
 import Airport from './airport/Airport.vue';
-import Atis from './Atis.vue'
-import Notes from './Notes.vue';
-import Clearance from './Clearance.vue';
-import RadioFlow from './RadioFlow.vue';
+import Atis from './atis/Atis.vue'
+import Notes from './notes/Notes.vue';
+import Clearance from './clearance/Clearance.vue';
+import RadioFlow from './radios/RadioFlow.vue';
+import SunLight from './sunlight/SunLight.vue';
 import FuelBug from './fuel/FuelBug.vue';
-import Button from 'primevue/button'
+import Button from 'primevue/button';
+
 
 const emits = defineEmits(['update'])
 
@@ -17,13 +19,14 @@ const props = defineProps({
 })
 
 var state = {}
-const knownWidgets = ref([
-    {'name':'Airport','tile':'airport'},
-    {'name':'ATIS','tile':'atis'},
-    {'name':'Clearance','tile':'clearance'},
-    {'name':'Fuel','tile':'fuel'},
-    {'name':'Notes','tile':'notes'},
-    {'name':'Radios','tile':'radios'},
+const widgetsList = ref([
+    {'name':'Airport','tile':'airport', 'class':'double', 'tooltip':'Display runway and useful information'},
+    {'name':'ATIS','tile':'atis', 'class':'', 'tooltip':'Write down ATIS information'},
+    {'name':'Clearance','tile':'clearance', 'class':'', 'tooltip':'Write down clearance information'},
+    {'name':'Fuel','tile':'fuel', 'class':'','tooltip':'Track your fuel consumption'},
+    {'name':'Notes','tile':'notes', 'class':'', 'tooltip':'A blank tile to write stuff'},
+    {'name':'Radios','tile':'radios', 'class':'', 'tooltip':'Radio frequencies'},
+    {'name':'Sunlight','tile':'sunlight', 'class':'', 'tooltip':'Sunrise, Sunset, Civil Twilight...'},
 ])
 const widget = ref({})
 
@@ -69,7 +72,7 @@ function replaceWidget(newName = '') {
         <Header :title="'Tile Selection'" :clickable="false"></Header>
         <!-- <div class="widgetTitle">Tile Selection</div> -->
         <div class="content list">
-            <Button v-for="widget in knownWidgets" :label="widget.name"
+            <Button v-for="widget in widgetsList" :label="widget.name" :class="widget.class" :title="widget.tooltip"
                 @click="replaceWidget(widget.tile)"></Button>
         </div>
     </div>
@@ -85,6 +88,8 @@ function replaceWidget(newName = '') {
         @replace="replaceWidget" />
     <RadioFlow v-else-if="widget.name=='radios'" :params="widget.data" 
         @replace="replaceWidget" @update="onUpdate" />
+    <SunLight v-else-if="widget.name=='sunlight'" :params="widget.data" 
+        @replace="replaceWidget" @update="onUpdate" />
     <!-- <List v-else-if="widget.name=='list'" @replace="updateWidgetName"/> -->
 </template>
 
@@ -94,9 +99,14 @@ function replaceWidget(newName = '') {
     padding: 10px;
     gap:10px;
     grid-template-columns: 105px 105px;
-    grid-template-rows: auto auto auto;
+    grid-template-rows: auto auto auto auto;
     height: 186px;
 }
+
+.double  {
+    grid-column: 1 / span 2;
+}
+
 .widget {
   border: 1px solid darkgrey;
   font-family: Verdana, sans-serif;
