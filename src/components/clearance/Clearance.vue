@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
-import Header from './Header.vue';
-import NoSettings from './NoSettings.vue';
+import Header from '../shared/Header.vue';
+import NoSettings from '../shared/NoSettings.vue';
 
 const emits = defineEmits(['replace'])
 const mode = ref('')

@@ -1,7 +1,7 @@
 <script setup>
 import { ref,onMounted, watch } from 'vue'
-import Header from './Header.vue';
-import NoSettings from './NoSettings.vue'
+import Header from '../shared/Header.vue';
+import NoSettings from '../shared/NoSettings.vue'
 import Button from 'primevue/button'
 
 const emits = defineEmits(['replace','update'])
