@@ -10,9 +10,7 @@ import AirportEdit from './AirportEdit.vue';
 
 const emits = defineEmits(['replace','update'])
 
-
 var previousMode = '';
-// var airportSettigns = null;
 var state = {}
 
 const props = defineProps({
@@ -107,6 +105,7 @@ function loadProps(newProps) {
     }
     // console.log('Airport loadProps ' + JSON.stringify(newProps))
     const code = state.code
+    // Force edit mode if we don't have an airport yet
     if( !code) {
         title.value = defaultTitle
         mode.value = 'edit'
