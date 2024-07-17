@@ -29,9 +29,6 @@ let cornerId = -1
 const noFrequency = '-.-'
 const selectedCornerType = ref('weather')
 const cornerTypes = ref([
-    // { name: 'Weather Frequency', key: 'weather' },
-    // { name: 'Tower/CTAF Frequency', key: 'twr' },
-    // { name: 'Ground Frequency', key: 'gnd' },
     { name: 'Field Elevation', key: 'field' },
     { name: 'Traffic Pattern Altitude', key: 'tpa' },
     { name: 'Runway Information', key: 'rwyinfo' },
