@@ -1,4 +1,5 @@
 const db = require('./db')
+import axios from 'axios'
 import { Adip } from '../backend/Adip'
 import { User } from './models/User'
 import { UserDao } from './UserDao'
@@ -9,6 +10,7 @@ import { AirportTools } from './AirportTools'
 import { AirportView } from './models/AirportView'
 import { Sheet } from './models/Sheet'
 import { SheetDao } from './SheetDao'
+import { Sunlight } from './models/Sunlight'
 
 // Google API key
 
@@ -58,7 +60,7 @@ export class GApi {
      * @returns airport object or undefined if not found
      * @throws 400 if code is invalid 
     */
-    public static async getAirport(codeParam:string,userId: any=undefined):Promise<AirportView|undefined> {
+    public static async getAirport(codeParam:string,userId: any=undefined):Promise<Airport|undefined> {
         // console.log( "[gapi.getAirport] " + codeParam + ' user=' + userId);
         // try postgres first unless we are in force mode
         const code = codeParam.toUpperCase()
@@ -75,8 +77,13 @@ export class GApi {
             airport = await GApi.getAirportFromAdip(code)
         }
 
-        return AirportTools.format(airport)
+        return airport
     }
+
+    public static async getAirportView(codeParam:string, userId: any=undefined):Promise<AirportView|undefined> {
+        const airport = await GApi.getAirport(codeParam, userId)
+        return AirportTools.format(airport)
+    }    
 
     public static async getAirportFromAdip(code:string,save:boolean=true):Promise<Airport|undefined> {
         // console.log( "[gapi.getAirportFromAdip] code =", code, ", save =", save);
@@ -108,11 +115,11 @@ export class GApi {
      * @param {*} airportCodes A list of airport codes
      * @returns a list of corresponding airport data, which may be undefined
     */
-    public static async getAirportsList(airportCodes:string[],userId=undefined) {
+    public static async getAirportViewList(airportCodes:string[],userId=undefined) {
         const searchCodes = airportCodes.map( code => code.toUpperCase()) 
 
         const foundAirports:any[] = await AirportDao.readList(searchCodes,userId)
-        // console.log( "[gapi.getAirportsList] found " + JSON.stringify(foundAirports));
+        // console.log( "[gapi.getAirportViewList] found " + JSON.stringify(foundAirports));
 
         let output:(AirportView|undefined)[] = []
         for( let airport of foundAirports) {
@@ -125,6 +132,43 @@ export class GApi {
             output.push(view)
         }
         return output
+    }
+
+    /**
+     * 
+     * @param from 
+     * @param to 
+     * @param date is anumber such as 20240624
+     * @returns 
+     */
+    public static async getSunlight( from:string, to:string, date:number):Promise<Sunlight|undefined> {
+        const fromData:any|undefined = await GApi.getSunriseData(from, date)
+        if(!fromData) return undefined
+        if( to == from) {
+            // console.log('[GApi.getSunlight] from = ' + from)
+            return new Sunlight(fromData)
+        } else {
+            // console.log('[GApi.getSunlight] to = ' + to)
+            const toData:any|undefined = await GApi.getSunriseData(to, date)
+            return new Sunlight(fromData, toData)
+        }
+    }
+
+    public static async getSunriseData(airportCode:string, date:number):Promise<any | undefined> {
+        const airport:Airport|undefined = await GApi.getAirport(airportCode)
+        // const airportTo:Airport = await GApi.getAirport(to)
+        // console.log('[GApi.getSunlight]', airportCode, airport)
+        if( !airport || !airport.location) return undefined
+        const dateString:string = Math.trunc(date / 10000) + '-' + Math.trunc(date / 100 % 100) + '-' + (date % 100)
+        const url:string = 'https://api.sunrisesunset.io/json?lat=' + airport.location.lat + '&lng=' + airport.location.lon + '&date=' + dateString;
+        let data:any|undefined = undefined
+        await axios.get(url).then( response => {
+            // console.log('[GApi.getSunriseData]', JSON.stringify(response.data))
+            data = response.data
+        }).catch( error => {
+            console.log(error)
+        })
+        return data
     }
 
     /**
@@ -165,7 +209,7 @@ export class GApi {
     }
 
     static async sanitize( input:any):Promise<Airport | undefined> {
-        // console.log( "[GApi.getAirport] found " + code + ' in DB');
+        // console.log( "[GApi.sanitize] found " + code + ' in DB');
         if(!input || !input.code || !input.id || !input.version) {
             console.log("[GApi.sanitize] cannot sanitize airport=", JSON.stringify(input))
             return undefined;
