@@ -1,4 +1,4 @@
-export const version = '627'
+export const version = '717'
 export const blogUrl = 'https://gakneeboard.wordpress.com/'
 // export const blogUrl = 'https://ga-kneeboard.blogspot.com/'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
@@ -31,7 +31,7 @@ const demoRadioData = [
   {'id':5,'name':'clearance','data':{}},
   {'id':6,'name':'airport','data':{'code':'ktta','rwy':'03-21','pattern':2}},
   {'id':7,'name':'airport','data':{'code':'kawo','rwy':'all'}},
-  {'id':8,'name':'airport','data':{'code':'s43','rwy':'15R-33L','rwyOrientation':'magnetic'}},
+  {'id':8,'name':'sunlight','data':{'from':'KRNT'}},
   // {'id':9,'name':'airport','data':{'code':'s50','rwy':'16-34','pattern':4}},
   {'id':9,'name':'fuel'},
   {'id':10,'name':'notes','data':{}},
@@ -275,6 +275,25 @@ export function getFreqWeather(freqList) {
     || f.name.includes('AWOS')
     || f.name.includes('Weather')
   )
+}
+
+/**
+ * Get sunlight data
+ * @param {*} from 
+ * @param {*} to 
+ * @param {*} date 
+ * @returns 
+ */
+export async function getSunlight( from, to, date) {
+  const requestDate = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate()
+  return axios.get(apiRootUrl + 'sunlight/' + from + '/' + to + '/' + requestDate)
+    .then( response => {
+      return response.data
+    })
+    .catch( error => {
+      console.log( '[data.getSunlight] error ' + JSON.stringify(error))
+      return null
+    })
 }
 
 /**
