@@ -68,7 +68,7 @@ function sanityCheck() {
         </div>
         <div class="actionBar">
             <Button label="Cancel" link @click="emits('close')"></Button>
-            <Button icon="pi pi-check" label="Apply" @click="onApply"  ></Button>
+            <Button label="Apply" @click="onApply"  ></Button>
         </div>
     </div>
 </template>
