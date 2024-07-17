@@ -42,7 +42,7 @@ app.get("/airport/:id", async (req,res) => {
     const userId = await UserTools.userFromRequest(req)
     // console.log( "[index.get.airport]", req.params.id, userId);
 
-    GApi.getAirport(req.params.id, userId)
+    GApi.getAirportView(req.params.id, userId)
         .then( (airport) => {
             res.send(airport)
         }).catch( (e) => {
@@ -72,10 +72,35 @@ app.get('/airports/:list', async (req, res) => {
 
     const userId = await UserTools.userFromRequest(req)
     // console.log( "[index] /airports/ " + req.params.list);
-    const airports = await GApi.getAirportsList(req.params.list.split('-'),userId);
+    const airports = await GApi.getAirportViewList(req.params.list.split('-'),userId);
     // console.log( "[index] Returning airports " + JSON.stringify(airports));
     res.send(airports)
 })
+
+/**
+ * User is autenticating
+ */
+app.post('/authenticate', async(req,res) => {
+    // console.log( "[index] authenticate request ");
+    // console.log( "[index] authenticate body " + req.body);
+    await GApi.authenticate(req.body).then( (user) => {
+        res.send(user)
+    }).catch( (e) => {
+        catchError(res, e, 'POST /authenticate')
+    })
+})
+
+// record user feedback
+app.post('/feedback', async(req,res) => {
+    console.log( "API feedback request " + req);
+    console.log( "[index] feedback body " + JSON.stringify(req.body));
+    console.log( "[index] feedback body type " + typeof req.body);
+    // insert feedback in DB
+    const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+    await db.saveFeedback(payload)
+    res.send("Thank you for your feedback")
+})
+
 
 app.get('/housekeeping/willie', async (req,res) => {
     await HealthCheck.perform().then( (result) => {
@@ -131,27 +156,19 @@ app.delete('/sheet/:id', async (req, res) => {
     // console.log( "[index] DELETE sheet " + req.params.id
 })
 
-/**
- * User is autenticating
- */
-app.post('/authenticate', async(req,res) => {
-    // console.log( "[index] authenticate request ");
-    // console.log( "[index] authenticate body " + req.body);
-    await GApi.authenticate(req.body).then( (user) => {
-        res.send(user)
-    }).catch( (e) => {
-        catchError(res, e, 'POST /authenticate')
-    })
-})
+app.get('/sunlight/:from/:to/:date', async (req, res) => {
+    try {
+        // const sunlight = await GApi.getSunlight(req.params.from, req.params.to, req.params.date);
+        // console.log( "[index] Returning sunlight " + JSON.stringify(sunlight));
+        // res.send(sunlight)
 
-app.post('/feedback', async(req,res) => {
-    console.log( "API feedback request " + req);
-    console.log( "[index] feedback body " + JSON.stringify(req.body));
-    console.log( "[index] feedback body type " + typeof req.body);
-    // insert feedback in DB
-    const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
-    await db.saveFeedback(payload)
-    res.send("Thank you for your feedback")
+        GApi.getSunlight(req.params.from, req.params.to, req.params.date).then( sunlight => {
+            res.send(sunlight)
+        })
+    } catch(e) {
+        console.log(e)
+        catchError(res, e, 'GET /sunlight/:from/:to/:date')
+    }        
 })
 
 app.listen(port, () => console.log("[index] Server ready on port " + port));
@@ -163,7 +180,7 @@ app.listen(port, () => console.log("[index] Server ready on port " + port));
  * @param {*} msg 
  */
 function catchError(res, e, msg) {
-    // console.log( "[index] " + msg + " error " + JSON.stringify(e))
+    console.log( "[index] " + msg + " error " + JSON.stringify(e))
     if( e instanceof GApiError) {
         res.status(e.status).send(e.message)
     } else {
