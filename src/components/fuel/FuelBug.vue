@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import Header from '../Header.vue'
+import Header from '../shared/Header.vue'
 import FuelGauge from './FuelGauge.vue';
 import FuelEdit from './FuelEdit.vue';
 import { onMounted } from 'vue';
