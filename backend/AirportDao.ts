@@ -69,18 +69,18 @@ export class AirportDao {
      * @param creatorId 
      * @returns 
      */
-    public static async readList(list:any, creatorId:number|undefined=undefined):Promise<any> {
+    public static async readList(list:any, creatorId:number|undefined=undefined):Promise<Airport[]> {
         // console.log( '[AirportDao.readList] ' + JSON.stringify(list) + ' / ' + creatorId)
 
         let result:QueryResult;
         if( creatorId) {
-            result = await sql`SELECT id,code,data,creatorId,version FROM airports WHERE Code = ANY (${list}) AND (creatorId =${creatorId} OR creatorId IS NULL) `;
+            result = await sql`SELECT id,code,data,creatorId,version FROM airports WHERE Code = ANY (${list}) AND (creatorId =${creatorId} OR creatorId IS NULL) ORDER BY creatorId`;
         } else { // do not include creatorId
             result = await sql`SELECT id, code,data,creatorId,version FROM airports WHERE Code = ANY (${list}) AND creatorId is NULL`;
         }
         // console.log( '[AirportDoa.readList] found', result.rowCount, 'entries for', JSON.stringify(list))
     
-        const output:any[] = []
+        const output:Airport[] = []
 
         list.forEach( (code:string) => {
             // did we find that code in DB ?
@@ -101,8 +101,10 @@ export class AirportDao {
         return output
     }
 
-    static undefinedAirport(code:string) {
-        return { code : code, version : -1}
+    static undefinedAirport(code:string):Airport {
+        const airport:Airport = new Airport(code, '', 0)
+        airport.version = -1;
+        return airport
     }
 
     static async updateAirport(id:number, airport:Airport) {
