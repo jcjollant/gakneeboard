@@ -61,7 +61,7 @@ function loadProps(newProps) {
         const freqList = airport.freq.map( f => {
             return { id:'#'+f.name,label:f.name+' : '+formatFrequency(f)}
         })
-        if( 'freq' in runway) freqList.push({id:'twr',label:'Selected Runway'})
+        if( runway && 'freq' in runway) freqList.push({id:'twr',label:'Selected Runway'})
         frequencies.value = freqList
         showField(field)
         labelUnder.value = !newProps.flip
