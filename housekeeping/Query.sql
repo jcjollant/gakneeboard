@@ -52,7 +52,11 @@ SELECT * FROM airports WHERE Code='KBFI'
 # Test airport
 SELECT * FROM airports WHERE Code='12S'
 
-UPDATE airports SET data='{"code":"TEST","name":"Test Airport JC","elev":1000,"freq":[{"name":"CTAF","mhz":124.7},{"name":"TWR","mhz":null},{"name":"Weather","mhz":126.95},{"name":"GND","mhz":121.6}],"rwys":[{"name":"16-34","length":5400,"width":120,"ends":[null]}],"custom":false,"version":6,"effectiveDate":""}' , version=6 WHERE id=378
+SELECT * FROM airports WHERE Code='TEST' AND creatorid=1
+
+SELECT * FROM airports WHERE Code='TEST' and (creatorid=1 or creatorid IS NULL) ORDER BY creatorid
+
+UPDATE airports SET data='{"code":"TEST","name":"Test Airport JC","elev":1000,"freq":[{"name":"CTAF","mhz":124.7},{"name":"TWR","mhz":null},{"name":"Weather","mhz":126.95},{"name":"GND","mhz":121.6}],"rwys":[{"name":"16-34","length":5400,"width":120,"ends":[null]}],"custom":false,"version":6,"effectiveDate":""}' , version=7 WHERE id=378
 
 #########################################
 # Feedback table
