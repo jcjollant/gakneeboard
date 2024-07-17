@@ -1,11 +1,11 @@
 <script setup>
 
 import {ref, onMounted, watch} from 'vue';
-import Header from '../Header.vue'
-import Runway from './RunwayView.vue'
 import { getAirport, getFreqCtaf, getFreqWeather} from '../../assets/data.js'
+import Header from '../shared/Header.vue'
+import CornerStatic from '../shared/CornerStatic.vue';
+import Runway from './Runway.vue'
 import Corner from './Corner.vue';
-import CornerStatic from './CornerStatic.vue';
 import AirportEdit from './AirportEdit.vue';
 
 const emits = defineEmits(['replace','update'])

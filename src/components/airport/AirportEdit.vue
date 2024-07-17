@@ -1,13 +1,13 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
+import { Airport } from '../../assets/Airport';
 import * as data from '../../assets/data.js'
+
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner';
-import InputText from 'primevue/inputtext'
-import InputGroup from 'primevue/inputgroup'
-import InputGroupAddon from 'primevue/inputgroupaddon';
+
+import AirportInput from '../shared/AirportInput.vue'
 import CustomAirport from './CustomAirport.vue';
-import { Airport } from '../../assets/Airport';
 
 const emits = defineEmits(['close','selection'])
 
@@ -62,7 +62,6 @@ watch( props, async() => {
 
 
 let airport = null
-let pendingCode = null // used during the short delay between code update and actual request
 const loading = ref(false)
 const rwyList = ref([])
 const airportCode = ref('')
@@ -79,6 +78,7 @@ const customAirport = ref(null)
 const currentUser = ref(null)
 
 function loadAirport( code) {
+    airportCode.value = code
     data.getAirport( code)
         .then( newAirport => {
             loading.value = false;
@@ -122,27 +122,6 @@ function onApply() {
     emits('selection', airport, selectedRwy.value, rwyOrientation.value.toLowerCase())
 }
     
-// gets invoked as airport code is typed into the input field
-// We are after runways
-function onCodeUpdate() {
-    // console.log(airportCode.value)
-    // console.log('[AirportEdit.onCodeUpdate]',Date.now())
-    loading.value = true
-    airportName.value = ' '
-
-    pendingCode = airportCode.value
-    // only load the new code after a short delay to avoid sending useless query
-    if( pendingCode.length > 2) {
-        setTimeout( () => {
-            if( pendingCode == airportCode.value) {
-                pendingCode = null
-                loadAirport( airportCode.value)
-            }
-        }, 500)
-    }
-}
-
-                    
 function onCustomUpdated(code, airportData) {
     // console.log('[AirportEdit.onCustomUpdated]', code)
     showCustomAirport.value=false
@@ -187,16 +166,11 @@ function showCustomAirportDialog() {
 
 <template>
     <div class="content">
-        <CustomAirport v-model:visible="showCustomAirport"  :airport="customAirport" :user="currentUser"
+        <CustomAirport v-model:visible="showCustomAirport" :airport="customAirport" :user="currentUser"
                         @close="showCustomAirport=false" @updated="onCustomUpdated" />
         <div class="settings">
-            <div class="airportCode">
-                <InputGroup>
-                    <InputGroupAddon>Code</InputGroupAddon>
-                    <InputText v-model="airportCode" @input="onCodeUpdate"/>
-                </InputGroup>
-                <span class="airportName">{{  airportName }}</span>
-            </div>
+            <AirportInput :code="airportCode" :name="airportName" 
+                @updated="loadAirport" @updating="loading = true" />
             <ProgressSpinner v-if="loading" class="spinner" ></ProgressSpinner>
             <div v-else-if="validAirport">
                 <div class="miniHeader">Runway</div>
@@ -215,7 +189,8 @@ function showCustomAirportDialog() {
                         @click="rwyOrientation='magnetic'" :severity="rwyOrientation == 'magnetic' ? 'primary' : 'secondary'"></Button>
                 </div>
             </div>
-            <div class="actionBar">
+        </div>
+        <div class="actionBar">
                 <Button v-if="canEdit" label="Edit" severity="secondary"
                     @click="onCustomEdit"></Button>
                 <Button v-if="canCreate" label="Create" severity="secondary"
@@ -224,7 +199,6 @@ function showCustomAirportDialog() {
                 <Button label="Apply" 
                     @click="onApply" :disabled="!canApply" ></Button>
             </div>
-        </div>
     </div>
 </template>
 
@@ -234,66 +208,52 @@ function showCustomAirportDialog() {
     flex-flow: column;
     gap: 5px;    
     font-size: 0.7rem;
-    margin: 5px
+    padding: 5px
 }
-    .airportCode {
-        display: grid;
-        grid-template-columns: 100px 140px;
-        font-size: 0.8rem;
-        line-height: 1.5rem;
-        text-align: left;
-        gap:5px;
-    }
-    .airportName {
-        overflow: hidden;
-        line-height: 1.5rem;
-        height: 1.5rem;
-        font-size: 0.7rem;
-    }
-    .rwySelector {
-        display:grid;
-        grid-template-columns: auto auto auto;
-        /* display: flex;
-        justify-content: center; */
-        gap: 2px 5px;
-    }
+.rwySelector {
+    display:grid;
+    grid-template-columns: auto auto auto;
+    /* display: flex;
+    justify-content: center; */
+    gap: 2px 5px;
+}
 
-    .sign {
-        border-radius: 4px;
-        /* border: 1px solid black; */
-        padding: 2px 5px;
-        font-size: 0.7rem;
-    }
-    .miniHeader {
-        margin-top:5px;
-        text-align: left;
-    }
-    .runway {
-        background: red;
-        color:white;
-    }
-    .rwyOrientation {
-        display: flex;
-        justify-content: flex-start;
-        gap: 5px;
-    }
+.sign {
+    border-radius: 4px;
+    /* border: 1px solid black; */
+    padding: 2px 5px;
+    font-size: 0.7rem;
+}
+.miniHeader {
+    margin-top:5px;
+    text-align: left;
+}
+.runway {
+    background: red;
+    color:white;
+}
+.rwyOrientation {
+    display: flex;
+    justify-content: flex-start;
+    gap: 5px;
+}
 
-    .rwyOrientation .p-button {
-        padding: 0.5rem
-    }
-    .rwyOrientationChoice {
-        font-size: 0.8rem;
-    }
-    .switch {
-        height: 1.5rem;
-        line-height: 1.5rem;
-        font-size: 0.8rem;
-    }
-    :deep(.p-component), :deep(.p-inputgroup-addon) {
-        font-size: 0.8rem;
-        height: 1.5rem;
-    }
-    .spinner {
-        height: 1.5rem;
-    }
+.rwyOrientation .p-button {
+    padding: 0.5rem
+}
+.rwyOrientationChoice {
+    font-size: 0.8rem;
+}
+.switch {
+    height: 1.5rem;
+    line-height: 1.5rem;
+    font-size: 0.8rem;
+}
+:deep(.p-component), :deep(.p-inputgroup-addon) {
+    font-size: 0.8rem;
+    height: 1.5rem;
+}
+.spinner {
+    height: 1.5rem;
+}
 </style>
