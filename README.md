@@ -1,22 +1,25 @@
-# Background
-As a GA pilot, I rely on my kneeboard to get just in time information about the flight. For example, I need to see traffic pattern orientation, rwy length, frequencies or ATIS. I want a solution to customize this data, print it and snap it on the board so it's right there when I need it.
-I couldn't find anything I liked, so I scratched my own itch.
+# Cypress Testing
+## Command line
+Open the UI
+`npx cypress open`
+Run the test suite:
+`npx cypress run`
 
 # BUGS
 * Custom Airport is not editable after update
-* Delete custom page +> success + reload => page still there
   
 # TODO
 * Improve Radio Flow Selection with airport code and all frequencies
-## Airport
+## New Tiles
 * New Tiles Synopsis => capture altitude and fuel level
 * New Tile Navlog
 * New Tile Emergency
+## Airport
 * Small indicator below runway is configurable
-## Synopsis (new tile)
-* New Tile : Synopsis => capture altitude and fuel level
 
 # Done
+## 7/17/2024 717
+* Sunlight component shows sunrise, sunset, civil twilight
 ## 06/26/2024 626
 * Show list of frequencies for selection in corners list
 * Add separators in Corner data selectors
