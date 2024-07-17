@@ -17,6 +17,8 @@ ts-node .\wiliie.ts
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
+## 7/17
+* Implemented Sunrise API
 ## 7/13
 * Fixed runway frequency bug
 ## 7/12
