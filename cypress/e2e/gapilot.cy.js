@@ -1,6 +1,8 @@
 describe('template spec', () => {
   it('Visits main page', () => {
-    cy.visit('https://www.kneeboard.ga/')
+    // cy.visit('https://www.kneeboard.ga/')
+    // Sunlight Branch
+    cy.visit('https://gapilot-git-sunlight-jcjollants-projects.vercel.app/')
     // remove banner
     cy.contains('Got it').click()
 
