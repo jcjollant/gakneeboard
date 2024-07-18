@@ -55,6 +55,10 @@ watch( props, async() => {
         height: 39px;
         line-height: 30px;
     }
+    .header:hover {
+        color: darkblue;
+        font-weight: bolder;
+    }
     .replace {
         position:absolute;
         font-size: 15px;
