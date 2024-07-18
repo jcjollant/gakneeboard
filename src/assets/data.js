@@ -286,6 +286,7 @@ export function getFreqWeather(freqList) {
  */
 export async function getSunlight( from, to, date) {
   const requestDate = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate()
+  if( !to) to = from
   return axios.get(apiRootUrl + 'sunlight/' + from + '/' + to + '/' + requestDate)
     .then( response => {
       return response.data
