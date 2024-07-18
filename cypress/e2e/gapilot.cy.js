@@ -1,8 +1,12 @@
+const currentVersionNumber = '717'
+
 describe('template spec', () => {
   it('Visits main page', () => {
     // cy.visit('https://www.kneeboard.ga/')
+    // Local environment
+    cy.visit('http://localhost:5173/')
     // Sunlight Branch
-    cy.visit('https://gapilot-git-sunlight-jcjollants-projects.vercel.app/')
+    // cy.visit('https://gapilot-git-sunlight-jcjollants-projects.vercel.app/')
     // remove banner
     cy.contains('Got it').click()
 
@@ -15,7 +19,7 @@ describe('template spec', () => {
     cy.wait('@getAirports').its('response.statusCode').should('equal', 200)
 
     // check version number
-    cy.get('.versionDialog').contains('627')
+    cy.get('.versionDialog').contains(currentVersionNumber)
 
     // Reset tiles and check all are reset
     cy.get('.menuIcon').click()
@@ -36,8 +40,18 @@ describe('template spec', () => {
     cy.get('.p-confirm-dialog-accept > .p-button-label').click()
     cy.get('.menuIcon').click()
 
+    // test All expected tiles are loading
+    const expectedTiles = [
+      ['Renton Muni', 'Boeing Fld/king County Intl', 'Roche Harbor', 'Lone Pine/death Valley', 'ATIS @', 'Clearance @'],
+      ['Raleigh Exec Jetport At', 'Arlington Muni', 'Sun Light', 'Fuel Bug', 'Notes', 'Radio Flow']]
+    for( let page = 1; page < 3; page++) {
+      for( let tile = 1; tile < 7; tile++) {
+        const value = expectedTiles[page-1][tile-1]
+        cy.get(`:nth-child(${page}) > :nth-child(${tile}) > .header > div`).contains(value)
+      }
+    }
 
-    // renton fields
+    // Test Airport Tile Renton and Boeing fields
     const expectedValues = []
     expectedValues.push({'tile':'Renton Muni','label0':'ATIS','value0':'126.950','label1':'TWR','value1':'124.700','label2':'Elev','value2':'32','label3':'TPA','value3':'1032','watermark':'KRNT','dimensions':'5382x200'})
     expectedValues.push({'tile':'Boeing Fld/king County Intl','label0':'ATIS','value0':'127.750','label1':'RWY 14L-32R','value1':'118.300','label2':'Elev','value2':'22','label3':'TPA','value3':'1022','watermark':'KBFI','dimensions':'3709x100'})
@@ -64,6 +78,24 @@ describe('template spec', () => {
     cy.get(':nth-child(2) > .content > .top.right > .clickable > :nth-child(1) > :nth-child(1)').contains('120.600')
     cy.get(':nth-child(2) > .content > .top.right > .clickable > :nth-child(1) > .label').contains('RWY 14R-32L')
 
+    // Test Sunlight Tile
+    cy.get('[data-v-364bf338=""][data-v-b66d1b07=""] > .header > div').contains('Sun Light')
+    // date should be today
+    const today = new Date().toLocaleString('en-US', {weekday: 'short', month: 'short', day: 'numeric'})
+    cy.get('.date').contains( today)
+    // Test Tile can be replaced by Notes
+    cy.get('[data-v-364bf338=""][data-v-b66d1b07=""] > .header > div').click()
+    cy.get('.header > .p-button').click()
+    cy.get('[aria-label="Notes"]').click()
+    cy.get(':nth-child(2) > :nth-child(3) > .header > div').contains('Notes')
+    // If we come back to sunlight, it should be in edit mode
+    cy.get(':nth-child(2) > :nth-child(3) > .header > div').click()
+    cy.get('.header > .p-button').click()
+    cy.get('[aria-label="Sunlight"]').click()
+    // Check edit mode fields
+    cy.get('.settings > :nth-child(1) > .p-inputgroup > .p-inputgroup-addon').contains('From')
+    cy.get(':nth-child(2) > .p-inputgroup > .p-inputgroup-addon').contains('To')
+    cy.get('[data-v-364bf338=""][data-pc-name="inputgroup"] > .p-inputgroup-addon').contains('Date')
   })
   
 })
