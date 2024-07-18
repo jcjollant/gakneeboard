@@ -25,14 +25,13 @@ const demoRadioData = [
  const demoSheet = [
   {'id':0,'name':'airport','data':{'code':'krnt','rwy':'16-34'}},
   {'id':1,'name':'airport','data':{'code':'kbfi','rwy':'14L-32R'}},
-  {'id':2,'name':'airport','data':{'code':'w39','rwy':'NE-SW'}},
+  {'id':2,'name':'airport','data':{'code':'w39','rwy':'NE-SW','rwyOrientation':'magnetic'}},
   {'id':3,'name':'airport','data':{'code':'O26','rwy':'13-31'}},
   {'id':4,'name':'atis','data':{}},
   {'id':5,'name':'clearance','data':{}},
   {'id':6,'name':'airport','data':{'code':'ktta','rwy':'03-21','pattern':2}},
   {'id':7,'name':'airport','data':{'code':'kawo','rwy':'all'}},
   {'id':8,'name':'sunlight','data':{'from':'KRNT'}},
-  // {'id':9,'name':'airport','data':{'code':'s50','rwy':'16-34','pattern':4}},
   {'id':9,'name':'fuel'},
   {'id':10,'name':'notes','data':{}},
   {'id':11,'name':'radios','data':demoRadioData},
@@ -164,6 +163,7 @@ export async function customSheetSave(sheet) {
  */
 export async function getAirport( codeParam, group = false) {
     // console.log('[data.getAirport]', codeParam)
+    if(!codeParam) return null;
     const code = codeParam.toUpperCase()
 
     // console.log( '[data.getAirport]', code);
@@ -285,6 +285,8 @@ export function getFreqWeather(freqList) {
  * @returns 
  */
 export async function getSunlight( from, to, date) {
+  if( !from) return null; // we need at least the from code
+  if( !date) date = new Date() // today if not specified
   const requestDate = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate()
   if( !to) to = from
   return axios.get(apiRootUrl + 'sunlight/' + from + '/' + to + '/' + requestDate)
