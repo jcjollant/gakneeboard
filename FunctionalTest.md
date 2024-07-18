@@ -9,7 +9,7 @@
   * reset tiles => Confirmation => All tiles switch to selector
   * Load demo tiles => Confirmation => All tiles are loading
     * Renton, Boeing 14L, Raleigh, Arlington ALL
-    * Roche Harbor, Death Valley, Harvey (Mag), Fuel Bug
+    * Roche Harbor (Mag), Death Valley, Sunlight, Fuel Bug
     * ATIS Full, Clearance, Notes, Radios
 ## Airport Tile
   * Data Fields @ Renton Muni
