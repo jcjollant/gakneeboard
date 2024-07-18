@@ -49,8 +49,8 @@ watch( props, async() => {
 
 function loadProps(newProps) {
     state = newProps.params
-    airportFromCode.value = state.from
-    airportToCode.value = state.to
+    loadAirportFrom( state.from)
+    loadAirportTo(state.to ? state.to : state.from)
     date.value = state.date
     // Force edit mode if we don't have a code yet
     if(!airportFromCode.value) mode.value = 'edit'
@@ -86,21 +86,30 @@ function getData( from, to, date, update=true) {
     getSunlight( from, to, date).then( sunlightData => {
         // console.log('[Sunlight.onApply] data received', JSON.stringify(sunlightData))
         loading.value = false
-        sunriseTime.value = formatTime(sunlightData, 'sunrise')
-        sunsetTime.value = formatTime(sunlightData, 'sunset')
-        solarNoon.value = formatTime(sunlightData, 'solarNoon')
-        goldenHour.value = formatTime(sunlightData, 'goldenHour')
-        if('civilTwilight' in sunlightData) {
-            civilTwilightAm.value = formatTime(sunlightData.civilTwilight, 'am')
-            civilTwilightPm.value = formatTime(sunlightData.civilTwilight, 'pm')
+        if( sunlightData) {
+            sunriseTime.value = formatTime(sunlightData, 'sunrise')
+            sunsetTime.value = formatTime(sunlightData, 'sunset')
+            solarNoon.value = formatTime(sunlightData, 'solarNoon')
+            goldenHour.value = formatTime(sunlightData, 'goldenHour')
+            if('civilTwilight' in sunlightData) {
+                civilTwilightAm.value = formatTime(sunlightData.civilTwilight, 'am')
+                civilTwilightPm.value = formatTime(sunlightData.civilTwilight, 'pm')
+            } else {
+                civilTwilightAm.value = '?'
+                civilTwilightPm.value = '?'
+            }
+            // save new settings
+            state.from = airportFromCode.value
+            state.to = airportToCode.value
+            if(update) emits('update',state)
         } else {
-            civilTwilightAm.value = '?'
-            civilTwilightPm.value = '?'
+            sunriseTime.value = '-'
+            sunsetTime.value = '-'
+            solarNoon.value = '-'
+            goldenHour.value = '-'
+            civilTwilightAm.value = '-'
+            civilTwilightPm.value = '-'
         }
-        // save new settings
-        state.from = airportFromCode.value
-        state.to = airportToCode.value
-        if(update) emits('update',state)
     })
 }
 
