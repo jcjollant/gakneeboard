@@ -5,6 +5,7 @@ import Button from 'primevue/button'
 import { useConfirm } from 'primevue/useconfirm'
 import ConfirmDialog from 'primevue/confirmdialog';
 import Feedback from './Feedback.vue';
+import Print from './Print.vue'
 import Sheets from './Sheets.vue'
 import SignIn from './SignIn.vue';
 import Warning from './Warning.vue'
@@ -14,12 +15,12 @@ import { getBlankSheet, getCurrentUser, getDemoSheet, setCurrentUser, customShee
 import { sheetNameDemo, sheetNameReset } from '../../assets/data'
 import { blogUrl } from '../../assets/data'
 
-const emits = defineEmits(['authentication','copy','load','flip','howDoesItWork'])
+const emits = defineEmits(['authentication','copy','load','print','printOptions','howDoesItWork'])
 
 const confirm = useConfirm()
-const printMode = ref(false)
 const showFeedback = ref(false)
 const showMenu = ref(false)
+const showPrint = ref(false)
 const showSignIn = ref(false)
 const showWarning = ref(false)
 const showSheets = ref(false)
@@ -32,6 +33,19 @@ const props = defineProps({
   pageData: { type: Object, default: null},
   user: { type: Object, default: null},
 })
+
+function confirmAndCopy() {
+  confirm.require({
+      message: 'Do you want to replace all tiles on the right with tiles from the left?',
+      header: "Mirror",
+      rejectLabel: 'No',
+      acceptLabel: 'Yes, Replace',
+      accept: () => {
+        emits('copy')
+      }
+    })
+
+}
 
 function confirmAndLoad(title, sheet) {
   confirm.require({
@@ -73,8 +87,20 @@ onMounted(() => {
 })  
 
 function onPrint() {
-  printMode.value = !printMode.value
-  emits('flip')  
+  showPrint.value = true;
+  toggleMenu()
+  // printMode.value = !printMode.value
+  // emits('flip')  
+}
+
+function onPrintClose() {
+  // console.log('[Menu.onPrintClose]')
+  showPrint.value = false;
+}
+
+function onPrintPrint(options) {
+  showPrint.value = false;
+  emits('print', options);
 }
 
 function onSheet(mode) {
@@ -160,6 +186,7 @@ watch( props, async() => {
   loadProps( props)
 })
 
+
 </script>
 
 <template>
@@ -169,6 +196,8 @@ watch( props, async() => {
     <Toast />
     <Feedback v-model:visible="showFeedback" :user="user" 
       @sent="onFeedbackSent" @close="showFeedback=false" />
+    <Print v-model:visible="showPrint"
+      @close="onPrintClose" @print="onPrintPrint" />
     <Warning v-model:visible="showWarning" @close="showWarning=false" />
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
       @authentication="onAuthentication" />
@@ -188,6 +217,8 @@ watch( props, async() => {
           @click="onSignOut"></Button>
         <Button v-else label="Sign In" icon="pi pi-user" title="Sign In to enable custom data"
           @click="showSignIn=true"></Button>
+        <Button icon="pi pi-print" label="Print" title="Print the active sheet"
+          @click="onPrint" />
         <div class="separator"></div>
         <Button label="New" icon="pi pi-file" title="Reset all tiles on the sheet" @click="onSheetLoadDefault(sheetNameReset)"></Button>
         <Button label="Load" icon="pi pi-folder-open" title="Open existing sheet" @click="onSheet('load')"></Button>
@@ -195,9 +226,7 @@ watch( props, async() => {
         <Button label="Demo" icon="pi pi-clipboard"  title="Replace all with Demo Tiles" @click="onSheetLoadDefault(sheetNameDemo)"></Button>
         <div class="separator"></div>
         <Button label="Mirror" icon="pi pi-sign-out" title="Copy left page onto right" 
-          @click="emits('copy')"></Button>
-        <Button label="Flip" icon="pi pi-sort-alt" title="Flip right page vertically" :class="{active: printMode}" 
-          @click="onPrint"></Button>
+          @click="confirmAndCopy"></Button>
         <div class="separator"></div>
         <Button icon="pi pi-megaphone" title="Send Feedback"
           @click="showFeedback=true" ></Button>
@@ -205,7 +234,6 @@ watch( props, async() => {
           @click="showWarning=true"></Button>
         <Button icon="pi pi-question"  title="How does it work?"
           @click="emits('howDoesItWork')"></Button>
-        <div class="separator"></div>
         <Button label="Blog" @click="openBlog" title="Recent Features and Annoucements" link></button>
       </div>
     </div>
