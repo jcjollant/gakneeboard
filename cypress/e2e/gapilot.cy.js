@@ -7,8 +7,6 @@ describe('template spec', () => {
     cy.visit('http://localhost:5173/')
     // Sunlight Branch
     // cy.visit('https://gapilot-git-sunlight-jcjollants-projects.vercel.app/')
-    // remove banner
-    cy.contains('Got it').click()
 
     // wait for airports query
     cy.intercept({
@@ -17,6 +15,11 @@ describe('template spec', () => {
     }).as('getAirports');    
 
     cy.wait('@getAirports').its('response.statusCode').should('equal', 200)
+
+
+
+    // remove banner
+    cy.contains('Got it').click()
 
     // check version number
     cy.get('.versionDialog').contains(currentVersionNumber)
@@ -96,6 +99,17 @@ describe('template spec', () => {
     cy.get('.settings > :nth-child(1) > .p-inputgroup > .p-inputgroup-addon').contains('From')
     cy.get(':nth-child(2) > .p-inputgroup > .p-inputgroup-addon').contains('To')
     cy.get('[data-v-364bf338=""][data-pc-name="inputgroup"] > .p-inputgroup-addon').contains('Date')
+
+    // Test print dialog show up
+    cy.get('.menuIcon').click()
+    cy.get('[aria-label="Print"]').click()
+    cy.get('#pv_id_4_header').contains('Print Active Sheet')
+    cy.get('[title="So you can read back page while front page is clipped"] > .ml-2').contains('Flip right page')
+    cy.get('[title="That\'s the little thing in the bottom right corner"] > .ml-2').contains('Hide version number')
+    cy.get('[title="That\'s the little thing in the bottom right corner"] > .ml-2').click()
+    // click do not print
+    cy.get('.actionDialog > .p-button-link').click()
+
   })
   
 })
