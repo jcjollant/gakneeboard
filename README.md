@@ -18,6 +18,8 @@ Run the test suite:
 * Small indicator below runway is configurable
 
 # Done
+## 7/19/2024 719
+* Print mode
 ## 7/17/2024 717
 * Sunlight component shows sunrise, sunset, civil twilight
 ## 06/26/2024 626

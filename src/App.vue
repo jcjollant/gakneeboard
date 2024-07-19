@@ -26,11 +26,13 @@ const widget11 = ref({})
 const widgetsOne = [widget0,widget1,widget2,widget3,widget4,widget5]
 const widgetsTwo = [widget6,widget7,widget8,widget9,widget10,widget11]
 const allWidgets = widgetsOne.concat(widgetsTwo)
+
 const flipMode = ref(false)
 const keyUser = 'kb-user'
 const keyHowDoesItWork = 'howDoesItWork'
 const showHowDoesItWork = ref(true)
 const toast = useToast()
+const versionVisible = ref(true)
 
 // update all widgets with provided data
 function loadSheetData(data) {
@@ -113,6 +115,21 @@ onMounted(() => {
   inject();
 })
 
+function onPrint(options) {
+  //  console.log('[App.onPrint]', JSON.stringify(options))
+  if( options) {
+    flipMode.value = options.includes('flip')
+    versionVisible.value = !options.includes('version')
+  }
+
+  // print window content after a short timeout to let flipmode kickin
+  setTimeout(() => {
+    window.print()
+    flipMode.value = false;
+    versionVisible.value = true;
+  }, 300);
+}
+
 /**
  * Some widget data has been updated, we want to save this at least locally
  * @param {*} newWidgetData 
@@ -149,13 +166,13 @@ function showToastSuccess( summary, detail) {
     <Menu class="menu" :pageData="pageData"
       @authentication="onAuthentication"
       @load="onMenuLoad" 
-      @flip="flipMode=!flipMode"
+      @print="onPrint"
       @copy="onMenuCopy"
       @howDoesItWork="showHowDoesItWork=true"
       >
     </Menu>
   </div>
-  <div class="versionDialog">{{ version }}</div>
+  <div class="versionDialog" v-show="versionVisible">{{ version }}</div>
 </template>
 
 <style scoped>
