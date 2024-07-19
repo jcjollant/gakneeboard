@@ -1,5 +1,6 @@
 <script setup>
-import {version} from '../assets/data.js'
+import { blogUrl, version} from '../assets/data.js'
+
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog';
 
@@ -27,6 +28,7 @@ const emits = defineEmits(["close"]);
             <div>2. Print on Letter size paper</div>
             <div>3. Slap on your kneeboard and focus on the flight</div>
         </div>
+        <div>You can also check out the <a :href="blogUrl" target="_blank">blog</a> for tips and tricks</div>
         <div class="actionDialog"><Button label="Got it" @click="emits('close')"></Button></div>
         <div class="versionDialog">{{ version }}</div>
     </Dialog>
