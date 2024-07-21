@@ -1,3 +1,9 @@
+# Development
+Start the UI
+`npm run dev`
+And access via the browser, typically on port 5173
+`http://localhost:5173`
+
 # Cypress Testing
 ## Command line
 Open the UI
@@ -18,6 +24,8 @@ Run the test suite:
 * Small indicator below runway is configurable
 
 # Done
+## 7/21/2027
+* Fixed Airport Name behavior in Airport edit
 ## 7/19/2024 719
 * Print mode
 ## 7/17/2024 717
