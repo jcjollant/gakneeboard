@@ -17,6 +17,7 @@ const name = ref()
 let pendingCode = null // used during the short delay between code update and actual request
 
 function loadProps(props) {
+    // console.log('[AirportInput.loadProps]')
     code.value = props.code
     name.value = props.name
 }
@@ -39,12 +40,11 @@ watch( props, async() => {
 function onCodeUpdate() {
     // console.log(airportCode.value)
     // console.log('[AirportEdit.onCodeUpdate]',Date.now())
-    emits('updating')
-    name.value = ' '
-
     pendingCode = code.value
+    name.value = '...'
     // only load the new code after a short delay to avoid sending useless query
     if( pendingCode.length > 2) {
+        emits('updating')
         setTimeout( () => {
             // check if code has not changed
             if( pendingCode == code.value) {

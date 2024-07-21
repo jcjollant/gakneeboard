@@ -78,7 +78,9 @@ const customAirport = ref(null)
 const currentUser = ref(null)
 
 function loadAirport( code) {
+    // console.log('[AirportEdit.loadAirport]', code)
     airportCode.value = code
+    airportName.value = '...'
     data.getAirport( code)
         .then( newAirport => {
             loading.value = false;
@@ -114,6 +116,10 @@ function loadAirport( code) {
                 canEdit.value = false
             }
         })
+}
+
+function onAirportInputUpdating() {
+    loading.value=true
 }
 
 // settings are applied
@@ -170,7 +176,7 @@ function showCustomAirportDialog() {
                         @close="showCustomAirport=false" @updated="onCustomUpdated" />
         <div class="settings">
             <AirportInput :code="airportCode" :name="airportName" 
-                @updated="loadAirport" @updating="loading = true" />
+                @updated="loadAirport" @updating="onAirportInputUpdating" />
             <ProgressSpinner v-if="loading" class="spinner" ></ProgressSpinner>
             <div v-else-if="validAirport">
                 <div class="miniHeader">Runway</div>
