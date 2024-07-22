@@ -67,7 +67,7 @@ describe('Adip', () => {
     test('Renton fields',async () =>{
         const before = Date.now()
         const airport = Adip.airportFromData(krntData)
-        console.log(JSON.stringify(airport))
+        // console.log(JSON.stringify(airport))
         expect(airport.code).toBe('KRNT')
         expect(airport.name).toBe('Renton Muni')
         const allFreq = [['CTAF','124.7'],['GND','121.6'],['ATIS','126.95'],['TWR','124.7'],['UNICOM','122.95']]
@@ -102,6 +102,21 @@ describe('Adip', () => {
         expect(end34).toBeDefined()
         expect(end34?.mag).toBe(337)
         expect(end34?.tp).toBe(PatternDirection.Right)
+
+        // Navaids
+        expect(airport.navaids).toHaveLength(4)
+        const expectedNavaids = [
+            {"id":"SEA","freq":116.8,"type":"VORTAC","dist":5.2,"to":47.7},
+            {"id":"PAE","freq":110.6,"type":"VOR/DME","dist":25.7,"to":174.4},
+            {"id":"OLM","freq":113.4,"type":"VORTAC","dist":42,"to":41.5},
+            {"id":"CVV","freq":117.2,"type":"VOR/DME","dist":49.6,"to":155.4}]
+        for(let index = 0; index < airport.navaids.length; index++) {
+            expect(airport.navaids[index].id).toBe(expectedNavaids[index].id)
+            expect(airport.navaids[index].freq).toBe(expectedNavaids[index].freq)
+            expect(airport.navaids[index].type).toBe(expectedNavaids[index].type)
+            expect(airport.navaids[index].dist).toBe(expectedNavaids[index].dist)
+            expect(airport.navaids[index].to).toBe(expectedNavaids[index].to)
+        }
 
         // effectiveDate should be defined
         expect(airport.effectiveDate).toBe('2024-06-13T00:00:00')

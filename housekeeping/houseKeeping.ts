@@ -92,14 +92,19 @@ async function findMilitaryFrequencies() {
 }
 
 async function distilUnknowns() {
-    const result = await sql`SELECT * FROM unknowns LIMIT 1`
+    const result = await sql`SELECT * FROM unknowns LIMIT 30 WHERE code <> "ORD"`
     const codes = result.rows.map( row => row.code)
 
-    console.log( 'processing', JSON.stringify(codes))
+    console.log( '[distilUnknowns] considering', JSON.stringify(codes))
 
-    await GApi.getAirportList(codes);
-    for(const code of codes)
-    await sql`DELETE FROM unknowns WHERE Code = ${code}`
+    while( codes.length > 0) {
+        await new Promise(r => setTimeout(r, Math.random() * 3000 + 1000));
+        const code = codes.pop()
+        console.log('[distilUnknowns] processing', code)
+        await GApi.getAirportList([code]);
+        await sql`DELETE FROM unknowns WHERE Code = ${code}`
+    }
+
 }
 
 
@@ -118,4 +123,4 @@ async function distilUnknowns() {
 
 // findMilitaryFrequencies()
 // checkEffectiveDates()
-
+distilUnknowns()

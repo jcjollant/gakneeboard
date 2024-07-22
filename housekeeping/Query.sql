@@ -12,6 +12,7 @@ SELECT * FROM airports
 # How many airports are there
 SELECT COUNT(*) FROM airports
 
+# Known Unknowns
 SELECT COUNT(*) FROM airports WHERE version=-1
 
 SELECT COUNT(*) FROM airports WHERE version<6

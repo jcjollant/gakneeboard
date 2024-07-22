@@ -1,4 +1,4 @@
-import { Airport, Frequency, Runway, RunwaySurface, RunwayEnd, PatternDirection } from './models/Airport'
+import { Airport, Frequency, Runway, RunwaySurface, RunwayEnd, PatternDirection, Navaid } from './models/Airport'
 import axios from 'axios'
 
 
@@ -60,6 +60,11 @@ export class Adip {
         return airport;
     }
 
+    /**
+     * This is the main logic that turns ADIP raw data into Airport
+     * @param adip 
+     * @returns 
+     */
     static airportFromData( adip:any):Airport {
         if(!adip) throw new Error('No adip data')
         const code:string = ('icaoId' in adip ? adip.icaoId : 'locId' in adip ? adip.locId : '?')
@@ -127,6 +132,12 @@ export class Adip {
             airport.addRunways(runways)
         }
     
+        // read navaids
+        if(adip && adip.navaids) {
+            const navaids:Navaid[] = adip.navaids.map( (nav:any) => new Navaid(nav.facilityId, nav.frequency, nav.facilityType, nav.distance, nav.bearingToNavaid))
+            airport.addNavaids(navaids.filter(nav => nav.type.includes('VOR')))
+        }
+
         return airport
     }
 

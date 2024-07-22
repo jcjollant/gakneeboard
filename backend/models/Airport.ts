@@ -1,4 +1,4 @@
-const modelVersion:number = 7;
+const modelVersion:number = 8;
 export const versionInvalid:number = -1
 
 export class Frequency {
@@ -7,6 +7,21 @@ export class Frequency {
     constructor(name:string, frequency:number) {
         this.name = name;
         this.mhz = frequency;
+    }
+}
+
+export class Navaid {
+    id:string;
+    freq:number;
+    type:string;
+    dist:number;
+    to:number;
+    constructor(id:string, freq:number, type:string, dist:number, to:number) {
+        this.id = id;
+        this.freq = freq;
+        this.type = type;
+        this.dist = dist;
+        this.to = to;
     }
 }
 
@@ -146,6 +161,7 @@ export class Airport {
     elev: number;
     freq: Frequency[];
     rwys: Runway[];
+    navaids: Navaid[];
     custom: boolean;
     version:number; 
     effectiveDate:string;
@@ -159,6 +175,7 @@ export class Airport {
         this.elev = elevation;
         this.freq = [];
         this.rwys = [];
+        this.navaids = [];
         this.custom = false;
         this.version = modelVersion;
         this.effectiveDate = '';
@@ -181,6 +198,10 @@ export class Airport {
 
     addFrequency(name:string, mhz:number) {
         this.freq.push(new Frequency(name,mhz));
+    }
+
+    addNavaids(navaids:Navaid[]) {
+        this.navaids.push(...navaids);
     }
 
     /**
