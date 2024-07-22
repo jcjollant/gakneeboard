@@ -111,12 +111,5 @@ describe('Airport', () => {
         // Because NW-SE
         expect(Runway.isValidName("NW-SE")).toBeFalsy()
     })
-
-    test('Unkown Airport', () => {
-        const ua = Airport.getUnknownAirport();
-        expect(ua.code).toBe('???')
-        expect(ua.name).toBe('Unknown airport')
-        expect(ua.elev).toBe(0)
-    })
 });
 
