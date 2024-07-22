@@ -1,4 +1,5 @@
 const modelVersion:number = 7;
+export const versionInvalid:number = -1
 
 export class Frequency {
     name: string;
@@ -146,7 +147,7 @@ export class Airport {
     freq: Frequency[];
     rwys: Runway[];
     custom: boolean;
-    version:number;
+    version:number; 
     effectiveDate:string;
     fetchTime:number;
     location: { lat: number; lon: number }|undefined;
@@ -204,10 +205,6 @@ export class Airport {
 
     getVersion():number {
         return this.version
-    }
-
-    static getUnknownAirport():Airport {
-        return new Airport('???', 'Unknown airport', 0)
     }
 
     setEffectiveDate(date:string) {

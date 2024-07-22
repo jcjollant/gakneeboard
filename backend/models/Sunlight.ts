@@ -22,6 +22,13 @@ export class Sunlight {
                 this.civilTwilight.pm = from.results.dusk;
                 this.goldenHour = from.results.golden_hour;
             }
+        } else {
+            this.date = '';
+            this.sunrise = '';
+            this.sunset = '';
+            this.civilTwilight = {am:'',pm:''};
+            this.solarNoon = '';
+            this.goldenHour = '';
         }
     }
 }

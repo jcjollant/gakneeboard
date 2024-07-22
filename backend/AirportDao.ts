@@ -1,11 +1,17 @@
 import { QueryResult, sql } from  "@vercel/postgres";
-import { Airport } from "./models/Airport";
+import { Airport, versionInvalid } from "./models/Airport";
+import { version } from "os";
 
 export class AirportDao {
     
     public static async create(code:string, data:any) {
         // console.log( '[AirportDao.create] ' + code)
         await sql`INSERT INTO Airports (Code, Data, Version) VALUES (${code}, ${data},${data.version})`;
+    }
+
+    public static async createUnknown(code:string) {
+        // console.log( '[AirportDao.createUnknown] ' + code)
+        return sql`INSERT INTO Airports (Code,Version) VALUES (${code},${versionInvalid})`;
     }
 
     /**
@@ -69,7 +75,7 @@ export class AirportDao {
      * @param creatorId 
      * @returns 
      */
-    public static async readList(list:any, creatorId:number|undefined=undefined):Promise<Airport[]> {
+    public static async readList(list:any, creatorId:number|undefined=undefined):Promise<[string,Airport][]> {
         // console.log( '[AirportDao.readList] ' + JSON.stringify(list) + ' / ' + creatorId)
 
         let result:QueryResult;
@@ -80,32 +86,46 @@ export class AirportDao {
         }
         // console.log( '[AirportDoa.readList] found', result.rowCount, 'entries for', JSON.stringify(list))
     
-        const output:Airport[] = []
-
-        list.forEach( (code:string) => {
-            // did we find that code in DB ?
-            const found = result.rows.find( row => row.code == code)
-            if( found) {
-                const airport:Airport = JSON.parse(found.data);
+        return result.rows.map( row => {
+            if(row.data) {
+                const airport:Airport = JSON.parse(row.data);
                 // Do we need to salvage the code?
-                if(!airport.code) airport.code = code;
+                if(!airport.code) airport.code = row.code;
                 // console.log('[AirportDao.readList] found.creatorId', found.creatorId)
                 // It's a custom airport if creatorId matches
-                airport.custom = ( creatorId ? (creatorId == found.creatorid) : false)
-                airport.id = found.id;
-                airport.version = found.version;
-                output.push(airport)
+                airport.custom = ( creatorId ? (creatorId == row.creatorid) : false)
+                airport.id = row.id;
+                airport.version = row.version;
+                return [row.code,airport];
             } else {
-                output.push(AirportDao.undefinedAirport(code))
+                return [row.code,AirportDao.undefinedAirport(row.code)]
             }
         })
-        // console.log('[AirportDao.readList] returning', output.length, 'records')
-        return output
+
+        // const output:Airport[] = []
+
+        // list.forEach( (code:string) => {
+        //     // did we find that code in DB ?
+        //     const found = result.rows.find( row => row.code == code)
+        //     if( found) {
+        //         const airport:Airport = JSON.parse(found.data);
+        //         // Do we need to salvage the code?
+        //         if(!airport.code) airport.code = code;
+        //         // console.log('[AirportDao.readList] found.creatorId', found.creatorId)
+        //         // It's a custom airport if creatorId matches
+        //         airport.custom = ( creatorId ? (creatorId == found.creatorid) : false)
+        //         airport.id = found.id;
+        //         airport.version = found.version;
+        //         output.push(airport)
+        //     }
+        // })
+        // // console.log('[AirportDao.readList] returning', output.length, 'records')
+        // return output
     }
 
     static undefinedAirport(code:string):Airport {
         const airport:Airport = new Airport(code, '', 0)
-        airport.version = -1;
+        airport.version = versionInvalid;
         return airport
     }
 

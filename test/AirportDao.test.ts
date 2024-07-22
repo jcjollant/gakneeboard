@@ -1,6 +1,6 @@
 
 import {describe, expect, test} from '@jest/globals';
-import { Airport, Runway } from "../backend/models/Airport.ts"; 
+import { Airport, versionInvalid } from "../backend/models/Airport.ts"; 
 import { AirportDao } from '../backend/AirportDao.ts'
 import { postgresUrl, jcUserId } from './constants.ts';
 
@@ -44,18 +44,18 @@ describe('Custom Airports', () => {
         await AirportDao.createOrUpdateCustom( airportAs, userIdAs)
         // Read for JC
         const listJc = await AirportDao.readList([customCode],jcUserId)
-        expect(listJc.length).toBe(1)
-        expect(listJc[0].name).toBe(customNameJC)
+        expect(listJc.length).toBe(2)
+        expect(listJc[0][1].name).toBe(customNameJC)
         // Read for AS
         const listAs = await AirportDao.readList([customCode],userIdAs)
-        expect(listAs.length).toBe(1)
-        expect(listAs[0].name).toBe(customNameAS)
+        expect(listAs.length).toBe(2)
+        expect(listAs[0][1].name).toBe(customNameAS)
     })
 
     test( 'Undefined airport', () => {
         const undefinedAirport = AirportDao.undefinedAirport('TEST')
         expect(undefinedAirport.code).toBe('TEST')
-        expect(undefinedAirport.version).toBe(-1)
+        expect(undefinedAirport.version).toBe(versionInvalid)
     })
 });
 

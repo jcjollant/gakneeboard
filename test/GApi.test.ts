@@ -2,7 +2,6 @@ import { describe, expect, test} from '@jest/globals';
 import { GApi, GApiError } from '../backend/GApi'
 import { jcHash, postgresUrl, jcUserId, jcDemoSheet, jcToken, jcName } from './constants'
 import { AirportView } from '../backend/models/AirportView'
-import { Sunlight } from '../backend/models/Sunlight';
 
 process.env.POSTGRES_URL=postgresUrl
 
@@ -28,7 +27,10 @@ describe( 'GApi Tests', () => {
         expect(airports[1]?.code).toBe('KJFK')
 
         let list2 = ['jc','pae','jcj']
+        // console.log(await AirportDao.readList(list2.map( code => code.toUpperCase())))
+        // console.log( await GApi.getAirportList(list2))
         airports = await GApi.getAirportViewList(list2)
+        // console.log(airports)
         expect(airports).toHaveLength(list2.length)
         expect(airports[0]).toBeDefined()
         expect(airports[0]?.code).toBe('JC')
@@ -61,6 +63,15 @@ describe( 'GApi Tests', () => {
             expect(e).toBeInstanceOf(GApiError)
             expect(e.status).toBe(400)
         })
+
+        GApi.getAirportView('ABCDE').then( () => {
+            expect(true).toBe(false) // should not get here
+        }).catch( e => {
+            expect(e).toBeInstanceOf(GApiError)
+            expect(e.status).toBe(400)
+        })
+
+
         GApi.getAirport('ABCDE', undefined).then( () => {
             expect(true).toBe(false) // should not get here
         }).catch( e => {
@@ -100,6 +111,13 @@ describe( 'GApi Tests', () => {
     test('Update airport', async () => {
         const customRnt = {"code":"TEST","name":"Test Airport JC","elev":1000,"freq":[{"name":"CTAF","mhz":124.7},{"name":"TWR","mhz":null},{"name":"Weather","mhz":126.95},{"name":"GND","mhz":121.6}],"rwys":[{"name":"16-34","length":5400,"width":120,"ends":[null]}],"custom":false,"version":6,"effectiveDate":""}
         expect(await GApi.createCustomAirport(jcHash,customRnt)).toBe('TEST')
+    })
+
+    test('Get Custom airport', async () => {
+        const airport = await GApi.getAirportView("TEST", jcUserId)
+        // console.log(airport)
+        expect(airport).toBeDefined()
+        expect(airport?.code).toBe('TEST') 
     })
 
     test('Read custom sheet', async () => {

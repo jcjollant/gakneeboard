@@ -10,7 +10,7 @@ export class SheetDao {
      * @param userId 
      * @returns 
      */
-    public static async createOrUpdate(sheet:Sheet,userId:number,maxSheets:number=5):Promise<Sheet> {
+    public static async createOrUpdate(sheet:Sheet,userId:number,maxSheets:number=6):Promise<Sheet> {
         if(!sheet) throw new Error("No sheet provided");
         // Figure out a sheet id if it's not readily provided
         if(!sheet.id) {

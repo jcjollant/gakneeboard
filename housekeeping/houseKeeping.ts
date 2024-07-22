@@ -91,6 +91,17 @@ async function findMilitaryFrequencies() {
     console.log( "Total military " + candidate.length)
 }
 
+async function distilUnknowns() {
+    const result = await sql`SELECT * FROM unknowns LIMIT 1`
+    const codes = result.rows.map( row => row.code)
+
+    console.log( 'processing', JSON.stringify(codes))
+
+    await GApi.getAirportList(codes);
+    for(const code of codes)
+    await sql`DELETE FROM unknowns WHERE Code = ${code}`
+}
+
 
 // const output = []
 // result.rows.forEach( row => {
@@ -103,7 +114,8 @@ async function findMilitaryFrequencies() {
 
 // upgradeVersion()
 // refreshAllAirports()
-refreshAirport("KRNT",48)
+// refreshAirport("KRNT",48)
 
 // findMilitaryFrequencies()
 // checkEffectiveDates()
+distilUnknowns()

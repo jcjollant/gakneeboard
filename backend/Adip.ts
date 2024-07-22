@@ -61,7 +61,7 @@ export class Adip {
     }
 
     static airportFromData( adip:any):Airport {
-        if(!adip) return Airport.getUnknownAirport()
+        if(!adip) throw new Error('No adip data')
         const code:string = ('icaoId' in adip ? adip.icaoId : 'locId' in adip ? adip.locId : '?')
         const name:string = Adip.getName(adip)
         const elevation:number = adip.elevation

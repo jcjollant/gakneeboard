@@ -12,25 +12,35 @@ SELECT * FROM airports
 # How many airports are there
 SELECT COUNT(*) FROM airports
 
+SELECT COUNT(*) FROM airports WHERE version=-1
+
+SELECT COUNT(*) FROM airports WHERE version<6
+
 SELECT COUNT(*) FROM airports WHERE version=6
 
 SELECT COUNT(*) FROM airports WHERE version=7
 
 
-# How many airports have not been upgraded
-SELECT COUNT(*) FROM airports WHERE version<6
+SELECT * FROM airports WHERE version=7 AND NOT (data LIKE '%ASOS%' OR data LIKE '%AWOS%' OR data LIKE '%ATIS%' OR DATA LIKE '%"code":"?"%')
 
-SELECT * FROM airports WHERE version=7
+SELECT * FROM airports WHERE DATA LIKE '%"code":"?"%'
 
-SELECT * FROM airports WHERE Code='JCJ'
+DELETE FROM airports WHERE DATA LIKE '%"code":"?"%'
 
-SELECT * FROM airports WHERE Code='PAE'
+
+SELECT COUNT(*) FROM airports where data like '%"code":"?"%'
+
+SELECT * FROM airports WHERE Code='JC'
+
+SELECT * FROM airports WHERE Code = ANY (ARRAY['JC','PAE','JCJ'])
 
 SELECT * FROM airports WHERE Id=52
 
 SELECT Data FROM Airports WHERE Code in('RNT') AND (creatorId = 1 OR creatorId IS NULL)
 
 SELECT * FROM airports WHERE Code IN ('RNT','JFK') AND creatorId is NULL
+
+DELETE FROM airports WHERE Code IN ('RNT','JFK') AND creatorId is NULL AND id > 200
 
 # Custom airports fir JC
 SELECT Data FROM Airports WHERE creatorId = 1
@@ -42,7 +52,7 @@ SELECT 'code',creatorId FROM Airports WHERE creatorId IS NOT NULL
 SELECT COUNT(*) as count, Code from Airports WHERE creatorid IS NULL GROUP BY Code HAVING COUNT(*) > 1 ORDER BY count DESC 
 
 # Test airport
-SELECT * FROM airports WHERE Code='KRNT'
+SELECT * FROM airports WHERE Code='TEST'
 
 SELECT * FROM airports WHERE Code in ('KDZJ','KRZR','KDNN')
 
@@ -60,6 +70,8 @@ UPDATE airports SET data='{"code":"TEST","name":"Test Airport JC","elev":1000,"f
 
 #########################################
 # Feedback table
+SELECT COUNT(*) FROM feedback
+
 SELECT * FROM feedback
 
 DELETE FROM feedback WHERE Id in (56,57)
