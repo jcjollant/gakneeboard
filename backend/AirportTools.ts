@@ -41,7 +41,7 @@ export class AirportTools {
 
             }
             output = new AirportView(output)
-        } else if ( input.version == 7 || input.version == 6) {
+        } else if ( input.version >= 6) {
             output = new AirportView(input)
         } else if ( input.version == -1) {
             output = input
