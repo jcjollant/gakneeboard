@@ -1,4 +1,4 @@
-const currentVersionNumber = '717'
+const currentVersionNumber = '722'
 
 describe('template spec', () => {
   it('Visits main page', () => {
@@ -81,6 +81,26 @@ describe('template spec', () => {
     cy.get(':nth-child(2) > .content > .top.right > .clickable > :nth-child(1) > :nth-child(1)').contains('120.600')
     cy.get(':nth-child(2) > .content > .top.right > .clickable > :nth-child(1) > .label').contains('RWY 14R-32L')
 
+    // Check ATIS has all fields in full mode
+    cy.get('.info').contains('Info')
+    cy.get('.wind').contains('Wind')
+    cy.get('.runway').contains('Rwy')
+    cy.get('.visibility').contains('Vis')
+    cy.get('.sky').contains('Sky')
+    cy.get('.temperature').contains('Temp')
+    cy.get('.altimeter').contains('Alt')
+    // Check ATIS has all fields in compact mode
+    cy.get('[data-v-553a57e2=""][data-v-b66d1b07=""] > .header').click()
+    cy.get('[aria-label="Full Size"]').contains('Full Size')
+    cy.get('[aria-label="Compact (x4)"]').contains('Compact (x4)')
+    cy.get('[aria-label="Compact (x4)"]').click()
+    for(let index=1; index <=4; index++) {
+      cy.get(`:nth-child(${index}) > .info`).contains('Info')
+      cy.get(`:nth-child(${index}) > .wind`).contains('Wind')
+      cy.get(`:nth-child(${index}) > .altimeter`).contains('Alt')
+      cy.get(`:nth-child(${index}) > .runway`).contains('Rwy')
+  
+    }
     // Test Sunlight Tile
     cy.get('[data-v-364bf338=""][data-v-b66d1b07=""] > .header > div').contains('Sun Light')
     // date should be today

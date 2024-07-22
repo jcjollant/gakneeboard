@@ -24,7 +24,9 @@ Run the test suite:
 * Small indicator below runway is configurable
 
 # Done
-## 7/21/2027
+## 7/22/2024
+* Added Rwy to ATIS compact
+## 7/21/2024
 * Fixed Airport Name behavior in Airport edit
 ## 7/19/2024 719
 * Print mode

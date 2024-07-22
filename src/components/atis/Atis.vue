@@ -93,8 +93,11 @@ watch( props, async() => {
                 <div class="wind br" :class="{bb: n < 4 }">
                     <div class="label">Wind</div>
                 </div>
-                <div class="altimeter" :class="{bb: n < 4 }">
+                <div class="altimeter br" :class="{bb: n < 4 }">
                     <div class="label">Alt</div>
+                </div>
+                <div class="runway" :class="{bb: n < 4 }">
+                    <div class="label">Rwy</div>
                 </div>
                 
             </div>
@@ -125,7 +128,7 @@ watch( props, async() => {
 }
 .compact {
     display: grid;
-    grid-template-columns: 15% 55% 30%;
+    grid-template-columns: 15% 40% 25% 20%;
 }
 .info {
     grid-column: 1;
