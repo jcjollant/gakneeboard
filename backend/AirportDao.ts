@@ -87,8 +87,10 @@ export class AirportDao {
             const found = result.rows.find( row => row.code == code)
             if( found) {
                 const airport:Airport = JSON.parse(found.data);
+                // Do we need to salvage the code?
                 if(!airport.code) airport.code = code;
                 // console.log('[AirportDao.readList] found.creatorId', found.creatorId)
+                // It's a custom airport if creatorId matches
                 airport.custom = ( creatorId ? (creatorId == found.creatorid) : false)
                 airport.id = found.id;
                 airport.version = found.version;

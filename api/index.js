@@ -38,18 +38,6 @@ app.use(express.json()) // for parsing application/json
 
 app.get("/", (req, res) => res.send("GA API version " + version));
 
-app.get("/airport/:id", async (req,res) => {
-    const userId = await UserTools.userFromRequest(req)
-    // console.log( "[index.get.airport]", req.params.id, userId);
-
-    GApi.getAirportView(req.params.id, userId)
-        .then( (airport) => {
-            res.send(airport)
-        }).catch( (e) => {
-            catchError(res, e, 'GET /airport/:id')
-        })
-})
-
 /**
  * Create a new custom airport
  */
@@ -68,6 +56,21 @@ app.post("/airport", async (req,res) => {
     })
 })
 
+app.get("/airport/:id", async (req,res) => {
+    const userId = await UserTools.userFromRequest(req)
+    // console.log( "[index.get.airport]", req.params.id, userId);
+
+    GApi.getAirportView(req.params.id, userId)
+        .then( (airport) => {
+            res.send(airport)
+        }).catch( (e) => {
+            catchError(res, e, 'GET /airport/:id')
+        })
+})
+
+/**
+ * Get a list of airports represented as AirportView
+ */
 app.get('/airports/:list', async (req, res) => {
 
     const userId = await UserTools.userFromRequest(req)
