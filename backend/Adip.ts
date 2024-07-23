@@ -1,6 +1,7 @@
 import { Airport, Frequency, Runway, RunwaySurface, RunwayEnd, PatternDirection, Navaid } from './models/Airport'
 import axios from 'axios'
 
+const maxNavaids:number = 10
 
 export class Adip {
     static basicAuth:string = 'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP'
@@ -135,7 +136,8 @@ export class Adip {
         // read navaids
         if(adip && adip.navaids) {
             const navaids:Navaid[] = adip.navaids.map( (nav:any) => new Navaid(nav.facilityId, nav.frequency, nav.facilityType, nav.distance, nav.bearingToNavaid))
-            airport.addNavaids(navaids.filter(nav => nav.type.includes('VOR')))
+            // only consider VORs and limit the total number to maxNavaids
+            airport.addNavaids(navaids.filter(nav => nav.type.includes('VOR')).slice(0,maxNavaids))
         }
 
         return airport

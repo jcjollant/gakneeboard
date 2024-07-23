@@ -1,7 +1,7 @@
 import {describe, expect, test} from '@jest/globals';
 import { Adip } from '../backend/Adip'
 import { Airport, Frequency, PatternDirection, Runway, RunwaySurface } from '../backend/models/Airport';
-import { kbfiData, krntData, s43Data, kdzjData } from './adipData'
+import { kbfiData, kcdwData, kdzjData, krntData, s43Data } from './adipData'
 
 describe('Adip', () => {
 
@@ -147,6 +147,7 @@ describe('Adip', () => {
     })
 
     test('KDZJ fields', () => {
+        // This data is particular for have AWOS-3PT
         const airport = Adip.airportFromData(kdzjData)
         expect(airport.code).toBe('KDZJ')
         expect(airport.freq).toHaveLength(3)
@@ -156,5 +157,12 @@ describe('Adip', () => {
         expect(airport.freq[1].mhz).toBe(122.8)
         expect(airport.freq[2].name).toBe('AWOS-3PT')
         expect(airport.freq[2].mhz).toBe(119.325)
+    })
+
+    test('KCDW fields', () => {
+        // This data is particular for having a huge number of VOR
+        const airport = Adip.airportFromData(kcdwData)
+        expect(airport.code).toBe('KCDW')
+        expect(airport.navaids).toHaveLength(10)
     })
 })
