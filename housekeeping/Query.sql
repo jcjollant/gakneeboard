@@ -5,6 +5,8 @@ SELECT COUNT(*) FROM unknowns
 SELECT * FROM unknowns
 
 
+SELECT * FROM unknowns where code='KBFF'
+
 #########################################
 # Airports table
 SELECT * FROM airports
@@ -13,6 +15,8 @@ SELECT * FROM airports
 SELECT COUNT(*) FROM airports
 
 # Known Unknowns
+SELECT * FROM airports WHERE version=-1
+
 SELECT COUNT(*) FROM airports WHERE version=-1
 
 SELECT COUNT(*) FROM airports WHERE version<6
@@ -53,12 +57,12 @@ SELECT 'code',creatorId FROM Airports WHERE creatorId IS NOT NULL
 SELECT COUNT(*) as count, Code from Airports WHERE creatorid IS NULL GROUP BY Code HAVING COUNT(*) > 1 ORDER BY count DESC 
 
 # Test airport
-SELECT * FROM airports WHERE Code='TEST'
+SELECT * FROM airports WHERE Code='KBFF'
 
 SELECT * FROM airports WHERE Code in ('KDZJ','KRZR','KDNN')
 
 
-SELECT * FROM airports WHERE Code='KBFI'
+SELECT * FROM airports WHERE Code='KCDW'
 
 # Test airport
 SELECT * FROM airports WHERE Code='12S'
@@ -83,7 +87,7 @@ SELECT * FROM Airports WHERE Code='INT'
 # Unknowns
 SELECT * FROM Unknowns
 
-SELECT * FROM Unknowns WHERE code='KJCJ'
+SELECT * FROM Unknowns WHERE code='KCDW'
 
 SELECT count(*) FROM Unknowns
 

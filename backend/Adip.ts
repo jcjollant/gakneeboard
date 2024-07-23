@@ -46,9 +46,14 @@ export class Adip {
             },
         })
         .then( response => {
-            // console.log( JSON.stringify(response.data))
-            airport = Adip.airportFromData( response.data)
-            airport.fetchTime = Date.now();
+            // console.log( '[Adip.fetchAirport]', JSON.stringify(response.data))
+            try {
+                airport = Adip.airportFromData( response.data)
+                airport.fetchTime = Date.now();
+            } catch(e) {
+                console.log('[Adip.fetchAirport] failed to parse data', e)
+                airport = undefined
+            }
             // console.log( JSON.stringify(airport))
         })
         .catch( error => {
@@ -150,7 +155,7 @@ export class Adip {
         if(!adip || !adip.name) return '?'
         const name:string = adip.name
         let words = name.split(' ')
-        const output:string[] = name.split(' ').map( word => word[0].toUpperCase() + word.substring(1).toLowerCase())
+        const output:string[] = name.split(' ').filter(word => word.length > 0).map( word => word.length > 1 ? (word[0].toUpperCase() + word.substring(1).toLowerCase()) : word)
         return output.join(' ')
     }
 

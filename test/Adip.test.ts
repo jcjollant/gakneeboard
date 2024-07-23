@@ -1,7 +1,7 @@
 import {describe, expect, test} from '@jest/globals';
 import { Adip } from '../backend/Adip'
 import { Airport, Frequency, PatternDirection, Runway, RunwaySurface } from '../backend/models/Airport';
-import { kbfiData, kcdwData, kdzjData, krntData, s43Data } from './adipData'
+import { kbffData, kbfiData, kcdwData, kdzjData, krntData, s43Data } from './adipData'
 
 describe('Adip', () => {
 
@@ -164,5 +164,11 @@ describe('Adip', () => {
         const airport = Adip.airportFromData(kcdwData)
         expect(airport.code).toBe('KCDW')
         expect(airport.navaids).toHaveLength(10)
+    })
+
+    test('KBFF data', () => {
+        const airport = Adip.airportFromData(kbffData)
+        expect(airport.code).toBe('KBFF')
+        expect(airport.name).toBe('Western Nebraska Rgnl/wm B Heilig Fld/scottsbluff')
     })
 })
