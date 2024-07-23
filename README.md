@@ -24,6 +24,8 @@ Run the test suite:
 * Small indicator below runway is configurable
 
 # Done
+## 7/23/2024
+* Added Navaids to airport corners
 ## 7/22/2024
 * Added Rwy to ATIS compact
 ## 7/21/2024
