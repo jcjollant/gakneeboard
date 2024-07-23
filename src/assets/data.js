@@ -277,6 +277,11 @@ export function getFreqWeather(freqList) {
   )
 }
 
+export function getNavaid(navaidList, id) {
+  return navaidList.find( n => n.id == id)
+}
+
+
 /**
  * Get sunlight data
  * @param {*} from 

@@ -6,7 +6,7 @@ import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
 import OverlayPanel from 'primevue/overlaypanel'
 import RadioButton from 'primevue/radiobutton'
-import { getFreqCtaf, getFreqWeather, getFreqGround, getFrequency } from '../../assets/data';
+import { getFreqCtaf, getFreqWeather, getFreqGround, getFrequency, getNavaid } from '../../assets/data';
 
 
 const emits = defineEmits(['update'])
@@ -38,11 +38,17 @@ const customLabel = ref('')
 const customValue = ref('')
 
 const frequencies = ref([])
+const navaids = ref([])
 
 function formatFrequency(freq) {
     // console.log('[Corner.formatFrequency]', typeof freq)
     if( !freq || !freq.mhz) return noFrequency
     return freq.mhz.toFixed(3)
+}
+
+function formatNavaid(navaid) {
+    if(!navaid || !navaid.to) return '-'
+    return navaid.to.toFixed(0) + '°'
 }
 
 function loadProps(newProps) {
@@ -55,11 +61,23 @@ function loadProps(newProps) {
         airport = newProps.airport;
         runway = newProps.runway
         const field = newProps.data.field
-        const freqList = airport.freq.map( f => {
-            return { id:'#'+f.name,label:f.name+' : '+formatFrequency(f)}
-        })
-        if( runway && 'freq' in runway) freqList.push({id:'twr',label:'Selected Runway'})
-        frequencies.value = freqList
+        if(airport.freq) {
+            // build a frequency list with '#F' prefix
+            const freqList = airport.freq.map( f => {
+                return { id:'#F'+f.name, label: f.name+' : '+formatFrequency(f)}
+            })
+            if( runway && 'freq' in runway) freqList.push({id:'twr',label:'Selected Runway'})
+            frequencies.value = freqList
+        }
+
+        if( airport.navaids) {
+            // build a navaid list with '#N' prefix
+            const navaidList = airport.navaids.map( n => {
+                return { id: '#N'+n.id, label: n.id + ' ('+n.type+')'}
+            })
+            navaids.value = navaidList
+        }
+
         showField(field)
         labelUnder.value = !newProps.flip
         cornerId = newProps.data.id
@@ -79,11 +97,22 @@ onMounted(() => {
 
 function showField( field) {
     // console.log('[Corner.showField]', field, typeof field)
-    if( field.length > 0 && field[0] == '#' && airport.freq) {
-        const freqName = field.substring(1)
-        // console.log('[Corner.showField]', freqName)
-        value.value = formatFrequency( getFrequency( airport.freq, freqName))
-        label.value = freqName
+    if( field.length > 2 && field[0] == '#') { 
+        if(field[1] == 'F' && airport.freq) {
+            // RadioFrequencies use the '#F' prefix
+            const freqName = field.substring(2)
+            // console.log('[Corner.showField]', freqName)
+            value.value = formatFrequency( getFrequency( airport.freq, freqName))
+            label.value = freqName
+        } else if( field[1] == 'N' && airport.navaids) {
+            // RadioFrequencies use the '#F' prefix
+            const navaidName = field.substring(2)
+            // console.log('[Corner.showField]', freqName)
+            value.value = formatNavaid( getNavaid( airport.navaids, navaidName))
+            label.value = navaidName + ' Radial'
+        } else {
+            unknownValues()
+        }
         // console.log('[Corner.showField]', label.value)
     } else if( field.length > 0 && field[0] == '?') {
         // custom labels '?' as marker and separator
@@ -179,21 +208,34 @@ watch( props, () => {
         </div>
         <OverlayPanel ref="op">
             <div class="ctList">
-                <Fieldset legend="Frequencies">
+                <Fieldset legend="Standard">
+                    <div class="standardList">
+                        <div v-for="ct in cornerTypes" class="ctItem" >
+                            <RadioButton v-model="selectedCornerType" :inputId="ct.key" :value="ct.key" 
+                                @change="onChange(ct.key)"/>
+                            <label :for="ct.key" class="ml-2">{{ ct.name }}</label>
+                        </div>
+                    </div>
+                </Fieldset>
+                <Fieldset legend="Radios">
                     <div class="freqList">
                         <div v-for="freq in frequencies" class="ctItem" >
                             <RadioButton v-model="selectedCornerType" :inputId="freq.id" :value="freq.id" 
                                 @change="onChange(freq.id)"/>
                             <label :for="freq.id" class="ml-2">{{ freq.label  }}</label>
                         </div>
-                        <!-- <div v-for="(freq,index) in airport.freq" class="ctItem" >
-                            <RadioButton v-model="selectedCornerType" :inputId="'#'+freq.name" :value="'#'+freq.name" 
-                                @change="onChange('#'+freq.name)"/>
-                            <label :for="'#'+freq.name" class="ml-2">{{ freq.name + " : " + formatFrequency(freq) }}</label>
-                        </div> -->
                     </div>
                 </Fieldset>
-                <div class="ctItem">
+                <Fieldset legend="Navaids">
+                    <div class="navList">
+                        <div v-for="navaid in navaids" class="ctItem" >
+                            <RadioButton v-model="selectedCornerType" :inputId="navaid.id" :value="navaid.id" 
+                                @change="onChange(navaid.id)"/>
+                            <label :for="navaid.id" class="ml-2">{{ navaid.label  }}</label>
+                        </div>
+                    </div>
+                </Fieldset>
+                <div class="ctCustom">
                     <RadioButton v-model="selectedCornerType" inputId="custom" :value="'?'+customLabel+'?'+customValue" 
                         @click="onChange('?'+customLabel+'?'+customValue)"/>
                         <label for="custom" class="ml-2">Custom</label>
@@ -203,11 +245,6 @@ watch( props, () => {
                         <InputGroupAddon>:</InputGroupAddon>
                         <InputText placeholder="value" v-model="customValue"></InputText>
                     </InputGroup>
-                </div>
-                <div v-for="ct in cornerTypes" class="ctItem" >
-                    <RadioButton v-model="selectedCornerType" :inputId="ct.key" :value="ct.key" 
-                        @change="onChange(ct.key)"/>
-                    <label :for="ct.key" class="ml-2">{{ ct.name }}</label>
                 </div>
             </div>
         </OverlayPanel>
@@ -221,13 +258,18 @@ watch( props, () => {
     }
 
     .ctList {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: auto auto auto;
         gap: 1rem;
     }
     .ctItem {
         display: flex;
         align-items: center;
+    }
+    .ctCustom {
+        display: flex;
+        align-items: center;
+        grid-column: 1 / span 3;
     }
     .customGroup {
       width: 12rem;
@@ -236,7 +278,7 @@ watch( props, () => {
     .faded {
         opacity: 0.3;
     }
-    .freqList {
+    .freqList, .navList, .standardList {
         display: flex;
         flex-flow: column;
         gap: 0.5rem

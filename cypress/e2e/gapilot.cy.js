@@ -81,6 +81,26 @@ describe('template spec', () => {
     cy.get(':nth-child(2) > .content > .top.right > .clickable > :nth-child(1) > :nth-child(1)').contains('120.600')
     cy.get(':nth-child(2) > .content > .top.right > .clickable > :nth-child(1) > .label').contains('RWY 14R-32L')
 
+    // Check Corners have all exected data
+    // Open the bottom right corner
+    cy.get(':nth-child(1) > :nth-child(1) > .content > .bottom.right').click()
+    // standard fields
+    const expectedStandardFields = ['Field Elevation', 'Traffic Pattern Altitude', 'Runway Information', 'Nothing']
+    for(let index = 0; index < expectedStandardFields.length; index++) {
+      cy.get(`.standardList > :nth-child(${index+1})`).contains(expectedStandardFields[index])
+    }
+    // Radios
+    const expectedRadios = ['CTAF : 124.700', 'UNICOM : 122.950', 'ATIS : 126.950', 'GND : 121.600', 'TWR : 124.700']
+    for(let index = 0; index < expectedRadios.length; index++) {
+      cy.get(`.freqList > :nth-child(${index+1})`).contains(expectedRadios[index])
+    }
+
+    const expectedNavaids = ['SEA (VORTAC)', 'PAE (VOR/DME)', 'OLM (VORTAC)', 'CVV (VOR/DME)']
+    for(let index = 0; index < expectedNavaids.length; index++) {
+      cy.get(`.navList > :nth-child(${index+1})`).contains(expectedNavaids[index])
+    }
+
+    
     // Check ATIS has all fields in full mode
     cy.get('.info').contains('Info')
     cy.get('.wind').contains('Wind')
