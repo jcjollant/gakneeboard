@@ -1,4 +1,4 @@
-const version = 722
+const version = 722.2
 
 const express =require( "express")
 import cors from "cors";

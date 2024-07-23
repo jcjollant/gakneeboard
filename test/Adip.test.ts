@@ -74,7 +74,7 @@ describe('Adip', () => {
         expect(airport.freq).toHaveLength(allFreq.length)
         // Test all frequencies
         for(const pair of allFreq) {
-            console.log(pair[0])
+            // console.log(pair[0])
             const freq = airport.getFreq(pair[0])
             expect(freq).toBeDefined()
             expect(freq).toBe(Number(pair[1]))

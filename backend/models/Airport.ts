@@ -224,6 +224,17 @@ export class Airport {
         return this.freq.find((freq) => freq.name == name)?.mhz
     }
 
+    /**
+     * Static utility to find the mhz of a given frequency looked up by name
+     * @param freq 
+     * @param name 
+     * @returns 
+     */
+    static getFrequencyMhz(freq:Frequency[], name: string) {
+        return freq.find((freq) => freq.name == name)?.mhz
+    }
+
+
     getVersion():number {
         return this.version
     }

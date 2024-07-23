@@ -7,7 +7,8 @@ To test everything use `npm test`
 Otherwise use `npm test script.test.ts`
 
 ## Debug tests
-Start debugger in terminal then start test in same terminal
+Start debugger in terminal `npm run debug`
+Run the actual test `npm test XXX`
 
 ## Houskeeper Willie
 Housekeeper willie is a script that checks system heath . It is invoked everyday via a cron entry in `vercel.json`. To run the script locally use
@@ -20,6 +21,8 @@ ts-node .\willie.ts
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
+## 7/22
+Added navaids to airport vue
 ## 7/21
 Fixed the missing weather freq in version 7
 Removed usage of unknowns which are now integrated with airports

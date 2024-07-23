@@ -6,7 +6,6 @@ import { UserDao } from './UserDao'
 import { UserTools } from './UserTools'
 import { Airport, versionInvalid } from './models/Airport'
 import { AirportDao } from './AirportDao'
-import { AirportTools } from './AirportTools'
 import { AirportView } from './models/AirportView'
 import { Sheet } from './models/Sheet'
 import { SheetDao } from './SheetDao'
@@ -62,7 +61,7 @@ export class GApi {
     public static async getAirport(codeParam:string,userId: any=undefined):Promise<Airport|undefined> {
         // console.log( "[gapi.getAirport] " + codeParam + ' user=' + userId);
         // there is only one element and we only care about the airport
-        if(!AirportTools.isValidAirportCode(codeParam)) throw new GApiError(400, "Invalid Airport Code");
+        if(!Airport.isValidCode(codeParam)) throw new GApiError(400, "Invalid Airport Code");
         let code:string
         let airport:Airport|undefined
         [code,airport] = (await GApi.getAirportList([codeParam], userId))[0];
@@ -114,7 +113,7 @@ export class GApi {
     
                 }
             } else { // code not found
-                if( AirportTools.isValidAirportCode(code)) {
+                if( Airport.isValidCode(code)) {
                     // First time we see that code => Adip
                     let firstTimer:Airport|undefined = await Adip.fetchAirport(code)
 
@@ -134,7 +133,7 @@ export class GApi {
     }
 
     public static async getAirportView(codeParam:string, userId: any=undefined):Promise<AirportView|undefined> {
-        if( !AirportTools.isValidAirportCode(codeParam)) throw new GApiError(400, "Invalid Airport Code");
+        if( !Airport.isValidCode(codeParam)) throw new GApiError(400, "Invalid Airport Code");
         const list = await GApi.getAirportViewList([codeParam], userId)
         return list[0]
     }    
@@ -151,7 +150,7 @@ export class GApi {
 
         return airports.map( ([code,airport]) => {
             // console.log('[GApi.getAirportViewList]', code, airport)
-            return airport ? AirportTools.format(airport) : AirportView.getUndefined(code)
+            return airport ? new AirportView(airport) : AirportView.getUndefined(code)
         })
     }
 
@@ -199,7 +198,7 @@ export class GApi {
     */
     public static getIcao(code:string):string|null {
         const output = null
-        if( AirportTools.isValidAirportCode(code)) {
+        if( Airport.isValidCode(code)) {
             if( code.length == 3) {
                 return ('K' + code.toUpperCase())
             } else if( code.length == 4) {
@@ -212,7 +211,7 @@ export class GApi {
     static getLocId(code:string) {
         const output = null
 
-        if( AirportTools.isValidAirportCode(code)) {
+        if( Airport.isValidCode(code)) {
             if( code.length == 3) {
                 return code.toUpperCase()
             } else if( code.length == 4) {

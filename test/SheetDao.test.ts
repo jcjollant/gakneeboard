@@ -2,7 +2,7 @@
 import { describe, expect, test} from '@jest/globals';
 import { Sheet } from '../backend/models/Sheet.ts'
 import { SheetDao } from '../backend/SheetDao.ts'
-import { postgresUrl, jcUserId, asUserId, jcTestSheetId, asTestSheetId, jcTestSheetName, jcDemoSheet } from './constants.ts';
+import { postgresUrl, jcUserId, asUserId, jcTestSheetName, jcDemoSheet } from './constants.ts';
 
 process.env.POSTGRES_URL=postgresUrl
 
@@ -15,17 +15,18 @@ describe('Custom Sheets', () => {
         // Test creation with same name should keep same Id
         const returnSheet:Sheet = await SheetDao.createOrUpdate( sheet1, jcUserId)
         expect(returnSheet.name).toBe(jcTestSheetName)
-        expect(returnSheet.id).toBe(jcTestSheetId)
 
         // Test find by name
         const sheetId:number|undefined = await SheetDao.findByName(jcTestSheetName, jcUserId)
         expect(sheetId).toBeDefined()
-        expect(sheetId).toBe(jcTestSheetId)
+        expect(sheetId).toBe(returnSheet.id)
+        const jcTestSheetId:number = sheetId as number
+
+        // Test read by Id
 
         // Test find by name for same name and other user
         const sheetAsId:number|undefined = await SheetDao.findByName(jcTestSheetName, asUserId)
         expect(sheetAsId).toBeDefined()
-        expect(sheetAsId).toBe(asTestSheetId)
 
         // Modify data with only name and check only data has changed
         const returnSheet2:Sheet = await SheetDao.createOrUpdate( sheet2, jcUserId)
@@ -76,10 +77,18 @@ describe('Custom Sheets', () => {
     })
 
     test("Read by Id", async () => {
-        await SheetDao.readById(1, jcUserId).then((sheet:any) => {
-            expect(sheet).toBeDefined()
-            expect(sheet.id).toBe(1)
-            expect(sheet.name).toBe(jcTestSheetName)
+        await SheetDao.getListForUser(jcUserId).then( async (sheets:any) => {
+            expect(sheets.length).toBeGreaterThan(0)
+            const page0Id = sheets[0].id;
+            const page0Name = sheets[0].name;
+            await SheetDao.readById(page0Id, jcUserId).then((data:any) => {
+                expect(data).toBeDefined()
+                expect(data.id).toBe(page0Id)
+                expect(data.name).toBe(page0Name)
+            }).catch( err => {
+                console.log(err)
+                expect(false).toBe(true)
+            })
         }).catch( err => {
             console.log(err)
             expect(false).toBe(true)

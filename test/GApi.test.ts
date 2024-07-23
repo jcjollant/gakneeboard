@@ -1,6 +1,6 @@
 import { describe, expect, test} from '@jest/globals';
 import { GApi, GApiError } from '../backend/GApi'
-import { jcHash, postgresUrl, jcUserId, jcDemoSheet, jcToken, jcName } from './constants'
+import { jcHash, postgresUrl, jcUserId, jcDemoSheet, jcToken, jcName, jcTestSheetName } from './constants'
 import { AirportView } from '../backend/models/AirportView'
 
 process.env.POSTGRES_URL=postgresUrl
@@ -121,10 +121,15 @@ describe( 'GApi Tests', () => {
     })
 
     test('Read custom sheet', async () => {
-        const sheet = await GApi.sheetGetData( 1, jcUserId)
-        // console.log(JSON.stringify(sheet))
-        // console.log(JSON.stringify(jcDemoSheet))
-        expect(sheet).toEqual(jcDemoSheet)
+        await GApi.sheetGetList(jcUserId).then( list => {
+            expect(list.length).toBeGreaterThan(0)
+            const testSheet = list.find( sheet => sheet.name == jcTestSheetName);
+            expect(testSheet).toBeDefined()
+            expect(testSheet?.data).toEqual(jcDemoSheet)
+        }).catch( (e) => {
+            console.log(e)
+            expect(true).toBe(false) // should not get here
+        })
 
         // invalid pageId should throw error
         await GApi.sheetGetData(0,jcUserId).then( () => {
