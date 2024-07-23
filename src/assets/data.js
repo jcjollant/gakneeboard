@@ -1,4 +1,4 @@
-export const version = '722'
+export const version = '723'
 export const blogUrl = 'https://gakneeboard.wordpress.com/'
 // export const blogUrl = 'https://ga-kneeboard.blogspot.com/'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
