@@ -1,4 +1,4 @@
-export const version = '723'
+export const version = '724'
 export const blogUrl = 'https://gakneeboard.wordpress.com/'
 // export const blogUrl = 'https://ga-kneeboard.blogspot.com/'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
@@ -31,7 +31,7 @@ const demoRadioData = [
   {'id':5,'name':'clearance','data':{}},
   {'id':6,'name':'airport','data':{'code':'ktta','rwy':'03-21','pattern':2}},
   {'id':7,'name':'airport','data':{'code':'kawo','rwy':'all'}},
-  {'id':8,'name':'sunlight','data':{'from':'KRNT'}},
+  {'id':8,'name':'sunlight','data':{'from':'KRNT','to':'KSFF'}},
   {'id':9,'name':'fuel'},
   {'id':10,'name':'notes','data':{}},
   {'id':11,'name':'radios','data':demoRadioData},
