@@ -10,6 +10,7 @@ import Button from 'primevue/button'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import Calendar from 'primevue/calendar'
+import Checkbox from 'primevue/checkbox'
 
 const mode=ref('')
 const airportFromCode = ref('')
@@ -19,16 +20,20 @@ const airportToName = ref('')
 const circleKey = ref()
 const civilTwilightAm = ref('-')
 const civilTwilightPm = ref('-')
-const date = ref(null)
-const dateFormat = {weekday: 'short', month: 'short', day: 'numeric'}
+const dateFrom = ref(null)
+const dateTo = ref(null)
+const dateFormatBottom = {weekday: 'short', month: 'short', day: 'numeric'}
+const dateFormatCorner = {month: 'short', day: 'numeric'}
 const goldenHour = ref('-')
 const loading = ref(false)
 const solarNoon = ref('-')
 const sunriseTime = ref('-')
 const sunsetTime = ref('-')
 const validFromAirport = ref(false)
+const nightFlight = ref(false)
 
 let state = {}
+const ONE_DAY_MS = 86400000
 
 const emits = defineEmits(['replace','update'])
 
@@ -49,20 +54,31 @@ watch( props, async() => {
 
 function loadProps(newProps) {
     state = newProps.params
-    loadAirportFrom( state.from)
-    loadAirportTo(state.to ? state.to : state.from)
-    date.value = state.date
+    airportFromCode.value = state.from
+    validFromAirport.value = true
+    airportToCode.value = state.to ? state.to : state.from
+    // loadAirportFrom( state.from)
+    // loadAirportTo(state.to ? state.to : state.from)
     // Force edit mode if we don't have a code yet
     if(!airportFromCode.value) mode.value = 'edit'
     // default to today if we don't have a date
-    if(!date.value) date.value = new Date()
+    // default to day flight if we don't have a settings
+    const now = new Date()
+    dateFrom.value = now
+    nightFlight.value = state.night
+    // console.log('[SunLight.loadProps] from', JSON.stringify(dateFrom.value), "to", JSON.stringify(dateTo.value))
 
-    getData(airportFromCode.value, airportToCode.value, date.value, false)
+    getData(false)
 }
 
 // End of Props Section
 //---------------------------
 
+
+function formatDate(dateValue) {
+    if( !dateValue) return '?'
+    return dateValue.toLocaleString('en-US', dateFormatCorner)    
+}
 
 // turns a time looking like "5:09:28 AM" into "5:09a" 
 function formatTime(data, field) {
@@ -81,10 +97,24 @@ function formatTime(data, field) {
     return shortTime + suffix;
 }
 
-function getData( from, to, date, update=true) {
+/**
+ * Get data from the backend
+ * @param {*} from 
+ * @param {*} to 
+ * @param {*} date 
+ * @param {*} update 
+ */
+function getData( update=true) {
+    // refresh date to
+    if( nightFlight.value) {
+        dateTo.value = new Date( dateFrom.value.getTime() + ONE_DAY_MS)
+    } else {
+        dateTo.value = dateFrom.value
+    }
+
     loading.value = true
-    getSunlight( from, to, date).then( sunlightData => {
-        // console.log('[Sunlight.onApply] data received', JSON.stringify(sunlightData))
+    getSunlight( airportFromCode.value, airportToCode.value, dateFrom.value, nightFlight.value).then( sunlightData => {
+        // console.log('[Sunlight.getData] data received', JSON.stringify(sunlightData))
         loading.value = false
         if( sunlightData) {
             sunriseTime.value = formatTime(sunlightData, 'sunrise')
@@ -101,6 +131,7 @@ function getData( from, to, date, update=true) {
             // save new settings
             state.from = airportFromCode.value
             state.to = airportToCode.value
+            state.night = nightFlight.value
             if(update) emits('update',state)
         } else {
             sunriseTime.value = '-'
@@ -139,11 +170,12 @@ function loadAirport( code, nameField, codeField) {
 
 function onApply() {
     // you need at least a valid from airport and a valid date
-    if( validFromAirport.value && date.value) {
+    if( validFromAirport.value && dateFrom.value) {
+        // copy airportFrom onto airportTo if not provided
         if( airportToCode.value == '' || !airportToCode.value) airportToCode.value = airportFromCode.value
-        // fecth data for these airports
         // console.log('[SunLight.onApply]', airportFromCode.value, airportToCode.value, date.value)
-        getData(airportFromCode.value, airportToCode.value, date.value)
+        // fetch data for these airports
+        getData()
         onHeaderClick()
     } else {
         console.log('From Airport is invalid or date is not set')
@@ -164,31 +196,47 @@ function onHeaderClick() {
         <Header title="Sun Light" :replace="mode=='edit'"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div class="content" v-if="mode==''">
-            <Circle :time="circleKey" />
+            <Circle :time="circleKey" :night="nightFlight" />
             <CornerStatic class="corner top left" label="From" :value="airportFromCode"/>
             <CornerStatic class="corner top right" label="To" :value="airportToCode"/>
-            <CornerStatic class="corner bottom left" label="Solar Noon" :value="solarNoon" position="bottom"/>
-            <CornerStatic class="corner bottom right" label="Golden Hour" :value="goldenHour" position="bottom"/>
+            <CornerStatic class="corner bottom left" position="bottom"
+                :label="nightFlight?'':'Solar Noon'" 
+                :value="nightFlight?formatDate(dateFrom):solarNoon" />
+            <CornerStatic class="corner bottom right" position="bottom" 
+                :label="nightFlight?'':'Golden Hour'" 
+                :value="nightFlight?formatDate(dateTo):goldenHour"/>
             <div v-if="loading" class="loading">Fetching...</div>
             <div v-else class="text">
-                <div class="sunrise pt1"><span class="pr2">Sunrise</span><span>Sunset</span></div>
-                <div><span class="pr4">{{sunriseTime}}</span><span>{{sunsetTime}}</span></div>
-                <div class="pt1">Civil Twilight</div>
-                <div><span class="pr2">{{civilTwilightAm}}</span><span>{{civilTwilightPm}}</span></div>
+                <div v-if="nightFlight">
+                    <div><span class="pr2">{{civilTwilightPm}}</span><span>{{civilTwilightAm}}</span></div>
+                    <div class="pb1">Civil Twilight</div>
+                    <div><span class="pr4">{{sunsetTime}}</span><span>{{sunriseTime}}</span></div>
+                    <div class="sunrise"><span class="pr2">Sunset</span><span>Sunrise</span></div>
+                </div>
+                <div v-else>
+                    <div class="sunrise pt1"><span class="pr2">Sunrise</span><span>Sunset</span></div>
+                    <div><span class="pr4">{{sunriseTime}}</span><span>{{sunsetTime}}</span></div>
+                    <div class="pt1">Civil Twilight</div>
+                    <div><span class="pr2">{{civilTwilightAm}}</span><span>{{civilTwilightPm}}</span></div>
+                </div>
             </div>
-            <div class="date" :title="date ? date.toDateString() : '?'">{{ date ? date.toLocaleString('en-US', dateFormat) : '?' }}</div>
+            <div v-if="nightFlight" class="date">Night Flight</div>
+            <div v-else class="date" :title="dateFrom ? dateFrom.toDateString() : '?'">{{ dateFrom ? dateFrom.toLocaleString('en-US', dateFormatBottom) : '?' }}</div>
         </div>
         <div v-else class="content">
             <div class="settings">
                 <AirportInput :code="airportFromCode" :name="airportFromName" label="From"
                     @updated="loadAirportFrom" />
+                    <InputGroup>
+                    <InputGroupAddon class="airportCodeLabel">Date</InputGroupAddon>
+                    <Calendar v-model="dateFrom" showIcon />
+                </InputGroup>
                 <AirportInput :code="airportToCode" :name="airportToName" label="To"
                     @updated="loadAirportTo"   />
-
-                <InputGroup>
-                    <InputGroupAddon class="airportCodeLabel">Date</InputGroupAddon>
-                    <Calendar v-model="date" showIcon />
-                </InputGroup>
+                <div class="nightFlight">
+                    <Checkbox v-model="nightFlight" inputId="nightFlight" binary/>
+                    <label for="nightFlight" class="ml-2">Overnight Flight</label>
+                </div> 
             </div>
             <div class="actionBar">
                 <Button label="Cancel" link @click="onHeaderClick"></Button>
@@ -232,23 +280,31 @@ function onHeaderClick() {
     font-size: 0.9rem;
     justify-content: center;
 }
-    .pt1 {
+.nightFlight {
+    display: flex;
+    align-items: center;
+    padding-left: 3rem;
+}
+.pb1 {
+    padding-bottom: 1rem;
+}
+.pt1 {
     padding-top: 1rem;
-    }
-    .pr2 {
+}
+.pr2 {
     padding-right: 2rem;
-    }
-    .pr4 {
+}
+.pr4 {
     padding-right: 4rem;
-    }
-    .settings {
+}
+.settings {
     display: flex;
     flex-flow: column;
     /* grid-template-rows: 30px 30px 100px; */
     gap: 5px;
     padding: 5px;
     font-size: 0.7rem;
-    }
+}
 .airportCodeLabel {
     width: 3rem;
 }

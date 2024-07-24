@@ -175,13 +175,6 @@ export async function getAirport( codeParam, group = false) {
         return airport
     }
 
-    // is this a test?
-    // if( code == '???') {
-    //   // wait 5 seconds
-    //   await new Promise(r => setTimeout(r, 5000));
-    //   return null
-    // }
-
     // do we already know this code in the cache?
     if( code in airports) {
         airport = airports[code]
@@ -216,9 +209,10 @@ export async function getAirport( codeParam, group = false) {
 
       // wait until we are in first position
       while( pendingCodes.length > 0 && pendingCodes[0] != code) {
-        console.log( '[data.getAirport] waiting for', pendingCodes[0], pendingCodes.length)
+        // console.log( '[data.getAirport] waiting for', pendingCodes[0], pendingCodes.length, maxWait)
         await new Promise(r => setTimeout(r, 1000));
       }
+
 
       airport = await requestOneAirport( code)
 
@@ -289,12 +283,17 @@ export function getNavaid(navaidList, id) {
  * @param {*} date 
  * @returns 
  */
-export async function getSunlight( from, to, date) {
+export async function getSunlight( from, to=null, date=null, night=false) {
   if( !from) return null; // we need at least the from code
   if( !date) date = new Date() // today if not specified
-  const requestDate = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate()
-  if( !to) to = from
-  return axios.get(apiRootUrl + 'sunlight/' + from + '/' + to + '/' + requestDate)
+  if( !to) to = from // default to same airport
+  const dateFrom = getSunlightDate(date)
+  let url = apiRootUrl + 'sunlight/' + from + '/' + to + '/' + dateFrom
+  if( night) { 
+    const nextDay = new Date(date.getTime() + 24 * 60 * 60 * 1000)
+    url += '/' + getSunlightDate(nextDay)
+  }
+  return axios.get( url)
     .then( response => {
       return response.data
     })
@@ -302,6 +301,10 @@ export async function getSunlight( from, to, date) {
       console.log( '[data.getSunlight] error ' + JSON.stringify(error))
       return null
     })
+}
+
+function getSunlightDate(date) {
+  return date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate()
 }
 
 /**

@@ -4,15 +4,23 @@ const circleCanvas = ref()
 
 const props = defineProps({
     time: { type: Number, default: null},
+    night: { type: Boolean, default: false},
 })
 
-onMounted(() => {    
+let night = false;
+
+function loadProps(newProps) {
+    // console.log('[Circle.loadProps]', JSON.stringify(newProps))
+    if( newProps) night = newProps.night;
     draw()
+}
+
+onMounted(() => {    
+    loadProps(props)
 })
 
 watch( props, async() => {
-    // console.log("RunwayView props changed " + JSON.stringify(props));
-    draw()
+    loadProps(props)
 })
 
 function draw() {
@@ -27,9 +35,12 @@ function draw() {
     ctx.lineCap = 'round';
     const center = referenceSize / 2
     const radius = center - 15
+    const twilightColor = 'blue'
+    const dayColor = 'yellow'
+    const nightColor = 'black'
 
-    // Evening Twilight
-    ctx.strokeStyle = 'blue';
+    // Bottom Portion
+    ctx.strokeStyle = night ? dayColor : twilightColor;
     ctx.beginPath();
     ctx.arc( center, center, radius, 0, Math.PI/4, false);
     ctx.stroke();
@@ -37,11 +48,29 @@ function draw() {
     ctx.arc( center, center, radius, 3 * Math.PI / 4, Math.PI, false);
     ctx.stroke();
 
-    // Sun Light
-    ctx.beginPath()
+    // Top portion
+    ctx.beginPath();
     ctx.lineCap = 'butt'
-    ctx.strokeStyle = 'yellow'
-    ctx.arc( center, center, radius, 0, Math.PI, true);
+    if( night) {
+        // Civil twilight evening
+        ctx.strokeStyle = twilightColor;
+        ctx.beginPath();
+        ctx.arc( center, center, radius, Math.PI, 5 * Math.PI / 4, false);
+        ctx.stroke();
+        // Night
+        ctx.strokeStyle = nightColor;
+        ctx.beginPath();
+        ctx.arc( center, center, radius, 5 * Math.PI / 4, 7 * Math.PI / 4, false);
+        ctx.stroke();
+        // Civil twilight morning
+        ctx.strokeStyle = twilightColor;
+        ctx.beginPath();
+        ctx.arc( center, center, radius, 7 * Math.PI / 4, 0, false);
+        ctx.stroke();
+    } else {
+        ctx.strokeStyle = dayColor;
+        ctx.arc( center, center, radius, 0, Math.PI, true);
+    }
     ctx.stroke();
 
     // horizon
