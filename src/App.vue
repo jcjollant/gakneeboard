@@ -155,10 +155,10 @@ function showToastSuccess( summary, detail) {
   <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
   <Toast />
   <div class="twoPages">
-    <div class="onePage">
+    <div class="pageOne">
       <Widget v-for='widget in widgetsOne' :widget="widget.value" @update="onWidgetUpdated"/>
     </div>
-    <div class="onePage" :class="{flipMode: flipMode}">
+    <div class="pageTwo" :class="{flipMode: flipMode}">
       <Widget v-for='widget in widgetsTwo' :widget="widget.value" @update="onWidgetUpdated"/>
     </div>
   </div>
@@ -193,7 +193,7 @@ function showToastSuccess( summary, detail) {
   grid-template-columns: auto auto;
   gap: 80px;
 }
-.onePage {
+.pageOne, .pageTwo {
   display: grid;
   grid-template-columns: auto auto;
   gap: 5px;

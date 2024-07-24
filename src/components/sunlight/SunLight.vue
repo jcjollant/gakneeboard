@@ -197,14 +197,6 @@ function onHeaderClick() {
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div class="content" v-if="mode==''">
             <Circle :time="circleKey" :night="nightFlight" />
-            <CornerStatic class="corner top left" label="From" :value="airportFromCode"/>
-            <CornerStatic class="corner top right" label="To" :value="airportToCode"/>
-            <CornerStatic class="corner bottom left" position="bottom"
-                :label="nightFlight?'':'Solar Noon'" 
-                :value="nightFlight?formatDate(dateFrom):solarNoon" />
-            <CornerStatic class="corner bottom right" position="bottom" 
-                :label="nightFlight?'':'Golden Hour'" 
-                :value="nightFlight?formatDate(dateTo):goldenHour"/>
             <div v-if="loading" class="loading">Fetching...</div>
             <div v-else class="text">
                 <div v-if="nightFlight">
@@ -220,6 +212,14 @@ function onHeaderClick() {
                     <div><span class="pr2">{{civilTwilightAm}}</span><span>{{civilTwilightPm}}</span></div>
                 </div>
             </div>
+            <CornerStatic class="corner topLeftCorner" label="From" :value="airportFromCode"/>
+            <CornerStatic class="corner topRightCorner" label="To" :value="airportToCode"/>
+            <CornerStatic class="corner bottomLeftCorner" position="bottom"
+                :label="nightFlight?'From':'Solar Noon'" 
+                :value="nightFlight?formatDate(dateFrom):solarNoon" />
+            <CornerStatic class="corner bottomRightCorner" position="bottom" 
+                :label="nightFlight?'To':'Golden Hour'" 
+                :value="nightFlight?formatDate(dateTo):goldenHour"/>
             <div v-if="nightFlight" class="date">Night Flight</div>
             <div v-else class="date" :title="dateFrom ? dateFrom.toDateString() : '?'">{{ dateFrom ? dateFrom.toLocaleString('en-US', dateFormatBottom) : '?' }}</div>
         </div>
@@ -227,12 +227,12 @@ function onHeaderClick() {
             <div class="settings">
                 <AirportInput :code="airportFromCode" :name="airportFromName" label="From"
                     @updated="loadAirportFrom" />
-                    <InputGroup>
+                <AirportInput :code="airportToCode" :name="airportToName" label="To"
+                    @updated="loadAirportTo"   />
+                <InputGroup>
                     <InputGroupAddon class="airportCodeLabel">Date</InputGroupAddon>
                     <Calendar v-model="dateFrom" showIcon />
                 </InputGroup>
-                <AirportInput :code="airportToCode" :name="airportToName" label="To"
-                    @updated="loadAirportTo"   />
                 <div class="nightFlight">
                     <Checkbox v-model="nightFlight" inputId="nightFlight" binary/>
                     <label for="nightFlight" class="ml-2">Overnight Flight</label>
@@ -250,19 +250,25 @@ function onHeaderClick() {
     position: absolute; /* Absolute positioning within container */
     padding: 5px; /* Adjust padding for better visibility */
 }
-.top {
-    top: 0;
-}
-.left {
+.bottomLeftCorner {
+    bottom: 0;
     left: 0;
     text-align: left;
 }
-.right {
+.bottomRightCorner {
+    bottom: 0;
     right: 0;
     text-align: right;
 }
-.bottom {
-    bottom:0;
+.topLeftCorner {
+    top: 0;
+    left: 0;
+    text-align: left;
+}
+.topRightCorner {
+    top: 0;
+    right: 0;
+    text-align: right;
 }
 .loading {
     position:absolute;
