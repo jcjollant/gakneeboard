@@ -21,19 +21,21 @@ ts-node .\willie.ts
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
-## 7/22
+## 7/23/2024
+1) Fixed name bug affecting KBFF (When an airport has double blank in the name)
+2) Extended Sunlight API to support different dates
+## 7/22/2024
 Added navaids to airport vue
-## 7/21
+## 7/21/2024
 Fixed the missing weather freq in version 7
 Removed usage of unknowns which are now integrated with airports
-
-## 7/17
+## 7/17/2024
 * Implemented Sunrise API
-## 7/16
+## 7/16/2024
 * Fixed missing Asos/Awos frequency
-## 7/13
+## 7/13/2024
 * Fixed runway frequency bug
-## 7/12
+## 7/12/2024
 * Backend is now dynamically loading new FAA data when effective date is changed
 ## 6/29/2024
 * Added emails to housekeeping

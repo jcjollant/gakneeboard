@@ -1,4 +1,4 @@
-const version = 723
+const version = 723.2
 
 const express =require( "express")
 import cors from "cors";
@@ -159,13 +159,14 @@ app.delete('/sheet/:id', async (req, res) => {
     // console.log( "[index] DELETE sheet " + req.params.id
 })
 
-app.get('/sunlight/:from/:to/:date', async (req, res) => {
+app.get('/sunlight/:from/:to/:dateFrom/:dateTo?', async (req, res) => {
     try {
         // const sunlight = await GApi.getSunlight(req.params.from, req.params.to, req.params.date);
         // console.log( "[index] Returning sunlight " + JSON.stringify(sunlight));
         // res.send(sunlight)
 
-        GApi.getSunlight(req.params.from, req.params.to, req.params.date).then( sunlight => {
+        GApi.getSunlight(req.params.from, req.params.to, req.params.dateFrom, req.params.dateTo)
+        .then( sunlight => {
             res.send(sunlight)
         })
     } catch(e) {
