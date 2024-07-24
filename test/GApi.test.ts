@@ -173,13 +173,34 @@ describe( 'GApi Tests', () => {
     test('Sunlight', async () => {
         await GApi.getSunlight('KRNT', 'KSFF', 20240717).then( data => {
             expect(data).toBeDefined()
-            expect(data?.date).toBe('2024-07-17')
+            expect(data?.dateFrom).toBe('2024-07-17')
+            expect(data?.dateTo).toBe('2024-07-17')
             expect(data?.sunrise).toBe('5:29:46 AM')
+            expect(data?.sunset).toBe('8:43:31 PM') // KSFF
             expect(data?.civilTwilight.am).toBe('4:51:22 AM')
             expect(data?.civilTwilight.pm).toBe('9:22:09 PM')
             expect(data?.solarNoon).toBe('1:16:03 PM')
-            expect(data?.sunset).toBe('8:43:31 PM')
             expect(data?.goldenHour).toBe('7:56:53 PM')
+        }).catch( (e) => {
+            console.log(e)
+            expect(true).toBe(false) // should not get here
+        })
+    })
+
+    test('Sunlight Overnight', async () => {
+        await GApi.getSunlight('KRNT', 'KSFF', 20240717, 20240718).then( data => {
+            expect(data).toBeDefined()
+            expect(data?.dateFrom).toBe('2024-07-17')
+            expect(data?.dateTo).toBe('2024-07-18')
+            expect(data?.sunrise).toBe('5:10:30 AM') // KSFF
+            expect(data?.sunset).toBe('9:02:20 PM') // KRNT
+            expect(data?.civilTwilight.am).toBe('4:32:01 AM') // KSFF 07-18
+            expect(data?.civilTwilight.pm).toBe('9:40:44 PM') // KRNT 07-17
+            expect(data?.solarNoon).toBe('1:16:03 PM') // KRNT
+            expect(data?.goldenHour).toBe('7:56:07 PM') // KSFF
+
+            // KRNT {"results":{"date":"2024-07-17","sunrise":"5:29:46 AM","sunset":"9:02:20 PM","first_light":"2:51:17 AM","last_light":"11:40:50 PM","dawn":"4:51:22 AM","dusk":"9:40:44 PM","solar_noon":"1:16:03 PM","golden_hour":"8:15:55 PM","day_length":"15:32:33","timezone":"America/Los_Angeles","utc_offset":-420},"status":"OK"}
+            // KSFF {"results":{"date":"2024-07-18","sunrise":"5:10:30 AM","sunset":"8:42:38 PM","first_light":"2:31:36 AM","last_light":"11:21:32 PM","dawn":"4:32:01 AM","dusk":"9:21:07 PM","solar_noon":"12:56:34 PM","golden_hour":"7:56:07 PM","day_length":"15:32:08","timezone":"America/Los_Angeles","utc_offset":-420},"status":"OK"}            
         }).catch( (e) => {
             console.log(e)
             expect(true).toBe(false) // should not get here

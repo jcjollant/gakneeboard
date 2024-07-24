@@ -158,19 +158,23 @@ export class GApi {
      * 
      * @param from 
      * @param to 
-     * @param date is anumber such as 20240624
+     * @param dateFrom is anumber such as 20240624
      * @returns 
      */
-    public static async getSunlight( from:string, to:string, date:number):Promise<Sunlight|undefined> {
-        const fromData:any|undefined = await GApi.getSunriseData(from, date)
+    public static async getSunlight( from:string, to:string, dateFrom:number, dateTo:number|undefined=undefined):Promise<Sunlight|undefined> {
+        // Always get the from data
+        const fromData:any|undefined = await GApi.getSunriseData(from, dateFrom)
+        // console.log('[GApi.getSunlight] fromData', JSON.stringify(fromData))
         if(!fromData) return undefined
-        if( to == from) {
+        if(!dateTo) dateTo = dateFrom
+        if( to == from && dateFrom == dateTo) { // we are going to the same place on the same day
             // console.log('[GApi.getSunlight] from = ' + from)
             return new Sunlight(fromData)
-        } else {
+        } else { // we are going to a different place or returning on a different date
             // console.log('[GApi.getSunlight] to = ' + to)
-            const toData:any|undefined = await GApi.getSunriseData(to, date)
-            return new Sunlight(fromData, toData)
+            const toData:any|undefined = await GApi.getSunriseData(to, dateTo)
+            // console.log('[GApi.getSunlight] toData', JSON.stringify(toData))
+            return new Sunlight(fromData, toData, dateFrom != dateTo)
         }
     }
 
