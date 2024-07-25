@@ -56,19 +56,12 @@ function loadData(data) {
 }
 
 function addFrequency(freq) {
-    const numLines = textData.value.length > 0 ? textData.value.split(/\r\n|\r|\n/).length + 1 : 0
-    if(numLines >= maxFreqCount) {
+    if( frequencies.value.length >= maxFreqCount) {
         toast('Radio boxes are full', 'warn')
         return;
     }
-    // insert airport code to airport frequencies, if available
-    const newLine = '\n' + formatMhz(freq.mhz) + ',' + freq.name
-    if( numLines) {
-        textData.value += newLine
-    } else {
-        textData.value = newLine
-    }
-    toast( freq.name + ' added (' + (numLines) + '/' + maxFreqCount + ')')
+    frequencies.value.push({mhz:freq.mhz, name:freq.name})
+    toast( freq.name + ' added (' + (frequencies.value.length) + '/' + maxFreqCount + ')')
 }
 
 // load data from text value
@@ -76,13 +69,13 @@ function onApply() {
     // console.log( 'onApply ' + textData.value)
     var data = []
     textData.value.split('\n').forEach( (row) => {
-         const [mhz,name] = row.split(',')
-         // if we have enough values, we make a radio out of it
-         // ther is an upper limit at 15
-         if( mhz && name && data.length < maxFreqCount) {
+        const [mhz,name] = row.split(',')
+        // if we have enough values, we make a radio out of it
+        // ther is an upper limit at 15
+        if( mhz && name && data.length < maxFreqCount) {
             const freq = {mhz:mhz,name:name}
             data.push(freq)
-         }
+        }
     })
 
     loadData(data);
@@ -94,6 +87,7 @@ function onApply() {
 function onDone() {
     mode.value='edit'
     knownFrequencies.value = []
+    textData.value = frequencies.value.map( f => f.mhz + ',' + f.name).join('\n')
 }
 
 function onHeaderClick() {
@@ -111,6 +105,10 @@ function onCancel() {
     loadData( listBeforeEdit, false)
 }
 
+/**
+ * Builds the list of known frequencies from given airport data
+ * @param {*} airport 
+ */
 function showFrequencies(airport) {
     let list = []
     if( airport) {
@@ -161,7 +159,7 @@ function toast(message, severity='success') {
                 <div class="" v-else>Enter an airport code to view its known frequencies</div>
             </div>
             <div>
-                <Button icon="pi pi-search" label="Done" link
+                <Button icon="pi pi-thumbs-up" label="Done" link
                     @click="onDone"></Button> 
             </div>
         </div>
