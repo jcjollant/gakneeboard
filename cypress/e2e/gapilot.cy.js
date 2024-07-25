@@ -53,7 +53,10 @@ describe('template spec', () => {
       }
     }
 
-    // Test Airport Tile Renton and Boeing fields
+    // ========================================================================
+    // Arport tile
+    // ========================================================================
+    // Renton and Boeing fields
     const expectedValues = []
     expectedValues.push({'tile':'Renton Muni','label0':'ATIS','value0':'126.950','label1':'TWR','value1':'124.700','label2':'Elev','value2':'32','label3':'TPA','value3':'1032','watermark':'KRNT','dimensions':'5382x200'})
     expectedValues.push({'tile':'Boeing Fld/king County Intl','label0':'ATIS','value0':'127.750','label1':'RWY 14L-32R','value1':'118.300','label2':'Elev','value2':'22','label3':'TPA','value3':'1022','watermark':'KBFI','dimensions':'3709x100'})
@@ -72,16 +75,14 @@ describe('template spec', () => {
       cy.get(`:nth-child(1) > :nth-child(${child}) > .content > .container > .label`).contains(value.dimensions)
       cy.get(`:nth-child(1) > :nth-child(${child}) > .content > .airportCode`).contains(value.watermark)
     }
-
     // Switch runway and check frequency is being updated accordingly
     cy.get(':nth-child(1) > :nth-child(2) > .header > div').click()
     cy.get('[aria-label="14R-32L"]').click()
     cy.get('[aria-label="Apply"]').click()
     cy.get(':nth-child(2) > .content > .top.right > .clickable > :nth-child(1) > :nth-child(1)').contains('120.600')
     cy.get(':nth-child(2) > .content > .top.right > .clickable > :nth-child(1) > .label').contains('RWY 14R-32L')
-
     // Check Corners have all exected data
-    // Open the bottom right corner
+    // Open the bottom right corner to get the corner selection window
     cy.get(':nth-child(1) > :nth-child(1) > .content > .bottom.right').click()
     // standard fields
     const expectedStandardFields = ['Field Elevation', 'Traffic Pattern Altitude', 'Runway Information', 'Nothing']
@@ -93,13 +94,38 @@ describe('template spec', () => {
     for(let index = 0; index < expectedRadios.length; index++) {
       cy.get(`.freqList > :nth-child(${index+1})`).contains(expectedRadios[index])
     }
-
     const expectedNavaids = ['SEA (VORTAC)', 'PAE (VOR/DME)', 'OLM (VORTAC)', 'CVV (VOR/DME)']
     for(let index = 0; index < expectedNavaids.length; index++) {
       cy.get(`.navList > :nth-child(${index+1})`).contains(expectedNavaids[index])
     }
+    // Enter a new airport code and check it's data is loading
+    cy.get('.pageOne > :nth-child(3) > .header > div').click()
+    cy.get('.pageOne > :nth-child(3) > .content > .settings > .airportCode > .p-inputgroup > .p-inputtext').clear().type('KBLI')
+    // wait for the reply
+    cy.intercept({
+      method: 'GET',
+      url: 'https://ga-api-seven.vercel.app/airport/**',
+    }).as('getOneAirport');
+    cy.wait('@getOneAirport').its('response.statusCode').should('equal', 200)
+    // Name should be shown in AirportInput
+    cy.get('.pageOne > :nth-child(3) > .content > .settings > .airportCode > .airportName').contains('Bellingham Intl')
+    cy.get('.pageOne > :nth-child(3) > .content > .actionBar > [aria-label="Apply"]').click()
+    // Check for bellingham fields
+    const kbliValues = {'tile':'Bellingham Intl','label0':'ATIS','value0':'134.450','label1':'TWR','value1':'124.900','label2':'Elev','value2':'171','label3':'TPA','value3':'1171','watermark':'KBLI','dimensions':'6700x150'}
+    cy.get('.pageOne > :nth-child(3) > .header > div').contains(kbliValues.tile)
+    cy.get(':nth-child(3) > .content > .top.left > .clickable > :nth-child(1) > .label').contains(kbliValues.label0)
+    cy.get(':nth-child(3) > .content > .top.left > .clickable > :nth-child(1) > :nth-child(1)').contains(kbliValues.value0)
+    cy.get(':nth-child(3) > .content > .top.right > .clickable > :nth-child(1) > .label').contains(kbliValues.label1)
+    cy.get(':nth-child(3) > .content > .top.right > .clickable > :nth-child(1) > :nth-child(1)').contains(kbliValues.value1)
+    cy.get(':nth-child(3) > .content > .bottom.left > .clickable > :nth-child(1) > .label').contains(kbliValues.label2)
+    cy.get(':nth-child(3) > .content > .bottom.left > .clickable > :nth-child(1) > :nth-child(2)').contains(kbliValues.value2)
+    cy.get(':nth-child(3) > .content > .bottom.right > .clickable > :nth-child(1) > .label').contains(kbliValues.label3)
+    cy.get(':nth-child(3) > .content > .bottom.right > .clickable > :nth-child(1) > :nth-child(2)').contains(kbliValues.value3)
+    cy.get(':nth-child(3) > .content > .container > .label').contains(kbliValues.dimensions)
 
-    
+    // ========================================================================
+    // ATIS
+    // ========================================================================
     // Check ATIS has all fields in full mode
     cy.get('.info').contains('Info')
     cy.get('.wind').contains('Wind')
@@ -121,7 +147,9 @@ describe('template spec', () => {
   
     }
 
-    // Test Sunlight Tile
+    // ========================================================================
+    // Sunlight
+    // ========================================================================
     cy.get('.pageTwo > :nth-child(3) > .header > div').contains('Sun Light')
     // date should be today
     const today = new Date().toLocaleString('en-US', {weekday: 'short', month: 'short', day: 'numeric'})
@@ -146,7 +174,6 @@ describe('template spec', () => {
     cy.get('.bottomLeftCorner').contains('From')
     cy.get('.bottomRightCorner').contains('To')
     cy.get('.date').contains( 'Night Flight')
-
     // Test Tile can be replaced by Notes
     cy.get('.pageTwo > :nth-child(3) > .header > div').click()
     cy.get('.header > .p-button').click()
@@ -160,7 +187,30 @@ describe('template spec', () => {
     cy.get('.settings > :nth-child(1) > .p-inputgroup > .p-inputgroup-addon').contains('From')
     cy.get(':nth-child(2) > .p-inputgroup > .p-inputgroup-addon').contains('To')
     cy.get('[data-v-364bf338=""][data-pc-name="inputgroup"] > .p-inputgroup-addon').contains('Date')
+    cy.get('.actionBar > .p-button-link').click()
 
+    // ========================================================================
+    // Radio Flow
+    // ========================================================================
+    // Check all fields are present in Radio flow
+    const expectRadioFlow = [
+      ['116.800','SEA VOR'],
+      ['113.400','OLM VOR'],
+      ['124.700','RNT TWR'],
+      ['126.950','RNT ATIS'],
+      ['123.000','S43 CTAF'],
+      ['128.650','PAE ATIS'],
+      ['120.200','PAE TWR 34R'],
+      ['132.950','PAE TWR 34L']]
+    for(let index=0;index<expectRadioFlow.length;index++) {
+      cy.get(`.freqList > :nth-child(${index+1})`).contains(expectRadioFlow[index][0])
+      cy.get(`.freqList > :nth-child(${index+1})`).contains(expectRadioFlow[index][1])
+    }
+    cy.get('.freqList > :nth-child(1)')
+
+    // ========================================================================
+    // Print Dialog
+    // ========================================================================
     // Test print dialog show up
     cy.get('.menuIcon').click()
     cy.get('[aria-label="Print"]').click()

@@ -1,90 +1,28 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
+import { formatMhz } from '../../assets/data'
+
 import Header from '../shared/Header.vue';
-import RadioBox from './RadioBox.vue';
+import AirportInput from '../shared/AirportInput.vue'
+import FrequencyBox from './FrequencyBox.vue'
+
 import Button from 'primevue/button'
 import Textarea from 'primevue/textarea';
 
-const emits = defineEmits(['replace','update'])
+const emits = defineEmits(['replace','update','toast'])
+const maxFreqCount = 15
 
 const props = defineProps({
     params: { type: Object, default: null}, // expecting a list of radio {'target':'COM1', 'freq':'-.-', 'name':'-'}
 })
 
-const noRadio = {'target':'COM1', 'freq':'-.-', 'name':'-'}
-const radio1=ref(noRadio)
-const radio2=ref(noRadio)
-const radio3=ref(noRadio)
-const radio4=ref(noRadio)
-const radio5=ref(noRadio)
-const radio6=ref(noRadio)
-const radio7=ref(noRadio)
-const radio8=ref(noRadio)
 const mode=ref('')
 const textData = ref('')
-
-const allRadios = [radio1, radio2, radio3, radio4, radio5, radio6, radio7, radio8]
-
-function loadData(data) {
-    // console.log('RadioFlow loadData ' + JSON.stringify(data))
-    if( data && Array.isArray(data)) {
-        let text = ''
-        data.forEach( (radio, index) => {
-            if(index == 0) radio1.value = radio;
-            else if(index == 1) radio2.value = radio;
-            else if(index == 2) radio3.value = radio;
-            else if(index == 3) radio4.value = radio;
-            else if(index == 4) radio5.value = radio;
-            else if(index == 5) radio6.value = radio;
-            else if(index == 6) radio7.value = radio;
-            else if(index == 7) radio8.value = radio;
-            if(text != '') text += ','
-            text += radio.target + ',' + radio.freq + ',' + radio.name
-        })
-        textData.value = text;
-    } else {
-        radio1.value = noRadio
-    }
-}
-
-function addFrequency(name) {
-    const numLines = textData.value.split(/\r\n|\r|\n/).length
-    if(numLines >= 8) return;
-    textData.value += name + ',-.-,NAME\n'
-}
-
-// load data from text value
-function onApply() {
-    // console.log( 'onApply ' + textData.value)
-    var data = []
-    textData.value.split('\n').forEach( (row) => {
-         const [target,freq,name] = row.split(',')
-         // if we have enough values, we make a radio out of it
-         if( target && freq && name) {
-            const radio = {'target':target,'freq':freq,'name':name}
-            // console.log( 'radio :' + JSON.stringify(radio))
-            data.push(radio)
-         }
-    })
-
-    // fill the rest with noRadio
-    while( data.length < 8) data.push(noRadio)
-
-    loadData(data);
-    emits('update',data);
-    // go back to normal mode
-    mode.value = ''
-}
-
-function onHeaderClick() {
-    // console.log('onHeaderClick ' + mode.value)
-    if( mode.value == 'edit') {
-        mode.value = ''
-    } else {
-        mode.value = 'edit'
-        textData.value = allRadios.map((radio => radio.value.target + ',' + radio.value.freq + ',' + radio.value.name)).join('\n')
-    }
-}
+const frequencies = ref([])
+const knownFrequencies = ref([])
+let listBeforeEdit = []
+// format use to be {target:"", freq:"", name:""}
+// new format is {mhz:123.456, name:'Radio name'}
 
 onMounted(() => {
     // console.log('onMounted ' + JSON.stringify(props.params))
@@ -96,46 +34,158 @@ watch( props, async() => {
     loadData(props.params);
 })
 
+
+function loadData(data) {
+    // console.log('[RadioFlow.loadData]', JSON.stringify(data))
+    if( data && Array.isArray(data)) {
+        let list = []
+        data.forEach( (freq) => {
+            if( 'target' in freq) { // old format
+                // turn freq into mhz, keep name. Target is lost
+                list.push( {mhz:Number(freq.freq),name:freq.name})
+            } else {
+                list.push(freq)
+            }
+        })
+        frequencies.value = list
+        // build text based of the frequency list
+        textData.value = list.map( f => f.mhz + ',' + f.name).join('\n')
+    } else {
+        frequencies.value = []
+    }
+}
+
+function addFrequency(freq) {
+    const numLines = textData.value.length > 0 ? textData.value.split(/\r\n|\r|\n/).length + 1 : 0
+    if(numLines >= maxFreqCount) {
+        toast('Radio boxes are full', 'warn')
+        return;
+    }
+    // insert airport code to airport frequencies, if available
+    const newLine = '\n' + formatMhz(freq.mhz) + ',' + freq.name
+    if( numLines) {
+        textData.value += newLine
+    } else {
+        textData.value = newLine
+    }
+    toast( freq.name + ' added (' + (numLines) + '/' + maxFreqCount + ')')
+}
+
+// load data from text value
+function onApply() {
+    // console.log( 'onApply ' + textData.value)
+    var data = []
+    textData.value.split('\n').forEach( (row) => {
+         const [mhz,name] = row.split(',')
+         // if we have enough values, we make a radio out of it
+         // ther is an upper limit at 15
+         if( mhz && name && data.length < maxFreqCount) {
+            const freq = {mhz:mhz,name:name}
+            data.push(freq)
+         }
+    })
+
+    loadData(data);
+    emits('update',data);
+    // go back to normal mode
+    mode.value = ''
+}
+
+function onDone() {
+    mode.value='edit'
+    knownFrequencies.value = []
+}
+
+function onHeaderClick() {
+    // console.log('onHeaderClick ' + mode.value)
+    if( mode.value == 'edit') {
+        mode.value = ''
+    } else {
+        mode.value = 'edit'
+        listBeforeEdit = frequencies.value
+    }
+}
+
+function onCancel() {
+    mode.value = ''
+    loadData( listBeforeEdit, false)
+}
+
+function showFrequencies(airport) {
+    let list = []
+    if( airport) {
+        for(let freq of airport.freq) {
+            list.push({name:airport.code + ' ' + freq.name,display:freq.name, mhz:freq.mhz,nav:false})
+        }
+        for(let nav of airport.navaids) {
+            list.push({name:nav.id + ' ' + nav.type, display:nav.id,mhz:nav.freq,nav:true})
+        }
+    }
+    knownFrequencies.value = list
+}
+
+function toast(message, severity='success') {
+    emits( 'toast', { severity: severity, summary: 'Radio Flow', detail: message, life: 2000})
+}
+
 </script>
 
 <template>
     <div class="widget">
         <Header :title="'Radio Flow'" :replace="mode=='edit'"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <div class="radioList" v-if="mode==''">
-            <RadioBox class='br bb' :radio="radio1"/>
-            <RadioBox class='bb' :radio="radio2"/>
-            <RadioBox class='br bb' :radio="radio3"/>
-            <RadioBox class='bb' :radio="radio4"/>
-            <RadioBox class='br bb' :radio="radio5"/>
-            <RadioBox class='bb' :radio="radio6"/>
-            <RadioBox class='br' :radio="radio7"/>
-            <RadioBox :radio="radio8"/>
+        <div v-if="mode==''">
+            <div v-if="frequencies.length==0" class="fullsize"><div>No Radios</div></div>
+            <div class="freqList" v-else>
+                <FrequencyBox v-for="freq in frequencies" :freq="freq" :small="frequencies.length > 8" />
+            </div>
         </div>
         <div v-else-if="mode=='edit'" class="edit">
-            <!-- <div>Frequencies list</div> -->
-            <div class="list">Format: POSn,FREQ,NAME</div>
-            <div class="list">Ex: NAV2,116.8,SEA VOR</div>
-            <!-- <div>Format: COM1,124.7,TWR</div> -->
-            <!-- <textarea v-model="textData" rows="8" cols="24">Blah</textarea> -->
-            <!-- <div class="helpers">
-                <Button label="COM1" class="shortcut" @click="addFrequency('COM1')"></Button>
-                <Button label="COM2" class="shortcut" @click="addFrequency('COM2')"></Button>
-                <Button label="NAV1" class="shortcut" @click="addFrequency('NAV1')"></Button>
-                <Button label="NAV2" class="shortcut" @click="addFrequency('NAV2')"></Button>
-            </div> -->
-            <Textarea class='list' rows="8" cols="24" autoResize v-model="textData" 
-                placeholder="Enter up to 8 freq."></Textarea>
-
+            <Button icon="pi pi-search" label="Lookup" link
+                @click="mode='lookup'"></Button>
+            <Textarea class='list' rows="8" cols="24" v-model="textData"
+                placeholder="Enter up to 15 freq."></Textarea>
             <div class="actionBar">
-                <Button @click="onHeaderClick" label="Cancel" link></Button>
+                <Button @click="onCancel" label="Cancel" link></Button>
                 <Button icon="pi pi-check" @click="onApply" label="Apply"></Button>
+            </div>
+        </div>
+        <div v-else-if="mode=='lookup'" class="lookup">
+            <AirportInput :auto="true" @valid="showFrequencies"></AirportInput>
+            <div >
+                <div v-if="knownFrequencies.length" class="knownFrequencies">
+                    <Button v-for="kf in knownFrequencies" :label="kf.display" 
+                        :title="formatMhz(kf.mhz) + ',' + kf.name"
+                        @click="addFrequency(kf)" :icon="kf.nav?'pi pi-compass':''"></Button>
+                </div>
+                <div class="" v-else>Enter an airport code to view its known frequencies</div>
+            </div>
+            <div>
+                <Button icon="pi pi-search" label="Done" link
+                    @click="onDone"></Button> 
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+.fullsize{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    font-weight: 600;
+    font-size: x-large;
+    opacity: .3;
+    line-height: 200px;
+}
+.freqList {
+    padding-top: 5px;
+    display: flex;
+    gap: 5px;
+    flex-flow: wrap;
+    justify-content: center;
+}
 .radioList {
     position: relative;
     display: grid;
@@ -155,7 +205,7 @@ watch( props, async() => {
     text-align: center;
 }
 .list {
-
+    resize: none;
     font-size: 0.8rem;
     padding: 0.2rem;
     font-family: 'Courier New', Courier, monospace;
@@ -167,6 +217,13 @@ watch( props, async() => {
     height:200px;
     font-size: 0.8rem;
 }
+
+.p-button {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    height: 1.5rem;
+}
+
 .helpers {
     display: flex;
     justify-content: center;
@@ -178,5 +235,23 @@ watch( props, async() => {
     font-size: 0.8rem;
     font-family: 'Courier New', Courier, monospace;
     font-weight: 400;
+}
+.lookup {
+    display: flex;
+    flex-flow: column;
+    gap: 10px;
+    padding: 5px;
+    font-size: 0.8rem
+}
+.knownFrequencies {
+    display: flex;
+    gap:5px;
+    flex-flow: wrap;
+    align-content: flex-start;
+    height: 125px;
+    overflow: auto;
+}
+.counter {
+    font-size: 0.9rem;
 }
 </style>

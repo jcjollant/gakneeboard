@@ -14,9 +14,7 @@ import Checkbox from 'primevue/checkbox'
 
 const mode=ref('')
 const airportFromCode = ref('')
-const airportFromName = ref('')
 const airportToCode = ref('')
-const airportToName = ref('')
 const circleKey = ref()
 const civilTwilightAm = ref('-')
 const civilTwilightPm = ref('-')
@@ -29,7 +27,6 @@ const loading = ref(false)
 const solarNoon = ref('-')
 const sunriseTime = ref('-')
 const sunsetTime = ref('-')
-const validFromAirport = ref(false)
 const nightFlight = ref(false)
 
 let state = {}
@@ -55,7 +52,6 @@ watch( props, async() => {
 function loadProps(newProps) {
     state = newProps.params
     airportFromCode.value = state.from
-    validFromAirport.value = true
     airportToCode.value = state.to ? state.to : state.from
     // loadAirportFrom( state.from)
     // loadAirportTo(state.to ? state.to : state.from)
@@ -144,33 +140,20 @@ function getData( update=true) {
     })
 }
 
-function loadAirportFrom( code) {
-    airportFromCode.value = code
-    loadAirport( code, airportFromName, airportFromCode)
+function onAirportFrom( airport) {
+    console.log('[SunLight.onAirportFrom]', JSON.stringify(airport))
+    if(airport.code && airport.code != airportFromCode.value) {
+        airportFromCode.value = airport.code
+    }
 }
 
-function loadAirportTo( code) {
-    airportToCode.value = code
-    loadAirport( code, airportToName, airportToCode)
-}
-
-function loadAirport( code, nameField, codeField) {
-    getAirport( code)
-        .then( newAirport => {
-            if( newAirport && newAirport.version != -1) {
-                nameField.value = newAirport.name
-                codeField.value = newAirport.code
-                if( codeField.value == airportFromCode.value) validFromAirport.value = true;
-            } else { // airport is unknown
-                nameField.value = "Unknown"
-                if( codeField == airportFromCode) validFromAirport.value = false;
-            }
-        })
+function onAirportTo( airport) {
+    airportToCode.value = airport.code
 }
 
 function onApply() {
     // you need at least a valid from airport and a valid date
-    if( validFromAirport.value && dateFrom.value) {
+    if( airportFromCode.value && dateFrom.value) {
         // copy airportFrom onto airportTo if not provided
         if( airportToCode.value == '' || !airportToCode.value) airportToCode.value = airportFromCode.value
         // console.log('[SunLight.onApply]', airportFromCode.value, airportToCode.value, date.value)
@@ -225,10 +208,10 @@ function onHeaderClick() {
         </div>
         <div v-else class="content">
             <div class="settings">
-                <AirportInput :code="airportFromCode" :name="airportFromName" label="From"
-                    @updated="loadAirportFrom" />
-                <AirportInput :code="airportToCode" :name="airportToName" label="To"
-                    @updated="loadAirportTo"   />
+                <AirportInput :code="airportFromCode" label="From" :auto="true"
+                    @valid="onAirportFrom" />
+                <AirportInput :code="airportToCode" label="To" :auto="true"
+                    @valid="onAirportTo"   />
                 <InputGroup>
                     <InputGroupAddon class="airportCodeLabel">Date</InputGroupAddon>
                     <Calendar v-model="dateFrom" showIcon />

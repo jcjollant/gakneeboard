@@ -85,28 +85,7 @@ function loadAirport( code) {
         .then( newAirport => {
             loading.value = false;
             if( newAirport && newAirport.version != -1) {
-                // console.log("[AirportEdit.loadAirport] airport", JSON.stringify(airport))
-                // console.log("[AirportEdit.loadAirport] newAirport", JSON.stringify(newAirport))
-                airport = newAirport
-                showAirport()
-                // select the first runway by default
-                // console.log("[AirportEdit.loadAirport] runways", JSON.stringify(airport.rwys))
-                if('rwys' in airport && airport.rwys.length > 0) {
-                    selectedRwy.value = airport.rwys[0]['name']
-                    canApply.value = true
-                } else {
-                    canApply.value = false
-                }
-                if( 'custom' in airport && airport.custom) {
-                    customAirport.value = newAirport
-                    canEdit.value = true
-                } else {
-                    customAirport.value = null
-                    canEdit.value = false
-                }
-                // canEdit.value = (customAirport.value != null)
-                canCreate.value = false
-                // we cannot apply until we pick a runway
+                loadAirportData(newAirport)
             } else { // airport is unknown
                 rwyList.value = [];
                 airportName.value = "Unknown"
@@ -116,6 +95,31 @@ function loadAirport( code) {
                 canEdit.value = false
             }
         })
+}
+
+function loadAirportData(newAirport) {
+    // console.log("[AirportEdit.loadAirport] airport", JSON.stringify(airport))
+    // console.log("[AirportEdit.loadAirport] newAirport", JSON.stringify(newAirport))
+    airport = newAirport
+    showAirport()
+    // select the first runway by default
+    // console.log("[AirportEdit.loadAirport] runways", JSON.stringify(airport.rwys))
+    if('rwys' in airport && airport.rwys.length > 0) {
+        selectedRwy.value = airport.rwys[0]['name']
+        canApply.value = true
+    } else {
+        canApply.value = false
+    }
+    if( 'custom' in airport && airport.custom) {
+        customAirport.value = newAirport
+        canEdit.value = true
+    } else {
+        customAirport.value = null
+        canEdit.value = false
+    }
+    // canEdit.value = (customAirport.value != null)
+    canCreate.value = false
+    // we cannot apply until we pick a runway
 }
 
 function onAirportInputUpdating() {
@@ -175,8 +179,8 @@ function showCustomAirportDialog() {
         <CustomAirport v-model:visible="showCustomAirport" :airport="customAirport" :user="currentUser"
                         @close="showCustomAirport=false" @updated="onCustomUpdated" />
         <div class="settings">
-            <AirportInput :code="airportCode" :name="airportName" 
-                @updated="loadAirport" @updating="onAirportInputUpdating" />
+            <AirportInput :code="airportCode" :auto="true"
+                @valid="loadAirportData" />
             <ProgressSpinner v-if="loading" class="spinner" ></ProgressSpinner>
             <div v-else-if="validAirport">
                 <div class="miniHeader">Runway</div>

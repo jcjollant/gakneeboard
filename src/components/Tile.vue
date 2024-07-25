@@ -12,7 +12,7 @@ import FuelBug from './fuel/FuelBug.vue';
 import Button from 'primevue/button';
 
 
-const emits = defineEmits(['update'])
+const emits = defineEmits(['update','toast'])
 
 const props = defineProps({
     widget: { type: Object, default: null},
@@ -56,6 +56,10 @@ function onUpdate(params = '') {
     emits('update',state)
 }
 
+function onToast(data) {
+    emits('toast', data)
+}
+
 function replaceWidget(newName = '') {
     // widget.value = { 'id':widget.value.id,'name': newName.toLowerCase(), 'data':{}}
     state = { 'id':widget.value.id,'name': newName.toLowerCase(), 'data':{}}
@@ -87,7 +91,7 @@ function replaceWidget(newName = '') {
     <Notes v-else-if="widget.name=='notes'" 
         @replace="replaceWidget" />
     <RadioFlow v-else-if="widget.name=='radios'" :params="widget.data" 
-        @replace="replaceWidget" @update="onUpdate" />
+        @replace="replaceWidget" @update="onUpdate" @toast="onToast" />
     <SunLight v-else-if="widget.name=='sunlight'" :params="widget.data" 
         @replace="replaceWidget" @update="onUpdate" />
     <!-- <List v-else-if="widget.name=='list'" @replace="updateWidgetName"/> -->

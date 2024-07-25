@@ -1,4 +1,4 @@
-export const version = '724'
+export const version = '725'
 export const blogUrl = 'https://gakneeboard.wordpress.com/'
 // export const blogUrl = 'https://ga-kneeboard.blogspot.com/'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
@@ -14,7 +14,7 @@ export const sheetNameLocal = 'page1'
 
 const demoRadioData = [
   {'target':'NAV1','freq':'116.8','name':'SEA VOR'},
-  {'target':'NAV2','freq':'124.7','name':'OLM VOR'},
+  {'target':'NAV2','freq':'113.4','name':'OLM VOR'},
   {'target':'COM1','freq':'124.7','name':'RNT TWR'},
   {'target':'COM2','freq':'126.95','name':'RNT ATIS'},
   {'target':'COM1','freq':'123.0','name':'S43 CTAF'},
@@ -153,7 +153,10 @@ export async function customSheetSave(sheet) {
     })
 }
 
-
+export function formatMhz(mhz) {
+    if( !mhz) return '-.-'
+    return Number(mhz).toFixed(3)
+}
 
 /**
  * Query airport data backend

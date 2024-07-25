@@ -145,8 +145,12 @@ function saveSheetData() {
   localStorage.setItem(sheetNameLocal, JSON.stringify( pageData.value))
 }
 
+function showToast(data) {
+  toast.add(data)
+}
+
 function showToastSuccess( summary, detail) {
-  toast.add({ severity: 'success', summary: summary, detail: detail, life: 2500});  
+  showToast({ severity: 'success', summary: summary, detail: detail, life: 2500});  
 }
 
 </script>
@@ -156,10 +160,10 @@ function showToastSuccess( summary, detail) {
   <Toast />
   <div class="twoPages">
     <div class="pageOne">
-      <Widget v-for='widget in widgetsOne' :widget="widget.value" @update="onWidgetUpdated"/>
+      <Widget v-for='widget in widgetsOne' :widget="widget.value" @update="onWidgetUpdated" @toast="showToast"/>
     </div>
     <div class="pageTwo" :class="{flipMode: flipMode}">
-      <Widget v-for='widget in widgetsTwo' :widget="widget.value" @update="onWidgetUpdated"/>
+      <Widget v-for='widget in widgetsTwo' :widget="widget.value" @update="onWidgetUpdated" @toast="showToast"/>
     </div>
   </div>
   <div class="menuContainer">

@@ -1,25 +1,25 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
+import { getAirport } from '../../assets/data'
+
 import InputText from 'primevue/inputtext'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon';
 
-const emits = defineEmits(['updating', 'updated'])
+const emits = defineEmits(['valid', 'invalid'])
 
 const props = defineProps({
     code: { type: String, default: ''},
-    name: { type: String, default: ''},
-    label: { type: String, default: 'Code'}
+    label: { type: String, default: 'Code'},
 })
 
 const code = ref()
-const name = ref()
+const name = ref('')
 let pendingCode = null // used during the short delay between code update and actual request
 
 function loadProps(props) {
     // console.log('[AirportInput.loadProps]')
     code.value = props.code
-    name.value = props.name
 }
 
 onMounted(() => {
@@ -33,7 +33,21 @@ watch( props, async() => {
     loadProps(props)
 })
 
-
+function fetchAirport() {
+    // console.log('[AirportInput.fetchAirport]', code.value)
+    getAirport( code.value)
+        .then( airport => {
+            // console.log('[AirportInput.fetchAirport] received', JSON.stringify(airport))
+            if( airport && airport.version != -1) {
+                name.value = airport.name
+                code.value = airport.code
+                emits('valid', airport)
+            } else { // airport is unknown
+                name.value = "Unknown"
+                emits('invalid')
+            }
+        })
+}
 
 // gets invoked as airport code is typed into the input field
 // We are after runways
@@ -44,12 +58,11 @@ function onCodeUpdate() {
     name.value = '...'
     // only load the new code after a short delay to avoid sending useless query
     if( pendingCode.length > 2) {
-        emits('updating')
         setTimeout( () => {
             // check if code has not changed
             if( pendingCode == code.value) {
                 pendingCode = null
-                emits('updated', code.value)
+                fetchAirport()
             }
         }, 500)
     }
