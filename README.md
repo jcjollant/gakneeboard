@@ -24,8 +24,10 @@ Run the test suite:
 * Small indicator below runway is configurable
 
 # Done
+## 7/25/2024
+* Reworked RadioFlow
 ## 7/24/2024
-* Added nigh flight support to Sunligh tile
+* Added night flight support to Sunlight tile
 ## 7/23/2024
 * Added Navaids to airport corners
 ## 7/22/2024

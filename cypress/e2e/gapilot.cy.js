@@ -1,4 +1,4 @@
-const currentVersionNumber = '724'
+const currentVersionNumber = '725'
 
 describe('template spec', () => {
   it('Visits main page', () => {
