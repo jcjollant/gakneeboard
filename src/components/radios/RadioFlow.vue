@@ -55,6 +55,21 @@ function loadData(data) {
     }
 }
 
+function loadDataFromText() {
+    const data = []
+    textData.value.split('\n').forEach( (row) => {
+        const [mhz,name] = row.split(',')
+        // if we have enough values, we make a radio out of it
+        // ther is an upper limit at 15
+        if( mhz && name && data.length < maxFreqCount) {
+            const freq = {mhz:mhz,name:name}
+            data.push(freq)
+        }
+    })
+    loadData(data)
+    return data;
+}
+
 function addFrequency(freq) {
     if( frequencies.value.length >= maxFreqCount) {
         toast('Radio boxes are full', 'warn')
@@ -67,21 +82,15 @@ function addFrequency(freq) {
 // load data from text value
 function onApply() {
     // console.log( 'onApply ' + textData.value)
-    var data = []
-    textData.value.split('\n').forEach( (row) => {
-        const [mhz,name] = row.split(',')
-        // if we have enough values, we make a radio out of it
-        // ther is an upper limit at 15
-        if( mhz && name && data.length < maxFreqCount) {
-            const freq = {mhz:mhz,name:name}
-            data.push(freq)
-        }
-    })
-
-    loadData(data);
+    const data = loadDataFromText();
     emits('update',data);
     // go back to normal mode
     mode.value = ''
+}
+
+function onCancel() {
+    mode.value = ''
+    loadData( listBeforeEdit, false)
 }
 
 function onDone() {
@@ -100,9 +109,9 @@ function onHeaderClick() {
     }
 }
 
-function onCancel() {
-    mode.value = ''
-    loadData( listBeforeEdit, false)
+function onLookup() {
+    loadDataFromText()
+    mode.value = 'lookup'
 }
 
 /**
@@ -140,7 +149,7 @@ function toast(message, severity='success') {
         </div>
         <div v-else-if="mode=='edit'" class="edit">
             <Button icon="pi pi-search" label="Lookup" link
-                @click="mode='lookup'"></Button>
+                @click="onLookup"></Button>
             <Textarea class='list' rows="8" cols="24" v-model="textData"
                 placeholder="Enter up to 15 freq."></Textarea>
             <div class="actionBar">

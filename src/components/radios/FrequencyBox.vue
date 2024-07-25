@@ -44,6 +44,7 @@ const props = defineProps({
 }
 .name {
     text-align: right;
+    overflow: hidden;
 }
 
 .nameSmall {
