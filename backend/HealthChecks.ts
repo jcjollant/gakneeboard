@@ -1,12 +1,10 @@
 import { sql } from  "@vercel/postgres";
 import { Airport } from "./models/Airport";
-import { AirportView } from "./models/AirportView";
-import { GApi } from "./GApi"
+import { Adip } from './Adip'
 import { UserDao } from "./UserDao"
 import { FeedbackDao } from "./FeedbackDao"
 import { AirportDao } from "./AirportDao";
 import { createTransport } from 'nodemailer'
-import { fail } from "assert";
 
 export class Check {
     name:string;
@@ -51,12 +49,12 @@ export class HealthCheck {
         const check:Check = new Check('effectiveDate')
         const rentonCode:string = "KRNT"
 
-        await Promise.all([AirportDao.readList( [rentonCode]),GApi.getAirportFromAdip(rentonCode,false)]).then((results) => {
+        await Promise.all([AirportDao.readList( [rentonCode]),Adip.fetchAirport(rentonCode)]).then((results) => {
             try {
-                const rentonDb:AirportView|undefined = results[0][0]
+                const rentonDb:Airport = results[0][0][1]
                 const rentonAdip:Airport|undefined = results[1]
 
-                if( !rentonDb || !rentonAdip) {
+                if( !rentonDb) {
                     check.fail(rentonCode + " is not in the database")
                 } else if( !rentonAdip) {
                     check.fail(rentonCode + " is not in ADIP")
