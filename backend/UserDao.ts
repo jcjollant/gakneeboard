@@ -46,6 +46,6 @@ export class UserDao {
 
     public static async count():Promise<number> {
         const result = await sql`SELECT count(*) FROM Users`;
-        return result.rows[0].count
+        return Number(result.rows[0].count)
     }
 }

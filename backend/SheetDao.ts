@@ -4,6 +4,11 @@ import { Sheet } from "./models/Sheet";
 export class SheetDao {
     static modelVersion:number = 1;
 
+    public static async count():Promise<number> {
+        const result = await sql`SELECT count(*) FROM Sheets`;
+        return Number(result.rows[0].count)
+    }
+
     /**
      * Create a new Sheet or update and existing one for a given user.
      * @param sheet 

@@ -5,6 +5,7 @@ import { UserDao } from "./UserDao"
 import { FeedbackDao } from "./FeedbackDao"
 import { AirportDao } from "./AirportDao";
 import { createTransport } from 'nodemailer'
+import { SheetDao } from "./SheetDao";
 
 export class Check {
     name:string;
@@ -122,6 +123,21 @@ export class HealthCheck {
 
     }
 
+    static async sheetsCheck():Promise<Check> {
+        const check:Check = new Check('sheets')
+        const sheetCount:number = await SheetDao.count()
+
+        if( sheetCount < 9) {
+            check.fail("Only " + sheetCount + " sheets")
+        } else {
+            check.pass( "We have " + sheetCount + " sheets")
+        }
+
+        return check
+    }
+
+
+
     static async usersCheck():Promise<Check> {
         const check:Check = new Check('users')
         const userCount:number = await UserDao.count()
@@ -140,6 +156,7 @@ export class HealthCheck {
                 HealthCheck.effectiveDateCheck(), 
                 HealthCheck.usersCheck(),
                 HealthCheck.feedbackCheck(),
+                HealthCheck.sheetsCheck(),
                 HealthCheck.airportDuplicatesCheck()
             ]).then( async allChecks => {
             const failedChecks:number = allChecks.filter((check) => check.status === Check.FAIL).length

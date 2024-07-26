@@ -117,5 +117,10 @@ describe('Custom Sheets', () => {
                 expect(false).toBe(true)
             })
     })
+
+    test('Count', async () => {
+        expect(await SheetDao.count()).toBeGreaterThan(8)
+    })
+
 });
 
