@@ -24,6 +24,8 @@ Run the test suite:
 * Small indicator below runway is configurable
 
 # Done
+## 7/26/2024
+* Improved page management
 ## 7/25/2024
 * Reworked RadioFlow
 ## 7/24/2024
