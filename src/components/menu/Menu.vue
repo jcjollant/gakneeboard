@@ -31,7 +31,6 @@ let pageData = null;
 
 const props = defineProps({
   pageData: { type: Object, default: null},
-  user: { type: Object, default: null},
 })
 
 function confirmAndCopy() {
@@ -106,6 +105,7 @@ function onPrintPrint(options) {
 function onSheet(mode) {
   if( user.value) {
     // console.log("[Menu.onSaveAs] valid request")
+    user.value = getCurrentUser()
     showSheets.value = true;
     pageMode.value = mode
   } else {

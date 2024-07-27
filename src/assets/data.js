@@ -404,16 +404,19 @@ export async function sendFeedback(text,contactMe) {
  * @param {*} refreshSheets 
  */
 export function setCurrentUser( user, refreshSheets=false) {
-  // console.log('[data.setCurrentUser]', JSON.stringify(user))
+  // console.log('[data.setCurrentUser]', JSON.stringify(user), refreshSheets)
   currentUser = user
-  if( refreshSheets) {
+  if( currentUser && refreshSheets) {
     // request sheets after waiting 2 seconds
     setTimeout( () => {
+      // console.log( '[data.setCurrentUser] refreshing sheets')
       const url = apiRootUrl + 'sheets'
       axiosGetForUser(url).then( sheets => {
-        // console.log( '[data.setCurrentUser] sheets received', sheets)
-        if( currentUser) {
+        const newSheets = sheets.data;
+        // console.log( '[data.setCurrentUser] sheets received', JSON.stringify(sheets), 'difference=>', newSheets != currentUser.sheets)
+        if( newSheets != currentUser.sheets) {
           currentUser.sheets = sheets.data;
+          // console.log( '[data.setCurrentUser] sheets count', currentUser.sheets.length)
           userSortSheets()
         }
       })

@@ -67,6 +67,7 @@ function onCloseHowDoesItWork() {
 }
 
 onBeforeMount(()=>{
+  // console.log('[App.onBeforeMount]')
   // activate the last known user
   const user = JSON.parse(localStorage.getItem(keyUser))
   if( user) setCurrentUser( user, true)
@@ -103,7 +104,9 @@ function onMenuLoad(sheet) {
 }
 
 onMounted(() => {
+  // console.log('[App.onMounted]')
   try {
+
     let data = JSON.parse(localStorage.getItem(sheetNameLocal))
     loadSheetData(data)
   } catch(e) {
