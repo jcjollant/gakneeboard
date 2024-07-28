@@ -92,6 +92,7 @@ watch( props, async() => {
                 </div>
                 <div class="wind br" :class="{bb: n < 4 }">
                     <div class="label">Wind</div>
+                    <span class="at">@</span>
                 </div>
                 <div class="altimeter br" :class="{bb: n < 4 }">
                     <div class="label">Alt</div>
@@ -172,5 +173,10 @@ watch( props, async() => {
 .compact .altimeter {
     grid-column:3;
 }
-
+.at {
+    line-height: 3rem;
+    font-size: 0.8rem;
+    padding-left: 1rem;
+    color: darkgrey;
+}
 </style>
