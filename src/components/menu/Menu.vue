@@ -11,9 +11,9 @@ import SignIn from './SignIn.vue';
 import Warning from './Warning.vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
-import { getBlankSheet, getCurrentUser, getDemoSheet, setCurrentUser, customSheetSave } from '../../assets/data'
-import { sheetNameDemo, sheetNameReset } from '../../assets/data'
-import { blogUrl } from '../../assets/data'
+import { getBlankSheet, getDemoSheet, getDemoSheetChecklist, customSheetSave } from '../../assets/data'
+import { sheetNameDemo, sheetNameChecklist, sheetNameReset } from '../../assets/data'
+import { blogUrl, getCurrentUser, setCurrentUser } from '../../assets/data'
 
 const emits = defineEmits(['authentication','copy','load','print','printOptions','howDoesItWork'])
 
@@ -133,9 +133,20 @@ function onSheetDelete(sheet) {
  * @param {*} sheetName 
  */
 function onSheetLoadDefault(sheetName) {
+  // console.log('[Menu.onSheetLoadDefault]', sheetName)
   showSheets.value = false
-  const title = (sheetName == sheetNameDemo ? 'Load Demo Tiles' : 'Reset All Tiles')
-  const sheetData = sheetName == sheetNameDemo ? getDemoSheet() : getBlankSheet()
+  let title = '?'
+  let sheetData = {}
+  if( sheetName == sheetNameDemo) {
+    title = 'Load Demo Tiles';
+    sheetData = getDemoSheet();
+  } else if( sheetName == sheetNameChecklist) {
+    title = 'Load Demo Checklist';
+    sheetData = getDemoSheetChecklist();
+  } else if( sheetName == sheetNameReset) { 
+    title = 'Reset Pages';
+    sheetData = getBlankSheet();
+  }
   const sheet = {name:sheetName,data:sheetData}
   confirmAndLoad( title, sheet)
 }
