@@ -7,53 +7,18 @@ const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'https://ga-api-git-custom-airports-jcjollants-projects.vercel.app/'
 import { Airport } from './Airport.ts'
 import axios from 'axios'
+import { demoSheetTiles, demoSheetChecklist } from './demoData.js'
 
 export const sheetNameDemo = 'default-demo'
+export const sheetNameChecklist = 'default-demo-checklisk'
 export const sheetNameReset = 'default-reset'
 export const sheetNameLocal = 'page1'
 
-const demoRadioData = [
-  {'target':'NAV1','freq':'116.8','name':'SEA VOR'},
-  {'target':'NAV2','freq':'113.4','name':'OLM VOR'},
-  {'target':'COM1','freq':'124.7','name':'RNT TWR'},
-  {'target':'COM2','freq':'126.95','name':'RNT ATIS'},
-  {'target':'COM1','freq':'123.0','name':'S43 CTAF'},
-  {'target':'COM2','freq':'128.65','name':'PAE ATIS'},
-  {'target':'COM1','freq':'120.2','name':'PAE TWR 34R'},
-  {'target':'COM1','freq':'132.95','name':'PAE TWR 34L'}
-]
- const demoSheet = [
-  {'id':0,'name':'airport','data':{'code':'krnt','rwy':'16-34'}},
-  {'id':1,'name':'airport','data':{'code':'kbfi','rwy':'14L-32R'}},
-  {'id':2,'name':'airport','data':{'code':'w39','rwy':'NE-SW','rwyOrientation':'magnetic'}},
-  {'id':3,'name':'airport','data':{'code':'O26','rwy':'13-31'}},
-  {'id':4,'name':'atis','data':{}},
-  {'id':5,'name':'clearance','data':{}},
-  {'id':6,'name':'airport','data':{'code':'ktta','rwy':'03-21','pattern':2}},
-  {'id':7,'name':'airport','data':{'code':'kawo','rwy':'all'}},
-  {'id':8,'name':'sunlight','data':{'from':'KRNT','to':'KSFF'}},
-  {'id':9,'name':'fuel'},
-  {'id':10,'name':'notes','data':{}},
-  {'id':11,'name':'radios','data':demoRadioData},
-]
 
- const blankSheet = [
-  {'id':0,'name':'','data':{}},
-  {'id':1,'name':'','data':{}},
-  {'id':2,'name':'','data':{}},
-  {'id':3,'name':'','data':{}},
-  {'id':4,'name':'','data':{}},
-  {'id':5,'name':'','data':{}},
-  {'id':6,'name':'','data':{}},
-  {'id':7,'name':'','data':{}},
-  {'id':8,'name':'','data':{}},
-  {'id':9,'name':'','data':{}},
-  {'id':10,'name':'','data':{}},
-  {'id':11,'name':'','data':{}},
-]  
+const blankSheet = [{type:'selection',data:{}},{type:'selection',data:{}}]
 
 const contentTypeJson = { headers: {'Content-Type':'application/json'} }
-const contentTypeTextPlain = { headers: {'Content-Type':'text/plain'} }
+// const contentTypeTextPlain = { headers: {'Content-Type':'text/plain'} }
 const contentType = contentTypeJson;
 let currentUser = null
 let airports = {}
@@ -245,7 +210,11 @@ export function getCurrentUser() {
  * @returns a copy of demo sheet data 
  */
 export function getDemoSheet() {
-  return JSON.parse( JSON.stringify(demoSheet))
+  return JSON.parse( JSON.stringify(demoSheetTiles))
+}  
+
+export function getDemoSheetChecklist() {
+  return JSON.parse( JSON.stringify(demoSheetChecklist))
 }  
 
 export function getFrequency(freqList, name) {
