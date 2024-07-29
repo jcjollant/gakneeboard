@@ -55,7 +55,7 @@ watch( props, async() => {
         height: 39px;
         line-height: 30px;
     }
-    .header:hover {
+    .clickable:hover {
         color: darkblue;
         font-weight: bolder;
     }
