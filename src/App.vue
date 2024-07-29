@@ -3,29 +3,16 @@
 import { onBeforeMount, onMounted,ref} from 'vue'
 import { inject } from "@vercel/analytics"
 import Menu from './components/menu/Menu.vue'
-import Widget from './components/Tile.vue'
+import Page from './components/Page.vue'
 import { getDemoSheet, version } from './assets/data.js'
 import { setCurrentUser, sheetNameLocal} from './assets/data.js'
 import HowDoesItWork from './components/HowDoesItWork.vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
 
-const pageData = ref(null)
-const widget0 = ref({})
-const widget1 = ref({})
-const widget2 = ref({})
-const widget3 = ref({})
-const widget4 = ref({})
-const widget5 = ref({})
-const widget6 = ref({})
-const widget7 = ref({})
-const widget8 = ref({})
-const widget9 = ref({})
-const widget10 = ref({})
-const widget11 = ref({})
-const widgetsOne = [widget0,widget1,widget2,widget3,widget4,widget5]
-const widgetsTwo = [widget6,widget7,widget8,widget9,widget10,widget11]
-const allWidgets = widgetsOne.concat(widgetsTwo)
+const frontPageData = ref(null)
+const backPageData = ref(null)
+const sheetData = ref(null)
 
 const flipMode = ref(false)
 const keyUser = 'kb-user'
@@ -36,17 +23,30 @@ const versionVisible = ref(true)
 
 // update all widgets with provided data
 function loadSheetData(data) {
-  // console.log( '[App.loadSheetData]', typeof data, JSON.stringify(data))
+  console.log( '[App.loadSheetData]', typeof data, JSON.stringify(data))
 
   // if we don't know what to show, we load a copy of the demo page
   if( !data) data = getDemoSheet();
   if( typeof data == 'string') data = JSON.parse(data)
 
-  // assigns their values to all widgets
-  allWidgets.forEach((widget, index) => {
-      widget.value = data[index];
-  });
-  pageData.value = data;
+  // console.log('[App.loadSheetData]', JSON.stringify(data))
+  if(data.length == 12) { // old format with 12 tiles
+    // transform into new format
+    frontPageData.value = {type:'tiles',data:[data[0],data[1],data[2],data[3],data[4],data[5]]}
+    // adjust ids to 6->0 ... 11->5
+    for(let index = 6; index < 12; index++) {
+      data[index].id -= 6;
+    }
+    backPageData.value = {type:'tiles',data:[data[6],data[7],data[8],data[9],data[10],data[11]]}
+  } else if( data.length == 2){
+    frontPageData.value = data[0]
+    backPageData.value = data[1]
+  } else {
+    console.log('[App.loadSheetData] unexpected data length', data.length)
+    frontPageData.value = null
+    backPageData.value = null
+  }
+  sheetData.value = [frontPageData.value, backPageData.value]
 }
 
 function onAuthentication(user) {
@@ -82,22 +82,17 @@ onBeforeMount(()=>{
  * Copy all left tiles from left to right
  */
 function onMenuCopy() {
-  // console.log('[App.onMenuCopy]', JSON.stringify(pageData.value))
-  const newPageData = pageData.value;
-  const list = [{from:0,to:6},{from:1,to:7},{from:2,to:8},{from:3,to:9},{from:4,to:10},{from:5,to:11}]
-  for(const entry of list) {
-    newPageData[entry.to].name = newPageData[entry.from].name 
-    newPageData[entry.to].data = newPageData[entry.from].data
-  }
-  loadSheetData(newPageData)
-  saveSheetData()
+  // console.log('[App.onMenuCopy]')
+  backPageData.value = frontPageData.value
+  sheetData.value = [frontPageData.value, backPageData.value];
+  saveSheet()
 }
 
 function onMenuLoad(sheet) {
   // console.log('[App.onMenuLoad]', JSON.stringify(sheet))
   if(sheet && sheet.data) {
     loadSheetData(sheet.data)
-    saveSheetData()
+    saveSheet()
   } else {
     console.log('[App.onMenuLoad] could not load', JSON.stringify(sheet))
   }
@@ -112,7 +107,7 @@ onMounted(() => {
   } catch(e) {
     console.log('[App.onMounted] local data is corrupted')
     loadSheetData(null)
-    saveSheetData()
+    saveSheet()
   }
   // Analytics
   inject();
@@ -133,19 +128,24 @@ function onPrint(options) {
   }, 300);
 }
 
-/**
- * Some widget data has been updated, we want to save this at least locally
- * @param {*} newWidgetData 
- */
- function onWidgetUpdated(newWidgetData) {
-  // console.log('App : Tile updated with ' + JSON.stringify(newWidgetData))
-  pageData.value[newWidgetData.id] = newWidgetData;
-  saveSheetData();
+function onPageUpdateBack( pageData) {
+  // console.log('[App.onPageUpdateBack]', JSON.stringify(pageData))
+  backPageData.value = pageData;
+  sheetData.value[1] = pageData
+  saveSheet()
+
 }
 
-// save page data if it's page 1 or 2
-function saveSheetData() {
-  localStorage.setItem(sheetNameLocal, JSON.stringify( pageData.value))
+function onPageUpdateFront(pageData) {
+  frontPageData.value = pageData
+  sheetData.value[0] = pageData
+  saveSheet()
+}
+
+// Save sheet data to browser
+function saveSheet() {
+  // const sheetData = [frontPageData.value, backPageData.value]
+  localStorage.setItem(sheetNameLocal, JSON.stringify( sheetData.value))
 }
 
 function showToast(data) {
@@ -162,15 +162,11 @@ function showToastSuccess( summary, detail) {
   <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
   <Toast />
   <div class="twoPages">
-    <div class="pageOne">
-      <Widget v-for='widget in widgetsOne' :widget="widget.value" @update="onWidgetUpdated" @toast="showToast"/>
-    </div>
-    <div class="pageTwo" :class="{flipMode: flipMode}">
-      <Widget v-for='widget in widgetsTwo' :widget="widget.value" @update="onWidgetUpdated" @toast="showToast"/>
-    </div>
+    <Page :data="frontPageData" @update="onPageUpdateFront" @toast="showToast"/>
+    <Page :data="backPageData" @update="onPageUpdateBack" @toast="showToast"/>
   </div>
   <div class="menuContainer">
-    <Menu class="menu" :pageData="pageData"
+    <Menu class="menu" :pageData="sheetData"
       @authentication="onAuthentication"
       @load="onMenuLoad" 
       @print="onPrint"
@@ -199,11 +195,6 @@ function showToastSuccess( summary, detail) {
   display: grid;
   grid-template-columns: auto auto;
   gap: 80px;
-}
-.pageOne, .pageTwo {
-  display: grid;
-  grid-template-columns: auto auto;
-  gap: 5px;
 }
 .menu {
   position: absolute;
