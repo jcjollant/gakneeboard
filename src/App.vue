@@ -4,8 +4,8 @@ import { onBeforeMount, onMounted,ref} from 'vue'
 import { inject } from "@vercel/analytics"
 import Menu from './components/menu/Menu.vue'
 import Page from './components/Page.vue'
-import { getDemoSheet, version } from './assets/data.js'
-import { setCurrentUser, sheetNameLocal} from './assets/data.js'
+import { version, setCurrentUser } from './assets/data.js'
+import { getSheetDemoTiles, sheetNameLocal } from './assets/sheetData'
 import HowDoesItWork from './components/HowDoesItWork.vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
@@ -20,13 +20,14 @@ const keyHowDoesItWork = 'howDoesItWork'
 const showHowDoesItWork = ref(true)
 const toast = useToast()
 const versionVisible = ref(true)
+const menuVisible = ref(true)
 
 // update all widgets with provided data
 function loadSheetData(data) {
-  console.log( '[App.loadSheetData]', typeof data, JSON.stringify(data))
+  // console.log( '[App.loadSheetData]', typeof data, JSON.stringify(data))
 
   // if we don't know what to show, we load a copy of the demo page
-  if( !data) data = getDemoSheet();
+  if( !data) data = getSheetDemoTiles();
   if( typeof data == 'string') data = JSON.parse(data)
 
   // console.log('[App.loadSheetData]', JSON.stringify(data))
@@ -118,6 +119,7 @@ function onPrint(options) {
   if( options) {
     flipMode.value = options.includes('flip')
     versionVisible.value = !options.includes('version')
+    menuVisible.value = false
   }
 
   // print window content after a short timeout to let flipmode kickin
@@ -125,6 +127,7 @@ function onPrint(options) {
     window.print()
     flipMode.value = false;
     versionVisible.value = true;
+    menuVisible.value = true
   }, 300);
 }
 
@@ -162,11 +165,11 @@ function showToastSuccess( summary, detail) {
   <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
   <Toast />
   <div class="twoPages">
-    <Page :data="frontPageData" @update="onPageUpdateFront" @toast="showToast"/>
-    <Page :data="backPageData" @update="onPageUpdateBack" @toast="showToast"/>
+    <Page :data="frontPageData" @update="onPageUpdateFront" @toast="showToast" class="pageOne"/>
+    <Page :data="backPageData" @update="onPageUpdateBack" @toast="showToast" class="pageTwo"/>
   </div>
   <div class="menuContainer">
-    <Menu class="menu" :pageData="sheetData"
+    <Menu class="menu" :pageData="sheetData" v-show="menuVisible"
       @authentication="onAuthentication"
       @load="onMenuLoad" 
       @print="onPrint"
