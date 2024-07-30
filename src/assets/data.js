@@ -1,4 +1,4 @@
-export const version = '728'
+export const version = '729'
 export const blogUrl = 'https://gakneeboard.wordpress.com/'
 // export const blogUrl = 'https://ga-kneeboard.blogspot.com/'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
@@ -7,15 +7,8 @@ const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'https://ga-api-git-custom-airports-jcjollants-projects.vercel.app/'
 import { Airport } from './Airport.ts'
 import axios from 'axios'
-import { demoSheetTiles, demoSheetChecklist } from './demoData.js'
+import { sheetDataDemoTiles, sheetDataDemoChecklist, isDefaultName } from './sheetData.js'
 
-export const sheetNameDemo = 'default-demo'
-export const sheetNameChecklist = 'default-demo-checklisk'
-export const sheetNameReset = 'default-reset'
-export const sheetNameLocal = 'page1'
-
-
-const blankSheet = [{type:'selection',data:{}},{type:'selection',data:{}}]
 
 const contentTypeJson = { headers: {'Content-Type':'application/json'} }
 // const contentTypeTextPlain = { headers: {'Content-Type':'text/plain'} }
@@ -88,7 +81,7 @@ export async function customSheetSave(sheet) {
   if( !currentUser) {
     throw new Error('Cannot save sheet without user')
   }
-  if( sheet.name in [sheetNameDemo, sheetNameReset, sheetNameLocal]) {
+  if( isDefaultName(sheet.name)) {
     throw new Error('Sheet name conflicts with defaults')
   }
   const payload = {user:currentUser.sha256, sheet:sheet}
@@ -193,29 +186,11 @@ export async function getAirport( codeParam, group = false) {
   }
 
 /**
- * @returns a copy of blank sheet data
- */
-export function getBlankSheet() {
-  return JSON.parse( JSON.stringify(blankSheet))
-}  
-
-/**
  * @returns Whatever the current user is. Could be null if user is not authenticated
  */
 export function getCurrentUser() {
   return currentUser
 }
-
-/**
- * @returns a copy of demo sheet data 
- */
-export function getDemoSheet() {
-  return JSON.parse( JSON.stringify(demoSheetTiles))
-}  
-
-export function getDemoSheetChecklist() {
-  return JSON.parse( JSON.stringify(demoSheetChecklist))
-}  
 
 export function getFrequency(freqList, name) {
   return freqList.find( f => f.name.includes(name))
