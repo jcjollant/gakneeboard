@@ -6,7 +6,8 @@ import FieldSet from 'primevue/fieldset'
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputText from "primevue/inputtext";
-import { customSheetDelete, sheetNameChecklist, sheetNameDemo, sheetNameReset } from "../../assets/data"
+import { customSheetDelete } from "../../assets/data"
+import { sheetNameDemoChecklist, sheetNameDemoTiles, sheetNameNew } from '../../assets/sheetData'
 
 const emits = defineEmits(["close","delete","load","save","loadDefault"]);
 
@@ -88,11 +89,11 @@ watch( props, async() => {
     <FieldSet legend="Defaults" v-if="mode=='load'">
         <div class="sheetList">
           <Button label="Tiles Demo" icon="pi pi-clipboard"  title="Replace all with Demo Tiles" 
-            @click="emits('loadDefault', sheetNameDemo)"></Button>
+            @click="emits('loadDefault', sheetNameDemoTiles)"></Button>
           <Button label="Checklist Demo" icon="pi pi-clipboard"  title="Replace all with Demo Checklist" 
-            @click="emits('loadDefault',sheetNameChecklist)"></Button>
-          <Button label="Reset Page" icon="pi pi-file" title="Replace all tiles on the page" 
-            @click="emits('loadDefault', sheetNameReset)"></Button>
+            @click="emits('loadDefault',sheetNameDemoChecklist)"></Button>
+          <Button label="New Sheet" icon="pi pi-file" title="Both pages will show page selection" 
+            @click="emits('loadDefault', sheetNameNew)"></Button>
         </div>
     </FieldSet>
     <FieldSet legend="Save as New Sheet" v-else>
