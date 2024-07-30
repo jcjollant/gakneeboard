@@ -11,9 +11,10 @@ import SignIn from './SignIn.vue';
 import Warning from './Warning.vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
-import { getBlankSheet, getDemoSheet, getDemoSheetChecklist, customSheetSave } from '../../assets/data'
-import { sheetNameDemo, sheetNameChecklist, sheetNameReset } from '../../assets/data'
+import { customSheetSave } from '../../assets/data'
 import { blogUrl, getCurrentUser, setCurrentUser } from '../../assets/data'
+import { sheetNameDemoTiles, sheetNameDemoChecklist, sheetNameReset, sheetNameNew } from '../../assets/sheetData'
+import { getSheetBlank, getSheetDemoTiles, getSheetDemoChecklist, getPageBlank } from '../../assets/sheetData'
 
 const emits = defineEmits(['authentication','copy','load','print','printOptions','howDoesItWork'])
 
@@ -35,7 +36,7 @@ const props = defineProps({
 
 function confirmAndCopy() {
   confirm.require({
-      message: 'Do you want to replace all tiles on the right with tiles from the left?',
+      message: 'Do you want to duplicate left page onto right?',
       header: "Mirror",
       rejectLabel: 'No',
       acceptLabel: 'Yes, Replace',
@@ -48,7 +49,7 @@ function confirmAndCopy() {
 
 function confirmAndLoad(title, sheet) {
   confirm.require({
-      message: 'Do you want to replace all tiles in the current sheet?',
+      message: 'Do you want to replace both pages in the current sheet?',
       header: title,
       rejectLabel: 'No',
       acceptLabel: 'Yes, Replace',
@@ -137,15 +138,25 @@ function onSheetLoadDefault(sheetName) {
   showSheets.value = false
   let title = '?'
   let sheetData = {}
-  if( sheetName == sheetNameDemo) {
+  if( sheetName == sheetNameDemoTiles) {
     title = 'Load Demo Tiles';
-    sheetData = getDemoSheet();
-  } else if( sheetName == sheetNameChecklist) {
+    sheetData = getSheetDemoTiles();
+  } else if( sheetName == sheetNameDemoChecklist) {
     title = 'Load Demo Checklist';
-    sheetData = getDemoSheetChecklist();
+    sheetData = getSheetDemoChecklist();
+  } else if( sheetName == sheetNameNew) { 
+    title = 'Start New Sheet';
+    sheetData = getSheetBlank();
   } else if( sheetName == sheetNameReset) { 
     title = 'Reset Pages';
-    sheetData = getBlankSheet();
+    // console.log('[Menu.onSheetLoadDefault]', JSON.stringify(pageData))
+    if(pageData) {
+      const blankFrontPage = getPageBlank( pageData[0].type)
+      const blankBackPage = getPageBlank( pageData[1].type)
+      sheetData = [blankFrontPage,blankBackPage];
+    } else {
+      sheetData = getSheetBlank()
+    }
   }
   const sheet = {name:sheetName,data:sheetData}
   confirmAndLoad( title, sheet)
@@ -231,10 +242,10 @@ watch( props, async() => {
         <Button icon="pi pi-print" label="Print" title="Print the active sheet"
           @click="onPrint" />
         <div class="separator"></div>
-        <Button label="New" icon="pi pi-file" title="Reset all tiles on the sheet" @click="onSheetLoadDefault(sheetNameReset)"></Button>
+        <Button label="Reset" icon="pi pi-file" title="Reset both pages" @click="onSheetLoadDefault(sheetNameReset)"></Button>
         <Button label="Load" icon="pi pi-folder-open" title="Open existing sheet" @click="onSheet('load')"></Button>
         <Button label="Save" icon="pi pi-save" title="Save this sheet" @click="onSheet('save')"></Button>
-        <Button label="Demo" icon="pi pi-clipboard"  title="Replace all with Demo Tiles" @click="onSheetLoadDefault(sheetNameDemo)"></Button>
+        <Button label="Demo" icon="pi pi-clipboard" title="Load demo tiles" @click="onSheetLoadDefault(sheetNameDemoTiles)"></Button>
         <div class="separator"></div>
         <Button label="Mirror" icon="pi pi-sign-out" title="Copy left page onto right" 
           @click="confirmAndCopy"></Button>
