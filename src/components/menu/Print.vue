@@ -18,7 +18,8 @@ function onPrint() {
 </script>
 
 <template>
-  <Dialog modal header="Print Active Sheet" style="width:35rem">
+  <Dialog modal header="Print Active Sheet">
+  <div class="printPopup">
     <FieldSet legend="Options">
       <div class="modesList">
         <span title="So you can read back page while front page is clipped">
@@ -31,10 +32,12 @@ function onPrint() {
         </span>
         </div>
     </FieldSet>
+    <div class="note">Note : Enable 'Background graphics' in your system print settings for best results.</div>
     <div class="actionDialog gap-2">
       <Button label="Do Not Print" @click="emits('close')" link></Button>
       <Button label="Print" @click="onPrint"></Button>
     </div>
+  </div>
   </Dialog>
 </template>
 
@@ -61,5 +64,14 @@ function onPrint() {
   color: black;
 }
 
+.printPopup {
+  display: flex;
+  flex-flow: column;
+  gap:10px;
+  width:35rem;
+}
+.note {
+  font-size: 0.8rem;
+}
 
 </style>
