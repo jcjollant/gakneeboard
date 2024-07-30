@@ -1,4 +1,4 @@
-const currentVersionNumber = '725'
+const currentVersionNumber = '728'
 
 describe('template spec', () => {
   it('Visits main page', () => {
@@ -25,7 +25,7 @@ describe('template spec', () => {
 
     // Reset tiles and check all are reset
     cy.get('.menuIcon').click()
-    cy.get('[aria-label="New"]').click()
+    cy.get('[aria-label="Reset"]').click()
     cy.get('.p-confirm-dialog-accept').click()
     cy.get('.menuIcon').click()
 
@@ -135,7 +135,7 @@ describe('template spec', () => {
     cy.get('.temperature').contains('Temp')
     cy.get('.altimeter').contains('Alt')
     // Check ATIS has all fields in compact mode
-    cy.get('[data-v-553a57e2=""][data-v-b66d1b07=""] > .header').click()
+    cy.get('.pageOne > :nth-child(5) > .header').click()
     cy.get('[aria-label="Full Size"]').contains('Full Size')
     cy.get('[aria-label="Compact (x4)"]').contains('Compact (x4)')
     cy.get('[aria-label="Compact (x4)"]').click()
@@ -221,6 +221,10 @@ describe('template spec', () => {
     // click do not print
     cy.get('.actionDialog > .p-button-link').click()
 
+    // Sign in to get to
+    // cy.get('.menuIcon').click()
+    // cy.get('[aria-label="Sign In"]').click()
+    // cy.get('#gsi_755440_831716').click()
   })
   
 })
