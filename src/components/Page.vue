@@ -42,7 +42,7 @@ function onReplace(type) {
         }
     }
     const newPageData = {type:type,data:newData}
-    console.log('[Page.onReplace]', JSON.stringify(newPageData))
+    // console.log('[Page.onReplace]', JSON.stringify(newPageData))
     emits('update', newPageData)
 }
 
@@ -59,7 +59,7 @@ function onUpdate( newData) {
 </script>
 
 <template>
-    <ChecklistPage v-if="type=='checklist'" :data="pageData" />
+    <ChecklistPage v-if="type=='checklist'" :data="pageData" @update="onUpdate" />
     <SelectionPage v-else-if="type=='selection'" @replace="onReplace" />
     <TilePage v-else :data="pageData" @toast="onToast" @update="onUpdate" />
 </template>
