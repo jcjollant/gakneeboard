@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
-import ChecklistPage from './ChecklistPage.vue'
+import ChecklistPage from './checklist/ChecklistPage.vue'
 import SelectionPage from './SelectionPage.vue'
 import TilePage from './tiles/TilePage.vue'
 

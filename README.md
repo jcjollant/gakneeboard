@@ -24,6 +24,10 @@ Run the test suite:
 * Small indicator below runway is configurable
 
 # Done
+## 7/30/2024
+* Added two columns and theme to checklist
+## 7/29/2024
+* Added Checklist support
 ## 7/26/2024
 * Improved page management
 ## 7/25/2024
