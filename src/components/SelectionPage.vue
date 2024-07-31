@@ -9,7 +9,7 @@ const emits = defineEmits(['replace'])
 
 
 const knownPages = ref([
-    {'name':'Tiles (2x3)','type':'tiles', 'tooltip':'A grid of customizable tiles like Airport, ATIS, Radios, ...'},
+    {'name':'Tiles','type':'tiles', 'tooltip':'A 2x3 grid of customizable tiles like Airport, ATIS, Radios, ...'},
     {'name':'Checklist','type':'checklist', 'tooltip':'A checklist you can customize'},
 ])
 
