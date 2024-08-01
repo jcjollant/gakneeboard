@@ -15,15 +15,17 @@ export class SheetDao {
      * @param userId 
      * @returns 
      */
-    public static async createOrUpdate(sheet:Sheet,userId:number,maxSheets:number=6):Promise<Sheet> {
+    public static async createOrUpdate(sheet:Sheet,userId:number,maxSheets:number):Promise<Sheet> {
         if(!sheet) throw new Error("No sheet provided");
         // Figure out a sheet id if it's not readily provided
         if(!sheet.id) {
+            // if the id is not provided, fetch by name
             const pageId:number|undefined = await SheetDao.findByName( sheet.name, userId)
             if( pageId) {
                 sheet.id = pageId;
             }    
         }
+        // data contains the whole object
         const data:string = JSON.stringify(sheet.data);
         if( sheet.id) {
             // console.log( "[SheetDao.createOrUpdate] updating", pageId);
