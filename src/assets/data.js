@@ -1,13 +1,14 @@
 export const version = '730'
 export const blogUrl = 'https://gakneeboard.wordpress.com/'
+export const maxSheetCount = 10
 // export const blogUrl = 'https://ga-kneeboard.blogspot.com/'
-const apiRootUrl = 'https://ga-api-seven.vercel.app/'
-// const apiRootUrl = 'http://localhost:3000/'
+// const apiRootUrl = 'https://ga-api-seven.vercel.app/'
+const apiRootUrl = 'http://localhost:3000/'
 // const apiRootUrl = 'https://ga-api-git-google-auth-jcjollants-projects.vercel.app/'
 // const apiRootUrl = 'https://ga-api-git-custom-airports-jcjollants-projects.vercel.app/'
 import { Airport } from './Airport.ts'
 import axios from 'axios'
-import { sheetDataDemoTiles, sheetDataDemoChecklist, isDefaultName } from './sheetData.js'
+import { isDefaultName } from './sheetData.js'
 
 
 const contentTypeJson = { headers: {'Content-Type':'application/json'} }
@@ -85,25 +86,27 @@ export async function customSheetSave(sheet) {
     throw new Error('Sheet name conflicts with defaults')
   }
   const payload = {user:currentUser.sha256, sheet:sheet}
-  await axios.post(url, payload, contentTypeJson)
+  return axios.post(url, payload, contentTypeJson)
     .then( response => {
       const responseSheet = response.data
-      // console.log('[data.customSheetSave] sheet saved', sheet, responseSheet)
+      // console.log('[data.customSheetSave] sheet saved', JSON.stringify(responseSheet))
       // update that sheet in currentUser.sheets if it exists
       let index = -1
       if( sheet.id != 0 && currentUser.sheets.length > 0) {
         index = currentUser.sheets.findIndex( s => s.id == sheet.id)
         // console.log('[data.customSheetSave] index', index)
       }
+      // add new sheet or update existing sheet
       if( index == -1) {
         currentUser.sheets.push(responseSheet)
       } else {
         // update existing entry
-        currentUser.sheets[index].name = sheet.name
-        currentUser.sheets[index].data = sheet.data
+        currentUser.sheets[index] = responseSheet;
+        // currentUser.sheets[index].name = sheet.name
+        // currentUser.sheets[index].data = sheet.data
       }
       userSortSheets()
-      return sheet
+      return responseSheet
     })
     .catch( error => {
       console.log('[data.customSheetSave] error ' + JSON.stringify(error))
