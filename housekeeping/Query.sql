@@ -116,3 +116,8 @@ SELECT * FROM sheets
 
 # Count of JC sheets
 SELECT COUNT(*) FROM sheets WHERE user_Id=1
+
+#########################################
+# Publications
+
+SELECT * FROM publications WHERE sheetid IS NOT NULL
