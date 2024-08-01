@@ -2,8 +2,10 @@ export class Sheet {
     id:number;
     name:string;
     data:any;
+    publish:boolean;
+    code:string|undefined;
 
-    constructor(id:number, name:string, dataParam:any) {
+    constructor(id:number, name:string, dataParam:any, publish:boolean=false, code:string|undefined=undefined) {
         this.id = id;
         this.name = name;
         // whatever is passed, we want data to be an object
@@ -12,5 +14,7 @@ export class Sheet {
         } else {
             this.data = dataParam;
         }
+        this.publish = publish;
+        this.code = code;
     }
 }
