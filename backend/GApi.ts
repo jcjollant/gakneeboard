@@ -1,17 +1,20 @@
 const db = require('./db')
 import axios from 'axios'
 import { Adip } from '../backend/Adip'
-import { User } from './models/User'
-import { UserDao } from './UserDao'
-import { UserTools } from './UserTools'
 import { Airport, versionInvalid } from './models/Airport'
 import { AirportDao } from './AirportDao'
 import { AirportView } from './models/AirportView'
+import { User } from './models/User'
+import { UserDao } from './UserDao'
+import { UserTools } from './UserTools'
+import { PublicationDao } from './PublicationDao'
 import { Sheet } from './models/Sheet'
 import { SheetDao } from './SheetDao'
 import { Sunlight } from './models/Sunlight'
 
 // Google API key
+
+const maxSheets:number = 10
 
 export class GApiError {
     status:number;
@@ -281,7 +284,21 @@ export class GApi {
         // update record
         if( !userId) throw new GApiError( 400,"Invalid user");
 
-        return SheetDao.createOrUpdate(sheet, userId)
+        const newSheet:Sheet = await SheetDao.createOrUpdate(sheet, userId, maxSheets)
+        if(sheet.publish) {
+            // we need to create a new publication
+            const newPublication = await PublicationDao.publish(newSheet.id)
+            // console.log('[GApi.sheetSave] publication', JSON.stringify(newPublication)); 
+            if(!newPublication) throw new GApiError(500, "Publication failed");
+            newSheet.code = newPublication.code;
+        } else {
+            // we need to unpublish that sheet
+            await PublicationDao.unpublish(newSheet.id)
+            newSheet.code = undefined;
+        }
+        // otherwise, sheet publication status is current
+        // console.log('[GApi.sheetSave]', JSON.stringify(newSheet)); 
+        return newSheet;
     }
 
     /**
