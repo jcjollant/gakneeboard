@@ -166,16 +166,20 @@ function onSheetLoadDefault(sheetName) {
  * Page Dialog wants to save a page
  * @param {*} sheet 
  */
- function onSheetSave(sheet) {
-  // console.log('[menu.onPageSave]',pageName)
+ async function onSheetSave(sheet) {
+  // console.log('[Menu.onSheetSave]',JSON.stringify(sheet))
   showSheets.value = false;
   try {
       sheet.data = pageData;
-      customSheetSave(sheet).then(() => {
-        showToast('success','Clear','Sheet "' + sheet.name + '" saved')
+      await customSheetSave(sheet).then(returnSheet => {
+        console.log('[Menu.onSheetSave]', JSON.stringify(returnSheet))
+        showToast('success','Clear','Sheet "' + returnSheet.name + '" saved')
+        if(returnSheet.publish && returnSheet.code) {
+          showToast('success','Published', 'Sheet is accessible with code ' + returnSheet.code)
+        }
       })
   } catch( e) {
-    console.log('[Menu.onSheetSave]', e)
+    // console.log('[Menu.onSheetSave]', e)
     showToast('error','Save Page','Could not save sheet "' + sheet.name + '"')
   }
 }
