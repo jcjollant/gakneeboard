@@ -107,6 +107,21 @@ async function distilUnknowns() {
 
 }
 
+async function createPublicationCodes() {
+    // create a list all possible 2 alphanumeric character codes
+    const codes:string[] = Array.from({length: 36*36}, (_, i) => i.toString(36).toUpperCase().padStart(2, '0'))
+    // randomize the list
+    codes.sort( () => Math.random() - 0.5)
+    // const list = code.join
+    // sql`INSERT INTO publicationCodes (code) VALUES ${JSON.stringify(codes)}`
+    // console.log( JSON.stringify(codes))
+    // insert every code from codes in the database
+    for( const code of codes) {
+        await sql`INSERT INTO publications (code) VALUES (${code})`
+        console.log( "Inserted " + code)
+    }
+
+}
 
 // const output = []
 // result.rows.forEach( row => {
@@ -123,4 +138,5 @@ async function distilUnknowns() {
 
 // findMilitaryFrequencies()
 // checkEffectiveDates()
-distilUnknowns()
+// distilUnknowns()
+// createPublicationCodes()
