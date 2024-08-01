@@ -6,7 +6,9 @@ import FieldSet from 'primevue/fieldset'
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputText from "primevue/inputtext";
-import { customSheetDelete } from "../../assets/data"
+import SelectButton from "primevue/selectbutton"
+
+import { customSheetDelete, maxSheetCount } from "../../assets/data"
 import { sheetNameDemoChecklist, sheetNameDemoTiles, sheetNameNew } from '../../assets/sheetData'
 
 const emits = defineEmits(["close","delete","load","save","loadDefault"]);
@@ -17,10 +19,15 @@ const props = defineProps({
   user: { type: Object, default: null},
 })
 
-const target = ref(null)
-const newSheetName = ref('')
+const pubPublic = 'Public'
+const pubPrivate = 'Private'
+const publish = ref(pubPrivate)
+const sheetName = ref('')
 const sheets = ref([])
 const deleteMode = ref(false)
+const sheetCode = ref('')
+
+let targetSheetId = 0;
 
 function loadProps(props) {
   if( props.user && props.user.sheets) {
@@ -33,11 +40,19 @@ onMounted( () => {
   loadProps(props)
 })
 
-function onSaveNewSheet() {
-  const sheet = {id:0,name:newSheetName.value}
-  newSheetName.value = ''
+function onSaveSheet() {
+  const sheet = {id:targetSheetId,name:sheetName.value}
+  if( publish.value == pubPublic) {
+    sheet['publish'] = true;
+  }
+  sheetName.value = '';
+  targetSheetId = 0;
 
   emits('save',sheet)
+}
+
+function onSheetFetch() {
+  console.log('[Sheets.onSheetFetch] not implemented')
 }
 
 async function onSheetSelected(sheet) {
@@ -50,8 +65,12 @@ async function onSheetSelected(sheet) {
         emits('delete',sheet)
       }
     })
-  } else { // load or save
-    emits(props.mode,sheet)
+  } else if( props.mode.value == 'load'){ // load or save
+    emits('load',sheet)
+  } else {
+    // select sheet properties for saving
+    targetSheetId = sheet.id
+    sheetName.value = sheet.name
   }
 }
 
@@ -68,13 +87,51 @@ watch( props, async() => {
 
 <template>
   <Dialog modal :header="mode=='load'?'Load':'Save'" style="width:45rem">
-    <FieldSet :legend="mode=='load'?'Your Sheets':'Overwrite Existing Sheet'">
+    <div v-if="mode=='save'">
+      <FieldSet legend="Sheet Properties">
+        <div class="row mb-2">
+          <InputGroup>
+            <InputGroupAddon>Name</InputGroupAddon>
+            <InputText v-model="sheetName"/>
+          </InputGroup>
+          <Button label="Save" icon="pi pi-save" severity="secondary" 
+            :disabled="!sheetName.length"
+            @click="onSaveSheet"></Button>
+        </div>
+        <div class="row mb-2">
+          <div>Access</div>
+          <SelectButton v-model="publish" :options="[pubPublic, pubPrivate]" aria-labelledby="basic" />
+          <div>Code:<span class="code">None</span></div>
+        </div>
+      </FieldSet>
+      <FieldSet legend="Overwrite Existing Sheet">
+        <div v-if="sheets.length" class="sheetAndToggle">
+          <div class="sheetList">
+            <Button v-for="sheet in sheets" :label="sheet.name" 
+              :icon="deleteMode?'pi pi-times':'pi pi-copy'" 
+              :severity="deleteMode?'danger':'primary'"
+              :title="(deleteMode?'Delete':'Overwrite')+' \''+sheet.name+'\''"
+              @click="onSheetSelected(sheet)"></Button>
+          </div>
+          <Button title="Toggle delete mode"
+            :severity="deleteMode?'primary':'danger'" 
+            :icon="deleteMode?'pi pi-copy':'pi pi-trash'"
+            @click="onToggleDeleteMode"></Button>
+        </div>
+        <div v-else class="sheetList">
+          <label>Your custom sheets will show here once you save them.</label>
+        </div>
+      </FieldSet>
+      <label v-if="sheets.length>=maxSheetCount" class="experiment">We are currently experimenting with a limit of {{ maxSheetCount }} sheets</label>
+    </div>
+  <div v-else>
+    <FieldSet legend="Your Sheets">
       <div v-if="sheets.length" class="sheetAndToggle">
         <div class="sheetList">
           <Button v-for="sheet in sheets" :label="sheet.name" 
             :icon="deleteMode?'pi pi-times':'pi pi-copy'" 
             :severity="deleteMode?'danger':'primary'"
-            :title="(deleteMode?'Delete':mode=='load'?'Load':'Save')+' sheet'"
+            :title="(deleteMode?'Delete':mode=='load'?'Load':'Overwrite')+' \''+sheet.name+'\''"
             @click="onSheetSelected(sheet)"></Button>
         </div>
         <Button title="Toggle delete mode"
@@ -86,7 +143,7 @@ watch( props, async() => {
         <label>Your custom sheets will show here once you save them.</label>
       </div>
     </FieldSet>
-    <FieldSet legend="Defaults" v-if="mode=='load'">
+    <FieldSet legend="Defaults">
         <div class="sheetList">
           <Button label="Tiles Demo" icon="pi pi-clipboard"  title="Replace all with Demo Tiles" 
             @click="emits('loadDefault', sheetNameDemoTiles)"></Button>
@@ -96,18 +153,18 @@ watch( props, async() => {
             @click="emits('loadDefault', sheetNameNew)"></Button>
         </div>
     </FieldSet>
-    <FieldSet legend="Save as New Sheet" v-else>
-      <div class="row mb-2">
-        <InputGroup>
-          <InputGroupAddon>Name</InputGroupAddon>
-          <InputText v-model="newSheetName"/>
-        </InputGroup>
-        <Button label="Save" icon="pi pi-save" severity="secondary" 
-          :disabled="!newSheetName.length||sheets.find(sheet=>sheet.name==newSheetName)||sheets.length>=5"
-          @click="onSaveNewSheet"></Button>
-      </div>
-      <label v-if="sheets.length>=5" class="experiment">We are currently experimenting custom sheets with a limit of 5</label>
+    <FieldSet legend="Public Sheet">
+        <div class="row mb-2">
+          <InputGroup>
+            <InputGroupAddon>Code</InputGroupAddon>
+            <InputText v-model="sheetCode" />
+          </InputGroup>
+          <Button label="Fetch" icon="pi pi-file-import" severity="secondary" 
+            :disabled="!sheetCode.length"
+            @click="onSheetFetch"></Button>
+        </div>
     </FieldSet>
+  </div>
   </Dialog>
 </template>
 
@@ -133,10 +190,16 @@ watch( props, async() => {
 .row {
   display: flex;
   gap:1rem;
+  /* line-height: 2rem; */
+  align-items: center;
 }
 
 .experiment {
   color:brown;
   font-size: 0.8rem;
+}
+.code {
+  padding-left: 0.5rem;
+  font-weight: bold;
 }
 </style>
