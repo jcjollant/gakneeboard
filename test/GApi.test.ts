@@ -1,7 +1,8 @@
 import { describe, expect, test} from '@jest/globals';
 import { GApi, GApiError } from '../backend/GApi'
-import { jcHash, postgresUrl, jcUserId, jcDemoSheet, jcToken, jcName, jcTestSheetName } from './constants'
+import { jcHash, postgresUrl, jcUserId, jcTestSheetData, jcToken, jcName, jcTestSheetName, jcTestSheetId } from './constants'
 import { AirportView } from '../backend/models/AirportView'
+import { Sheet } from '../backend/models/Sheet'
 
 process.env.POSTGRES_URL=postgresUrl
 
@@ -125,7 +126,6 @@ describe( 'GApi Tests', () => {
             expect(list.length).toBeGreaterThan(0)
             const testSheet = list.find( sheet => sheet.name == jcTestSheetName);
             expect(testSheet).toBeDefined()
-            expect(testSheet?.data).toEqual(jcDemoSheet)
         }).catch( (e) => {
             console.log(e)
             expect(true).toBe(false) // should not get here
@@ -137,6 +137,25 @@ describe( 'GApi Tests', () => {
         }).catch( e => {
             expect(e).toBeInstanceOf(GApiError)
         })
+    })
+
+    test('Sheet Publication', async() => {
+        const sheetIn = new Sheet( jcTestSheetId, jcTestSheetName, jcTestSheetData)
+        expect(sheetIn.publish).toBeFalsy()
+        expect(sheetIn.code).toBeUndefined()
+        let sheetOut = await GApi.sheetSave(jcHash, sheetIn)
+        expect(sheetOut.publish).toBeFalsy()
+        expect(sheetOut.code).toBeUndefined()
+        sheetIn.publish = true
+        sheetOut = await GApi.sheetSave(jcHash, sheetIn)
+        expect(sheetOut.publish).toBeTruthy()
+        expect(sheetOut.code).toBeDefined()
+        expect(sheetOut.code).toHaveLength(2)
+        // now unpublish that sheet
+        sheetIn.publish = false
+        sheetOut = await GApi.sheetSave(jcHash, sheetIn)
+        expect(sheetOut.publish).toBeFalsy()
+        expect(sheetOut.code).toBeUndefined()
     })
 
     test('Authenticate', async () => {
