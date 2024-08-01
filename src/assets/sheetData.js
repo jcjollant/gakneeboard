@@ -58,7 +58,7 @@ export const sheetDataDemoTiles = [{
  }
 ]
 
-export const sheetDataDemoChecklist = [{
+const pageDemoChecklist1 = {
   type:pageTypeChecklist,
   data:{
     name:'Preflight',
@@ -89,7 +89,8 @@ export const sheetDataDemoChecklist = [{
         {c:'Hobbs & Tach',r:'RECORD'},
         {c:'Master Switches',r:'OFF'},
     ]
-  }},{
+  }}
+const pageDemoChecklist2 = {
   type:pageTypeChecklist,
   data : {
     name:'Preflight (Cont\'d)',
@@ -120,10 +121,9 @@ export const sheetDataDemoChecklist = [{
         {c:'Fuel Cap Seal x2',r:'CHECKED'},
         {c:'Fuel Cap Secured x2',r:'CHECKED'},
     ]
-
   }
-
-}]
+}
+export const sheetDataDemoChecklist = [pageDemoChecklist1,pageDemoChecklist2]
 
 /**
  * Build a blank page for the given type
