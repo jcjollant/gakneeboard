@@ -19,15 +19,6 @@ const props = defineProps({
   user: { type: Object, default: null},
 })
 
-const pubPublic = 'Public'
-const pubPrivate = 'Private'
-const publish = ref(pubPrivate)
-const sheetName = ref('')
-const sheets = ref([])
-const deleteMode = ref(false)
-const sheetCode = ref('')
-
-let targetSheetId = 0;
 
 function loadProps(props) {
   if( props.user && props.user.sheets) {
@@ -39,6 +30,23 @@ function loadProps(props) {
 onMounted( () => {
   loadProps(props)
 })
+
+const pubPublic = 'Public'
+const pubPrivate = 'Private'
+const publish = ref(pubPrivate)
+const sheetName = ref('')
+const sheets = ref([])
+const deleteMode = ref(false)
+const sheetCode = ref('')
+const targetSheet = ref(null)
+let targetSheetId = 0;
+
+function getSheetName(sheet) {
+  if(!sheet || !sheet.name) return '?'
+  let name = sheet.name;
+  if(sheet.publish) name  = name +' (' + sheet.code + ')'
+  return name;
+}
 
 function onSaveSheet() {
   const sheet = {id:targetSheetId,name:sheetName.value}
@@ -56,6 +64,7 @@ function onSheetFetch() {
 }
 
 async function onSheetSelected(sheet) {
+  // console.log('[Sheets.onSheetSelected] deleteMode', deleteMode.value,'mode', props.mode)
   if(deleteMode.value) {
     await customSheetDelete(sheet).then( () => {
       // console.log('[Sheets.onSheetSelected]', sheet)
@@ -65,8 +74,11 @@ async function onSheetSelected(sheet) {
         emits('delete',sheet)
       }
     })
-  } else if( props.mode.value == 'load'){ // load or save
-    emits('load',sheet)
+  } else if( props.mode == 'load'){ // load or save
+    // console.log('[Sheets.onSheetSelected] load', JSON.stringify(sheet))
+    targetSheet.value = sheet
+    targetSheetId = sheet.id;
+    // emits('load',sheet)
   } else {
     // select sheet properties for saving
     targetSheetId = sheet.id
@@ -128,23 +140,23 @@ watch( props, async() => {
     <FieldSet legend="Your Sheets">
       <div v-if="sheets.length" class="sheetAndToggle">
         <div class="sheetList">
-          <Button v-for="sheet in sheets" :label="sheet.name" 
+          <Button v-for="sheet in sheets" :label="getSheetName(sheet)" 
             :icon="deleteMode?'pi pi-times':'pi pi-copy'" 
             :severity="deleteMode?'danger':'primary'"
             :title="(deleteMode?'Delete':mode=='load'?'Load':'Overwrite')+' \''+sheet.name+'\''"
             @click="onSheetSelected(sheet)"></Button>
+          <Button title="Toggle delete mode"
+            :severity="deleteMode?'primary':'danger'" 
+            :icon="deleteMode?'pi pi-copy':'pi pi-trash'"
+            @click="onToggleDeleteMode"></Button>
         </div>
-        <Button title="Toggle delete mode"
-          :severity="deleteMode?'primary':'danger'" 
-          :icon="deleteMode?'pi pi-copy':'pi pi-trash'"
-          @click="onToggleDeleteMode"></Button>
       </div>
       <div v-else class="sheetList">
         <label>Your custom sheets will show here once you save them.</label>
       </div>
     </FieldSet>
-    <FieldSet legend="Defaults">
-        <div class="sheetList">
+    <FieldSet legend="Demos & Shared">
+        <div class="sheetList mb-2">
           <Button label="Tiles Demo" icon="pi pi-clipboard"  title="Replace all with Demo Tiles" 
             @click="emits('loadDefault', sheetNameDemoTiles)"></Button>
           <Button label="Checklist Demo" icon="pi pi-clipboard"  title="Replace all with Demo Checklist" 
@@ -152,8 +164,6 @@ watch( props, async() => {
           <Button label="New Sheet" icon="pi pi-file" title="Both pages will show page selection" 
             @click="emits('loadDefault', sheetNameNew)"></Button>
         </div>
-    </FieldSet>
-    <FieldSet legend="Public Sheet">
         <div class="row mb-2">
           <InputGroup>
             <InputGroupAddon>Code</InputGroupAddon>
@@ -163,6 +173,18 @@ watch( props, async() => {
             :disabled="!sheetCode.length"
             @click="onSheetFetch"></Button>
         </div>
+    </FieldSet>
+
+    <FieldSet legend="Selected Sheet Details">
+      <div v-if="targetSheet">
+        <div>Name<span>{{targetSheet.name}}</span></div>
+        <div>Description<span></span></div>
+        <div>Front<span></span></div>
+        <div>Back<span></span></div>
+      </div>
+      <div v-else>
+        <div>Select a sheet above from Your list, Demos or Shared</div>
+      </div>
     </FieldSet>
   </div>
   </Dialog>
