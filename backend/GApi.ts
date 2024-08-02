@@ -235,7 +235,7 @@ export class GApi {
 
     public static async sheetGetByCode(code:string):Promise<Sheet|undefined> {
         const pub:Publication|undefined = await PublicationDao.findByCode(code)
-        if(!pub || !pub.sheetid) return undefined
+        if(!pub || !pub.sheetid) throw new GApiError(404, 'Publication not found');
         return SheetDao.readById(pub.sheetid)
     }
 

@@ -154,16 +154,37 @@ describe( 'GApi Tests', () => {
         let sheetOut = await GApi.sheetSave(jcHash, sheetIn)
         expect(sheetOut.publish).toBeFalsy()
         expect(sheetOut.code).toBeUndefined()
+        // Now publish that sheet
         sheetIn.publish = true
         sheetOut = await GApi.sheetSave(jcHash, sheetIn)
         expect(sheetOut.publish).toBeTruthy()
         expect(sheetOut.code).toBeDefined()
         expect(sheetOut.code).toHaveLength(2)
+
+        // get that publication by code
+        expect(sheetOut.code).toBeTruthy()
+        const publicationCode = sheetOut.code
+        if(!publicationCode) return; // to help VS COde
+        let sheetByCode = await GApi.sheetGetByCode(publicationCode)
+        // it should be the same as the original
+        expect(sheetByCode).toBeDefined()
+        expect(sheetByCode?.id).toBe(sheetOut.id)
+        expect(sheetByCode?.name).toBe(sheetOut.name)
+        expect(JSON.stringify(sheetByCode?.data)).toBe(JSON.stringify(sheetOut.data))
+
         // now unpublish that sheet
         sheetIn.publish = false
         sheetOut = await GApi.sheetSave(jcHash, sheetIn)
         expect(sheetOut.publish).toBeFalsy()
         expect(sheetOut.code).toBeUndefined()
+
+        // get that publication by code should fail with 404
+        await GApi.sheetGetByCode(publicationCode).then( () => {
+            expect(true).toBeFalsy() // should not get here ()
+        }).catch( e => {
+            expect(e).toBeInstanceOf(GApiError)
+            expect(e.status).toBe(404)
+        })
     })
 
     test('Authenticate', async () => {
