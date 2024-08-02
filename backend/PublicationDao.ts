@@ -25,11 +25,22 @@ export class PublicationDao {
     }
 
     /**
+     * Find a publication by it's code
+     * @param code Publication code
+     * @returns Found publication or undefined if not found
+     */
+    public static async findByCode(code:string):Promise<Publication|undefined> {
+        let result = await sql`SELECT id,sheetid FROM publications WHERE code = ${code}`
+        if( result.rowCount == 0) return undefined;
+        return new Publication(result.rows[0]['id'], code, result.rows[0]['sheetid'])
+    }
+
+    /**
      * Look for a publication for a given sheetid
      * @param sheetid Sheet of interest
      * @returns A publication or undefined if that sheet was not found
      */
-    public static async findPublication(sheetid:number):Promise<Publication|undefined> {
+    public static async findBySheet(sheetid:number):Promise<Publication|undefined> {
         let result = await sql`SELECT id,code FROM publications WHERE sheetid = ${sheetid}`
         if( result.rowCount == 0) return undefined;
         return new Publication(result.rows[0]['id'], result.rows[0]['code'], sheetid)

@@ -7,6 +7,7 @@ import { AirportView } from './models/AirportView'
 import { User } from './models/User'
 import { UserDao } from './UserDao'
 import { UserTools } from './UserTools'
+import { Publication } from './models/Publication'
 import { PublicationDao } from './PublicationDao'
 import { Sheet } from './models/Sheet'
 import { SheetDao } from './SheetDao'
@@ -232,6 +233,12 @@ export class GApi {
         if( freq == null) return false;
         if( freq =='-.-') return false;
         return Adip.isMilitary(Number(freq))
+    }
+
+    public static async sheetGetByCode(code:string):Promise<Sheet|undefined> {
+        const pub:Publication|undefined = await PublicationDao.findByCode(code)
+        if(!pub || !pub.sheetid) return undefined
+        return SheetDao.readById(pub.sheetid)
     }
 
     /**

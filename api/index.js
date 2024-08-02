@@ -121,6 +121,15 @@ app.get('/sheet/:id', async (req, res) => {
     }
 })
 
+app.get('/sheetbycode/:code', async (req, res) => {
+    try {
+        let sheet = await GApi.sheetGetByCode(req.params.code);
+        res.send(sheet)
+    } catch( e) {
+        catchError(res, e, 'GET /sheetbycode/:code')
+    }
+})
+
 app.get('/sheets', async (req, res) => {
     const userId = await UserTools.userFromRequest(req)
     try {
