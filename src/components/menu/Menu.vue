@@ -12,10 +12,10 @@ import Warning from './Warning.vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
 import { customSheetSave } from '../../assets/data'
-import { blogUrl, getCurrentUser, setCurrentUser } from '../../assets/data'
+import { blogUrl, getCurrentUser, setCurrentUser, sheetGetList } from '../../assets/data'
 import { sheetNameDemoTiles, sheetNameDemoChecklist, sheetNameReset, sheetNameNew } from '../../assets/sheetData'
-import { getSheetBlank, getSheetDemoTiles, getSheetDemoChecklist, getPageBlank } from '../../assets/sheetData'
-import { getToastData, toastError, toastSuccess } from '../../assets/toast'
+import { getSheetBlank, getSheetDemoTiles } from '../../assets/sheetData'
+import { getToastData, toastError, toastSuccess, toastWarning } from '../../assets/toast'
 
 const emits = defineEmits(['authentication','copy','load','print','printOptions','howDoesItWork','toast'])
 
@@ -31,9 +31,18 @@ const user = ref(null)
 const pageMode = ref('load')
 let pageData = null;
 
+//---------------------
+// Props management
 const props = defineProps({
   pageData: { type: Object, default: null},
 })
+
+function loadProps( props) {
+  // console.log('Menu loadProps', JSON.stringify(props))
+  pageData = props.pageData;
+}
+// End props management
+//---------------------
 
 function confirmAndCopy() {
   confirm.require({
@@ -60,10 +69,6 @@ function confirmAndLoad(title, sheet) {
     })
 }
 
-function loadProps( props) {
-  // console.log('Menu loadProps', JSON.stringify(props))
-  pageData = props.pageData;
-}
 
 function onAuthentication(userParam) {
   // console.log('[Menu.onAuthentication] ' + JSON.stringify(userParam))
@@ -83,9 +88,16 @@ function onFeedbackSent() {
   toast.add({ severity: 'info', summary: 'Readback Correct', detail: 'Thanks for your feedback!', life: 3000});  
 }
 
-onMounted(() => {
+onMounted( () => {
   user.value = getCurrentUser()
   loadProps(props)
+
+  // request sheets after waiting 2 seconds
+  setTimeout( async () => {
+    // console.log( '[data.setCurrentUser] refreshing sheets')
+    user.value.sheets = await sheetGetList()
+  }, 2000)
+
 })  
 
 function onPrint() {
@@ -116,6 +128,13 @@ function onSheet(mode) {
   }
 }
 
+/**
+ * Hide the sheet dialog
+ */
+function onSheetClose() {
+  showSheets.value = false;
+}
+
 function onSheetDelete(sheet) {
   showToast('Clear', 'Sheet "' + sheet.name + '" deleted')
 }
@@ -128,39 +147,6 @@ function onSheetDelete(sheet) {
   // console.log('[menu.onPageLoad]',pageName)
   showSheets.value = false
   const title = 'Load "' + sheet.name + '" Sheet'
-  confirmAndLoad( title, sheet)
-}
-
-/**
- * Load demo or blank sheet
- * @param {*} sheetName 
- */
-function onSheetLoadDefault(sheetName) {
-  // console.log('[Menu.onSheetLoadDefault]', sheetName)
-  showSheets.value = false
-  let title = '?'
-  let sheetData = {}
-  if( sheetName == sheetNameDemoTiles) {
-    title = 'Load Demo Tiles';
-    sheetData = getSheetDemoTiles();
-  } else if( sheetName == sheetNameDemoChecklist) {
-    title = 'Load Demo Checklist';
-    sheetData = getSheetDemoChecklist();
-  } else if( sheetName == sheetNameNew) { 
-    title = 'Start New Sheet';
-    sheetData = getSheetBlank();
-  } else if( sheetName == sheetNameReset) { 
-    title = 'Reset Pages';
-    // console.log('[Menu.onSheetLoadDefault]', JSON.stringify(pageData))
-    if(pageData) {
-      const blankFrontPage = getPageBlank( pageData[0].type)
-      const blankBackPage = getPageBlank( pageData[1].type)
-      sheetData = [blankFrontPage,blankBackPage];
-    } else {
-      sheetData = getSheetBlank()
-    }
-  }
-  const sheet = {name:sheetName,data:sheetData}
   confirmAndLoad( title, sheet)
 }
 
@@ -234,9 +220,9 @@ watch( props, async() => {
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
       @authentication="onAuthentication" />
     <Sheets v-model:visible="showSheets" :mode="pageMode" :user="user"
+      @close="onSheetClose"
       @delete="onSheetDelete"
       @load="onSheetLoad" 
-      @load-default="onSheetLoadDefault"
       @save="onSheetSave"
       @toast="onToast" />
     <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu">
@@ -253,10 +239,10 @@ watch( props, async() => {
         <Button icon="pi pi-print" label="Print" title="Print the active sheet"
           @click="onPrint" />
         <div class="separator"></div>
-        <Button label="Reset" icon="pi pi-file" title="Reset both pages" @click="onSheetLoadDefault(sheetNameReset)"></Button>
+        <Button label="Reset" icon="pi pi-file" title="Reset both pages" @click="onSheetLoad(getSheetBlank())"></Button>
         <Button label="Load" icon="pi pi-folder-open" title="Open existing sheet" @click="onSheet('load')"></Button>
         <Button label="Save" icon="pi pi-save" title="Save this sheet" @click="onSheet('save')"></Button>
-        <Button label="Demo" icon="pi pi-clipboard" title="Load demo tiles" @click="onSheetLoadDefault(sheetNameDemoTiles)"></Button>
+        <Button label="Demo" icon="pi pi-clipboard" title="Load demo tiles" @click="onSheetLoad(getSheetDemoTiles())"></Button>
         <div class="separator"></div>
         <Button label="Mirror" icon="pi pi-sign-out" title="Copy left page onto right" 
           @click="confirmAndCopy"></Button>

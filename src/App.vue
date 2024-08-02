@@ -5,7 +5,7 @@ import { inject } from "@vercel/analytics"
 import Menu from './components/menu/Menu.vue'
 import Page from './components/Page.vue'
 import { version, setCurrentUser } from './assets/data.js'
-import { getSheetDemoTiles, sheetNameLocal } from './assets/sheetData'
+import { getSheetDemoTiles, normalizeSheetData, sheetNameLocal } from './assets/sheetData'
 import HowDoesItWork from './components/HowDoesItWork.vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
@@ -27,19 +27,13 @@ function loadSheetData(data) {
   // console.log( '[App.loadSheetData]', typeof data, JSON.stringify(data))
 
   // if we don't know what to show, we load a copy of the demo page
-  if( !data) data = getSheetDemoTiles();
-  if( typeof data == 'string') data = JSON.parse(data)
+  if( !data) {
+    const demoSheet = getSheetDemoTiles();
+    data = demoSheet.data;
+  }
+  data = normalizeSheetData(data)
 
-  // console.log('[App.loadSheetData]', JSON.stringify(data))
-  if(data.length == 12) { // old format with 12 tiles
-    // transform into new format
-    frontPageData.value = {type:'tiles',data:[data[0],data[1],data[2],data[3],data[4],data[5]]}
-    // adjust ids to 6->0 ... 11->5
-    for(let index = 6; index < 12; index++) {
-      data[index].id -= 6;
-    }
-    backPageData.value = {type:'tiles',data:[data[6],data[7],data[8],data[9],data[10],data[11]]}
-  } else if( data.length == 2){
+  if( data.length == 2){
     frontPageData.value = data[0]
     backPageData.value = data[1]
   } else {
@@ -71,7 +65,9 @@ onBeforeMount(()=>{
   // console.log('[App.onBeforeMount]')
   // activate the last known user
   const user = JSON.parse(localStorage.getItem(keyUser))
-  if( user) setCurrentUser( user, true)
+  if( user) {
+    setCurrentUser( user)
+  }
 
   // How does it work popup check
   if( localStorage.getItem( keyHowDoesItWork) == 'false') {

@@ -8,7 +8,7 @@ const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'https://ga-api-git-custom-airports-jcjollants-projects.vercel.app/'
 import { Airport } from './Airport.ts'
 import axios from 'axios'
-import { isDefaultName } from './sheetData.js'
+import { isDefaultName, normalizeSheetData } from './sheetData.js'
 
 
 const contentTypeJson = { headers: {'Content-Type':'application/json'} }
@@ -33,7 +33,8 @@ export async function authenticate( source, token) {
     }
   }
 
-  setCurrentUser(response.data)
+  currentUser = response.data
+
   return currentUser
 }
 
@@ -42,7 +43,7 @@ export async function authenticate( source, token) {
  * @param {*} url 
  * @returns 
  */
-async function axiosGetForUser(url) {
+async function getUrlWithUser(url) {
   if( currentUser) {
     return axios.get(url,{params:{user:currentUser.sha256}})
   } else {
@@ -274,7 +275,7 @@ export function refreshAirport(code, data) {
 async function requestAllAirports( codes) {
   // console.log( 'perform group request for ' + codes.length)
   const url = apiRootUrl + 'airports/' + codes.join('-');
-  await axiosGetForUser(url)
+  await getUrlWithUser(url)
     .then( response => {
         // console.log( JSON.stringify(response.data))
         const airportList = response.data
@@ -305,7 +306,7 @@ async function requestOneAirport( code) {
   let airport = null
 
   const url = apiRootUrl + 'airport/' + code;
-  await axiosGetForUser(url)
+  await getUrlWithUser(url)
     .then( response => {
         // console.log( '[data.requestOneAirport] received', JSON.stringify(response.data))
         airport = response.data
@@ -348,27 +349,10 @@ export async function sendFeedback(text,contactMe) {
 /**
  * Memorize the current user and refresh all sheets if requested
  * @param {*} user 
- * @param {*} refreshSheets 
  */
-export function setCurrentUser( user, refreshSheets=false) {
-  // console.log('[data.setCurrentUser]', JSON.stringify(user), refreshSheets)
+export function setCurrentUser( user) {
+  // console.log('[data.setCurrentUser]', JSON.stringify(user))
   currentUser = user
-  if( currentUser && refreshSheets) {
-    // request sheets after waiting 2 seconds
-    setTimeout( () => {
-      // console.log( '[data.setCurrentUser] refreshing sheets')
-      const url = apiRootUrl + 'sheets'
-      axiosGetForUser(url).then( sheets => {
-        const newSheets = sheets.data;
-        // console.log( '[data.setCurrentUser] sheets received', JSON.stringify(sheets), 'difference=>', newSheets != currentUser.sheets)
-        if( newSheets != currentUser.sheets) {
-          currentUser.sheets = sheets.data;
-          // console.log( '[data.setCurrentUser] sheets count', currentUser.sheets.length)
-          userSortSheets()
-        }
-      })
-      }, 2000)
-  }
 }
 
 /**
@@ -406,5 +390,48 @@ export async function saveCustomAirport(airport) {
     .catch( error => {
       console.log( '[data] custom airport save error ' + error)
     })
+
+}
+
+/**
+ * Gets a sheet from its publication code
+ * @param {*} code 
+ * @returns 
+ */
+export async function sheetGetByCode(code) {
+  const url = apiRootUrl + 'sheetByCode/' + code
+  return axios.get( url)
+    .then( response => response.data)
+    .catch( error => {
+      console.log( '[data.sheetGetByCode] error ' + JSON.stringify(error))
+      return null
+    })
+
+}
+
+export async function sheetGetById(id) {
+  const url = apiRootUrl + 'sheet/' + id
+  return getUrlWithUser(url).then( response => {
+    // console.log('[data.sheetGetById]', JSON.stringify(response))
+    const sheet = response.data;
+    sheet.data = normalizeSheetData(sheet.data)
+    return sheet;
+  }).catch( error => {
+      console.log( '[data.sheetGetById] error ' + error)
+      return null
+    })
+}
+
+export async function sheetGetList() {
+  const url = apiRootUrl + 'sheets'
+  return getUrlWithUser(url).then( sheets => {
+    currentUser.sheets = sheets;
+    userSortSheets()
+    return currentUser.sheets;
+  })
+  .catch( error => {
+    console.log( '[data.sheetGetList] error ' + error)
+    return null
+  })
 
 }

@@ -34,29 +34,36 @@ const pageDataBlankChecklist = {type:pageTypeChecklist, data:{}}
 const pageDataBlankSelection = {type:pageTypeSelection,data:{}}
 
 // Sheets
-const sheetDataBlank = [pageDataBlankSelection,pageDataBlankSelection]
+const sheetBlank = {
+  name:'Blank',
+  data:[pageDataBlankSelection,pageDataBlankSelection]
+}
 
-export const sheetDataDemoTiles = [{
-  type:pageTypeTiles,
-  data:[
-    {'id':0,'name':'airport','data':{'code':'krnt','rwy':'16-34'}},
-    {'id':1,'name':'airport','data':{'code':'kbfi','rwy':'14L-32R'}},
-    {'id':2,'name':'airport','data':{'code':'w39','rwy':'NE-SW','rwyOrientation':'magnetic'}},
-    {'id':3,'name':'airport','data':{'code':'O26','rwy':'13-31'}},
-    {'id':4,'name':'atis','data':{}},
-    {'id':5,'name':'clearance','data':{}},
- ]},{
-  type:pageTypeTiles,
-  data:[
-    {'id':0,'name':'airport','data':{'code':'ktta','rwy':'03-21','pattern':2}},
-    {'id':1,'name':'airport','data':{'code':'kawo','rwy':'all'}},
-    {'id':2,'name':'sunlight','data':{'from':'KRNT','to':'KSFF'}},
-    {'id':3,'name':'fuel'},
-    {'id':4,'name':'notes','data':{}},
-    {'id':5,'name':'radios','data':demoRadioData},
+const sheetDemoTiles = {
+  name: 'Tiles Demo',
+  data: [{
+    type:pageTypeTiles,
+    name:"Tiles Demo",
+    data:[
+      {'id':0,'name':'airport','data':{'code':'krnt','rwy':'16-34'}},
+      {'id':1,'name':'airport','data':{'code':'kbfi','rwy':'14L-32R'}},
+      {'id':2,'name':'airport','data':{'code':'w39','rwy':'NE-SW','rwyOrientation':'magnetic'}},
+      {'id':3,'name':'airport','data':{'code':'O26','rwy':'13-31'}},
+      {'id':4,'name':'atis','data':{}},
+      {'id':5,'name':'clearance','data':{}},
+   ]},{
+    type:pageTypeTiles,
+    data:[
+      {'id':0,'name':'airport','data':{'code':'ktta','rwy':'03-21','pattern':2}},
+      {'id':1,'name':'airport','data':{'code':'kawo','rwy':'all'}},
+      {'id':2,'name':'sunlight','data':{'from':'KRNT','to':'KSFF'}},
+      {'id':3,'name':'fuel'},
+      {'id':4,'name':'notes','data':{}},
+      {'id':5,'name':'radios','data':demoRadioData},
+    ]
+   }
   ]
- }
-]
+}
 
 const pageDemoChecklist1 = {
   type:pageTypeChecklist,
@@ -123,7 +130,40 @@ const pageDemoChecklist2 = {
     ]
   }
 }
-export const sheetDataDemoChecklist = [pageDemoChecklist1,pageDemoChecklist2]
+export const sheetDemoChecklist = {
+  name:'Checklist Demo',
+  data:[pageDemoChecklist1,pageDemoChecklist2]
+}
+
+export function describePage(page) {
+  if(!page) return "empty";
+  try {
+    if(page.type == pageTypeTiles) {
+      let output = "[Tiles] "
+      const tiles = page.data.map( t => {
+        if(t.name=='airport') {
+          return "Airport(" + t.data.code.toUpperCase() + ")"
+        } else  {
+          return t.name[0].toUpperCase() + t.name.substring(1)
+        }
+      })
+      return output + tiles.join(',');
+    } else if(page.type == pageTypeChecklist) {
+      let output = "[Checklist] " + page.data.name
+      // build a list of sections within that list
+      const sections = page.data.items.filter(i => 's' in i).map(i => i.s);
+      if(sections.length) {
+        return output + " : " + sections.join(' / ')
+      }
+      return output
+    } else if(page.type == pageTypeSelection) {
+      return "[Selection]"
+    }
+  } catch(e) {
+    console.log('[sheetData.describePage] error', e)
+  }
+  return "?"
+}
 
 /**
  * Build a blank page for the given type
@@ -145,22 +185,46 @@ export function getPageBlank(type) {
  * @returns a copy of blank sheet data
  */
 export function getSheetBlank() {
-  return JSON.parse( JSON.stringify(sheetDataBlank))
+  return JSON.parse( JSON.stringify(sheetBlank))
 }  
 
 /**
  * @returns a copy of demo sheet data 
  */
 export function getSheetDemoTiles() {
-  return JSON.parse( JSON.stringify(sheetDataDemoTiles))
+  return JSON.parse( JSON.stringify(sheetDemoTiles))
 }  
 
 export function getSheetDemoChecklist() {
-  return JSON.parse( JSON.stringify(sheetDataDemoChecklist))
+  return JSON.parse( JSON.stringify(sheetDemoChecklist))
 }  
 
 
 
 export function isDefaultName(name) {
   return name in allSheetNames
+}
+
+/**
+ * transform old format sheet (tiles without pages) into new format
+ * @param {*} sheet 
+ * @returns 
+ */
+export function normalizeSheetData(data) {
+  if(!data) return data;
+  if( typeof data == 'string') data = JSON.parse(data)
+
+  // console.log('[sheetData.normalizeSheetData]', JSON.stringify(data))
+  if(data.length == 12) { // old format with 12 tiles
+    // transform into new format
+    const front = {type:pageTypeTiles,data:[data[0],data[1],data[2],data[3],data[4],data[5]]}
+    // adjust ids to 6->0 ... 11->5
+    for(let index = 6; index < 12; index++) {
+      data[index].id -= 6;
+    }
+    const back = {type:pageTypeTiles,data:[data[6],data[7],data[8],data[9],data[10],data[11]]}
+    data = [front, back]
+  }
+
+  return data;
 }
