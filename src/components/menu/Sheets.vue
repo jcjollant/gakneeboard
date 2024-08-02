@@ -49,14 +49,9 @@ const deleteMode = ref(false)
 const sheetCode = ref('')
 const targetSheet = ref(null)
 let targetSheetId = 0;
+const fetchingSheet = {name:'Fetching...',data:{}}
 
 async function fetchSheet(id) {
-  await sheetGetById(id).then( sheet => {
-    // console.log('[Sheets.fetchSheet]', JSON.stringify(sheet))    
-    targetSheet.value = sheet;
-  }).catch( e => {
-    console.log('[Sheets.fetchSheet] failed', e)    
-  })
 }
 
 function getSheetName(sheet) {
@@ -93,12 +88,14 @@ function onSaveSheet() {
 }
 
 async function onSheetFetchCode() {
+  targetSheet.value = fetchingSheet;
   await sheetGetByCode(sheetCode.value).then( sheet => {
     // console.log('[Sheets.onSheetFetch] sheet', JSON.stringify(sheet))
     // showToast('Fetch', 'Sheet found')
     targetSheet.value = sheet;
   } ).catch( e => {
     showToast('Fetch','Could not load sheet with code ' + sheetCode.value, toastError)
+    targetSheet.value = null;
   }) 
 }
 
@@ -115,7 +112,13 @@ async function onSheetSelected(sheet) {
     })
   } else if( props.mode == 'load'){ // load or save
     // console.log('[Sheets.onSheetSelected] load', JSON.stringify(sheet))
-    fetchSheet(sheet.id)
+    targetSheet.value = fetchingSheet;
+    await sheetGetById(sheet.id).then( sheet => {
+      // console.log('[Sheets.fetchSheet]', JSON.stringify(sheet))    
+      targetSheet.value = sheet;
+    }).catch( e => {
+      console.log('[Sheets.onSheetSelected] fetch failed', e)    
+    })
   } else { // save
     // select sheet properties for saving
     targetSheet.value = sheet
@@ -180,7 +183,7 @@ function showToast(summary,details,severity=toastSuccess) {
       </FieldSet>
       <label v-if="sheets.length>=maxSheetCount" class="experiment">We are currently experimenting with a limit of {{ maxSheetCount }} sheets</label>
     </div>
-  <div v-else>
+  <div v-else><!-- load -->
     <FieldSet legend="Your Sheets">
       <div v-if="sheets.length" class="sheetAndToggle">
         <div class="sheetList">
@@ -200,38 +203,37 @@ function showToast(summary,details,severity=toastSuccess) {
       </div>
     </FieldSet>
     <FieldSet legend="Demos & Shared">
-      <div class="codeFetch mb-2">
-        <InputGroup>
+      <div class="alignedRow mb-2">
+        <InputGroup class="sharedCode">
           <InputGroupAddon>Code</InputGroupAddon>
           <InputText v-model="sheetCode" />
+          <Button icon="pi pi-search" @click="onSheetFetchCode" :disabled="!sheetCode.length" severity="secondary"></Button>
         </InputGroup>
-        <Button label="Fetch by Code" icon="pi pi-file-import" severity="secondary" 
+        <!-- <Button label="Fetch by Code" icon="pi pi-file-import" severity="secondary" 
           :disabled="!sheetCode.length"
-          @click="onSheetFetchCode"></Button>
-      </div>
-      <div class="sheetList mb-2">
+          @click="onSheetFetchCode"></Button> -->
+      <!-- <div class="sheetList mb-2"> -->
         <Button label="Tiles Demo" icon="pi pi-clipboard"  title="Replace all with Demo Tiles" 
           @click="onLoadDefault(sheetNameDemoTiles)"></Button>
         <Button label="Checklist Demo" icon="pi pi-clipboard"  title="Replace all with Demo Checklist" 
           @click="onLoadDefault(sheetNameDemoChecklist)"></Button>
         <Button label="New Sheet" icon="pi pi-file" title="Both pages will show page selection" 
           @click="onLoadDefault(sheetNameNew)"></Button>
-      </div>
-    </FieldSet>
+      <!-- </div> -->
+    </div>
+  </FieldSet>
 
     <FieldSet legend="Content">
       <div v-if="targetSheet" class="sheetDescription">
         <div class="bold">Name</div><div>{{targetSheet.name}}</div>
-        <div class="bold">Front</div><div>{{ describePage(targetSheet.data[0]) }}</div>
-        <div class="bold">Back</div><div>{{ describePage(targetSheet.data[1]) }}</div>
+        <div class="bold pageDescription">Front</div><div class="pageDescription">{{ describePage(targetSheet.data[0]) }}</div>
+        <div class="bold pageDescription">Back</div><div class="pageDescription">{{ describePage(targetSheet.data[1]) }}</div>
       </div>
-      <div v-else>
-        <div>Select a sheet above from Your list, Demos or Shared</div>
-      </div>
+      <div v-else>Select a sheet above from Your list, Demos or Shared</div>
     </FieldSet>
     <div class="actionDialog gap-2">
         <Button label="Do Not Load" @click="emits('close')" link></Button>
-        <Button label="Send" @click="emits('load',targetSheet)" :disabled="!targetSheet"></Button>
+        <Button label="Load Sheet" @click="emits('load',targetSheet)" :disabled="!targetSheet"></Button>
       </div>
   </div>
   </Dialog>
@@ -257,10 +259,8 @@ function showToast(summary,details,severity=toastSuccess) {
 }
 
 .codeFetch {
-  display: grid;
-  grid-template-columns: auto auto;
-  gap:1rem;
-  align-items: center;
+  display: flex;
+  gap:5px;
 }
 
 .experiment {
@@ -286,8 +286,15 @@ function showToast(summary,details,severity=toastSuccess) {
 }
 .alignedRow {
   display: flex;
+  flex-wrap: wrap;
   /* line-height: 2rem; */
   align-items: center;
   gap: 5px;
+}
+.sharedCode {
+  width: 10rem;
+}
+.pageDescription {
+  font-size: 0.8rem;
 }
 </style>

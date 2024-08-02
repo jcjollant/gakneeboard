@@ -424,8 +424,8 @@ export async function sheetGetById(id) {
 
 export async function sheetGetList() {
   const url = apiRootUrl + 'sheets'
-  return getUrlWithUser(url).then( sheets => {
-    currentUser.sheets = sheets;
+  return getUrlWithUser(url).then( response => {
+    currentUser.sheets = response.data;
     userSortSheets()
     return currentUser.sheets;
   })

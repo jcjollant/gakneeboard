@@ -95,7 +95,10 @@ onMounted( () => {
   // request sheets after waiting 2 seconds
   setTimeout( async () => {
     // console.log( '[data.setCurrentUser] refreshing sheets')
-    user.value.sheets = await sheetGetList()
+    const sheets = await sheetGetList();
+    console.log('[Menu.onMounted] sheets', JSON.stringify(sheets))
+    user.value.sheets = sheets
+
   }, 2000)
 
 })  
