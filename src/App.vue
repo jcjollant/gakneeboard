@@ -175,6 +175,7 @@ function showToastSuccess( summary, detail) {
       @print="onPrint"
       @copy="onMenuCopy"
       @howDoesItWork="showHowDoesItWork=true"
+      @toast="showToast"
       >
     </Menu>
   </div>

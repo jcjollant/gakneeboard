@@ -8,12 +8,14 @@ import InputGroupAddon from "primevue/inputgroupaddon";
 import InputText from "primevue/inputtext";
 import SelectButton from "primevue/selectbutton"
 
-import { customSheetDelete, maxSheetCount } from "../../assets/data"
+import { customSheetDelete, maxSheetCount, getSheetByCode } from "../../assets/data"
 import { sheetNameDemoChecklist, sheetNameDemoTiles, sheetNameNew } from '../../assets/sheetData'
+import { getToastData, toastError, toastSuccess } from '../../assets/toast'
 
-const emits = defineEmits(["close","delete","load","save","loadDefault"]);
+const emits = defineEmits(["close","delete","load","save","loadDefault","toast"]);
 
-// mode must match events 'load' and 'save'
+//-----------------
+// Props management
 const props = defineProps({ 
   mode: { type: String, default: 'load'},
   user: { type: Object, default: null},
@@ -30,6 +32,13 @@ function loadProps(props) {
 onMounted( () => {
   loadProps(props)
 })
+
+watch( props, async() => {
+  loadProps( props)
+})
+
+// End of props management
+//------------------------
 
 const pubPublic = 'Public'
 const pubPrivate = 'Private'
@@ -59,7 +68,13 @@ function onSaveSheet() {
   emits('save',sheet)
 }
 
-function onSheetFetch() {
+async function onSheetFetch() {
+  await getSheetByCode(sheetCode.value).then( sheet => {
+    console.log('[Sheets.onSheetFetch] sheet', JSON.stringify(sheet))
+    showToast('Fetch', 'Sheet found')
+  } ).catch( e => {
+    showToast('Fetch','Could not load sheet with code ' + sheetCode.value, toastError)
+  }) 
   console.log('[Sheets.onSheetFetch] not implemented')
 }
 
@@ -90,9 +105,9 @@ function onToggleDeleteMode() {
   deleteMode.value = !deleteMode.value
 }
 
-watch( props, async() => {
-  loadProps( props)
-})
+function showToast(summary,details,severity=toastSuccess) {
+  emits('toast',getToastData(summary,details, severity))
+}
 
 
 </script>

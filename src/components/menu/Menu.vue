@@ -15,8 +15,9 @@ import { customSheetSave } from '../../assets/data'
 import { blogUrl, getCurrentUser, setCurrentUser } from '../../assets/data'
 import { sheetNameDemoTiles, sheetNameDemoChecklist, sheetNameReset, sheetNameNew } from '../../assets/sheetData'
 import { getSheetBlank, getSheetDemoTiles, getSheetDemoChecklist, getPageBlank } from '../../assets/sheetData'
+import { getToastData, toastError, toastSuccess } from '../../assets/toast'
 
-const emits = defineEmits(['authentication','copy','load','print','printOptions','howDoesItWork'])
+const emits = defineEmits(['authentication','copy','load','print','printOptions','howDoesItWork','toast'])
 
 const confirm = useConfirm()
 const showFeedback = ref(false)
@@ -71,7 +72,8 @@ function onAuthentication(userParam) {
     user.value = userParam
     emits('authentication', userParam)
   } else {
-    toast.add({ severity: 'warn', summary: 'Engine Roughness', detail: 'Authentication failed', life: 3000});  
+    toast.add(
+      { severity: 'warn', summary: 'Engine Roughness', detail: 'Authentication failed', life: 3000});  
   }
 }
 
@@ -110,12 +112,12 @@ function onSheet(mode) {
     showSheets.value = true;
     pageMode.value = mode
   } else {
-    showToast('warn','Squawk and Ident','Please sign in to use custom sheets')
+    showToast('Squawk and Ident','Please sign in to use custom sheets', toastWarning)
   }
 }
 
 function onSheetDelete(sheet) {
-  showToast('success', 'Clear', 'Sheet "' + sheet.name + '" deleted')
+  showToast('Clear', 'Sheet "' + sheet.name + '" deleted')
 }
 
 /**
@@ -173,14 +175,14 @@ function onSheetLoadDefault(sheetName) {
       sheet.data = pageData;
       await customSheetSave(sheet).then(returnSheet => {
         console.log('[Menu.onSheetSave]', JSON.stringify(returnSheet))
-        showToast('success','Clear','Sheet "' + returnSheet.name + '" saved')
+        showToast('Clear','Sheet "' + returnSheet.name + '" saved')
         if(returnSheet.publish && returnSheet.code) {
-          showToast('success','Published', 'Sheet is accessible with code ' + returnSheet.code)
+          showToast('Published', 'Sheet is accessible with code ' + returnSheet.code)
         }
       })
   } catch( e) {
     // console.log('[Menu.onSheetSave]', e)
-    showToast('error','Save Page','Could not save sheet "' + sheet.name + '"')
+    showToast('Save Page','Could not save sheet "' + sheet.name + '"', toastError)
   }
 }
 
@@ -191,13 +193,17 @@ function onSignOut() {
   emits('authentication',null)
 }
 
+function onToast(data) {
+  emits('toast', data)
+}
+
 function openBlog() {
   window.open( blogUrl, '_blank');
 }
 
 
-function showToast(severity, summary, detail) {
-  toast.add({ severity: severity, summary: summary, detail: detail, life: 3000});  
+function showToast( summary, detail, severity=toastSuccess) {
+  toast.add( getToastData(summary, detail, severity));  
 }
 
 // Toggle menu visibility which will update component layout
@@ -231,7 +237,8 @@ watch( props, async() => {
       @delete="onSheetDelete"
       @load="onSheetLoad" 
       @load-default="onSheetLoadDefault"
-      @save="onSheetSave" />
+      @save="onSheetSave"
+      @toast="onToast" />
     <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu">
       <div class="bar1"></div>
       <div class="bar2"></div>
