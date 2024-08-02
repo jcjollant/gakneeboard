@@ -4,6 +4,10 @@ import { Sheet } from "./models/Sheet";
 export class SheetDao {
     static modelVersion:number = 1;
 
+    static maxSheets:number = 10
+
+
+
     public static async count():Promise<number> {
         const result = await sql`SELECT count(*) FROM Sheets`;
         return Number(result.rows[0].count)
@@ -15,7 +19,7 @@ export class SheetDao {
      * @param userId 
      * @returns 
      */
-    public static async createOrUpdate(sheet:Sheet,userId:number,maxSheets:number):Promise<Sheet> {
+    public static async createOrUpdate(sheet:Sheet,userId:number):Promise<Sheet> {
         if(!sheet) throw new Error("No sheet provided");
         // Figure out a sheet id if it's not readily provided
         if(!sheet.id) {
@@ -37,7 +41,7 @@ export class SheetDao {
             // count the number of sheets for this user
             const r1 = await sql`SELECT COUNT(*) AS count FROM sheets WHERE user_id=${userId};`
             const count = r1.rows[0]['count'] as number;
-            if( count >= maxSheets) throw new Error("Maximum number of sheets reached");
+            if( count >= SheetDao.maxSheets) throw new Error("Maximum number of sheets reached");
             const result = await sql`
                 INSERT INTO sheets (name, data, version, user_id)
                 VALUES (${sheet.name}, ${data}, ${this.modelVersion}, ${userId})
@@ -77,18 +81,18 @@ export class SheetDao {
 
     /**
      * Gets a list of pages for a given user. The list is returned as an array of 
-     * stringified json objects containing the name and id of each page.
+     * objects without the sheet data
      * @param userId 
      * @returns list of found sheets
      */
     public static async getListForUser(userId:number):Promise<Sheet[]> {
         // console.log('[SheetDao.getListForUser] user', userId)
         return await sql`
-            SELECT id,name,data FROM sheets WHERE user_id=${userId};
+            SELECT sheets.id as id,name,publications.code as code FROM sheets LEFT JOIN publications ON sheets.id=publications.sheetid WHERE user_id=${userId}
         `.then( (result) => {
             // console.log('[SheetDao.getListForUser]', result.rowCount)
             if(result.rowCount) {
-                return result.rows.map( (row) => new Sheet(row['id'], row['name'], row['data']))
+                return result.rows.map( (row) => new Sheet(row['id'], row['name'], [], row['code'] != null, row['code']))
             } else {
                 return []
             }
