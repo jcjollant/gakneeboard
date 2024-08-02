@@ -97,17 +97,24 @@ export class SheetDao {
 
     /**
      * Find sheet by it's Id and user
-     * @param pageId 
+     * @param sheetId 
      * @param userId 
      * @returns 
      */
-    public static async readById(pageId:number, userId:number):Promise<Sheet|undefined> {
-        const result = await sql`
-            SELECT data,name FROM sheets WHERE id=${pageId} AND user_id=${userId};
-        `
+    public static async readById(sheetId:number, userId:number|undefined=undefined):Promise<Sheet|undefined> {
+        let result:any;
+        if(userId) {
+            result = await sql`
+                SELECT data,name FROM sheets WHERE id=${sheetId} AND user_id=${userId};
+            `
+        } else {
+            result = await sql`
+                SELECT data,name FROM sheets WHERE id=${sheetId};
+            `
+        }
         if( result.rowCount == 0) return undefined
 
         const row = result.rows[0];
-        return new Sheet( pageId, row['name'], row['data']);
+        return new Sheet( sheetId, row['name'], row['data']);
     }
 }
