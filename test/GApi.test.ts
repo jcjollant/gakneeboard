@@ -132,11 +132,19 @@ describe( 'GApi Tests', () => {
         })
 
         // invalid pageId should throw error
-        await GApi.sheetGetData(0,jcUserId).then( () => {
+        await GApi.sheetGet(0,jcUserId).then( () => {
             expect(true).toBe(false) // should not get here
         }).catch( e => {
             expect(e).toBeInstanceOf(GApiError)
         })
+
+        // custom sheet should check out
+        await GApi.sheetGet(jcTestSheetId,jcUserId).then( sheet => {
+            expect(sheet.name).toBe(jcTestSheetName)
+        }).catch( e => {
+            expect(true).toBe(false) // should not get here
+        })
+
     })
 
     test('Sheet Publication', async() => {

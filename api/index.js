@@ -114,7 +114,7 @@ app.get('/housekeeping/willie', async (req,res) => {
 app.get('/sheet/:id', async (req, res) => {
     const userId = await UserTools.userFromRequest(req)
     try {
-        let sheet = await GApi.sheetGetData(req.params.id, userId);
+        let sheet = await GApi.sheetGet(req.params.id, userId);
         res.send(sheet)
     } catch( e) {
         catchError(res, e, 'GET /sheet/:id')

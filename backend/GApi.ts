@@ -264,10 +264,10 @@ export class GApi {
      * @returns 
      * @throws 404 if not found
      */
-    public static async sheetGetData(sheetId:number,userId:number):Promise<any> {
+    public static async sheetGet(sheetId:number,userId:number):Promise<any> {
         const sheet:Sheet|undefined = await SheetDao.readById(sheetId, userId)
         // console.log( '[gapi.sheetGet] ' + sheetId + ' -> ' + output)
-        if( sheet) return sheet.data
+        if( sheet) return sheet
         throw new GApiError(404, 'Sheet not found')
     }
 
