@@ -15,8 +15,6 @@ import { Sunlight } from './models/Sunlight'
 
 // Google API key
 
-const maxSheets:number = 10
-
 export class GApiError {
     status:number;
     message:string;
@@ -291,7 +289,7 @@ export class GApi {
         // update record
         if( !userId) throw new GApiError( 400,"Invalid user");
 
-        const newSheet:Sheet = await SheetDao.createOrUpdate(sheet, userId, maxSheets)
+        const newSheet:Sheet = await SheetDao.createOrUpdate(sheet, userId)
         if(sheet.publish) {
             // we need to create a new publication
             const newPublication = await PublicationDao.publish(newSheet.id)
