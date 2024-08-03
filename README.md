@@ -25,7 +25,8 @@ Run the test suite:
 
 # Done
 ## 8/03/2024
-* Fixed checklist color bug
+1) Fixed checklist color bug
+2) Improved checklist management of empty and long lines
 ## 8/02/2024
 * Added sheets sharing
 ## 7/30/2024

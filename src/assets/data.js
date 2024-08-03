@@ -1,4 +1,4 @@
-export const version = '803'
+export const version = '803-2'
 export const blogUrl = 'https://gakneeboard.wordpress.com/'
 export const maxSheetCount = 10
 export const keyUser = 'kb-user'
