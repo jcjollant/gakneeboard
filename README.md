@@ -21,6 +21,8 @@ ts-node .\willie.ts
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
+## 8/02/2024
+* Sheet sharing
 ## 7/23/2024
 1) Fixed name bug affecting KBFF (When an airport has double blank in the name)
 2) Extended Sunlight API to support different dates
