@@ -24,6 +24,8 @@ Run the test suite:
 * Small indicator below runway is configurable
 
 # Done
+## 8/03/2024
+* Fixed checklist color bug
 ## 8/02/2024
 * Added sheets sharing
 ## 7/30/2024

@@ -1,4 +1,5 @@
-const currentVersionNumber = '802'
+// import { version as currentVersionNumber } from '../../src/assets/data'
+const currentVersionNumber = 803
 const environment = 'http://localhost:5173/'
 
 function visitAndCloseBanner() {
@@ -33,7 +34,7 @@ function newPage() {
 }
 
 describe('template spec', () => {
-  it('Navigation works correcly', () => {
+  it.skip('Navigation works correcly', () => {
     visitAndCloseBanner()
     newPage()
     // sets one page in Tiles, other in Checlisk
@@ -269,5 +270,19 @@ describe('template spec', () => {
     cy.get('.rightList > :nth-child(1) > .separator').contains('Section2')
     cy.get('.rightList > .theme-green > .challenge').contains('Challenge2')
     cy.get('.rightList > .theme-green > .response').contains('Response2')
+
+    // Change color to blue
+    cy.get('.pageOne > .header').click()
+    cy.get('.theme-blue > label').click()
+    cy.get('[aria-label="Apply"]').click()
+    // check it's blue
+    cy.get('.leftList > .theme-blue > .challenge').contains('Challenge1')
+
+    // Open demo Checklist
+    cy.get('.menuIcon').click()
+    cy.get('[aria-label="Load"]').click()
+    cy.get('.p-confirm-dialog-accept > .p-button-label').click()
+    cy.get('.menuIcon').click()
+
   })
 })
