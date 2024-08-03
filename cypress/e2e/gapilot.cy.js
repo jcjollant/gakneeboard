@@ -1,12 +1,8 @@
-const currentVersionNumber = '728'
+const currentVersionNumber = '802'
+const environment = 'http://localhost:5173/'
 
-describe('template spec', () => {
-  it('Visits main page', () => {
-    // cy.visit('https://www.kneeboard.ga/')
-    // Local environment
-    cy.visit('http://localhost:5173/')
-    // Sunlight Branch
-    // cy.visit('https://gapilot-git-sunlight-jcjollants-projects.vercel.app/')
+function visitAndCloseBanner() {
+    cy.visit(environment)
 
     // wait for airports query
     cy.intercept({
@@ -22,21 +18,37 @@ describe('template spec', () => {
 
     // check version number
     cy.get('.versionDialog').contains(currentVersionNumber)
+}
 
+function newPage() {
     // Reset tiles and check all are reset
     cy.get('.menuIcon').click()
-    cy.get('[aria-label="Reset"]').click()
+    cy.get('[aria-label="New"]').click()
     cy.get('.p-confirm-dialog-accept').click()
     cy.get('.menuIcon').click()
 
-    // check all tiles are in reset mode
-    for( const page of [1,2]) {
-      for( const tile of [1, 2, 3, 4, 5, 6]) {
-        cy.get(`:nth-child(${page}) > :nth-child(${tile}) > .header > div`).contains('Tile Selection')
-      }
+    // both pages should be in selection mode
+    cy.get('.pageOne > .header').contains('Page Selection')
+    cy.get('.pageTwo > .header').contains('Page Selection')
+}
+
+describe('template spec', () => {
+  it('Navigation works correcly', () => {
+    visitAndCloseBanner()
+    newPage()
+    // sets one page in Tiles, other in Checlisk
+    cy.get('.pageOne > .list > [aria-label="Tiles"]').click()
+    cy.get('.pageTwo > .list > [aria-label="Checklist"]').click()
+
+    // check all tiles are in reset mode on page 1
+    for( const tile of [1, 2, 3, 4, 5, 6]) {
+      cy.get(`:nth-child(1) > :nth-child(${tile}) > .header > div`).contains('Tile Selection')
     }
 
-    // load demo page
+    // Check page 2 is in checlist mode
+    cy.get('.pageTwo > .header').contains("Checklist")
+
+    // load tiles demo page
     cy.get('.menuIcon').click()
     cy.get('[aria-label="Demo"]').click()
     cy.get('.p-confirm-dialog-accept > .p-button-label').click()
@@ -226,5 +238,36 @@ describe('template spec', () => {
     // cy.get('[aria-label="Sign In"]').click()
     // cy.get('#gsi_755440_831716').click()
   })
-  
+  it('Checklist work', () => {
+    visitAndCloseBanner()
+    newPage()
+    // set both pages to checlist
+    cy.get('.pageOne > .list > [aria-label="Checklist"]').click()
+    cy.get('.pageTwo > .list > [aria-label="Checklist"]').click()
+    cy.get('.pageOne > .header').contains("Checklist")
+    cy.get('.pageTwo > .header').contains("Checklist")
+
+    //  swicth to edit mode
+    cy.get('.pageOne > .header').click()
+    cy.get('.pageOne > .header').contains("Checklist")
+
+    // cy.get('.p-inputgroup > .p-inputtext').contains('Checklist')
+    // one list for now
+    cy.get('.oneOrTwoLists').children().should('have.length', 1)
+
+    // swicth to two columns
+    cy.get('[tabindex="-1"]').click()
+    cy.get('.oneOrTwoLists').children().should('have.length', 2)
+
+    cy.get('.oneOrTwoLists > :nth-child(1)').type('##Section1\nChallenge1##Response1')
+    cy.get('.oneOrTwoLists > :nth-child(2)').type('##Section2\nChallenge2##Response2')
+    cy.get('.theme-green').click()
+    cy.get('[aria-label="Apply"]').click()
+    cy.get('.leftList > :nth-child(1) > .separator').contains('Section1')
+    cy.get('.leftList > .theme-green > .challenge').contains('Challenge1')
+    cy.get('.leftList > .theme-green > .response').contains('Response1')
+    cy.get('.rightList > :nth-child(1) > .separator').contains('Section2')
+    cy.get('.rightList > .theme-green > .challenge').contains('Challenge2')
+    cy.get('.rightList > .theme-green > .response').contains('Response2')
+  })
 })
