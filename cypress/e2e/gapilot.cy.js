@@ -34,7 +34,7 @@ function newPage() {
 }
 
 describe('template spec', () => {
-  it.skip('Navigation works correcly', () => {
+  it('Navigation works correcly', () => {
     visitAndCloseBanner()
     newPage()
     // sets one page in Tiles, other in Checlisk
@@ -260,29 +260,46 @@ describe('template spec', () => {
     cy.get('[tabindex="-1"]').click()
     cy.get('.oneOrTwoLists').children().should('have.length', 2)
 
-    cy.get('.oneOrTwoLists > :nth-child(1)').type('##Section1\nChallenge1##Response1')
-    cy.get('.oneOrTwoLists > :nth-child(2)').type('##Section2\nChallenge2##Response2')
+    cy.get('.oneOrTwoLists > :nth-child(1)').type('##Section1\nChallenge1.1##Response1.1\n##\n\nChallenge1.2\nChallenge1.3##')
+    cy.get('.oneOrTwoLists > :nth-child(2)').type('##Section2\nChallenge2.1##Response2.1\n##\n\nChallenge2.2\nChallenge2.3##')
     cy.get('.theme-green').click()
     cy.get('[aria-label="Apply"]').click()
+    // Section
     cy.get('.leftList > :nth-child(1) > .separator').contains('Section1')
-    cy.get('.leftList > .theme-green > .challenge').contains('Challenge1')
-    cy.get('.leftList > .theme-green > .response').contains('Response1')
-    cy.get('.rightList > :nth-child(1) > .separator').contains('Section2')
-    cy.get('.rightList > .theme-green > .challenge').contains('Challenge2')
-    cy.get('.rightList > .theme-green > .response').contains('Response2')
+    // Normal line with two short boxes
+    cy.get('.leftList > .theme-green > .challenge').contains('Challenge1.1')
+    cy.get('.leftList > .theme-green > .response').contains('Response1.1')
+    // short empty boxes
+    cy.get('.leftList > :nth-child(3) > .challenge').should('be.empty')
+    cy.get('.leftList > :nth-child(3) > .response').should('be.empty')
+    // long empty box
+    cy.get('.leftList > :nth-child(4) > .spanned').should('be.empty')
+    // long box with challenge
+    cy.get('.leftList > :nth-child(5) > .spanned').contains('Challenge1.2')
+    // short boxes with challenge and question
+    cy.get('.leftList > :nth-child(6) > .challenge').contains('Challenge1.3')
+    cy.get('.leftList > :nth-child(6) > .response').should('be.empty')
+
+    cy.get('.rightList > .theme-green > .challenge').contains('Challenge2.1')
+    cy.get('.rightList > .theme-green > .response').contains('Response2.1')
+    // short empty boxes
+    cy.get('.rightList > :nth-child(3) > .challenge').should('be.empty')
+    cy.get('.rightList > :nth-child(3) > .response').should('be.empty')
+    // long empty box
+    cy.get('.rightList > :nth-child(4) > .spanned').should('be.empty')
+    // long box with challenge
+    cy.get('.rightList > :nth-child(5) > .spanned').contains('Challenge2.2')
+    // short boxes with challenge and question
+    cy.get('.rightList > :nth-child(6) > .challenge').contains('Challenge2.3')
+    cy.get('.rightList > :nth-child(6) > .response').should('be.empty')
+
 
     // Change color to blue
     cy.get('.pageOne > .header').click()
     cy.get('.theme-blue > label').click()
     cy.get('[aria-label="Apply"]').click()
     // check it's blue
-    cy.get('.leftList > .theme-blue > .challenge').contains('Challenge1')
-
-    // Open demo Checklist
-    cy.get('.menuIcon').click()
-    cy.get('[aria-label="Load"]').click()
-    cy.get('.p-confirm-dialog-accept > .p-button-label').click()
-    cy.get('.menuIcon').click()
+    cy.get('.leftList > .theme-blue > .challenge').contains('Challenge1.1')
 
   })
 })

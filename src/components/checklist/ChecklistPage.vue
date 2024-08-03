@@ -65,9 +65,21 @@ function itemsFromList(value) {
         let challenge;
         let response;
         [challenge, response] = line.split('##')
-        if (challenge == undefined || response == undefined) return { c: '?', r: '?' }
-        // is this a section?
-        if (challenge.length == 0) return { s: response }
+        if( response == undefined) { // there is no separator
+            if( challenge == undefined) return {c:'?'}
+            // Full line with only challenge
+            return { c:challenge}  
+        }
+        // No challenge
+        if (challenge.length == 0) {
+            // it can be a section or a blank line
+            // [##]
+            if(response.length == 0) return {c:'', r:''}
+            // section [##Section]
+            return { s: response }
+        }
+
+        // normal entry
         return { c: challenge, r: response }
     })
     return items;
@@ -79,7 +91,8 @@ function listFromItems(items) {
     // translate items into text
     const list = items.map(item => {
         if ('s' in item) return '##' + item.s;
-        return item.c + '##' + item.r
+        if ('r' in item) return item.c + '##' + item.r
+        return item.c
     })
     return list.join('\n')
 }
@@ -167,9 +180,9 @@ Create sections using '##Section Name':
             <div v-if="columns == colSingle">
                 <div v-if="data && data.items && data.items.length" v-for="(item, index) in data.items" class="checklist"
                     :class="(index % 2) ? theme : ''">
-                    <div v-if="'s' in item" class="separator">{{ item.s }}</div>
-                    <div v-else class="challenge">{{ item.c }}</div>
-                    <div class="response">{{ item.r }}</div>
+                    <div v-if="'s' in item" class="separator spanned">{{ item.s }}</div>
+                    <div v-else class="challenge" :class="('r' in item)?'':'spanned'">{{ item.c }}</div>
+                    <div v-if="'r' in item" class="response">{{ item.r }}</div>
                 </div>
                 <div v-else>There are no items in this list yet<br />Click the header to start customizing</div>
             </div>
@@ -177,18 +190,18 @@ Create sections using '##Section Name':
                 <div class="leftList">
                     <div v-if="data && data.items.length" v-for="(item, index) in data.items" class="checklist smallFont"
                         :class="(index % 2) ? theme : ''">
-                        <div v-if="'s' in item" class="separator">{{ item.s }}</div>
-                        <div v-else class="challenge">{{ item.c }}</div>
-                        <div class="response">{{ item.r }}</div>
+                        <div v-if="'s' in item" class="separator spanned">{{ item.s }}</div>
+                        <div v-else class="challenge" :class="('r' in item)?'':'spanned'">{{ item.c }}</div>
+                        <div v-if="'r' in item" class="response">{{ item.r }}</div>
                     </div>
                     <div v-else>Empty</div>
                 </div>
                 <div class="rightList">
                     <div v-if="data && data.items2 && data.items2.length" v-for="(item, index) in data.items2"
                         class="checklist smallFont" :class="(index % 2) ? theme : ''">
-                        <div v-if="'s' in item" class="separator">{{ item.s }}</div>
-                        <div v-else class="challenge">{{ item.c }}</div>
-                        <div class="response">{{ item.r }}</div>
+                        <div v-if="'s' in item" class="separator spanned">{{ item.s }}</div>
+                        <div v-else class="challenge" :class="('r' in item)?'':'spanned'">{{ item.c }}</div>
+                        <div v-if="'r' in item" class="response">{{ item.r }}</div>
                     </div>
                     <div v-else>Empty</div>
                 </div>
@@ -217,6 +230,7 @@ Create sections using '##Section Name':
     text-align: left;
     padding-left: 10px;
     border-right: 1px solid lightgrey;
+    height: 1.6rem
 }
 
 .theme-yellow {
@@ -240,8 +254,10 @@ Create sections using '##Section Name':
     font-weight: bolder;
     color: darkgrey;
     background: white;
-    grid-column: 1 / span 2;
+}
 
+.spanned {
+    grid-column: 1 / span 2
 }
 
 .heading {
