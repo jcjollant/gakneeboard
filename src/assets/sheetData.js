@@ -135,8 +135,13 @@ export const sheetDemoChecklist = {
   data:[pageDemoChecklist1,pageDemoChecklist2]
 }
 
-export function describePage(page) {
-  if(!page) return "empty";
+export function describePage(sheet, pageNumber) {
+  if(!sheet) return "empty";
+  if(!sheet.data || sheet.data.length < 2) return '?'
+  const page = sheet.data[pageNumber]
+  // do we have a page and a type yet?
+  if(!page || !page.type) return '?'
+
   try {
     if(page.type == pageTypeTiles) {
       let output = "[Tiles] "
