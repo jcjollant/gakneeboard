@@ -30,6 +30,8 @@ function loadProps(newProps) {
         }
         if( 'theme' in newProps.data) {
             theme.value = 'theme-' + newProps.data.theme
+        } else {
+            theme.value = 'theme-yellow'
         }
     } else {
         data.value = null

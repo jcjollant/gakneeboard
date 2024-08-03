@@ -69,6 +69,7 @@ const pageDemoChecklist1 = {
   type:pageTypeChecklist,
   data:{
     name:'Preflight',
+    theme:'yellow',
     items: [
         {s:'Cabin'},
         {c:'Docs AR(R)OW',r:'CHECKED'},
@@ -101,6 +102,7 @@ const pageDemoChecklist2 = {
   type:pageTypeChecklist,
   data : {
     name:'Preflight (Cont\'d)',
+    theme:'yellow',
     items: [
         {s:'Tail'},
         {c:'Tie Down',r:'REMOVED'},
