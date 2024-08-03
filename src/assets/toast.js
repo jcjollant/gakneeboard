@@ -1,5 +1,6 @@
-export const toastSuccess = 'success'
 export const toastError = 'error'
+export const toastInfo = 'info'
+export const toastSuccess = 'success'
 export const toastWarning = 'warn'
 
 export function getToastData(summary,detail,severity=toastSuccess,life=3000) {
