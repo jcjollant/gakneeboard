@@ -4,7 +4,7 @@ import { onBeforeMount, onMounted,ref} from 'vue'
 import { inject } from "@vercel/analytics"
 import Menu from './components/menu/Menu.vue'
 import Page from './components/Page.vue'
-import { version, setCurrentUser } from './assets/data.js'
+import { version, setCurrentUser, keyUser } from './assets/data.js'
 import { getSheetDemoTiles, normalizeSheetData, sheetNameLocal } from './assets/sheetData'
 import HowDoesItWork from './components/HowDoesItWork.vue'
 import { useToast } from 'primevue/usetoast'
@@ -15,7 +15,6 @@ const backPageData = ref(null)
 const sheetData = ref(null)
 
 const flipMode = ref(false)
-const keyUser = 'kb-user'
 const keyHowDoesItWork = 'howDoesItWork'
 const showHowDoesItWork = ref(true)
 const toast = useToast()
@@ -42,18 +41,6 @@ function loadSheetData(data) {
     backPageData.value = null
   }
   sheetData.value = [frontPageData.value, backPageData.value]
-}
-
-function onAuthentication(user) {
-  // console.log('[App.onAuthentication] user', JSON.stringify(user))
-  if( user) {
-    localStorage.setItem(keyUser,JSON.stringify(user))
-    showToastSuccess('Clear','Welcome ' + user.name)
-  } else {
-    localStorage.removeItem(keyUser)
-    // reload the page
-    location.reload()
-  }
 }
 
 function onCloseHowDoesItWork() {
@@ -166,7 +153,6 @@ function showToastSuccess( summary, detail) {
   </div>
   <div class="menuContainer">
     <Menu class="menu" :pageData="sheetData" v-show="menuVisible"
-      @authentication="onAuthentication"
       @load="onMenuLoad" 
       @print="onPrint"
       @copy="onMenuCopy"

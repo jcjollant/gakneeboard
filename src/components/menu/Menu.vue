@@ -9,13 +9,10 @@ import Print from './Print.vue'
 import Sheets from './Sheets.vue'
 import SignIn from './SignIn.vue';
 import Warning from './Warning.vue'
-import { useToast } from 'primevue/usetoast'
-import Toast from 'primevue/toast';
-import { customSheetSave } from '../../assets/data'
+import { customSheetSave, keyUser } from '../../assets/data'
 import { blogUrl, getCurrentUser, setCurrentUser, sheetGetList } from '../../assets/data'
-import { sheetNameDemoTiles, sheetNameDemoChecklist, sheetNameReset, sheetNameNew } from '../../assets/sheetData'
 import { getSheetBlank, getSheetDemoTiles } from '../../assets/sheetData'
-import { getToastData, toastError, toastSuccess, toastWarning } from '../../assets/toast'
+import { getToastData, toastError, toastSuccess, toastWarning, toastInfo } from '../../assets/toast'
 
 const emits = defineEmits(['authentication','copy','load','print','printOptions','howDoesItWork','toast'])
 
@@ -26,7 +23,6 @@ const showPrint = ref(false)
 const showSignIn = ref(false)
 const showWarning = ref(false)
 const showSheets = ref(false)
-const toast = useToast()
 const user = ref(null)
 const pageMode = ref('load')
 let pageData = null;
@@ -41,6 +37,11 @@ function loadProps( props) {
   // console.log('Menu loadProps', JSON.stringify(props))
   pageData = props.pageData;
 }
+
+watch( props, async() => {
+  loadProps( props)
+})
+
 // End props management
 //---------------------
 
@@ -70,37 +71,26 @@ function confirmAndLoad(title, sheet) {
 }
 
 
-function onAuthentication(userParam) {
+function onAuthentication(newUser) {
   // console.log('[Menu.onAuthentication] ' + JSON.stringify(userParam))
   showSignIn.value = false
-  if( userParam) {
-    user.value = userParam
-    emits('authentication', userParam)
+  if( newUser) {
+    userChange(newUser)
+    emits('toast', getToastData( 'Clear', 'Welcome ' + newUser.name))
   } else {
-    toast.add(
-      { severity: 'warn', summary: 'Engine Roughness', detail: 'Authentication failed', life: 3000});  
+    emits('toast', getToastData('Engine Roughness', 'Authentication failed', toastWarning));  
   }
 }
 
 function onFeedbackSent() {
   // console.log('[menu] onFeedbackSent')
   showFeedback.value = false
-  toast.add({ severity: 'info', summary: 'Readback Correct', detail: 'Thanks for your feedback!', life: 3000});  
+  showToast('Readback Correct', 'Thanks for your feedback!', toastInfo)
 }
 
 onMounted( () => {
-  user.value = getCurrentUser()
+  userChange(getCurrentUser(), false)
   loadProps(props)
-
-  // request sheets after waiting 2 seconds
-  setTimeout( async () => {
-    // console.log( '[data.setCurrentUser] refreshing sheets')
-    const sheets = await sheetGetList();
-    console.log('[Menu.onMounted] sheets', JSON.stringify(sheets))
-    user.value.sheets = sheets
-
-  }, 2000)
-
 })  
 
 function onPrint() {
@@ -120,10 +110,9 @@ function onPrintPrint(options) {
   emits('print', options);
 }
 
-function onSheet(mode) {
+function onSheetDialog(mode) {
   if( user.value) {
     // console.log("[Menu.onSaveAs] valid request")
-    user.value = getCurrentUser()
     showSheets.value = true;
     pageMode.value = mode
   } else {
@@ -138,8 +127,13 @@ function onSheetClose() {
   showSheets.value = false;
 }
 
+// a sheet has been deleted, it should be removed from the user
 function onSheetDelete(sheet) {
-  showToast('Clear', 'Sheet "' + sheet.name + '" deleted')
+    if(!user.value || !user.value.sheets) return;
+
+    const newList = user.value.sheets.filter( s => s.id != sheet.id)
+    userUpdateSheets(newList);
+    showToast('Clear', 'Sheet "' + sheet.name + '" deleted')
 }
 
 /**
@@ -163,11 +157,12 @@ function onSheetDelete(sheet) {
   try {
       sheet.data = pageData;
       await customSheetSave(sheet).then(returnSheet => {
-        console.log('[Menu.onSheetSave]', JSON.stringify(returnSheet))
+        // console.log('[Menu.onSheetSave]', JSON.stringify(returnSheet))
         showToast('Clear','Sheet "' + returnSheet.name + '" saved')
         if(returnSheet.publish && returnSheet.code) {
           showToast('Published', 'Sheet is accessible with code ' + returnSheet.code)
         }
+        userUpdateSheets(getCurrentUser().sheets)
       })
   } catch( e) {
     // console.log('[Menu.onSheetSave]', e)
@@ -176,10 +171,9 @@ function onSheetDelete(sheet) {
 }
 
 function onSignOut() {
-  setCurrentUser(null)
-  user.value = null
-  // notifiy parent
-  emits('authentication',null)
+  userChange(null)
+  // reload the page
+  location.reload()
 }
 
 function onToast(data) {
@@ -192,7 +186,7 @@ function openBlog() {
 
 
 function showToast( summary, detail, severity=toastSuccess) {
-  toast.add( getToastData(summary, detail, severity));  
+  emits('toast', getToastData(summary, detail, severity))
 }
 
 // Toggle menu visibility which will update component layout
@@ -201,12 +195,45 @@ function toggleMenu() {
 }
 
 /**
- * Something has changed in the props
+ * A new user should be considered
+ * @param {*} newUser 
+ * @param {*} save Save Cookie and update user in data.
  */
-watch( props, async() => {
-  loadProps( props)
-})
+function userChange(newUser, save=true) {
+  user.value = newUser
 
+  // request sheets after waiting 2 seconds
+  if(newUser) {
+    // save the cookie
+    if(save) {
+      setCurrentUser(newUser)
+      localStorage.setItem(keyUser,JSON.stringify(newUser))
+    }
+
+    setTimeout( async () => {
+      // console.log( '[data.setCurrentUser] refreshing sheets')
+      const sheets = await sheetGetList();
+      // console.log('[Menu.onMounted] sheets', JSON.stringify(sheets))
+      userUpdateSheets(sheets)
+    }, 2000)
+  } else {
+    if(save) {
+      setCurrentUser(null)
+      // remove the cookie
+      localStorage.removeItem(keyUser)
+
+    }
+  }
+
+}
+
+function userUpdateSheets(newList) {
+  if(!user.value) return;
+  const tempUser = JSON.parse(JSON.stringify(user.value))
+  tempUser.sheets = newList;
+  user.value = tempUser
+  // console.log('[Menu.userUpdateSheets] new list', JSON.stringify(newList))
+}
 
 </script>
 
@@ -214,7 +241,6 @@ watch( props, async() => {
 
   <div class="container" :class="{grow: showMenu}">
     <ConfirmDialog />
-    <Toast />
     <Feedback v-model:visible="showFeedback" :user="user" 
       @sent="onFeedbackSent" @close="showFeedback=false" />
     <Print v-model:visible="showPrint"
@@ -242,9 +268,9 @@ watch( props, async() => {
         <Button icon="pi pi-print" label="Print" title="Print the active sheet"
           @click="onPrint" />
         <div class="separator"></div>
-        <Button label="Reset" icon="pi pi-file" title="Reset both pages" @click="onSheetLoad(getSheetBlank())"></Button>
-        <Button label="Load" icon="pi pi-folder-open" title="Open existing sheet" @click="onSheet('load')"></Button>
-        <Button label="Save" icon="pi pi-save" title="Save this sheet" @click="onSheet('save')"></Button>
+        <Button label="New" icon="pi pi-file" title="Reset both pages" @click="onSheetLoad(getSheetBlank())"></Button>
+        <Button label="Load" icon="pi pi-folder-open" title="Open existing sheet" @click="onSheetDialog('load')"></Button>
+        <Button label="Save" icon="pi pi-save" title="Save this sheet" @click="onSheetDialog('save')"></Button>
         <Button label="Demo" icon="pi pi-clipboard" title="Load demo tiles" @click="onSheetLoad(getSheetDemoTiles())"></Button>
         <div class="separator"></div>
         <Button label="Mirror" icon="pi pi-sign-out" title="Copy left page onto right" 
