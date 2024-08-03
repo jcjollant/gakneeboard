@@ -1,6 +1,7 @@
-export const version = '730'
+export const version = '802'
 export const blogUrl = 'https://gakneeboard.wordpress.com/'
 export const maxSheetCount = 10
+export const keyUser = 'kb-user'
 // export const blogUrl = 'https://ga-kneeboard.blogspot.com/'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 //const apiRootUrl = 'http://localhost:3000/'
@@ -90,6 +91,8 @@ export async function customSheetSave(sheet) {
   return axios.post(url, payload, contentTypeJson)
     .then( response => {
       const responseSheet = response.data
+      // we don't need the data
+      responseSheet.data = []
       // console.log('[data.customSheetSave] sheet saved', JSON.stringify(responseSheet))
       // update that sheet in currentUser.sheets if it exists
       let index = -1
@@ -417,7 +420,9 @@ export async function sheetGetById(id) {
     sheet.data = normalizeSheetData(sheet.data)
     return sheet;
   }).catch( error => {
-      console.log( '[data.sheetGetById] error ' + error)
+      if(error.response.status != 404) {
+        console.log( '[data.sheetGetById] error ' + error)
+      }
       return null
     })
 }
