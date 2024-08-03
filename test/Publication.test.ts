@@ -14,4 +14,5 @@ describe('Publication', () => {
         expect(pub.code).toBe(someCode) 
         expect(pub.sheetid).toBe(someSheetId)
     })
+
 })

@@ -6,8 +6,8 @@ import { kbffData, kbfiData, kcdwData, kdzjData, krntData, s43Data } from './adi
 describe('Adip', () => {
 
     test('Military frequencies', () => {
-        expect(Adip.isMilitary(123.0)).toBe(false)
-        expect(Adip.isMilitary(269.9)).toBe(true)
+        expect(Adip.isMilitary(123.0)).toBeFalsy()
+        expect(Adip.isMilitary(269.9)).toBeTruthy()
     })
 
     test('Variation should be <0 for East and >0 for west',() =>{

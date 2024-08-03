@@ -5,7 +5,9 @@ import { UserDao } from "./UserDao"
 import { FeedbackDao } from "./FeedbackDao"
 import { AirportDao } from "./AirportDao";
 import { createTransport } from 'nodemailer'
+import { PublicationDao } from './PublicationDao'
 import { SheetDao } from "./SheetDao";
+
 
 export class Check {
     name:string;
@@ -84,6 +86,17 @@ export class HealthCheck {
         return check
     }
 
+    static async publicationsCheck():Promise<Check> {
+        const check:Check = new Check('publications')
+        const availableCount:number = await PublicationDao.countAvailable()
+        if( availableCount < 600) {
+            check.fail("Only " + availableCount + " publications available")
+        } else {
+            check.pass( "We have " + (1296-availableCount) + "/ 1296 publications")
+        }
+        return check
+    }
+
     /**
      * Sends an email with the outcome of all checks
      * This methods requires a password that seems to expire ona regular bas
@@ -157,7 +170,8 @@ export class HealthCheck {
                 HealthCheck.usersCheck(),
                 HealthCheck.feedbackCheck(),
                 HealthCheck.sheetsCheck(),
-                HealthCheck.airportDuplicatesCheck()
+                HealthCheck.airportDuplicatesCheck(),
+                HealthCheck.publicationsCheck()
             ]).then( async allChecks => {
             const failedChecks:number = allChecks.filter((check) => check.status === Check.FAIL).length
             const data:string = JSON.stringify(allChecks)

@@ -2,6 +2,13 @@ import { sql } from "@vercel/postgres"
 import { Publication } from "./models/Publication";
 
 export class PublicationDao {
+    public static async countAvailable(): Promise<number> {
+        let result = await sql`SELECT COUNT(*) as count FROM publications WHERE sheetid IS NULL`
+        if( result.rowCount != 1) {
+            throw new Error("Invalid count query");
+        }
+        return Number(result.rows[0]['count'])
+    }
     /**
      * 
      * @param sheetid 
