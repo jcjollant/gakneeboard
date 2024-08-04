@@ -5,14 +5,15 @@ import { inject } from "@vercel/analytics"
 import Menu from './components/menu/Menu.vue'
 import Page from './components/Page.vue'
 import { version, setCurrentUser, keyUser } from './assets/data.js'
-import { getSheetDemoTiles, normalizeSheetData, sheetNameLocal } from './assets/sheetData'
+import { getSheetDemoTiles, localSheetLoad, localSheetSave, normalizeSheetData, sheetDataLocal as oldSheetData } from './assets/sheetData'
 import HowDoesItWork from './components/HowDoesItWork.vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
 
 const frontPageData = ref(null)
 const backPageData = ref(null)
-const sheetData = ref(null)
+const activeSheet = ref(null)
+const sheetModified = ref(false)
 
 const flipMode = ref(false)
 const keyHowDoesItWork = 'howDoesItWork'
@@ -20,27 +21,53 @@ const showHowDoesItWork = ref(true)
 const toast = useToast()
 const versionVisible = ref(true)
 const menuVisible = ref(true)
+const menuOpen = ref(false)
+const sheetNameVisible = ref(true)
+const pageOneVisible = ref(true)
+const pageTwoVisible = ref(true)
+
+function doPrint() {
+  return new Promise( resolve => {
+    window.print();
+    // then bring everythign back to normal
+    flipMode.value = false;
+    versionVisible.value = true;
+    menuVisible.value = true
+    sheetNameVisible.value = true;
+    pageOneVisible.value = true;
+    pageTwoVisible.value = true;
+    resolve(true)
+  })
+}
+
+
+function getSheetName() {
+  if( !activeSheet.value || !activeSheet.value.name) return ''
+  return activeSheet.value.name 
+}
 
 // update all widgets with provided data
-function loadSheetData(data) {
-  // console.log( '[App.loadSheetData]', typeof data, JSON.stringify(data))
+function loadSheet(sheet=null) {
+  // console.log( '[App.loadSheet]', typeof data, JSON.stringify(sheet))
 
   // if we don't know what to show, we load a copy of the demo page
-  if( !data) {
-    const demoSheet = getSheetDemoTiles();
-    data = demoSheet.data;
+  if( !sheet) {
+    sheet = getSheetDemoTiles();
   }
-  data = normalizeSheetData(data)
 
+  // make sure data is at the latest format
+  const data = normalizeSheetData(sheet.data)
   if( data.length == 2){
     frontPageData.value = data[0]
     backPageData.value = data[1]
   } else {
-    console.log('[App.loadSheetData] unexpected data length', data.length)
+    console.log('[App.loadSheet] unexpected data length', data.length)
     frontPageData.value = null
     backPageData.value = null
   }
-  sheetData.value = [frontPageData.value, backPageData.value]
+  sheet.data = [frontPageData.value, backPageData.value]
+  activeSheet.value = sheet;
+  sheetModified.value = sheet.modified;
 }
 
 function onCloseHowDoesItWork() {
@@ -68,96 +95,107 @@ onBeforeMount(()=>{
 function onMenuCopy() {
   // console.log('[App.onMenuCopy]')
   backPageData.value = frontPageData.value
-  sheetData.value = [frontPageData.value, backPageData.value];
-  saveSheet()
+  activeSheet.value.data = [frontPageData.value, backPageData.value];
+  saveActiveSheet(true)
 }
 
 function onMenuLoad(sheet) {
   // console.log('[App.onMenuLoad]', JSON.stringify(sheet))
   if(sheet && sheet.data) {
-    loadSheetData(sheet.data)
-    saveSheet()
+    loadSheet(sheet)
+    saveActiveSheet(false)
   } else {
     console.log('[App.onMenuLoad] could not load', JSON.stringify(sheet))
   }
 }
 
+function onMenuToggle(value) {
+  menuOpen.value = value
+}
+
 onMounted(() => {
   // console.log('[App.onMounted]')
   try {
-
-    let data = JSON.parse(localStorage.getItem(sheetNameLocal))
-    loadSheetData(data)
+    let localSheet = localSheetLoad()
+    if(!localSheet) { // second change with page
+      let data = JSON.parse(localStorage.getItem(oldSheetData))
+      // create a local sheet with no name
+      localSheet = {data:data}
+      // TODO remove data from localstorage
+      // Save activeSheet locally
+      localSheetSave(localSheet)
+    }
+    loadSheet(localSheet)
   } catch(e) {
     console.log('[App.onMounted] local data is corrupted')
-    loadSheetData(null)
-    saveSheet()
+    loadSheet()
+    saveActiveSheet()
   }
   // Analytics
   inject();
 })
 
 function onPrint(options) {
-  //  console.log('[App.onPrint]', JSON.stringify(options))
+  console.log('[App.onPrint]', JSON.stringify(options))
   if( options) {
-    flipMode.value = options.includes('flip')
-    versionVisible.value = !options.includes('version')
+    flipMode.value = options.flipBack;
+    versionVisible.value = options.showVersion
+    pageOneVisible.value = options.showFront;
+    pageTwoVisible.value = options.showBack;
+
+    // these don't change
+    sheetNameVisible.value = false
     menuVisible.value = false
   }
 
   // print window content after a short timeout to let flipmode kickin
-  setTimeout(() => {
-    window.print()
-    flipMode.value = false;
-    versionVisible.value = true;
-    menuVisible.value = true
-  }, 300);
+  setTimeout(doPrint, 500);
 }
 
 function onPageUpdateBack( pageData) {
   // console.log('[App.onPageUpdateBack]', JSON.stringify(pageData))
   backPageData.value = pageData;
-  sheetData.value[1] = pageData
-  saveSheet()
-
+  activeSheet.value.data[1] = pageData
+  saveActiveSheet(true)
 }
 
 function onPageUpdateFront(pageData) {
+  // console.log('[App.onPageUpdateFront]')
   frontPageData.value = pageData
-  sheetData.value[0] = pageData
-  saveSheet()
+  activeSheet.value.data[0] = pageData
+  saveActiveSheet(true)
 }
 
-// Save sheet data to browser
-function saveSheet() {
-  // const sheetData = [frontPageData.value, backPageData.value]
-  localStorage.setItem(sheetNameLocal, JSON.stringify( sheetData.value))
+function saveActiveSheet(modified=false) {
+  localSheetSave(activeSheet.value, modified)
+  sheetModified.value = modified
 }
 
 function showToast(data) {
   toast.add(data)
 }
-
-function showToastSuccess( summary, detail) {
-  showToast({ severity: 'success', summary: summary, detail: detail, life: 2500});  
-}
-
 </script>
 
 <template>
   <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
   <Toast />
-  <div class="twoPages">
-    <Page :data="frontPageData" @update="onPageUpdateFront" @toast="showToast" class="pageOne"/>
-    <Page :data="backPageData" @update="onPageUpdateBack" @toast="showToast" class="pageTwo"/>
+  <div class="sheetName" v-show="sheetNameVisible"
+    :class="{'sheetNameOffset':menuOpen, 'sheetNameModified': sheetModified}">{{ getSheetName() }}</div>
+  <div :class="{'twoPages':pageOneVisible && pageTwoVisible}">
+    <Page :data="frontPageData" v-if="pageOneVisible" class="pageOne"
+      @update="onPageUpdateFront" 
+      @toast="showToast" />
+    <Page :data="backPageData" v-if="pageTwoVisible" class="pageTwo" :class="{flipMode:flipMode}"
+      @update="onPageUpdateBack" 
+      @toast="showToast" />
   </div>
   <div class="menuContainer">
-    <Menu class="menu" :pageData="sheetData" v-show="menuVisible"
+    <Menu class="menu" :pageData="activeSheet?activeSheet.data:null" v-show="menuVisible"
       @load="onMenuLoad" 
       @print="onPrint"
       @copy="onMenuCopy"
       @howDoesItWork="showHowDoesItWork=true"
-      @toast="showToast"
+      @toast="showToast" @toggle="onMenuToggle"
       >
     </Menu>
   </div>
@@ -177,10 +215,37 @@ function showToastSuccess( summary, detail) {
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
 }
+.sheetName {
+  position : absolute;
+  font-size: 3rem;
+  font-weight: 700;
+  opacity: 0.1;
+  width: 1050px;
+  top:0;
+  z-index: -1;
+}
+
+.sheetNameOffset {
+  top: 3rem;
+}
+
+.sheetNameModified {
+  font-style: italic;
+  color: orange;
+  opacity: 0.4;
+}
+
+.pageOne, .pageTwo {
+  background:white;
+}
+
 .twoPages {
   display: grid;
   grid-template-columns: auto auto;
   gap: 80px;
+}
+.onePage {
+  display:flex
 }
 .menu {
   position: absolute;
