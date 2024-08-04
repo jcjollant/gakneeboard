@@ -14,7 +14,7 @@ import { blogUrl, getCurrentUser, setCurrentUser, sheetGetList } from '../../ass
 import { getSheetBlank, getSheetDemoTiles } from '../../assets/sheetData'
 import { getToastData, toastError, toastSuccess, toastWarning, toastInfo } from '../../assets/toast'
 
-const emits = defineEmits(['authentication','copy','load','print','printOptions','howDoesItWork','toast'])
+const emits = defineEmits(['authentication','copy','load','print','printOptions','howDoesItWork','toast','toggle'])
 
 const confirm = useConfirm()
 const showFeedback = ref(false)
@@ -89,7 +89,8 @@ function onFeedbackSent() {
 }
 
 onMounted( () => {
-  userChange(getCurrentUser(), false)
+  setTimeout( () => userChange(getCurrentUser(), false), 1500)
+  
   loadProps(props)
 })  
 
@@ -193,6 +194,7 @@ function showToast( summary, detail, severity=toastSuccess) {
 // Toggle menu visibility which will update component layout
 function toggleMenu() {
     showMenu.value = !showMenu.value;
+    emits('toggle', showMenu.value)
 }
 
 /**
