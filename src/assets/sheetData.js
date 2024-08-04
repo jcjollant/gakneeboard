@@ -17,9 +17,10 @@ export const sheetNameDemoTiles = 'default-demo-tiles'
 export const sheetNameDemoChecklist = 'default-demo-checklist'
 export const sheetNameNew = 'default-new-sheet'
 export const sheetNameReset = 'default-reset'
-export const sheetNameLocal = 'page1'
+const activeSheetLocal = 'sheet'
+export const sheetDataLocal = 'page1'
 
-const allSheetNames = [sheetNameDemoTiles, sheetNameDemoChecklist, sheetNameReset, sheetNameLocal]
+const allSheetNames = [sheetNameDemoTiles, sheetNameDemoChecklist, sheetNameReset, activeSheetLocal, sheetDataLocal]
 
 // blank pages
 const pageDataBlankTiles = {type:pageTypeTiles,data:[
@@ -210,6 +211,16 @@ export function getSheetDemoChecklist() {
 
 export function isDefaultName(name) {
   return name in allSheetNames
+}
+
+export function localSheetLoad() {
+  return JSON.parse(localStorage.getItem(activeSheetLocal))  
+}
+
+// Save sheet data to browser
+export function localSheetSave(sheet,modified=false) {
+  if(sheet) sheet.modified = modified;
+  localStorage.setItem(activeSheetLocal, JSON.stringify( sheet))
 }
 
 /**
