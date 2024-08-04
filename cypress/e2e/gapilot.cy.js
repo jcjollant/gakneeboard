@@ -221,24 +221,37 @@ describe('template spec', () => {
     }
     cy.get('.freqList > :nth-child(1)')
 
-    // ========================================================================
-    // Print Dialog
-    // ========================================================================
-    // Test print dialog show up
-    cy.get('.menuIcon').click()
-    cy.get('[aria-label="Print"]').click()
-    cy.get('#pv_id_4_header').contains('Print Active Sheet')
-    cy.get('[title="So you can read back page while front page is clipped"] > .ml-2').contains('Flip right page')
-    cy.get('[title="That\'s the little thing in the bottom right corner"] > .ml-2').contains('Hide version number')
-    cy.get('[title="That\'s the little thing in the bottom right corner"] > .ml-2').click()
-    // click do not print
-    cy.get('.actionDialog > .p-button-link').click()
-
     // Sign in to get to
     // cy.get('.menuIcon').click()
     // cy.get('[aria-label="Sign In"]').click()
     // cy.get('#gsi_755440_831716').click()
   })
+
+  // ========================================================================
+  // Print Dialog
+  // ========================================================================
+  it('Print Dialog', () =>{
+    visitAndCloseBanner()
+
+    // Test print dialog show up
+    cy.get('.menuIcon').click()
+    cy.get('[aria-label="Print"]').click()
+    // check title
+    cy.get('#pv_id_4_header').contains('Print')
+    // Check Page options
+    cy.get('[aria-label="Front Page"]')
+    cy.get('[aria-label="Both Pages"]')
+    cy.get('[aria-label="Back Page"]')
+    // check options
+    cy.get('[title="So you can read back page while front page is clipped"] > .ml-2').contains('Flip Back Page')
+    cy.get('[title="That\'s the little thing in the bottom right corner"] > .ml-2').contains('Hide version number')
+    cy.get('[title="That\'s the little thing in the bottom right corner"] > .ml-2').click()
+    // click do not print
+    cy.get('.actionDialog > .p-button-link').click()
+
+    
+  })
+
   it('Checklist work', () => {
     visitAndCloseBanner()
     newPage()
