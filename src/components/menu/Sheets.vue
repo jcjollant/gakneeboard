@@ -70,7 +70,7 @@ function onButtonClose() {
 }
 
 function onButtonLoad() {
-  emits('load',targetSheet)
+  emits('load',targetSheet.value)
   changeTargetSheet()
 }
 
