@@ -24,6 +24,9 @@ Run the test suite:
 * Small indicator below runway is configurable
 
 # Done
+## 8/04/2024
+* Showing Sheet name
+* Added more print options
 ## 8/03/2024
 1) Fixed checklist color bug
 2) Improved checklist management of empty and long lines
