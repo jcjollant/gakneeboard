@@ -262,11 +262,15 @@ export class GApi {
      * @returns 
      * @throws 404 if not found
      */
-    public static async sheetGet(sheetId:number,userId:number):Promise<any> {
+    public static async sheetGet(sheetId:number,userId:number):Promise<Sheet> {
         const sheet:Sheet|undefined = await SheetDao.readById(sheetId, userId)
         // console.log( '[gapi.sheetGet] ' + sheetId + ' -> ' + output)
-        if( sheet) return sheet
-        throw new GApiError(404, 'Sheet not found')
+        if( !sheet) throw new GApiError(404, 'Sheet not found')
+        // is this published?
+        const pub:Publication|undefined = await PublicationDao.findBySheet(sheet.id)
+        sheet.setPublication(pub);
+        
+        return sheet;
     }
 
     public static async sheetGetList(userId:number):Promise<Sheet[]> {

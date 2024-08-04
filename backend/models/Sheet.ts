@@ -1,3 +1,5 @@
+import { Publication } from "./Publication";
+
 export class Sheet {
     id:number;
     name:string;
@@ -16,5 +18,15 @@ export class Sheet {
         }
         this.publish = publish;
         this.code = code;
+    }
+
+    setPublication(pub: Publication|undefined) {
+        if(pub) {
+            this.code = pub.code;
+            this.publish = true;
+        } else {
+            this.code = undefined;
+            this.publish = false;
+        }
     }
 }

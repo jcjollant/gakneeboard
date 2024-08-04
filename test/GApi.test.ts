@@ -121,7 +121,7 @@ describe( 'GApi Tests', () => {
         expect(airport?.code).toBe('TEST') 
     })
 
-    test('Read custom sheet', async () => {
+    test('Sheet List', async () => {
         await GApi.sheetGetList(jcUserId).then( list => {
             expect(list.length).toBeGreaterThan(0)
             const testSheet = list.find( sheet => sheet.name == jcTestSheetName);
@@ -130,7 +130,9 @@ describe( 'GApi Tests', () => {
             console.log(e)
             expect(true).toBe(false) // should not get here
         })
+    })
 
+    test('Sheet Get', async () => {
         // invalid pageId should throw error
         await GApi.sheetGet(0,jcUserId).then( () => {
             expect(true).toBe(false) // should not get here
@@ -154,6 +156,7 @@ describe( 'GApi Tests', () => {
         let sheetOut = await GApi.sheetSave(jcHash, sheetIn)
         expect(sheetOut.publish).toBeFalsy()
         expect(sheetOut.code).toBeUndefined()
+        expect(sheetOut.id).toBe(jcTestSheetId)
         // Now publish that sheet
         sheetIn.publish = true
         sheetOut = await GApi.sheetSave(jcHash, sheetIn)
@@ -171,6 +174,15 @@ describe( 'GApi Tests', () => {
         expect(sheetByCode?.id).toBe(sheetOut.id)
         expect(sheetByCode?.name).toBe(sheetOut.name)
         expect(JSON.stringify(sheetByCode?.data)).toBe(JSON.stringify(sheetOut.data))
+
+        // get that sheet by id
+        let sheetById = await GApi.sheetGet(sheetOut.id, jcUserId)
+        expect(sheetById).toBeDefined()
+        expect(sheetById?.id).toBe(sheetOut.id)
+        expect(sheetById?.name).toBe(sheetOut.name)
+        expect(JSON.stringify(sheetById?.data)).toBe(JSON.stringify(sheetOut.data))
+        expect(sheetById?.publish).toBeTruthy()
+        expect(sheetById?.code).toBe(publicationCode)
 
         // now unpublish that sheet
         sheetIn.publish = false
