@@ -27,6 +27,7 @@ Run the test suite:
 ## 8/03/2024
 1) Fixed checklist color bug
 2) Improved checklist management of empty and long lines
+3) One toast when saving and publishing. targetSheet clean up when saving or loading
 ## 8/02/2024
 * Added sheets sharing
 ## 7/30/2024
