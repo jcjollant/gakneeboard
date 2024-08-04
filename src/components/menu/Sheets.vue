@@ -54,6 +54,7 @@ function changeTargetSheet(newSheet) {
   targetSheet.value = newSheet
   publish.value = newSheet?.publish ? pubPublic : pubPrivate
   sheetNameText.value = newSheet ? newSheet.name : ''
+  // console.log('[Sheets.changeTargetSheet] publish', publish.value)
 }
 
 function getSheetName(sheet=null) {
@@ -63,10 +64,25 @@ function getSheetName(sheet=null) {
   return name;
 }
 
-function onClose() {
+function onButtonClose() {
   changeTargetSheet()
   emits('close')
 }
+
+function onButtonLoad() {
+  emits('load',targetSheet)
+  changeTargetSheet()
+}
+
+function onButtonSave() {
+  const targetSheetId = targetSheet?.value?.id
+  const sheet = {id:targetSheetId,name:sheetNameText.value,publish:publish.value==pubPublic}
+
+  emits('save',sheet)
+  changeTargetSheet()
+}
+
+
 
 /**
  * A default sheet has been selected load its data into
@@ -88,13 +104,6 @@ function onLoadDefault(sheetName) {
 function onNewSheet() {
   const newSheet = {name:sheetNameText.value, publish:publish.value==pubPublic}
   changeTargetSheet(newSheet)
-}
-
-function onSaveSheet() {
-  const targetSheetId = targetSheet?.value?.id
-  const sheet = {id:targetSheetId,name:sheetNameText.value,publish:publish.value==pubPublic}
-
-  emits('save',sheet)
 }
 
 async function onSheetFetchCode() {
@@ -120,7 +129,7 @@ async function onSheetSelected(sheet) {
         changeTargetSheet()
       }
     })
-  } else if( props.mode == 'load'){ // load or save
+  } else { // load or save
     // console.log('[Sheets.onSheetSelected] load', JSON.stringify(sheet))
     changeTargetSheet(fetchingSheet)
     await sheetGetById(sheet.id).then( sheet => {
@@ -130,9 +139,6 @@ async function onSheetSelected(sheet) {
       console.log('[Sheets.onSheetSelected] fetch failed', e)    
       changeTargetSheet()
     })
-  } else { // save
-    // select sheet properties for saving
-    changeTargetSheet(sheet)
   }
 }
 
@@ -188,12 +194,17 @@ function showToast(summary,details,severity=toastSuccess) {
             <div>Code:</div>
             <div>{{ targetSheet?.code ? targetSheet.code:'(none)' }}</div>
           </div>
+          <div class="sheetDescription">
+            <div class="bold pageDescription">Front</div><div class="pageDescription">{{ describePage(targetSheet, 0) }}</div>
+            <div class="bold pageDescription">Back</div><div class="pageDescription">{{ describePage(targetSheet, 1) }}</div>
+          </div>
+
         </div>
       </FieldSet>
       <label v-if="sheets.length>=maxSheetCount" class="experiment">We are currently experimenting with a limit of {{ maxSheetCount }} sheets</label>
       <div v-else class="actionDialog gap-2">
-        <Button label="Do Not Save" @click="onClose" link></Button>
-        <Button :label="targetSheet?.id ? 'Overwrite Sheet' : 'Save Sheet'" @click="onSaveSheet" 
+        <Button label="Do Not Save" @click="onButtonClose" link></Button>
+        <Button :label="targetSheet?.id ? 'Overwrite Sheet' : 'Save Sheet'" @click="onButtonSave" 
           :disabled="!sheetNameText.length"></Button>
       </div>
     </div>
@@ -245,8 +256,8 @@ function showToast(summary,details,severity=toastSuccess) {
       <div v-else>Select a sheet above from Your list, Demos or Shared</div>
     </FieldSet>
     <div class="actionDialog gap-2">
-      <Button label="Do Not Load" @click="onClose" link></Button>
-      <Button label="Load Sheet" @click="emits('load',targetSheet)" :disabled="!targetSheet"></Button>
+      <Button label="Do Not Load" @click="onButtonClose" link></Button>
+      <Button label="Load Sheet" @click="onButtonLoad" :disabled="!targetSheet"></Button>
     </div>
   </div>
   </Dialog>
@@ -288,6 +299,7 @@ function showToast(summary,details,severity=toastSuccess) {
   display: grid;
   gap: 5px;
   grid-template-columns: 3.5rem auto;
+  grid-column: 1 / span 2;
 }
 .bold {
   font-weight: bold;

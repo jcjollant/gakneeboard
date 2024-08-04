@@ -158,10 +158,11 @@ function onSheetDelete(sheet) {
       sheet.data = pageData;
       await customSheetSave(sheet).then(returnSheet => {
         // console.log('[Menu.onSheetSave]', JSON.stringify(returnSheet))
-        showToast('Clear','Sheet "' + returnSheet.name + '" saved')
+        let message = 'Sheet "' + returnSheet.name + '" saved';
         if(returnSheet.publish && returnSheet.code) {
-          showToast('Published', 'Sheet is accessible with code ' + returnSheet.code)
+          message += '\Share code is ' + returnSheet.code
         }
+        showToast('Clear', message)
         userUpdateSheets(getCurrentUser().sheets)
       })
   } catch( e) {
