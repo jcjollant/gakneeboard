@@ -1,7 +1,9 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 // import { demoPageChecklist } from '../assets/data'
+import { itemsFromList, listFromItems } from '../../assets/checklist'
 
+import ChecklistViewer from './ChecklistViewer.vue'
 import Header from '../../components/shared/Header.vue'
 import ThemeSelector from './ThemeSelector.vue'
 
@@ -9,7 +11,6 @@ import Button from 'primevue/button'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
-import RadioButton from 'primevue/radiobutton'
 import SelectButton from 'primevue/selectbutton'
 import Textarea from 'primevue/textarea'
 
@@ -56,32 +57,8 @@ const textData = ref('')
 const textData2 = ref('')
 const theme = ref('theme-yellow')
 let nameBeforeEdit = ''
+let themeBeforeEdit = 'theme-yellow'
 const columns = ref(colSingle)
-
-function itemsFromList(value) {
-    if (value == '') return []
-    const items = value.split('\n').map(line => {
-        let challenge;
-        let response;
-        [challenge, response] = line.split('##')
-        if (challenge == undefined || response == undefined) return { c: '?', r: '?' }
-        // is this a section?
-        if (challenge.length == 0) return { s: response }
-        return { c: challenge, r: response }
-    })
-    return items;
-}
-
-function listFromItems(items) {
-    if (!items) return ''
-
-    // translate items into text
-    const list = items.map(item => {
-        if ('s' in item) return '##' + item.s;
-        return item.c + '##' + item.r
-    })
-    return list.join('\n')
-}
 
 function onApply() {
     // turn textData into a list of items
@@ -103,6 +80,7 @@ function onApply() {
 function onCancel() {
     mode.value = ''
     title.value = nameBeforeEdit;
+    theme.value = themeBeforeEdit;
 }
 
 function onHeaderClick() {
@@ -110,6 +88,7 @@ function onHeaderClick() {
         textData.value = listFromItems(data.value.items)
         textData2.value = listFromItems(data.value.items2)
         nameBeforeEdit = title.value
+        themeBeforeEdit = theme.value
     }
     mode.value = mode.value == 'edit' ? '' : 'edit'
 }
@@ -150,27 +129,14 @@ Create sections using '##Section Name':
         </div>
         <div v-else>
             <div v-if="columns == colSingle">
-                <ChecklistViewer v-if="data && data.items" :items="data.items" />
-                <div v-else>There are no items in this list yet<br />Click the header to start customizing</div>
+                <ChecklistViewer :items="data ? data.items : []" :theme="theme" />
             </div>
             <div v-else class="twoLists">
                 <div class="leftList">
-                    <div v-if="data && data.items.length" v-for="(item, index) in data.items" class="checklist smallFont"
-                        :class="(index % 2) ? theme : ''">
-                        <div v-if="'s' in item" class="separator">{{ item.s }}</div>
-                        <div v-else class="challenge">{{ item.c }}</div>
-                        <div class="response">{{ item.r }}</div>
-                    </div>
-                    <div v-else>Empty</div>
+                    <ChecklistViewer :items="data ? data.items : []" :theme="theme" :small="true" />
                 </div>
                 <div class="rightList">
-                    <div v-if="data && data.items2 && data.items2.length" v-for="(item, index) in data.items2"
-                        class="checklist smallFont" :class="(index % 2) ? theme : ''">
-                        <div v-if="'s' in item" class="separator">{{ item.s }}</div>
-                        <div v-else class="challenge">{{ item.c }}</div>
-                        <div class="response">{{ item.r }}</div>
-                    </div>
-                    <div v-else>Empty</div>
+                    <ChecklistViewer :items="data ? data.items2 : []" :theme="theme" :small="true" />
                 </div>
             </div>
         </div>
@@ -180,35 +146,6 @@ Create sections using '##Section Name':
 <style scoped>
 .contentPage {
     overflow: hidden;
-}
-
-.checklist {
-    display: grid;
-    grid-template-columns: 70% 30%;
-    line-height: 1.6rem;
-    border-bottom: 1px solid lightgrey;
-}
-
-.smallFont {
-    font-size: 0.9rem;
-}
-
-.challenge {
-    text-align: left;
-    padding-left: 10px;
-    border-right: 1px solid lightgrey;
-}
-
-.response {
-    font-weight: bold;
-}
-
-.separator {
-    font-weight: bolder;
-    color: darkgrey;
-    background: white;
-    grid-column: 1 / span 2;
-
 }
 
 .heading {
