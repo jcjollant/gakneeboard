@@ -11,6 +11,7 @@ const theme = ref('theme-yellow')
 const short = ref(false)
 const themes = ref([{name:'Yellow', value:'theme-yellow'},{name:'Blue', value:'theme-blue'},{name:'Green', value:'theme-green'},{name:'Grey', value:'theme-grey'}])
 
+//------------------------
 // Props management
 const props = defineProps({
     theme: { type: String, default: 'theme-yellow' },
@@ -30,16 +31,16 @@ watch(props, () => {
     loadProps(props)
 })
 // End of props management
-
+//------------------------
 
 function onChange() {
-    console.log('[ThemeSelector] new color', theme.value)
+    // console.log('[ThemeSelector.onChange] new color', theme.value)
     emits('change', theme.value)
 }
 
 </script>
 <template>
-    <Dropdown v-if="short" v-model="theme" :options="themes" optionLabel="name" optionValue="value" placeHolder="Theme"></Dropdown>
+    <Dropdown v-if="short" v-model="theme" :options="themes" optionLabel="name" optionValue="value" placeHolder="Theme" @change="onChange"></Dropdown>
     <div class="themeSelector" v-else>
         <div class="sample">Theme</div>
         <div v-for="(t,index) in themes" class="sample" :class="t.value">
@@ -57,7 +58,6 @@ function onChange() {
     display: flex;
     align-items: center;
 }
-
 
 .themeSelector {
     display: flex;
