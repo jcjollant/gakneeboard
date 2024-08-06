@@ -87,8 +87,8 @@ function onToast(data) {
         @replace="onReplace" @update="onUpdate" />
     <Atis v-else-if="tile.name=='atis'" :params="tile.data"
         @replace="onReplace" @update="onUpdate"/>
-    <ChecklistTile v-else-if="tile.name=='checklist'" 
-        @replace="onReplace"/>
+    <ChecklistTile v-else-if="tile.name=='checklist'" :params="tile.data" 
+        @replace="onReplace" @update="onUpdate"/>
     <Clearance v-else-if="tile.name=='clearance'" 
         @replace="onReplace"/>
     <FuelBug v-else-if="tile.name=='fuel'" :params="tile.data"
