@@ -3,6 +3,7 @@ import { onMounted, ref, watch } from 'vue'
 // import { demoPageChecklist } from '../assets/data'
 
 import Header from '../../components/shared/Header.vue'
+import ThemeSelector from './ThemeSelector.vue'
 
 import Button from 'primevue/button'
 import InputGroup from 'primevue/inputgroup'
@@ -113,6 +114,10 @@ function onHeaderClick() {
     mode.value = mode.value == 'edit' ? '' : 'edit'
 }
 
+function onThemeChange(newTheme) {
+    theme.value = newTheme;
+}
+
 </script>
 
 <template>
@@ -137,25 +142,7 @@ Create sections using '##Section Name':
                 <Textarea v-if="columns == colDouble" rows="26" cols="48" v-model="textData2" class="editList"
                     :class="{ 'smallTextarea': columns == colDouble }"></Textarea>
             </div>
-            <div class="themeSelector">
-                <div class="sample">Theme</div>
-                <div class="theme-yellow sample">
-                    <RadioButton v-model="theme" inputId="theme1" name="theme" value="theme-yellow" />
-                    <label for="theme1">Yellow</label>
-                </div>
-                <div class="theme-blue sample">
-                    <RadioButton v-model="theme" inputId="theme2" name="theme" value="theme-blue" />
-                    <label for="theme2">Blue</label>
-                </div>
-                <div class="theme-green sample">
-                    <RadioButton v-model="theme" inputId="theme3" name="theme" value="theme-green" />
-                    <label for="theme3">Green</label>
-                </div>
-                <div class="theme-grey sample">
-                    <RadioButton v-model="theme" inputId="theme4" name="theme" value="theme-grey" />
-                    <label for="theme4">Grey</label>
-                </div>
-            </div>
+            <ThemeSelector @change="onThemeChange" :theme="theme" />
             <div class="actionBar">
                 <Button @click="onCancel" label="Cancel" link></Button>
                 <Button icon="pi pi-check" @click="onApply" label="Apply"></Button>
@@ -163,12 +150,7 @@ Create sections using '##Section Name':
         </div>
         <div v-else>
             <div v-if="columns == colSingle">
-                <div v-if="data && data.items && data.items.length" v-for="(item, index) in data.items" class="checklist"
-                    :class="(index % 2) ? theme : ''">
-                    <div v-if="'s' in item" class="separator">{{ item.s }}</div>
-                    <div v-else class="challenge">{{ item.c }}</div>
-                    <div class="response">{{ item.r }}</div>
-                </div>
+                <ChecklistViewer v-if="data && data.items" :items="data.items" />
                 <div v-else>There are no items in this list yet<br />Click the header to start customizing</div>
             </div>
             <div v-else class="twoLists">
@@ -215,19 +197,6 @@ Create sections using '##Section Name':
     text-align: left;
     padding-left: 10px;
     border-right: 1px solid lightgrey;
-}
-
-.theme-yellow {
-    background: lightyellow;
-}
-.theme-blue {
-    background: #b4c6e7;
-}
-.theme-green {
-    background: #c6e0b4;
-}
-.theme-grey {
-    background: #e9e9e9;
 }
 
 .response {
@@ -290,16 +259,5 @@ Create sections using '##Section Name':
     display: flex;
     gap: 5px;
 }
-.themeSelector {
-    display: flex;
-    gap: 10px;
-}
 
-.sample {
-    padding: 5px;
-    border-radius: 3px;
-    gap: 5px;
-    display: flex;
-    align-items: center;
-}
 </style>
