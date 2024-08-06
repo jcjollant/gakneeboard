@@ -1,7 +1,7 @@
 <script setup>
-
 import {ref, onMounted, watch} from 'vue';
 import { getAirport, getFreqCtaf, getFreqWeather} from '../../assets/data.js'
+
 import Header from '../shared/Header.vue'
 import CornerStatic from '../shared/CornerStatic.vue';
 import Runway from './Runway.vue'
@@ -278,7 +278,7 @@ function updateWidget() {
 </script>
 
 <template>
-    <div class="widget">
+    <div class="tile">
         <Header :title="title" :replace="mode=='edit'"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <AirportEdit v-if="mode=='edit'" :airport="airportData" :rwyName="runwayName" :rwyOrientation="rwyOrientation"

@@ -138,7 +138,7 @@ function toast(message, severity='success') {
 </script>
 
 <template>
-    <div class="widget">
+    <div class="tile">
         <Header :title="'Radio Flow'" :replace="mode=='edit'"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div v-if="mode==''">

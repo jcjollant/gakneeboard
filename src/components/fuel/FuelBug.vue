@@ -62,7 +62,7 @@ function onSettingsUpdate(newUsable, newFuelFlow, newReserve) {
 </script>
 
 <template>
-    <div class="widget">
+    <div class="tile">
         <Header title="Fuel Bug" :replace="editMode" 
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <!-- <NoSettings v-if="editMode" /> -->

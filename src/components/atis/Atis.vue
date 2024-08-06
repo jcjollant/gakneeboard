@@ -55,7 +55,7 @@ watch( props, async() => {
 
 </script>
 <template>
-    <div class="widget">
+    <div class="tile">
         <Header :title="mode==''?'ATIS @':'ATIS'" :replace="mode=='edit'" :left="mode==''" 
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div v-if="mode=='edit'" class="content list" >

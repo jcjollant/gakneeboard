@@ -13,7 +13,7 @@ function onClick() {
 
 </script>
 <template>
-    <div class="widget">
+    <div class="tile">
         <Header :title="'Notes'" :replace="mode=='edit'" :stealth="mode==''"
             @click="onClick" @replace="emits('replace')"></Header>
         <NoSettings v-if="mode=='edit'"></NoSettings> 

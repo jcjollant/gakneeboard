@@ -175,7 +175,7 @@ function onHeaderClick() {
 </script>
 
 <template>
-    <div class="widget">
+    <div class="tile">
         <Header title="Sun Light" :replace="mode=='edit'"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div class="content" v-if="mode==''">
