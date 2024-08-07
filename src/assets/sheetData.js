@@ -55,7 +55,7 @@ const sheetDemoTiles = {
    ]},{
     type:pageTypeTiles,
     data:[
-      {'id':0,'name':'airport','data':{'code':'ktta','rwy':'03-21','pattern':2}},
+      {'id':0,'name':'checklist','data':{name:'Power OFF stalls', items:[{"c":"Clearing Turns+Calls","r":"Made"},{"c":"Visual Reference","r":"Bugged"},{"c":"Altitude","r":"3,000"},{"c":"Power=1,600 Flaps > Full"},{"c":"Hold 65 3s, Level off until stall"},{"c":"Full Power + Right Rudder"},{"c":"Flaps 20 > 10 > 0"},{"c":"ACS HDG/Bank","r":"±10°/20°"}],theme:"blue"}},
       {'id':1,'name':'airport','data':{'code':'kawo','rwy':'all'}},
       {'id':2,'name':'sunlight','data':{'from':'KRNT','to':'KSFF'}},
       {'id':3,'name':'fuel'},
