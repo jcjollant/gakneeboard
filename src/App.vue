@@ -4,7 +4,7 @@ import { onBeforeMount, onMounted,ref} from 'vue'
 import { inject } from "@vercel/analytics"
 import Menu from './components/menu/Menu.vue'
 import Page from './components/Page.vue'
-import { version, setCurrentUser, keyUser } from './assets/data.js'
+import { duplicate, keyUser, setCurrentUser, version } from './assets/data.js'
 import { getSheetDemoTiles, localSheetLoad, localSheetSave, normalizeSheetData, sheetDataLocal as oldSheetData } from './assets/sheetData'
 import { getToastData } from './assets/toast'
 import HowDoesItWork from './components/HowDoesItWork.vue'
@@ -99,7 +99,7 @@ function onMaintenanceDialog() {
  */
 function onMenuCopy() {
   // console.log('[App.onMenuCopy]')
-  backPageData.value = frontPageData.value
+  backPageData.value = duplicate(frontPageData.value)
   activeSheet.value.data = [frontPageData.value, backPageData.value];
   saveActiveSheet(true)
 }
