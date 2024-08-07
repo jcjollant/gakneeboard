@@ -14,7 +14,7 @@ import { blogUrl, getCurrentUser, setCurrentUser, sheetGetList } from '../../ass
 import { getSheetBlank, getSheetDemoTiles } from '../../assets/sheetData'
 import { getToastData, toastError, toastSuccess, toastWarning, toastInfo } from '../../assets/toast'
 
-const emits = defineEmits(['authentication','copy','load','print','printOptions','howDoesItWork','toast'])
+const emits = defineEmits(['authentication','copy','load','print','printOptions','howDoesItWork','toast','toggle'])
 
 const confirm = useConfirm()
 const showFeedback = ref(false)
@@ -89,7 +89,8 @@ function onFeedbackSent() {
 }
 
 onMounted( () => {
-  userChange(getCurrentUser(), false)
+  setTimeout( () => userChange(getCurrentUser(), false), 1500)
+  
   loadProps(props)
 })  
 
@@ -158,10 +159,11 @@ function onSheetDelete(sheet) {
       sheet.data = pageData;
       await customSheetSave(sheet).then(returnSheet => {
         // console.log('[Menu.onSheetSave]', JSON.stringify(returnSheet))
-        showToast('Clear','Sheet "' + returnSheet.name + '" saved')
+        let message = 'Sheet "' + returnSheet.name + '" saved';
         if(returnSheet.publish && returnSheet.code) {
-          showToast('Published', 'Sheet is accessible with code ' + returnSheet.code)
+          message += '\Share code is ' + returnSheet.code
         }
+        showToast('Clear', message)
         userUpdateSheets(getCurrentUser().sheets)
       })
   } catch( e) {
@@ -192,6 +194,7 @@ function showToast( summary, detail, severity=toastSuccess) {
 // Toggle menu visibility which will update component layout
 function toggleMenu() {
     showMenu.value = !showMenu.value;
+    emits('toggle', showMenu.value)
 }
 
 /**

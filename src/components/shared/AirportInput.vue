@@ -84,7 +84,7 @@ function onCodeUpdate() {
 <style scoped>
     .airportCode {
         display: grid;
-        grid-template-columns: 100px 140px;
+        grid-template-columns: 100px auto;
         font-size: 0.8rem;
         line-height: 1.5rem;
         text-align: left;

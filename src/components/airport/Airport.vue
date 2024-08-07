@@ -374,10 +374,9 @@ function updateWidget() {
         top: 0;
         width:100%;
         height: 100%;
-        /* height: 90px; */
         text-align: center;
         vertical-align: middle;
-        z-index: -1;
+        /* z-index: -1; */
     }
     .shortAirportCode {
         font-size: 6rem;

@@ -29,6 +29,7 @@ async function handleLoginSuccess( response) {
         <span>Sign In is necessary to enable the following features:</span>
         <span>
           <ul>
+            <li>Sheets Saving & Sharing</li>
             <li>Custom Airports Data</li>
             <li>Feedback follow up</li>
           </ul>
