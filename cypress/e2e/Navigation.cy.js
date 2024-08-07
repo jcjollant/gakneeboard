@@ -26,6 +26,14 @@ describe('Tiles', () => {
     
   })
 
+  it.skip('Mirrors', () => {
+    visitAndCloseBanner()
+    // load checlist demo
+    cy.get('.menuIcon').click()
+    cy.get('[aria-label="Load"]').click()
+
+  })
+
   it('Maintenance Window', () => {
     visitAndCloseBanner()
     cy.get('.maintenanceDialog').click()
