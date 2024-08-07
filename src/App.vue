@@ -114,6 +114,10 @@ function onMenuLoad(sheet) {
   }
 }
 
+function onMenuSave() {
+  sheetModified.value = false;
+}
+
 function onMenuToggle(value) {
   menuOpen.value = value
 }
@@ -172,6 +176,7 @@ function onPageUpdateFront(pageData) {
 }
 
 function saveActiveSheet(modified=false) {
+  console.log('[App.saveActiveSheet]', modified)
   localSheetSave(activeSheet.value, modified)
   sheetModified.value = modified
 }
@@ -200,6 +205,7 @@ function showToast(data) {
       @print="onPrint"
       @copy="onMenuCopy"
       @howDoesItWork="showHowDoesItWork=true"
+      @save="onMenuSave"
       @toast="showToast" @toggle="onMenuToggle"
       >
     </Menu>
