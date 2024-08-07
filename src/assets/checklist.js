@@ -4,9 +4,21 @@ export function itemsFromList(value) {
         let challenge;
         let response;
         [challenge, response] = line.split('##')
-        if (challenge == undefined || response == undefined) return { c: '?', r: '?' }
-        // is this a section?
-        if (challenge.length == 0) return { s: response }
+        if( response == undefined) { // there is no separator
+            if( challenge == undefined) return {c:'?'}
+            // Full line with only challenge
+            return { c:challenge}  
+        }
+        // No challenge
+        if (challenge.length == 0) {
+            // it can be a section or a blank line
+            // [##]
+            if(response.length == 0) return {c:'', r:''}
+            // section [##Section]
+            return { s: response }
+        }
+
+        // normal entry
         return { c: challenge, r: response }
     })
     return items;
@@ -18,7 +30,8 @@ export function listFromItems(items) {
     // translate items into text
     const list = items.map(item => {
         if ('s' in item) return '##' + item.s;
-        return item.c + '##' + item.r
+        if ('r' in item) return item.c + '##' + item.r
+        return item.c
     })
     return list.join('\n')
 }
