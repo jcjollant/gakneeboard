@@ -80,6 +80,7 @@ function onHeaderClick() {
     if( mode.value == '') {
         nameBeforeEdit = title.value;
         themeBeforeEdit = theme.value;
+        textData.value = listFromItems(items.value)
         mode.value = 'edit'
     } else {
         mode.value = ''
