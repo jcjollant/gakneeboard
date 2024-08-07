@@ -20,6 +20,8 @@ export const sheetNameReset = 'default-reset'
 const activeSheetLocal = 'sheet'
 export const sheetDataLocal = 'page1'
 
+import { duplicate } from './data'
+
 const allSheetNames = [sheetNameDemoTiles, sheetNameDemoChecklist, sheetNameReset, activeSheetLocal, sheetDataLocal]
 
 // blank pages
@@ -185,7 +187,7 @@ export function getPageBlank(type) {
   } else if(type == pageTypeTiles) {
     source = pageDataBlankTiles
   }
-  return JSON.parse( JSON.stringify(source))
+  return duplicate(source)
 }
 
 
@@ -193,18 +195,18 @@ export function getPageBlank(type) {
  * @returns a copy of blank sheet data
  */
 export function getSheetBlank() {
-  return JSON.parse( JSON.stringify(sheetBlank))
+  return duplicate(sheetBlank)
 }  
 
 /**
  * @returns a copy of demo sheet data 
  */
 export function getSheetDemoTiles() {
-  return JSON.parse( JSON.stringify(sheetDemoTiles))
+  return duplicate(sheetDemoTiles)
 }  
 
 export function getSheetDemoChecklist() {
-  return JSON.parse( JSON.stringify(sheetDemoChecklist))
+  return duplicate(sheetDemoChecklist)
 }  
 
 

@@ -39,6 +39,10 @@ export async function authenticate( source, token) {
   return currentUser
 }
 
+export function duplicate(source) {
+  return JSON.parse( JSON.stringify(source))
+}
+
 /**
  * Add user information to request header if user is known
  * @param {*} url 
