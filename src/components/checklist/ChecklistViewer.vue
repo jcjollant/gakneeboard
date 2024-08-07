@@ -13,6 +13,7 @@ const small = ref(false)
 const items = ref([])
 
 function loadProps(newProps) {
+    // console.log('[ChecklistViewer.loadProps]', JSON.stringify(newProps))
     if(!newProps) return;
     theme.value = newProps.theme;
     small.value = newProps.small;
@@ -32,11 +33,11 @@ watch(props, () => {
 <template>
     <div v-if="items.length > 0" v-for="(item, index) in items" class="checklist"
         :class="(index % 2) ? theme : ''">
-        <div v-if="'s' in item" class="section">{{ item.s }}</div>
-        <div v-else class="challenge" :class="{'smallFont': small}">{{ item.c }}</div>
-        <div class="response" :class="{'smallFont': small}">{{ item.r }}</div>
+        <div v-if="'s' in item" class="section spanned" >{{ item.s }}</div>
+        <div v-else class="challenge" :class="{'smallFont': small, 'spanned':!('r' in item)}">{{ item.c }}</div>
+        <div v-if="'r' in item" class="response" :class="{'smallFont': small}">{{ item.r }}</div>
     </div>
-    <div v-else class="placeHolder" :class="{'smallFont':small}">There are no items in this list yet<br>Click the header to customize</div>
+    <div v-else class="placeHolder" :class="{'smallPlaceHolder':small}">There are no items in this list yet<br>Click the header to customize</div>
 </template>
 
 <style scoped>
@@ -44,6 +45,7 @@ watch(props, () => {
     text-align: left;
     padding-left: 10px;
     border-right: 1px solid lightgrey;
+    height: 1.6rem;
 }
 
 .checklist {
@@ -74,8 +76,16 @@ watch(props, () => {
 .smallFont {
     font-size: 0.8rem;
     line-height: 1.5rem;
+    height: 1.5rem;
 }
 
+.smallPlaceHolder {
+    font-size: 0.8rem;
+}
+
+.spanned {
+    grid-column: 1 / span 2
+}
 .theme-yellow {
     background: lightyellow;
 }
