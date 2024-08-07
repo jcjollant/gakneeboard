@@ -14,7 +14,7 @@ import { blogUrl, getCurrentUser, setCurrentUser, sheetGetList } from '../../ass
 import { getSheetBlank, getSheetDemoTiles } from '../../assets/sheetData'
 import { getToastData, toastError, toastSuccess, toastWarning, toastInfo } from '../../assets/toast'
 
-const emits = defineEmits(['authentication','copy','load','print','printOptions','howDoesItWork','toast','toggle'])
+const emits = defineEmits(['authentication','copy','load','print','printOptions','howDoesItWork','save','toast','toggle'])
 
 const confirm = useConfirm()
 const showFeedback = ref(false)
@@ -165,6 +165,7 @@ function onSheetDelete(sheet) {
         }
         showToast('Clear', message)
         userUpdateSheets(getCurrentUser().sheets)
+        emits('save')
       })
   } catch( e) {
     // console.log('[Menu.onSheetSave]', e)
