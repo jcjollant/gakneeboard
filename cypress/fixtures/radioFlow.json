@@ -1,0 +1,10 @@
+[
+    {"freq":"116.800","name":"SEA VOR"},
+    {"freq":"113.400","name":"OLM VOR"},
+    {"freq":"124.700","name":"RNT TWR"},
+    {"freq":"126.950","name":"RNT ATIS"},
+    {"freq":"123.000","name":"S43 CTAF"},
+    {"freq":"128.650","name":"PAE ATIS"},
+    {"freq":"120.200","name":"PAE TWR 34R"},
+    {"freq":"132.950","name":"PAE TWR 34L"}    
+]

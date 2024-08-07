@@ -6,6 +6,7 @@ import Menu from './components/menu/Menu.vue'
 import Page from './components/Page.vue'
 import { version, setCurrentUser, keyUser } from './assets/data.js'
 import { getSheetDemoTiles, localSheetLoad, localSheetSave, normalizeSheetData, sheetDataLocal as oldSheetData } from './assets/sheetData'
+import { getToastData } from './assets/toast'
 import HowDoesItWork from './components/HowDoesItWork.vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
@@ -88,6 +89,10 @@ onBeforeMount(()=>{
     showHowDoesItWork.value = false;
   }
 })
+
+function onMaintenanceDialog() {
+  showToast( getToastData("Maintenance", "Window"))
+}
 
 /**
  * Copy all left tiles from left to right
@@ -199,7 +204,9 @@ function showToast(data) {
       >
     </Menu>
   </div>
-  <div class="versionDialog" v-show="versionVisible">{{ version }}</div>
+  <div class="versionDialog" v-show="versionVisible">{{ version }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span>
+  </div>
+  
 </template>
 
 <style scoped>

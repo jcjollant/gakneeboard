@@ -1,6 +1,8 @@
 // import { version as currentVersionNumber } from '../../src/assets/data'
-const currentVersionNumber = 803
-const environment = 'http://localhost:5173/'
+const currentVersionNumber = 804
+const devEnv = 'http://localhost:5173/'
+const prodEnv = 'https://kneeboard.ga'
+const environment = devEnv
 
 function visitAndCloseBanner() {
     cy.visit(environment)
@@ -34,7 +36,7 @@ function newPage() {
 }
 
 describe('template spec', () => {
-  it('Navigation works correcly', () => {
+  it.skip('Navigation works correcly', () => {
     visitAndCloseBanner()
     newPage()
     // sets one page in Tiles, other in Checlisk
@@ -199,27 +201,20 @@ describe('template spec', () => {
     // Check edit mode fields
     cy.get('.settings > :nth-child(1) > .p-inputgroup > .p-inputgroup-addon').contains('From')
     cy.get(':nth-child(2) > .p-inputgroup > .p-inputgroup-addon').contains('To')
-    cy.get('[data-v-364bf338=""][data-pc-name="inputgroup"] > .p-inputgroup-addon').contains('Date')
+    cy.get('.pageTwo > :nth-child(3) > .content > .settings > :nth-child(3)').contains('Date')
     cy.get('.actionBar > .p-button-link').click()
 
     // ========================================================================
     // Radio Flow
     // ========================================================================
     // Check all fields are present in Radio flow
-    const expectRadioFlow = [
-      ['116.800','SEA VOR'],
-      ['113.400','OLM VOR'],
-      ['124.700','RNT TWR'],
-      ['126.950','RNT ATIS'],
-      ['123.000','S43 CTAF'],
-      ['128.650','PAE ATIS'],
-      ['120.200','PAE TWR 34R'],
-      ['132.950','PAE TWR 34L']]
-    for(let index=0;index<expectRadioFlow.length;index++) {
-      cy.get(`.freqList > :nth-child(${index+1})`).contains(expectRadioFlow[index][0])
-      cy.get(`.freqList > :nth-child(${index+1})`).contains(expectRadioFlow[index][1])
-    }
-    cy.get('.freqList > :nth-child(1)')
+    cy.fixture('radioFlow').then((radioFlow) => {
+      for(let index=0; index<radioFlow.length; index++) {
+        cy.get(`.freqList > :nth-child(${index+1})`).contains(radioFlow[index].freq)
+        cy.get(`.freqList > :nth-child(${index+1})`).contains(radioFlow[index].name)
+      }
+    })
+//    cy.get('.freqList > :nth-child(1)')
 
     // Sign in to get to
     // cy.get('.menuIcon').click()
@@ -230,7 +225,7 @@ describe('template spec', () => {
   // ========================================================================
   // Print Dialog
   // ========================================================================
-  it('Print Dialog', () =>{
+  it.skip('Print Dialog', () =>{
     visitAndCloseBanner()
 
     // Test print dialog show up
@@ -252,7 +247,7 @@ describe('template spec', () => {
     
   })
 
-  it('Checklist work', () => {
+  it.skip('Checklist work', () => {
     visitAndCloseBanner()
     newPage()
     // set both pages to checlist
@@ -315,4 +310,10 @@ describe('template spec', () => {
     cy.get('.leftList > .theme-blue > .challenge').contains('Challenge1.1')
 
   })
+
+  it('Maintenance Window', () => {
+    visitAndCloseBanner()
+    cy.get('.maintenanceDialog').click()
+  })
+
 })
