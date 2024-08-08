@@ -33,7 +33,7 @@ const activeTopic = ref(topicAbout)
       </div>
       <div v-if="activeTopic.value==topicAbout.value">
         <div class="mb-5 justify"><strong>GA Kneeboard</strong> started as a personal project but users feedback made it the useful utility it is today. It is meant to mitigate high information loads, associated to flying, with easily accessible essential information. Originally intended as a supplement to pilot's EFB, the kneeboard printout has become a primary source of information due to its sheer convenience.<br>GA Kneeboard is free to use. If you find it useful, please consider spreading the word and sending your suggestions.</div>
-        <div class="justify"><strong>Special Thanks</strong> to Ash, Jason, Steve and Stewart whom have contributed invaluable feedback and suggestion since Day 1</div>
+        <div class="justify"><strong>Special Thanks</strong> to Ash, Jason, Steve and Stewart whom have contributed invaluable feedback and suggestions since Day 1</div>
       </div>
       <div v-else-if="activeTopic.value==topicGuide.value" class="mb-5">
         <div class="mb-5 justify"><a :href="blogUrl" target="_blank">GA Kneeboard Blog</a> is a great resource for guides and updates. For example:</div>
