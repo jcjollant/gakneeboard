@@ -83,6 +83,10 @@ body {
   gap: 0.5rem;
 }
 
+.justify {
+  text-align: justify;
+}
+
 .ml-2 {
   margin-left: 0.5rem;
 }
