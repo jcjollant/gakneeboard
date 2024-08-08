@@ -1,7 +1,8 @@
-export const currentVersionNumber = 806
+export const currentVersionNumber = 807
 const devEnv = 'http://localhost:5173/'
 const prodEnv = 'https://kneeboard.ga'
 export const environment = devEnv
+export const titleAtis = "ATIS @"
 
 export function visitAndCloseBanner() {
     cy.visit(environment)
