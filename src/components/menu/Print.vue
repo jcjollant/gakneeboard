@@ -35,7 +35,7 @@ function onPrint() {
   <div class="printPopup">
     <FieldSet legend="What are we printing?">
       <div class="pageOptions">
-      <SelectButton v-model="pageOption" :options="[frontOption, bothOption, backOption]" optionLabel="name" aria-labelledby="basic" class="mb-2" />
+        <SelectButton v-model="pageOption" :options="[frontOption, bothOption, backOption]" optionLabel="name" aria-labelledby="basic" class="mb-2" />
       </div>
     </FieldSet>
     <FieldSet legend="Options">
@@ -72,20 +72,13 @@ function onPrint() {
   gap: 2rem;
 }
 
-.pageList {
+/* .pageList {
   display: flex;
-}
-:deep(.p-fieldset-legend) {
-      border: none;
-      background: none;
-}
-:deep(.p-fieldset-content) {
-      padding: 0;
-}
+} */
 
-.active {
-  background: white;
-  color: black;
+.pageOptions {
+  display: flex;
+  justify-content: center;
 }
 
 .printPopup {
@@ -102,9 +95,13 @@ p.note {
   margin: 0
 }
 
-.pageOptions {
-  display: flex;
-  justify-content: center;
+:deep(.p-fieldset-legend) {
+      border: none;
+      background: none;
 }
+:deep(.p-fieldset-content) {
+      padding: 0;
+}
+
 
 </style>
