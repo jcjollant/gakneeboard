@@ -21,6 +21,8 @@ ts-node .\willie.ts
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
+## 8/08/2024
+* Updated effective date
 ## 8/03/2024
 1) Added publications to healthcheck
 2) Aded publication code to GApi.sheetGet

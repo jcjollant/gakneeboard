@@ -5,7 +5,7 @@ const maxNavaids:number = 10
 
 export class Adip {
     static basicAuth:string = 'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP'
-    static currentEffectiveDate: string = "2024-07-11T00:00:00"
+    static currentEffectiveDate: string = "2024-08-08T00:00:00"
 
     public static async fetchAirport(code:string):Promise<Airport|undefined>{
         let locId = null
