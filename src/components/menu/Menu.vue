@@ -8,7 +8,7 @@ import Feedback from './Feedback.vue';
 import Print from './Print.vue'
 import Sheets from './Sheets.vue'
 import SignIn from './SignIn.vue';
-import Warning from './Warning.vue'
+import About from './About.vue'
 import { customSheetSave, keyUser } from '../../assets/data'
 import { blogUrl, getCurrentUser, setCurrentUser, sheetGetList } from '../../assets/data'
 import { getSheetBlank, getSheetDemoTiles } from '../../assets/sheetData'
@@ -21,7 +21,7 @@ const showFeedback = ref(false)
 const showMenu = ref(false)
 const showPrint = ref(false)
 const showSignIn = ref(false)
-const showWarning = ref(false)
+const showAbout = ref(false)
 const showSheets = ref(false)
 const user = ref(null)
 const pageMode = ref('load')
@@ -249,7 +249,7 @@ function userUpdateSheets(newList) {
       @sent="onFeedbackSent" @close="showFeedback=false" />
     <Print v-model:visible="showPrint"
       @close="onPrintClose" @print="onPrintPrint" />
-    <Warning v-model:visible="showWarning" @close="showWarning=false" />
+    <About v-model:visible="showAbout" @close="showAbout=false" />
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
       @authentication="onAuthentication" />
     <Sheets v-model:visible="showSheets" :mode="pageMode" :user="user"
@@ -280,13 +280,13 @@ function userUpdateSheets(newList) {
         <Button label="Mirror" icon="pi pi-sign-out" title="Copy left page onto right" 
           @click="confirmAndCopy"></Button>
         <div class="separator"></div>
-        <Button icon="pi pi-megaphone" title="Send Feedback"
+        <Button label="Feedback" icon="pi pi-megaphone" title="Send Feedback"
           @click="showFeedback=true" ></Button>
-        <Button icon="pi pi-exclamation-triangle" title="Warnings" severity="warning"
-          @click="showWarning=true"></Button>
-        <Button icon="pi pi-question"  title="How does it work?"
-          @click="emits('howDoesItWork')"></Button>
-        <Button label="Blog" @click="openBlog" title="Recent Features and Annoucements" link></button>
+        <Button icon="pi pi-info-circle" title="About / Guides / Warnings"
+          @click="showAbout=true"></Button>
+        <!-- <Button icon="pi pi-question"  title="How does it work?"
+          @click="emits('howDoesItWork')"></Button> -->
+        <!-- <Button label="Blog" @click="openBlog" title="Recent Features and Annoucements" link></button> -->
       </div>
     </div>
   </div>
