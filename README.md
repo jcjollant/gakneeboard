@@ -24,6 +24,8 @@ Run the test suite:
 * Small indicator below runway is configurable
 
 # Done
+## 8/07/2024
+* New About Dialog
 ## 8/06/2024
 * New Tile Checklist
 ## 8/04/2024
