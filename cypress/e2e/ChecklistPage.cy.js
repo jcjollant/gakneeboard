@@ -18,11 +18,16 @@ describe('Checklist Page', () => {
     // one list for now
     cy.get('.oneOrTwoLists').children().should('have.length', 1)
 
+    // Check is has theme
+    cy.get('.themeSelector > :nth-child(1)')
+    // check it has hint
+    cy.get('.actionBar > .p-button-icon-only')
+
     // swicth to two columns
     cy.get('[tabindex="-1"]').click()
     cy.get('.oneOrTwoLists').children().should('have.length', 2)
 
-    cy.get('.oneOrTwoLists > :nth-child(1)').type('##Section1\nChallenge1.1##Response1.1\n##\n\nChallenge1.2\nChallenge1.3##')
+    cy.get('.oneOrTwoLists > :nth-child(1)').type('##Section1\nChallenge1.1##Response1.1\n##\n\nChallenge1.2\nChallenge1.3##\n##!Emergency')
     cy.get('.oneOrTwoLists > :nth-child(2)').type('##Section2\nChallenge2.1##Response2.1\n##\n\nChallenge2.2\nChallenge2.3##')
     cy.get('.theme-green').click()
     cy.get('[aria-label="Apply"]').click()
@@ -41,6 +46,8 @@ describe('Checklist Page', () => {
     // short boxes with challenge and question
     cy.get('.leftList > :nth-child(6) > .challenge').contains('Challenge1.3')
     cy.get('.leftList > :nth-child(6) > .response').should('be.empty')
+    // Emergent Section
+    cy.get('.leftList > :nth-child(7) > .section').should('have.class', 'emergent')
 
     cy.get('.rightList > .theme-green > .challenge').contains('Challenge2.1')
     cy.get('.rightList > .theme-green > .response').contains('Response2.1')
