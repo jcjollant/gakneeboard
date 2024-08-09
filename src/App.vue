@@ -176,7 +176,7 @@ function onPageUpdateFront(pageData) {
 }
 
 function saveActiveSheet(modified=false) {
-  console.log('[App.saveActiveSheet]', modified)
+  // console.log('[App.saveActiveSheet]', modified)
   localSheetSave(activeSheet.value, modified)
   sheetModified.value = modified
 }
