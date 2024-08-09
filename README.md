@@ -24,6 +24,9 @@ Run the test suite:
 * Small indicator below runway is configurable
 
 # Done
+## 8/09/2024
+* Added help to Checklist Tile and Checklist page
+* Emergent Section header
 ## 8/07/2024
 * New About Dialog
 ## 8/06/2024
