@@ -14,6 +14,11 @@ export function itemsFromList(value) {
             // it can be a section or a blank line
             // [##]
             if(response.length == 0) return {c:'', r:''}
+            // it's a section header
+            // Test if it's emergent
+            if( response.length > 0 && response[0] == '!') {
+                return {s:response.substring(1), t:'emer'}
+            }
             // section [##Section]
             return { s: response }
         }
@@ -29,7 +34,10 @@ export function listFromItems(items) {
 
     // translate items into text
     const list = items.map(item => {
-        if ('s' in item) return '##' + item.s;
+        if ('s' in item) {
+            if( item.t == 'emer') return '!' + item.s
+            return '##' + item.s;
+        }
         if ('r' in item) return item.c + '##' + item.r
         return item.c
     })
