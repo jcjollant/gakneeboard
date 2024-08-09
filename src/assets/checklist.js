@@ -35,7 +35,7 @@ export function listFromItems(items) {
     // translate items into text
     const list = items.map(item => {
         if ('s' in item) {
-            if( item.t == 'emer') return '!' + item.s
+            if( item.t == 'emer') return '##!' + item.s
             return '##' + item.s;
         }
         if ('r' in item) return item.c + '##' + item.r
