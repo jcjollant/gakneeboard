@@ -244,13 +244,15 @@ describe('Tiles', () => {
     cy.get('.oneLine > .p-inputgroup > .p-inputgroup-addon').contains('Name')
     cy.get('.p-inputgroup > .p-inputtext').should('have.value', title)
     cy.get('.p-dropdown-label').contains('Blue')
+    // Information icon
+    cy.get('.actionBar > .p-button-icon-only')
     // Change title but cancel
     cy.get('.p-inputgroup > .p-inputtext').type('{selectall}').type('Name1')
     // Title should be updated for now
     cy.get('.pageTwo > :nth-child(1) > .header > div').contains('Name1')
     cy.get('.p-dropdown').type('G').type('{enter}')
     // Cancel
-    cy.get('.actionBar > .p-button-link').click()
+    cy.get('[aria-label="Cancel"]').click()
     // Title goes back
     cy.get('.pageTwo > :nth-child(1) > .header > div').contains(title)
     // Color sdhould not change
