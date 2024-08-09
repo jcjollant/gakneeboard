@@ -1,12 +1,13 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import { itemsFromList, listFromItems } from '../../assets/checklist'
+import { urlGuideChecklist } from '../../assets/data'
 
+import ActionBar from '../shared/ActionBar.vue'
 import ChecklistViewer from './ChecklistViewer.vue'
 import Header from '../shared/Header.vue'
 import ThemeSelector from './ThemeSelector.vue'
 
-import Button from 'primevue/button'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
@@ -21,7 +22,7 @@ const props = defineProps({
 })
 
 function loadProps(newProps) {
-    console.log('[ChecklistTile.loadProps]', JSON.stringify(newProps))
+    // console.log('[ChecklistTile.loadProps]', JSON.stringify(newProps))
     if (newProps.params) {
         items.value = newProps.params.items;
         if (newProps.params.name) title.value = newProps.params.name
@@ -109,10 +110,7 @@ function onThemeChange(newTheme) {
             <div class="oneOrTwoLists">
                 <Textarea rows="7" cols="24" v-model="textData" class="editList" placeholder="Up to 8 items will fit vertically."></Textarea>
             </div>
-            <div class="actionBar">
-                <Button @click="onCancel" label="Cancel" link></Button>
-                <Button icon="pi pi-check" @click="onApply" label="Apply"></Button>
-            </div>
+            <ActionBar @apply="onApply" @cancel="onCancel" :help="urlGuideChecklist" />
         </div>
         <div v-else class="content">
             <ChecklistViewer :items="items" :theme="theme" :small="true" />
