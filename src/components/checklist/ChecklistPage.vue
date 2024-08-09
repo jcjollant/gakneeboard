@@ -1,13 +1,14 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 // import { demoPageChecklist } from '../assets/data'
+import { urlGuideChecklist } from '../../assets/data'
 import { itemsFromList, listFromItems } from '../../assets/checklist'
 
+import ActionBar from '../shared/ActionBar.vue'
 import ChecklistViewer from './ChecklistViewer.vue'
-import Header from '../../components/shared/Header.vue'
+import Header from '../shared/Header.vue'
 import ThemeSelector from './ThemeSelector.vue'
 
-import Button from 'primevue/button'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
@@ -124,10 +125,7 @@ Create sections using '##Section Name':
                     :class="{ 'smallTextarea': columns == colDouble }"></Textarea>
             </div>
             <ThemeSelector @change="onThemeChange" :theme="theme" />
-            <div class="actionBar">
-                <Button @click="onCancel" label="Cancel" link></Button>
-                <Button icon="pi pi-check" @click="onApply" label="Apply"></Button>
-            </div>
+            <ActionBar @cancel="onCancel" @apply="onApply" :help="urlGuideChecklist" />
         </div>
         <div v-else>
             <div v-if="columns == colSingle">
