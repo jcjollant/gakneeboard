@@ -32,8 +32,9 @@ watch(props, () => {
 
 <template>
     <div v-if="items.length > 0" v-for="(item, index) in items" class="checklist"
-        :class="(index % 2) ? theme : ''">
-        <div v-if="'s' in item" class="section spanned" :class="{'emergent': item.t =='emer','strong': item.t=='strong'}" >{{ item.s }}</div>
+        :class="(index % 2 || item.t=='strong') ? theme : ''">
+        <div v-if="'s' in item" class="section spanned" 
+            :class="{'emergent': item.t =='emer','strong': item.t=='strong'}" >{{ item.s }}</div>
         <div v-else class="challenge" :class="{'smallFont': small, 'spanned':!('r' in item)}">{{ item.c }}</div>
         <div v-if="'r' in item" class="response" :class="{'smallFont': small}">{{ item.r }}</div>
     </div>
