@@ -1,4 +1,4 @@
-export const version = '810-2'
+export const version = '811'
 export const maxSheetCount = 10
 export const keyUser = 'kb-user'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
@@ -12,6 +12,7 @@ export const urlGuideChecklist = 'https://gakneeboard.wordpress.com/2024/08/06/c
 export const urlGuideFuelBug = 'https://gakneeboard.wordpress.com/2024/07/30/fuel-bug-tile-guide/'
 export const urlGuideRadioFlow = 'https://gakneeboard.wordpress.com/2024/08/03/radio-flow-tile-guide/'
 export const urlGuideSunlight = 'https://gakneeboard.wordpress.com/2024/08/10/sunlight-tile-guide/'
+export const urlKneeboard = 'https://kneeboard.ga'
 import { Airport } from './Airport.ts'
 import axios from 'axios'
 import { isDefaultName, normalizeSheetData } from './sheetData.js'
