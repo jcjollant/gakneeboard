@@ -8,7 +8,7 @@ import InputGroupAddon from "primevue/inputgroupaddon";
 import InputText from "primevue/inputtext";
 import SelectButton from "primevue/selectbutton"
 
-import { customSheetDelete, maxSheetCount, sheetGetByCode, sheetGetById } from "../../assets/data"
+import { customSheetDelete, maxSheetCount, sheetGetByCode, sheetGetById, urlKneeboard } from "../../assets/data"
 import { describePage, getSheetBlank, getSheetDemoChecklist, getSheetDemoTiles, sheetNameDemoChecklist, sheetNameDemoTiles, sheetNameNew } from '../../assets/sheetData'
 import { getToastData, toastError, toastSuccess } from '../../assets/toast'
 
@@ -49,12 +49,18 @@ const deleteMode = ref(false)
 const sheetCode = ref('')
 const targetSheet = ref(null)
 const fetchingSheet = {name:'Fetching...',data:{}}
+const directLink = ref('')
 
 function changeTargetSheet(newSheet) {
   targetSheet.value = newSheet
   publish.value = newSheet?.publish ? pubPublic : pubPrivate
   sheetNameText.value = newSheet ? newSheet.name : ''
   // console.log('[Sheets.changeTargetSheet] publish', publish.value)
+  if( newSheet && newSheet.code) {
+    directLink.value = urlKneeboard + '?sheet=' + newSheet.code
+  } else {
+    directLink.value = ''
+  }
 }
 
 function getSheetName(sheet=null) {
@@ -82,7 +88,19 @@ function onButtonSave() {
   changeTargetSheet()
 }
 
-
+async function onCopyURL() {
+  const toastTitle = 'Copy to Clipboard'
+    if(!directLink.value) {
+      showToast(toastTitle, 'Nothing to copy', toastError)
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(directLink.value);
+      showToast(toastTitle, directLink.value + ' copied to clipboard')
+    } catch($e) {
+      showToast(toastTitle, 'Could not copy to clipboard', toastError)
+    }  
+}
 
 /**
  * A default sheet has been selected load its data into
@@ -176,7 +194,7 @@ function showToast(summary,details,severity=toastSuccess) {
       </FieldSet>
       <FieldSet legend="Sheet Properties">
         <div class="sheetProps">
-          <InputGroup>
+          <InputGroup class="pageName">
             <InputGroupAddon>Name</InputGroupAddon>
             <InputText v-model="sheetNameText"/>
           </InputGroup>
@@ -190,9 +208,11 @@ function showToast(summary,details,severity=toastSuccess) {
             <div>Access:</div>
             <SelectButton v-model="publish" :options="[pubPublic, pubPrivate]" aria-labelledby="basic" />
           </div>
-          <div class="alignedRow">
-            <div>Code:</div>
-            <div>{{ targetSheet?.code ? targetSheet.code:'(none)' }}</div>
+          <div class="alignedRow codeAndLink" v-show="directLink">
+            <div>Share code </div>
+            <div class="bold">{{ targetSheet?.code ? targetSheet.code:'(none)' }}</div>
+            <div><a :href="directLink" target="_blank">{{ directLink }}</a></div>
+            <Button icon="pi pi-clipboard" title="Copy direct URL to Sheet" @click="onCopyURL"></Button>
           </div>
           <div class="sheetDescription">
             <div class="bold pageDescription">Front</div><div class="pageDescription">{{ describePage(targetSheet, 0) }}</div>
@@ -274,14 +294,18 @@ function showToast(summary,details,severity=toastSuccess) {
   display: flex;
   justify-content: space-between;
 }
-:deep(.p-fieldset-legend) {
-      border: none;
-      background: none;
-}
-:deep(.p-fieldset-content) {
-      padding: 0;
+.bold {
+  font-weight: bold;
 }
 
+.code {
+  padding-left: 0.5rem;
+  font-weight: bold;
+}
+
+.codeAndLink {
+  grid-column: 2 / span 2;
+}
 .codeFetch {
   display: flex;
   gap:5px;
@@ -291,23 +315,16 @@ function showToast(summary,details,severity=toastSuccess) {
   color:brown;
   font-size: 0.8rem;
 }
-.code {
-  padding-left: 0.5rem;
-  font-weight: bold;
-}
 .sheetDescription {
   display: grid;
   gap: 5px;
   grid-template-columns: 3.5rem auto;
-  grid-column: 1 / span 2;
-}
-.bold {
-  font-weight: bold;
+  grid-column: 1 / span 3;
 }
 .sheetProps {
   display: grid;
   gap: 10px;
-  grid-template-columns: 60% auto;
+  grid-template-columns: 35% 30% auto;
 }
 .alignedRow {
   display: flex;
@@ -319,10 +336,22 @@ function showToast(summary,details,severity=toastSuccess) {
 .sharedCode {
   width: 10rem;
 }
+.pageName {
+  grid-column: 1 / span 2;
+}
 .pageDescription {
   font-size: 0.8rem;
 }
 .newSheetButton {
     grid-column: 2 / span 2;
 }
+
+:deep(.p-fieldset-legend) {
+      border: none;
+      background: none;
+}
+:deep(.p-fieldset-content) {
+      padding: 0;
+}
+
 </style>
