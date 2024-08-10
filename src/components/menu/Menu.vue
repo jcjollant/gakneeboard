@@ -10,7 +10,7 @@ import Sheets from './Sheets.vue'
 import SignIn from './SignIn.vue';
 import About from './About.vue'
 import { customSheetSave, keyUser } from '../../assets/data'
-import { blogUrl, getCurrentUser, setCurrentUser, sheetGetList } from '../../assets/data'
+import { urlBlog, getCurrentUser, setCurrentUser, sheetGetList } from '../../assets/data'
 import { getSheetBlank, getSheetDemoTiles } from '../../assets/sheetData'
 import { getToastData, toastError, toastSuccess, toastWarning, toastInfo } from '../../assets/toast'
 
@@ -184,7 +184,7 @@ function onToast(data) {
 }
 
 function openBlog() {
-  window.open( blogUrl, '_blank');
+  window.open( urlBlog, '_blank');
 }
 
 
