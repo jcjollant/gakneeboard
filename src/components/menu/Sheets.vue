@@ -210,9 +210,11 @@ function showToast(summary,details,severity=toastSuccess) {
           </div>
           <div class="alignedRow codeAndLink" v-show="directLink">
             <div>Share code </div>
-            <div class="bold">{{ targetSheet?.code ? targetSheet.code:'(none)' }}</div>
-            <div><a :href="directLink" target="_blank">{{ directLink }}</a></div>
-            <Button icon="pi pi-clipboard" title="Copy direct URL to Sheet" @click="onCopyURL"></Button>
+            <!-- <div class="bold">{{ targetSheet?.code ? targetSheet.code:'(none)' }}</div> -->
+            <div class="bold"><a :href="directLink" target="_blank">{{ targetSheet?.code ? targetSheet.code:'(none)' }}</a></div>
+            <!-- <div><a :href="directLink" target="_blank">{{ directLink }}</a></div> -->
+            <!-- <div><a :href="directLink" target="_blank">{{ directLink }}</a></div> -->
+            <Button icon="pi pi-clipboard" title="Copy link to clipboard" @click="onCopyURL"></Button>
           </div>
           <div class="sheetDescription">
             <div class="bold pageDescription">Front</div><div class="pageDescription">{{ describePage(targetSheet, 0) }}</div>
@@ -305,6 +307,7 @@ function showToast(summary,details,severity=toastSuccess) {
 
 .codeAndLink {
   grid-column: 2 / span 2;
+  justify-content: end;
 }
 .codeFetch {
   display: flex;
