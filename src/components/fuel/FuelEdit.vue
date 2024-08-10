@@ -1,11 +1,11 @@
 <script setup>
-import { ref } from 'vue'
-// import InputText from 'primevue/inputtext';
-// import InputGroup from 'primevue/inputgroup'
-// import InputGroupAddon from 'primevue/inputgroupaddon'
+import { onMounted, ref } from 'vue'
+import { urlGuideFuelBug } from '../../assets/data'
+
 import InputNumber from 'primevue/inputnumber'
 import Button from 'primevue/button'
-import { onMounted } from 'vue';
+
+import ActionBar from '../shared/ActionBar.vue'
 
 const emits = defineEmits(['close','update'])
 
@@ -66,10 +66,7 @@ function sanityCheck() {
         <div class="checks">
             <Button class="warning" v-for="warning in warnings" :label="warning" severity="warning"></Button>
         </div>
-        <div class="actionBar">
-            <Button label="Cancel" link @click="emits('close')"></Button>
-            <Button label="Apply" @click="onApply"  ></Button>
-        </div>
+        <ActionBar @apply="onApply" @cancel="emits('close')" :help="urlGuideFuelBug" />
     </div>
 </template>
 
