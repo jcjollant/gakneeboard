@@ -54,7 +54,7 @@ function onPrint() {
       <p class="note">
         <div>'Letter' paper size and 'Landscape' layout will fold between pages to kneeboard size.</div>
         <div>Enable 'Background graphics' in your print settings for best results (Checklists, Fuel Bug).</div>
-        <div>Single pages in 'Portait' layout make great PDFs</div>
+        <div>Single pages in 'Portrait' layout make great PDFs</div>
       </p>
       </FieldSet>
     <div class="actionDialog gap-2">
