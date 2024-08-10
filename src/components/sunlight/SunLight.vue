@@ -1,12 +1,13 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { getAirport, getSunlight } from '../../assets/data'
+import { getAirport, getSunlight, urlGuideSunlight } from '../../assets/data'
+
+import ActionBar from '../shared/ActionBar.vue'
 import CornerStatic from '../shared/CornerStatic.vue'
 import Header from '../shared/Header.vue'
 import Circle from './Circle.vue'
 import AirportInput from '../shared/AirportInput.vue'
 
-import Button from 'primevue/button'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import Calendar from 'primevue/calendar'
@@ -221,10 +222,7 @@ function onHeaderClick() {
                     <label for="nightFlight" class="ml-2">Overnight Flight</label>
                 </div> 
             </div>
-            <div class="actionBar">
-                <Button label="Cancel" link @click="onHeaderClick"></Button>
-                <Button label="Apply" @click="onApply"></Button>
-            </div>
+            <ActionBar @cancel="onHeaderClick" @apply="onApply" :help="urlGuideSunlight" />
         </div>
     </div>    
 </template>
