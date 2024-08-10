@@ -4,9 +4,9 @@ import { onBeforeMount, onMounted,ref} from 'vue'
 import { inject } from "@vercel/analytics"
 import Menu from './components/menu/Menu.vue'
 import Page from './components/Page.vue'
-import { duplicate, keyUser, setCurrentUser, version } from './assets/data.js'
-import { getSheetDemoTiles, localSheetLoad, localSheetSave, normalizeSheetData, sheetDataLocal as oldSheetData } from './assets/sheetData'
-import { getToastData } from './assets/toast'
+import { duplicate, keyUser, setCurrentUser, sheetGetByCode, version } from './assets/data.js'
+import { getSheetDemoTiles, getSheetLocal, localSheetSave, normalizeSheetData } from './assets/sheetData'
+import { getToastData, toastError } from './assets/toast'
 import HowDoesItWork from './components/HowDoesItWork.vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
@@ -40,7 +40,6 @@ function doPrint() {
     resolve(true)
   })
 }
-
 
 function getSheetName() {
   if( !activeSheet.value || !activeSheet.value.name) return ''
@@ -122,22 +121,36 @@ function onMenuToggle(value) {
   menuOpen.value = value
 }
 
-onMounted(() => {
+onMounted(async () => {
   // console.log('[App.onMounted]')
   try {
-    let localSheet = localSheetLoad()
-    if(!localSheet) { // second change with page
-      let data = JSON.parse(localStorage.getItem(oldSheetData))
-      // create a local sheet with no name
-      localSheet = {data:data}
-      // TODO remove data from localstorage
-      // Save activeSheet locally
-      localSheetSave(localSheet)
+    // console.log( '[App.onMounted]', JSON.stringify(window.location.search))
+    let urlParams = new URLSearchParams(window.location.search);
+    if( urlParams.has('sheet')) {
+      const sheetCode = urlParams.get('sheet')
+      // console.log('[App.onMounted] sheet code', sheetCode)
+
+      // TODO go get that sheet
+      sheetGetByCode(sheetCode).then( sheet => {
+        // console.log('[App.onMounted] sheet', JSON.stringify(sheet))
+        // showToast('Fetch', 'Sheet found')
+        if(sheet) {
+          loadSheet(sheet)
+        } else {
+          showToast( getToastData( 'Load Sheet','Sheet Code not found ' + sheetCode, toastError))
+          loadSheet(getSheetLocal())
+        }
+      }).catch(e => {
+          showToast( getToastData( 'Load Sheet','Error fetching sheet ' + sheetCode, toastError))
+          loadSheet(getSheetLocal())
+      }) 
+    } else {
+      loadSheet(getSheetLocal())
     }
-    loadSheet(localSheet)
   } catch(e) {
-    console.log('[App.onMounted] local data is corrupted')
-    loadSheet()
+    console.log('[App.onMounted] local data is corrupted', JSON.stringify(e))
+    // revert to demo tiles
+    loadSheet(getSheetDemoTiles())
     saveActiveSheet()
   }
   // Analytics
