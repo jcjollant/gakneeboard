@@ -16,8 +16,10 @@ export function itemsFromList(value) {
             if(response.length == 0) return {c:'', r:''}
             // it's a section header
             // Test if it's emergent
-            if( response.length > 0 && response[0] == '!') {
-                return {s:response.substring(1), t:'emer'}
+            if( response.length > 1) {
+                // emergency and strong background
+                if( response[0] == '!') return {s:response.substring(1), t:'emer'}
+                if( response[0] == '*') return {s:response.substring(1), t:'strong'}
             }
             // section [##Section]
             return { s: response }
@@ -35,7 +37,8 @@ export function listFromItems(items) {
     // translate items into text
     const list = items.map(item => {
         if ('s' in item) {
-            if( item.t == 'emer') return '##!' + item.s
+            if( item.t == 'emer') return '##!' + item.s;
+            if( item.t == 'strong') return '##*' + item.s;
             return '##' + item.s;
         }
         if ('r' in item) return item.c + '##' + item.r
