@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue";
 
-import { blogUrl } from '../../assets/data'
+import { urlBlog, urlGuideAirport, urlGuideAtis, urlGuideChecklist, urlGuideFuelBug, urlGuideRadioFlow, urlGuideSunlight } from '../../assets/data'
 
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
@@ -10,11 +10,12 @@ import SelectButton from 'primevue/selectbutton'
 const emits = defineEmits(["close"]);
 
 const guides = [
-  {name:'Airport Tile Guide', url:'https://gakneeboard.wordpress.com/2024/07/28/airport-tile-guide/'},
-  {name:"Radio Flow Tile Guide", url:'https://gakneeboard.wordpress.com/2024/08/03/radio-flow-tile-guide/'},
-  {name:'Fuel Bug Tile Guide', url:'https://gakneeboard.wordpress.com/2024/07/30/fuel-bug-tile-guide/'},
-  {name:'ATIS Tile Guide', url:'https://gakneeboard.wordpress.com/2024/07/29/atis-tile-guide/'},
-  {name:"Checklist Syntax Guide",url:'https://gakneeboard.wordpress.com/2024/08/06/checklist-syntax-guide/'},
+  {name:'Airport Tile Guide', url:urlGuideAirport},
+  {name:'ATIS Tile Guide', url:urlGuideAtis},
+  {name:"Checklist Syntax Guide",url:urlGuideChecklist},
+  {name:'Fuel Bug Tile Guide', url:urlGuideFuelBug},
+  {name:"Radio Flow Tile Guide", url:urlGuideRadioFlow},
+  {name:"Sun Light Tile Guide", url:urlGuideSunlight},
 ]
 
 const topicAbout = {name:'About',value:'about'}
@@ -36,7 +37,7 @@ const activeTopic = ref(topicAbout)
         <div class="justify"><strong>Special Thanks</strong> to Ash, Jason, Steve and Stewart whom have contributed invaluable feedback and suggestions since Day 1</div>
       </div>
       <div v-else-if="activeTopic.value==topicGuide.value" class="mb-5">
-        <div class="mb-5 justify"><a :href="blogUrl" target="_blank">GA Kneeboard Blog</a> is a great resource for guides and updates. For example:</div>
+        <div class="mb-5 justify"><a :href="urlBlog" target="_blank">GA Kneeboard Blog</a> is a great resource for guides and updates. For example:</div>
         <div v-for="guide in guides" class="guides"><a :href="guide.url" target="_blank">{{guide.name}}</a></div>
       </div>
       <div v-else-if="activeTopic.value==topicWarning.value" class="warning-content mb-5">
