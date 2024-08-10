@@ -18,11 +18,11 @@ export const sheetNameDemoChecklist = 'default-demo-checklist'
 export const sheetNameNew = 'default-new-sheet'
 export const sheetNameReset = 'default-reset'
 const activeSheetLocal = 'sheet'
-export const sheetDataLocal = 'page1'
+const oldSheetData = 'page1'
 
 import { duplicate } from './data'
 
-const allSheetNames = [sheetNameDemoTiles, sheetNameDemoChecklist, sheetNameReset, activeSheetLocal, sheetDataLocal]
+const allSheetNames = [sheetNameDemoTiles, sheetNameDemoChecklist, sheetNameReset, activeSheetLocal, oldSheetData]
 
 // blank pages
 const pageDataBlankTiles = {type:pageTypeTiles,data:[
@@ -209,14 +209,23 @@ export function getSheetDemoChecklist() {
   return duplicate(sheetDemoChecklist)
 }  
 
-
+// Load active sheet from localstorage
+export function getSheetLocal() {
+  const localSheet = JSON.parse(localStorage.getItem(activeSheetLocal))  
+  if(!localSheet) { 
+    // try old page system
+    let data = JSON.parse(localStorage.getItem(oldSheetData))
+    // create a local sheet with no name
+    localSheet = {data:data}
+    // TODO remove data from localstorage
+    // Save activeSheet locally
+    localSheetSave(localSheet)
+  }
+  return localSheet
+}
 
 export function isDefaultName(name) {
   return name in allSheetNames
-}
-
-export function localSheetLoad() {
-  return JSON.parse(localStorage.getItem(activeSheetLocal))  
 }
 
 // Save sheet data to browser
