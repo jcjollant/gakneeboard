@@ -1,7 +1,8 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { formatMhz } from '../../assets/data'
+import { formatMhz, urlGuideRadioFlow } from '../../assets/data'
 
+import ActionBar from '../shared/ActionBar.vue'
 import Header from '../shared/Header.vue';
 import AirportInput from '../shared/AirportInput.vue'
 import FrequencyBox from './FrequencyBox.vue'
@@ -152,10 +153,7 @@ function toast(message, severity='success') {
                 @click="onLookup"></Button>
             <Textarea class='list' rows="8" cols="24" v-model="textData"
                 placeholder="Enter up to 15 freq."></Textarea>
-            <div class="actionBar">
-                <Button @click="onCancel" label="Cancel" link></Button>
-                <Button icon="pi pi-check" @click="onApply" label="Apply"></Button>
-            </div>
+            <ActionBar @apply="onApply" @cancel="onCancel" :help="urlGuideRadioFlow" />
         </div>
         <div v-else-if="mode=='lookup'" class="lookup">
             <AirportInput :auto="true" @valid="showFrequencies"></AirportInput>
