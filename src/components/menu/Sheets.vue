@@ -198,7 +198,7 @@ function showToast(summary,details,severity=toastSuccess) {
             <InputGroupAddon>Name</InputGroupAddon>
             <InputText v-model="sheetNameText"/>
           </InputGroup>
-          <Button label="Do Not Overwrite" icon="pi pi-file" severity="secondary" title="Create a copy instead"
+          <Button label="Make Copy" icon="pi pi-file" severity="secondary" title="Create a copy instead or overwritting"
             :disabled="!(targetSheet?.id)"
             @click="onNewSheet"></Button>
           <!-- <Button label="Save" icon="pi pi-save" severity="secondary" 
@@ -223,7 +223,7 @@ function showToast(summary,details,severity=toastSuccess) {
 
         </div>
       </FieldSet>
-      <label v-if="sheets.length>=maxSheetCount" class="experiment">We are currently experimenting with a limit of {{ maxSheetCount }} sheets</label>
+      <label v-if="sheets.length > maxSheetCount || (sheets.length==maxSheetCount && !(targetSheet?.id))" class="experiment">We are currently experimenting with a limit of {{ maxSheetCount }} sheets</label>
       <div v-else class="actionDialog gap-2">
         <Button label="Do Not Save" @click="onButtonClose" link></Button>
         <Button :label="targetSheet?.id ? 'Overwrite Sheet' : 'Save Sheet'" @click="onButtonSave" 
