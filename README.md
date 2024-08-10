@@ -24,6 +24,11 @@ Run the test suite:
 * Small indicator below runway is configurable
 
 # Done
+## 8/10/2024
+* Strong mode for checklist section
+* Tiles now using ActionBar and showing help: Fuel Radio Sunlight
+* ActionBar showing hint
+* Link to new Sunlight Tile guide
 ## 8/09/2024
 * Added help to Checklist Tile and Checklist page
 * Emergent Section header
