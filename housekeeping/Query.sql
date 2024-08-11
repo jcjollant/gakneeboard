@@ -17,6 +17,7 @@ SELECT COUNT(*) FROM airports
 # Known Unknowns
 SELECT * FROM airports WHERE version=-1
 
+# Count of known unknowns
 SELECT COUNT(*) FROM airports WHERE version=-1
 
 SELECT COUNT(*) FROM airports WHERE version<6
@@ -75,19 +76,16 @@ UPDATE airports SET data='{"code":"TEST","name":"Test Airport JC","elev":1000,"f
 
 #########################################
 # Feedback table
+
+# Count feedbacks
 SELECT COUNT(*) FROM feedback
 
+# Show all feedbacks
 SELECT * FROM feedback
 
-DELETE FROM feedback WHERE Id in (56,57)
-
-SELECT * FROM Airports WHERE Code='INT'
-
 #########################################
-# Unknowns
+# Unknowns TODO : TRUNCATE
 SELECT * FROM Unknowns
-
-SELECT * FROM Unknowns WHERE code='KCDW'
 
 SELECT count(*) FROM Unknowns
 
