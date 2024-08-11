@@ -21,6 +21,8 @@ ts-node .\willie.ts
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
+## 8/11/2024
+* Root is now returning airport current effective date
 ## 8/08/2024
 * Updated effective date
 ## 8/03/2024
