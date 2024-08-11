@@ -11,7 +11,7 @@ export class AirportView {
     rwys: Runway[];
     navaids: Navaid[];
     custom: boolean;
-    version: number;
+    asof: number;
 
     constructor(airport:Airport|undefined) {
         if(airport) {
@@ -19,17 +19,33 @@ export class AirportView {
             this.name = airport.name;
             this.elev = airport.elev;
             this.custom = airport.custom;
-            this.version = AirportView.currentVersion;
+            this.asof = AirportView.formatAsOf(airport.effectiveDate);
         } else {
             this.code = '';
             this.name = '';
             this.elev = 0;
             this.custom = false;
-            this.version = AirportView.invalidVersion;
+            this.asof = 0;
         }
         this.freq = (airport && airport.freq) ? airport.freq : []
         this.rwys = (airport && airport.rwys) ? airport.rwys : []
         this.navaids = (airport && airport.navaids) ? airport.navaids : []
+    }
+
+    public static formatAsOf(date:string):number {
+        // examples
+        // "effectiveDate":"2024-07-11T00:00:00"
+        // "effectiveDate":"2024-08-08T00:00:00"
+        // extract year, month, and day from the string
+        if( date && date.length >= 10 && date[4] == '-' && date[7] == '-') {
+            const year = parseInt(date.substring(0, 4));
+            const month = parseInt(date.substring(5, 7));
+            const day = parseInt(date.substring(8, 10));
+            // turn it into a number
+            return year * 10000 + month * 100 + day;
+        } else { // invalid date format
+            return 0;
+        }
     }
 
     static getUndefined(code: any): AirportView {
