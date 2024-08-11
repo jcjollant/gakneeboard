@@ -146,23 +146,17 @@ function loadProps(newProps) {
     title.value = "Loading " + code + '...'
     getAirport( code, true)
         .then(airport => {
-            if( airport && 'rwys' in airport) {
-                showAirport(airport)
-                if( 'rwy' in state) {
-                    if( state.rwy == 'all') {
-                        mode.value = 'list'
-                    } else {
-                        mode.value = ''
-                        showRunway(state.rwy);
-                    }
-                } else { // default to first runway
-                    mode.value = ''
-                    showRunway(airport.rwys[0].name)
-                }
-            } else {
-                // console.log('No data came out of get airport ' + code)
-                title.value = 'Airport "' + code + '"'
-                mode.value = 'edit'
+            onNewAirport(airport)
+            // is there a follow up request?
+            if(airport.promise) {
+                airport.promise.then((outcome) => {
+                    // console.log( '[Airport.loadProps] outcome', JSON.stringify(outcome))
+                    // if data was not curren, load new version
+                    if(!outcome.current && outcome.airport){
+                        // console.log( '[Airport.loadProps] data was not current', JSON.stringify(outcome))
+                        onNewAirport(outcome.airport)
+                    } 
+                })
             }
         })
 }
@@ -196,6 +190,29 @@ function onHeaderClick() {
         title.value = airport.name
     }    
 }    
+
+// consider new airport and its data
+function onNewAirport(airport) {
+    if( airport && 'rwys' in airport) {
+        showAirport(airport)
+        if( 'rwy' in state) {
+            if( state.rwy == 'all') {
+                mode.value = 'list'
+            } else {
+                mode.value = ''
+                showRunway(state.rwy);
+            }
+        } else { // default to first runway
+            mode.value = ''
+            showRunway(airport.rwys[0].name)
+        }
+    } else { // no data for this airport
+        // console.log('No data came out of get airport ' + code)
+        // Switch to edit mode
+        title.value = 'Airport "' + code + '"'
+        mode.value = 'edit'
+    }
+}
 
 function onPatternUpdate(newPatternMode) {
     // console.log('Airport onPatternUpdate ' + newPatternMode)
