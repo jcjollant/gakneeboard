@@ -24,6 +24,9 @@ const contentType = contentTypeJson;
 let currentUser = null
 let airports = {}
 let pendingCodes = []
+export let backendVersion = null
+export let currentAirportEffectiveDate = null
+let effectiveDatePromise = null
 
 export async function authenticate( source, token) {
   const url = apiRootUrl + 'authenticate'
@@ -153,7 +156,7 @@ export async function getAirport( codeParam, group = false) {
         return airport
     }
 
-    // do we already know this code in the cache?
+    // do we already have this airport in memory?
     if( code in airports) {
         airport = airports[code]
         // console.log( '[data.getAirport] found in cache ' + code)
@@ -166,32 +169,67 @@ export async function getAirport( codeParam, group = false) {
       return await waitForAirportData( code)
     }
 
+    // do we already have this airport in localStorage?
+    const localStorageKey = 'airport-' + code;
+    const localCopy = localStorage.getItem(localStorageKey)
+    if(localCopy) {
+      // we have local airport information
+      const localAirport = JSON.parse( localCopy)
+      // console.log('[data.getAirport] local', JSON.stringify(localAirport.asof), 'cead', currentAirportEffectiveDate)
+      if(localAirport.asof && localAirport.asof == currentAirportEffectiveDate) {
+        // airport data is current
+        return localAirport;
+      } else if( !currentAirportEffectiveDate){
+        // we cannot tell if airport data is current, wait for caed
+        // pass a promise that returns the investigation outcome
+        localAirport.promise = new Promise( resolve => {
+          effectiveDatePromise.then( (caed) => {
+            if(caed != localAirport.asof) {
+              // turn out this data was stale, remove ir from localStorage
+              // console.log('[data.getAirport] caed is not current for', code, 'removing from localStorage')
+              localStorage.removeItem(localStorageKey)
+              getAirport(code, false).then(airport => {
+                resolve({current:false,airport:airport})
+              }).catch( (e) => {
+                // console.log('[data.getAirport] error getting new airport data', e)
+                resolve({current:false,airport:null})
+              })
+            } else { // dates match
+              // console.log('[data.getAirport] caed is current')
+              resolve({current:true,airport:localAirport})
+            }
+          })
+
+        })
+        return localAirport;
+      }
+    }
+
     // add ourselves to the list of pending queries
     // console.log( '[data.getAirport] adding to queue', code);
     pendingCodes.push(code)
     // console.log( '[data.getAirport]', code, 'enqueued', JSON.stringify(pendingCodes));
 
     if( group) {
-      // wait until there are no more queries
+      // Are we still getting new queries?
       const beforeCount = pendingCodes.length
       await new Promise(r => setTimeout(r, 500));
-      const afterCount = pendingCodes.length
-      if( beforeCount == afterCount) { // no queries withing the last 500 ms
+
+      if( beforeCount == pendingCodes.length) { // no queries withing the last 500 ms
+        // go ahead and place the query
         await requestAllAirports( pendingCodes)
       }
       airport = await waitForAirportData( code)
-      // remove ourselves from the list of pending queries
-      // pendingCodes.splice( pendingCodes.indexOf(code), 1)
 
     } else { // grouping is not allowed
 
-      // wait until we are in first position
+      // wait until the current code is in first position
       while( pendingCodes.length > 0 && pendingCodes[0] != code) {
         // console.log( '[data.getAirport] waiting for', pendingCodes[0], pendingCodes.length, maxWait)
         await new Promise(r => setTimeout(r, 1000));
       }
 
-
+      // Request that one code
       airport = await requestOneAirport( code)
 
       // remove ourselves from the first position in the queue
@@ -199,8 +237,47 @@ export async function getAirport( codeParam, group = false) {
       // console.log( '[data.getAirport]', code, 'removed from queue', JSON.stringify(pendingCodes))
     }
 
+    // save this data in local storage
+    console.log('[data.getAirport] saving to localStorage', code)
+    localStorage.setItem(localStorageKey, JSON.stringify(airport))
+
     return airport
-  }
+}
+
+/**
+ * Request backend information such as version and current effective date
+ * @returns 
+ */
+export async function getBackend() {
+  // console.log('[data.getBackend]')
+  // create new promise until we have effective date
+  effectiveDatePromise = new Promise( (resolve) => {
+    let retries = 5
+    const interval = setInterval( () => {
+      // console.log('[data.getBackend] waiting for effective date', retries)
+      if( currentAirportEffectiveDate || !retries) {
+        clearInterval(interval)
+        resolve( currentAirportEffectiveDate ? currentAirportEffectiveDate : null)
+        return
+      }
+      --retries;
+    }, 500)
+  })
+
+  // Actually get the data
+  return axios.get( apiRootUrl)
+    .then( response => {
+      // console.log('[data.getBackend]', JSON.stringify(response.data))
+      backendVersion = response?.data?.version
+      currentAirportEffectiveDate = response?.data?.aced
+
+      return response.data
+    })
+    .catch( error => {
+      console.log( '[data.getBackend] error', JSON.stringify(error))
+      return null
+    })
+}
 
 /**
  * @returns Whatever the current user is. Could be null if user is not authenticated
