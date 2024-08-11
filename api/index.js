@@ -1,4 +1,4 @@
-const version = 807
+const version = 811
 
 const express =require( "express")
 import cors from "cors";
@@ -36,7 +36,7 @@ app.use(express.json()) // for parsing application/json
 //     next();
 // });
 
-app.get("/", (req, res) => res.send("GA API version " + version));
+app.get("/", (req, res) => res.send({version: version, aced: GApi.getAirportCurrentEffectiveDate()}));
 
 /**
  * Create a new custom airport
