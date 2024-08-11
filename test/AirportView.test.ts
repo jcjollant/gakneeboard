@@ -8,7 +8,7 @@ describe( 'Airport View', () => {
     test( 'Undefined constructor', () => {
         const undefinedView = new AirportView(undefined)
         expect(undefinedView).toBeDefined()
-        expect(undefinedView.version).toBe(-1)
+        expect(undefinedView.asof).toBe(0)
     })
 
     test('undefined view', () => {
@@ -16,7 +16,7 @@ describe( 'Airport View', () => {
         const undefinedView = AirportView.getUndefined(airportCode)
         expect(undefinedView).toBeDefined()
         expect(undefinedView.code).toBe(airportCode)
-        expect(undefinedView.version).toBe(-1)
+        expect(undefinedView.asof).toBe(0)
         expect(undefinedView.freq).toHaveLength(0)
         expect(undefinedView.rwys).toHaveLength(0)
         expect(undefinedView.navaids).toHaveLength(0)
@@ -29,7 +29,7 @@ describe( 'Airport View', () => {
         const airport = new Airport( airportCode, airportName, airportElevation)
         const view = new AirportView(airport)
         expect(view).toBeDefined() 
-        expect(view.version).toBe(AirportView.currentVersion)
+        expect(view.asof).toBe(0)
         expect(view.code).toBe(airportCode) 
         expect(view.name).toBe(airportName)
         expect(view.freq).toHaveLength(0)
@@ -50,13 +50,14 @@ describe( 'Airport View', () => {
                 expect(rwy.freq).toBe(expectedRwys[index].mhz)
             }
         }
+        expect(view.asof).toBe(20240711)
     })
 
     test('Renton view', () => {
         const view = new AirportView(Adip.airportFromData(krntData));
         expect(view).toBeDefined()
         expect(view).toBeInstanceOf(AirportView)
-        expect(view?.version).toBe(AirportView.currentVersion)
+        expect(view?.asof).toBe(20240613)
         expect(view?.code).toBe('KRNT')
         expect(view?.name).toBe('Renton Muni')
         const allFreq = [['CTAF','124.7'],['GND','121.6'],['ATIS','126.95'],['TWR','124.7'],['UNICOM','122.95']]
@@ -94,5 +95,16 @@ describe( 'Airport View', () => {
             expect(navaid.dist).toBe(expectedNavaids[index].dist)
             expect(navaid.to).toBe(expectedNavaids[index].to)
         }
+    })
+
+    test('Format as of', () => {
+        expect( AirportView.formatAsOf('bogus')).toBe(0)
+        // "effectiveDate":"2024-07-11T00:00:00"
+        expect( AirportView.formatAsOf('2024-07-11T00:00:00')).toBe(20240711)
+        expect( AirportView.formatAsOf('2024-07-11T')).toBe(20240711)
+        expect( AirportView.formatAsOf('2024-07-11')).toBe(20240711)
+        expect( AirportView.formatAsOf('2024_07_11')).toBe(0)
+        // "effectiveDate":"2024-08-08T00:00:00"
+        expect( AirportView.formatAsOf('2024-08-08T00:00:00')).toBe(20240808)
     })
 })
