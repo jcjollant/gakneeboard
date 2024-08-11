@@ -4,7 +4,8 @@ import { onBeforeMount, onMounted,ref} from 'vue'
 import { inject } from "@vercel/analytics"
 import Menu from './components/menu/Menu.vue'
 import Page from './components/Page.vue'
-import { duplicate, keyUser, setCurrentUser, sheetGetByCode, version } from './assets/data.js'
+import { duplicate, getBackend, keyUser, setCurrentUser, sheetGetByCode } from './assets/data.js'
+import { backendVersion, version } from './assets/data.js'
 import { getSheetDemoTiles, getSheetLocal, localSheetSave, normalizeSheetData } from './assets/sheetData'
 import { getToastData, toastError } from './assets/toast'
 import HowDoesItWork from './components/HowDoesItWork.vue'
@@ -26,6 +27,7 @@ const menuOpen = ref(false)
 const sheetNameVisible = ref(true)
 const pageOneVisible = ref(true)
 const pageTwoVisible = ref(true)
+const versionText = ref('')
 
 function doPrint() {
   return new Promise( resolve => {
@@ -77,6 +79,9 @@ function onCloseHowDoesItWork() {
 
 onBeforeMount(()=>{
   // console.log('[App.onBeforeMount]')
+  getBackend().then(() => {
+    versionText.value = version + '/' + backendVersion
+  })
   // activate the last known user
   const user = JSON.parse(localStorage.getItem(keyUser))
   if( user) {
@@ -223,7 +228,7 @@ function showToast(data) {
       >
     </Menu>
   </div>
-  <div class="versionDialog" v-show="versionVisible">{{ version }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span>
+  <div class="versionDialog" v-show="versionVisible">{{ versionText }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span>
   </div>
   
 </template>
