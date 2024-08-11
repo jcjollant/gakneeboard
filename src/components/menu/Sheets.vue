@@ -174,7 +174,7 @@ function showToast(summary,details,severity=toastSuccess) {
 <template>
   <Dialog modal :header="mode=='load'?'Load':'Save'" style="width:45rem">
     <div v-if="mode=='save'">
-      <FieldSet legend="Overwrite Existing Sheet">
+      <FieldSet :legend="'Your'+(sheets.length?(' '+sheets.length):'')+' sheets'">
         <div v-if="sheets.length" class="sheetAndToggle">
           <div class="sheetList">
             <Button v-for="sheet in sheets" :label="getSheetName(sheet)" 
@@ -192,7 +192,7 @@ function showToast(summary,details,severity=toastSuccess) {
           <label>Your custom sheets will show here once you save them.</label>
         </div>
       </FieldSet>
-      <FieldSet legend="Sheet Properties">
+      <FieldSet legend="Properties">
         <div class="sheetProps">
           <InputGroup class="pageName">
             <InputGroupAddon>Name</InputGroupAddon>
