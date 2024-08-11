@@ -53,6 +53,10 @@ export class GApi {
         return await AirportDao.createOrUpdateCustom(airport, userId)
     }
 
+    public static getAirportCurrentEffectiveDate() {
+        return AirportView.formatAsOf( Adip.currentEffectiveDate)
+    }
+
     /**
      * Get an airport either from postgres or ADIP
      * @param {*} codeParam airport code
