@@ -1,6 +1,6 @@
 const axios = require('axios')
 
-import { jcHash, jcTestAirport} from './constants.ts'
+import { jcHash, currentAsOf, currentVersion} from './constants.ts'
 
 describe('index', () => {
     test('Multiple airports query', async () => {
@@ -19,7 +19,8 @@ describe('index', () => {
             .then(res => {
                 // console.log(res.data)
                 expect(res.data).toBeDefined();
-                expect(res.data).toMatch(/^GA API version /)
+                expect(res.data.version).toBe(currentVersion)
+                expect(res.data.aced).toBe(currentAsOf)
             })
     })
 
