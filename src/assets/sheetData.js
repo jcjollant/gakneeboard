@@ -88,7 +88,7 @@ const pageDemoChecklist1 = {
         {c:'Master Batt',r:'ON'},
         {c:'Lights + Pitot Heat',r:'ON'},
         {c:'Flaps',r:'FULL'},
-        {c:'Walk Around',r:''},
+        {s:'Walk Around'},
         {c:'All Lights',r:'CHECKED'},
         {c:'Antenas (Comm, ELT, Nav, GPS, OAT)',r:'CHECKED'},
         {c:'Wings (Frost, Ice)',r:'CLEAR'},
