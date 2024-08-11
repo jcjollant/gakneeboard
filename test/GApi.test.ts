@@ -1,10 +1,11 @@
 import { describe, expect, test} from '@jest/globals';
 import { GApi, GApiError } from '../backend/GApi'
-import { jcHash, postgresUrl, jcUserId, jcTestSheetData, jcToken, jcName, jcTestSheetName, jcTestSheetId } from './constants'
-import { AirportView } from '../backend/models/AirportView'
+import { jcHash, jcUserId, jcTestSheetData, jcToken, jcName, jcTestSheetName, jcTestSheetId } from './constants'
+import { currentAsOf, postgresUrl } from './constants';
 import { Sheet } from '../backend/models/Sheet'
 
 process.env.POSTGRES_URL=postgresUrl
+
 
 describe( 'GApi Tests', () => {
 
@@ -35,13 +36,13 @@ describe( 'GApi Tests', () => {
         expect(airports).toHaveLength(list2.length)
         expect(airports[0]).toBeDefined()
         expect(airports[0]?.code).toBe('JC')
-        expect(airports[0]?.version).toBe(-1)
+        expect(airports[0]?.asof).toBe(0)
         expect(airports[1]).toBeDefined()
         expect(airports[1]?.code).toBe('KPAE')
-        expect(airports[1]?.version).toBe(AirportView.currentVersion)
+        expect(airports[1]?.asof).toBe(currentAsOf)
         expect(airports[2]).toBeDefined()
         expect(airports[2]?.code).toBe('JCJ')
-        expect(airports[2]?.version).toBe(-1)
+        expect(airports[2]?.asof).toBe(0)
     })
 
     test('Invalid airports list', async() =>{
@@ -51,10 +52,10 @@ describe( 'GApi Tests', () => {
         expect(airports).toHaveLength(2)
         expect(airports[0]).toBeDefined()
         expect(airports[0]?.code).toBe('NT')
-        expect(airports[0]?.version).toBe(-1)
+        expect(airports[0]?.asof).toBe(0)
         expect(airports[1]).toBeDefined()
         expect(airports[1]?.code).toBe('FK')
-        expect(airports[1]?.version).toBe(-1)
+        expect(airports[1]?.asof).toBe(0)
     })
 
     test('Invalid Airport Code', async () => {
@@ -265,5 +266,9 @@ describe( 'GApi Tests', () => {
             console.log(e)
             expect(true).toBe(false) // should not get here
         })
+    })
+
+    test('Current Effective Date', () => {
+        expect(GApi.getAirportCurrentEffectiveDate()).toBe(currentAsOf)
     })
 })
