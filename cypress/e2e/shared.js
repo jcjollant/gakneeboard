@@ -1,4 +1,4 @@
-export const currentVersionNumber = 809
+export const currentVersionNumber = '811-2/811'
 const devEnv = 'http://localhost:5173/'
 const prodEnv = 'https://kneeboard.ga'
 export const environment = devEnv
@@ -10,10 +10,6 @@ export function visitAndCloseBanner() {
 
     // remove banner
     cy.contains('Got it').click()
-
-
-    // check version number
-    cy.get('.versionDialog').contains(currentVersionNumber)
 }
 
 export function newPage() {

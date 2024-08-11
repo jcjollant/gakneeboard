@@ -1,4 +1,4 @@
-import { visitAndCloseBanner, newPage, titleAtis } from './shared'
+import { currentVersionNumber, visitAndCloseBanner, titleAtis } from './shared'
 
 describe('Tiles', () => {
   // ========================================================================
@@ -6,6 +6,9 @@ describe('Tiles', () => {
   // ========================================================================
   it('Print Dialog', () =>{
     visitAndCloseBanner()
+
+    // check version number
+    cy.get('.versionDialog').contains(currentVersionNumber)
 
     // Test print dialog show up
     cy.get('.menuIcon').click()
