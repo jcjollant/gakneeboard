@@ -24,6 +24,9 @@ Run the test suite:
 * Small indicator below runway is configurable
 
 # Done
+## 8/11/2024
+1) Users can share a deep link to the page
+2) Airport data caching and Fixed heading in checlist demo
 ## 8/10/2024
 * Strong mode for checklist section
 * Tiles now using ActionBar and showing help: Fuel Radio Sunlight
