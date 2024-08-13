@@ -1,4 +1,4 @@
-export const version = '812-2'
+export const version = '813'
 export const maxSheetCount = 10
 export const keyUser = 'kb-user'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
@@ -6,6 +6,7 @@ const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'https://ga-api-git-google-auth-jcjollants-projects.vercel.app/'
 // const apiRootUrl = 'https://ga-api-git-custom-airports-jcjollants-projects.vercel.app/'
 export const urlBlog = 'https://gakneeboard.wordpress.com/'
+export const urlFacebookGroup = 'https://www.facebook.com/groups/1479675382917767'
 export const urlGuideAirport = 'https://gakneeboard.wordpress.com/2024/07/28/airport-tile-guide/'
 export const urlGuideAtis = 'https://gakneeboard.wordpress.com/2024/07/29/atis-tile-guide/'
 export const urlGuideChecklist = 'https://gakneeboard.wordpress.com/2024/08/06/checklist-syntax-guide/'

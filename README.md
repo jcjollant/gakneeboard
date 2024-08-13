@@ -24,6 +24,8 @@ Run the test suite:
 * Small indicator below runway is configurable
 
 # Done
+## 8/13/2024
+* Updated About box with Facebook group and Guides as buttons
 ## 8/12/2024
 1) 812
 * Fixed page name not updated when saving a page under a different name
