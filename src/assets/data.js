@@ -1,4 +1,4 @@
-export const version = '811-2'
+export const version = '812'
 export const maxSheetCount = 10
 export const keyUser = 'kb-user'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
@@ -238,7 +238,7 @@ export async function getAirport( codeParam, group = false) {
     }
 
     // save this data in local storage
-    console.log('[data.getAirport] saving to localStorage', code)
+    // console.log('[data.getAirport] saving to localStorage', code)
     localStorage.setItem(localStorageKey, JSON.stringify(airport))
 
     return airport

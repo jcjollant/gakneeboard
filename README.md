@@ -24,6 +24,11 @@ Run the test suite:
 * Small indicator below runway is configurable
 
 # Done
+## 8/12/2024
+* Fixed page name not updated when saving a page under a different name
+* Rwy Selector behavior on large number (KORD, KDFW)
+* All Rwys have been redesigned to fit more data
+* Fixed All Rwys scroll
 ## 8/11/2024
 1) Users can share a deep link to the page
 2) Airport data caching and Fixed heading in checlist demo
