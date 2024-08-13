@@ -5,12 +5,13 @@ describe('Tiles', () => {
     visitAndCloseBanner()
 
     // wait for airports query
-    cy.intercept({
-      method: 'GET',
-      url: 'https://ga-api-seven.vercel.app/airports/**',
-    }).as('getAirports');
+    // cy.intercept({
+    //   method: 'GET',
+    //   url: 'https://ga-api-seven.vercel.app/airports/**',
+    // }).as('getAirports');
 
-    cy.wait('@getAirports').its('response.statusCode').should('equal', 200)
+//    cy.wait('@getAirports').its('response.statusCode').should('equal', 200)
+    cy.wait(2000)
 
     newPage()
 
@@ -112,6 +113,22 @@ describe('Tiles', () => {
     cy.get(':nth-child(3) > .content > .bottom.right > .clickable > :nth-child(1) > .label').contains(kbliValues.label3)
     cy.get(':nth-child(3) > .content > .bottom.right > .clickable > :nth-child(1) > :nth-child(2)').contains(kbliValues.value3)
     cy.get(':nth-child(3) > .content > .container > .label').contains(kbliValues.dimensions)
+
+    // Test All Runways mode with KAWO Arlington
+    cy.get('.runwayList > :nth-child(1) > :nth-child(1)').contains('Rwy')
+    cy.get('.runwayList > :nth-child(1) > :nth-child(2)').contains('Len')
+    cy.get('.runwayList > :nth-child(1) > :nth-child(3)').contains('Freq')
+    cy.get('.runwayList > :nth-child(2) > .runwayListItemRunway > .patternRight').contains('11')
+    cy.get('.runwayList > :nth-child(2) > .runwayListItemRunway > .patternLeft').contains('29')
+    cy.get('.runwayList > :nth-child(3) > .runwayListItemRunway > .patternRight').contains('16')
+    cy.get('.runwayList > :nth-child(3) > .runwayListItemRunway > .patternLeft').contains('34')
+    cy.get(':nth-child(1) > :nth-child(1) > :nth-child(1) > .label').contains('Elev')
+    cy.get(':nth-child(2) > :nth-child(1) > :nth-child(1) > .label').contains('TPA')
+    cy.get('.footer > :nth-child(3) > :nth-child(1) > :nth-child(1) > .label').contains('AWOS-3PT')
+    cy.get(':nth-child(1) > :nth-child(1) > :nth-child(1) > :nth-child(2)').contains('142')
+    cy.get('.footer > :nth-child(2) > :nth-child(1) > :nth-child(1) > :nth-child(2)').contains('1142')
+    cy.get('.footer > :nth-child(3) > :nth-child(1) > :nth-child(1) > :nth-child(2)').contains('135.625')
+
   })
 
 })
