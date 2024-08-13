@@ -226,6 +226,8 @@ function showCustomAirportDialog() {
     /* display: flex;
     justify-content: center; */
     gap: 2px 5px;
+    overflow: auto;
+    height: 4.5rem;
 }
 
 .sign {
@@ -261,7 +263,7 @@ function showCustomAirportDialog() {
 }
 :deep(.p-component), :deep(.p-inputgroup-addon) {
     font-size: 0.8rem;
-    height: 1.5rem;
+    height: 1.4rem;
 }
 .spinner {
     height: 1.5rem;

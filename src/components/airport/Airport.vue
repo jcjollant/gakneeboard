@@ -94,6 +94,11 @@ function getEndings(rwys, freq) {
     return output
 }
 
+function getTpClass(end) {
+    if(end && end.tp && end.tp=='R') return 'patternRight';
+    return 'patternLeft';
+}
+
 // load props can happen on initial load or when settings are changed
 // 1) Airport Code 2) Selected Runway 3) patternMode 4) Corners and 5) Runway orientation
 function loadProps(newProps) {
@@ -305,16 +310,24 @@ function updateWidget() {
             <div class="runwayList">
                 <div class="runwayListRow">
                     <div class="runwayListHeader">Rwy</div>
-                    <div class="runwayListHeader">TP</div>
+                    <!-- <div class="runwayListHeader">TP</div> -->
                     <div class="runwayListHeader">Len</div>
                     <div class="runwayListHeader">Freq</div>
                 </div>
-                <div class="runwayListRow"  v-for="(end) in allEndings">
+                <div class="runwayListRow" v-for="rwy in rwyList">
+                    <div class="runwayListItemRunway">
+                        <span :class="getTpClass(rwy.ends[0])">{{rwy.ends[0].name}}</span>-
+                        <span :class="getTpClass(rwy.ends[1])">{{rwy.ends[1]?rwy.ends[1].name:'' }}</span>
+                    </div>
+                    <div class="runwayListItem">{{ Math.round(rwy.length / 100) }}</div>
+                    <div class="runwayListItem">{{ rwy.freq?rwy.freq.toFixed(3):'' }}</div>
+                </div>
+                <!-- <div class="runwayListRow"  v-for="(end) in allEndings">
                     <div class="runwayListItemRunway">{{end.name}}</div>
                     <div class="runwayListItem">{{ end.pattern }}</div>
                     <div class="runwayListItem">{{ Math.round(end.length / 100) }}</div>
                     <div class="runwayListItem">{{ end.freq }}</div>
-                </div>
+                </div> -->
             </div>
             <div class="footer">
                 <CornerStatic label="Elev" :value="elevation" position="bottom"/>
@@ -322,7 +335,7 @@ function updateWidget() {
                 <CornerStatic :label="weatherType" :value="weatherFreq" position="bottom"/>
             </div>
         </div>
-        <div class="content" v-else="">
+        <div class="content" v-else=""> <!-- Normal mode -->
             <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
             <div v-if="unknownRunway" class="unknownRwy">Unknown Runway</div>
             <Runway v-else :runway="selectedRunway" :pattern="patternMode" :orientation="rwyOrientation"
@@ -364,6 +377,12 @@ function updateWidget() {
     .bottom {
         bottom: 0;
     }
+    .patternLeft {
+        color: darkblue;
+    }
+    .patternRight {
+        color: darkred;
+    }
     .left{
         left: 0;
         text-align: left;
@@ -371,6 +390,16 @@ function updateWidget() {
     .right {
         right: 0;
         text-align: right; /* Align text to the right */
+    }
+    .runwayList {
+        background: transparent;
+        width:240px;
+        height:10.5rem;
+        overflow: auto;
+        /* overflow-y: scroll; */
+        /* z-index: 1; */
+        position: relative;
+        /* top: -200px; */
     }
     .runwayListItem {
         text-align: center;
@@ -393,20 +422,15 @@ function updateWidget() {
         height: 100%;
         text-align: center;
         vertical-align: middle;
-        /* z-index: -1; */
+        z-index: 0;
     }
     .shortAirportCode {
         font-size: 6rem;
     }
-    .runwayList {
-        width:240px;
-        height:10.5rem;
-        overflow: auto;
-        overflow-y: scroll;
-    }
     .runwayListRow {
         display: grid;
-        grid-template-columns: 30% 20% 20% 30%;
+        grid-template-columns: 40% 20% 40%;
+        /* grid-template-columns: 30% 20% 20% 30%; */
     }
 
     .runwayListHeader {
