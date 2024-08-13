@@ -16,7 +16,9 @@ import { getToastData, toastError, toastSuccess, toastWarning, toastInfo } from 
 
 const emits = defineEmits(['authentication','copy','load','print','printOptions','howDoesItWork','save','toast','toggle'])
 
+const activeSheet = ref(null)
 const confirm = useConfirm()
+const refreshPrint = ref(0)
 const showFeedback = ref(false)
 const showMenu = ref(false)
 const showPrint = ref(false)
@@ -26,6 +28,7 @@ const showSheets = ref(false)
 const user = ref(null)
 const pageMode = ref('load')
 let pageData = null;
+let readyToPrint = false;
 
 //---------------------
 // Props management
@@ -38,8 +41,27 @@ function loadProps( props) {
   pageData = props.pageData;
 }
 
+onMounted( () => {
+  setTimeout( () => userChange(getCurrentUser(), false), 1500)
+  
+  loadProps(props)
+})  
+
 watch( props, async() => {
   loadProps( props)
+})
+
+watch(showPrint, async( newValue, oldValue) => {
+  // console.log('[Menu.watch] oldP', oldP, 'newP', newP)
+  if(!newValue) {
+    // this mechanism prevent options reset when you are about to print
+    if( readyToPrint) {
+      readyToPrint = false;
+    } else {
+      emits('printOptions', null)
+    }
+  }
+
 })
 
 // End props management
@@ -65,6 +87,7 @@ function confirmAndLoad(title, sheet) {
       rejectLabel: 'No',
       acceptLabel: 'Yes, Replace',
       accept: () => {
+        activeSheet.value = sheet
         emits('load', sheet)
       }
     })
@@ -88,14 +111,9 @@ function onFeedbackSent() {
   showToast('Readback Correct', 'Thanks for your feedback!', toastInfo)
 }
 
-onMounted( () => {
-  setTimeout( () => userChange(getCurrentUser(), false), 1500)
-  
-  loadProps(props)
-})  
-
 function onPrint() {
   showPrint.value = true;
+  refreshPrint.value++;
   toggleMenu()
   // printMode.value = !printMode.value
   // emits('flip')  
@@ -106,7 +124,12 @@ function onPrintClose() {
   showPrint.value = false;
 }
 
+function onPrintOptions(options) {
+  emits('printOptions', options);
+}
+
 function onPrintPrint(options) {
+  readyToPrint = true;
   showPrint.value = false;
   emits('print', options);
 }
@@ -183,11 +206,6 @@ function onToast(data) {
   emits('toast', data)
 }
 
-function openBlog() {
-  window.open( urlBlog, '_blank');
-}
-
-
 function showToast( summary, detail, severity=toastSuccess) {
   emits('toast', getToastData(summary, detail, severity))
 }
@@ -247,12 +265,15 @@ function userUpdateSheets(newList) {
     <ConfirmDialog />
     <Feedback v-model:visible="showFeedback" :user="user" 
       @sent="onFeedbackSent" @close="showFeedback=false" />
-    <Print v-model:visible="showPrint"
-      @close="onPrintClose" @print="onPrintPrint" />
+    <Print v-model:visible="showPrint" :refresh="refreshPrint"
+      @close="onPrintClose" 
+      @options="onPrintOptions"
+      @print="onPrintPrint"
+       />
     <About v-model:visible="showAbout" @close="showAbout=false" />
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
       @authentication="onAuthentication" />
-    <Sheets v-model:visible="showSheets" :mode="pageMode" :user="user"
+    <Sheets v-model:visible="showSheets" :mode="pageMode" :user="user" :sheet="activeSheet"
       @close="onSheetClose"
       @delete="onSheetDelete"
       @load="onSheetLoad" 

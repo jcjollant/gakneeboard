@@ -19,6 +19,7 @@ const emits = defineEmits(["close","delete","load","save","toast"]);
 const props = defineProps({ 
   mode: { type: String, default: 'load'},
   user: { type: Object, default: null},
+  sheet: { type: Object, default: null},
 })
 
 
@@ -27,6 +28,7 @@ function loadProps(props) {
     sheets.value = props.user.sheets
     // console.log('[Sheets.loadProps]', JSON.stringify(sheets.value))
   }
+  targetSheet.value = props.sheet;
 }
 
 onMounted( () => {
