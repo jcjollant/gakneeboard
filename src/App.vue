@@ -118,8 +118,9 @@ function onMenuLoad(sheet) {
   }
 }
 
-function onMenuSave() {
-  sheetModified.value = false;
+function onMenuSave(sheet) {
+  activeSheet.value = sheet;
+  saveActiveSheet(false)
 }
 
 function onMenuToggle(value) {

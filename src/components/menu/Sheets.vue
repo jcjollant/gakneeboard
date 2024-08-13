@@ -220,13 +220,13 @@ function showToast(summary,details,severity=toastSuccess) {
             <div class="bold pageDescription">Front</div><div class="pageDescription">{{ describePage(targetSheet, 0) }}</div>
             <div class="bold pageDescription">Back</div><div class="pageDescription">{{ describePage(targetSheet, 1) }}</div>
           </div>
-
         </div>
       </FieldSet>
       <label v-if="sheets.length > maxSheetCount || (sheets.length==maxSheetCount && !(targetSheet?.id))" class="experiment">We are currently experimenting with a limit of {{ maxSheetCount }} sheets</label>
       <div v-else class="actionDialog gap-2">
         <Button label="Do Not Save" @click="onButtonClose" link></Button>
-        <Button :label="targetSheet?.id ? 'Overwrite Sheet' : 'Save Sheet'" @click="onButtonSave" 
+        <Button :label="targetSheet?.id ? 'Overwrite Sheet' : 'Save Sheet'" 
+          @click="onButtonSave" 
           :disabled="!sheetNameText.length"></Button>
       </div>
     </div>

@@ -165,7 +165,7 @@ function onSheetDelete(sheet) {
         }
         showToast('Clear', message)
         userUpdateSheets(getCurrentUser().sheets)
-        emits('save')
+        emits('save', sheet)
       })
   } catch( e) {
     // console.log('[Menu.onSheetSave]', e)
