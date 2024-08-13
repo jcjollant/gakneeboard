@@ -32,13 +32,7 @@ const versionText = ref('')
 function doPrint() {
   return new Promise( resolve => {
     window.print();
-    // then bring everythign back to normal
-    flipMode.value = false;
-    versionVisible.value = true;
-    menuVisible.value = true
-    sheetNameVisible.value = true;
-    pageOneVisible.value = true;
-    pageTwoVisible.value = true;
+    restorePrintOptions();
     resolve(true)
   })
 }
@@ -164,20 +158,27 @@ onMounted(async () => {
 })
 
 function onPrint(options) {
-  console.log('[App.onPrint]', JSON.stringify(options))
-  if( options) {
-    flipMode.value = options.flipBack;
-    versionVisible.value = options.showVersion
-    pageOneVisible.value = options.showFront;
-    pageTwoVisible.value = options.showBack;
-
-    // these don't change
-    sheetNameVisible.value = false
-    menuVisible.value = false
-  }
+  // console.log('[App.onPrint]')
+  flipMode.value = options.flipped;
+  pageOneVisible.value = options.showFront;
+  pageTwoVisible.value = options.showBack;
+  // These things don't change
+  versionVisible.value = false;
+  sheetNameVisible.value = false
+  menuVisible.value = false
 
   // print window content after a short timeout to let flipmode kickin
   setTimeout(doPrint, 500);
+}
+
+function onPrintOptions(options) {
+  if( options) {
+    flipMode.value = options.flipped;
+    pageOneVisible.value = options.showFront;
+    pageTwoVisible.value = options.showBack;
+  } else {
+    restorePrintOptions();
+  }
 }
 
 function onPageUpdateBack( pageData) {
@@ -192,6 +193,16 @@ function onPageUpdateFront(pageData) {
   frontPageData.value = pageData
   activeSheet.value.data[0] = pageData
   saveActiveSheet(true)
+}
+
+function restorePrintOptions() {
+    // then bring everythign back to normal
+    flipMode.value = false;
+    versionVisible.value = true;
+    menuVisible.value = true
+    sheetNameVisible.value = true;
+    pageOneVisible.value = true;
+    pageTwoVisible.value = true;
 }
 
 function saveActiveSheet(modified=false) {
@@ -222,6 +233,7 @@ function showToast(data) {
     <Menu class="menu" :pageData="activeSheet?activeSheet.data:null" v-show="menuVisible"
       @load="onMenuLoad" 
       @print="onPrint"
+      @printOptions="onPrintOptions"
       @copy="onMenuCopy"
       @howDoesItWork="showHowDoesItWork=true"
       @save="onMenuSave"
@@ -252,8 +264,9 @@ function showToast(data) {
   font-size: 3rem;
   font-weight: 700;
   opacity: 0.1;
-  width: 1050px;
-  top:0;
+  width: 100%;
+  top: 0;
+  left: 0;
   z-index: -1;
 }
 

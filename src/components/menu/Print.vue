@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 import Button from "primevue/button";
 import Dialog from 'primevue/dialog'
@@ -7,25 +7,55 @@ import FieldSet from 'primevue/fieldset'
 import Checkbox from 'primevue/checkbox'
 import SelectButton from 'primevue/selectbutton'
 
-const emits = defineEmits(["close","print"]);
+const emits = defineEmits(["close","print","options"]);
 
-const frontOption = {name:'Front Page',front:true,back:false}
-const bothOption = {name:'Both Pages',front:true,back:true}
-const backOption = {name:'Back Page',front:false,back:true}
+const frontOption = {name:'Front Page',front:true,back:false,flipped:false}
+const bothOption = {name:'Both',front:true,back:true,flipped:false}
+const flippedOption = {name:'Flipped',front:true,back:true,flipped:true}
+const backOption = {name:'Back Page',front:false,back:true,flipped:false}
 
-const options = ref([])
 const pageOption = ref(bothOption)
 
-function onPrint() {
-  console.log('[Print.onPrint] options', JSON.stringify(options.value),'pageOptions', JSON.stringify(pageOption.value))
+//---------------------
+// Props management
+const props = defineProps({
+  refresh: { type: Number, default: 0},
+})
+
+function loadProps( props) {
+  pageOption.value = bothOption
+}
+
+onMounted( () => {
+  loadProps(props)
+})  
+
+watch( props, async() => {
+  loadProps( props)
+})
+//---------------------
+
+function getOptions() {
   const printOptions = {
-    flipBack:options.value.includes('flip'),
-    showVersion:!options.value.includes('version'),
+    flipped:pageOption.value.flipped,
     showFront:pageOption.value.front,
     showBack:pageOption.value.back,
   }
+  return printOptions
+}
 
-  emits('print', printOptions)
+function onClose() {
+  // emits('options', null)
+  emits('close')
+}
+
+function onPrint() {
+  // console.log('[Print.onPrint] options', JSON.stringify(options.value),'pageOptions', JSON.stringify(pageOption.value))
+  emits('print', getOptions())
+}
+
+function onNewOptions() {
+  emits('options', getOptions())
 }
 
 </script>
@@ -35,19 +65,7 @@ function onPrint() {
   <div class="printPopup">
     <FieldSet legend="What are we printing?">
       <div class="pageOptions">
-        <SelectButton v-model="pageOption" :options="[frontOption, bothOption, backOption]" optionLabel="name" aria-labelledby="basic" class="mb-2" />
-      </div>
-    </FieldSet>
-    <FieldSet legend="Options">
-      <div class="modesList mb-2">
-        <span title="So you can read back page while front page is clipped">
-          <Checkbox v-model="options" inputId="flipRightPage" name="options" value="flip"/>
-          <label for="flipRightPage" class="ml-2">Flip Back Page </label>
-        </span>
-        <span title="That's the little thing in the bottom right corner">
-          <Checkbox v-model="options" inputId="versionNumber" name="options" value="version" />
-          <label for="versionNumber" class="ml-2">Hide version number </label>
-        </span>
+        <SelectButton v-model="pageOption" :options="[frontOption, bothOption, flippedOption, backOption]" optionLabel="name" aria-labelledby="basic" class="mb-2" @change="onNewOptions" />
       </div>
     </FieldSet>
     <FieldSet legend="Tips">
@@ -58,7 +76,7 @@ function onPrint() {
       </p>
       </FieldSet>
     <div class="actionDialog gap-2">
-      <Button label="Do Not Print" @click="emits('close')" link></Button>
+      <Button label="Do Not Print" @click="onClose" link></Button>
       <Button label="Print" @click="onPrint"></Button>
     </div>
   </div>
@@ -71,10 +89,6 @@ function onPrint() {
   flex-flow: wrap;
   gap: 2rem;
 }
-
-/* .pageList {
-  display: flex;
-} */
 
 .pageOptions {
   display: flex;
