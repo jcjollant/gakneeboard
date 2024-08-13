@@ -25,10 +25,15 @@ Run the test suite:
 
 # Done
 ## 8/12/2024
+1) 812
 * Fixed page name not updated when saving a page under a different name
 * Rwy Selector behavior on large number (KORD, KDFW)
 * All Rwys have been redesigned to fit more data
 * Fixed All Rwys scroll
+2) 812-2
+* Save sheet is now showing current sheet if it's been previously loaded
+* Print Hide version number is now implicit
+* print is now showing options in real time. Print options are simplified
 ## 8/11/2024
 1) Users can share a deep link to the page
 2) Airport data caching and Fixed heading in checlist demo
