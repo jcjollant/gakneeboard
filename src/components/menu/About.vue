@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue";
 
-import { urlBlog, urlGuideAirport, urlGuideAtis, urlGuideChecklist, urlGuideFuelBug, urlGuideRadioFlow, urlGuideSunlight } from '../../assets/data'
+import { urlBlog, urlFacebookGroup, urlGuideAirport, urlGuideAtis, urlGuideChecklist, urlGuideFuelBug, urlGuideRadioFlow, urlGuideSunlight } from '../../assets/data'
 
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
@@ -10,19 +10,23 @@ import SelectButton from 'primevue/selectbutton'
 const emits = defineEmits(["close"]);
 
 const guides = [
-  {name:'Airport Tile Guide', url:urlGuideAirport},
-  {name:'ATIS Tile Guide', url:urlGuideAtis},
-  {name:"Checklist Syntax Guide",url:urlGuideChecklist},
-  {name:'Fuel Bug Tile Guide', url:urlGuideFuelBug},
-  {name:"Radio Flow Tile Guide", url:urlGuideRadioFlow},
-  {name:"Sun Light Tile Guide", url:urlGuideSunlight},
+  {name:'Airport Tile', url:urlGuideAirport},
+  {name:'ATIS Tile', url:urlGuideAtis},
+  {name:"Checklist Syntax",url:urlGuideChecklist},
+  {name:'Fuel Bug Tile', url:urlGuideFuelBug},
+  {name:"Radio Flow Tile", url:urlGuideRadioFlow},
+  {name:"Sun Light Tile", url:urlGuideSunlight},
 ]
 
 const topicAbout = {name:'About',value:'about'}
 const topicWarning = {name:'Warnings',value:'warning'}
-const topicGuide = {name:'Guides',value:'guide'}
+const topicGuide = {name:'Help',value:'guide'}
 const topics = ref([topicAbout,topicGuide,topicWarning])
 const activeTopic = ref(topicAbout)
+
+function openUrl(url) {
+  window.open(url, '_blank')
+}
 
 </script>
 
@@ -37,8 +41,11 @@ const activeTopic = ref(topicAbout)
         <div class="justify"><strong>Special Thanks</strong> to Ash, Jason, Steve and Stewart whom have contributed invaluable feedback and suggestions since Day 1</div>
       </div>
       <div v-else-if="activeTopic.value==topicGuide.value" class="mb-5">
-        <div class="mb-5 justify"><a :href="urlBlog" target="_blank">GA Kneeboard Blog</a> is a great resource for guides and updates. For example:</div>
-        <div v-for="guide in guides" class="guides"><a :href="guide.url" target="_blank">{{guide.name}}</a></div>
+        <div class="mb-5 justify"><a :href="urlBlog" target="_blank">GA Kneeboard Blog</a> is the best source updates and user guides. For example:</div>
+        <div class="mb-5 guides">
+          <Button v-for="guide in guides" :label="guide.name" @click="openUrl(guide.url)" severity="help"></Button>
+        </div>
+        <div class="mb-5 justify">last, GA Kneeboard public <a :href="urlFacebookGroup" target="_blank">Facebook Group</a> is a good place to interract.</div>
       </div>
       <div v-else-if="activeTopic.value==topicWarning.value" class="warning-content mb-5">
         <div class="warning-item mr-3">Airport information</div>
@@ -65,10 +72,11 @@ const activeTopic = ref(topicAbout)
 
 }
 .guides {
-  display: flex;
-  flex-direction: column;
-  text-align: center;
+  display: grid;
+  grid-template-columns: auto auto auto auto auto;
+  gap: 0.5rem;
 }
+
 .pageOptions {
   display: flex;
   justify-content: center;
