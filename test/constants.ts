@@ -14,7 +14,7 @@ export const jcToken = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjY3MTk2NzgzNTFhNWZhZWRjMmU3
 export const jcEmail = 'jcjollant@gmail.com'
 
 export const currentAsOf = 20240808;
-export const currentVersion = 811
+export const currentVersion = 814
 export const krntAtcs =  [
     {mhz:119.2, useCount:6, name:'SEATTLE-TACOMA APPROACH CONTROL'},
     {mhz:120.1, useCount:4, name:'SEATTLE-TACOMA APPROACH CONTROL'},
