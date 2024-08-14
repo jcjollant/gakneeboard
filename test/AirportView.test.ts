@@ -1,8 +1,25 @@
 import {describe, expect, test} from '@jest/globals';
 import { Adip } from '../backend/Adip';
-import { Airport, PatternDirection } from '../backend/models/Airport';
+import { Airport } from '../backend/models/Airport';
 import { AirportView } from '../backend/models/AirportView';
+import { PatternDirection } from '../backend/models/Runway'
+
 import { kbfiData, krntData } from './adipData'
+import { krntAtcs } from './constants';
+
+function checkAtc(airport:AirportView,expectedAtcs:any) {
+    expect(airport.atc).toHaveLength(expectedAtcs.length)
+
+    for(let index = 0; index < expectedAtcs.length; index++) {
+        const atc = airport.atc[index]
+        const expected = expectedAtcs[index]
+        expect(atc.mhz).toBe(expected.mhz)
+        expect(atc.use).toHaveLength(expected.useCount)
+        expect(atc.name).toBe(expected.name)
+    }
+}
+
+
 
 describe( 'Airport View', () => {
     test( 'Undefined constructor', () => {
@@ -20,6 +37,7 @@ describe( 'Airport View', () => {
         expect(undefinedView.freq).toHaveLength(0)
         expect(undefinedView.rwys).toHaveLength(0)
         expect(undefinedView.navaids).toHaveLength(0)
+        expect(undefinedView.atc).toHaveLength(0)
     })
 
     test('Defined view', () => {
@@ -35,6 +53,8 @@ describe( 'Airport View', () => {
         expect(view.freq).toHaveLength(0)
         expect(view.rwys).toHaveLength(0)
         expect(view.custom).toBeFalsy()
+        expect(view.navaids).toHaveLength(0)
+        expect(view.atc).toHaveLength(0)
     })
 
     test('Boeing View', () => {
@@ -95,6 +115,8 @@ describe( 'Airport View', () => {
             expect(navaid.dist).toBe(expectedNavaids[index].dist)
             expect(navaid.to).toBe(expectedNavaids[index].to)
         }
+        // check ATCs
+        checkAtc(view, krntAtcs)
     })
 
     test('Format as of', () => {
