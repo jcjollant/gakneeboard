@@ -1,5 +1,8 @@
-import { Airport, Frequency, Runway, RunwayEnd, Navaid, PatternDirection } from "./Airport";
-
+import { Airport } from './Airport'
+import { Atc } from './Atc'
+import { Frequency } from './Frequency'
+import { Navaid } from './Navaid'
+import { Runway } from './Runway'
 
 export class AirportView {
     public static currentVersion:number = 2;
@@ -10,6 +13,7 @@ export class AirportView {
     freq: Frequency[];
     rwys: Runway[];
     navaids: Navaid[];
+    atc:Atc[];
     custom: boolean;
     asof: number;
 
@@ -30,6 +34,7 @@ export class AirportView {
         this.freq = (airport && airport.freq) ? airport.freq : []
         this.rwys = (airport && airport.rwys) ? airport.rwys : []
         this.navaids = (airport && airport.navaids) ? airport.navaids : []
+        this.atc = (airport && airport.atc) ? airport.atc : []
     }
 
     public static formatAsOf(date:string):number {
