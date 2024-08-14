@@ -41,7 +41,7 @@ export class SheetDao {
             // count the number of sheets for this user
             const r1 = await sql`SELECT COUNT(*) AS count FROM sheets WHERE user_id=${userId};`
             const count = r1.rows[0]['count'] as number;
-            if( count >= SheetDao.maxSheets) throw new Error("Maximum number of sheets reached");
+            if( count >= SheetDao.maxSheets && userId != 1) throw new Error("Maximum number of sheets reached");
             const result = await sql`
                 INSERT INTO sheets (name, data, version, user_id)
                 VALUES (${sheet.name}, ${data}, ${this.modelVersion}, ${userId})
