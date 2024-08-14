@@ -1,7 +1,21 @@
 import {describe, expect, test} from '@jest/globals';
 import { Adip } from '../backend/Adip'
-import { Airport, Frequency, PatternDirection, Runway, RunwaySurface } from '../backend/models/Airport';
+import { Airport } from '../backend/models/Airport';
+import { PatternDirection, Runway, RunwaySurface } from '../backend/models/Runway'
 import { kbffData, kbfiData, kcdwData, kdzjData, krntData, s43Data } from './adipData'
+import { krntAtcs } from './constants';
+
+function checkAtc(airport:Airport,expectedAtcs:any) {
+    expect(airport.atc).toHaveLength(expectedAtcs.length)
+
+    for(let index = 0; index < expectedAtcs.length; index++) {
+        const atc = airport.atc[index]
+        const expected = expectedAtcs[index]
+        expect(atc.mhz).toBe(expected.mhz)
+        expect(atc.use).toHaveLength(expected.useCount)
+        expect(atc.name).toBe(expected.name)
+    }
+}
 
 describe('Adip', () => {
 
@@ -34,21 +48,14 @@ describe('Adip', () => {
         expect(rs3.cond).toEqual("typecondition")
     }) 
 
-    test('Frequencies',() => {
+    test('Frequency parsing',() => {
         expect(Adip.parseFrequency('117.1 ;ARR-NE')).toBe(117.1)
         expect(Adip.parseFrequency('123.0')).toBe(123.0)    
         expect(Adip.parseFrequency('120.2 ;RWY 16L/34R')).toBe(120.2)    
-        const airport:Airport = new Airport('TEST','TEST',0);
-        airport.addFrequency('GND',121.6)
-        expect(airport.freq).toHaveLength(1)
-        expect(airport.getFreq('GND')).toBe(121.6)
-        const f1:Frequency = new Frequency( 'ATIS', 126.95)
-        const f2:Frequency = new Frequency( 'TWR', 124.7)
-        airport.addFrequencies([f1,f2])
-        expect(airport.freq).toHaveLength(3)
-        expect(airport.getFreq('GND')).toBe(121.6)
-        expect(airport.getFreq('ATIS')).toBe(126.95)
-        expect(airport.getFreq('TWR')).toBe(124.7)
+
+        const seattleApproachFreq = '119.2 ;017-079 SEA RWY 34'
+        expect(Adip.parseFrequency(seattleApproachFreq)).toBe(119.2)
+        expect(Adip.parseFrequencyNotes(seattleApproachFreq)).toBe('017-079 SEA RWY 34')
     })
 
     test('Runway Frequency', () => {
@@ -118,6 +125,11 @@ describe('Adip', () => {
             expect(airport.navaids[index].to).toBe(expectedNavaids[index].to)
         }
 
+        // console.log(JSON.stringify(airport.atc))
+
+        // ATC
+        checkAtc( airport, krntAtcs)
+
         // effectiveDate should be defined
         expect(airport.effectiveDate).toBe('2024-06-13T00:00:00')
         // ICAO should be defined
@@ -164,6 +176,15 @@ describe('Adip', () => {
         const airport = Adip.airportFromData(kcdwData)
         expect(airport.code).toBe('KCDW')
         expect(airport.navaids).toHaveLength(10)
+
+        // console.log(JSON.stringify(airport.atc))
+        const expectedAtcs = [
+            {mhz:119.2, useCount:1, name:'NEW YORK TRACON'},
+            {mhz:127.6, useCount:2, name:'NEW YORK TRACON'},
+            {mhz:132.8, useCount:1, name:'NEW YORK TRACON'},
+        ]
+        checkAtc( airport, expectedAtcs)
+
     })
 
     test('KBFF data', () => {

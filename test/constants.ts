@@ -15,3 +15,13 @@ export const jcEmail = 'jcjollant@gmail.com'
 
 export const currentAsOf = 20240808;
 export const currentVersion = 811
+export const krntAtcs =  [
+    {mhz:119.2, useCount:6, name:'SEATTLE-TACOMA APPROACH CONTROL'},
+    {mhz:120.1, useCount:4, name:'SEATTLE-TACOMA APPROACH CONTROL'},
+    {mhz:120.4, useCount:1, name:'SEATTLE-TACOMA APPROACH CONTROL'},
+    {mhz:123.9, useCount:3, name:'SEATTLE-TACOMA APPROACH CONTROL'},
+    {mhz:125.6, useCount:1, name:'SEATTLE-TACOMA APPROACH CONTROL'},
+    {mhz:125.9, useCount:5, name:'SEATTLE-TACOMA APPROACH CONTROL'},
+    {mhz:126.5, useCount:4, name:'SEATTLE-TACOMA APPROACH CONTROL'},
+    {mhz:128.5, useCount:4, name:'SEATTLE-TACOMA APPROACH CONTROL'},
+]

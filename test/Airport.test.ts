@@ -1,6 +1,9 @@
 
-import {describe, expect, test} from '@jest/globals';
-import { Airport, PatternDirection, Runway, RunwayEnd } from "../backend/models/Airport"; 
+import { describe, expect, test } from '@jest/globals'
+import { Airport } from '../backend/models/Airport'
+import { Atc } from '../backend/models/Atc'
+import { Frequency } from '../backend/models/Frequency'
+import { PatternDirection, Runway, RunwayEnd } from '../backend/models/Runway'
 
 describe('Airport', () => {
     test ('Airport should be an object', () => {
@@ -23,15 +26,54 @@ describe('Airport', () => {
         expect(Airport.isValidCode("")).toBeFalsy()
     })
 
-    test('Frequencies', () => {
+    test('Frequencies, ATC', () => {
         const airport = new Airport("name", "JCJ", 32);
-        const ctafFreq = 124.7
         const ctaf:string = "CTAF"
+        const ctafFreq = 124.7
+        const gnd:string = "GND"
+        const gndFreq = 121.6
         airport.addFrequency( ctaf, ctafFreq);
-        expect(airport.freq.length).toBe(1)
+        airport.addFrequency(gnd, gndFreq)
+        expect(airport.freq.length).toBe(2)
         // read back
-        const freq = airport.getFreq( ctaf)
-        expect(freq).toBe(ctafFreq)
+        expect(airport.getFreq( ctaf)).toBe(ctafFreq)
+        expect(airport.getFreq( gnd)).toBe(gndFreq)
+
+        const atis:string = "ATIS"
+        const atisFreq = 126.95
+        const twr:string = "TWR"
+        const twrFreq = 124.7
+        const f1:Frequency = new Frequency( atis, atisFreq)
+        const f2:Frequency = new Frequency( twr, twrFreq)
+        airport.addFrequencies([f1,f2])
+        expect(airport.freq).toHaveLength(4)
+        expect(airport.getFreq(atis)).toBe(atisFreq)
+        expect(airport.getFreq(twr)).toBe(twrFreq)
+
+
+        // ATC
+        const atc1Freq:number = 123.1
+        const atc1Use:string = 'APCH/P'
+        const atc1Use2:string = 'CD/P'
+        const atc1Name:string = 'name1'
+        const atc1:Atc = new Atc(atc1Freq, atc1Name,atc1Use)
+        atc1.addUse(atc1Use2)
+
+        const atc2Freq = 123.2
+        const atc2Use = 'CD/P'
+        const atc2Name = 'name2'
+        const atc2:Atc = new Atc(atc2Freq, atc2Name, atc2Use)
+        const atcs = [atc1,atc2]
+        airport.addAtcs(atcs)
+
+        expect(airport.atc.length).toBe(2)
+        expect(airport.atc[0].mhz).toBe(atc1Freq)
+        expect(airport.atc[0].use[0]).toBe(atc1Use)
+        expect(airport.atc[0].use[1]).toBe(atc1Use2)
+        expect(airport.atc[0].name).toBe(atc1Name)
+        expect(airport.atc[1].mhz).toBe(atc2Freq)
+        expect(airport.atc[1].use[0]).toBe(atc2Use)
+        expect(airport.atc[1].name).toBe(atc2Name)
     })
 
     test('Runways', () => {
@@ -111,5 +153,6 @@ describe('Airport', () => {
         // Because NW-SE
         expect(Runway.isValidName("NW-SE")).toBeFalsy()
     })
+
 });
 
