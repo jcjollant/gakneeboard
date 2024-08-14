@@ -1,4 +1,9 @@
-import { Airport, Frequency, Runway, RunwaySurface, RunwayEnd, PatternDirection, Navaid } from './models/Airport'
+import { raw } from 'express'
+import { Airport } from './models/Airport'
+import { Atc } from './models/Atc'
+import { Frequency } from './models/Frequency'
+import { Navaid } from './models/Navaid'
+import { Runway, RunwaySurface, RunwayEnd, PatternDirection } from './models/Runway'
 import axios from 'axios'
 
 const maxNavaids:number = 10
@@ -114,7 +119,7 @@ export class Adip {
         }
 
         // read runways
-        if(adip && adip.runways) {
+        if(adip.runways) {
             const runways:Runway[] = adip.runways.map( (rwy:any) => {
                 const name:string = rwy.runwayIdentifier.replace('/','-')
                 const length:number = Number(rwy.length)
@@ -139,11 +144,36 @@ export class Adip {
         }
     
         // read navaids
-        if(adip && adip.navaids) {
+        if(adip.navaids) {
             const navaids:Navaid[] = adip.navaids.map( (nav:any) => new Navaid(nav.facilityId, nav.frequency, nav.facilityType, nav.distance, nav.bearingToNavaid))
             // only consider VORs and limit the total number to maxNavaids
             airport.addNavaids(navaids.filter(nav => nav.type.includes('VOR')).slice(0,maxNavaids))
         }
+
+        // ATC frequencies
+        if(adip.satelliteAirports) {
+            // build a raw list without military freq
+            const rawList  = adip.satelliteAirports.map( (sa:any) => {
+                const freq:number = Adip.parseFrequency( sa.frequency);
+                let use:string = sa.frequencyUse;
+                const name:string = sa.masterAirportName;
+                const notes:string = Adip.parseFrequencyNotes(sa.frequency)
+                if(notes.length>0) use += '('+notes+')'
+                return {freq:freq,name:name,use:use}
+            }).filter( (elt:any) => !Adip.isMilitary(elt.freq))
+            // now build the final list with consolidated freq
+            const atcs:Atc[] = []
+            for(const entry of rawList) {
+                const atc = atcs.find( a => a.mhz == entry.freq)
+                if(atc) {
+                    atc.addUse(entry.use)
+                } else {
+                    atcs.push( new Atc( entry.freq, entry.name, entry.use))
+                }
+            }
+            // store data
+            airport.addAtcs( atcs.sort( (a,b) => a.mhz - b.mhz))
+         }
 
         return airport
     }
@@ -253,6 +283,12 @@ export class Adip {
         return output
     }
 
+    public static parseFrequencyNotes(freq:string):string {
+        if(!freq) return ''
+        const index = freq.indexOf(' ;')
+        if( index == -1) return ''
+        return freq.substring(index + 2);
+    } 
     static parseTrafficPattern( end:any):PatternDirection {
         if( !end) throw new Error("Invalid end for traffic pattern")
         if( end.rightHandTrafficFlag && end.rightHandTrafficFlag == 'YES') return PatternDirection.Right
