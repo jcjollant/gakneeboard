@@ -5,7 +5,7 @@ import { inject } from "@vercel/analytics"
 import Menu from './components/menu/Menu.vue'
 import Page from './components/Page.vue'
 import { duplicate, getBackend, keyUser, setCurrentUser, sheetGetByCode } from './assets/data.js'
-import { backendVersion, version } from './assets/data.js'
+import { backend, version } from './assets/data.js'
 import { getSheetDemoTiles, getSheetLocal, localSheetSave, normalizeSheetData } from './assets/sheetData'
 import { getToastData, toastError } from './assets/toast'
 import HowDoesItWork from './components/HowDoesItWork.vue'
@@ -74,7 +74,7 @@ function onCloseHowDoesItWork() {
 onBeforeMount(()=>{
   // console.log('[App.onBeforeMount]')
   getBackend().then(() => {
-    versionText.value = version + '/' + backendVersion
+    versionText.value = version + '/' + backend.version
   })
   // activate the last known user
   const user = JSON.parse(localStorage.getItem(keyUser))
