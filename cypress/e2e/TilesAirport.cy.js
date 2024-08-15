@@ -81,14 +81,22 @@ describe('Tiles', () => {
       cy.get(`.standardList > :nth-child(${index+1})`).contains(expectedStandardFields[index])
     }
     // Radios
-    const expectedRadios = ['CTAF : 124.700', 'UNICOM : 122.950', 'ATIS : 126.950', 'GND : 121.600', 'TWR : 124.700']
+    const expectedRadios = ['124.700 : CTAF', '122.950 : UNICOM', '126.950 : ATIS', '121.600 : GND', '124.700 : TWR']
     for(let index = 0; index < expectedRadios.length; index++) {
       cy.get(`.freqList > :nth-child(${index+1})`).contains(expectedRadios[index])
     }
-    const expectedNavaids = ['SEA (VORTAC)', 'PAE (VOR/DME)', 'OLM (VORTAC)', 'CVV (VOR/DME)']
+    const expectedNavaids = ['116.800 : SEA (VORTAC)', '110.600 : PAE (VOR/DME)', '113.400 : OLM (VORTAC)', '117.200 : CVV (VOR/DME)']
     for(let index = 0; index < expectedNavaids.length; index++) {
       cy.get(`.navList > :nth-child(${index+1})`).contains(expectedNavaids[index])
     }
+    const expectedAtcs = ['119.200 : Apch', '120.100 : Apch', '120.400 : Apch', '123.900 : Approach', '125.600 : OLYMPIA', '125.900 : Apch', '126.500 : Apch', '128.500 : Apch']
+    for(let index = 0; index < expectedAtcs.length; index++) {
+      cy.get(`.atcList > :nth-child(${index+1})`).contains(expectedAtcs[index])
+    }
+    // close overlaypanel
+    cy.get('[aria-label="Done"]').click()
+
+
     // Enter a new airport code and check it's data is loading
     cy.get('.pageOne > :nth-child(3) > .header > div').click()
     cy.get('.pageOne > :nth-child(3) > .content > .settings > .airportCode > .p-inputgroup > .p-inputtext').clear().type('KBLI')
