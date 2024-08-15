@@ -24,6 +24,9 @@ Run the test suite:
 * Small indicator below runway is configurable
 
 # Done
+## 8/14/2024
+1) ATC in airport tile
+2) Fixed About
 ## 8/13/2024
 * Updated About box with Facebook group and Guides as buttons
 ## 8/12/2024
