@@ -5,7 +5,7 @@ import { Navaid } from './Navaid'
 import { Runway } from './Runway'
 
 export class AirportView {
-    public static currentVersion:number = 3;
+    public static currentVersion:number = 4;
     public static invalidVersion:number = -1;
     code: string;
     name: string;
@@ -16,6 +16,7 @@ export class AirportView {
     atc:Atc[];
     custom: boolean;
     asof: number;
+    version:number = AirportView.currentVersion;
 
     constructor(airport:Airport|undefined) {
         if(airport) {
