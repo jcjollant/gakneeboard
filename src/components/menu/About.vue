@@ -41,7 +41,7 @@ function openUrl(url) {
         <div class="justify"><strong>Special Thanks</strong> to Ash, Jason, Steve and Stewart whom have contributed invaluable feedback and suggestions since Day 1</div>
       </div>
       <div v-else-if="activeTopic.value==topicGuide.value" class="mb-5">
-        <div class="mb-5 justify"><a :href="urlBlog" target="_blank">GA Kneeboard Blog</a> is the best source updates and user guides. For example:</div>
+        <div class="mb-5 justify"><a :href="urlBlog" target="_blank">GA Kneeboard Blog</a> is the best source for updates and user guides. For example:</div>
         <div class="mb-5 guides">
           <Button v-for="guide in guides" :label="guide.name" @click="openUrl(guide.url)" severity="help"></Button>
         </div>
