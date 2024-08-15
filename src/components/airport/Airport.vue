@@ -214,7 +214,7 @@ function onNewAirport(airport) {
     } else { // no data for this airport
         // console.log('No data came out of get airport ' + code)
         // Switch to edit mode
-        title.value = 'Airport "' + code + '"'
+        title.value = 'Airport ?'
         mode.value = 'edit'
     }
 }
@@ -322,12 +322,6 @@ function updateWidget() {
                     <div class="runwayListItem">{{ Math.round(rwy.length / 100) }}</div>
                     <div class="runwayListItem">{{ rwy.freq?rwy.freq.toFixed(3):'' }}</div>
                 </div>
-                <!-- <div class="runwayListRow"  v-for="(end) in allEndings">
-                    <div class="runwayListItemRunway">{{end.name}}</div>
-                    <div class="runwayListItem">{{ end.pattern }}</div>
-                    <div class="runwayListItem">{{ Math.round(end.length / 100) }}</div>
-                    <div class="runwayListItem">{{ end.freq }}</div>
-                </div> -->
             </div>
             <div class="footer">
                 <CornerStatic label="Elev" :value="elevation" position="bottom"/>
