@@ -50,10 +50,11 @@ const sheets = ref([])
 const deleteMode = ref(false)
 const sheetCode = ref('')
 const targetSheet = ref(null)
-const fetchingSheet = {name:'Fetching...',data:{}}
+const fetching = ref(false)
 const directLink = ref('')
 
 function changeTargetSheet(newSheet) {
+  fetching.value = false;
   targetSheet.value = newSheet
   publish.value = newSheet?.publish ? pubPublic : pubPrivate
   sheetNameText.value = newSheet ? newSheet.name : ''
@@ -127,7 +128,7 @@ function onNewSheet() {
 }
 
 async function onSheetFetchCode() {
-  targetSheet.value = fetchingSheet;
+  fetching.value = true;
   await sheetGetByCode(sheetCode.value).then( sheet => {
     // console.log('[Sheets.onSheetFetch] sheet', JSON.stringify(sheet))
     // showToast('Fetch', 'Sheet found')
@@ -151,9 +152,9 @@ async function onSheetSelected(sheet) {
     })
   } else { // load or save
     // console.log('[Sheets.onSheetSelected] load', JSON.stringify(sheet))
-    changeTargetSheet(fetchingSheet)
+    fetching.value = true;
     await sheetGetById(sheet.id).then( sheet => {
-      // console.log('[Sheets.fetchSheet]', JSON.stringify(sheet))    
+      // console.log('[Sheets.fetchSheet]', JSON.stringify(sheet))
       changeTargetSheet(sheet)
     }).catch( e => {
       console.log('[Sheets.onSheetSelected] fetch failed', e)    
@@ -273,15 +274,15 @@ function showToast(summary,details,severity=toastSuccess) {
   </FieldSet>
     <FieldSet legend="Content">
       <div v-if="targetSheet" class="sheetDescription">
-        <div class="bold">Name</div><div>{{targetSheet.name}}</div>
-        <div class="bold pageDescription">Front</div><div class="pageDescription">{{ describePage(targetSheet, 0) }}</div>
-        <div class="bold pageDescription">Back</div><div class="pageDescription">{{ describePage(targetSheet, 1) }}</div>
+        <div class="bold">Name</div><div>{{fetching ? 'Fetching...' : targetSheet.name}}</div>
+        <div class="bold pageDescription">Front</div><div class="pageDescription">{{ fetching ? '' : describePage(targetSheet, 0) }}</div>
+        <div class="bold pageDescription">Back</div><div class="pageDescription">{{ fetching ? '' : describePage(targetSheet, 1) }}</div>
       </div>
       <div v-else>Select a sheet above from Your list, Demos or Shared</div>
     </FieldSet>
     <div class="actionDialog gap-2">
       <Button label="Do Not Load" @click="onButtonClose" link></Button>
-      <Button label="Load Sheet" @click="onButtonLoad" :disabled="!targetSheet"></Button>
+      <Button label="Load Sheet" @click="onButtonLoad" :disabled="!targetSheet || fetching"></Button>
     </div>
   </div>
   </Dialog>
