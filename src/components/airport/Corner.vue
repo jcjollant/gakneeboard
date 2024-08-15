@@ -1,5 +1,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
+
+import Button from 'primevue/button'
 import Fieldset from 'primevue/fieldset'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
@@ -39,11 +41,13 @@ const customValue = ref('')
 
 const frequencies = ref([])
 const navaids = ref([])
+const atcGroups = ref([])
 
 function formatFrequency(freq) {
     // console.log('[Corner.formatFrequency]', typeof freq)
-    if( !freq || !freq.mhz) return noFrequency
-    return freq.mhz.toFixed(3)
+    if( !freq || (!freq.mhz && !freq.freq)) return noFrequency
+    const value = freq.mhz ? freq.mhz : freq.freq;
+    return value.toFixed(3)
 }
 
 function formatNavaid(navaid) {
@@ -64,7 +68,7 @@ function loadProps(newProps) {
         if(airport.freq) {
             // build a frequency list with '#F' prefix
             const freqList = airport.freq.map( f => {
-                return { id:'#F'+f.name, label: f.name+' : '+formatFrequency(f)}
+                return { id:'#F'+f.name, label: formatFrequency(f) + ' : ' + f.name}
             })
             if( runway && 'freq' in runway) freqList.push({id:'twr',label:'Selected Runway'})
             frequencies.value = freqList
@@ -73,9 +77,36 @@ function loadProps(newProps) {
         if( airport.navaids) {
             // build a navaid list with '#N' prefix
             const navaidList = airport.navaids.map( n => {
-                return { id: '#N'+n.id, label: n.id + ' ('+n.type+')'}
+                // console.log('[Corner.loadProps]', JSON.stringify(n))
+                return { id: '#N'+n.id, label: formatFrequency(n) + ' : ' + n.id + ' ('+n.type+')'}
             })
             navaids.value = navaidList
+        }
+
+        if( airport.atc) {
+            const groupList = []
+            for( let index = 0; index < airport.atc.length; index++) {
+                const atc = airport.atc[index]
+                const group = groupList.find( g => atc.name == g.name)
+                let useLabel =  String(atc.use)
+                let approach = ''
+                let departure = ''
+                if( useLabel.length > 30) {
+                    approach = 'Apch'
+                    departure = 'Dep'
+                } else {
+                    approach = 'Approach'
+                    departure = 'Departure'
+                }
+                useLabel = useLabel.replaceAll('APCH/P', approach).replaceAll('DEP/P', departure).replaceAll('DE/P', departure)
+                const entry = {id:'#A'+atc.mhz, mhz:atc.mhz, label:useLabel}
+                if( group) {
+                    group.atcs.push(entry)
+                } else {
+                    groupList.push({name:atc.name, atcs:[entry]})
+                }
+            }
+            atcGroups.value = groupList
         }
 
         showField(field)
@@ -105,11 +136,16 @@ function showField( field) {
             value.value = formatFrequency( getFrequency( airport.freq, freqName))
             label.value = freqName
         } else if( field[1] == 'N' && airport.navaids) {
-            // RadioFrequencies use the '#F' prefix
+            // Navaids use the '#N' prefix
             const navaidName = field.substring(2)
             // console.log('[Corner.showField]', freqName)
             value.value = formatNavaid( getNavaid( airport.navaids, navaidName))
             label.value = navaidName + ' Radial'
+        } else if( field[1] == 'A' && airport.atc) {
+            // ATC use the '#A' prefix
+            const freq = Number(field.substring(2))
+            value.value = freq.toFixed(3)
+            label.value = airport.atc.find( a => a.mhz == freq).name
         } else {
             unknownValues()
         }
@@ -217,7 +253,7 @@ watch( props, () => {
                         </div>
                     </div>
                 </Fieldset>
-                <Fieldset legend="Radios">
+                <Fieldset legend="Airport Frequencies">
                     <div class="freqList">
                         <div v-for="freq in frequencies" class="ctItem" >
                             <RadioButton v-model="selectedCornerType" :inputId="freq.id" :value="freq.id" 
@@ -235,6 +271,15 @@ watch( props, () => {
                         </div>
                     </div>
                 </Fieldset>
+                <Fieldset :legend="group.name" class="ctAtc" v-for="group in atcGroups">
+                    <div class="atcList">
+                        <div v-for="atc in group.atcs" class="ctItem" >
+                            <RadioButton v-model="selectedCornerType" :inputId="atc.id" :value="atc.id" 
+                                @change="onChange(atc.id)"/>
+                            <label :for="atc.id" class="ml-2">{{ formatFrequency(atc) }} : <span :class="{'atcSmall':atc.label.length > 30}">{{ atc.label  }}</span></label>
+                        </div>
+                    </div>
+                </Fieldset>
                 <div class="ctCustom">
                     <RadioButton v-model="selectedCornerType" inputId="custom" :value="'?'+customLabel+'?'+customValue" 
                         @click="onChange('?'+customLabel+'?'+customValue)"/>
@@ -246,15 +291,24 @@ watch( props, () => {
                         <InputText placeholder="value" v-model="customValue"></InputText>
                     </InputGroup>
                 </div>
+                <div class="doneBtn">
+                    <Button label="Done" @click="op.hide()"></Button>
+                </div>
             </div>
         </OverlayPanel>
     </div>
 </template>
 
 <style scoped>
+    .atcSmall {
+        font-size: 0.9rem;
+    }
     .label {
         padding: 0;
         font-size:9px;
+        width:120px;
+        height: 10px;
+        overflow: hidden;
     }
 
     .ctList {
@@ -266,19 +320,24 @@ watch( props, () => {
         display: flex;
         align-items: center;
     }
+    .ctAtc {
+        grid-column: 1 / span 3;
+    }
     .ctCustom {
         display: flex;
         align-items: center;
-        grid-column: 1 / span 3;
+        grid-column: 1 / span 2;
     }
     .customGroup {
       width: 12rem;
+    }   
+.doneBtn{
+    text-align: right;
 }
-
     .faded {
         opacity: 0.3;
     }
-    .freqList, .navList, .standardList {
+    .freqList, .navList, .standardList, .atcList {
         display: flex;
         flex-flow: column;
         gap: 0.5rem
