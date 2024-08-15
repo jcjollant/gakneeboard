@@ -1,4 +1,4 @@
-const version = 814
+const version = 814.2
 
 const express =require( "express")
 import cors from "cors";
@@ -7,6 +7,7 @@ const db = require('../backend/db.js');
 import { GApi, GApiError } from '../backend/GApi'
 import { UserTools } from '../backend/UserTools'
 import { HealthCheck } from "../backend/HealthChecks";
+import { AirportView } from "../backend/models/AirportView";
 
 const port = 3002
 const app = express();
@@ -36,7 +37,11 @@ app.use(express.json()) // for parsing application/json
 //     next();
 // });
 
-app.get("/", (req, res) => res.send({version: version, aced: GApi.getAirportCurrentEffectiveDate()}));
+app.get("/", (req, res) => res.send({
+    version: version, 
+    aced: GApi.getAirportCurrentEffectiveDate(),
+    camv: AirportView.currentVersion
+    }));
 
 /**
  * Create a new custom airport
