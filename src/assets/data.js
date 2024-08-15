@@ -1,4 +1,4 @@
-export const version = '813'
+export const version = 814
 export const maxSheetCount = 10
 export const keyUser = 'kb-user'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
@@ -17,6 +17,7 @@ export const urlKneeboard = 'https://kneeboard.ga'
 import { Airport } from './Airport.ts'
 import axios from 'axios'
 import { isDefaultName, normalizeSheetData } from './sheetData.js'
+import { Backend } from './Backend.ts'
 
 
 const contentTypeJson = { headers: {'Content-Type':'application/json'} }
@@ -25,9 +26,19 @@ const contentType = contentTypeJson;
 let currentUser = null
 let airports = {}
 let pendingCodes = []
-export let backendVersion = null
-export let currentAirportEffectiveDate = null
-let effectiveDatePromise = null
+// export let backendVersion = null
+// export let currentAirportEffectiveDate = null
+// let effectiveDatePromise = null
+// let backendPromise = null
+export const backend = new Backend()
+
+function airportCurrent( airport) {
+  if( !backend.ready && !airport) return false;
+  const dateMatch = airport.asof && backend.airportEffectiveDate && airport.asof == backend.airportEffectiveDate
+  const modelMatch = airport.version && backend.airportModelVersion && airport.version == backend.airportModelVersion
+  // console.log( '[data.airportCurrent] ' + airport.code + ' ' + dateMatch + ' ' + modelMatch )
+  return dateMatch && modelMatch;
+}
 
 export async function authenticate( source, token) {
   const url = apiRootUrl + 'authenticate'
@@ -120,8 +131,6 @@ export async function customSheetSave(sheet) {
       } else {
         // update existing entry
         currentUser.sheets[index] = responseSheet;
-        // currentUser.sheets[index].name = sheet.name
-        // currentUser.sheets[index].data = sheet.data
       }
       userSortSheets()
       return responseSheet
@@ -173,37 +182,40 @@ export async function getAirport( codeParam, group = false) {
     // do we already have this airport in localStorage?
     const localStorageKey = 'airport-' + code;
     const localCopy = localStorage.getItem(localStorageKey)
-    if(localCopy) {
+    if(localCopy && localCopy != "null") {
+      // console.log('[data.getAirport] localCopy', JSON.stringify(localCopy))
       // we have local airport information
       const localAirport = JSON.parse( localCopy)
-      // console.log('[data.getAirport] local', JSON.stringify(localAirport.asof), 'cead', currentAirportEffectiveDate)
-      if(localAirport.asof && localAirport.asof == currentAirportEffectiveDate) {
-        // airport data is current
-        return localAirport;
-      } else if( !currentAirportEffectiveDate){
-        // we cannot tell if airport data is current, wait for caed
-        // pass a promise that returns the investigation outcome
-        localAirport.promise = new Promise( resolve => {
-          effectiveDatePromise.then( (caed) => {
-            if(caed != localAirport.asof) {
-              // turn out this data was stale, remove ir from localStorage
-              // console.log('[data.getAirport] caed is not current for', code, 'removing from localStorage')
-              localStorage.removeItem(localStorageKey)
-              getAirport(code, false).then(airport => {
-                resolve({current:false,airport:airport})
-              }).catch( (e) => {
-                // console.log('[data.getAirport] error getting new airport data', e)
-                resolve({current:false,airport:null})
-              })
-            } else { // dates match
-              // console.log('[data.getAirport] caed is current')
-              resolve({current:true,airport:localAirport})
-            }
-          })
-
-        })
-        return localAirport;
+      if( backend.ready) {
+        if( airportCurrent( localAirport)) {
+          // Airport data is current
+          // console.log('[data.getAirport] localAirport ', code, 'is current')
+          return localAirport;
+        }
       }
+      // Either airport data is stale or backend is not ready
+      // Add a promise to the localAirport that will return investigation outcome
+      localAirport.promise = new Promise( async(resolve) => {
+        // if backend is ready this will resolve immediately
+        await backend.promise.then( () => {
+          // compare effective date and model version
+          if( airportCurrent(localAirport)) {
+            resolve({current:true,airport:localAirport})
+          } else {
+            // turn out this data was stale, remove ir from localStorage
+            localStorage.removeItem(localStorageKey)
+            getAirport(code, false).then(airport => {
+              resolve({current:false,airport:airport})
+            }).catch( (e) => {
+              // console.log('[data.getAirport] error getting new airport data', e)
+              resolve({current:false,airport:null})
+            })
+          }
+        })
+
+      })
+      // we return stale airport with promise
+      return localAirport;
     }
 
     // add ourselves to the list of pending queries
@@ -250,34 +262,29 @@ export async function getAirport( codeParam, group = false) {
  * @returns 
  */
 export async function getBackend() {
-  // console.log('[data.getBackend]')
-  // create new promise until we have effective date
-  effectiveDatePromise = new Promise( (resolve) => {
-    let retries = 5
-    const interval = setInterval( () => {
-      // console.log('[data.getBackend] waiting for effective date', retries)
-      if( currentAirportEffectiveDate || !retries) {
-        clearInterval(interval)
-        resolve( currentAirportEffectiveDate ? currentAirportEffectiveDate : null)
-        return
-      }
-      --retries;
-    }, 500)
+  backend.promise = new Promise( (resolve) => {
+    axios.get(apiRootUrl)
+      .then( response => {
+        // console.log('[data.getBackend]', JSON.stringify(response.data))
+        if( !response || !response.data) {
+          resolve(null)
+        } else {
+          backend.version = Number(response.data.version)
+          backend.airportEffectiveDate = Number(response.data.aced)
+          backend.airportModelVersion = Number(response.data.camv)
+          backend.ready = true;
+          // console.log('[data.getBackend] backend', JSON.stringify(backend))
+          resolve(backend)
+        }
+      })
+      .catch( error => {
+        console.log( '[data.getBackend] error', JSON.stringify(error))
+        resolve(null)
+      })
   })
 
   // Actually get the data
-  return axios.get( apiRootUrl)
-    .then( response => {
-      // console.log('[data.getBackend]', JSON.stringify(response.data))
-      backendVersion = response?.data?.version
-      currentAirportEffectiveDate = response?.data?.aced
-
-      return response.data
-    })
-    .catch( error => {
-      console.log( '[data.getBackend] error', JSON.stringify(error))
-      return null
-    })
+  return backend.promise
 }
 
 /**
