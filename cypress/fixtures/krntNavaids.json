@@ -1,0 +1,7 @@
+[
+    { "mhz":"116.800" , "name":"SEA VORTAC"},
+    { "mhz":"110.600" , "name":"PAE VOR/DME"},
+    { "mhz":"113.400" , "name":"OLM VORTAC"},
+    { "mhz":"117.200" , "name":"CVV VOR/DME"}
+]
+ 

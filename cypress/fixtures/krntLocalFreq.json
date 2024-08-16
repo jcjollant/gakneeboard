@@ -1,0 +1,8 @@
+[
+    { "mhz":"124.700" , "name":"CTAF"},
+    { "mhz":"122.950" , "name":"UNICOM"},
+    { "mhz":"126.950" , "name":"ATIS"},
+    { "mhz":"121.600" , "name":"GND"},
+    { "mhz":"124.700" , "name":"TWR"}
+]
+ 
