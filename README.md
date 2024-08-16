@@ -14,16 +14,9 @@ Run the test suite:
 # BUGS
 * Custom Airport is not editable after update
   
-# TODO
-* Improve Radio Flow Selection with airport code and all frequencies
-## New Tiles
-* New Tiles Synopsis => capture altitude and fuel level
-* New Tile Navlog
-* New Tile Emergency
-## Airport
-* Small indicator below runway is configurable
-
 # Done
+## 8/16/2024
+* Fixed visual bugs
 ## 8/14/2024
 1) ATC in airport tile
 2) Fixed About

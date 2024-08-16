@@ -136,8 +136,8 @@ function updateTextarea() {
         </div>
         <div v-else-if="mode=='edit'" class="edit">
             <Button icon="pi pi-search" label="Lookup" link
-                @click="onLookup"></Button>
-            <Textarea class='list' rows="8" cols="24" v-model="textData"
+                @click="onLookup" class="lookupBtn"></Button>
+            <Textarea class='list' rows="9" cols="24" v-model="textData"
                 placeholder="Enter up to 15 freq."></Textarea>
             <ActionBar @apply="onApply" @cancel="onCancel" :help="urlGuideRadioFlow" />
         </div>
@@ -188,10 +188,20 @@ function updateTextarea() {
     font-weight: 600;
 }
 
+.lookupBtn {
+    margin: 0 auto;
+    margin-top: 5px;
+}
+
 .edit {
     position: relative;
     height:200px;
+    width:240px;
     font-size: 0.8rem;
+    display: inline-flex;
+    flex-flow: column;
+    /* gap: 5px; */
+    padding: 0 5px;
 }
 
 .p-button {
