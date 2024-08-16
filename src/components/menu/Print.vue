@@ -70,8 +70,9 @@ function onNewOptions() {
     </FieldSet>
     <FieldSet legend="Tips">
       <p class="note">
-        <div>'Letter' paper size and 'Landscape' layout will fold between pages to kneeboard size.</div>
-        <div>Enable 'Background graphics' in your print settings for best results (Checklists, Fuel Bug).</div>
+        <div>Use Flipped print to read back page while front is clipped </div>
+        <div>'Letter' paper size and 'Landscape' layout will fold between pages to kneeboard size</div>
+        <div>Enable 'Background graphics' in your print settings for best results for Checklists</div>
         <div>Single pages in 'Portrait' layout make great PDFs</div>
       </p>
       </FieldSet>
