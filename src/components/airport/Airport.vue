@@ -2,11 +2,12 @@
 import {ref, onMounted, watch} from 'vue';
 import { getAirport, getFreqCtaf, getFreqWeather} from '../../assets/data.js'
 
-import Header from '../shared/Header.vue'
-import CornerStatic from '../shared/CornerStatic.vue';
-import Runway from './Runway.vue'
-import Corner from './Corner.vue';
 import AirportEdit from './AirportEdit.vue';
+import Corner from './Corner.vue';
+import CornerStatic from '../shared/CornerStatic.vue';
+import Header from '../shared/Header.vue'
+import PlaceHolder from '../shared/PlaceHolder.vue'
+import Runway from './Runway.vue'
 
 const emits = defineEmits(['replace','update'])
 
@@ -113,7 +114,7 @@ function loadProps(newProps) {
     // Force edit mode if we don't have an airport yet
     if( !code) {
         title.value = defaultTitle
-        mode.value = 'edit'
+        // mode.value = 'edit'
         return
     }
 
@@ -193,6 +194,8 @@ function onHeaderClick() {
         airportCode.value = airport.code
         mode.value = previousMode;
         title.value = airport.name
+    } else {
+        mode.value = ''
     }    
 }    
 
@@ -330,18 +333,21 @@ function updateWidget() {
             </div>
         </div>
         <div class="content" v-else=""> <!-- Normal mode -->
-            <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
-            <div v-if="unknownRunway" class="unknownRwy">Unknown Runway</div>
-            <Runway v-else :runway="selectedRunway" :pattern="patternMode" :orientation="rwyOrientation"
-                @update="onPatternUpdate" />
-            <Corner class="corner top left" :airport="airportData" :data="corner0" :runway="selectedRunway" 
-                @update="onCornerUpdate" />
-            <Corner class="corner top right" :airport="airportData" :data="corner1"  :runway="selectedRunway" 
-                @update="onCornerUpdate"/>
-            <Corner class="corner bottom left" :airport="airportData" :data="corner2"  :runway="selectedRunway" :flip="true"  
-                @update="onCornerUpdate"/>
-            <Corner class="corner bottom right" :airport="airportData" :data="corner3"  :runway="selectedRunway" :flip="true"  
-                @update="onCornerUpdate"/>
+            <div v-if="airportCode">
+                <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
+                <div v-if="unknownRunway" class="unknownRwy">Unknown Runway</div>
+                <Runway v-else :runway="selectedRunway" :pattern="patternMode" :orientation="rwyOrientation"
+                    @update="onPatternUpdate" />
+                <Corner class="corner top left" :airport="airportData" :data="corner0" :runway="selectedRunway" 
+                    @update="onCornerUpdate" />
+                <Corner class="corner top right" :airport="airportData" :data="corner1"  :runway="selectedRunway" 
+                    @update="onCornerUpdate"/>
+                <Corner class="corner bottom left" :airport="airportData" :data="corner2"  :runway="selectedRunway" :flip="true"  
+                    @update="onCornerUpdate"/>
+                <Corner class="corner bottom right" :airport="airportData" :data="corner3"  :runway="selectedRunway" :flip="true"  
+                    @update="onCornerUpdate"/>
+            </div>
+            <PlaceHolder v-else title="No Airport" />
         </div>
     </div>    
 </template>

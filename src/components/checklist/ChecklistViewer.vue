@@ -2,6 +2,8 @@
 
 import { onMounted, ref, watch } from 'vue'
 
+import PlaceHolder from '../shared/PlaceHolder.vue';
+
 const props = defineProps({
     items: { type: Object, default: [] },
     theme: { type: String, default: 'theme-yellow'},
@@ -38,7 +40,7 @@ watch(props, () => {
         <div v-else class="challenge" :class="{'smallFont': small, 'spanned':!('r' in item)}">{{ item.c }}</div>
         <div v-if="'r' in item" class="response" :class="{'smallFont': small}">{{ item.r }}</div>
     </div>
-    <div v-else class="placeHolder" :class="{'smallPlaceHolder':small}">There are no items in this list yet<br>Click the header to customize</div>
+    <PlaceHolder v-else title="No Items" />
 </template>
 
 <style scoped>
@@ -56,12 +58,12 @@ watch(props, () => {
     border-bottom: 1px solid lightgrey;
 }
 
-.placeHolder {
+/* .placeHolder {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100%;
-}
+} */
 .response {
     font-weight: bold;
 }
@@ -85,9 +87,9 @@ watch(props, () => {
     height: 1.5rem;
 }
 
-.smallPlaceHolder {
+/* .smallPlaceHolder {
     font-size: 0.8rem;
-}
+} */
 
 .spanned {
     grid-column: 1 / span 2

@@ -4,9 +4,9 @@ import { formatMhz, urlGuideRadioFlow } from '../../assets/data'
 
 import ActionBar from '../shared/ActionBar.vue'
 import Header from '../shared/Header.vue';
-import AirportInput from '../shared/AirportInput.vue'
 import FrequencyBox from './FrequencyBox.vue'
 import LookupDialog from './LookupDialog.vue'
+import PlaceHolder from '../shared/PlaceHolder.vue'
 
 import Button from 'primevue/button'
 import Textarea from 'primevue/textarea';
@@ -129,7 +129,7 @@ function updateTextarea() {
         <Header :title="'Radio Flow'" :replace="mode=='edit'"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div v-if="mode==''">
-            <div v-if="frequencies.length==0" class="fullsize"><div>No Radios</div></div>
+            <PlaceHolder v-if="frequencies.length==0" title="No Radios" />
             <div class="freqList" v-else>
                 <FrequencyBox v-for="freq in frequencies" :freq="freq" :small="frequencies.length > 8" />
             </div>
@@ -145,16 +145,6 @@ function updateTextarea() {
 </template>
 
 <style scoped>
-.fullsize{
-    display: flex;
-    justify-content: center;
-    align-content: center;
-    flex-direction: column;
-    font-weight: 600;
-    font-size: x-large;
-    opacity: .3;
-    line-height: 200px;
-}
 .freqList {
     padding-top: 5px;
     display: flex;

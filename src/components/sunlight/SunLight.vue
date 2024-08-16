@@ -3,17 +3,18 @@ import { ref, onMounted, watch } from 'vue'
 import { getAirport, getSunlight, urlGuideSunlight } from '../../assets/data'
 
 import ActionBar from '../shared/ActionBar.vue'
+import AirportInput from '../shared/AirportInput.vue'
+import Circle from './Circle.vue'
 import CornerStatic from '../shared/CornerStatic.vue'
 import Header from '../shared/Header.vue'
-import Circle from './Circle.vue'
-import AirportInput from '../shared/AirportInput.vue'
+import PlaceHolder from '../shared/PlaceHolder.vue'
 
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import Calendar from 'primevue/calendar'
 import Checkbox from 'primevue/checkbox'
 
-const mode=ref('')
+const mode = ref('')
 const airportFromCode = ref('')
 const airportToCode = ref('')
 const circleKey = ref()
@@ -57,7 +58,7 @@ function loadProps(newProps) {
     // loadAirportFrom( state.from)
     // loadAirportTo(state.to ? state.to : state.from)
     // Force edit mode if we don't have a code yet
-    if(!airportFromCode.value) mode.value = 'edit'
+//    if(!airportFromCode.value) mode.value = 'edit'
     // default to today if we don't have a date
     // default to day flight if we don't have a settings
     const now = new Date()
@@ -142,7 +143,7 @@ function getData( update=true) {
 }
 
 function onAirportFrom( airport) {
-    console.log('[SunLight.onAirportFrom]', JSON.stringify(airport))
+    // console.log('[SunLight.onAirportFrom]', JSON.stringify(airport))
     if(airport.code && airport.code != airportFromCode.value) {
         airportFromCode.value = airport.code
     }
@@ -178,34 +179,39 @@ function onHeaderClick() {
 <template>
     <div class="tile">
         <Header title="Sun Light" :replace="mode=='edit'"
-            @click="onHeaderClick" @replace="emits('replace')"></Header>
+            @click="onHeaderClick" 
+            @replace="emits('replace')">
+        </Header>
         <div class="content" v-if="mode==''">
-            <Circle :time="circleKey" :night="nightFlight" />
-            <div v-if="loading" class="loading">Fetching...</div>
-            <div v-else class="text">
-                <div v-if="nightFlight">
-                    <div><span class="pr2">{{civilTwilightPm}}</span><span>{{civilTwilightAm}}</span></div>
-                    <div class="pb1">Civil Twilight</div>
-                    <div><span class="pr4">{{sunsetTime}}</span><span>{{sunriseTime}}</span></div>
-                    <div class="sunrise"><span class="pr2">Sunset</span><span>Sunrise</span></div>
+            <div v-if="airportFromCode">
+                <Circle :time="circleKey" :night="nightFlight" />
+                <div v-if="loading" class="loading">Fetching...</div>
+                <div v-else class="text">
+                    <div v-if="nightFlight">
+                        <div><span class="pr2">{{civilTwilightPm}}</span><span>{{civilTwilightAm}}</span></div>
+                        <div class="pb1">Civil Twilight</div>
+                        <div><span class="pr4">{{sunsetTime}}</span><span>{{sunriseTime}}</span></div>
+                        <div class="sunrise"><span class="pr2">Sunset</span><span>Sunrise</span></div>
+                    </div>
+                    <div v-else>
+                        <div class="sunrise pt1"><span class="pr2">Sunrise</span><span>Sunset</span></div>
+                        <div><span class="pr4">{{sunriseTime}}</span><span>{{sunsetTime}}</span></div>
+                        <div class="pt1">Civil Twilight</div>
+                        <div><span class="pr2">{{civilTwilightAm}}</span><span>{{civilTwilightPm}}</span></div>
+                    </div>
                 </div>
-                <div v-else>
-                    <div class="sunrise pt1"><span class="pr2">Sunrise</span><span>Sunset</span></div>
-                    <div><span class="pr4">{{sunriseTime}}</span><span>{{sunsetTime}}</span></div>
-                    <div class="pt1">Civil Twilight</div>
-                    <div><span class="pr2">{{civilTwilightAm}}</span><span>{{civilTwilightPm}}</span></div>
-                </div>
+                <CornerStatic class="corner topLeftCorner" label="From" :value="airportFromCode"/>
+                <CornerStatic class="corner topRightCorner" label="To" :value="airportToCode"/>
+                <CornerStatic class="corner bottomLeftCorner" position="bottom"
+                    :label="nightFlight?'From':'Solar Noon'" 
+                    :value="nightFlight?formatDate(dateFrom):solarNoon" />
+                <CornerStatic class="corner bottomRightCorner" position="bottom" 
+                    :label="nightFlight?'To':'Golden Hour'" 
+                    :value="nightFlight?formatDate(dateTo):goldenHour"/>
+                <div v-if="nightFlight" class="date">Night Flight</div>
+                <div v-else class="date" :title="dateFrom ? dateFrom.toDateString() : '?'">{{ dateFrom ? dateFrom.toLocaleString('en-US', dateFormatBottom) : '?' }}</div>
             </div>
-            <CornerStatic class="corner topLeftCorner" label="From" :value="airportFromCode"/>
-            <CornerStatic class="corner topRightCorner" label="To" :value="airportToCode"/>
-            <CornerStatic class="corner bottomLeftCorner" position="bottom"
-                :label="nightFlight?'From':'Solar Noon'" 
-                :value="nightFlight?formatDate(dateFrom):solarNoon" />
-            <CornerStatic class="corner bottomRightCorner" position="bottom" 
-                :label="nightFlight?'To':'Golden Hour'" 
-                :value="nightFlight?formatDate(dateTo):goldenHour"/>
-            <div v-if="nightFlight" class="date">Night Flight</div>
-            <div v-else class="date" :title="dateFrom ? dateFrom.toDateString() : '?'">{{ dateFrom ? dateFrom.toLocaleString('en-US', dateFormatBottom) : '?' }}</div>
+            <PlaceHolder v-else title="No Airport" />
         </div>
         <div v-else class="content">
             <div class="settings">
