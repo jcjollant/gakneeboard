@@ -20,10 +20,8 @@ const props = defineProps({
     display: flex;
     flex-flow: column;
     gap: 0;
-    border: 2px solid darkcyan;
-    color: darkcyan;
-    /* border: 2px solid darkgreen;
-    color: darkgreen; */
+    border: 1px solid darkslategrey;
+    /* color: darkcyan; */
     padding: 4px 2px;
 }
 .fbSmall {
