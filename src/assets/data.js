@@ -1,4 +1,4 @@
-export const version = 814.2
+export const version = 815
 export const maxSheetCount = 10
 export const keyUser = 'kb-user'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
@@ -190,6 +190,7 @@ export async function getAirport( codeParam, group = false) {
         if( airportCurrent( localAirport)) {
           // Airport data is current
           // console.log('[data.getAirport] localAirport ', code, 'is current')
+          airports[code] = localAirport
           return localAirport;
         }
       }
@@ -200,11 +201,13 @@ export async function getAirport( codeParam, group = false) {
         await backend.promise.then( () => {
           // compare effective date and model version
           if( airportCurrent(localAirport)) {
+            airports[code] = localAirport
             resolve({current:true,airport:localAirport})
           } else {
             // turn out this data was stale, remove ir from localStorage
             localStorage.removeItem(localStorageKey)
             getAirport(code, false).then(airport => {
+              airports[code] = airport
               resolve({current:false,airport:airport})
             }).catch( (e) => {
               // console.log('[data.getAirport] error getting new airport data', e)
@@ -285,6 +288,10 @@ export async function getBackend() {
 
   // Actually get the data
   return backend.promise
+}
+
+export function getAirports() {
+  return airports;
 }
 
 /**
