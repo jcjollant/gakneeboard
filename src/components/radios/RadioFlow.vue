@@ -6,6 +6,7 @@ import ActionBar from '../shared/ActionBar.vue'
 import Header from '../shared/Header.vue';
 import AirportInput from '../shared/AirportInput.vue'
 import FrequencyBox from './FrequencyBox.vue'
+import LookupDialog from './LookupDialog.vue'
 
 import Button from 'primevue/button'
 import Textarea from 'primevue/textarea';
@@ -20,10 +21,9 @@ const props = defineProps({
 const mode=ref('')
 const textData = ref('')
 const frequencies = ref([])
-const knownFrequencies = ref([])
+const showLookup = ref(false)
+const lookupTime = ref(0)
 let listBeforeEdit = []
-// format use to be {target:"", freq:"", name:""}
-// new format is {mhz:123.456, name:'Radio name'}
 
 onMounted(() => {
     // console.log('onMounted ' + JSON.stringify(props.params))
@@ -49,8 +49,7 @@ function loadData(data) {
             }
         })
         frequencies.value = list
-        // build text based of the frequency list
-        textData.value = list.map( f => f.mhz + ',' + f.name).join('\n')
+        updateTextarea()
     } else {
         frequencies.value = []
     }
@@ -76,8 +75,11 @@ function addFrequency(freq) {
         toast('Radio boxes are full', 'warn')
         return;
     }
-    frequencies.value.push({mhz:freq.mhz, name:freq.name})
+    frequencies.value.push(freq)
     toast( freq.name + ' added (' + (frequencies.value.length) + '/' + maxFreqCount + ')')
+
+    // refresh the list
+    updateTextarea()
 }
 
 // load data from text value
@@ -94,12 +96,6 @@ function onCancel() {
     loadData( listBeforeEdit, false)
 }
 
-function onDone() {
-    mode.value='edit'
-    knownFrequencies.value = []
-    textData.value = frequencies.value.map( f => f.mhz + ',' + f.name).join('\n')
-}
-
 function onHeaderClick() {
     // console.log('onHeaderClick ' + mode.value)
     if( mode.value == 'edit') {
@@ -112,33 +108,23 @@ function onHeaderClick() {
 
 function onLookup() {
     loadDataFromText()
-    mode.value = 'lookup'
-}
-
-/**
- * Builds the list of known frequencies from given airport data
- * @param {*} airport 
- */
-function showFrequencies(airport) {
-    let list = []
-    if( airport) {
-        for(let freq of airport.freq) {
-            list.push({name:airport.code + ' ' + freq.name,display:freq.name, mhz:freq.mhz,nav:false})
-        }
-        for(let nav of airport.navaids) {
-            list.push({name:nav.id + ' ' + nav.type, display:nav.id,mhz:nav.freq,nav:true})
-        }
-    }
-    knownFrequencies.value = list
+    showLookup.value = true
+    lookupTime.value = Date.now()
+    // loadDataFromText()
+    // mode.value = 'lookup'
 }
 
 function toast(message, severity='success') {
     emits( 'toast', { severity: severity, summary: 'Radio Flow', detail: message, life: 2000})
 }
 
+function updateTextarea() {
+    textData.value = frequencies.value.map( f => f.mhz + ',' + f.name).join('\n')
+}
 </script>
 
 <template>
+    <LookupDialog v-model:visible="showLookup" :time="lookupTime" @add="addFrequency" />
     <div class="tile">
         <Header :title="'Radio Flow'" :replace="mode=='edit'"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
@@ -154,21 +140,6 @@ function toast(message, severity='success') {
             <Textarea class='list' rows="8" cols="24" v-model="textData"
                 placeholder="Enter up to 15 freq."></Textarea>
             <ActionBar @apply="onApply" @cancel="onCancel" :help="urlGuideRadioFlow" />
-        </div>
-        <div v-else-if="mode=='lookup'" class="lookup">
-            <AirportInput :auto="true" @valid="showFrequencies"></AirportInput>
-            <div >
-                <div v-if="knownFrequencies.length" class="knownFrequencies">
-                    <Button v-for="kf in knownFrequencies" :label="kf.display" 
-                        :title="formatMhz(kf.mhz) + ',' + kf.name"
-                        @click="addFrequency(kf)" :icon="kf.nav?'pi pi-compass':''"></Button>
-                </div>
-                <div class="" v-else>Enter an airport code to view its known frequencies</div>
-            </div>
-            <div>
-                <Button icon="pi pi-thumbs-up" label="Done" link
-                    @click="onDone"></Button> 
-            </div>
         </div>
     </div>
 </template>
