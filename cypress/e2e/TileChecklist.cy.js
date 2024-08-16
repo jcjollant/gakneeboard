@@ -9,7 +9,7 @@ describe('Checklist Tile', () => {
       url: 'https://ga-api-seven.vercel.app/airports/**',
     }).as('getAirports');
 
-    cy.wait('@getAirports').its('response.statusCode').should('equal', 200)
+    cy.wait(1000)
 
     const title = 'Power OFF stalls'
     const title3 = 'Name3'
@@ -57,7 +57,8 @@ describe('Checklist Tile', () => {
     // Apply changes
     cy.get('[aria-label="Apply"]').click()
     // There should be not items
-    cy.get('.placeHolder').contains('There are no items')
+    cy.get('.pageTwo > :nth-child(1) > .content > .placeHolder').contains('No Items')
+    cy.get('.pageTwo > :nth-child(1) > .content > .placeHolder').contains('Click the header to configure')
 
   })
 

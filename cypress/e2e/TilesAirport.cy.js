@@ -55,26 +55,26 @@ describe('Tiles', () => {
       const value = expectedValues[index]
       const child = index + 1
       cy.get(`:nth-child(1) > :nth-child(${child}) > .header > div`).contains(value.tile)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > .top.left > .clickable > :nth-child(1) > :nth-child(1)`).contains(value.value0)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > .top.left > .clickable > :nth-child(1) > .label`).contains(value.label0)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > .top.right > .clickable > :nth-child(1) > :nth-child(1)`).contains(value.value1)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > .top.right > .clickable > :nth-child(1) > .label`).contains(value.label1)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > .bottom.left > .clickable > :nth-child(1) > :nth-child(2)`).contains(value.value2)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > .bottom.left > .clickable > :nth-child(1) > .label`).contains(value.label2)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > .bottom.right > .clickable > :nth-child(1) > :nth-child(2)`).contains(value.value3)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > .bottom.right > .clickable > :nth-child(1) > .label`).contains(value.label3)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > .container > .label`).contains(value.dimensions)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > .airportCode`).contains(value.watermark)
+      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .top.left > .clickable > :nth-child(1) > :nth-child(1)`).contains(value.value0)
+      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .top.left > .clickable > :nth-child(1) > .label`).contains(value.label0)
+      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .top.right > .clickable > :nth-child(1) > :nth-child(1)`).contains(value.value1)
+      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .top.right > .clickable > :nth-child(1) > .label`).contains(value.label1)
+      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .bottom.left > .clickable > :nth-child(1) > :nth-child(2)`).contains(value.value2)
+      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .bottom.left > .clickable > :nth-child(1) > .label`).contains(value.label2)
+      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .bottom.right > .clickable > :nth-child(1) > :nth-child(2)`).contains(value.value3)
+      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .bottom.right > .clickable > :nth-child(1) > .label`).contains(value.label3)
+      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .container > .label`).contains(value.dimensions)
+      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .airportCode`).contains(value.watermark)
     }
     // Switch runway and check frequency is being updated accordingly
     cy.get(':nth-child(1) > :nth-child(2) > .header > div').click()
     cy.get('[aria-label="14R-32L"]').click()
     cy.get('[aria-label="Apply"]').click()
-    cy.get(':nth-child(2) > .content > .top.right > .clickable > :nth-child(1) > :nth-child(1)').contains('120.600')
-    cy.get(':nth-child(2) > .content > .top.right > .clickable > :nth-child(1) > .label').contains('RWY 14R-32L')
+    cy.get(':nth-child(2) > .content > :nth-child(1) > .top.right > .clickable > :nth-child(1) > :nth-child(1)').contains('120.600')
+    cy.get(':nth-child(2) > .content > :nth-child(1) > .top.right > .clickable > :nth-child(1) > .label').contains('RWY 14R-32L')
     // Check Corners have all exected data
     // Open the bottom right corner to get the corner selection window
-    cy.get(':nth-child(1) > :nth-child(1) > .content > .bottom.right').click()
+    cy.get(':nth-child(1) > :nth-child(1) > .content > :nth-child(1) > .bottom.right').click()
     // standard fields
     const expectedStandardFields = ['Field Elevation', 'Traffic Pattern Altitude', 'Runway Information', 'Nothing']
     for(let index = 0; index < expectedStandardFields.length; index++) {
@@ -112,15 +112,15 @@ describe('Tiles', () => {
     // Check for bellingham fields
     const kbliValues = {'tile':'Bellingham Intl','label0':'ATIS','value0':'134.450','label1':'TWR','value1':'124.900','label2':'Elev','value2':'171','label3':'TPA','value3':'1171','watermark':'KBLI','dimensions':'6700x150'}
     cy.get('.pageOne > :nth-child(3) > .header > div').contains(kbliValues.tile)
-    cy.get(':nth-child(3) > .content > .top.left > .clickable > :nth-child(1) > .label').contains(kbliValues.label0)
-    cy.get(':nth-child(3) > .content > .top.left > .clickable > :nth-child(1) > :nth-child(1)').contains(kbliValues.value0)
-    cy.get(':nth-child(3) > .content > .top.right > .clickable > :nth-child(1) > .label').contains(kbliValues.label1)
-    cy.get(':nth-child(3) > .content > .top.right > .clickable > :nth-child(1) > :nth-child(1)').contains(kbliValues.value1)
-    cy.get(':nth-child(3) > .content > .bottom.left > .clickable > :nth-child(1) > .label').contains(kbliValues.label2)
-    cy.get(':nth-child(3) > .content > .bottom.left > .clickable > :nth-child(1) > :nth-child(2)').contains(kbliValues.value2)
-    cy.get(':nth-child(3) > .content > .bottom.right > .clickable > :nth-child(1) > .label').contains(kbliValues.label3)
-    cy.get(':nth-child(3) > .content > .bottom.right > .clickable > :nth-child(1) > :nth-child(2)').contains(kbliValues.value3)
-    cy.get(':nth-child(3) > .content > .container > .label').contains(kbliValues.dimensions)
+    cy.get(':nth-child(3) > .content > :nth-child(1) > .top.left > .clickable > :nth-child(1) > .label').contains(kbliValues.label0)
+    cy.get(':nth-child(3) > .content > :nth-child(1) > .top.left > .clickable > :nth-child(1) > :nth-child(1)').contains(kbliValues.value0)
+    cy.get(':nth-child(3) > .content > :nth-child(1) > .top.right > .clickable > :nth-child(1) > .label').contains(kbliValues.label1)
+    cy.get(':nth-child(3) > .content > :nth-child(1) > .top.right > .clickable > :nth-child(1) > :nth-child(1)').contains(kbliValues.value1)
+    cy.get(':nth-child(3) > .content > :nth-child(1) > .bottom.left > .clickable > :nth-child(1) > .label').contains(kbliValues.label2)
+    cy.get(':nth-child(3) > .content > :nth-child(1) > .bottom.left > .clickable > :nth-child(1) > :nth-child(2)').contains(kbliValues.value2)
+    cy.get(':nth-child(3) > .content > :nth-child(1) > .bottom.right > .clickable > :nth-child(1) > .label').contains(kbliValues.label3)
+    cy.get(':nth-child(3) > .content > :nth-child(1) > .bottom.right > .clickable > :nth-child(1) > :nth-child(2)').contains(kbliValues.value3)
+    cy.get(':nth-child(3) > .content > :nth-child(1) > .container > .label').contains(kbliValues.dimensions)
 
     // Test All Runways mode with KAWO Arlington
     cy.get('.runwayList > :nth-child(1) > :nth-child(1)').contains('Rwy')
@@ -136,6 +136,20 @@ describe('Tiles', () => {
     cy.get(':nth-child(1) > :nth-child(1) > :nth-child(1) > :nth-child(2)').contains('142')
     cy.get('.footer > :nth-child(2) > :nth-child(1) > :nth-child(1) > :nth-child(2)').contains('1142')
     cy.get('.footer > :nth-child(3) > :nth-child(1) > :nth-child(1) > :nth-child(2)').contains('135.625')
+
+    // Replace tile with Notes
+    cy.get('.pageOne > :nth-child(3) > .header > div').click()
+    cy.get('.header > .p-button').click()
+    cy.get('[aria-label="Notes"]').click()
+    cy.get('.pageOne > :nth-child(3) > .header > div').contains('Notes')
+    // Change tile back to Airport
+    cy.get('.pageOne > :nth-child(3) > .header > div').click()
+    cy.get('.header > .p-button').click()
+    cy.get('[aria-label="Airport"]').click()
+    // We should see the placeholder
+    cy.get('.pageOne > :nth-child(3) > :nth-child(2) > .placeHolder').contains('No Airport')
+    cy.get('.pageOne > :nth-child(3) > :nth-child(2) > .placeHolder').contains('Click the header to configure')
+
 
   })
 

@@ -47,16 +47,13 @@ describe('Tiles', () => {
     cy.get('.header > .p-button').click()
     cy.get('[aria-label="Notes"]').click()
     cy.get(':nth-child(2) > :nth-child(3) > .header > div').contains('Notes')
-    // If we come back to sunlight, it should be in edit mode
+    // Change tile back to Sunlight
     cy.get(':nth-child(2) > :nth-child(3) > .header > div').click()
     cy.get('.header > .p-button').click()
     cy.get('[aria-label="Sunlight"]').click()
-    // Check edit mode fields
-    cy.get('.settings > :nth-child(1) > .p-inputgroup > .p-inputgroup-addon').contains('From')
-    cy.get(':nth-child(2) > .p-inputgroup > .p-inputgroup-addon').contains('To')
-    cy.get('.pageTwo > :nth-child(3) > .content > .settings > :nth-child(3)').contains('Date')
-    cy.get('[aria-label="Cancel"]').click()
-
+    // We should see the placeholder
+    cy.get('.pageTwo > :nth-child(3) > :nth-child(2) > .placeHolder').contains('No Airport')
+    cy.get('.pageTwo > :nth-child(3) > :nth-child(2) > .placeHolder').contains('Click the header to configure')
   })
 
 })
