@@ -16,7 +16,8 @@ Run the test suite:
   
 # Done
 ## 8/16/2024
-* Fixed visual bugs
+1) Fixed visual bugs
+2) Added placeholder
 ## 8/14/2024
 1) ATC in airport tile
 2) Fixed About
