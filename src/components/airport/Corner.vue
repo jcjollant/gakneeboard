@@ -9,6 +9,7 @@ import InputText from 'primevue/inputtext'
 import OverlayPanel from 'primevue/overlaypanel'
 import RadioButton from 'primevue/radiobutton'
 import { getFreqCtaf, getFreqWeather, getFreqGround, getFrequency, getNavaid } from '../../assets/data';
+import { formatFrequency, formatAtcGroups } from '../../assets/format'
 
 
 const emits = defineEmits(['update'])
@@ -42,13 +43,6 @@ const customValue = ref('')
 const frequencies = ref([])
 const navaids = ref([])
 const atcGroups = ref([])
-
-function formatFrequency(freq) {
-    // console.log('[Corner.formatFrequency]', typeof freq)
-    if( !freq || (!freq.mhz && !freq.freq)) return noFrequency
-    const value = freq.mhz ? freq.mhz : freq.freq;
-    return value.toFixed(3)
-}
 
 function formatNavaid(navaid) {
     if(!navaid || !navaid.to) return '-'
@@ -84,28 +78,10 @@ function loadProps(newProps) {
         }
 
         if( airport.atc) {
-            const groupList = []
-            for( let index = 0; index < airport.atc.length; index++) {
-                const atc = airport.atc[index]
-                const group = groupList.find( g => atc.name == g.name)
-                let useLabel =  String(atc.use)
-                let approach = ''
-                let departure = ''
-                if( useLabel.length > 30) {
-                    approach = 'Apch'
-                    departure = 'Dep'
-                } else {
-                    approach = 'Approach'
-                    departure = 'Departure'
-                }
-                useLabel = useLabel.replaceAll('APCH/P', approach).replaceAll('DEP/P', departure).replaceAll('DE/P', departure)
-                const entry = {id:'#A'+atc.mhz, mhz:atc.mhz, label:useLabel}
-                if( group) {
-                    group.atcs.push(entry)
-                } else {
-                    groupList.push({name:atc.name, atcs:[entry]})
-                }
-            }
+            const groupList = formatAtcGroups(airport, (e) => {
+                e['id']='#A'+e.mhz
+                e['label'] = e.use
+            })
             atcGroups.value = groupList
         }
 
