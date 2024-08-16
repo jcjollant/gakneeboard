@@ -87,6 +87,10 @@ body {
   text-align: justify;
 }
 
+.left {
+  text-align:left;
+}
+
 .ml-2 {
   margin-left: 0.5rem;
 }
@@ -106,6 +110,13 @@ body {
 }
 .mb-5 {
   margin-bottom: 2rem;
+}
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mt-5 {
+  margin-top: 2rem;
 }
 
 .bb {
