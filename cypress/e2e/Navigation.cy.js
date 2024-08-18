@@ -26,35 +26,62 @@ describe('Tiles', () => {
     
   })
 
-  it('Mirrors', () => {
+  it('Editor', () => {
     visitAndCloseBanner()
 
-    // wait for airports query
-    cy.intercept({
-      method: 'GET',
-      url: 'https://ga-api-seven.vercel.app/airports/**',
-    }).as('getAirports');
-
-    // cy.wait('@getAirports').its('response.statusCode').should('equal', 200)
     cy.wait(1000)
 
-    // load checklist demo
+    // enable editor
     cy.get('.menuIcon').click()
-    cy.get('[aria-label="Mirror"]').click()
+    cy.get('[aria-label="Editor"]').click()
+
+    // Check we have action buttons
+    cy.get('.editor').contains('Reset')
+    cy.get('.editor').contains('Duplicate')
+    cy.get('.editor').contains('Swap')
+
+    // reset left
+    cy.get(':nth-child(1) > [aria-label="Reset"]').click()
+    cy.get('.pageOne').contains('Page Selection')
+    cy.get('.pageTwo').contains('Page Selection').should('not.exist')
+
+    // reload demo
+    cy.get('[aria-label="Demo"]').click()
     cy.get('.p-confirm-dialog-accept').click()
 
-    // check tiles have been mirrored
-    cy.get('.pageTwo > :nth-child(5) > .header > div').contains(titleAtis)
-    cy.get('.pageTwo > :nth-child(6) > .header > div').contains('Clearance @')
+    // reset right
+    cy.get(':nth-child(3) > [aria-label="Reset"]').click()
+    cy.get('.pageOne').contains('Page Selection').should('not.exist')
+    cy.get('.pageTwo').contains('Page Selection')
 
-    // Modifying left page should not impact right page
-    cy.get('.pageOne > :nth-child(5) > .header > div').click()
-    // replace tile with notes
-    cy.get('.header > .p-button').click()
-    cy.get('[aria-label="Notes"]').click()
-    cy.get('.pageOne > :nth-child(5) > .header > div').contains('Notes')
-    // Page two should still be Atis
-    cy.get('.pageTwo > :nth-child(5) > .header > div').contains(titleAtis)
+    // reload demo
+    cy.get('[aria-label="Demo"]').click()
+    cy.get('.p-confirm-dialog-accept').click()
+
+    // swap
+    cy.get('.pageOne > :nth-child(6) > .header').contains('Clearance @')
+    cy.get('.pageTwo > :nth-child(6) > .header').contains('Radio Flow')
+    cy.get('[aria-label="Swap"]').click()
+    cy.get('.pageOne > :nth-child(6) > .header').contains('Radio Flow')
+    cy.get('.pageTwo > :nth-child(6) > .header').contains('Clearance @')
+
+    // reload demo
+    cy.get('[aria-label="Demo"]').click()
+    cy.get('.p-confirm-dialog-accept').click()
+
+    // Copy Front to Back
+    cy.get(':nth-child(1) > [aria-label="Duplicate"]').click()
+    cy.get('.pageOne > :nth-child(6) > .header').contains('Clearance @')
+    cy.get('.pageTwo > :nth-child(6) > .header').contains('Clearance @')
+
+    // reload demo
+    cy.get('[aria-label="Demo"]').click()
+    cy.get('.p-confirm-dialog-accept').click()
+
+    // Copy Back to Front
+    cy.get(':nth-child(3) > [aria-label="Duplicate"]').click()
+    cy.get('.pageOne > :nth-child(6) > .header').contains('Radio Flow')
+    cy.get('.pageTwo > :nth-child(6) > .header').contains('Radio Flow')
 
   })
 
