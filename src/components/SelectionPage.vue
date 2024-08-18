@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from 'vue'
 
+import { pageTypeChecklist, pageTypeCover, pageTypeTiles } from '../assets/sheetData'
+
 import Header from '../components/shared/Header.vue'
 
 import Button from 'primevue/button'
@@ -9,8 +11,9 @@ const emits = defineEmits(['replace'])
 
 
 const knownPages = ref([
-    {'name':'Tiles','type':'tiles', 'tooltip':'A 2x3 grid of customizable tiles like Airport, ATIS, Radios, ...'},
-    {'name':'Checklist','type':'checklist', 'tooltip':'A checklist you can customize'},
+    {'name':'Tiles','type':pageTypeTiles, 'tooltip':'A 2x3 grid of customizable tiles like Airport, ATIS, Radios, ...'},
+    {'name':'Checklist','type':pageTypeChecklist, 'tooltip':'A checklist you can customize'},
+    {'name':'Cover','type':pageTypeCover, 'tooltip':'A cover page for your creations'},
 ])
 
 function replacePage(type) {
