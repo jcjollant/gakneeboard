@@ -14,7 +14,7 @@ import { urlBlog, getCurrentUser, setCurrentUser, sheetGetList } from '../../ass
 import { getSheetBlank, getSheetDemoTiles } from '../../assets/sheetData'
 import { getToastData, toastError, toastSuccess, toastWarning, toastInfo } from '../../assets/toast'
 
-const emits = defineEmits(['authentication','copy','load','print','printOptions','howDoesItWork','save','toast','toggle'])
+const emits = defineEmits(['authentication','editor','howDoesItWork','load','print','printOptions','save','toast','toggle'])
 
 const activeSheet = ref(null)
 const confirm = useConfirm()
@@ -298,8 +298,10 @@ function userUpdateSheets(newList) {
         <Button label="Save" icon="pi pi-save" title="Save this sheet" @click="onSheetDialog('save')"></Button>
         <Button label="Demo" icon="pi pi-clipboard" title="Load demo tiles" @click="onSheetLoad(getSheetDemoTiles())"></Button>
         <div class="separator"></div>
-        <Button label="Mirror" icon="pi pi-sign-out" title="Copy left page onto right" 
-          @click="confirmAndCopy"></Button>
+        <Button label="Editor" icon="pi pi-file-edit" title="Toggle Page Editor buttons" 
+          @click="emits('editor')"></Button>
+        <!-- <Button label="Mirror" icon="pi pi-sign-out" title="Copy left page onto right" 
+          @click="confirmAndCopy"></Button> -->
         <div class="separator"></div>
         <Button label="Feedback" icon="pi pi-megaphone" title="Send Feedback"
           @click="showFeedback=true" ></Button>
