@@ -15,6 +15,8 @@ Run the test suite:
 * Custom Airport is not editable after update
   
 # Done
+## 8/17/2024
+* New Page type "Cover"
 ## 8/16/2024
 1) Fixed visual bugs
 2) Added placeholder

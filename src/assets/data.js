@@ -1,4 +1,4 @@
-export const version = 816.2
+export const version = 817
 export const maxSheetCount = 10
 export const keyUser = 'kb-user'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
