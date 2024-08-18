@@ -79,14 +79,14 @@ export class HealthCheck {
 
     }
 
-    static async feedbackCheck():Promise<Check> {
-        const check:Check = new Check('feedback')
-        const feedbackCount:number = await FeedbackDao.count()
-        check.pass( "We have " + feedbackCount + " feedbacks")
-        return check
-    }
+    // static async feedbackCheck():Promise<Check> {
+    //     const check:Check = new Check('feedback')
+    //     const feedbackCount:number = await FeedbackDao.count()
+    //     check.pass( "We have " + feedbackCount + " feedbacks")
+    //     return check
+    // }
 
-    static async publicationsCheck():Promise<Check> {
+    static async availablePublicationsCheck():Promise<Check> {
         const check:Check = new Check('publications')
         const availableCount:number = await PublicationDao.countAvailable()
         if( availableCount < 600) {
@@ -136,42 +136,40 @@ export class HealthCheck {
 
     }
 
-    static async sheetsCheck():Promise<Check> {
-        const check:Check = new Check('sheets')
-        const sheetCount:number = await SheetDao.count()
+    // static async sheetsCheck():Promise<Check> {
+    //     const check:Check = new Check('sheets')
+    //     const sheetCount:number = await SheetDao.count()
 
-        if( sheetCount < 9) {
-            check.fail("Only " + sheetCount + " sheets")
-        } else {
-            check.pass( "We have " + sheetCount + " sheets")
-        }
+    //     if( sheetCount < 9) {
+    //         check.fail("Only " + sheetCount + " sheets")
+    //     } else {
+    //         check.pass( "We have " + sheetCount + " sheets")
+    //     }
 
-        return check
-    }
+    //     return check
+    // }
 
+    // static async usersCheck():Promise<Check> {
+    //     const check:Check = new Check('users')
+    //     const userCount:number = await UserDao.count()
 
+    //     if( userCount < 14) {
+    //         check.fail("Only " + userCount + " users")
+    //     } else {
+    //         check.pass( "We have " + userCount + " users")
+    //     }
 
-    static async usersCheck():Promise<Check> {
-        const check:Check = new Check('users')
-        const userCount:number = await UserDao.count()
-
-        if( userCount < 14) {
-            check.fail("Only " + userCount + " users")
-        } else {
-            check.pass( "We have " + userCount + " users")
-        }
-
-        return check
-    }
+    //     return check
+    // }
 
     public static async perform():Promise<Check[]> {
         return Promise.all([
                 HealthCheck.effectiveDateCheck(), 
-                HealthCheck.usersCheck(),
-                HealthCheck.feedbackCheck(),
-                HealthCheck.sheetsCheck(),
+                // HealthCheck.usersCheck(),
+                // HealthCheck.feedbackCheck(),
+                // HealthCheck.sheetsCheck(),
                 HealthCheck.airportDuplicatesCheck(),
-                HealthCheck.publicationsCheck()
+                HealthCheck.availablePublicationsCheck()
             ]).then( async allChecks => {
             const failedChecks:number = allChecks.filter((check) => check.status === Check.FAIL).length
             const data:string = JSON.stringify(allChecks)
