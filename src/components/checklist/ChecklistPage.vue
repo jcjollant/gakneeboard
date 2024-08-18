@@ -103,7 +103,7 @@ function onThemeChange(newTheme) {
 </script>
 
 <template>
-    <div class="contentPage">
+    <div class="contentPage checklistPage">
         <Header :title="title" :class="{ 'heading': data }" @click="onHeaderClick"></Header>
         <div v-if="mode == 'edit'" class="settings">
             <InputGroup>
@@ -144,7 +144,7 @@ Create sections using '##Section Name':
 </template>
 
 <style scoped>
-.contentPage {
+.checklistPage {
     overflow: hidden;
 }
 
