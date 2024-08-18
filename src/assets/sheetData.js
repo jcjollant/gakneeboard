@@ -12,6 +12,7 @@ const demoRadioData = [
 export const pageTypeSelection = 'selection'
 export const pageTypeTiles = 'tiles'
 export const pageTypeChecklist = 'checklist'
+export const pageTypeCover = 'cover'
 
 export const sheetNameDemoTiles = 'default-demo-tiles'
 export const sheetNameDemoChecklist = 'default-demo-checklist'
@@ -168,6 +169,8 @@ export function describePage(sheet, pageNumber) {
       return output
     } else if(page.type == pageTypeSelection) {
       return "[Selection]"
+    } else if(page.type == pageTypeCover ) {
+      return "[Cover] " + page.data.title;
     }
   } catch(e) {
     console.log('[sheetData.describePage] error', e)
