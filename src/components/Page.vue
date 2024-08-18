@@ -1,7 +1,10 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
+import { pageTypeChecklist, pageTypeCover, pageTypeSelection } from '../assets/sheetData'
+
 import ChecklistPage from './checklist/ChecklistPage.vue'
+import CoverPage from './cover/CoverPage.vue'
 import SelectionPage from './SelectionPage.vue'
 import TilePage from './tiles/TilePage.vue'
 
@@ -59,8 +62,9 @@ function onUpdate( newData) {
 </script>
 
 <template>
-    <ChecklistPage v-if="type=='checklist'" :data="pageData" @update="onUpdate" />
-    <SelectionPage v-else-if="type=='selection'" @replace="onReplace" />
+    <ChecklistPage v-if="type==pageTypeChecklist" :data="pageData" @update="onUpdate" />
+    <CoverPage v-else-if="type==pageTypeCover" :data="pageData" @replace="onReplace" @update="onUpdate" />
+    <SelectionPage v-else-if="type==pageTypeSelection" @replace="onReplace" />
     <TilePage v-else :data="pageData" @toast="onToast" @update="onUpdate" />
 </template>
 
