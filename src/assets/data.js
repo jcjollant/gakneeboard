@@ -26,6 +26,7 @@ const contentType = contentTypeJson;
 let currentUser = null
 let airports = {}
 let pendingCodes = []
+let sunlightCache = {}
 // export let backendVersion = null
 // export let currentAirportEffectiveDate = null
 // let effectiveDatePromise = null
@@ -45,7 +46,7 @@ export async function authenticate( source, token) {
   const payload = {source:source, token:token}
   const response = await axios.post(url, payload, contentTypeJson)
     .catch( e => {
-      console.log( '[data.authenticate] ' + e)
+      reportError( '[data.authenticate] ' + JSON.stringify(e))
       return null
     })
   // remove unknown airports because some may be due to unauhtenticated user
@@ -93,7 +94,7 @@ export async function customSheetDelete(sheet) {
       return sheet
     })
     .catch( error => {
-      console.log('[data.customSheetDelete] error ' + JSON.stringify(error))
+      reportError('[data.customSheetDelete] error ' + JSON.stringify(error))
       return null
     })
 }
@@ -136,7 +137,7 @@ export async function customSheetSave(sheet) {
       return responseSheet
     })
     .catch( error => {
-      console.log('[data.customSheetSave] error ' + JSON.stringify(error))
+      reportError('[data.customSheetSave] error ' + JSON.stringify(error))
       return null
     })
 }
@@ -210,7 +211,7 @@ export async function getAirport( codeParam, group = false) {
               airports[code] = airport
               resolve({current:false,airport:airport})
             }).catch( (e) => {
-              // console.log('[data.getAirport] error getting new airport data', e)
+              reportError('[data.getAirport] error getting new airport data' + JSON.stringify(e))
               resolve({current:false,airport:null})
             })
           }
@@ -281,7 +282,7 @@ export async function getBackend() {
         }
       })
       .catch( error => {
-        console.log( '[data.getBackend] error', JSON.stringify(error))
+        reportError( '[data.getBackend] error' + JSON.stringify(error))
         resolve(null)
       })
   })
@@ -344,17 +345,25 @@ export async function getSunlight( from, to=null, date=null, night=false) {
   if( !date) date = new Date() // today if not specified
   if( !to) to = from // default to same airport
   const dateFrom = getSunlightDate(date)
-  let url = apiRootUrl + 'sunlight/' + from + '/' + to + '/' + dateFrom
+  const params = from + '/' + to + '/' + dateFrom;
   if( night) { 
     const nextDay = new Date(date.getTime() + 24 * 60 * 60 * 1000)
-    url += '/' + getSunlightDate(nextDay)
+    params += '/' + getSunlightDate(nextDay)
   }
+  // do we already have that data?
+  if( params in sunlightCache) {
+    // console.log('[data.getSunlight] found cache hit')
+    return sunlightCache[params]
+  }
+
+  let url = apiRootUrl + 'sunlight/' + params
   return axios.get( url)
     .then( response => {
+      sunlightCache[params] = response.data
       return response.data
     })
     .catch( error => {
-      console.log( '[data.getSunlight] error ' + JSON.stringify(error))
+      reportError( '[data.getSunlight] error ' + JSON.stringify(error))
       return null
     })
 }
@@ -370,6 +379,11 @@ function getSunlightDate(date) {
  */
 export function refreshAirport(code, data) {
   airports[code] = data
+}
+
+export function reportError(message) {
+  // we are just printing in the console for now but eventually we want to report
+  console.log(message);
 }
 
 /**
@@ -397,7 +411,7 @@ async function requestAllAirports( codes) {
       codes.forEach( code => {
         airports[code] = null
       })
-      console.log( '[data.requestAllAirports] error ', error)
+      reportError( '[data.requestAllAirports] error ' + JSON.stringify(error))
     })
 }
 
@@ -447,7 +461,7 @@ export async function sendFeedback(text,contactMe) {
       // console.log( '[data] feedback sent')
     })
     .catch( error => {
-      console.log( '[data] feedback error ' + JSON.stringify(error))
+      reportError( '[data.sendFeedback] error ' + JSON.stringify(error))
     })
 }
 
@@ -493,7 +507,7 @@ export async function saveCustomAirport(airport) {
       // console.log( '[data] custom airport saved', airport.code)
     })
     .catch( error => {
-      console.log( '[data] custom airport save error ' + error)
+      reportError( '[data.saveCustomAirport] custom airport save error ' + JSON.stringify(error))
     })
 
 }
@@ -508,7 +522,7 @@ export async function sheetGetByCode(code) {
   return axios.get( url)
     .then( response => response.data)
     .catch( error => {
-      console.log( '[data.sheetGetByCode] error ' + JSON.stringify(error))
+      reportError( '[data.sheetGetByCode] error ' + JSON.stringify(error))
       return null
     })
 
@@ -523,7 +537,7 @@ export async function sheetGetById(id) {
     return sheet;
   }).catch( error => {
       if(error.response.status != 404) {
-        console.log( '[data.sheetGetById] error ' + error)
+        reportError( '[data.sheetGetById] error ' + error.response.status + ' ' + error.response.statusText)
       }
       return null
     })
@@ -537,7 +551,7 @@ export async function sheetGetList() {
     return currentUser.sheets;
   })
   .catch( error => {
-    console.log( '[data.sheetGetList] error ' + error)
+    reportError( '[data.sheetGetList] error ' + JSON.stringify(error))
     return null
   })
 
