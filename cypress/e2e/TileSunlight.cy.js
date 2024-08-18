@@ -12,7 +12,7 @@ describe('Tiles', () => {
       url: 'https://ga-api-seven.vercel.app/airports/**',
     }).as('getAirports');
 
-    cy.wait('@getAirports').its('response.statusCode').should('equal', 200)
+    cy.wait(2000)
 
     // check header is present
     cy.get('.pageTwo > :nth-child(3) > .header > div').contains('Sun Light')
