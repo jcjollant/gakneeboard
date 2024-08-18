@@ -2,21 +2,27 @@
 // import HelloWorld from './components/HelloWorld.vue'
 import { onBeforeMount, onMounted,ref} from 'vue'
 import { inject } from "@vercel/analytics"
+
+import { duplicate, getBackend, keyUser, reportError, setCurrentUser, sheetGetByCode } from './assets/data.js'
+import { backend, version } from './assets/data.js'
+import { getSheetDemoTiles, getSheetLocal, localSheetSave, normalizeSheetData, pageDataBlank } from './assets/sheetData'
+import { getToastData, toastError, toastWarning } from './assets/toast'
+
+import { useToast } from 'primevue/usetoast'
+import Button from 'primevue/button'
+import Toast from 'primevue/toast';
+
 import Menu from './components/menu/Menu.vue'
 import Page from './components/Page.vue'
-import { duplicate, getBackend, keyUser, setCurrentUser, sheetGetByCode } from './assets/data.js'
-import { backend, version } from './assets/data.js'
-import { getSheetDemoTiles, getSheetLocal, localSheetSave, normalizeSheetData } from './assets/sheetData'
-import { getToastData, toastError } from './assets/toast'
 import HowDoesItWork from './components/HowDoesItWork.vue'
-import { useToast } from 'primevue/usetoast'
-import Toast from 'primevue/toast';
+
 
 const frontPageData = ref(null)
 const backPageData = ref(null)
 const activeSheet = ref(null)
 const sheetModified = ref(false)
 
+const editor = ref(false)
 const flipMode = ref(false)
 const keyHowDoesItWork = 'howDoesItWork'
 const showHowDoesItWork = ref(true)
@@ -88,6 +94,29 @@ onBeforeMount(()=>{
   }
 })
 
+function onEditorAction(action) {
+  // console.log('[App.onEditorAction]')
+  if(action == 'copyFrontToBack') {
+    backPageData.value = duplicate(frontPageData.value)
+  } else if(action == 'copyBackToFront') {
+    frontPageData.value = duplicate(backPageData.value)
+  } else if(action == 'swapPages') {
+    const swap = duplicate(frontPageData.value)
+    frontPageData.value = duplicate(backPageData.value)
+    backPageData.value = swap;
+  } else if(action == 'resetFront') {
+    frontPageData.value = duplicate(pageDataBlank)
+  } else if(action == 'resetBack') {
+    backPageData.value = duplicate(pageDataBlank)
+  } else {
+    reportError('[App.oneditorAction] unknown action ' + action)
+  }
+  // update active sheet with new values
+  activeSheet.value.data = [frontPageData.value, backPageData.value];
+  saveActiveSheet(true)
+
+}
+
 function onMaintenanceDialog() {
   showToast( getToastData("Maintenance", "Window"))
 }
@@ -95,11 +124,11 @@ function onMaintenanceDialog() {
 /**
  * Copy all left tiles from left to right
  */
-function onMenuCopy() {
-  // console.log('[App.onMenuCopy]')
-  backPageData.value = duplicate(frontPageData.value)
-  activeSheet.value.data = [frontPageData.value, backPageData.value];
-  saveActiveSheet(true)
+function onMenuEditor() {
+  if(!editor.value && sheetModified.value) {
+    showToast( getToastData('Editing Modified Page','Save your page before editing to undo potential mistakes', toastWarning, 5000))
+  }
+  editor.value = !editor.value;
 }
 
 function onMenuLoad(sheet) {
@@ -166,6 +195,7 @@ function onPrint(options) {
   versionVisible.value = false;
   sheetNameVisible.value = false
   menuVisible.value = false
+  editor.value = false;
 
   // print window content after a short timeout to let flipmode kickin
   setTimeout(doPrint, 500);
@@ -224,20 +254,30 @@ function showToast(data) {
   <div :class="{'twoPages':pageOneVisible && pageTwoVisible}">
     <Page :data="frontPageData" v-if="pageOneVisible" class="pageOne"
       @update="onPageUpdateFront" 
-      @toast="showToast" />
+      @toast="toast.add" />
     <Page :data="backPageData" v-if="pageTwoVisible" class="pageTwo" :class="{flipMode:flipMode}"
       @update="onPageUpdateBack" 
-      @toast="showToast" />
+      @toast="toast.add" />
+  </div>
+  <div v-if="editor" class="editor">
+    <div class="editorPage">
+      <Button icon="pi pi-file" label="Reset" @click="onEditorAction('resetFront')"></Button>
+      <Button icon="pi pi-arrow-right" label="Duplicate" @click="onEditorAction('copyFrontToBack')"></Button>
+    </div>
+    <Button icon="pi pi-arrow-right-arrow-left" label="Swap" @click="onEditorAction('swapPages')"></Button>
+    <div class="editorPage">
+      <Button icon="pi pi-arrow-left" label="Duplicate" @click="onEditorAction('copyBackToFront')"></Button>
+      <Button icon="pi pi-file" label="Reset" @click="onEditorAction('resetBack')"></Button>
+    </div>
   </div>
   <div class="menuContainer">
     <Menu class="menu" :pageData="activeSheet?activeSheet.data:null" v-show="menuVisible"
-      @load="onMenuLoad" 
-      @print="onPrint"
-      @printOptions="onPrintOptions"
-      @copy="onMenuCopy"
+      @editor="onMenuEditor"
       @howDoesItWork="showHowDoesItWork=true"
+      @load="onMenuLoad" 
+      @print="onPrint" @printOptions="onPrintOptions"
       @save="onMenuSave"
-      @toast="showToast" @toggle="onMenuToggle"
+      @toast="toast.add" @toggle="onMenuToggle"
       >
     </Menu>
   </div>
@@ -247,17 +287,15 @@ function showToast(data) {
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.editor {
+  display: flex;
+  justify-content: center;
+  padding-top:20px;
+  gap:100px;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+.editorPage {
+  display: flex;
+  gap:10px;
 }
 .sheetName {
   position : absolute;
