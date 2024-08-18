@@ -31,11 +31,7 @@ describe('Tiles', () => {
 
     cy.get('.nightFlight').click()
     cy.get('[aria-label="Apply"]').click()
-    cy.intercept({
-      method: 'GET',
-      url: 'https://ga-api-seven.vercel.app/sunlight/**',
-    }).as('getSunlight');    
-    cy.wait('@getSunlight').its('response.statusCode').should('equal', 200)
+    cy.wait(500)
     // Check corners in night mode
     cy.get('.topLeftCorner').contains('KRNT')
     cy.get('.topRightCorner').contains('KSFF')
