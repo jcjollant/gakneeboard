@@ -345,7 +345,7 @@ export async function getSunlight( from, to=null, date=null, night=false) {
   if( !date) date = new Date() // today if not specified
   if( !to) to = from // default to same airport
   const dateFrom = getSunlightDate(date)
-  const params = from + '/' + to + '/' + dateFrom;
+  let params = from + '/' + to + '/' + dateFrom;
   if( night) { 
     const nextDay = new Date(date.getTime() + 24 * 60 * 60 * 1000)
     params += '/' + getSunlightDate(nextDay)
