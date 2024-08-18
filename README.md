@@ -21,6 +21,8 @@ ts-node .\willie.ts
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
+## 8/18/2024
+* Added Waylon that publishes metrics
 ## 8/14/2024
 * Added support for ATC information
 ## 8/11/2024
