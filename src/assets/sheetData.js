@@ -35,12 +35,12 @@ const pageDataBlankTiles = {type:pageTypeTiles,data:[
   {id:5,name:'',data:{}},
 ]}
 const pageDataBlankChecklist = {type:pageTypeChecklist, data:{}}
-const pageDataBlankSelection = {type:pageTypeSelection,data:{}}
+export const pageDataBlank = {type:pageTypeSelection,data:{}}
 
 // Sheets
 const sheetBlank = {
   name:'Blank',
-  data:[pageDataBlankSelection,pageDataBlankSelection]
+  data:[pageDataBlank,pageDataBlank]
 }
 
 const sheetDemoTiles = {
@@ -184,7 +184,7 @@ export function describePage(sheet, pageNumber) {
  * @returns 
  */
 export function getPageBlank(type) {
-  let source = pageDataBlankSelection
+  let source = pageDataBlank
   if(type == pageTypeChecklist) {
     source = pageDataBlankChecklist;
   } else if(type == pageTypeTiles) {
