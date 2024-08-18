@@ -4,6 +4,12 @@ import { version } from "os";
 
 export class AirportDao {
     
+    public static async count():Promise<number> {
+        const result = await sql`SELECT count(*) FROM Airports`;
+        return Number(result.rows[0].count)
+    }
+
+
     public static async create(code:string, data:any) {
         // console.log( '[AirportDao.create] ' + code)
         await sql`INSERT INTO Airports (Code, Data, Version) VALUES (${code}, ${data},${data.version})`;
