@@ -1,6 +1,6 @@
 import { currentVersionNumber, visitAndCloseBanner, titleAtis } from './shared'
 
-describe('Tiles', () => {
+describe('Navigation', () => {
   // ========================================================================
   // Print Dialog
   // ========================================================================
