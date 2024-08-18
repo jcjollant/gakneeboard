@@ -1,3 +1,6 @@
+const noFrequency = '-.-'
+
+
 export function formatAtcGroups(airport, enrichment=undefined) {
     if( !airport || !airport.atc) return []
 

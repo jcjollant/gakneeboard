@@ -29,7 +29,6 @@ const props = defineProps({
 let airport = null
 let runway = null
 let cornerId = -1
-const noFrequency = '-.-'
 const selectedCornerType = ref('weather')
 const cornerTypes = ref([
     { name: 'Field Elevation', key: 'field' },
