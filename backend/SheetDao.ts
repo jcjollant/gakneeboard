@@ -6,8 +6,6 @@ export class SheetDao {
 
     static maxSheets:number = 10
 
-
-
     public static async count():Promise<number> {
         const result = await sql`SELECT count(*) FROM Sheets`;
         return Number(result.rows[0].count)
