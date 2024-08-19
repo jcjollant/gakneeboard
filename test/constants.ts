@@ -14,7 +14,7 @@ export const jcToken = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjY3MTk2NzgzNTFhNWZhZWRjMmU3
 export const jcEmail = 'jcjollant@gmail.com'
 
 export const currentAsOf = 20240808;
-export const currentVersion = 814.2
+export const currentVersion = 819
 export const currentAirportModelVersion = 4
 export const krntAtcs =  [
     {mhz:119.2, useCount:6, name:'SEATTLE-TACOMA APPROACH CONTROL'},
