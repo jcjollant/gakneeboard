@@ -31,6 +31,7 @@ export class AirportView {
             this.elev = 0;
             this.custom = false;
             this.asof = 0;
+            this.version = AirportView.invalidVersion;
         }
         this.freq = (airport && airport.freq) ? airport.freq : []
         this.rwys = (airport && airport.rwys) ? airport.rwys : []
