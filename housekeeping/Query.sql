@@ -36,7 +36,7 @@ DELETE FROM airports WHERE DATA LIKE '%"code":"?"%'
 
 SELECT COUNT(*) FROM airports where data like '%"code":"?"%'
 
-SELECT * FROM airports WHERE Code='JC'
+SELECT * FROM airports WHERE Code ='KXX'
 
 SELECT * FROM airports WHERE Code = ANY (ARRAY['JC','PAE','JCJ'])
 
@@ -112,10 +112,26 @@ INSERT INTO health_checks (data,failures) VALUES ("TEST",1)
 # Sheets Pages
 SELECT * FROM sheets
 
+# Sheets from actual users
+SELECT * FROM sheets WHERE user_id > 2
+
 # Count of JC sheets
 SELECT COUNT(*) FROM sheets WHERE user_Id=1
+
+# Who are Sheet creators
+SELECT COUNT(*) as count, user_id FROM sheets GROUP BY user_id ORDER BY count DESC
+
+# Who are Sheet creators
+SELECT COUNT(*) as count, user_id FROM sheets WHERE user_id IS NOT NULL GROUP BY user_id ORDER BY count DESC
+
+# Who are Sheet creators
+SELECT COUNT(*) as count, user_id FROM sheets WHERE user_id IS NOT NULL AND user_id != 1 GROUP
 
 #########################################
 # Publications
 
 SELECT * FROM publications WHERE sheetid IS NOT NULL
+
+# Who else than JC has published
+SELECT COUNT(p.*), s.user_id FROM publications as p LEFT JOIN sheets as s ON p.sheetid = s.id  GROUP BY s.user_id ORDER BY count DESC
+
