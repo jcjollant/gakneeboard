@@ -192,4 +192,12 @@ describe('Adip', () => {
         expect(airport.code).toBe('KBFF')
         expect(airport.name).toBe('Western Nebraska Rgnl/wm B Heilig Fld/scottsbluff')
     })
+
+    test('Invalid Code', () => {
+        try {
+            const airport = Adip.airportFromData({"error":"noAirportData"})
+            expect(true).toBeFalsy()
+        } catch(e) {
+        }
+    })
 })

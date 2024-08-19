@@ -38,6 +38,7 @@ describe( 'Airport View', () => {
         expect(undefinedView.rwys).toHaveLength(0)
         expect(undefinedView.navaids).toHaveLength(0)
         expect(undefinedView.atc).toHaveLength(0)
+        expect(undefinedView.version).toBe(-1)
     })
 
     test('Defined view', () => {
