@@ -1,11 +1,11 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { Airport } from '../../assets/Airport';
 import * as data from '../../assets/data.js'
 
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner';
 
+import ActionBar from '../shared/ActionBar.vue'
 import AirportInput from '../shared/AirportInput.vue'
 import CustomAirport from './CustomAirport.vue';
 
@@ -66,7 +66,7 @@ const loading = ref(false)
 const rwyList = ref([])
 const airportCode = ref('')
 const airportName = ref('')
-const canCancel = ref(false)
+const canCancel = ref(true)
 const canApply = ref(false)
 const canCreate = ref(false)
 const canEdit = ref(false)
@@ -87,12 +87,7 @@ function loadAirport( code) {
             if( newAirport && newAirport.version != -1) {
                 loadAirportData(newAirport)
             } else { // airport is unknown
-                rwyList.value = [];
-                airportName.value = "Unknown"
-                validAirport.value = false
-                canApply.value = false
-                canCreate.value = Airport.isValidCode(code)
-                canEdit.value = false
+                onInvalidAirport(code)
             }
         })
 }
@@ -117,13 +112,8 @@ function loadAirportData(newAirport) {
         customAirport.value = null
         canEdit.value = false
     }
-    // canEdit.value = (customAirport.value != null)
     canCreate.value = false
-    // we cannot apply until we pick a runway
-}
-
-function onAirportInputUpdating() {
-    loading.value=true
+    canCancel.value = true
 }
 
 // settings are applied
@@ -131,7 +121,11 @@ function onApply() {
     // update settings with orientation
     emits('selection', airport, selectedRwy.value, rwyOrientation.value.toLowerCase())
 }
-    
+
+function onCancel() {
+    emits('close')
+}
+
 function onCustomUpdated(code, airportData) {
     // console.log('[AirportEdit.onCustomUpdated]', code)
     showCustomAirport.value=false
@@ -141,17 +135,27 @@ function onCustomUpdated(code, airportData) {
     loadAirport(code)
 }
 
-function onCustomCreate() {
-    // console.log('[AirportEdit.onCustomCreate]')
-    const newAirport = new Airport( airportCode.value, "", 0)
-    newAirport.custom = true
-    // console.log('[AirportEdit.onCustomCreate] newAirport', JSON.stringify(newAirport))
-    customAirport.value = newAirport;
-    showCustomAirportDialog()
-}
+// function onCustomCreate() {
+//     // console.log('[AirportEdit.onCustomCreate]')
+//     const newAirport = new Airport( airportCode.value, "", 0)
+//     newAirport.custom = true
+//     // console.log('[AirportEdit.onCustomCreate] newAirport', JSON.stringify(newAirport))
+//     customAirport.value = newAirport;
+//     showCustomAirportDialog()
+// }
 
 function onCustomEdit() {
     showCustomAirportDialog();
+}
+
+function onInvalidAirport(code) {
+    rwyList.value = [];
+    airportName.value = "Unknown"
+    validAirport.value = false
+    canApply.value = false
+    canCreate.value = false // Airport.isValidCode(code)
+    canEdit.value = false
+
 }
 
 // A runway has been selected from the list
@@ -180,7 +184,7 @@ function showCustomAirportDialog() {
                         @close="showCustomAirport=false" @updated="onCustomUpdated" />
         <div class="settings">
             <AirportInput :code="airportCode" :auto="true"
-                @valid="loadAirportData" />
+                @valid="loadAirportData" @invalid="onInvalidAirport" />
             <ProgressSpinner v-if="loading" class="spinner" ></ProgressSpinner>
             <div v-else-if="validAirport">
                 <div class="miniHeader">Runway</div>
@@ -200,15 +204,17 @@ function showCustomAirportDialog() {
                 </div>
             </div>
         </div>
-        <div class="actionBar">
-                <Button v-if="canEdit" label="Edit" severity="secondary"
+                <!-- <Button v-if="canEdit" label="Edit" severity="secondary"
                     @click="onCustomEdit"></Button>
                 <Button v-if="canCreate" label="Create" severity="secondary"
-                    @click="onCustomCreate"></Button>
+                    @click="onCustomCreate"></Button> -->
+        <ActionBar :help="data.urlGuideAirport" :canApply="canApply" :canCancel="canCancel"
+            @apply="onApply" @cancel="onCancel"  />
+        <!-- <div class="actionBar">
                 <Button v-if="canCancel" label="Cancel" link @click="emits('close')"></Button>
                 <Button label="Apply" 
                     @click="onApply" :disabled="!canApply" ></Button>
-            </div>
+            </div> -->
     </div>
 </template>
 
