@@ -67,6 +67,7 @@ app.get("/airport/:id", async (req,res) => {
 
     GApi.getAirportView(req.params.id, userId)
         .then( (airport) => {
+            //console.log("[index] Returning airport " + JSON.stringify(airport));
             res.send(airport)
         }).catch( (e) => {
             catchError(res, e, 'GET /airport/:id')
