@@ -202,6 +202,7 @@ function onPrint(options) {
 }
 
 function onPrintOptions(options) {
+  // console.log('[App.onPrintOptions]', JSON.stringify(options))
   if( options) {
     flipMode.value = options.flipped;
     pageOneVisible.value = options.showFront;
@@ -233,6 +234,7 @@ function restorePrintOptions() {
     sheetNameVisible.value = true;
     pageOneVisible.value = true;
     pageTwoVisible.value = true;
+    editor.value = false;
 }
 
 function saveActiveSheet(modified=false) {
