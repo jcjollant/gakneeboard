@@ -115,8 +115,7 @@ function onPrint() {
   showPrint.value = true;
   refreshPrint.value++;
   toggleMenu()
-  // printMode.value = !printMode.value
-  // emits('flip')  
+  emits('printOptions');
 }
 
 function onPrintClose() {
@@ -291,7 +290,7 @@ function userUpdateSheets(newList) {
         <Button v-else label="Sign In" icon="pi pi-user" title="Sign In to enable custom data"
           @click="showSignIn=true"></Button>
         <Button icon="pi pi-print" label="Print" title="Print the active sheet"
-          @click="onPrint" />
+          @click="onPrint"></Button>
         <div class="separator"></div>
         <Button label="New" icon="pi pi-file" title="Reset both pages" @click="onSheetLoad(getSheetBlank())"></Button>
         <Button label="Load" icon="pi pi-folder-open" title="Open existing sheet" @click="onSheetDialog('load')"></Button>
