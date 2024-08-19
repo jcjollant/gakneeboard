@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import Button from 'primevue/button'
 
 const emits = defineEmits(['apply','cancel'])
@@ -7,14 +7,12 @@ const help = ref(null)
 const canApply = ref(true)
 const canCancel = ref(true)
 
+//------------------------------
+// Props management
 const props = defineProps({
     help: { type: String, default: null },
     canApply : { type: Boolean, default: true},
     canCancel : { type: Boolean, default: true},
-})
-
-onMounted(() => {
-    loadProps(props)
 })
 
 function loadProps(newProps) {
@@ -22,6 +20,17 @@ function loadProps(newProps) {
     canApply.value = newProps.canApply
     canCancel.value = newProps.canCancel
 }
+
+onMounted(() => {
+    loadProps(props)
+})
+
+watch( props, async() => {
+    loadProps(props)
+})
+
+//------------------------------
+
 
 function onHelp() {
     if(help.value) {
