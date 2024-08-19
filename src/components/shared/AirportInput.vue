@@ -44,7 +44,7 @@ function fetchAirport() {
                 emits('valid', airport)
             } else { // airport is unknown
                 name.value = "Unknown"
-                emits('invalid')
+                emits('invalid', code.value)
             }
         })
 }
