@@ -4,9 +4,13 @@ import Button from 'primevue/button'
 
 const emits = defineEmits(['apply','cancel'])
 const help = ref(null)
+const canApply = ref(true)
+const canCancel = ref(true)
 
 const props = defineProps({
     help: { type: String, default: null },
+    canApply : { type: Boolean, default: true},
+    canCancel : { type: Boolean, default: true},
 })
 
 onMounted(() => {
@@ -15,6 +19,8 @@ onMounted(() => {
 
 function loadProps(newProps) {
     help.value = newProps.help
+    canApply.value = newProps.canApply
+    canCancel.value = newProps.canCancel
 }
 
 function onHelp() {
@@ -28,8 +34,8 @@ function onHelp() {
 <template>
     <div class="actionBar">
         <Button class="floatLeft" v-if="help" icon="pi pi-info-circle" link @click="onHelp" title="Get help on this topic"></Button>
-        <Button @click="emits('cancel')" label="Cancel" link></Button>
-        <Button icon="pi pi-check" @click="emits('apply')" label="Apply"></Button>
+        <Button v-if="canCancel" @click="emits('cancel')" label="Cancel" link></Button>
+        <Button icon="pi pi-check" @click="emits('apply')" label="Apply" :disabled="!canApply"></Button>
     </div>
 </template>
 
