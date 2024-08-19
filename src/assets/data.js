@@ -1,8 +1,8 @@
-export const version = 818
+export const version = 819
 export const maxSheetCount = 10
 export const keyUser = 'kb-user'
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
-//const apiRootUrl = 'http://localhost:3000/'
+// const apiRootUrl = 'http://localhost:3000/'
 // const apiRootUrl = 'https://ga-api-git-google-auth-jcjollants-projects.vercel.app/'
 // const apiRootUrl = 'https://ga-api-git-custom-airports-jcjollants-projects.vercel.app/'
 export const urlBlog = 'https://gakneeboard.wordpress.com/'
