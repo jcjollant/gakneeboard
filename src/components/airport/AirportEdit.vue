@@ -21,7 +21,7 @@ const emits = defineEmits(['close','selection'])
 })
 
 function loadProps(props) {
-    // console.log('AirportEdit loading props ' + JSON.stringify(props))
+    // console.log('[AirportEdit.loadProps] ' + JSON.stringify(props))
     if( props.airport) {
         airport = props.airport
         showAirport()
@@ -30,7 +30,7 @@ function loadProps(props) {
         // if we have an airport to start with, we can revert.
         canCancel.value = true;
         canApply.value = true;
-        
+        // console.log('[AirportEdit.loadProps]', canCancel.value, canApply.value)
         // select the first runway by default
         if( props.rwyName) {
             selectedRwy.value = props.rwyName
@@ -66,7 +66,7 @@ const loading = ref(false)
 const rwyList = ref([])
 const airportCode = ref('')
 const airportName = ref('')
-const canCancel = ref(true)
+const canCancel = ref(false)
 const canApply = ref(false)
 const canCreate = ref(false)
 const canEdit = ref(false)
@@ -144,11 +144,12 @@ function onCustomUpdated(code, airportData) {
 //     showCustomAirportDialog()
 // }
 
-function onCustomEdit() {
-    showCustomAirportDialog();
-}
+// function onCustomEdit() {
+//     showCustomAirportDialog();
+// }
 
 function onInvalidAirport(code) {
+    // console.log('[AirportEdit.onInvalidAirport]', code)
     rwyList.value = [];
     airportName.value = "Unknown"
     validAirport.value = false
@@ -171,10 +172,10 @@ function showAirport() {
     validAirport.value = true;
 }
                             
-function showCustomAirportDialog() {
-    currentUser.value = data.getCurrentUser()
-    showCustomAirport.value = true
-}
+// function showCustomAirportDialog() {
+//     currentUser.value = data.getCurrentUser()
+//     showCustomAirport.value = true
+// }
 
 </script>
 
@@ -204,17 +205,12 @@ function showCustomAirportDialog() {
                 </div>
             </div>
         </div>
-                <!-- <Button v-if="canEdit" label="Edit" severity="secondary"
-                    @click="onCustomEdit"></Button>
-                <Button v-if="canCreate" label="Create" severity="secondary"
-                    @click="onCustomCreate"></Button> -->
+        <!-- <Button v-if="canEdit" label="Edit" severity="secondary"
+            @click="onCustomEdit"></Button>
+        <Button v-if="canCreate" label="Create" severity="secondary"
+            @click="onCustomCreate"></Button> -->
         <ActionBar :help="data.urlGuideAirport" :canApply="canApply" :canCancel="canCancel"
             @apply="onApply" @cancel="onCancel"  />
-        <!-- <div class="actionBar">
-                <Button v-if="canCancel" label="Cancel" link @click="emits('close')"></Button>
-                <Button label="Apply" 
-                    @click="onApply" :disabled="!canApply" ></Button>
-            </div> -->
     </div>
 </template>
 
