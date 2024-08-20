@@ -260,3 +260,20 @@ export function normalizeSheetData(data) {
 
   return data;
 }
+
+// See whether a page data string is valid
+export async function readPageFromClipboard(page) {
+  return new Promise( (resolve,reject) => {
+    navigator.clipboard.readText().then( text => {
+      try {
+        const pageData = JSON.parse(text)
+        if( !('type' in pageData && 'data' in pageData)) throw new Error('Unkonw object format');
+        resolve( pageData)
+      } catch(e) {
+        reject('Clipboard data is not a Kneeboard Page')
+      }
+    }).catch( e => {
+      reject('Clipboard access denied')
+    })
+  })
+}
