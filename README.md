@@ -15,6 +15,8 @@ Run the test suite:
 * Custom Airport is not editable after update
   
 # Done
+## 8/20/2024
+* Editor improvments, copy paste
 ## 8/19/2024
 * Improved unknown code management
 * Added Help link to Airport Edit ActionBar
