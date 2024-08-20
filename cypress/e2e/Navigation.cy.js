@@ -36,9 +36,13 @@ describe('Navigation', () => {
     cy.get('[aria-label="Editor"]').click()
 
     // Check we have action buttons
-    cy.get('.editor').contains('Reset')
-    cy.get('.editor').contains('Duplicate')
-    cy.get('.editor').contains('Swap')
+    cy.get(':nth-child(1) > [aria-label="Reset"]')
+    cy.get(':nth-child(1) > [aria-label="Copy"]')
+    cy.get(':nth-child(1) > [aria-label="Paste"]')
+    cy.get('.middle > .p-button').should('have.class','p-button-icon-only')
+    cy.get(':nth-child(3) > [aria-label="Reset"]')
+    cy.get(':nth-child(3) > [aria-label="Copy"]')
+    cy.get(':nth-child(3) > [aria-label="Paste"]')
 
     // reset left
     cy.get(':nth-child(1) > [aria-label="Reset"]').click()
@@ -61,7 +65,7 @@ describe('Navigation', () => {
     // swap
     cy.get('.pageOne > :nth-child(6) > .header').contains('Clearance @')
     cy.get('.pageTwo > :nth-child(6) > .header').contains('Radio Flow')
-    cy.get('[aria-label="Swap"]').click()
+    cy.get('.middle > .p-button').click()
     cy.get('.pageOne > :nth-child(6) > .header').contains('Radio Flow')
     cy.get('.pageTwo > :nth-child(6) > .header').contains('Clearance @')
 
@@ -70,7 +74,9 @@ describe('Navigation', () => {
     cy.get('.p-confirm-dialog-accept').click()
 
     // Copy Front to Back
-    cy.get(':nth-child(1) > [aria-label="Duplicate"]').click()
+    cy.get(':nth-child(1) > [aria-label="Copy"]').click()
+    cy.get(':nth-child(3) > [aria-label="Paste"]').click()
+
     cy.get('.pageOne > :nth-child(6) > .header').contains('Clearance @')
     cy.get('.pageTwo > :nth-child(6) > .header').contains('Clearance @')
 
@@ -79,7 +85,8 @@ describe('Navigation', () => {
     cy.get('.p-confirm-dialog-accept').click()
 
     // Copy Back to Front
-    cy.get(':nth-child(3) > [aria-label="Duplicate"]').click()
+    cy.get(':nth-child(3) > [aria-label="Copy"]').click()
+    cy.get(':nth-child(1) > [aria-label="Paste"]').click()
     cy.get('.pageOne > :nth-child(6) > .header').contains('Radio Flow')
     cy.get('.pageTwo > :nth-child(6) > .header').contains('Radio Flow')
 
