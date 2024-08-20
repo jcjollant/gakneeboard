@@ -5,13 +5,14 @@ import { inject } from "@vercel/analytics"
 
 import { duplicate, getBackend, keyUser, reportError, setCurrentUser, sheetGetByCode } from './assets/data.js'
 import { backend, version } from './assets/data.js'
-import { getSheetDemoTiles, getSheetLocal, localSheetSave, normalizeSheetData, pageDataBlank } from './assets/sheetData'
+import { EditorAction } from './assets/Editor.ts'
+import { getSheetDemoTiles, getSheetLocal, localSheetSave, normalizeSheetData, pageDataBlank, readPageFromClipboard } from './assets/sheetData'
 import { getToastData, toastError, toastWarning } from './assets/toast'
 
 import { useToast } from 'primevue/usetoast'
-import Button from 'primevue/button'
 import Toast from 'primevue/toast';
 
+import Editor from './components/Editor.vue'
 import Menu from './components/menu/Menu.vue'
 import Page from './components/Page.vue'
 import HowDoesItWork from './components/HowDoesItWork.vue'
@@ -94,20 +95,32 @@ onBeforeMount(()=>{
   }
 })
 
-function onEditorAction(action) {
-  // console.log('[App.onEditorAction]')
-  if(action == 'copyFrontToBack') {
-    backPageData.value = duplicate(frontPageData.value)
-  } else if(action == 'copyBackToFront') {
-    frontPageData.value = duplicate(backPageData.value)
-  } else if(action == 'swapPages') {
+async function onEditorAction(action) {
+  if(action == EditorAction.swapPages) {
     const swap = duplicate(frontPageData.value)
     frontPageData.value = duplicate(backPageData.value)
     backPageData.value = swap;
-  } else if(action == 'resetFront') {
+  } else if(action == EditorAction.resetFront) {
     frontPageData.value = duplicate(pageDataBlank)
-  } else if(action == 'resetBack') {
+  } else if(action == EditorAction.resetBack) {
     backPageData.value = duplicate(pageDataBlank)
+  } else if(action == EditorAction.copyFront || action == EditorAction.copyBack) {
+    const front = (action == EditorAction.copyFront);
+    const pageData = ( front ? frontPageData.value : backPageData.value)
+    const which = (front ? 'Front' : 'Back')
+    // grab data and show toast
+    navigator.clipboard.writeText(JSON.stringify(pageData));
+    showToast( getToastData('Clear',which + ' page copied to clipboard'))
+  } else if(action == EditorAction.pasteBack || action == EditorAction.pasteFront) {
+    readPageFromClipboard().then( page => {
+        if( action == EditorAction.pasteBack) {
+          backPageData.value = page;
+        } else {
+          frontPageData.value = page;
+        }
+    }).catch( e => {
+        showToast(getToastData('Cannot Paste', e, toastError))
+    }) 
   } else {
     reportError('[App.oneditorAction] unknown action ' + action)
   }
@@ -261,17 +274,7 @@ function showToast(data) {
       @update="onPageUpdateBack" 
       @toast="toast.add" />
   </div>
-  <div v-if="editor" class="editor">
-    <div class="editorPage">
-      <Button icon="pi pi-file" label="Reset" @click="onEditorAction('resetFront')"></Button>
-      <Button icon="pi pi-arrow-right" label="Duplicate" @click="onEditorAction('copyFrontToBack')"></Button>
-    </div>
-    <Button icon="pi pi-arrow-right-arrow-left" label="Swap" @click="onEditorAction('swapPages')"></Button>
-    <div class="editorPage">
-      <Button icon="pi pi-arrow-left" label="Duplicate" @click="onEditorAction('copyBackToFront')"></Button>
-      <Button icon="pi pi-file" label="Reset" @click="onEditorAction('resetBack')"></Button>
-    </div>
-  </div>
+  <Editor v-if="editor" @action="onEditorAction" />
   <div class="menuContainer">
     <Menu class="menu" :pageData="activeSheet?activeSheet.data:null" v-show="menuVisible"
       @editor="onMenuEditor"
@@ -289,16 +292,6 @@ function showToast(data) {
 </template>
 
 <style scoped>
-.editor {
-  display: flex;
-  justify-content: center;
-  padding-top:20px;
-  gap:100px;
-}
-.editorPage {
-  display: flex;
-  gap:10px;
-}
 .sheetName {
   position : absolute;
   font-size: 3rem;
