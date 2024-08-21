@@ -4,6 +4,7 @@ import { Adip } from "../backend/Adip"
 import { postgresUrl } from "../test/constants"
 import { Airport } from "../backend/models/Airport"
 import { AirportDao } from '../backend/AirportDao'
+import { Metrics, Metric } from '../backend/Metrics'
 
 process.env.POSTGRES_URL=postgresUrl
 
@@ -140,3 +141,7 @@ async function createPublicationCodes() {
 // checkEffectiveDates()
 // distilUnknowns()
 // createPublicationCodes()
+
+Metrics.perform(false, false).then(dataString => {
+    console.log( dataString)
+})
