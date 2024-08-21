@@ -10,7 +10,7 @@ import InputText from "primevue/inputtext";
 import SelectButton from "primevue/selectbutton"
 
 import { customSheetDelete, maxSheetCount, sheetGetByCode, sheetGetById, urlKneeboard } from "../../assets/data"
-import { describePage, getSheetBlank, getSheetDemoChecklist, getSheetDemoTiles, sheetNameDemoChecklist, sheetNameDemoTiles, sheetNameNew } from '../../assets/sheetData'
+import { describePage, getSheetBlank, getSheetDemo, getSheetDemoChecklist, getSheetDemoTiles, sheetNameDemo, sheetNameDemoChecklist, sheetNameDemoTiles, sheetNameNew } from '../../assets/sheetData'
 import { getToastData, toastError, toastSuccess } from '../../assets/toast'
 
 const emits = defineEmits(["close","delete","load","save","toast"]);
@@ -111,7 +111,9 @@ async function onCopyURL() {
  * @param sheetName 
  */
 function onLoadDefault(sheetName) {
-  if( sheetName == sheetNameDemoTiles) {
+  if( sheetName == sheetNameDemo) {
+    changeTargetSheet( getSheetDemo())
+  } else if( sheetName == sheetNameDemoTiles) {
     changeTargetSheet( getSheetDemoTiles())
   } else if( sheetName == sheetNameDemoChecklist) {
     changeTargetSheet( getSheetDemoChecklist())
@@ -258,12 +260,12 @@ function showToast(summary,details,severity=toastSuccess) {
           :disabled="!sheetCode.length"
           @click="onSheetFetchCode"></Button> -->
       <!-- <div class="sheetList mb-2"> -->
-        <Button label="Tiles Demo" icon="pi pi-clipboard"  title="Replace all with Demo Tiles" 
+        <Button label="Default" icon="pi pi-clipboard"  title="Load Default Sheet" 
+          @click="onLoadDefault(sheetNameDemo)"></Button>
+        <Button label="All Tiles" icon="pi pi-clipboard"  title="Replace all with Demo Tiles" 
           @click="onLoadDefault(sheetNameDemoTiles)"></Button>
-        <Button label="Checklist Demo" icon="pi pi-clipboard"  title="Replace all with Demo Checklist" 
+        <Button label="Checklist" icon="pi pi-clipboard"  title="Replace all with Demo Checklist" 
           @click="onLoadDefault(sheetNameDemoChecklist)"></Button>
-        <Button label="New Sheet" icon="pi pi-file" title="Both pages will show page selection" 
-          @click="onLoadDefault(sheetNameNew)"></Button>
       <!-- </div> -->
     </div>
   </FieldSet>

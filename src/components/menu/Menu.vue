@@ -295,20 +295,15 @@ function userUpdateSheets(newList) {
         <Button label="New" icon="pi pi-file" title="Reset both pages" @click="onSheetLoad(getSheetBlank())"></Button>
         <Button label="Load" icon="pi pi-folder-open" title="Open existing sheet" @click="onSheetDialog('load')"></Button>
         <Button label="Save" icon="pi pi-save" title="Save this sheet" @click="onSheetDialog('save')"></Button>
-        <Button label="Demo" icon="pi pi-clipboard" title="Load demo tiles" @click="onSheetLoad(getSheetDemoTiles())"></Button>
+        <Button label="Demo" icon="pi pi-clipboard" title="Load demo sheet" @click="onSheetLoad(getSheetDemo())"></Button>
         <div class="separator"></div>
         <Button label="Editor" icon="pi pi-file-edit" title="Toggle Page Editor buttons" 
           @click="emits('editor')"></Button>
-        <!-- <Button label="Mirror" icon="pi pi-sign-out" title="Copy left page onto right" 
-          @click="confirmAndCopy"></Button> -->
         <div class="separator"></div>
         <Button label="Feedback" icon="pi pi-megaphone" title="Send Feedback"
           @click="showFeedback=true" ></Button>
         <Button icon="pi pi-info-circle" title="About / Guides / Warnings"
           @click="showAbout=true"></Button>
-        <!-- <Button icon="pi pi-question"  title="How does it work?"
-          @click="emits('howDoesItWork')"></Button> -->
-        <!-- <Button label="Blog" @click="openBlog" title="Recent Features and Annoucements" link></button> -->
       </div>
     </div>
   </div>
