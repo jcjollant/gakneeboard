@@ -183,7 +183,7 @@ function onSheetDelete(sheet) {
         // console.log('[Menu.onSheetSave]', JSON.stringify(returnSheet))
         let message = 'Sheet "' + returnSheet.name + '" saved';
         if(returnSheet.publish && returnSheet.code) {
-          message += '\Share code is ' + returnSheet.code
+          message += '\nShare code is ' + returnSheet.code
         }
         showToast('Clear', message)
         userUpdateSheets(getCurrentUser().sheets)
