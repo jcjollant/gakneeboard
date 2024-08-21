@@ -1,12 +1,11 @@
 import { sql } from  "@vercel/postgres";
-import { Airport } from "./models/Airport";
-import { Adip } from './Adip'
 import { UserDao } from "./UserDao"
 import { FeedbackDao } from "./FeedbackDao"
 import { AirportDao } from "./AirportDao";
 import { createTransport } from 'nodemailer'
 import { PublicationDao } from './PublicationDao'
 import { SheetDao } from "./SheetDao";
+import { Sheet } from "./models/Sheet";
 
 
 export class Metric {
@@ -16,6 +15,10 @@ export class Metric {
     constructor(checkName:string, value:number) {
         this.name = checkName;
         this.value = value;
+    }
+
+    public addOne() {
+        this.value++;
     }
 }
 
@@ -39,6 +42,70 @@ export class Metrics {
     static async sheets():Promise<Metric> {
         const sheetsCount:number = await SheetDao.count()
         return new Metric('sheets', sheetsCount)
+    }
+
+    static async sheetDetails():Promise<Metric[]> {
+        const sheets:Sheet[] = await SheetDao.getAllSheetData()
+
+        const staleSheetCount = new Metric('staleSheetCount', 0)
+
+        const totalPageCount = new Metric('totalPageCount', 0)
+        const tilePageCount = new Metric('tilePageCount', 0)
+        const checklistPageCount = new Metric('checklistPageCount', 0)
+        const coverPageCount = new Metric('coverPageCount', 0)
+        const selectionPageCount = new Metric('selectionPageCount', 0)
+
+        const totalTileCount = new Metric('totalTileCount', 0)
+        const airportTileCount = new Metric('airportTileCount', 0)
+        const atisTileCount = new Metric('atisTileCount', 0)
+        const checklistTileCount = new Metric('checklistTileCount', 0)
+        const clearanceTileCount = new Metric('clearanceTileCount', 0)
+        const fuelTileCount = new Metric('fuelTileCount', 0)
+        const notesTileCount = new Metric('notesTileCount', 0)
+        const radiosTileCount = new Metric('radiosTileCount', 0)
+        const sunlightTileCount = new Metric('sunlightTileCount', 0)
+        for(let sheet of sheets) {
+            if(sheet.data.length != 2) {
+                // console.log('sheet.data.length != 2 for', sheet.id)
+                staleSheetCount.addOne()
+                continue
+            }
+            for(let page of sheet.data) {
+                if(page.type == 'tiles') {
+                    tilePageCount.addOne()
+                    for(let tile of page.data) {
+                        totalTileCount.addOne()
+                        if(tile.name == 'airport') {
+                            airportTileCount.addOne()
+                        } else if(tile.name == 'atis') {
+                            atisTileCount.addOne()
+                        } else if(tile.name == 'checklist') {
+                            checklistTileCount.addOne()
+                        } else if(tile.name == 'clearance') {
+                            clearanceTileCount.addOne()
+                        } else if(tile.name == 'fuel') {
+                            fuelTileCount.addOne()
+                        } else if(tile.name == 'notes') {
+                            notesTileCount.addOne()
+                        } else if(tile.name == 'radios') {
+                            radiosTileCount.addOne()
+                        } else if(tile.name == 'sunlight') {
+                            sunlightTileCount.addOne()
+                        }
+                    }
+                } else if(page.type == 'checklist') {
+                    checklistPageCount.addOne()
+                } else if(page.type == 'cover') {
+                    coverPageCount.addOne()
+                } else if(page.type == 'selection') {
+                    selectionPageCount.addOne()
+                }
+                totalPageCount.addOne()
+            }
+        }
+        // build a list of all metrics
+        const allMetrics = [totalPageCount, tilePageCount, checklistPageCount, coverPageCount, selectionPageCount, totalTileCount, airportTileCount, atisTileCount, checklistTileCount, clearanceTileCount, fuelTileCount, notesTileCount, radiosTileCount, sunlightTileCount, staleSheetCount]
+        return allMetrics
     }
 
     static async publicationsCheck():Promise<Metric> {
@@ -85,25 +152,39 @@ export class Metrics {
 
     }
 
-    public static async perform():Promise<Metric[]> {
+    public static async perform(commit:boolean=true, sendMail:boolean=true):Promise<String> {
         return Promise.all([
                 Metrics.airports(), 
                 Metrics.feedbacks(),
                 Metrics.publicationsCheck(),
+                Metrics.sheetDetails(),
                 Metrics.sheets(),
                 Metrics.users()
             ]).then( async allMetrics => {
             const data:any = {}
             for(const metric of allMetrics) {
-                data[metric.name] = metric.value
+                if( Array.isArray(metric)) {
+                    for(const m of metric) {
+                        data[m.name] = m.value
+                    }
+                } else {
+                    data[metric.name] = metric.value
+                }
             }
             const dataString:string = JSON.stringify(data)
 
-            await sql`INSERT INTO metrics (data) VALUES (${dataString})`;
-    
-            console.log( '[Metrics.perform] sending email')
-            await Metrics.sendMail( dataString)
-            return allMetrics
+            if(commit) {
+                await sql`INSERT INTO metrics (data) VALUES (${dataString})`;
+            } else {
+                console.log( '[Metrics.perform] skipping commit')
+            }
+            if(sendMail) {
+                console.log( '[Metrics.perform] sending email')
+                await Metrics.sendMail( dataString)
+            } else {
+                console.log( '[Metrics.perform] skipping email')
+            }
+            return dataString
         })
     
     }
