@@ -77,6 +77,13 @@ export class SheetDao {
         return result.rows[0]['id'];
     }
 
+    public static async getAllSheetData():Promise<Sheet[]> {
+        const result = await sql`
+            SELECT id,data,name FROM sheets;
+        `
+        return result.rows.map((row) => new Sheet(row['id'], row['name'], row['data']));
+    }
+
     /**
      * Gets a list of pages for a given user. The list is returned as an array of 
      * objects without the sheet data
