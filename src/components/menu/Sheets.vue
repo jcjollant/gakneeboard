@@ -205,19 +205,13 @@ function showToast(summary,details,severity=toastSuccess) {
           <Button label="Make Copy" icon="pi pi-file" severity="secondary" title="Create a copy instead or overwritting"
             :disabled="!(targetSheet?.id)"
             @click="onNewSheet"></Button>
-          <!-- <Button label="Save" icon="pi pi-save" severity="secondary" 
-            :disabled="!sheetName.length"
-            @click="onSaveSheet"></Button> -->
           <div class="alignedRow">
             <div>Access:</div>
             <SelectButton v-model="publish" :options="[pubPublic, pubPrivate]" aria-labelledby="basic" />
           </div>
           <div class="alignedRow codeAndLink" v-show="directLink">
             <div>Share code </div>
-            <!-- <div class="bold">{{ targetSheet?.code ? targetSheet.code:'(none)' }}</div> -->
             <div class="bold"><a :href="directLink" target="_blank">{{ targetSheet?.code ? targetSheet.code:'(none)' }}</a></div>
-            <!-- <div><a :href="directLink" target="_blank">{{ directLink }}</a></div> -->
-            <!-- <div><a :href="directLink" target="_blank">{{ directLink }}</a></div> -->
             <Button icon="pi pi-clipboard" title="Copy link to clipboard" @click="onCopyURL"></Button>
           </div>
           <div class="sheetDescription">
