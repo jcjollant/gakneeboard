@@ -16,11 +16,13 @@ Run the test suite:
   
 # Done
 ## 8/20/2024
-* Editor improvments, copy paste
+* Fixed typo in sheet save code
+* New Demo sheet is a mix of Tiles and Checlist
 ## 8/19/2024
+1) Added Help link to Airport Edit ActionBar
 * Improved unknown code management
-* Added Help link to Airport Edit ActionBar
 * Disabled custom creation
+2) Editor improvments, copy paste
 ## 8/18/2024
 * Editor mode
 * Sunlight caching
