@@ -14,6 +14,7 @@ export const pageTypeTiles = 'tiles'
 export const pageTypeChecklist = 'checklist'
 export const pageTypeCover = 'cover'
 
+export const sheetNameDemo = 'default-demo'
 export const sheetNameDemoTiles = 'default-demo-tiles'
 export const sheetNameDemoChecklist = 'default-demo-checklist'
 export const sheetNameNew = 'default-new-sheet'
@@ -23,7 +24,8 @@ const oldSheetData = 'page1'
 
 import { duplicate } from './data'
 
-const allSheetNames = [sheetNameDemoTiles, sheetNameDemoChecklist, sheetNameReset, activeSheetLocal, oldSheetData]
+// used to check if a sheet name is already taken by defaults
+const defaultSheetNames = [sheetNameDemo, sheetNameDemoTiles, sheetNameDemoChecklist, sheetNameReset, activeSheetLocal, oldSheetData]
 
 // blank pages
 const pageDataBlankTiles = {type:pageTypeTiles,data:[
@@ -42,6 +44,32 @@ const sheetBlank = {
   name:'Blank',
   data:[pageDataBlank,pageDataBlank]
 }
+
+const sheetDemo = {
+  name: 'Default Demo',
+  data: [{
+    type:pageTypeTiles,
+    data:[
+      {"id":0,"name":"airport","data":{"code":"KBFI","rwy":"14L-32R","rwyOrientation":"magnetic","corners":["weather","twr","field","tpa"]}},
+      {"id":1,"name":"airport","data":{"code":"KSFF","rwy":"04L-22R","rwyOrientation":"vertical","corners":["weather","twr","field","tpa"],"pattern":2}},
+      {"id":2,"name":"radios","data":[{"mhz":"116.8","name":"SEA VOR"},{"mhz":"124.7","name":"OLM VOR"},{"mhz":"124.7","name":"RNT TWR"},{"mhz":"126.95","name":"RNT ATIS"},{"mhz":"123","name":"S43 CTAF"},{"mhz":"128.65","name":"PAE ATIS"},{"mhz":"120.2","name":"PAE TWR 34R"},{"mhz":"132.95","name":"PAE TWR 34L"}]},
+      {"id":3,"name":"notes","data":{}},
+      {"id":4,"name":"atis","data":{}},
+      {"id":5,"name":"clearance","data":{}}
+    ]},{
+      type:pageTypeChecklist,
+      data:{
+        "name":"Flight",
+        "items":[
+          {"s":"Climb","t":"strong"},{"c":"Power","r":"FULL"},{"c":"Mixture","r":"RICH"},{"c":"Flaps","r":"UP"},{"c":"Engine","r":"GREEN"},{"s":"Approach","t":"strong"},{"c":"Direct","r":"SET"},{"c":"ATIS","r":"GET"},{"c":"Altimeter","r":"SET"},{"c":"RWY HDG","r":"SET"},{"c":"Calls","r":"MADE"},{"c":"Briefing","r":"DONE"},{"s":"Engine FAILURE","t":"emer"},{"c":"Airspeed","r":"68"},{"c":"Fuel Pump","r":"ON"},{"c":"Mixture","r":"RICH"},{"c":"Fuel Shutoff","r":"ON"},{"c":"Fuel Selector","r":"BOTH"},{"s":"Engine FIRE","t":"emer"},{"c":"Mixture","r":"CUTOFF"},{"c":"Fuel Shutoff","r":"OFF"},{"c":"Fuel Pump","r":"OFF"},{"c":"Masters","r":"OFF"},{"c":"Vents, Heat, Air","r":"CLOSED"},{"c":"Emergency Descent","r":"120@30"},{"c":""}
+        ],
+        "items2":[
+          {"s":"Cruise","t":"strong"},{"c":"Power","r":"SET"},{"c":"Flaps","r":"UP"},{"c":"Trim","r":"SET"},{"c":"Heading","r":"BUGGED"},{"s":"Before Landing","t":"strong"},{"c":"Fuel Selector","r":"BOTH"},{"c":"Mixture","r":"RICH"},{"c":"Landing Lights","r":"ON"},{"c":"Safety Belts","r":"ON"},{"c":"Auto Pilot","r":"OFF"},{"c":"Cabin Power","r":"OFF"},{"s":"After Landing"},{"c":"Flaps","r":"UP"},{"c":"Light","r":"TAXI"},{"c":"Mixture","r":"Lean"},{"c":"Trim","r":"T/O"},{"c":"Pitot","r":"OFF"},{"c":"Comms","r":"GND"},{"s":"Shutdown"},{"c":"Avionics","r":"OFF"},{"c":"Mixture","r":"IDLE"},{"c":"Magnetos","r":"OFF"},{"c":"Electrical Equipment","r":"OFF"},{"c":"Hobbs & Tach","r":"RECORD"},{"c":"Master & Stby","r":"OFF"}
+        ],
+        "theme":"blue"
+      }
+    }]
+  }
 
 const sheetDemoTiles = {
   name: 'Tiles Demo',
@@ -204,10 +232,20 @@ export function getSheetBlank() {
 /**
  * @returns a copy of demo sheet data 
  */
+export function getSheetDemo() {
+  return duplicate(sheetDemo)
+}  
+
+/**
+ * @returns a copy of demo sheet data 
+ */
 export function getSheetDemoTiles() {
   return duplicate(sheetDemoTiles)
 }  
 
+/**
+ * @returns a copy of checklist demo sheet data 
+ */
 export function getSheetDemoChecklist() {
   return duplicate(sheetDemoChecklist)
 }  
@@ -228,7 +266,7 @@ export function getSheetLocal() {
 }
 
 export function isDefaultName(name) {
-  return name in allSheetNames
+  return name in defaultSheetNames
 }
 
 // Save sheet data to browser
