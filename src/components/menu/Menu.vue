@@ -1,29 +1,35 @@
 <script setup>
 import { watch } from 'vue';
 import { ref, onMounted } from 'vue';
+
+import { customSheetSave, keyUser } from '../../assets/data'
+import { getCurrentUser, setCurrentUser, sheetGetList } from '../../assets/data'
+import { getSheetBlank, getSheetDemo } from '../../assets/sheetData'
+import { getToastData, toastError, toastSuccess, toastWarning, toastInfo } from '../../assets/toast'
+
 import Button from 'primevue/button'
 import { useConfirm } from 'primevue/useconfirm'
 import ConfirmDialog from 'primevue/confirmdialog';
+
 import Feedback from './Feedback.vue';
 import Print from './Print.vue'
 import Sheets from './Sheets.vue'
 import SignIn from './SignIn.vue';
 import About from './About.vue'
-import { customSheetSave, keyUser } from '../../assets/data'
-import { urlBlog, getCurrentUser, setCurrentUser, sheetGetList } from '../../assets/data'
-import { getSheetBlank, getSheetDemoTiles } from '../../assets/sheetData'
-import { getToastData, toastError, toastSuccess, toastWarning, toastInfo } from '../../assets/toast'
+import Maintenance from './Maintenance.vue'
+
 
 const emits = defineEmits(['authentication','editor','howDoesItWork','load','print','printOptions','save','toast','toggle'])
 
 const activeSheet = ref(null)
 const confirm = useConfirm()
 const refreshPrint = ref(0)
+const showAbout = ref(false)
 const showFeedback = ref(false)
+const showMaintenance = ref(false)
 const showMenu = ref(false)
 const showPrint = ref(false)
 const showSignIn = ref(false)
-const showAbout = ref(false)
 const showSheets = ref(false)
 const user = ref(null)
 const pageMode = ref('load')
@@ -67,19 +73,6 @@ watch(showPrint, async( newValue, oldValue) => {
 // End props management
 //---------------------
 
-function confirmAndCopy() {
-  confirm.require({
-      message: 'Do you want to duplicate left page onto right?',
-      header: "Mirror",
-      rejectLabel: 'No',
-      acceptLabel: 'Yes, Replace',
-      accept: () => {
-        emits('copy')
-      }
-    })
-
-}
-
 function confirmAndLoad(title, sheet) {
   confirm.require({
       message: 'Do you want to replace both pages in the current sheet?',
@@ -109,6 +102,12 @@ function onFeedbackSent() {
   // console.log('[menu] onFeedbackSent')
   showFeedback.value = false
   showToast('Readback Correct', 'Thanks for your feedback!', toastInfo)
+}
+
+// maintenance user
+function onMaintenance() {
+  userChange(getCurrentUser(), false)  
+  showMaintenance.value = false;
 }
 
 function onPrint() {
@@ -196,9 +195,17 @@ function onSheetDelete(sheet) {
 }
 
 function onSignOut() {
-  userChange(null)
-  // reload the page
-  location.reload()
+  confirm.require({
+      message: 'You will loose access to your custom content.',
+      header: 'Sign Out',
+      rejectLabel: 'Stay in',
+      acceptLabel: 'Ok',
+      accept: () => {
+        userChange(null)
+        // reload the page
+        location.reload()
+      }
+    })
 }
 
 function onToast(data) {
@@ -262,6 +269,7 @@ function userUpdateSheets(newList) {
 
   <div class="container" :class="{grow: showMenu}">
     <ConfirmDialog />
+    <Maintenance v-model:visible="showMaintenance" @maintenance="onMaintenance" />
     <Feedback v-model:visible="showFeedback" :user="user" 
       @sent="onFeedbackSent" @close="showFeedback=false" />
     <Print v-model:visible="showPrint" :refresh="refreshPrint"
@@ -299,7 +307,7 @@ function userUpdateSheets(newList) {
         <div class="separator"></div>
         <Button label="Editor" icon="pi pi-file-edit" title="Toggle Page Editor buttons" 
           @click="emits('editor')"></Button>
-        <div class="separator"></div>
+        <div class="separator" @click="showMaintenance=true"></div>
         <Button label="Feedback" icon="pi pi-megaphone" title="Send Feedback"
           @click="showFeedback=true" ></Button>
         <Button icon="pi pi-info-circle" title="About / Guides / Warnings"
