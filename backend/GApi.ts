@@ -1,4 +1,3 @@
-const db = require('./db')
 import axios from 'axios'
 import { Adip } from '../backend/Adip'
 import { Airport, versionInvalid } from './models/Airport'
