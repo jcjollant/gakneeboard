@@ -1,13 +1,12 @@
-const version = 822
-
 const express =require( "express")
 import cors from "cors";
 // const cors = require('cors');
-const db = require('../backend/db.js');
+import { version } from '../backend/constants.js'
 import { GApi, GApiError } from '../backend/GApi'
 import { UserTools } from '../backend/UserTools'
 import { HealthCheck } from "../backend/HealthChecks";
 import { AirportView } from "../backend/models/AirportView";
+import { FeedbackDao } from "../backend/FeedbackDao";
 
 const port = 3002
 const app = express();
@@ -106,7 +105,7 @@ app.post('/feedback', async(req,res) => {
     console.log( "[index] feedback body type " + typeof req.body);
     // insert feedback in DB
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
-    await db.saveFeedback(payload)
+    await FeedbackDao.save(payload)
     res.send("Thank you for your feedback")
 })
 
