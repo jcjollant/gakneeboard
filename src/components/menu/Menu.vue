@@ -104,6 +104,12 @@ function onFeedbackSent() {
   showToast('Readback Correct', 'Thanks for your feedback!', toastInfo)
 }
 
+// how does it work? close about and emit to parent
+function onHdiw() {
+  showAbout.value = false;
+  emits('howDoesItWork')
+}
+
 // maintenance user
 function onMaintenance() {
   userChange(getCurrentUser(), false)  
@@ -277,7 +283,7 @@ function userUpdateSheets(newList) {
       @options="onPrintOptions"
       @print="onPrintPrint"
        />
-    <About v-model:visible="showAbout" @close="showAbout=false" />
+    <About v-model:visible="showAbout" @close="showAbout=false" @hdiw="onHdiw"/>
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
       @authentication="onAuthentication" />
     <Sheets v-model:visible="showSheets" :mode="pageMode" :user="user" :sheet="activeSheet"

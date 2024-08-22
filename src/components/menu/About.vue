@@ -7,7 +7,7 @@ import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import SelectButton from 'primevue/selectbutton'
 
-const emits = defineEmits(["close"]);
+const emits = defineEmits(["close","hdiw"]);
 
 const guides = [
   {name:'Airport Tile', url:urlGuideAirport},
@@ -61,7 +61,10 @@ function openUrl(url) {
         <div class="warning-item mr-3">Magnetic Headings</div>
         <div>Are calculated with FAA variation data which can be quite old at some locations</div>
       </div>    
-      <div class="actionDialog gap-2"><Button label="Got it" @click="emits('close')"></Button></div>
+      <div class="actionDialog gap-2">
+        <Button label="How Does It Work?" @click="emits('hdiw')" link></Button>
+        <Button label="Got it" @click="emits('close')"></Button>
+      </div>
     </div>
   </Dialog>
 </template>

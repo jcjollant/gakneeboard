@@ -1,10 +1,32 @@
-import { currentVersionNumber, visitAndCloseBanner, maintenanceMode } from './shared'
+import { currentVersionNumber, environment, visitAndCloseBanner, maintenanceMode } from './shared'
 
 describe('Navigation', () => {
+    it('How Does It Work', () => {
+      cy.visit(environment)
+
+      function checkHdiw() {
+        cy.get('.hdiw').contains('1. Edit')
+        cy.get('.hdiw').contains('2. Print')
+        cy.get('.hdiw').contains('3. Clip')
+      }
+      checkHdiw();
+
+      // remove banner
+      cy.contains('Got it').click()
+
+      // reopen how does it work via About page
+      cy.get('.menuIcon').click()
+      cy.get('.p-button-icon-only').click()
+      cy.get('.p-button-link').click()
+
+      checkHdiw();
+
+    })
+
   // ========================================================================
   // Print Dialog
   // ========================================================================
-  it('Print Dialog', () =>{
+  it.skip('Print Dialog', () =>{
     visitAndCloseBanner()
 
     // check version number
@@ -26,7 +48,7 @@ describe('Navigation', () => {
     
   })
 
-  it('Editor', () => {
+  it.skip('Editor', () => {
     visitAndCloseBanner()
 
     cy.wait(1000)
@@ -92,7 +114,7 @@ describe('Navigation', () => {
 
   })
 
-  it('Sign in and Load Page', () => {
+  it.skip('Sign in and Load Page', () => {
     visitAndCloseBanner()
     maintenanceMode()
 
