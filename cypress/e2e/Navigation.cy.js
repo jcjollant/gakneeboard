@@ -64,9 +64,9 @@ describe('Navigation', () => {
 
     // swap
     cy.get('.pageOne > :nth-child(6) > .header').contains('Clearance @')
-    cy.get('.pageTwo > :nth-child(6) > .header').contains('Radio Flow')
+    cy.get('.pageTwo > :nth-child(2) > .twoLists > .leftList > :nth-child(19)').contains('FIRE')
     cy.get('.middle > .p-button').click()
-    cy.get('.pageOne > :nth-child(6) > .header').contains('Radio Flow')
+    cy.get('.pageOne > :nth-child(2) > .twoLists > .leftList > :nth-child(19)').contains('FIRE')
     cy.get('.pageTwo > :nth-child(6) > .header').contains('Clearance @')
 
     // reload demo
@@ -87,14 +87,47 @@ describe('Navigation', () => {
     // Copy Back to Front
     cy.get(':nth-child(3) > [aria-label="Copy"]').click()
     cy.get(':nth-child(1) > [aria-label="Paste"]').click()
-    cy.get('.pageOne > :nth-child(6) > .header').contains('Radio Flow')
-    cy.get('.pageTwo > :nth-child(6) > .header').contains('Radio Flow')
+    cy.get('.pageOne > :nth-child(2) > .twoLists > .leftList > :nth-child(19)').contains('FIRE')
+    cy.get('.pageTwo > :nth-child(2) > .twoLists > .leftList > :nth-child(19)').contains('FIRE')
 
   })
 
-  it('Maintenance Window', () => {
+  it('Load Page', () => {
     visitAndCloseBanner()
-    cy.get('.maintenanceDialog').click()
+    const code = '12b39a0daff8fc144fc678663395f6ce5706c778a259167ebc307144fcc96146'
+    cy.get('.menuIcon').click()
+    cy.get('.buttonsList > :nth-child(10)').click()
+    // type code in maintenance window
+    cy.get('.p-inputtext').type(code)
+    // submit
+    cy.get('.p-dialog-content > div > .p-button').click()
+
+    // user name should show up
+    cy.get('.active').contains('Jc')
+
+    // load page should open
+    cy.get('[aria-label="Load"]').click()
+    cy.get('#pv_id_15_content > .p-fieldset-content > div').contains('Select a sheet above')
+    // Check demo pages work
+    cy.get('[aria-label="Default"]').click()
+    cy.get('.sheetDescription > :nth-child(2)').contains('Default Demo')
+    cy.get('[aria-label="All Tiles"]').click()
+    cy.get('.sheetDescription > :nth-child(2)').contains('Tiles Demo')
+    cy.get('[aria-label="Checklist"]').click()
+    cy.get('.sheetDescription > :nth-child(2)').contains('Checklist Demo')
+
+    // Do Not Load
+    cy.get('.p-button-link').click()
+
+    // Check Sign out
+    cy.get('.active').click()
+    cy.get('.p-confirm-dialog-message').contains("You will loose access")
+    cy.get('.p-confirm-dialog-accept').click()
+
+    // should be back to sign in
+    cy.get('.menuIcon').click()
+    cy.get('[aria-label="Sign In"]')
+
   })
 
 
