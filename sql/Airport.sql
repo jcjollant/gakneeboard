@@ -60,3 +60,5 @@ SELECT 'code',creatorId FROM Airports WHERE creatorId IS NOT NULL
 
 # Duplicates
 SELECT COUNT(*) as count, Code from Airports WHERE creatorid IS NULL GROUP BY Code HAVING COUNT(*) > 1 ORDER BY count DESC 
+
+SELECT * FROM airports where code = 'TEST'
