@@ -1,10 +1,10 @@
-export const version = 820
+export const version = 821
 export const maxSheetCount = 10
 export const keyUser = 'kb-user'
+
 const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'http://localhost:3000/'
-// const apiRootUrl = 'https://ga-api-git-google-auth-jcjollants-projects.vercel.app/'
-// const apiRootUrl = 'https://ga-api-git-custom-airports-jcjollants-projects.vercel.app/'
+
 export const urlBlog = 'https://gakneeboard.wordpress.com/'
 export const urlFacebookGroup = 'https://www.facebook.com/groups/1479675382917767'
 export const urlGuideAirport = 'https://gakneeboard.wordpress.com/2024/07/28/airport-tile-guide/'
@@ -14,6 +14,7 @@ export const urlGuideFuelBug = 'https://gakneeboard.wordpress.com/2024/07/30/fue
 export const urlGuideRadioFlow = 'https://gakneeboard.wordpress.com/2024/08/03/radio-flow-tile-guide/'
 export const urlGuideSunlight = 'https://gakneeboard.wordpress.com/2024/08/10/sunlight-tile-guide/'
 export const urlKneeboard = 'https://kneeboard.ga'
+
 import { Airport } from './Airport.ts'
 import axios from 'axios'
 import { isDefaultName, normalizeSheetData } from './sheetData.js'
@@ -42,23 +43,22 @@ function airportCurrent( airport) {
 }
 
 export async function authenticate( source, token) {
-  const url = apiRootUrl + 'authenticate'
-  const payload = {source:source, token:token}
-  const response = await axios.post(url, payload, contentTypeJson)
-    .catch( e => {
-      reportError( '[data.authenticate] ' + JSON.stringify(e))
-      return null
-    })
-  // remove unknown airports because some may be due to unauhtenticated user
-  for( const code in airports) {
-    if( airports[code] == null) {
-      delete airports[code]
-    }
-  }
+  return new Promise( (resolve, reject) => {
+    const url = apiRootUrl + 'authenticate'
+    const payload = {source:source, token:token}
+    axios.post(url, payload, contentTypeJson)
+      .then( response => {
+        // remove unknown airports because some may be due to unauhtenticated user
+        removeUnknowAirports()
 
-  currentUser = response.data
-
-  return currentUser
+        currentUser = response.data
+        resolve(currentUser)
+      })
+      .catch( e => {
+        reportError( '[data.authenticate] ' + JSON.stringify(e))
+        reject(e)
+      })
+  })
 }
 
 export function duplicate(source) {
@@ -328,6 +328,25 @@ export function getFreqWeather(freqList) {
   )
 }
 
+/**
+ * Request maintenance with a code
+ * @param {*} code 
+ */
+export async function getMaintenance(code) {
+  return new Promise( (resolve, reject) => {
+    const url = apiRootUrl + 'maintenance/' + code
+    axios.get(url)
+      .then( response => {
+        setCurrentUser( response.data)
+        resolve(true)
+      })
+      .catch( error => {
+        reportError('[data.getMaintenance] error ' + JSON.stringify(error))
+        reject(error)
+      })
+  })
+}
+
 export function getNavaid(navaidList, id) {
   return navaidList.find( n => n.id == id)
 }
@@ -379,6 +398,14 @@ function getSunlightDate(date) {
  */
 export function refreshAirport(code, data) {
   airports[code] = data
+}
+
+function removeUnknowAirports() {
+  for( const code in airports) {
+    if( airports[code] == null) {
+      delete airports[code]
+    }
+  }
 }
 
 export function reportError(message) {
