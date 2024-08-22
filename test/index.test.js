@@ -1,6 +1,7 @@
 const axios = require('axios')
 
-import { jcHash, jcHash2, currentAirportModelVersion, currentAsOf, currentVersion} from './constants.ts'
+import { jcHash, jcHash2, currentAirportModelVersion, currentAsOf } from './constants.ts'
+import { version } from '../backend/constants.js'
 
 const apiRootUrl = 'http://localhost:3000/'
 
@@ -21,7 +22,7 @@ describe('index', () => {
             .then(res => {
                 // console.log(res.data)
                 expect(res.data).toBeDefined();
-                expect(res.data.version).toBe(currentVersion)
+                expect(res.data.version).toBe(version)
                 expect(res.data.aced).toBe(currentAsOf)
                 expect(res.data.camv).toBe(currentAirportModelVersion)
             })
