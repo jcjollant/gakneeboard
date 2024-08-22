@@ -21,6 +21,8 @@ ts-node .\willie.ts
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
+## 8/22/2024
+* Adip is saving data
 ## 8/21/2024
 * Added get maintenance
 ## 8/19/2024
