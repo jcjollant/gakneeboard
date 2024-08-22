@@ -13,9 +13,9 @@ import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
 
 import Editor from './components/Editor.vue'
+import HowDoesItWork from './components/HowDoesItWork.vue'
 import Menu from './components/menu/Menu.vue'
 import Page from './components/Page.vue'
-import HowDoesItWork from './components/HowDoesItWork.vue'
 
 
 const frontPageData = ref(null)
@@ -78,6 +78,7 @@ function onCloseHowDoesItWork() {
   localStorage.setItem(keyHowDoesItWork, "false")
 }
 
+// Before the app starts, we request backend information, load user and potentially show how does it work
 onBeforeMount(()=>{
   // console.log('[App.onBeforeMount]')
   getBackend().then(() => {
@@ -128,10 +129,6 @@ async function onEditorAction(action) {
   activeSheet.value.data = [frontPageData.value, backPageData.value];
   saveActiveSheet(true)
 
-}
-
-function onMaintenanceDialog() {
-  showToast( getToastData("Maintenance", "Window"))
 }
 
 /**
@@ -209,6 +206,7 @@ function onPrint(options) {
   sheetNameVisible.value = false
   menuVisible.value = false
   editor.value = false;
+  showHowDoesItWork.value = false;
 
   // print window content after a short timeout to let flipmode kickin
   setTimeout(doPrint, 500);
@@ -240,7 +238,7 @@ function onPageUpdateFront(pageData) {
 }
 
 function restorePrintOptions() {
-    // then bring everythign back to normal
+    // Bring everything back to normal
     flipMode.value = false;
     versionVisible.value = true;
     menuVisible.value = true
@@ -248,6 +246,7 @@ function restorePrintOptions() {
     pageOneVisible.value = true;
     pageTwoVisible.value = true;
     editor.value = false;
+    showHowDoesItWork.value = false;
 }
 
 function saveActiveSheet(modified=false) {
