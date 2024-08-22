@@ -6,4 +6,13 @@ export class FeedbackDao {
         return result.rows[0].count
     }
 
+    public static async save(data:any) {
+        // console.log( '[FeedbackDao.save]')
+        if( 'user' in data) {
+            await sql`INSERT INTO Feedback (Version,Text,user256) VALUES (${data.version},${data.feedback},${data.user})`;
+        } else {
+            await sql`INSERT INTO Feedback (Version,Text) VALUES (${data.version},${data.feedback})`;
+        }
+    }
+
 }
