@@ -275,7 +275,7 @@ function showToast(summary,details,severity=toastSuccess) {
         <div class="bold pageDescription">Front</div><div class="pageDescription">{{ fetching ? '' : describePage(targetSheet, 0) }}</div>
         <div class="bold pageDescription">Back</div><div class="pageDescription">{{ fetching ? '' : describePage(targetSheet, 1) }}</div>
       </div>
-      <div v-else>Select a sheet above from Your list, Demos or Shared</div>
+      <div v-else>Select a sheet above to view its content</div>
     </FieldSet>
     <div class="actionDialog gap-2">
       <Button label="Do Not Load" @click="onButtonClose" link></Button>
