@@ -1,4 +1,4 @@
-import { raw } from 'express'
+import { AdipDao } from './AdipDao'
 import { Airport } from './models/Airport'
 import { Atc } from './models/Atc'
 import { Frequency } from './models/Frequency'
@@ -13,7 +13,7 @@ export class Adip {
     static currentEffectiveDate: string = "2024-08-08T00:00:00"
 
     public static async fetchAirport(code:string):Promise<Airport|undefined>{
-        let locId = null
+        let locId:string|undefined = undefined
         // if the code is 4 digits, try to turn it into locId
         if( code.length == 4) {
             // console.log( 'ADIP fetching locId for ' + code);
@@ -41,9 +41,10 @@ export class Adip {
         }
 
         let airport:Airport|undefined = undefined
+        const fetchCode = locId ? locId : code;
         await axios.post(
             'https://adip.faa.gov/agisServices/public-api/getAirportDetails',
-            '{ "locId": "' + (locId == null ? code : locId) + '" }',
+            '{ "locId": "' + fetchCode + '" }',
             { 
                 headers:{ 
                 'Authorization': Adip.basicAuth,
@@ -59,6 +60,14 @@ export class Adip {
                 console.log('[Adip.fetchAirport] failed to parse data', e)
                 airport = undefined
             }
+
+            // save returned adip data
+            try {
+                AdipDao.save(fetchCode, response.data)
+            } catch(e) {
+                reportError( '[Adip.fetchAirport] cannot save Adip data')
+            }
+
             // console.log( JSON.stringify(airport))
         })
         .catch( error => {
