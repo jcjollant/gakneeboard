@@ -14,6 +14,20 @@ export function visitAndCloseBanner() {
     cy.contains('Got it').click()
 }
 
+export function maintenanceMode() {
+    const code = '12b39a0daff8fc144fc678663395f6ce5706c778a259167ebc307144fcc96146'
+    // Open menu
+    cy.get('.menuIcon').click()
+    cy.get('.buttonsList > :nth-child(10)').click()
+    // type code in maintenance window
+    cy.get('.p-inputtext').type(code)
+    // submit
+    cy.get('.p-dialog-content > div > .p-button').click()
+
+    // and close the menu
+    cy.get('.menuIcon').click()
+}
+
 export function newPage() {
     // Reset tiles and check all are reset
     cy.get('.menuIcon').click()

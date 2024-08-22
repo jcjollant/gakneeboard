@@ -1,4 +1,4 @@
-import { currentVersionNumber, visitAndCloseBanner, titleAtis } from './shared'
+import { currentVersionNumber, visitAndCloseBanner, maintenanceMode } from './shared'
 
 describe('Navigation', () => {
   // ========================================================================
@@ -14,7 +14,7 @@ describe('Navigation', () => {
     cy.get('.menuIcon').click()
     cy.get('[aria-label="Print"]').click()
     // check title
-    cy.get('#pv_id_4_header').contains('Print')
+    cy.get('.p-dialog-header').contains('Print')
     // Check Page options
     cy.get('[aria-label="Front Page"]')
     cy.get('[aria-label="Both"]')
@@ -92,16 +92,12 @@ describe('Navigation', () => {
 
   })
 
-  it('Load Page', () => {
+  it('Sign in and Load Page', () => {
     visitAndCloseBanner()
-    const code = '12b39a0daff8fc144fc678663395f6ce5706c778a259167ebc307144fcc96146'
-    cy.get('.menuIcon').click()
-    cy.get('.buttonsList > :nth-child(10)').click()
-    // type code in maintenance window
-    cy.get('.p-inputtext').type(code)
-    // submit
-    cy.get('.p-dialog-content > div > .p-button').click()
+    maintenanceMode()
 
+    // open menu
+    cy.get('.menuIcon').click()
     // user name should show up
     cy.get('.active').contains('Jc')
 

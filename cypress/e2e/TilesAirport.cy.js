@@ -1,4 +1,4 @@
-import { visitAndCloseBanner, newPage } from './shared'
+import { visitAndCloseBanner, newPage, maintenanceMode } from './shared'
 
 describe('Tiles', () => {
   it('Airport Tile', () => {
@@ -28,9 +28,12 @@ describe('Tiles', () => {
     cy.get('.pageTwo > .header').contains("Checklist")
 
     // load tiles demo page
+    maintenanceMode()
     cy.get('.menuIcon').click()
-    cy.get('[aria-label="Demo"]').click()
-    cy.get('.p-confirm-dialog-accept > .p-button-label').click()
+    cy.get('[aria-label="Load"]').click()
+    cy.get('[aria-label="All Tiles"]').click()
+    cy.get('[aria-label="Load Sheet"]').click()
+    cy.get('.p-confirm-dialog-accept').click()
     cy.get('.menuIcon').click()
 
     // test All expected tiles are loading
@@ -44,9 +47,6 @@ describe('Tiles', () => {
       }
     }
 
-    // ========================================================================
-    // Arport tile
-    // ========================================================================
     // Renton and Boeing fields
     const expectedValues = []
     expectedValues.push({'tile':'Renton Muni','label0':'ATIS','value0':'126.950','label1':'TWR','value1':'124.700','label2':'Elev','value2':'32','label3':'TPA','value3':'1032','watermark':'KRNT','dimensions':'5382x200'})
@@ -95,7 +95,6 @@ describe('Tiles', () => {
     }
     // close overlaypanel
     cy.get('[aria-label="Done"]').click()
-
 
     // Enter a new airport code and check it's data is loading
     cy.get('.pageOne > :nth-child(3) > .header > div').click()
