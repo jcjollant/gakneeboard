@@ -15,9 +15,12 @@ Run the test suite:
 * Custom Airport is not editable after update
   
 # Done
+## 8/21/2024
+* Maintenance mode
+* Sign out confirmation
 ## 8/20/2024
 * Fixed typo in sheet save code
-* New Demo sheet is a mix of Tiles and Checlist
+* New Demo sheet is a mix of Tiles and Checklist
 ## 8/19/2024
 1) Added Help link to Airport Edit ActionBar
 * Improved unknown code management
