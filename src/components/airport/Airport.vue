@@ -154,7 +154,7 @@ function loadProps(newProps) {
         .then(airport => {
             onNewAirport(airport)
             // is there a follow up request?
-            if(airport.promise) {
+            if(airport && airport.promise) {
                 airport.promise.then((outcome) => {
                     // console.log( '[Airport.loadProps] outcome', JSON.stringify(outcome))
                     // if data was not curren, load new version
