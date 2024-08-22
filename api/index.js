@@ -1,4 +1,4 @@
-const version = 819
+const version = 821
 
 const express =require( "express")
 import cors from "cors";
@@ -80,7 +80,7 @@ app.get("/airport/:id", async (req,res) => {
 app.get('/airports/:list', async (req, res) => {
 
     const userId = await UserTools.userFromRequest(req)
-    // console.log( "[index] /airports/ " + req.params.list);
+    // console.log( "[index] /airports/", req.params.list, "userId", userId);
     const airports = await GApi.getAirportViewList(req.params.list.split('-'),userId);
     // console.log( "[index] Returning airports " + JSON.stringify(airports));
     res.send(airports)
@@ -115,6 +115,16 @@ app.get('/housekeeping/willie', async (req,res) => {
     await HealthCheck.perform().then( (result) => {
         res.send(result)
     })
+})
+
+app.get('/maintenance/:code', async (req, res) => {
+    if(req.params.code === '12b39a0daff8fc144fc678663395f6ce5706c778a259167ebc307144fcc96146') {
+        const body = {source:'google',token:''}
+        const user =  {"sha256":"357c3920bbfc6eefef7e014ca49ef12c78bb875c0826efe90194c9978303a8d3","name":"Jc","sheets":[]}
+        res.send(user)
+    } else {
+        res.status(404).send()
+    }
 })
 
 app.get('/sheet/:id', async (req, res) => {

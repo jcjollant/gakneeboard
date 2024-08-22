@@ -1,10 +1,12 @@
 const axios = require('axios')
 
-import { jcHash, currentAirportModelVersion, currentAsOf, currentVersion} from './constants.ts'
+import { jcHash, jcHash2, currentAirportModelVersion, currentAsOf, currentVersion} from './constants.ts'
+
+const apiRootUrl = 'http://localhost:3000/'
 
 describe('index', () => {
     test('Multiple airports query', async () => {
-        await axios.get( 'http://localhost:3000/airports/rnt-jfk')
+        await axios.get( apiRootUrl + 'airports/rnt-jfk')
             .then(res => {
                 // console.log(res.data)
                 // console.log( JSON.stringify(res.data))
@@ -15,7 +17,7 @@ describe('index', () => {
     })
 
     test('API Version', async () => {
-        await axios.get( 'http://localhost:3000/')
+        await axios.get( apiRootUrl)
             .then(res => {
                 // console.log(res.data)
                 expect(res.data).toBeDefined();
@@ -26,7 +28,7 @@ describe('index', () => {
     })
 
     test('Invalid Id', async () => {
-        await axios.get( 'http://localhost:3000/airport/ABCDE')
+        await axios.get( apiRootUrl + 'airport/ABCDE')
             .then( () => {
                 expect(true).toBe(false)
             })
@@ -38,8 +40,29 @@ describe('index', () => {
             })
     })
 
+    test('Get Maintenance', async () => {
+        await axios.get( apiRootUrl + 'maintenance/invalidcode')
+            .then( () => {
+                expect(true).toBe(false)
+            })
+            .catch( (error) => {
+                // console.log(error)
+                expect(error.response).toBeDefined()
+                expect(error.response.status).toBeDefined();
+                expect(error.response.status).toBe(404);
+            })
+        await axios.get( apiRootUrl + 'maintenance/12b39a0daff8fc144fc678663395f6ce5706c778a259167ebc307144fcc96146')
+            .then( (res) => {
+                expect(res.data).toBeDefined();
+                expect(res.data.sha256).toBe(jcHash2)
+            })
+            .catch( (error) => {
+                expect(true).toBe(false)
+            })
+    })
+
     test('Get Custom Airport', async () => {
-        await axios.get( 'http://localhost:3000/airport/TEST?user=' + jcHash)
+        await axios.get( apiRootUrl + 'airport/TEST?user=' + jcHash)
             .then( (res) => {
                 expect(res.data).toBeDefined();
                 expect(res.data.code).toBe('TEST')
@@ -54,7 +77,7 @@ describe('index', () => {
     // test('Custom Airport Creation', async() => {
     //     const payload = {user: jcHash, airport: jcTestAirport  }
     //     await axios.post(
-    //             'http://localhost:3000/airport', 
+    //             apiRootUrl + 'airport', 
     //             payload, 
     //             { headers: {'Content-Type':'application/json'} })
     //         .then( res => {

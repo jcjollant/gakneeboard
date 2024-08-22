@@ -1,4 +1,5 @@
 export const jcHash = 'bfaa2eb49bf63f41c05a016e03653fe2d7f8bf196ba6fb3f3340d3dcd7016770'
+export const jcHash2 = '357c3920bbfc6eefef7e014ca49ef12c78bb875c0826efe90194c9978303a8d3'
 export const jcUserId = 1
 export const asUserId = 2
 export const jcName = 'JC'
@@ -14,7 +15,7 @@ export const jcToken = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjY3MTk2NzgzNTFhNWZhZWRjMmU3
 export const jcEmail = 'jcjollant@gmail.com'
 
 export const currentAsOf = 20240808;
-export const currentVersion = 819
+export const currentVersion = 821
 export const currentAirportModelVersion = 4
 export const krntAtcs =  [
     {mhz:119.2, useCount:6, name:'SEATTLE-TACOMA APPROACH CONTROL'},
