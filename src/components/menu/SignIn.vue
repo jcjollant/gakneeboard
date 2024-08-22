@@ -14,12 +14,11 @@ async function handleLoginSuccess( response) {
   const { credential } = response;
   // console.log( "[SignIn.handleLoginSuccess] Access Token", credential)
   // console.log( "[SignIn.handleLoginSuccess] User", decodeCredential(credential))
-  const user = await authenticate( 'google', credential)
-  // .then( user => {
-  //   console.log( "[SignIn.handleLoginSuccess] user ", JSON.stringify(user))
-  // })
-  emits('authentication', user)
-
+  authenticate( 'google', credential)
+    .then( user => {
+      // console.log( "[SignIn.handleLoginSuccess] user ", JSON.stringify(user))
+      emits('authentication', user)
+    })
 }
 
 </script>
