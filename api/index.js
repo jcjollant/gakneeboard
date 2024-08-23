@@ -7,7 +7,7 @@ import { UserTools } from '../backend/UserTools'
 import { HealthCheck } from "../backend/HealthChecks";
 import { AirportView } from "../backend/models/AirportView";
 import { FeedbackDao } from "../backend/FeedbackDao";
-
+import { Maintenance } from '../backend/Maintenance'
 const port = 3002
 const app = express();
 
@@ -117,13 +117,17 @@ app.get('/housekeeping/willie', async (req,res) => {
 })
 
 app.get('/maintenance/:code', async (req, res) => {
-    if(req.params.code === '12b39a0daff8fc144fc678663395f6ce5706c778a259167ebc307144fcc96146') {
-        const body = {source:'google',token:''}
-        const user =  {"sha256":"357c3920bbfc6eefef7e014ca49ef12c78bb875c0826efe90194c9978303a8d3","name":"Jc","sheets":[]}
-        res.send(user)
-    } else {
+    const maintenance = new Maintenance(req.params.code)
+    if(maintenance.validCode() === false) {
+        // console.log('[index] Invalid maintenance code')
         res.status(404).send()
+        return
     }
+    maintenance.perform().then( (result) => {
+        res.send(result)
+    }).catch(e => {
+        catchError(res, e, 'GET /maintenance/:code')
+    })
 })
 
 app.get('/sheet/:id', async (req, res) => {

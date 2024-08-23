@@ -53,6 +53,12 @@ SELECT * FROM sheets WHERE id = 45
 # Count of JC sheets
 SELECT COUNT(*) FROM sheets WHERE user_Id=1
 
+# Sheets per user
+SELECT COUNT(*) as count, user_id FROM sheets GROUP BY user_id
+
+# Sheets per user
+SELECT COUNT(*) as count, user_id FROM sheets WHERE user_id IS NOT NULL GROUP BY user_id
+
 # Who are Sheet creators
 SELECT COUNT(*) as count, user_id FROM sheets GROUP BY user_id ORDER BY count DESC
 
