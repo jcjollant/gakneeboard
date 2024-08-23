@@ -109,16 +109,9 @@ app.post('/feedback', async(req,res) => {
     res.send("Thank you for your feedback")
 })
 
-
-app.get('/housekeeping/willie', async (req,res) => {
-    await HealthCheck.perform().then( (result) => {
-        res.send(result)
-    })
-})
-
 app.get('/maintenance/:code', async (req, res) => {
     const maintenance = new Maintenance(req.params.code)
-    if(maintenance.validCode() === false) {
+    if(maintenance.isValidCode() === false) {
         // console.log('[index] Invalid maintenance code')
         res.status(404).send()
         return

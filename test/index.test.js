@@ -2,6 +2,7 @@ const axios = require('axios')
 
 import { jcHash, jcHash2, currentAirportModelVersion, currentAsOf } from './constants.ts'
 import { version } from '../backend/constants.js'
+import { Maintenance } from '../backend/Maintenance.ts'
 
 const apiRootUrl = 'http://localhost:3000/'
 
@@ -52,7 +53,15 @@ describe('index', () => {
                 expect(error.response.status).toBeDefined();
                 expect(error.response.status).toBe(404);
             })
-        await axios.get( apiRootUrl + 'maintenance/12b39a0daff8fc144fc678663395f6ce5706c778a259167ebc307144fcc96146')
+        await axios.get( apiRootUrl + 'maintenance/' + Maintenance.codeTest)
+            .then( (res) => {
+                expect(res.data).toBeDefined();
+                expect(res.data).toBe('OK')
+            })
+            .catch( (error) => {
+                expect(true).toBe(false)
+            })
+        await axios.get( apiRootUrl + 'maintenance/' + Maintenance.codeLogin)
             .then( (res) => {
                 expect(res.data).toBeDefined();
                 expect(res.data.sha256).toBe(jcHash2)
