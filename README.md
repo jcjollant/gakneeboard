@@ -22,7 +22,8 @@ ts-node .\willie.ts
 
 # Done
 ## 8/22/2024
-* Adip is saving data
+1) Adip is saving data
+2) Mainteinance is able to trigger metrics
 ## 8/21/2024
 * Added get maintenance
 ## 8/19/2024
