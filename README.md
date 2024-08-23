@@ -21,6 +21,8 @@ ts-node .\willie.ts
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
+## 8/23/2024
+* Housekeeping methods moved to maintenance
 ## 8/22/2024
 1) Adip is saving data
 2) Mainteinance is able to trigger metrics
