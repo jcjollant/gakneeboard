@@ -9,10 +9,14 @@ const demoRadioData = [
   {'target':'COM1','freq':'132.95','name':'PAE TWR 34L'}
 ]
 
-export const pageTypeSelection = 'selection'
-export const pageTypeTiles = 'tiles'
-export const pageTypeChecklist = 'checklist'
-export const pageTypeCover = 'cover'
+export class PageType {
+  static selection = 'selection'
+  static tiles = 'tiles'
+  static checklist = 'checklist'
+  static cover = 'cover'
+  static navLog = 'navlog'
+}
+
 
 export const sheetNameDemo = 'default-demo'
 export const sheetNameDemoTiles = 'default-demo-tiles'
@@ -28,7 +32,7 @@ import { duplicate } from './data'
 const defaultSheetNames = [sheetNameDemo, sheetNameDemoTiles, sheetNameDemoChecklist, sheetNameReset, activeSheetLocal, oldSheetData]
 
 // blank pages
-const pageDataBlankTiles = {type:pageTypeTiles,data:[
+const pageDataBlankTiles = {type:PageType.tiles,data:[
   {id:0,name:'',data:{}},
   {id:1,name:'',data:{}},
   {id:2,name:'',data:{}},
@@ -36,8 +40,8 @@ const pageDataBlankTiles = {type:pageTypeTiles,data:[
   {id:4,name:'',data:{}},
   {id:5,name:'',data:{}},
 ]}
-const pageDataBlankChecklist = {type:pageTypeChecklist, data:{}}
-export const pageDataBlank = {type:pageTypeSelection,data:{}}
+const pageDataBlankChecklist = {type:PageType.checklist, data:{}}
+export const pageDataBlank = {type:PageType.selection,data:{}}
 
 // Sheets
 const sheetBlank = {
@@ -48,7 +52,7 @@ const sheetBlank = {
 const sheetDemo = {
   name: 'Default Demo',
   data: [{
-    type:pageTypeTiles,
+    type:PageType.tiles,
     data:[
       {"id":0,"name":"airport","data":{"code":"KBFI","rwy":"14L-32R","rwyOrientation":"magnetic","corners":["weather","twr","field","tpa"]}},
       {"id":1,"name":"airport","data":{"code":"KSFF","rwy":"04L-22R","rwyOrientation":"vertical","corners":["weather","twr","field","tpa"],"pattern":2}},
@@ -57,7 +61,7 @@ const sheetDemo = {
       {"id":4,"name":"atis","data":{}},
       {"id":5,"name":"clearance","data":{}}
     ]},{
-      type:pageTypeChecklist,
+      type:PageType.checklist,
       data:{
         "name":"Flight",
         "items":[
@@ -74,7 +78,7 @@ const sheetDemo = {
 const sheetDemoTiles = {
   name: 'Tiles Demo',
   data: [{
-    type:pageTypeTiles,
+    type:PageType.tiles,
     name:"Tiles Demo",
     data:[
       {'id':0,'name':'airport','data':{'code':'krnt','rwy':'16-34'}},
@@ -84,7 +88,7 @@ const sheetDemoTiles = {
       {'id':4,'name':'atis','data':{}},
       {'id':5,'name':'clearance','data':{}},
    ]},{
-    type:pageTypeTiles,
+    type:PageType.tiles,
     data:[
       {'id':0,'name':'checklist','data':{name:'Power OFF stalls', items:[{"c":"Clearing Turns+Calls","r":"Made"},{"c":"Visual Reference","r":"Bugged"},{"c":"Altitude","r":"3,000"},{"c":"Power=1,600 Flaps > Full"},{"c":"Hold 65 3s, Level off until stall"},{"c":"Full Power + Right Rudder"},{"c":"Flaps 20 > 10 > 0"},{"c":"ACS HDG/Bank","r":"±10°/20°"}],theme:"blue"}},
       {'id':1,'name':'airport','data':{'code':'kawo','rwy':'all'}},
@@ -98,7 +102,7 @@ const sheetDemoTiles = {
 }
 
 const pageDemoChecklist1 = {
-  type:pageTypeChecklist,
+  type:PageType.checklist,
   data:{
     name:'Preflight',
     theme:'yellow',
@@ -131,7 +135,7 @@ const pageDemoChecklist1 = {
     ]
   }}
 const pageDemoChecklist2 = {
-  type:pageTypeChecklist,
+  type:PageType.checklist,
   data : {
     name:'Preflight (Cont\'d)',
     theme:'yellow',
@@ -177,7 +181,7 @@ export function describePage(sheet, pageNumber) {
   if(!page || !page.type) return '?'
 
   try {
-    if(page.type == pageTypeTiles) {
+    if(page.type == PageType.tiles) {
       let output = "[Tiles] "
       const tiles = page.data.map( t => {
         if(t.name=='airport') {
@@ -187,7 +191,7 @@ export function describePage(sheet, pageNumber) {
         }
       })
       return output + tiles.join(',');
-    } else if(page.type == pageTypeChecklist) {
+    } else if(page.type == PageType.checklist) {
       let output = "[Checklist] " + page.data.name
       // build a list of sections within that list
       const sections = page.data.items.filter(i => 's' in i).map(i => i.s);
@@ -195,10 +199,12 @@ export function describePage(sheet, pageNumber) {
         return output + " : " + sections.join(' / ')
       }
       return output
-    } else if(page.type == pageTypeSelection) {
+    } else if(page.type == PageType.selection) {
       return "[Selection]"
-    } else if(page.type == pageTypeCover ) {
+    } else if(page.type == PageType.cover ) {
       return "[Cover] " + page.data.title;
+    } else if(page.type == PageType.navLog) {
+      return '[NavLog]'
     }
   } catch(e) {
     console.log('[sheetData.describePage] error', e)
@@ -213,9 +219,9 @@ export function describePage(sheet, pageNumber) {
  */
 export function getPageBlank(type) {
   let source = pageDataBlank
-  if(type == pageTypeChecklist) {
+  if(type == PageType.checklist) {
     source = pageDataBlankChecklist;
-  } else if(type == pageTypeTiles) {
+  } else if(type == PageType.tiles) {
     source = pageDataBlankTiles
   }
   return duplicate(source)
@@ -287,12 +293,12 @@ export function normalizeSheetData(data) {
   // console.log('[sheetData.normalizeSheetData]', JSON.stringify(data))
   if(data.length == 12) { // old format with 12 tiles
     // transform into new format
-    const front = {type:pageTypeTiles,data:[data[0],data[1],data[2],data[3],data[4],data[5]]}
+    const front = {type:PageType.tiles,data:[data[0],data[1],data[2],data[3],data[4],data[5]]}
     // adjust ids to 6->0 ... 11->5
     for(let index = 6; index < 12; index++) {
       data[index].id -= 6;
     }
-    const back = {type:pageTypeTiles,data:[data[6],data[7],data[8],data[9],data[10],data[11]]}
+    const back = {type:PageType.tiles,data:[data[6],data[7],data[8],data[9],data[10],data[11]]}
     data = [front, back]
   }
 
