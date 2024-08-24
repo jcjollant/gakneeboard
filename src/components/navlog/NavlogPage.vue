@@ -104,14 +104,15 @@ function onHeaderClick() {
                     <div>Time</div>
                     <div>Fuel</div>
                 </div>
-                <div v-for="v in navlog.legs.slice(0, navlog.legs.length - 1)" class="legsGrid borderBottom">
+                <div v-for="v in navlog.legs.slice(0, navlog.legs.length - 1)" 
+                    class="legsGrid borderBottom"  :class="{'legClimb':(v.att=='+'),'legDesc':(v.att=='-')}">
                     <div class="headingGroup">
-                        <i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(v.att=='+'),'pi-arrow-down-right attDesc':(v.att=='-')}"></i>
+                        <!-- <i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(v.att=='+'),'pi-arrow-down-right attDesc':(v.att=='-')}"></i> -->
                         <div class="heading">{{ v.mh }}</div>
                     </div>
                     <div class="borderLeft borderRight">{{ v.ld }}</div>
                     <div class="">{{ v.gs }}</div>
-                    <div class="borderLeft">&nbsp</div>
+                    <div class="borderLeft legNote"><i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(v.att=='+'),'pi-arrow-down-right attDesc':(v.att=='-')}"></i></div>
                     <div class="borderLeft">{{ formatLegTime(v.lt) }}</div>
                     <div class="borderLeft fuel">{{ v.lf }}<span class="fuelRemaining">{{ v.fr }}</span></div>
                 </div>
@@ -121,18 +122,8 @@ function onHeaderClick() {
                     <div class="totalFuel borderLeft borderBottom">43.5</div>
                 </div>
             </div>
-            <!-- <div class="totals borderLeft">
-                <div class="totalGrid header checkpointHeader">
-                    <div>Time</div>
-                    <div>Fuel</div>
-                </div>
-                <div v-for="v in values" class="totalGrid borderBottom">
-                    <div class="time">{{ formatLegTime(v.lt) }}</div>
-                    <div class="borderLeft fuel">{{ v.fr }}<span class="fuelUsed">{{ -v.fu }}</span></div>
-                </div>
-            </div> -->
         </div>
-            <div class="notes">Notes</div>
+        <div class="notes">Notes</div>
     </div>
 </template>
 
@@ -159,7 +150,7 @@ function onHeaderClick() {
     position: absolute;
     right: 0;
     bottom: 0;
-    opacity: 0.15;
+    opacity: 0.10;
 }
 
 .attClimb {
@@ -224,6 +215,15 @@ function onHeaderClick() {
     display: grid;
     grid-template-rows: auto auto;
 } */
+.legDesc {
+    background-color: rgba(0, 255, 0, 0.1);
+}
+.legClimb {
+    background-color: rgba(255, 0, 0, 0.1);
+}
+.legNote {
+    position:relative;
+}
 .legsFooter {
     line-height: 1.5rem;
     font-size: 0.8rem;
