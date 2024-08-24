@@ -1,10 +1,11 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
-import { pageTypeChecklist, pageTypeCover, pageTypeSelection } from '../assets/sheetData'
+import { PageType } from '../assets/sheetData'
 
 import ChecklistPage from './checklist/ChecklistPage.vue'
 import CoverPage from './cover/CoverPage.vue'
+import NavlogPage from './navlog/NavlogPage.vue'
 import SelectionPage from './SelectionPage.vue'
 import TilePage from './tiles/TilePage.vue'
 
@@ -62,9 +63,10 @@ function onUpdate( newData) {
 </script>
 
 <template>
-    <ChecklistPage v-if="type==pageTypeChecklist" :data="pageData" @update="onUpdate" />
-    <CoverPage v-else-if="type==pageTypeCover" :data="pageData" @replace="onReplace" @update="onUpdate" />
-    <SelectionPage v-else-if="type==pageTypeSelection" @replace="onReplace" />
+    <ChecklistPage v-if="type==PageType.checklist" :data="pageData" @update="onUpdate" />
+    <CoverPage v-else-if="type==PageType.cover" :data="pageData" @replace="onReplace" @update="onUpdate" />
+    <SelectionPage v-else-if="type==PageType.selection" @replace="onReplace" />
+    <NavlogPage v-else-if="type==PageType.navLog" @replace="onReplace" />
     <TilePage v-else :data="pageData" @toast="onToast" @update="onUpdate" />
 </template>
 

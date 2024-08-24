@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 
-import { pageTypeChecklist, pageTypeCover, pageTypeTiles } from '../assets/sheetData'
+import { PageType } from '../assets/sheetData'
 
 import Header from '../components/shared/Header.vue'
 
@@ -11,9 +11,10 @@ const emits = defineEmits(['replace'])
 
 
 const knownPages = ref([
-    {'name':'Tiles','type':pageTypeTiles, 'tooltip':'A 2x3 grid of customizable tiles like Airport, ATIS, Radios, ...'},
-    {'name':'Checklist','type':pageTypeChecklist, 'tooltip':'A checklist you can customize'},
-    {'name':'Cover','type':pageTypeCover, 'tooltip':'A cover page for your creations'},
+    {'name':'Tiles','type':PageType.tiles, 'tooltip':'A 2x3 grid of customizable tiles like Airport, ATIS, Radios, ...'},
+    {'name':'Checklist','type':PageType.checklist, 'tooltip':'A checklist you can customize'},
+    {'name':'Cover','type':PageType.cover, 'tooltip':'A cover page for your stylish templates'},
+    {'name':'NavLog','type':PageType.navLog, 'tooltip':'A Navigation Log with checkpoints and headings'},
 ])
 
 function replacePage(type) {
