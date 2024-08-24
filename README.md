@@ -15,6 +15,7 @@ Run the test suite:
 * Custom Airport is not editable after update
   
 # Done
+* Mainteinance showing toasts
 ## 8/21/2024
 * Maintenance mode
 * Sign out confirmation
