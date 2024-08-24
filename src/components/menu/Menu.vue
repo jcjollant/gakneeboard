@@ -275,7 +275,8 @@ function userUpdateSheets(newList) {
 
   <div class="container" :class="{grow: showMenu}">
     <ConfirmDialog />
-    <Maintenance v-model:visible="showMaintenance" @maintenance="onMaintenance" />
+    <Maintenance v-model:visible="showMaintenance" 
+      @maintenance="onMaintenance" @toast="onToast" />
     <Feedback v-model:visible="showFeedback" :user="user" 
       @sent="onFeedbackSent" @close="showFeedback=false" />
     <Print v-model:visible="showPrint" :refresh="refreshPrint"

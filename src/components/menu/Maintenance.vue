@@ -2,18 +2,22 @@
 import { ref } from 'vue'
 
 import { getMaintenance } from '../../assets/data'
+import { getToastData, getToastError } from '../../assets/toast'
 
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext'
 
-const emits = defineEmits(['maintenance'])
+const emits = defineEmits(['maintenance', 'toast'])
 
 const code = ref('')
 
 function onSubmit() {
     getMaintenance(code.value).then( () => {
+        emits('toast', getToastData('Maintenance', 'Operation succeeded'))
         emits('maintenance')
+    }).catch( e =>{
+        emits('toast', getToastError('Maintenance', 'Operation failed'))
     })
 }
 

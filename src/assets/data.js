@@ -335,14 +335,15 @@ export function getFreqWeather(freqList) {
 export async function getMaintenance(code) {
   return new Promise( (resolve, reject) => {
     const url = apiRootUrl + 'maintenance/' + code
-    axios.get(url)
-      .then( response => {
-        setCurrentUser( response.data)
-        resolve(true)
-      })
-      .catch( error => {
-        reportError('[data.getMaintenance] error ' + JSON.stringify(error))
-        reject(error)
+    axios.get(url).then( response => {
+        // console.log('[data.getMaintenance]', JSON.stringify(response.data))
+        if( typeof response.data === 'object' && 'sha256' in response.data) {
+          setCurrentUser( response.data)
+        }
+        resolve()
+      }).catch( error => {
+        // reportError('[data.getMaintenance] error ' + JSON.stringify(error))
+        reject()
       })
   })
 }
