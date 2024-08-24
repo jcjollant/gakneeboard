@@ -6,6 +6,9 @@ export const environment = devEnv
 // export const backend = devBackend
 export const titleAtis = "ATIS @"
 
+export const maintenanceLogin = '12b39a0daff8fc144fc678663395f6ce5706c778a259167ebc307144fcc96146'
+export const maintenanceTest ='4d51414ceb16fe67ec67ef5194a76036fc54b59846c9e8da52841717fe4b6247'
+
 export function visitAndCloseBanner() {
     cy.visit(environment)
 
@@ -15,12 +18,11 @@ export function visitAndCloseBanner() {
 }
 
 export function maintenanceMode() {
-    const code = '12b39a0daff8fc144fc678663395f6ce5706c778a259167ebc307144fcc96146'
     // Open menu
     cy.get('.menuIcon').click()
     cy.get('.buttonsList > :nth-child(10)').click()
     // type code in maintenance window
-    cy.get('.p-inputtext').type(code)
+    cy.get('.p-inputtext').type(maintenanceLogin)
     // submit
     cy.get('.p-dialog-content > div > .p-button').click()
 
