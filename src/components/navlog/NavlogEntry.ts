@@ -1,9 +1,9 @@
 export class NavlogEntry {
     name: string;
     alt: number|undefined; // Altitude
-    th: number; // True heading
-    ch: number; // Compass Heading
-    wca: number; // wind correction angle
+    th: number|undefined; // True heading
+    ch: number|undefined; // Compass Heading
+    wca: number|undefined; // wind correction angle
     ld: number; // leg distance
     gs: number; // ground speed
     lt: number; // let time
@@ -14,7 +14,13 @@ export class NavlogEntry {
     constructor(name:string, atltitude:number|undefined=undefined) {
         this.name = name;
         this.alt = atltitude;
+        this.th = undefined;
+        this.ch = undefined; // needs to be calculated from other values
+        this.wca = undefined;
+        this.ld = 0;
         this.lt = 0;
+        this.lf = 0;
+        this.att = undefined;
     }
     static copy(source:any):NavlogEntry {
         if(!source) return new NavlogEntry('');
@@ -31,12 +37,12 @@ export class NavlogEntry {
         return output;
     }
     public getLegDistance():number {
-        return this.ld;
+        return this.ld ? this.ld : 0;
     }
     public getLegTime():number {
         return this.lt ? this.lt : 0;
     }
     public getLegFuel() {
-        return this.lf;
+        return this.lf ? this.lf : 0;
     }
 }
