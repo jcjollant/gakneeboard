@@ -32,23 +32,55 @@ export class Navlog {
         return output;
     }
 
-    calculateTotals() {
+    // computed a compass heading based off navlog settings and leg true heading
+    getEntryCompassHeading(entry:NavlogEntry):number|undefined {
+        return (entry.th) ? (entry.th + this.mv + this.md) : undefined
+    }
+
+    updateRelationships() {
         // calculate total time and distance
         // based on leg times and distances
         this.td = 0;
         this.tt = 0;
         this.ft = this.ff;
-        for(const entry of this.entries) {
+
+        const entriesCount = this.entries.length;
+
+        // we count all legs except last checkpoint which doesn't have a leg
+        for(let index = 0; index < entriesCount -1; index++) {
+            const entry:NavlogEntry = this.entries[index]
+
+            // update totals
             this.td += entry.getLegDistance()
             this.tt += entry.getLegTime()
+
+            // fuel
+            entry.fr = this.ft;
             this.ft -= entry.getLegFuel()
+
+            // update compass headings
+            entry.ch = this.getEntryCompassHeading(entry)
+
+            // attitudes
+            const nextEntry = (index < entriesCount - 1) ? this.entries[index+1] : undefined;
+            // attitude is set to neutral (undefined) if altitudes are unknown or equal
+            if( nextEntry == undefined 
+                || entry.alt === undefined 
+                || nextEntry.alt === undefined 
+                || entry.alt == nextEntry.alt) {
+                entry.att = undefined;
+            } else if( entry.alt < nextEntry.alt) {
+                entry.att = '+'
+            } else {
+                entry.att = '-'
+            }
         }
     }
 
     // refresh Navlog entries and recompute totals
     setEntries(entries:NavlogEntry[]) {
         this.entries = entries
-        this.calculateTotals()
+        this.updateRelationships()
     }
 
 }
