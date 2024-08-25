@@ -15,11 +15,13 @@ const props = defineProps({
 
 const code = ref()
 const name = ref('')
+const valid = ref(false)
 let pendingCode = null // used during the short delay between code update and actual request
 
 function loadProps(props) {
     // console.log('[AirportInput.loadProps]')
     code.value = props.code
+    valid.value = false
 }
 
 onMounted(() => {
@@ -41,8 +43,10 @@ function fetchAirport() {
             if( airport && airport.version != -1) {
                 name.value = airport.name
                 code.value = airport.code
+                valid.value = true
                 emits('valid', airport)
             } else { // airport is unknown
+                valid.value = false
                 name.value = "Unknown"
                 emits('invalid', code.value)
             }
@@ -56,6 +60,7 @@ function onCodeUpdate() {
     // console.log('[AirportEdit.onCodeUpdate]',Date.now())
     pendingCode = code.value
     name.value = '...'
+    valid.value = false
     // only load the new code after a short delay to avoid sending useless query
     if( pendingCode.length > 2) {
         setTimeout( () => {
@@ -77,35 +82,40 @@ function onCodeUpdate() {
             <InputGroupAddon>{{label}}</InputGroupAddon>
             <InputText v-model="code" @input="onCodeUpdate"/>
         </InputGroup>
-        <span class="airportName">{{ name }}</span>
+        <span class="airportName" :class="{'valid': valid}">{{ name }}</span>
     </div>
 </template>
 
 <style scoped>
-    .airportCode {
-        display: grid;
-        grid-template-columns: 100px auto;
-        font-size: 0.8rem;
-        line-height: 1.5rem;
-        text-align: left;
-        gap:5px;
-    }
-    .airportName {
-        overflow: hidden;
-        line-height: 1.5rem;
-        height: 1.5rem;
-        font-size: 0.7rem;
-    }
+.airportCode {
+    display: grid;
+    grid-template-columns: 100px auto;
+    font-size: 0.8rem;
+    line-height: 1.5rem;
+    text-align: left;
+    gap:5px;
+}
+.airportName {
+    overflow: hidden;
+    line-height: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.7rem;
+}
 
-    :deep(.p-component), :deep(.p-inputgroup-addon) {
-        font-size: 0.8rem;
-        height: 1.5rem;
-        
-    }
-    :deep(.p-inputgroup-addon) {
-        width: 3rem;
-    }
-    :deep(.p-inputtext) {
-        padding: 5px;
-    }
+.valid {
+    font-weight: bold;
+    /* color:darkgreen */
+}
+
+:deep(.p-component), :deep(.p-inputgroup-addon) {
+    font-size: 0.8rem;
+    height: 1.5rem;
+    
+}
+:deep(.p-inputgroup-addon) {
+    width: 3rem;
+}
+:deep(.p-inputtext) {
+    padding: 5px;
+}
 </style>
