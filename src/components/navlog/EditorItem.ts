@@ -1,6 +1,6 @@
 import { NavlogEntry } from "./NavlogEntry"
 
-export class NavlogItem {
+export class EditorItem {
     entry:NavlogEntry
     canDelete:boolean
     canAdd:boolean
@@ -13,11 +13,11 @@ export class NavlogItem {
 
     // create a boundary item with its airport code, elevation and cannot be deleted
     public static boundary(airport:any, canAdd:boolean=true) {
-        return new NavlogItem(new NavlogEntry(airport.code, airport.elev), false, canAdd)
+        return new EditorItem(new NavlogEntry(airport.code, airport.elev), false, canAdd)
     }
 
     // a vanilla item only has a name and can be deleted
-    public static vanila(name:string) {
-        return new NavlogItem(new NavlogEntry(name))
+    public static vanila(name:string,elevation:number|undefined=undefined) {
+        return new EditorItem(new NavlogEntry(name,elevation))
     }
 }
