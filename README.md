@@ -13,11 +13,18 @@ Run the test suite:
 
 # BUGS
 * Custom Airport is not editable after update
+
+## TODO
+Do not allow last leg edit or split checkpoint and leg edit
+Remove cheat button
+Offset legs and checkpoint
+Create a demo with Navlog
+
 # Done
+## 
 * Maintenance showing toasts
-* Editor removed from Menu to Main page
-* Navlog main view page ()
-* NavLog has and editor (WiP)
+* Editor button removed from Menu and added Main page bottom left corner
+* Navlog page with associated editor (WiP)
 ## 8/21/2024
 * Maintenance mode
 * Sign out confirmation
