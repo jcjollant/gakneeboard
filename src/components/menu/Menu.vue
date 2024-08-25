@@ -19,7 +19,7 @@ import About from './About.vue'
 import Maintenance from './Maintenance.vue'
 
 
-const emits = defineEmits(['authentication','editor','howDoesItWork','load','print','printOptions','save','toast','toggle'])
+const emits = defineEmits(['authentication','howDoesItWork','load','print','printOptions','save','toast','toggle'])
 
 const activeSheet = ref(null)
 const confirm = useConfirm()
@@ -311,9 +311,6 @@ function userUpdateSheets(newList) {
         <Button label="Load" icon="pi pi-folder-open" title="Open existing sheet" @click="onSheetDialog('load')"></Button>
         <Button label="Save" icon="pi pi-save" title="Save this sheet" @click="onSheetDialog('save')"></Button>
         <Button label="Demo" icon="pi pi-clipboard" title="Load demo sheet" @click="onSheetLoad(getSheetDemo())"></Button>
-        <div class="separator"></div>
-        <Button label="Editor" icon="pi pi-file-edit" title="Toggle Page Editor buttons" 
-          @click="emits('editor')"></Button>
         <div class="separator" @click="showMaintenance=true"></div>
         <Button label="Feedback" icon="pi pi-megaphone" title="Send Feedback"
           @click="showFeedback=true" ></Button>

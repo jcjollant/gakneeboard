@@ -23,17 +23,17 @@ const backPageData = ref(null)
 const activeSheet = ref(null)
 const sheetModified = ref(false)
 
-const editor = ref(false)
 const flipMode = ref(false)
 const keyHowDoesItWork = 'howDoesItWork'
+const showEditor = ref(false)
 const showHowDoesItWork = ref(true)
-const toast = useToast()
-const versionVisible = ref(true)
-const menuVisible = ref(true)
+const showVersion = ref(true)
+const showMenu = ref(true)
 const menuOpen = ref(false)
-const sheetNameVisible = ref(true)
-const pageOneVisible = ref(true)
-const pageTwoVisible = ref(true)
+const showSheetName = ref(true)
+const showPageOne = ref(true)
+const showPageTwo = ref(true)
+const toast = useToast()
 const versionText = ref('')
 
 function doPrint() {
@@ -135,10 +135,10 @@ async function onEditorAction(action) {
  * Copy all left tiles from left to right
  */
 function onMenuEditor() {
-  if(!editor.value && sheetModified.value) {
+  if(!showEditor.value && sheetModified.value) {
     showToast( getToastData('Editing Modified Page','Save your page before editing to undo potential mistakes', toastWarning, 5000))
   }
-  editor.value = !editor.value;
+  showEditor.value = !showEditor.value;
 }
 
 function onMenuLoad(sheet) {
@@ -199,13 +199,13 @@ onMounted(async () => {
 function onPrint(options) {
   // console.log('[App.onPrint]')
   flipMode.value = options.flipped;
-  pageOneVisible.value = options.showFront;
-  pageTwoVisible.value = options.showBack;
+  showPageOne.value = options.showFront;
+  showPageTwo.value = options.showBack;
   // These things don't change
-  versionVisible.value = false;
-  sheetNameVisible.value = false
-  menuVisible.value = false
-  editor.value = false;
+  showVersion.value = false;
+  showSheetName.value = false
+  showMenu.value = false
+  showEditor.value = false;
   showHowDoesItWork.value = false;
 
   // print window content after a short timeout to let flipmode kickin
@@ -216,8 +216,8 @@ function onPrintOptions(options) {
   // console.log('[App.onPrintOptions]', JSON.stringify(options))
   if( options) {
     flipMode.value = options.flipped;
-    pageOneVisible.value = options.showFront;
-    pageTwoVisible.value = options.showBack;
+    showPageOne.value = options.showFront;
+    showPageTwo.value = options.showBack;
   } else {
     restorePrintOptions();
   }
@@ -240,12 +240,12 @@ function onPageUpdateFront(pageData) {
 function restorePrintOptions() {
     // Bring everything back to normal
     flipMode.value = false;
-    versionVisible.value = true;
-    menuVisible.value = true
-    sheetNameVisible.value = true;
-    pageOneVisible.value = true;
-    pageTwoVisible.value = true;
-    editor.value = false;
+    showVersion.value = true;
+    showMenu.value = true
+    showSheetName.value = true;
+    showPageOne.value = true;
+    showPageTwo.value = true;
+    showEditor.value = false;
     showHowDoesItWork.value = false;
 }
 
@@ -263,34 +263,40 @@ function showToast(data) {
 <template>
   <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
   <Toast />
-  <div class="sheetName" v-show="sheetNameVisible"
+  <div class="sheetName" v-show="showSheetName"
     :class="{'sheetNameOffset':menuOpen, 'sheetNameModified': sheetModified}">{{ getSheetName() }}</div>
-  <div :class="{'twoPages':pageOneVisible && pageTwoVisible}">
-    <Page :data="frontPageData" v-if="pageOneVisible" class="pageOne"
+  <div :class="{'twoPages':showPageOne && showPageTwo}">
+    <Page :data="frontPageData" v-if="showPageOne" class="pageOne"
       @update="onPageUpdateFront" 
       @toast="toast.add" />
-    <Page :data="backPageData" v-if="pageTwoVisible" class="pageTwo" :class="{flipMode:flipMode}"
+    <Page :data="backPageData" v-if="showPageTwo" class="pageTwo" :class="{flipMode:flipMode}"
       @update="onPageUpdateBack" 
       @toast="toast.add" />
   </div>
-  <Editor v-if="editor" @action="onEditorAction" />
-  <div class="menuContainer">
-    <Menu class="menu" :pageData="activeSheet?activeSheet.data:null" v-show="menuVisible"
-      @editor="onMenuEditor"
-      @howDoesItWork="showHowDoesItWork=true"
-      @load="onMenuLoad" 
-      @print="onPrint" @printOptions="onPrintOptions"
-      @save="onMenuSave"
-      @toast="toast.add" @toggle="onMenuToggle"
-      >
-    </Menu>
-  </div>
-  <div class="versionDialog" v-show="versionVisible">{{ versionText }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span>
+  <Editor v-if="showEditor" @action="onEditorAction" />
+  <Menu class="menu" :pageData="activeSheet?activeSheet.data:null" v-show="showMenu"
+    @howDoesItWork="showHowDoesItWork=true"
+    @load="onMenuLoad" 
+    @print="onPrint" @printOptions="onPrintOptions"
+    @save="onMenuSave"
+    @toast="toast.add" @toggle="onMenuToggle"
+    >
+  </Menu>
+  <i class="pi pi-file-edit editorButton clickable" v-show="showMenu"
+    @click="onMenuEditor" title="Toggle Page Editor"></i>
+  <div class="versionDialog" v-show="showVersion">{{ versionText }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span>
   </div>
   
 </template>
 
 <style scoped>
+.editorButton {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  font-size: 1.5rem;
+  color: darkgrey;
+}
 .sheetName {
   position : absolute;
   font-size: 3rem;
