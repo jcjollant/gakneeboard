@@ -1,12 +1,15 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
-import { formatLegTime } from '../../assets/format'
+import { duplicate } from '../../assets/data'
+import { formatAltitude, formatLegTime } from '../../assets/format'
 
 import Header from '../shared/Header.vue'
+import NavlogEdit from './NavlogEdit.vue'
+import PlaceHolder from '../shared/PlaceHolder.vue'
 
 
-const emits = defineEmits(['update'])
+const emits = defineEmits(['toast','update'])
 
 const props = defineProps({
     data: { type: Object, default: null },
@@ -44,8 +47,6 @@ watch(props, () => {
 //------------------------
 
 // create a list of ten objects with one 'ch' key which has a number value between 0 and 359
-const listValues = [
-    ]
 const demoNavlog = {
     legs:[
         {name:"KRNT", alt:32, mh:129,wca:-2,ld:4.2,gs:71,lt:3.5,fr:53,lf:-2.4, att:'+'},
@@ -61,34 +62,58 @@ const demoNavlog = {
         {name:"KELN", alt:1763,fr:43.5}
     ]
 }
-const navlog = ref(demoNavlog)
+const navlog = ref(null)
 const data = ref(null)
 const mode = ref('')
 const title = ref('NavLog')
+let navlogBeforeEdit = null
 
-function onHeaderClick() {
-    if (mode.value == '' && data.value) {
-    }
-    mode.value = mode.value == 'edit' ? '' : 'edit'
+function onEditApply(newNavlog) {
+    console.log('[NavlogPAge.onEditApply]', JSON.stringify(newNavlog))
+    navlog.value = newNavlog
+    mode.value = ''
 }
 
+// Edit has been cancelled, we restore previous state
+function onEditCancel() {
+    // restore previous values
+    navlog.value = navlogBeforeEdit
+    mode.value = ''
+}
+
+function onHeaderClick() {
+    if(mode.value=='') {
+        navlogBeforeEdit = duplicate( navlog.value)
+    }
+    mode.value = (mode.value == 'edit' ? '' : 'edit')
+}
+
+function onToast(data) {
+    emits('toast', data)
+}
 </script>
 
 <template>
     <div class="contentPage navlogPage">
-        <div v-if="mode == 'edit'" class="settings">
-            <Header :title="title" @click="onHeaderClick"></Header>
+        <div v-if="mode == 'edit'">
+            <Header :title="title" :page="true" @click="onHeaderClick"></Header>
+            <NavlogEdit :navlog="navlog"
+                @toast="onToast" @cancel="onEditCancel" @apply="onEditApply" />
+        </div>
+        <div v-else-if="navlog==null">
+            <Header :title="title" :page="true" @click="onHeaderClick"></Header>
+            <PlaceHolder title="No Entries"></PlaceHolder>
         </div>
         <div v-else class="main">
             <div class="checkpoints borderRight">
-                <div class="checkpointGrid checkpointHeader header">
-                    <div>CheckPt</div>
-                    <div>Alt.</div>
+                <div class="checkpointGrid checkpointHeader navlogHeader">
+                    <div title="Checkpoint">CheckPt</div>
+                    <div title="Altitude">Alt.</div>
                 </div>
-                <div v-for="v in navlog.legs" class="checkpointGrid borderBottom">
+                <div v-for="v in navlog.entries" class="checkpointGrid borderBottom">
                     <div class="name borderRight" :class="{'checkpointStrong':(v.name.length < 7)}">{{ v.name }}</div>
                     <div class="altitudeGroup">
-                        <span class="altitude checkpointStrong">{{ v.alt }}</span>
+                        <span class="altitude checkpointStrong">{{ formatAltitude( v.alt) }}</span>
                         <i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(v.att=='+'),'pi-arrow-down-right attDesc':(v.att=='-')}"></i>
                     </div>
                     
@@ -96,15 +121,15 @@ function onHeaderClick() {
             </div>
             <div class="legs">
                 <div class="title clickable" @click="onHeaderClick">{{title}}</div>
-                <div class="legsHeader legsGrid header borderBottom">
-                    <div>CH</div>
-                    <div>Dist.</div>
-                    <div>GS</div>
+                <div class="legsHeader legsGrid navlogHeader borderBottom">
+                    <div title="Compass Heading">CH</div>
+                    <div title="Distance">Dist.</div>
+                    <div title="Ground Speed">GS</div>
                     <div>Notes</div>
                     <div>Time</div>
                     <div>Fuel</div>
                 </div>
-                <div v-for="v in navlog.legs.slice(0, navlog.legs.length - 1)" 
+                <div v-for="v in navlog.entries.slice(0, navlog.entries.length - 1)" 
                     class="legsGrid borderBottom"  :class="{'legClimb':(v.att=='+'),'legDesc':(v.att=='-')}">
                     <div class="headingGroup">
                         <!-- <i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(v.att=='+'),'pi-arrow-down-right attDesc':(v.att=='-')}"></i> -->
@@ -117,13 +142,13 @@ function onHeaderClick() {
                     <div class="borderLeft fuel">{{ v.lf }}<span class="fuelRemaining">{{ v.fr }}</span></div>
                 </div>
                 <div class="legsGrid legsFooter">
-                    <div class="totalDistance borderLeft borderRight borderBottom">77.8</div>
-                    <div class="totalTime borderLeft borderBottom">{{ formatLegTime(52.69) }}</div>
-                    <div class="totalFuel borderLeft borderBottom">43.5</div>
+                    <div class="totalDistance borderLeft borderRight borderBottom">{{ navlog.td }}</div>
+                    <div class="totalTime borderLeft borderBottom">{{ formatLegTime(navlog.tt) }}</div>
+                    <div class="totalFuel borderLeft borderBottom">{{ navlog.ft }}</div>
                 </div>
             </div>
+            <div class="notes">Notes</div>
         </div>
-        <div class="notes">Notes</div>
     </div>
 </template>
 
@@ -199,7 +224,7 @@ function onHeaderClick() {
     opacity: 0.3;
     color: blue;
 }
-.header {
+.navlogHeader {
     font-size: 0.8rem;
     font-weight: bold;
     opacity: 0.5;
