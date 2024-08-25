@@ -52,7 +52,7 @@ export class HealthCheck {
         const check:Check = new Check('effectiveDate')
         const rentonCode:string = "KRNT"
 
-        await Promise.all([AirportDao.readList( [rentonCode]),Adip.fetchAirport(rentonCode)]).then((results) => {
+        await Promise.all([AirportDao.readList( [rentonCode]),Adip.fetchAirport(rentonCode,false)]).then((results) => {
             try {
                 const rentonDb:Airport = results[0][0][1]
                 const rentonAdip:Airport|undefined = results[1]

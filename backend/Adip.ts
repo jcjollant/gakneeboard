@@ -12,7 +12,13 @@ export class Adip {
     static basicAuth:string = 'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP'
     static currentEffectiveDate: string = "2024-08-08T00:00:00"
 
-    public static async fetchAirport(code:string):Promise<Airport|undefined>{
+    /**
+     * Fetch airport details from Adip then parse it into an Airport object
+     * @param code Airport code 
+     * @param saveRawData boolean flag indicating whether we should record request data
+     * @returns 
+     */
+    public static async fetchAirport(code:string,saveRawData:boolean=true):Promise<Airport|undefined>{
         let locId:string|undefined = undefined
         // if the code is 4 digits, try to turn it into locId
         if( code.length == 4) {
@@ -61,11 +67,13 @@ export class Adip {
                 airport = undefined
             }
 
-            // save returned adip data
-            try {
-                AdipDao.save(fetchCode, response.data)
-            } catch(e) {
-                reportError( '[Adip.fetchAirport] cannot save Adip data')
+            if( saveRawData) {
+                // save returned adip data
+                try {
+                    AdipDao.save(fetchCode, response.data)
+                } catch(e) {
+                    reportError( '[Adip.fetchAirport] cannot save Adip data')
+                }
             }
 
             // console.log( JSON.stringify(airport))
