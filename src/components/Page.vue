@@ -63,11 +63,15 @@ function onUpdate( newData) {
 </script>
 
 <template>
-    <ChecklistPage v-if="type==PageType.checklist" :data="pageData" @update="onUpdate" />
-    <CoverPage v-else-if="type==PageType.cover" :data="pageData" @replace="onReplace" @update="onUpdate" />
-    <SelectionPage v-else-if="type==PageType.selection" @replace="onReplace" />
-    <NavlogPage v-else-if="type==PageType.navLog" @toast="onToast" @replace="onReplace" />
-    <TilePage v-else :data="pageData" @toast="onToast" @update="onUpdate" />
+    <ChecklistPage v-if="type==PageType.checklist" :data="pageData" 
+        @update="onUpdate" />
+    <CoverPage v-else-if="type==PageType.cover" :data="pageData" 
+        @update="onUpdate" />
+    <NavlogPage v-else-if="type==PageType.navLog" :data="pageData"
+        @update="onUpdate" @toast="onToast" />
+    <TilePage v-else-if="type==PageType.tiles" :data="pageData" 
+        @update="onUpdate" @toast="onToast" />
+    <SelectionPage v-else @replace="onReplace" />
 </template>
 
 <style scoped>

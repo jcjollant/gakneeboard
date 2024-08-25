@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue'
 
 import { duplicate } from '../../assets/data'
-import { formatAltitude, formatLegTime } from '../../assets/format'
+import { formatAltitude, formatDistance, formatLegTime } from '../../assets/format'
 
 import Header from '../shared/Header.vue'
 import NavlogEdit from './NavlogEdit.vue'
@@ -16,22 +16,11 @@ const props = defineProps({
 })
 
 function loadProps(newProps) {
-    // console.log('[ChecklistPage.loadProps]', JSON.stringify(newProps))
+    console.log('[Navlog.loadProps]', JSON.stringify(newProps))
     if (newProps.data) {
-        data.value = newProps.data;
-        if (newProps.data.name) title.value = newProps.data.name
-        if ('items2' in newProps.data) {
-            columns.value = colDouble
-        } else {
-            columns.value = colSingle
-        }
-        if( 'theme' in newProps.data) {
-            theme.value = 'theme-' + newProps.data.theme
-        } else {
-            theme.value = 'theme-yellow'
-        }
+        navlog.value = newProps.data;
     } else {
-        data.value = null
+        navlog.value = null
     }
 }
 
@@ -63,15 +52,15 @@ const demoNavlog = {
     ]
 }
 const navlog = ref(null)
-const data = ref(null)
 const mode = ref('')
 const title = ref('NavLog')
 let navlogBeforeEdit = null
 
 function onEditApply(newNavlog) {
-    console.log('[NavlogPAge.onEditApply]', JSON.stringify(newNavlog))
+    // console.log('[NavlogPage.onEditApply]', JSON.stringify(newNavlog))
     navlog.value = newNavlog
     mode.value = ''
+    emits('update',newNavlog)
 }
 
 // Edit has been cancelled, we restore previous state
@@ -129,20 +118,20 @@ function onToast(data) {
                     <div>Time</div>
                     <div>Fuel</div>
                 </div>
-                <div v-for="v in navlog.entries.slice(0, navlog.entries.length - 1)" 
-                    class="legsGrid borderBottom"  :class="{'legClimb':(v.att=='+'),'legDesc':(v.att=='-')}">
+                <div v-for="e in navlog.entries.slice(0, navlog.entries.length - 1)" 
+                    class="legsGrid borderBottom"  :class="{'legClimb':(e.att=='+'),'legDesc':(e.att=='-')}">
                     <div class="headingGroup">
                         <!-- <i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(v.att=='+'),'pi-arrow-down-right attDesc':(v.att=='-')}"></i> -->
-                        <div class="heading">{{ v.mh }}</div>
+                        <div class="heading">{{ e.ch }}</div>
                     </div>
-                    <div class="borderLeft borderRight">{{ v.ld }}</div>
-                    <div class="">{{ v.gs }}</div>
-                    <div class="borderLeft legNote"><i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(v.att=='+'),'pi-arrow-down-right attDesc':(v.att=='-')}"></i></div>
-                    <div class="borderLeft">{{ formatLegTime(v.lt) }}</div>
-                    <div class="borderLeft fuel">{{ v.lf }}<span class="fuelRemaining">{{ v.fr }}</span></div>
+                    <div class="borderLeft borderRight">{{ e.ld }}</div>
+                    <div class="">{{ e.gs }}</div>
+                    <div class="borderLeft legNote"><i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(e.att=='+'),'pi-arrow-down-right attDesc':(e.att=='-')}"></i></div>
+                    <div class="borderLeft">{{ formatLegTime(e.lt) }}</div>
+                    <div class="borderLeft fuel">{{ e.lf }}<span class="fuelRemaining">{{ e.fr }}</span></div>
                 </div>
                 <div class="legsGrid legsFooter">
-                    <div class="totalDistance borderLeft borderRight borderBottom">{{ navlog.td }}</div>
+                    <div class="totalDistance borderLeft borderRight borderBottom">{{ formatDistance(navlog.td) }}</div>
                     <div class="totalTime borderLeft borderBottom">{{ formatLegTime(navlog.tt) }}</div>
                     <div class="totalFuel borderLeft borderBottom">{{ navlog.ft }}</div>
                 </div>
