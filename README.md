@@ -13,9 +13,11 @@ Run the test suite:
 
 # BUGS
 * Custom Airport is not editable after update
-  
 # Done
-* Mainteinance showing toasts
+* Maintenance showing toasts
+* Editor removed from Menu to Main page
+* Navlog main view page ()
+* NavLog has and editor (WiP)
 ## 8/21/2024
 * Maintenance mode
 * Sign out confirmation
