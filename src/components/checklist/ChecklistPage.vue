@@ -104,7 +104,7 @@ function onThemeChange(newTheme) {
 
 <template>
     <div class="contentPage checklistPage">
-        <Header :title="title" :class="{ 'heading': data }" @click="onHeaderClick"></Header>
+        <Header :title="title" :page="data!=null" @click="onHeaderClick"></Header>
         <div v-if="mode == 'edit'" class="settings">
             <InputGroup>
                 <InputGroupAddon class="checklistNameAddon">Name</InputGroupAddon>

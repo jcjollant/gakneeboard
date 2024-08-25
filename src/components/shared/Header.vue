@@ -5,17 +5,19 @@ import Button from 'primevue/button'
 const emits = defineEmits(['replace'])
 
 const props = defineProps({
-    title: { type: String, required:true},
-    replace: { type:Boolean, default:false},
     clickable: { type: Boolean, default:true},
     left: { type: Boolean, default:false},
+    page: { type: Boolean, default:false},
+    replace: { type:Boolean, default:false},
     stealth: { type: Boolean, default:false},
+    title: { type: String, required:true},
 })
 
 const title=ref('');
 const clickable=ref(false)
 const replace=ref(false)
 const left = ref(false)
+const page = ref(false)
 const stealth = ref(false)
 
 onMounted( () => {
@@ -27,6 +29,7 @@ function updateProps() {
     title.value = props.title
     replace.value = props.replace
     left.value = props.left
+    page.value = props.page
     clickable.value = props.clickable
     stealth.value = props.stealth
 }
@@ -39,14 +42,14 @@ watch( props, async() => {
 
 
 <template>
-    <div class="header" :class="{ clickable: clickable, left: left, stealth: stealth }">
+    <div class="headerTitle" :class="{ clickable: clickable, left: left, page: page, stealth: stealth }">
         <div>{{ title }}</div>
         <Button class="replace" v-if="replace" icon="pi pi-trash" title="Replace Tile" @click="emits('replace')"></Button>
     </div>
 </template>
 
 <style scoped>
-    .header {
+    .headerTitle {
         text-align: center;
         padding: 5px;
         border-bottom: 1px dashed darkgrey;
@@ -57,6 +60,10 @@ watch( props, async() => {
     }
     .clickable:hover {
         color: darkblue;
+        font-weight: bolder;
+    }
+    .page {
+        font-size: 1.2rem;
         font-weight: bolder;
     }
     .replace {
