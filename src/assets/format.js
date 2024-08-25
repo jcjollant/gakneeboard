@@ -1,4 +1,5 @@
 const noFrequency = '-.-'
+const noTime = '--:--'
 
 export function formatAltitude(value) {
     if(!value) return '?'
@@ -38,6 +39,12 @@ export function formatAtcGroups(airport, enrichment=undefined) {
     return groupList;
 }
 
+export function formatDistance(dist) {
+    if(!dist) return '?'
+    if(typeof dist == 'string') return Number(dist).toFixed(1)
+    return dist.toFixed(1)
+}
+
 export function formatFrequency(freq) {
     // console.log('[Corner.formatFrequency]', typeof freq)
     if( !freq || (!freq.mhz && !freq.freq)) return noFrequency
@@ -45,8 +52,14 @@ export function formatFrequency(freq) {
     return value.toFixed(3)
 }
 
+export function formatFuel(fuel) {
+    if(!fuel) return '?'
+    if(typeof fuel == 'string') return Number(fuel).toFixed(1)
+    return fuel.toFixed(1)
+}
+
 export function formatLegTime(time) {
-    if(!time) return '--:--'
+    if(!time) return noTime
     // transform decimal minutes into minutes and seconds
     const minutes = Math.floor(time)
     const seconds = Math.round((time - minutes) * 60)
