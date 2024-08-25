@@ -66,7 +66,7 @@ function onUpdate( newData) {
     <ChecklistPage v-if="type==PageType.checklist" :data="pageData" @update="onUpdate" />
     <CoverPage v-else-if="type==PageType.cover" :data="pageData" @replace="onReplace" @update="onUpdate" />
     <SelectionPage v-else-if="type==PageType.selection" @replace="onReplace" />
-    <NavlogPage v-else-if="type==PageType.navLog" @replace="onReplace" />
+    <NavlogPage v-else-if="type==PageType.navLog" @toast="onToast" @replace="onReplace" />
     <TilePage v-else :data="pageData" @toast="onToast" @update="onUpdate" />
 </template>
 
