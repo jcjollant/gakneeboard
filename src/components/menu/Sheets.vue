@@ -10,7 +10,9 @@ import InputText from "primevue/inputtext";
 import SelectButton from "primevue/selectbutton"
 
 import { customSheetDelete, maxSheetCount, sheetGetByCode, sheetGetById, urlKneeboard } from "../../assets/data"
-import { describePage, getSheetBlank, getSheetDemo, getSheetDemoChecklist, getSheetDemoTiles, sheetNameDemo, sheetNameDemoChecklist, sheetNameDemoTiles, sheetNameNew } from '../../assets/sheetData'
+import { describePage } from '../../assets/sheetData'
+import { getSheetBlank, getSheetDemo, getSheetDemoChecklist, getSheetDemoNavlog, getSheetDemoTiles } from '../../assets/sheetData'
+import { sheetNameDemo, sheetNameDemoChecklist, sheetNameDemoNavlog, sheetNameDemoTiles, sheetNameNew } from '../../assets/sheetData'
 import { getToastData, toastError, toastSuccess } from '../../assets/toast'
 
 const emits = defineEmits(["close","delete","load","save","toast"]);
@@ -117,6 +119,8 @@ function onLoadDefault(sheetName) {
     changeTargetSheet( getSheetDemoTiles())
   } else if( sheetName == sheetNameDemoChecklist) {
     changeTargetSheet( getSheetDemoChecklist())
+  } else if( sheetName == sheetNameDemoNavlog) {
+    changeTargetSheet( getSheetDemoNavlog())
   } else if( sheetName == sheetNameNew) { 
     changeTargetSheet( getSheetBlank())
   } else {
@@ -256,26 +260,23 @@ function showToast(summary,details,severity=toastSuccess) {
           <InputText v-model="sheetCode" />
           <Button icon="pi pi-search" @click="onSheetFetchCode" :disabled="!sheetCode.length" severity="secondary"></Button>
         </InputGroup>
-        <!-- <Button label="Fetch by Code" icon="pi pi-file-import" severity="secondary" 
-          :disabled="!sheetCode.length"
-          @click="onSheetFetchCode"></Button> -->
-      <!-- <div class="sheetList mb-2"> -->
         <Button label="Default" icon="pi pi-clipboard"  title="Load Default Sheet" 
           @click="onLoadDefault(sheetNameDemo)"></Button>
-        <Button label="All Tiles" icon="pi pi-clipboard"  title="Replace all with Demo Tiles" 
+        <Button label="Tiles" icon="pi pi-clipboard"  title="Replace all with Tiles Demo" 
           @click="onLoadDefault(sheetNameDemoTiles)"></Button>
-        <Button label="Checklist" icon="pi pi-clipboard"  title="Replace all with Demo Checklist" 
+        <Button label="Checklist" icon="pi pi-clipboard"  title="Replace all with Checklist Demo" 
           @click="onLoadDefault(sheetNameDemoChecklist)"></Button>
-      <!-- </div> -->
+        <Button label="Navlog" icon="pi pi-clipboard"  title="Replace all with Navlog Demo" 
+          @click="onLoadDefault(sheetNameDemoNavlog)"></Button>
     </div>
   </FieldSet>
     <FieldSet legend="Content">
       <div v-if="targetSheet" class="sheetDescription">
         <div class="bold">Name</div><div>{{fetching ? 'Fetching...' : targetSheet.name}}</div>
-        <div class="bold pageDescription">Front</div><div class="pageDescription">{{ fetching ? '' : describePage(targetSheet, 0) }}</div>
-        <div class="bold pageDescription">Back</div><div class="pageDescription">{{ fetching ? '' : describePage(targetSheet, 1) }}</div>
+        <div class="bold pageDescription">Front</div><div class="pageDescription">{{ fetching ? '' : describePage(targetSheet, 0, 90) }}</div>
+        <div class="bold pageDescription">Back</div><div class="pageDescription">{{ fetching ? '' : describePage(targetSheet, 1, 90) }}</div>
       </div>
-      <div v-else>Select a sheet above to view its content</div>
+      <div v-else class="contentPlaceholder">Select a sheet above to view its content</div>
     </FieldSet>
     <div class="actionDialog gap-2">
       <Button label="Do Not Load" @click="onButtonClose" link></Button>
@@ -344,6 +345,7 @@ function showToast(summary,details,severity=toastSuccess) {
 }
 .pageDescription {
   font-size: 0.8rem;
+  overflow: hidden;
 }
 .newSheetButton {
     grid-column: 2 / span 2;
