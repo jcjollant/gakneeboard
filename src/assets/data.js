@@ -1,4 +1,4 @@
-export const version = 821
+export const version = 825
 export const maxSheetCount = 10
 export const keyUser = 'kb-user'
 
