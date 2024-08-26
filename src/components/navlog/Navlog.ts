@@ -1,3 +1,4 @@
+import { visitAndCloseBanner } from "../../../cypress/e2e/shared";
 import { NavlogEntry } from "./NavlogEntry";
 
 export class Navlog {
@@ -5,8 +6,8 @@ export class Navlog {
     to:string
     ff:number // Initial fuel (Fuel From)
     ft:number // Fuel at destination (Fuel To)
-    mv:number // magnetic variation
-    md:number // magnetic deviation
+    mv:number|undefined // magnetic variation
+    md:number|undefined // magnetic deviation
     tt:number // Total Time
     td:number // Total Distance
     entries:NavlogEntry[]
@@ -14,6 +15,10 @@ export class Navlog {
     constructor(from:string,to:string) {
         this.from = from;
         this.to = to;
+        this.ff = 0;
+        this.ft = 0;
+        this.md = undefined;
+        this.mv = undefined;
         this.tt = 0;
         this.td = 0;
         this.entries = []
@@ -34,7 +39,9 @@ export class Navlog {
 
     // computed a compass heading based off navlog settings and leg true heading
     getEntryCompassHeading(entry:NavlogEntry):number|undefined {
-        return (entry.th) ? (entry.th + this.mv + this.md) : undefined
+        const variation = Number(this.mv ? this.mv : 0);
+        const deviation = Number(this.md ? this.md : 0);
+        return (entry.th) ? (entry.th + variation + deviation) : undefined
     }
 
     updateRelationships() {
