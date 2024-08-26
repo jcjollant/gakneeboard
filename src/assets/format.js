@@ -39,12 +39,6 @@ export function formatAtcGroups(airport, enrichment=undefined) {
     return groupList;
 }
 
-export function formatDistance(dist) {
-    if(!dist) return '?'
-    if(typeof dist == 'string') return Number(dist).toFixed(1)
-    return dist.toFixed(1)
-}
-
 export function formatFrequency(freq) {
     // console.log('[Corner.formatFrequency]', typeof freq)
     if( !freq || (!freq.mhz && !freq.freq)) return noFrequency
