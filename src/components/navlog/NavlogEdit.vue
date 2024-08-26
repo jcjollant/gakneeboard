@@ -2,8 +2,8 @@
 import { onMounted, ref, watch } from 'vue'
 
 import { formatAltitude, formatFuel, formatLegTime } from '../../assets/format'
+import { Formatter } from '../../assets/Formatter'
 import { emitToast, emitToastError } from '../../assets/toast'
-import { getAirport } from '../../assets/data'
 import { Navlog } from './Navlog'
 import { NavlogEntry } from './NavlogEntry'
 import { EditorItem } from './EditorItem'
@@ -26,7 +26,8 @@ const activeTime = ref(0)
 const fuel = ref('')
 const items = ref([])
 const showEditor = ref(false)
-const maxLogItems = 15
+const showLeg = ref(true)
+const maxLogItems = 14
 const navlog = ref(new Navlog())
 
 let airportFrom = null;
@@ -39,7 +40,7 @@ const props = defineProps({
 
 function loadProps(newProps) {
     // console.log('[NavlogEdit.loadProps]', JSON.stringify(newProps))
-    if (newProps.navlog) {
+    if (newProps.navlog && newProps.navlog.entries) {
         navlog.value = Navlog.copy(newProps.navlog);
         // build a list of items from entries
         const entries = newProps.navlog.entries;
@@ -70,6 +71,12 @@ watch(props, () => {
 // End of props management
 //-------------------------
 
+function formatName(name) {
+    if(!name) return '?'
+    if(name.length > 15) return name.substring(0,15) + '...'
+    return name;
+}
+
 function onAirportFromValid(airport) {
     airportFrom = airport;
 }
@@ -93,18 +100,18 @@ function onApply() {
     emits('apply', newNavLog)
 }
 
-function onCheat() {
-    navlog.value.from = 'KRNT'
-    navlog.value.to = 'KELN'
-    navlog.value.ff = 53
-    navlog.value.mv = -15
-    navlog.value.md = 0
-    Promise.all([getAirport('KRNT'), getAirport('KELN')]).then((values) => {
-        airportFrom = values[0]
-        airportTo = values[1]
-        onCreate()
-    })
-}
+// function onCheat() {
+//     navlog.value.from = 'KRNT'
+//     navlog.value.to = 'KELN'
+//     navlog.value.ff = 53
+//     navlog.value.mv = -15
+//     navlog.value.md = 0
+//     Promise.all([getAirport('KRNT'), getAirport('KELN')]).then((values) => {
+//         airportFrom = values[0]
+//         airportTo = values[1]
+//         onCreate()
+//     })
+// }
 
 /**
  * Create a new items list using from and to
@@ -122,6 +129,9 @@ function onCreate() {
     newList.push( EditorItem.boundary( airportTo, false))
     // console.log('[NavlogEdit.onCreate]', JSON.stringify(newNL))
     items.value = newList;
+
+    navlog.value = new Navlog( airportFrom.code, airportTo.code)
+    console.log('[NavlogEdit.onCreate]', JSON.stringify(navlog.value))
 
     emitToast(emits, 'Navlog Created','Please update TOC/TOD altitudes')
 }
@@ -141,7 +151,7 @@ function onEntryEditorSave(entry) {
 function onItemAdd(index) {
     console.log('[NavlogEdit.onAddItem]', index, items.value.length)
     if(items.value.length >= maxLogItems) {
-        emitToastError( emits, 'Log Full', `We cannot display more than ${maxLogItems}`)
+        emitToastError( emits, 'Log Full', `We cannot display more than ${maxLogItems} checkpoints in the navlog`)
         return
     }
     const newItem = EditorItem.vanila('?')
@@ -161,20 +171,22 @@ function onItemEdit(index) {
     activeIndex = index;
     activeEntry.value = items.value[index].entry
     activeTime.value = Date.now()
-    console.log('[NavlogEdit.onItemEdit]', JSON.stringify(activeEntry.value))
+    // console.log('[NavlogEdit.onItemEdit]', JSON.stringify(activeEntry.value))
+    showLeg.value = index < items.value.length - 1
     showEditor.value = true
 }
+
 
 </script>
 
 <template>
 <div>
-    <NavlogEntryEditor v-model:visible="showEditor" :entry="activeEntry" :time="activeTime" 
+    <NavlogEntryEditor v-model:visible="showEditor" :entry="activeEntry" :time="activeTime" :showLeg="showLeg"
         @close="onEntryEditorClose" @save="onEntryEditorSave" />
     <div class="variables">
         <AirportInput :code="navlog.from" :auto="true" label="From" class="airportFrom" @valid="onAirportFromValid" @invalid="onAirportFromInvalid" />
         <AirportInput :code="navlog.to" :auto="true" label="To" class="airportTo" @valid="onAirportToValid" @invalid="onAirportToInvalid"/>
-        <InputGroup>
+        <InputGroup class="initialFuel">
             <InputGroupAddon>Initial Fuel</InputGroupAddon>
             <InputText v-model="navlog.ff"/>
         </InputGroup>
@@ -188,43 +200,51 @@ function onItemEdit(index) {
         </InputGroup>
         <Button label="Create" @click="onCreate"></Button>
     </div>
-    <div>
+    <!-- <div>
         <Button label="Cheat" @click="onCheat"></Button>
-    </div>
-    <div class="headers legGrid bb">
-        <div>&nbsp</div>
-        <div title="Checkpoint Name">CheckPt</div>
-        <div title="Checkpoint Altitude">Alt</div>
-        <div title="True Heading">TH</div>
-        <div title="True Heading corrected for Magnetic Variation and Deviation">CH</div>
-        <div title="Leg Distance">Dist.</div>
-        <div title="Ground Speed">GS</div>
-        <div title="Leg Time">Time</div>
-        <div title="Leg Fuel">Fuel</div>
-    </div>
-    <div>
-        <div v-for="(i,index) in items" class="legGrid bb">
-            <div class="actions">
-                <!-- <i class="pi pi-pencil clickable actionEdit" title="Edit"
-                    @click="onItemEdit(index)"></i> -->
-                <i v-if="i.canDelete" class="pi pi-times actionDelete clickable" title="Delete checkpoint"
-                    @click="onItemDelete(index)"></i>
-                <i v-if="i.canAdd" class="pi pi-plus actionAdd clickable" title="Add new checkpoint after"
-                    @click="onItemAdd(index+1)"></i>
+    </div> -->
+    <div class="grids" v-if="items.length">
+        <div class="checkpoints"><!-- checkpoints -->
+            <div class="headers checkpointGrid bb">
+                <div>&nbsp</div>
+                <div title="Checkpoint Name">CheckPt</div>
+                <div title="Checkpoint Altitude">Alt</div>
             </div>
-            <div class="bl name clickable" @click="onItemEdit(index)">{{ i.entry.name }}</div>
-            <div class="bl">{{ formatAltitude(i.entry.alt) }}</div>
-            <div class="bl">{{ (index < items.length - 1) ? i.entry.th : '' }}</div>
-            <div v-if="index < items.length - 1" class="bl compassHeading">{{ i.entry.ch }}</div>
-            <div v-else></div>
-            <div v-if="index < items.length - 1" class="bl">{{ i.entry.ld }}</div>
-            <div v-else class="total">{{ navlog.td }}</div>
-            <div v-if="index < items.length - 1" class="bl">{{ i.entry.gs }}</div>
-            <div v-else></div>
-            <div v-if="index < items.length - 1" class="bl">{{ formatLegTime(i.entry.lt) }}</div>
-            <div v-else class="total">{{ formatLegTime(navlog.tt) }}</div>
-            <div v-if="index < items.length - 1" class="bl">{{ i.entry.lf }}</div>
-            <div v-else class="total">{{ formatFuel(navlog.ff - navlog.ft) }}</div>
+            <div v-for="(i,index) in items" class="checkpointGrid bb">
+                <div class="actions">
+                    <!-- <i class="pi pi-pencil clickable actionEdit" title="Edit"
+                        @click="onItemEdit(index)"></i> -->
+                    <i v-if="i.canDelete" class="pi pi-times actionDelete clickable" title="Delete checkpoint"
+                        @click="onItemDelete(index)"></i>
+                    <i v-if="i.canAdd" class="pi pi-plus actionAdd clickable" title="Add new checkpoint after"
+                        @click="onItemAdd(index+1)"></i>
+                </div>
+                <div class="bl name editable" @click="onItemEdit(index)">{{ formatName(i.entry.name) }}</div>
+                <div class="bl br editable" @click="onItemEdit(index)">{{ formatAltitude(i.entry.alt) }}</div>
+            </div>
+        </div>
+        <div class="legs"><!-- legs -->
+            <div class="headers legGrid bb">
+                <div title="True Heading">TH</div>
+                <div title="True Heading corrected for Magnetic Variation and Deviation">CH</div>
+                <div title="Leg Distance">Dist.</div>
+                <div title="Ground Speed">GS</div>
+                <div title="Leg Time">Time</div>
+                <div title="Leg Fuel">Fuel</div>
+            </div>
+            <div v-for="(i,index) in items.slice(0, items.length - 1)" class="legGrid bb">
+                <div class="editable trueHeading" @click="onItemEdit(index)">{{ (index < items.length - 1) ? i.entry.th : '' }}</div>
+                <div class="bl compassHeading">{{ i.entry.ch }}</div>
+                <div class="bl editable" @click="onItemEdit(index)">{{ Formatter.distance( i.entry.ld) }}</div>
+                <div class="bl editable" @click="onItemEdit(index)">{{ i.entry.gs }}</div>
+                <div class="bl editable" @click="onItemEdit(index)">{{ formatLegTime(i.entry.lt) }}</div>
+                <div class="bl editable" @click="onItemEdit(index)">{{ i.entry.lf }}</div>
+            </div>
+            <div class="legGrid">
+                <div class="total totalDistance">{{ Formatter.distance(navlog.td) }}</div>
+                <div class="total totalTime">{{ formatLegTime(navlog.tt) }}</div>
+                <div class="total totalFuel">{{ formatFuel(navlog.ff - navlog.ft) }}</div>
+            </div>
         </div>
     </div>
     <ActionBar @cancel="emits('cancel')" @apply="onApply"></ActionBar>
@@ -251,26 +271,58 @@ function onItemEdit(index) {
 .airportTo {
     grid-column: 3 / 5;
 }
+.checkpointGrid {
+    display: grid;
+    grid-template-columns: 3rem 4rem 3rem;
+    line-height: 2rem;
+    font-size: 0.8rem;
+}
+.checkpoints {
+
+}
 .compassHeading {
     background-color: #EEE;
 }
+.editable {
+    cursor: pointer;
+    color: darkblue;
+}
+.grids {
+    display: grid;
+    grid-template-columns: 10rem 17.25rem;
+}
+:hover.editable {
+    font-weight: bold;
+}
 .headers {
-    display: flex;
     font-weight: bold;
     font-size: 0.8rem;
 }
 .legGrid {
     display: grid;
-    grid-template-columns: 3rem 4rem 3rem 2.5rem 2.5rem 2.5rem 3rem 4rem 3rem;
+    grid-template-columns: 2.5rem 2.5rem 2.5rem 3rem 4rem 3rem auto;
     line-height: 2rem;
     font-size: 0.8rem;
 }
-
-:hover.name {
-    font-weight: bold;
+.legs {
+    margin-top: 1rem;
+}
+.name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: normal;
+    overflow: hidden;
+    height: 2rem;
 }
 .total {
     font-weight: bold;
+}
+.totalDistance {
+    grid-column: 3;
+}
+.totalTime {
+    grid-column: 5;
 }
 .variables {
     display: grid;
