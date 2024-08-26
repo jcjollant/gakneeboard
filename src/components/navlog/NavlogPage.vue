@@ -2,7 +2,8 @@
 import { onMounted, ref, watch } from 'vue'
 
 import { duplicate } from '../../assets/data'
-import { formatAltitude, formatDistance, formatLegTime } from '../../assets/format'
+import { formatAltitude, formatFuel, formatLegTime } from '../../assets/format'
+import { Formatter } from '../../assets/Formatter'
 
 import Header from '../shared/Header.vue'
 import NavlogEdit from './NavlogEdit.vue'
@@ -16,7 +17,7 @@ const props = defineProps({
 })
 
 function loadProps(newProps) {
-    console.log('[Navlog.loadProps]', JSON.stringify(newProps))
+    // console.log('[NavlogPage.loadProps]', JSON.stringify(newProps))
     if (newProps.data) {
         navlog.value = newProps.data;
     } else {
@@ -36,21 +37,6 @@ watch(props, () => {
 //------------------------
 
 // create a list of ten objects with one 'ch' key which has a number value between 0 and 359
-const demoNavlog = {
-    legs:[
-        {name:"KRNT", alt:32, mh:129,wca:-2,ld:4.2,gs:71,lt:3.5,fr:53,lf:-2.4, att:'+'},
-        {name:"TOC25", alt:2500, mh:128,wca:-3,ld:2.9,gs:106,lt:1.66,fr:50.6,lf:-0.2},
-        {name:"Lk Youngs ZEBKU", alt:2500, mh:75,wca:0,ld:4.0,gs:68,lt:3.5,fr:50.4,lf:-0.7},
-        {name:"TOC45", alt:2500, mh:75,wca:0,ld:1.0,gs:101,lt:0.62,fr:49.7,lf:-0.1},
-        {name:"Bravo Shelf 50", alt:2500, mh:75,wca:0,ld:2.2,gs:67,lt:2.0,fr:49.6,lf:-0.4, att:'+'},
-        {name:"TOC55", alt:5500, mh:75,wca:0,ld:4.5,gs:96,lt:2.79,fr:49.2,lf:-0.4},
-        {name:"Clear B Shelf 60", alt:5500, mh:75,wca:0,ld:4.4,gs:66,lt:4.0,fr:48.8,lf:-0.8, att:'+'},
-        {name:"TOC75", alt:7500, mh:75,wca:0,ld:7.6,gs:94,lt:4.9,fr:48.0,lf:-0.6},
-        {name:"4W0", alt:7500, mh:98,wca:-3,ld:28.8,gs:95,lt:18.25,fr:47.4,lf:-2.4},
-        {name:"TOD", alt:7500, mh:65,wca:2,ld:18.2,gs:95,lt:11.47,fr:45.0,lf:-1.5, att:'-'},
-        {name:"KELN", alt:1763,fr:43.5}
-    ]
-}
 const navlog = ref(null)
 const mode = ref('')
 const title = ref('NavLog')
@@ -89,18 +75,18 @@ function onToast(data) {
             <NavlogEdit :navlog="navlog"
                 @toast="onToast" @cancel="onEditCancel" @apply="onEditApply" />
         </div>
-        <div v-else-if="navlog==null">
+        <div v-else-if="navlog==null || navlog.entries==null">
             <Header :title="title" :page="true" @click="onHeaderClick"></Header>
             <PlaceHolder title="No Entries"></PlaceHolder>
         </div>
         <div v-else class="main">
-            <div class="checkpoints borderRight">
+            <div class="checkpoints br">
                 <div class="checkpointGrid checkpointHeader navlogHeader">
                     <div title="Checkpoint">CheckPt</div>
                     <div title="Altitude">Alt.</div>
                 </div>
-                <div v-for="v in navlog.entries" class="checkpointGrid borderBottom">
-                    <div class="name borderRight" :class="{'checkpointStrong':(v.name.length < 7)}">{{ v.name }}</div>
+                <div v-for="v in navlog.entries" class="checkpointGrid bb">
+                    <div class="name br" :class="{'checkpointStrong':(v.name.length < 7)}">{{ v.name }}</div>
                     <div class="altitudeGroup">
                         <span class="altitude checkpointStrong">{{ formatAltitude( v.alt) }}</span>
                         <i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(v.att=='+'),'pi-arrow-down-right attDesc':(v.att=='-')}"></i>
@@ -110,7 +96,7 @@ function onToast(data) {
             </div>
             <div class="legs">
                 <div class="title clickable" @click="onHeaderClick">{{title}}</div>
-                <div class="legsHeader legsGrid navlogHeader borderBottom">
+                <div class="legsHeader legsGrid navlogHeader bb">
                     <div title="Compass Heading">CH</div>
                     <div title="Distance">Dist.</div>
                     <div title="Ground Speed">GS</div>
@@ -119,21 +105,22 @@ function onToast(data) {
                     <div>Fuel</div>
                 </div>
                 <div v-for="e in navlog.entries.slice(0, navlog.entries.length - 1)" 
-                    class="legsGrid borderBottom"  :class="{'legClimb':(e.att=='+'),'legDesc':(e.att=='-')}">
+                    class="legsGrid bb"  :class="{'legClimb':(e.att=='+'),'legDesc':(e.att=='-')}">
                     <div class="headingGroup">
-                        <!-- <i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(v.att=='+'),'pi-arrow-down-right attDesc':(v.att=='-')}"></i> -->
                         <div class="heading">{{ e.ch }}</div>
                     </div>
-                    <div class="borderLeft borderRight">{{ e.ld }}</div>
+                    <div class="bl br">{{ e.ld }}</div>
                     <div class="">{{ e.gs }}</div>
-                    <div class="borderLeft legNote"><i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(e.att=='+'),'pi-arrow-down-right attDesc':(e.att=='-')}"></i></div>
-                    <div class="borderLeft">{{ formatLegTime(e.lt) }}</div>
-                    <div class="borderLeft fuel">{{ e.lf }}<span class="fuelRemaining">{{ e.fr }}</span></div>
+                    <div class="bl legNote">
+                        <i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(e.att=='+'),'pi-arrow-down-right attDesc':(e.att=='-'),'pi-arrow-right attCruise':(e.att!='+'&&e.att!='-')}"></i>
+                    </div>
+                    <div class="bl">{{ formatLegTime(e.lt) }}</div>
+                    <div class="bl fuel">{{ e.lf }}<span class="fuelRemaining">{{ formatFuel(e.fr) }}</span></div>
                 </div>
                 <div class="legsGrid legsFooter">
-                    <div class="totalDistance borderLeft borderRight borderBottom">{{ formatDistance(navlog.td) }}</div>
-                    <div class="totalTime borderLeft borderBottom">{{ formatLegTime(navlog.tt) }}</div>
-                    <div class="totalFuel borderLeft borderBottom">{{ navlog.ft }}</div>
+                    <div class="totalDistance bl br bb">{{ Formatter.distance(navlog.td) }}</div>
+                    <div class="totalTime bl bb">{{ formatLegTime(navlog.tt) }}</div>
+                    <div class="totalFuel bl bb">{{ formatFuel(navlog.ft) }}</div>
                 </div>
             </div>
             <div class="notes">Notes</div>
@@ -162,7 +149,7 @@ function onToast(data) {
     font-size: 3rem;
     font-weight: 900;
     position: absolute;
-    right: 0;
+    right: 1px;
     bottom: 0;
     opacity: 0.10;
 }
@@ -171,21 +158,11 @@ function onToast(data) {
     color: red;
 }
 .attCruise {
-    color: blue;
+    color: darkgray;
 }
 .attDesc {
     color: green;
-}
-.borderBottom {
-    border-bottom: 1px dashed darkgrey;
-}
-.borderLeft {
-    border-left: 1px dashed darkgrey;
-}
-.borderRight {
-    border-right: 1px dashed darkgrey;
-}
-.checkpointGrid {
+}.checkpointGrid {
     display:grid;
     grid-template-columns: 5rem 4rem;
 }
@@ -225,10 +202,9 @@ function onToast(data) {
 .headingGroup {
     position: relative;
 }
-/* .legs {
-    display: grid;
-    grid-template-rows: auto auto;
-} */
+.legs {
+    z-index: 1;
+}
 .legDesc {
     background-color: rgba(0, 255, 0, 0.1);
 }
@@ -270,11 +246,12 @@ function onToast(data) {
 .notes {
     position: absolute;
     bottom: 0;
-    font-size: 3rem;
-    line-height: 3.5rem;
+    font-size: 2.5rem;
+    line-height: 3rem;
     font-weight: 700;
     opacity: 0.1;
     width: 100%;
+    z-index: 0;
 }
 .settings {
     display: flex;
@@ -288,6 +265,7 @@ function onToast(data) {
 }
 .totalDistance {
     grid-column: 2;
+    background: white;
 }
 .totalFuel {
     grid-column: 6;
