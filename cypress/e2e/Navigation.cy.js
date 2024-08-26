@@ -26,7 +26,7 @@ describe('Navigation', () => {
   // ========================================================================
   // Print Dialog
   // ========================================================================
-  it.skip('Print Dialog', () =>{
+  it('Print Dialog', () =>{
     visitAndCloseBanner()
 
     // check version number
@@ -48,14 +48,33 @@ describe('Navigation', () => {
     
   })
 
-  it.skip('Editor', () => {
+  it('Page Selection', () => {
+    visitAndCloseBanner()
+
+    cy.wait(1000)
+
+    cy.get('.menuIcon').click()
+    cy.get('[aria-label="New"]').click()
+    // Accept new page
+    cy.get('.p-confirm-dialog-accept').click()
+
+    const expectedList = ['Tiles', 'Checklist', 'Cover', 'NavLog']
+    const pages = ['pageOne', 'pageTwo']
+    cy.get('.pageOne > .headerTitle').contains('Page Selection')
+    for(const page of pages) {
+      for( const label of expectedList) {
+        cy.get('.' + page + ' > .list > [aria-label="' + label + '"]')
+      }
+    }
+  })
+
+  it('Editor', () => {
     visitAndCloseBanner()
 
     cy.wait(1000)
 
     // enable editor
-    cy.get('.menuIcon').click()
-    cy.get('[aria-label="Editor"]').click()
+    cy.get('.pi-file-edit').click()
 
     // Check we have action buttons
     cy.get(':nth-child(1) > [aria-label="Reset"]')
@@ -72,6 +91,7 @@ describe('Navigation', () => {
     cy.get('.pageTwo').contains('Page Selection').should('not.exist')
 
     // reload demo
+    cy.get('.menuIcon').click()
     cy.get('[aria-label="Demo"]').click()
     cy.get('.p-confirm-dialog-accept').click()
 
@@ -85,11 +105,11 @@ describe('Navigation', () => {
     cy.get('.p-confirm-dialog-accept').click()
 
     // swap
-    cy.get('.pageOne > :nth-child(6) > .header').contains('Clearance @')
+    cy.get('.pageOne > :nth-child(6) > .headerTitle').contains('Clearance @')
     cy.get('.pageTwo > :nth-child(2) > .twoLists > .leftList > :nth-child(19)').contains('FIRE')
     cy.get('.middle > .p-button').click()
     cy.get('.pageOne > :nth-child(2) > .twoLists > .leftList > :nth-child(19)').contains('FIRE')
-    cy.get('.pageTwo > :nth-child(6) > .header').contains('Clearance @')
+    cy.get('.pageTwo > :nth-child(6) > .headerTitle').contains('Clearance @')
 
     // reload demo
     cy.get('[aria-label="Demo"]').click()
@@ -99,8 +119,8 @@ describe('Navigation', () => {
     cy.get(':nth-child(1) > [aria-label="Copy"]').click()
     cy.get(':nth-child(3) > [aria-label="Paste"]').click()
 
-    cy.get('.pageOne > :nth-child(6) > .header').contains('Clearance @')
-    cy.get('.pageTwo > :nth-child(6) > .header').contains('Clearance @')
+    cy.get('.pageOne > :nth-child(6) > .headerTitle').contains('Clearance @')
+    cy.get('.pageTwo > :nth-child(6) > .headerTitle').contains('Clearance @')
 
     // reload demo
     cy.get('[aria-label="Demo"]').click()
@@ -114,7 +134,7 @@ describe('Navigation', () => {
 
   })
 
-  it.skip('Sign in and Load Page', () => {
+  it('Sign in and Load Page', () => {
     visitAndCloseBanner()
     maintenanceMode()
 
@@ -125,14 +145,16 @@ describe('Navigation', () => {
 
     // load page should open
     cy.get('[aria-label="Load"]').click()
-    cy.get('#pv_id_15_content > .p-fieldset-content > div').contains('Select a sheet above')
+    cy.get('.contentPlaceholder').contains('Select a sheet above')
     // Check demo pages work
     cy.get('[aria-label="Default"]').click()
     cy.get('.sheetDescription > :nth-child(2)').contains('Default Demo')
-    cy.get('[aria-label="All Tiles"]').click()
+    cy.get('[aria-label="Tiles"]').click()
     cy.get('.sheetDescription > :nth-child(2)').contains('Tiles Demo')
     cy.get('[aria-label="Checklist"]').click()
     cy.get('.sheetDescription > :nth-child(2)').contains('Checklist Demo')
+    cy.get('[aria-label="Navlog"]').click()
+    cy.get('.sheetDescription > :nth-child(2)').contains('Navlog Demo')
 
     // Do Not Load
     cy.get('.p-button-link').click()
