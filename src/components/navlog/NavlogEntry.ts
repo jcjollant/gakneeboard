@@ -1,39 +1,39 @@
 export class NavlogEntry {
     name: string;
     alt: number|undefined; // Altitude
-    th: number|undefined; // True heading
+    tc: number|undefined; // True Course
+    wind: string|undefined; // Wind
+    th: number|undefined; // True Heading
+    mh: number|undefined; // Magnetic Heading
     ch: number|undefined; // Compass Heading
-    wca: number|undefined; // wind correction angle
-    ld: number; // leg distance
-    gs: number; // ground speed
-    lt: number; // let time
-    fr: number; // fuel remaining
-    lf: number; // leg fuel
+    ld: number|undefined; // leg distance
+    gs: number|undefined; // ground speed
+    lt: number|undefined; // let time
+    fr: number|undefined; // fuel remaining
+    lf: number|undefined; // leg fuel
     att: string|undefined; // attitude
 
     constructor(name:string, atltitude:number|undefined=undefined) {
         this.name = name;
         this.alt = atltitude;
+        this.tc = undefined;
+        this.wind = undefined;
         this.th = undefined;
         this.ch = undefined; // needs to be calculated from other values
-        this.wca = undefined;
-        this.ld = 0;
-        this.lt = 0;
-        this.lf = 0;
+        this.ld = undefined;
+        this.gs = undefined;
+        this.lt = undefined;
+        this.fr = undefined;
+        this.lf = undefined;
         this.att = undefined;
     }
     static copy(source:any):NavlogEntry {
         if(!source) return new NavlogEntry('');
         const output:NavlogEntry = new NavlogEntry(source.name, source.alt);
-        output.th = source.th;
-        output.ch = source.ch;
-        output.wca = source.wca;
-        output.ld = source.ld;
-        output.gs = source.gs;
-        output.lt = source.lt;
-        output.fr = source.fr;
-        output.lf = source.lf;
-        output.att = source.att;
+        const fields = ['tc','wind','th','mh','ch','ld','gs','lt','fr','lf','att']
+        for(const field of fields) {
+            if(source[field]) output[field] = source[field];
+        }
         return output;
     }
     public getLegDistance():number {

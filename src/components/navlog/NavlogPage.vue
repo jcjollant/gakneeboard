@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue'
 
 import { duplicate } from '../../assets/data'
-import { formatAltitude, formatFuel, formatLegTime } from '../../assets/format'
+import { formatAltitude } from '../../assets/format'
 import { Formatter } from '../../assets/Formatter'
 
 import Header from '../shared/Header.vue'
@@ -97,7 +97,8 @@ function onToast(data) {
             <div class="legs">
                 <div class="title clickable" @click="onHeaderClick">{{title}}</div>
                 <div class="legsHeader legsGrid navlogHeader bb">
-                    <div title="Compass Heading">CH</div>
+                    <div title="Magnetic Heading">MH</div>
+                    <!-- <div title="Compass Heading">CH</div> -->
                     <div title="Distance">Dist.</div>
                     <div title="Ground Speed">GS</div>
                     <div>Notes</div>
@@ -107,20 +108,21 @@ function onToast(data) {
                 <div v-for="e in navlog.entries.slice(0, navlog.entries.length - 1)" 
                     class="legsGrid bb"  :class="{'legClimb':(e.att=='+'),'legDesc':(e.att=='-')}">
                     <div class="headingGroup">
-                        <div class="heading">{{ e.ch }}</div>
+                        <div class="heading">{{ e.mh }}</div>
+                        <!-- <div class="heading">{{ e.ch }}</div> -->
                     </div>
                     <div class="bl br">{{ e.ld }}</div>
                     <div class="">{{ e.gs }}</div>
                     <div class="bl legNote">
                         <i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(e.att=='+'),'pi-arrow-down-right attDesc':(e.att=='-'),'pi-arrow-right attCruise':(e.att!='+'&&e.att!='-')}"></i>
                     </div>
-                    <div class="bl">{{ formatLegTime(e.lt) }}</div>
-                    <div class="bl fuel">{{ e.lf }}<span class="fuelRemaining">{{ formatFuel(e.fr) }}</span></div>
+                    <div class="bl">{{ Formatter.legTime(e.lt) }}</div>
+                    <div class="bl fuel">{{ e.lf }}<span class="fuelRemaining">{{ Formatter.fuel(e.fr) }}</span></div>
                 </div>
                 <div class="legsGrid legsFooter">
                     <div class="totalDistance bl br bb">{{ Formatter.distance(navlog.td) }}</div>
-                    <div class="totalTime bl bb">{{ formatLegTime(navlog.tt) }}</div>
-                    <div class="totalFuel bl bb">{{ formatFuel(navlog.ft) }}</div>
+                    <div class="totalTime bl bb">{{ Formatter.legTime(navlog.tt) }}</div>
+                    <div class="totalFuel bl bb">{{ Formatter.fuel(navlog.ft) }}</div>
                 </div>
             </div>
             <div class="notes">Notes</div>

@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
-import { formatAltitude, formatFuel, formatLegTime } from '../../assets/format'
+import { formatAltitude } from '../../assets/format'
 import { Formatter } from '../../assets/Formatter'
 import { emitToast, emitToastError } from '../../assets/toast'
 import { Navlog } from './Navlog'
@@ -16,22 +16,28 @@ import Button from 'primevue/button'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
+import { useConfirm } from 'primevue/useconfirm'
 
 const emits = defineEmits(['apply','cancel','toast'])
 
 const activeEntry = ref(null)
 const activeTime = ref(0)
-// const codeFrom = ref(null)
-// const codeTo = ref(null)
-const fuel = ref('')
+const codeFrom = ref(null)
+const codeTo = ref(null)
+const confirm = useConfirm()
+const initialFuel = ref(null)
 const items = ref([])
+const magneticVariation = ref(null)
+const magneticDeviation = ref(0)
 const showEditor = ref(false)
 const showLeg = ref(true)
+const totalDistance = ref(0)
+const totalTime = ref(0)
+const totalFuel = ref(0)
 const maxLogItems = 14
-const navlog = ref(new Navlog())
 
-let airportFrom = null;
-let airportTo = null;
+let elevFrom = 0;
+let elevTo = 0;
 let activeIndex = -1
 
 const props = defineProps({
@@ -41,9 +47,16 @@ const props = defineProps({
 function loadProps(newProps) {
     // console.log('[NavlogEdit.loadProps]', JSON.stringify(newProps))
     if (newProps.navlog && newProps.navlog.entries) {
-        navlog.value = Navlog.copy(newProps.navlog);
+        const navlog = Navlog.copy(newProps.navlog);
+        const entries = navlog.entries;
+
+        codeFrom.value = navlog.from;
+        codeTo.value = navlog.to;
+        initialFuel.value = navlog.getFuelFrom();
+        magneticVariation.value = navlog.getMagneticVariation()
+        magneticDeviation.value = 0
+
         // build a list of items from entries
-        const entries = newProps.navlog.entries;
         items.value = entries.map( (e,index) => {
             const first = (index == 0);
             const last = (index == (entries.length - 1))
@@ -53,12 +66,10 @@ function loadProps(newProps) {
             const canAdd = !last;
             return new EditorItem( e, canDelete, canAdd)
         })
-    } else {
-        navlog.value = new Navlog();
+        totalFuel.value = navlog.ff - navlog.ft
+        totalDistance.value = navlog.td;
+        totalTime.value = navlog.tt;
     }
-    // codeFrom.value = navlog.value.from
-    // codeTo.value = navlog.value.to
-    fuel.value = navlog.value.ff
 }
 
 onMounted(() => {
@@ -71,6 +82,11 @@ watch(props, () => {
 // End of props management
 //-------------------------
 
+function compass(raw) {
+    const value = Number(raw)
+    return isNaN(value) ? 0 : value;
+}
+
 function formatName(name) {
     if(!name) return '?'
     if(name.length > 15) return name.substring(0,15) + '...'
@@ -78,83 +94,103 @@ function formatName(name) {
 }
 
 function onAirportFromValid(airport) {
-    airportFrom = airport;
+    codeFrom.value = airport.code;
+    elevFrom = Math.round(airport.elev);
 }
 function onAirportFromInvalid() {
-    airportFrom = null;
+    elevFrom = 0;
 }
 function onAirportToValid(airport) {
-    airportTo = airport;
+    codeTo.value = airport.code;
+    elevTo = Math.round(airport.elev);
 }
 function onAirportToInvalid() {
-    airportTo = null;
+    elevTo = 0;
 }
 
 function onApply() {
-    // copy items into navlog
-    const newNavLog = Navlog.copy(navlog.value);
-    newNavLog.ff = Number(newNavLog.ff)
+    // Create a new NavLog from entries
+    const newNavLog = new Navlog(codeFrom, codeTo)
+    newNavLog.setFuelFrom(initialFuel.value)
+    newNavLog.setMagneticVariation(magneticVariation.value)
+    newNavLog.setMagneticDeviation(magneticDeviation.value)
+    newNavLog.setTotalDistance(totalDistance.value)
+    newNavLog.setTotalTime(totalTime.value)
+    newNavLog.setFuelTo(initialFuel.value - totalFuel.value)
     // copy Editor Items entries into navlog
     newNavLog.setEntries( items.value.map( i => NavlogEntry.copy(i.entry)))
 
     emits('apply', newNavLog)
 }
 
-// function onCheat() {
-//     navlog.value.from = 'KRNT'
-//     navlog.value.to = 'KELN'
-//     navlog.value.ff = 53
-//     navlog.value.mv = -15
-//     navlog.value.md = 0
-//     Promise.all([getAirport('KRNT'), getAirport('KELN')]).then((values) => {
-//         airportFrom = values[0]
-//         airportTo = values[1]
-//         onCreate()
-//     })
-// }
-
 /**
  * Create a new items list using from and to
  */
 function onCreate() {
-    if(!airportFrom || !airportTo) {
-        emitToastError( emits, 'Invalid Airports', 'We need two valid airports to create the log')
+    if(!codeFrom.value || !codeTo.value) {
+        emitToastError( emits, 'Invalid Airports', 'We need two airports to create the log')
         return
     }
+
+    // are we overwritting something?
+    if(items.value.length > 0) {
+        // call confirmation after short delay
+        confirm.require({
+            message: 'Do you want to replace all entries in the current log?',
+            header: 'Overwrite?',
+            rejectLabel: 'No',
+            acceptLabel: 'Yes, Replace',
+            accept: () => {
+                doCreate()
+            }
+        })
+    } else {
+        doCreate()
+    }
+}
+function doCreate() {
     const newList = []
     
-    newList.push( EditorItem.boundary( airportFrom))
-    newList.push( EditorItem.vanila('TOC', airportFrom.elev + 2000))
-    newList.push( EditorItem.vanila('TOD', airportTo.elev + 2000))
-    newList.push( EditorItem.boundary( airportTo, false))
+    newList.push( EditorItem.vanilla( codeFrom.value, elevFrom, false, true))
+    newList.push( EditorItem.vanilla('TOC', elevFrom + 2000))
+    newList.push( EditorItem.vanilla('TOD', elevTo + 2000))
+    newList.push( EditorItem.vanilla( codeTo.value, elevTo, false, false))
     // console.log('[NavlogEdit.onCreate]', JSON.stringify(newNL))
     items.value = newList;
 
-    navlog.value = new Navlog( airportFrom.code, airportTo.code)
-    console.log('[NavlogEdit.onCreate]', JSON.stringify(navlog.value))
+
+
+    // reset totals
+    totalDistance.value = 0
+    totalTime.value = 0
+    totalFuel.value = 0
 
     emitToast(emits, 'Navlog Created','Please update TOC/TOD altitudes')
-}
 
+}
 function onEntryEditorClose() {
     showEditor.value = false;
 }
 
 function onEntryEditorSave(entry) {
-    entry.ch = navlog.value.getEntryCompassHeading( entry);
+    // refresh this entry
     items.value[activeIndex].entry = entry
-    navlog.value.setEntries( items.value.map( i => NavlogEntry.copy(i.entry)))
-
+    // close editor
     showEditor.value = false;
+
+    // recompute totals
+    totalDistance.value = items.value.reduce( (total,i) => i.entry.ld ? total + i.entry.ld : total,0)
+    totalTime.value = items.value.reduce( (total,i) => i.entry.lt ? total + i.entry.lt : total,0)
+    totalFuel.value = items.value.reduce( (total,i) => i.entry.lf ? total + i.entry.lf : total,0)
 }
 
 function onItemAdd(index) {
-    console.log('[NavlogEdit.onAddItem]', index, items.value.length)
+    // console.log('[NavlogEdit.onAddItem]', index, items.value.length)
     if(items.value.length >= maxLogItems) {
         emitToastError( emits, 'Log Full', `We cannot display more than ${maxLogItems} checkpoints in the navlog`)
         return
     }
-    const newItem = EditorItem.vanila('?')
+    const newItem = EditorItem.vanilla('?')
     // insert new item at position
     const newList =  items.value
     newList.splice(index,0,newItem)
@@ -176,29 +212,37 @@ function onItemEdit(index) {
     showEditor.value = true
 }
 
+// a magnetic value has been changed, recompute course headings
+function onMagneticChange() {
+    for(const item of items.value) {
+        if( item.entry.th) {
+            item.entry.ch = item.entry.th + Number(magneticVariation.value) + Number(magneticDeviation.value)
+        }
+    }
+}
 
 </script>
 
 <template>
 <div>
-    <NavlogEntryEditor v-model:visible="showEditor" :entry="activeEntry" :time="activeTime" :showLeg="showLeg"
+    <NavlogEntryEditor v-model:visible="showEditor" :entry="activeEntry" :time="activeTime" :showLeg="showLeg" :magVar="compass(magneticVariation)" :magDev="compass(magneticDeviation)"
         @close="onEntryEditorClose" @save="onEntryEditorSave" />
     <div class="variables">
-        <AirportInput :code="navlog.from" :auto="true" label="From" class="airportFrom" @valid="onAirportFromValid" @invalid="onAirportFromInvalid" />
-        <AirportInput :code="navlog.to" :auto="true" label="To" class="airportTo" @valid="onAirportToValid" @invalid="onAirportToInvalid"/>
-        <InputGroup class="initialFuel">
+        <AirportInput :code="codeFrom" :auto="true" label="From" class="airportFrom" @valid="onAirportFromValid" @invalid="onAirportFromInvalid" />
+        <AirportInput :code="codeTo" :auto="true" label="To" class="airportTo" @valid="onAirportToValid" @invalid="onAirportToInvalid"/>
+        <InputGroup class="initialFuel" title="Fuel before Taxi">
             <InputGroupAddon>Initial Fuel</InputGroupAddon>
-            <InputText v-model="navlog.ff"/>
+            <InputText v-model="initialFuel"/>
         </InputGroup>
-        <InputGroup>
+        <!-- <InputGroup title="Magnetic Variation for the flight">
             <InputGroupAddon>MagVar</InputGroupAddon>
-            <InputText v-model="navlog.mv"/>
+            <InputText v-model="magneticVariation" @input="onMagneticChange"/>
         </InputGroup>
-        <InputGroup>
+        <InputGroup title="We are hardcoding deviation to 0 for the moment">
             <InputGroupAddon>MagDev</InputGroupAddon>
-            <InputText v-model="navlog.md"/>
-        </InputGroup>
-        <Button label="Create" @click="onCreate"></Button>
+            <InputText v-model="magneticDeviation" @input="onMagneticChange" :disabled="true"/>
+        </InputGroup> -->
+        <Button label="Create" @click="onCreate" :disabled="(!codeFrom||!codeTo)"></Button>
     </div>
     <!-- <div>
         <Button label="Cheat" @click="onCheat"></Button>
@@ -225,25 +269,27 @@ function onItemEdit(index) {
         </div>
         <div class="legs"><!-- legs -->
             <div class="headers legGrid bb">
-                <div title="True Heading">TH</div>
-                <div title="True Heading corrected for Magnetic Variation and Deviation">CH</div>
+                <!-- <div title="True Heading">TH</div> -->
+                <div title="Magnetic Heading">MH</div>
+                <!-- <div title="Compass Heading (Magnetic Heading + Magnetic Deviation)">CH</div> -->
                 <div title="Leg Distance">Dist.</div>
                 <div title="Ground Speed">GS</div>
                 <div title="Leg Time">Time</div>
                 <div title="Leg Fuel">Fuel</div>
             </div>
             <div v-for="(i,index) in items.slice(0, items.length - 1)" class="legGrid bb">
-                <div class="editable trueHeading" @click="onItemEdit(index)">{{ (index < items.length - 1) ? i.entry.th : '' }}</div>
-                <div class="bl compassHeading">{{ i.entry.ch }}</div>
-                <div class="bl editable" @click="onItemEdit(index)">{{ Formatter.distance( i.entry.ld) }}</div>
-                <div class="bl editable" @click="onItemEdit(index)">{{ i.entry.gs }}</div>
-                <div class="bl editable" @click="onItemEdit(index)">{{ formatLegTime(i.entry.lt) }}</div>
-                <div class="bl editable" @click="onItemEdit(index)">{{ i.entry.lf }}</div>
+                <!-- <div class="editable trueHeading" @click="onItemEdit(index)">{{ Formatter.heading(i.entry.th) }}</div> -->
+                <div class="magneticHeading editable" @click="onItemEdit(index)">{{ Formatter.heading(i.entry.mh) }}</div>
+                <!-- <div class="bl compassHeading">{{ Formatter.heading(i.entry.ch) }}</div> -->
+                <div class="legDistance bl editable" @click="onItemEdit(index)">{{ Formatter.distance( i.entry.ld) }}</div>
+                <div class="groundSpeed bl editable" @click="onItemEdit(index)">{{ Formatter.speed(i.entry.gs) }}</div>
+                <div class="legTime bl editable" @click="onItemEdit(index)">{{ Formatter.legTime(i.entry.lt) }}</div>
+                <div class="legFuel bl editable" @click="onItemEdit(index)">{{ Formatter.fuel(i.entry.lf) }}</div>
             </div>
             <div class="legGrid">
-                <div class="total totalDistance">{{ Formatter.distance(navlog.td) }}</div>
-                <div class="total totalTime">{{ formatLegTime(navlog.tt) }}</div>
-                <div class="total totalFuel">{{ formatFuel(navlog.ff - navlog.ft) }}</div>
+                <div class="total totalDistance">{{ Formatter.distance(totalDistance) }}</div>
+                <div class="total totalTime">{{ Formatter.legTime(totalTime) }}</div>
+                <div class="total totalFuel">{{ Formatter.fuel(totalFuel) }}</div>
             </div>
         </div>
     </div>
@@ -273,12 +319,9 @@ function onItemEdit(index) {
 }
 .checkpointGrid {
     display: grid;
-    grid-template-columns: 3rem 4rem 3rem;
+    grid-template-columns: 4rem auto 3rem;
     line-height: 2rem;
     font-size: 0.8rem;
-}
-.checkpoints {
-
 }
 .compassHeading {
     background-color: #EEE;
@@ -289,7 +332,7 @@ function onItemEdit(index) {
 }
 .grids {
     display: grid;
-    grid-template-columns: 10rem 17.25rem;
+    grid-template-columns: auto 15rem;
 }
 :hover.editable {
     font-weight: bold;
@@ -298,9 +341,12 @@ function onItemEdit(index) {
     font-weight: bold;
     font-size: 0.8rem;
 }
+.initialFuel {
+    grid-column: 3;
+}
 .legGrid {
     display: grid;
-    grid-template-columns: 2.5rem 2.5rem 2.5rem 3rem 4rem 3rem auto;
+    grid-template-columns: 2.5rem 2.5rem 3rem 4rem 3rem;
     line-height: 2rem;
     font-size: 0.8rem;
 }
@@ -319,14 +365,14 @@ function onItemEdit(index) {
     font-weight: bold;
 }
 .totalDistance {
-    grid-column: 3;
+    grid-column: 2;
 }
 .totalTime {
-    grid-column: 5;
+    grid-column: 4;
 }
 .variables {
     display: grid;
-    grid-template-columns: auto auto auto auto;
+    grid-template-columns: repeat(4, minmax(0, 1fr));;
     gap: 5px;
     padding: 5px;
 }
