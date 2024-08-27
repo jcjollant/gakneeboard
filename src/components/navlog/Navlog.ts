@@ -27,12 +27,12 @@ export class Navlog {
     static copy(source:any):Navlog {
         if(!source) return new Navlog('', '')
         const output:Navlog = new Navlog(source.from, source.to)
-        output.ff = source.ff
-        output.ft = source.ft
-        output.mv = source.mv
-        output.md = source.md
-        output.tt = source.tt
-        output.td = source.td
+        output.ff = Number(source.ff)
+        output.ft = Number(source.ft)
+        output.mv = Number(source.mv)
+        output.md = Number(source.md)
+        output.tt = Number(source.tt)
+        output.td = Number(source.td)
         output.entries = source.entries?.map((entry:any) => NavlogEntry.copy(entry))
         return output;
     }
@@ -42,6 +42,56 @@ export class Navlog {
         const variation = Number(this.mv ? this.mv : 0);
         const deviation = Number(this.md ? this.md : 0);
         return (entry.th) ? (entry.th + variation + deviation) : undefined
+    }
+
+    getFuelFrom():number {
+        return this.ff;
+    }
+
+    getMagneticDeviation():number|undefined {
+        return this.md;
+    }
+
+    getMagneticVariation():number|undefined {
+        return this.mv;
+    }
+
+    // refresh Navlog entries and recompute totals
+    setEntries(entries:NavlogEntry[]) {
+        this.entries = entries
+        this.updateRelationships()
+    }
+
+    setFuelFrom(value:any) {
+        this.ff = Number(value)
+    }
+
+    setFuelTo(value:any) {
+        this.ft = Number(value)
+    }
+
+    setMagneticDeviation(value:any) {
+        if( value == '') {
+            this.md = undefined
+        } else {
+            this.md = Number(value)
+        }
+    }
+
+    setMagneticVariation(value:any) {
+        if( value == '') {
+            this.mv = undefined
+        } else {
+            this.mv = Number(value)
+        }
+    }
+
+    setTotalDistance(value:any) {
+        this.td = Number(value)
+    }
+
+    setTotalTime(value:any) {
+        this.tt = Number(value)
     }
 
     updateRelationships() {
@@ -82,12 +132,6 @@ export class Navlog {
                 entry.att = '-'
             }
         }
-    }
-
-    // refresh Navlog entries and recompute totals
-    setEntries(entries:NavlogEntry[]) {
-        this.entries = entries
-        this.updateRelationships()
     }
 
 }
