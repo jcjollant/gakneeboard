@@ -18,7 +18,7 @@ describe('navlog Page', () => {
 
     // edit mode
     cy.get(':nth-child(1) > .headerTitle').click()
-    const expectedVariables = ['From', 'To', 'Initial Fuel', 'MagVar', 'MagDev', 'Create']
+    const expectedVariables = ['From', 'To', 'Initial Fuel', 'Create']
     for(const variable of expectedVariables) {
       cy.get('.variables').contains(variable)
     }
@@ -26,7 +26,6 @@ describe('navlog Page', () => {
     // create a navlog
     cy.get('.airportFrom > .p-inputgroup > .p-inputtext').type('KRNT')
     cy.get('.airportTo > .p-inputgroup > .p-inputtext').type('KSFF')
-    cy.get(':nth-child(4) > .p-inputtext').type('-15')
     cy.wait(1500)
     // Click create
     cy.get('.variables > .p-button').click()
@@ -35,25 +34,24 @@ describe('navlog Page', () => {
     cy.get('.checkpoints > :nth-child(5)').contains('KSFF')
     cy.get('.checkpoints > :nth-child(5)').contains('1957')
     // totals should be undefined
-    cy.get('.totalDistance').contains('?')
-    cy.get('.totalTime').contains('--:--')
-    cy.get('.totalFuel').contains('?')
+    cy.get('.totalDistance').contains('0.0')
+    cy.get('.totalTime').contains('0:00')
+    cy.get('.totalFuel').contains('0.0')
 
     // Update legs
     cy.get(':nth-child(2) > .br').click()
-    cy.get('#th').type('90')
+    cy.get('#mh').type('90')
     cy.get('#ld').type('1')
     cy.get('#gs').type('2')
     cy.get('#lt').type('3:15')
     cy.get('#lf').type('4')
     cy.get('.actionDialog > [aria-label="Save"]').click()
     // first line should be updated
-    cy.get(':nth-child(2) > .trueHeading').contains('90')
-    cy.get(':nth-child(2) > .compassHeading').contains('75')
-    cy.get('.legs > :nth-child(2) > :nth-child(3)').contains('1.0')
-    cy.get('.legs > :nth-child(2) > :nth-child(4)').contains('2')
-    cy.get('.legs > :nth-child(2) > :nth-child(5)').contains('3:15')
-    cy.get('.legs > :nth-child(2) > :nth-child(6)').contains('4')
+    cy.get(':nth-child(2) > .magneticHeading').contains('90')
+    cy.get(':nth-child(2) > .legDistance').contains('1.0')
+    cy.get(':nth-child(2) > .groundSpeed').contains('2')
+    cy.get(':nth-child(2) > .legTime').contains('3:15')
+    cy.get(':nth-child(2) > .legFuel').contains('4')
 
     // enter values for the other two legs
 
