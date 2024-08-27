@@ -15,10 +15,9 @@ Run the test suite:
 * Custom Airport is not editable after update
 
 ## TODO
-Create a demo with Navlog
 
 # Done
-## 8/25/2024
+## 8/26/2024
 * Maintenance showing toasts
 * Editor button removed from Menu and added Main page bottom left corner
 * Navlog page with associated editor
