@@ -17,10 +17,10 @@ describe('Radio Flow Tile', () => {
     })
 
     // check header is present
-    cy.get('.pageTwo > :nth-child(6) > .header > div').contains('Radio Flow')
+    cy.get('.pageTwo > :nth-child(6) > .headerTitle > div').contains('Radio Flow')
 
     // Switch to edit mode
-    cy.get('.pageTwo > :nth-child(6) > .header > div').click()
+    cy.get('.pageTwo > :nth-child(6) > .headerTitle > div').click()
     // check it has hint
     cy.get('.actionBar > .p-button-icon-only')
 
@@ -71,17 +71,17 @@ describe('Radio Flow Tile', () => {
     cy.get('.p-inputtextarea').should('have.value','124.7,KRNT CTAF\n110.6,PAE VOR/DME\n119.2,SEATTLE-TACOMA APPROACH CONTROL')
 
     // Switch tile type to notes then coma back to radio
-    // cy.get('.pageTwo > :nth-child(6) > .header > div').click()
-    cy.get('.header > .p-button').click()
+    // cy.get('.pageTwo > :nth-child(6) > .headerTitle > div').click()
+    cy.get('.headerTitle > .p-button').click()
     cy.get('[aria-label="Notes"]').click()
-    cy.get('.pageTwo > :nth-child(6) > .header > div').contains('Notes')
+    cy.get('.pageTwo > :nth-child(6) > .headerTitle > div').contains('Notes')
     // Change tile back to Radio FLow
-    cy.get('.pageTwo > :nth-child(6) > .header > div').click()
-    cy.get('.header > .p-button').click()
+    cy.get('.pageTwo > :nth-child(6) > .headerTitle > div').click()
+    cy.get('.headerTitle > .p-button').click()
     cy.get('[aria-label="Radios"]').click()
 
     // Header should be back to RadioFlow
-    cy.get('.pageTwo > :nth-child(6) > .header > div').contains('Radio Flow')
+    cy.get('.pageTwo > :nth-child(6) > .headerTitle > div').contains('Radio Flow')
     // check we have the placeholder
     cy.get('.pageTwo > :nth-child(6) > :nth-child(2) > .placeHolder').contains('No Radios')
     cy.get('.pageTwo > :nth-child(6) > :nth-child(2) > .placeHolder').contains('Click the header to configure')

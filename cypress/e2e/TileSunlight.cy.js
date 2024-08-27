@@ -15,7 +15,7 @@ describe('Tiles', () => {
     cy.wait(2000)
 
     // check header is present
-    cy.get('.pageTwo > :nth-child(3) > .header > div').contains('Sun Light')
+    cy.get('.pageTwo > :nth-child(3) > .headerTitle > div').contains('Sun Light')
     // date should be today
     const today = new Date().toLocaleString('en-US', {weekday: 'short', month: 'short', day: 'numeric'})
     cy.get('.date').contains( today)
@@ -25,7 +25,7 @@ describe('Tiles', () => {
     cy.get('.bottomLeftCorner').contains('Solar Noon')
     cy.get('.bottomRightCorner').contains('Golden Hour')
     // switch to overnight mode
-    cy.get('.pageTwo > :nth-child(3) > .header > div').click()
+    cy.get('.pageTwo > :nth-child(3) > .headerTitle > div').click()
     // check it has hint
     cy.get('.actionBar > .p-button-icon-only')
 
@@ -39,13 +39,13 @@ describe('Tiles', () => {
     cy.get('.bottomRightCorner').contains('To')
     cy.get('.date').contains( 'Night Flight')
     // Test Tile can be replaced by Notes
-    cy.get('.pageTwo > :nth-child(3) > .header > div').click()
-    cy.get('.header > .p-button').click()
+    cy.get('.pageTwo > :nth-child(3) > .headerTitle > div').click()
+    cy.get('.headerTitle > .p-button').click()
     cy.get('[aria-label="Notes"]').click()
-    cy.get(':nth-child(2) > :nth-child(3) > .header > div').contains('Notes')
+    cy.get(':nth-child(2) > :nth-child(3) > .headerTitle > div').contains('Notes')
     // Change tile back to Sunlight
-    cy.get(':nth-child(2) > :nth-child(3) > .header > div').click()
-    cy.get('.header > .p-button').click()
+    cy.get(':nth-child(2) > :nth-child(3) > .headerTitle > div').click()
+    cy.get('.headerTitle > .p-button').click()
     cy.get('[aria-label="Sunlight"]').click()
     // We should see the placeholder
     cy.get('.pageTwo > :nth-child(3) > :nth-child(2) > .placeHolder').contains('No Airport')

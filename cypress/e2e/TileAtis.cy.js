@@ -12,7 +12,7 @@ describe('ATIS Tile', () => {
     cy.wait('@getAirports').its('response.statusCode').should('equal', 200)
 
     // check header
-    cy.get('.pageOne > :nth-child(5) > .header > div').contains(titleAtis)
+    cy.get('.pageOne > :nth-child(5) > .headerTitle > div').contains(titleAtis)
 
     // Check ATIS has all fields in full mode
     cy.get('.info').contains('Info')

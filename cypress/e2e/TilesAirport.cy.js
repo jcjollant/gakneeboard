@@ -21,7 +21,7 @@ describe('Tiles', () => {
 
     // check all tiles are in reset mode on page 1
     for( const tile of [1, 2, 3, 4, 5, 6]) {
-      cy.get(`:nth-child(1) > :nth-child(${tile}) > .header > div`).contains('Tile Selection')
+      cy.get(`:nth-child(1) > :nth-child(${tile}) > .headerTitle > div`).contains('Tile Selection')
     }
 
     // Check page 2 is in checlist mode
@@ -31,7 +31,7 @@ describe('Tiles', () => {
     maintenanceMode()
     cy.get('.menuIcon').click()
     cy.get('[aria-label="Load"]').click()
-    cy.get('[aria-label="All Tiles"]').click()
+    cy.get('[aria-label="Tiles"]').click()
     cy.get('[aria-label="Load Sheet"]').click()
     cy.get('.p-confirm-dialog-accept').click()
     cy.get('.menuIcon').click()
@@ -43,7 +43,7 @@ describe('Tiles', () => {
     for( let page = 1; page < 3; page++) {
       for( let tile = 1; tile < 7; tile++) {
         const value = expectedTiles[page-1][tile-1]
-        cy.get(`:nth-child(${page}) > :nth-child(${tile}) > .header > div`).contains(value)
+        cy.get(`:nth-child(${page}) > :nth-child(${tile}) > .headerTitle > div`).contains(value)
       }
     }
 
@@ -54,7 +54,7 @@ describe('Tiles', () => {
     for(let index = 0; index < 2; index++) {
       const value = expectedValues[index]
       const child = index + 1
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .header > div`).contains(value.tile)
+      cy.get(`:nth-child(1) > :nth-child(${child}) > .headerTitle > div`).contains(value.tile)
       cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .top.left > .clickable > :nth-child(1) > :nth-child(1)`).contains(value.value0)
       cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .top.left > .clickable > :nth-child(1) > .label`).contains(value.label0)
       cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .top.right > .clickable > :nth-child(1) > :nth-child(1)`).contains(value.value1)
@@ -67,7 +67,7 @@ describe('Tiles', () => {
       cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .airportCode`).contains(value.watermark)
     }
     // Switch runway and check frequency is being updated accordingly
-    cy.get(':nth-child(1) > :nth-child(2) > .header > div').click()
+    cy.get(':nth-child(1) > :nth-child(2) > .headerTitle > div').click()
     cy.get('[aria-label="14R-32L"]').click()
     cy.get('[aria-label="Apply"]').click()
     cy.get(':nth-child(2) > .content > :nth-child(1) > .top.right > .clickable > :nth-child(1) > :nth-child(1)').contains('120.600')
@@ -97,7 +97,7 @@ describe('Tiles', () => {
     cy.get('[aria-label="Done"]').click()
 
     // Enter a new airport code and check it's data is loading
-    cy.get('.pageOne > :nth-child(3) > .header > div').click()
+    cy.get('.pageOne > :nth-child(3) > .headerTitle > div').click()
     cy.get('.pageOne > :nth-child(3) > .content > .settings > .airportCode > .p-inputgroup > .p-inputtext').clear().type('KBLI')
     // wait for the reply
     cy.intercept({
@@ -110,7 +110,7 @@ describe('Tiles', () => {
     cy.get('.pageOne > :nth-child(3) > .content > .actionBar > [aria-label="Apply"]').click()
     // Check for bellingham fields
     const kbliValues = {'tile':'Bellingham Intl','label0':'ATIS','value0':'134.450','label1':'TWR','value1':'124.900','label2':'Elev','value2':'171','label3':'TPA','value3':'1171','watermark':'KBLI','dimensions':'6700x150'}
-    cy.get('.pageOne > :nth-child(3) > .header > div').contains(kbliValues.tile)
+    cy.get('.pageOne > :nth-child(3) > .headerTitle > div').contains(kbliValues.tile)
     cy.get(':nth-child(3) > .content > :nth-child(1) > .top.left > .clickable > :nth-child(1) > .label').contains(kbliValues.label0)
     cy.get(':nth-child(3) > .content > :nth-child(1) > .top.left > .clickable > :nth-child(1) > :nth-child(1)').contains(kbliValues.value0)
     cy.get(':nth-child(3) > .content > :nth-child(1) > .top.right > .clickable > :nth-child(1) > .label').contains(kbliValues.label1)
@@ -137,13 +137,13 @@ describe('Tiles', () => {
     cy.get('.footer > :nth-child(3) > :nth-child(1) > :nth-child(1) > :nth-child(2)').contains('135.625')
 
     // Replace tile with Notes
-    cy.get('.pageOne > :nth-child(3) > .header > div').click()
-    cy.get('.header > .p-button').click()
+    cy.get('.pageOne > :nth-child(3) > .headerTitle > div').click()
+    cy.get('.headerTitle > .p-button').click()
     cy.get('[aria-label="Notes"]').click()
-    cy.get('.pageOne > :nth-child(3) > .header > div').contains('Notes')
+    cy.get('.pageOne > :nth-child(3) > .headerTitle > div').contains('Notes')
     // Change tile back to Airport
-    cy.get('.pageOne > :nth-child(3) > .header > div').click()
-    cy.get('.header > .p-button').click()
+    cy.get('.pageOne > :nth-child(3) > .headerTitle > div').click()
+    cy.get('.headerTitle > .p-button').click()
     cy.get('[aria-label="Airport"]').click()
     // We should see the placeholder
     cy.get('.pageOne > :nth-child(3) > :nth-child(2) > .placeHolder').contains('No Airport')
