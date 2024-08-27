@@ -1,5 +1,4 @@
 const noFrequency = '-.-'
-const noTime = '--:--'
 
 export function formatAltitude(value) {
     if(!value) return '?'
@@ -46,17 +45,5 @@ export function formatFrequency(freq) {
     return value.toFixed(3)
 }
 
-export function formatFuel(fuel) {
-    if(!fuel) return '?'
-    if(typeof fuel == 'string') return Number(fuel).toFixed(1)
-    return fuel.toFixed(1)
-}
 
-export function formatLegTime(time) {
-    if(!time) return noTime
-    // transform decimal minutes into minutes and seconds
-    const minutes = Math.floor(time)
-    const seconds = Math.round((time - minutes) * 60)
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`
-}
 
