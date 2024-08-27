@@ -17,7 +17,7 @@ export class EditorItem {
     }
 
     // a vanilla item only has a name and can be deleted
-    public static vanila(name:string,elevation:number|undefined=undefined) {
-        return new EditorItem(new NavlogEntry(name,elevation))
+    public static vanilla(name:string,elevation:number|undefined=undefined,canDelete:boolean=true,canAdd:boolean=true) {
+        return new EditorItem(new NavlogEntry(name,elevation), canDelete, canAdd)
     }
 }
