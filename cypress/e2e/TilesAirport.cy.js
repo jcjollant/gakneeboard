@@ -25,7 +25,7 @@ describe('Tiles', () => {
     }
 
     // Check page 2 is in checlist mode
-    cy.get('.pageTwo > .header').contains("Checklist")
+    cy.get('.pageTwo > .headerTitle').contains("Checklist")
 
     // load tiles demo page
     maintenanceMode()

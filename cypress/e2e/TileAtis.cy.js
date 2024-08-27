@@ -23,7 +23,7 @@ describe('ATIS Tile', () => {
     cy.get('.temperature').contains('Temp')
     cy.get('.altimeter').contains('Alt')
     // Check ATIS has all fields in compact mode
-    cy.get('.pageOne > :nth-child(5) > .header').click()
+    cy.get('.pageOne > :nth-child(5) > .headerTitle').click()
     cy.get('[aria-label="Full Size"]').contains('Full Size')
     cy.get('[aria-label="Compact (x4)"]').contains('Compact (x4)')
     cy.get('[aria-label="Compact (x4)"]').click()
