@@ -165,8 +165,8 @@ onMounted(async () => {
   try {
     // console.log( '[App.onMounted]', JSON.stringify(window.location.search))
     let urlParams = new URLSearchParams(window.location.search);
-    if( urlParams.has('sheet')) {
-      const sheetCode = urlParams.get('sheet')
+    if( urlParams.has('sheet') || urlParams.has('t')) {
+      const sheetCode = urlParams.has('t') ? urlParams.get('t') : urlParams.get('sheet')
       // console.log('[App.onMounted] sheet code', sheetCode)
 
       // TODO go get that sheet
