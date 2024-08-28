@@ -271,7 +271,7 @@ function showToast(summary,details,severity=toastSuccess) {
     </FieldSet>
     <div class="actionDialog gap-2">
       <Button label="Do Not Load" @click="onButtonClose" link></Button>
-      <Button label="Load Sheet" @click="onButtonLoad" :disabled="!targetTemplate || fetching"></Button>
+      <Button label="Load Template" @click="onButtonLoad" :disabled="!targetTemplate || fetching"></Button>
     </div>
   </div>
   </Dialog>
