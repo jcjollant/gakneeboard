@@ -112,7 +112,7 @@ function onThemeChange(newTheme) {
             </div>
             <ActionBar @apply="onApply" @cancel="onCancel" :help="urlGuideChecklist" />
         </div>
-        <div v-else class="content">
+        <div v-else class="checklistMain">
             <ChecklistViewer :items="items" :theme="theme" :small="true" />
         </div>
     </div>

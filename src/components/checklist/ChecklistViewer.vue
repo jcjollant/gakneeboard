@@ -47,7 +47,6 @@ watch(props, () => {
 .challenge {
     text-align: left;
     padding-left: 10px;
-    border-right: 1px solid lightgrey;
     height: 1.6rem;
 }
 
@@ -66,6 +65,7 @@ watch(props, () => {
 } */
 .response {
     font-weight: bold;
+    border-left: 1px solid lightgrey;
 }
 
 .section {
