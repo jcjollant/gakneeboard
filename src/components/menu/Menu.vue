@@ -13,7 +13,7 @@ import ConfirmDialog from 'primevue/confirmdialog';
 
 import Feedback from './Feedback.vue';
 import Print from './Print.vue'
-import Sheets from './Sheets.vue'
+import Templates from './Templates.vue'
 import SignIn from './SignIn.vue';
 import About from './About.vue'
 import Maintenance from './Maintenance.vue'
@@ -75,7 +75,7 @@ watch(showPrint, async( newValue, oldValue) => {
 
 function confirmAndLoad(title, sheet) {
   confirm.require({
-      message: 'Do you want to replace both pages in the current sheet?',
+      message: 'Do you want to replace all pages in the current Template?',
       header: title,
       rejectLabel: 'No',
       acceptLabel: 'Yes, Replace',
@@ -151,52 +151,52 @@ function onSheetDialog(mode) {
 /**
  * Hide the sheet dialog
  */
-function onSheetClose() {
+function onTemplateClose() {
   showSheets.value = false;
 }
 
 // a sheet has been deleted, it should be removed from the user
-function onSheetDelete(sheet) {
+function onTemplateDelete(template) {
     if(!user.value || !user.value.sheets) return;
 
-    const newList = user.value.sheets.filter( s => s.id != sheet.id)
+    const newList = user.value.sheets.filter( s => s.id != template.id)
     userUpdateSheets(newList);
-    showToast('Clear', 'Sheet "' + sheet.name + '" deleted')
+    showToast('Clear', 'Template "' + template.name + '" deleted')
 }
 
 /**
  * Page dialog wants us to save the page
- * @param {*} sheet 
+ * @param {*} template 
  */
- function onSheetLoad(sheet) {
+ function onTemplateLoad(template) {
   // console.log('[menu.onPageLoad]',pageName)
   showSheets.value = false
-  const title = 'Load "' + sheet.name + '" Sheet'
-  confirmAndLoad( title, sheet)
+  const title = 'Load Template "' + template.name + '"'
+  confirmAndLoad( title, template)
 }
 
 /**
  * Page Dialog wants to save a page
- * @param {*} sheet 
+ * @param {*} template 
  */
- async function onSheetSave(sheet) {
-  // console.log('[Menu.onSheetSave]',JSON.stringify(sheet))
+ async function onTemplateSave(template) {
+  // console.log('[Menu.onSheetSave]',JSON.stringify(template))
   showSheets.value = false;
   try {
-      sheet.data = pageData;
-      await customSheetSave(sheet).then(returnSheet => {
+      template.data = pageData;
+      await customSheetSave(template).then(returnSheet => {
         // console.log('[Menu.onSheetSave]', JSON.stringify(returnSheet))
-        let message = 'Sheet "' + returnSheet.name + '" saved';
+        let message = 'Template "' + returnSheet.name + '" saved';
         if(returnSheet.publish && returnSheet.code) {
           message += '\nShare code is ' + returnSheet.code
         }
         showToast('Clear', message)
         userUpdateSheets(getCurrentUser().sheets)
-        emits('save', sheet)
+        emits('save', template)
       })
   } catch( e) {
     // console.log('[Menu.onSheetSave]', e)
-    showToast('Save Page','Could not save sheet "' + sheet.name + '"', toastError)
+    showToast('Save Template','Could not save template "' + template.name + '"', toastError)
   }
 }
 
@@ -246,9 +246,9 @@ function userChange(newUser, save=true) {
 
     setTimeout( async () => {
       // console.log( '[data.setCurrentUser] refreshing sheets')
-      const sheets = await sheetGetList();
+      const templates = await sheetGetList();
       // console.log('[Menu.onMounted] sheets', JSON.stringify(sheets))
-      userUpdateSheets(sheets)
+      userUpdateSheets(templates)
     }, 2000)
   } else {
     if(save) {
@@ -287,11 +287,11 @@ function userUpdateSheets(newList) {
     <About v-model:visible="showAbout" @close="showAbout=false" @hdiw="onHdiw"/>
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
       @authentication="onAuthentication" />
-    <Sheets v-model:visible="showSheets" :mode="pageMode" :user="user" :sheet="activeSheet"
-      @close="onSheetClose"
-      @delete="onSheetDelete"
-      @load="onSheetLoad" 
-      @save="onSheetSave"
+    <Templates v-model:visible="showSheets" :mode="pageMode" :user="user" :sheet="activeSheet"
+      @close="onTemplateClose"
+      @delete="onTemplateDelete"
+      @load="onTemplateLoad" 
+      @save="onTemplateSave"
       @toast="onToast" />
     <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu">
       <div class="bar1"></div>
@@ -304,13 +304,13 @@ function userUpdateSheets(newList) {
           @click="onSignOut"></Button>
         <Button v-else label="Sign In" icon="pi pi-user" title="Sign In to enable custom data"
           @click="showSignIn=true"></Button>
-        <Button icon="pi pi-print" label="Print" title="Print the active sheet"
+        <Button icon="pi pi-print" label="Print" title="Print Active Template"
           @click="onPrint"></Button>
         <div class="separator"></div>
-        <Button label="New" icon="pi pi-file" title="Reset both pages" @click="onSheetLoad(getSheetBlank())"></Button>
-        <Button label="Load" icon="pi pi-folder-open" title="Open existing sheet" @click="onSheetDialog('load')"></Button>
-        <Button label="Save" icon="pi pi-save" title="Save this sheet" @click="onSheetDialog('save')"></Button>
-        <Button label="Demo" icon="pi pi-clipboard" title="Load demo sheet" @click="onSheetLoad(getSheetDemo())"></Button>
+        <Button label="New" icon="pi pi-file" title="Reset Template" @click="onTemplateLoad(getSheetBlank())"></Button>
+        <Button label="Load" icon="pi pi-folder-open" title="Open Existing Template" @click="onSheetDialog('load')"></Button>
+        <Button label="Save" icon="pi pi-save" title="Save this Template" @click="onSheetDialog('save')"></Button>
+        <Button label="Demo" icon="pi pi-clipboard" title="Load demo Template" @click="onTemplateLoad(getSheetDemo())"></Button>
         <div class="separator" @click="showMaintenance=true"></div>
         <Button label="Feedback" icon="pi pi-megaphone" title="Send Feedback"
           @click="showFeedback=true" ></Button>
