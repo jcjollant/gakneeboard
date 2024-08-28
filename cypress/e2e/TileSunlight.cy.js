@@ -49,7 +49,7 @@ describe('Tiles', () => {
     cy.get('[aria-label="Sunlight"]').click()
     // We should see the placeholder
     cy.get('.pageTwo > :nth-child(3) > :nth-child(2) > .placeHolder').contains('No Airport')
-    cy.get('.pageTwo > :nth-child(3) > :nth-child(2) > .placeHolder').contains('Click the header to configure')
+    cy.get('.pageTwo > :nth-child(3) > :nth-child(2) > .placeHolder').contains('Click header to configure')
   })
 
 })

@@ -58,7 +58,7 @@ describe('Checklist Tile', () => {
     cy.get('[aria-label="Apply"]').click()
     // There should be not items
     cy.get('.pageTwo > :nth-child(1) > .content > .placeHolder').contains('No Items')
-    cy.get('.pageTwo > :nth-child(1) > .content > .placeHolder').contains('Click the header to configure')
+    cy.get('.pageTwo > :nth-child(1) > .content > .placeHolder').contains('Click header to configure')
 
   })
 
