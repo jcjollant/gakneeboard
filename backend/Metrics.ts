@@ -54,6 +54,7 @@ export class Metrics {
         const checklistPageCount = new Metric('checklistPageCount', 0)
         const coverPageCount = new Metric('coverPageCount', 0)
         const selectionPageCount = new Metric('selectionPageCount', 0)
+        const navlogPageCount = new Metric('navlogPageCount', 0)
 
         const totalTileCount = new Metric('totalTileCount', 0)
         const airportTileCount = new Metric('airportTileCount', 0)
@@ -99,6 +100,8 @@ export class Metrics {
                     coverPageCount.addOne()
                 } else if(page.type == 'selection') {
                     selectionPageCount.addOne()
+                } else if(page.type == 'navlog') {
+                    navlogPageCount.addOne()
                 }
                 totalPageCount.addOne()
             }

@@ -21,6 +21,8 @@ ts-node .\willie.ts
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
+## 8/27/2024
+* Added navlog to page count details (Waylon)
 ## 8/25/2024
 * Adip is not saving raw data on effectiveDateCheck
 ## 8/23/2024
