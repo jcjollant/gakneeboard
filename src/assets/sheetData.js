@@ -219,7 +219,7 @@ export const sheetDemoNavlog = {
   data: [pageDemoNavlog0,pageDemoNavlog1]
 }
 
-export function describePage(sheet, pageNumber, maxLength=undefined) {
+export function describePage(sheet, pageNumber, maxLength=90) {
   if(!sheet) return "empty";
 
   let output = '?'
@@ -256,6 +256,8 @@ export function describePage(sheet, pageNumber, maxLength=undefined) {
   } catch(e) {
     console.log('[sheetData.describePage] error', e)
   }
+
+  // Truncate string if it's too long
   if(maxLength && output.length > maxLength) {
     output = output.substring(0, maxLength) + '...'
   }
@@ -323,6 +325,24 @@ export function getSheetLocal() {
     localSheetSave(localSheet)
   }
   return localSheet
+}
+
+// turn a default name into its data or null if the name is unkown
+export function getTemplateDataFromName(name) {
+  if( name == sheetNameDemo) {
+    return getSheetDemo()
+  } else if( name == sheetNameDemoTiles) {
+    return getSheetDemoTiles()
+  } else if( name == sheetNameDemoChecklist) {
+    return getSheetDemoChecklist()
+  } else if( name == sheetNameDemoNavlog) {
+    return getSheetDemoNavlog()
+  } else if( name == sheetNameNew) { 
+    return getSheetBlank()
+  } else {
+    return null;
+  }
+
 }
 
 export function isDefaultName(name) {
