@@ -11,7 +11,7 @@ import SelectButton from "primevue/selectbutton"
 
 import { customSheetDelete, sheetGetByCode, sheetGetById, urlKneeboard } from "../../assets/data"
 import { describePage, getTemplateDataFromName } from '../../assets/sheetData'
-import { sheetNameDemo, sheetNameDemoChecklist, sheetNameDemoNavlog, sheetNameDemoTiles, sheetNameNew } from '../../assets/sheetData'
+import { sheetNameDemo, sheetNameDemoChecklist, sheetNameDemoNavlog, sheetNameDemoTiles } from '../../assets/sheetData'
 import { getToastData, toastError, toastSuccess } from '../../assets/toast'
 
 const emits = defineEmits(["close","delete","load","save","toast"]);
