@@ -107,7 +107,10 @@ export class Metrics {
             }
         }
         // build a list of all metrics
-        const allMetrics = [totalPageCount, tilePageCount, checklistPageCount, coverPageCount, selectionPageCount, totalTileCount, airportTileCount, atisTileCount, checklistTileCount, clearanceTileCount, fuelTileCount, notesTileCount, radiosTileCount, sunlightTileCount, staleSheetCount]
+        const allMetrics = [
+            totalPageCount, tilePageCount, checklistPageCount, coverPageCount, selectionPageCount, navlogPageCount,
+            totalTileCount, airportTileCount, atisTileCount, checklistTileCount, clearanceTileCount, fuelTileCount, notesTileCount, radiosTileCount, sunlightTileCount, 
+            staleSheetCount]
         return allMetrics
     }
 
@@ -166,6 +169,7 @@ export class Metrics {
             ]).then( async allMetrics => {
             const data:any = {}
             for(const metric of allMetrics) {
+                // if we received an array, flatten it
                 if( Array.isArray(metric)) {
                     for(const m of metric) {
                         data[m.name] = m.value
