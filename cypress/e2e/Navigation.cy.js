@@ -145,16 +145,16 @@ describe('Navigation', () => {
 
     // load page should open
     cy.get('[aria-label="Load"]').click()
-    cy.get('.contentPlaceholder').contains('Select a sheet above')
+    cy.get('.contentPlaceholder').contains('Select a template above')
     // Check demo pages work
     cy.get('[aria-label="Default"]').click()
-    cy.get('.sheetDescription > :nth-child(2)').contains('Default Demo')
+    cy.get('.templateDescription > :nth-child(2)').contains('Default Demo')
     cy.get('[aria-label="Tiles"]').click()
-    cy.get('.sheetDescription > :nth-child(2)').contains('Tiles Demo')
+    cy.get('.templateDescription > :nth-child(2)').contains('Tiles Demo')
     cy.get('[aria-label="Checklist"]').click()
-    cy.get('.sheetDescription > :nth-child(2)').contains('Checklist Demo')
+    cy.get('.templateDescription > :nth-child(2)').contains('Checklist Demo')
     cy.get('[aria-label="Navlog"]').click()
-    cy.get('.sheetDescription > :nth-child(2)').contains('Navlog Demo')
+    cy.get('.templateDescription > :nth-child(2)').contains('Navlog Demo')
 
     // Do Not Load
     cy.get('.p-button-link').click()
