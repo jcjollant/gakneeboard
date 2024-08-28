@@ -1,4 +1,4 @@
-import { visitAndCloseBanner, newPage, maintenanceMode } from './shared'
+import { visitAndCloseBanner, newPage, maintenanceMode, placeHolderSubtitle } from './shared'
 
 describe('Tiles', () => {
   it('Airport Tile', () => {
@@ -32,7 +32,7 @@ describe('Tiles', () => {
     cy.get('.menuIcon').click()
     cy.get('[aria-label="Load"]').click()
     cy.get('[aria-label="Tiles"]').click()
-    cy.get('[aria-label="Load Sheet"]').click()
+    cy.get('[aria-label="Load Template"]').click()
     cy.get('.p-confirm-dialog-accept').click()
     cy.get('.menuIcon').click()
 
@@ -147,7 +147,7 @@ describe('Tiles', () => {
     cy.get('[aria-label="Airport"]').click()
     // We should see the placeholder
     cy.get('.pageOne > :nth-child(3) > :nth-child(2) > .placeHolder').contains('No Airport')
-    cy.get('.pageOne > :nth-child(3) > :nth-child(2) > .placeHolder').contains('Click the header to configure')
+    cy.get('.pageOne > :nth-child(3) > :nth-child(2) > .placeHolder').contains(placeHolderSubtitle)
 
 
   })

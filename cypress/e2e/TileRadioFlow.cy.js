@@ -1,4 +1,4 @@
-import { visitAndCloseBanner, newPage } from './shared'
+import { visitAndCloseBanner, newPage, placeHolderSubtitle } from './shared'
 
 describe('Radio Flow Tile', () => {
   it('Radio Flow Tile', () => {
@@ -84,7 +84,7 @@ describe('Radio Flow Tile', () => {
     cy.get('.pageTwo > :nth-child(6) > .headerTitle > div').contains('Radio Flow')
     // check we have the placeholder
     cy.get('.pageTwo > :nth-child(6) > :nth-child(2) > .placeHolder').contains('No Radios')
-    cy.get('.pageTwo > :nth-child(6) > :nth-child(2) > .placeHolder').contains('Click header to configure')
+    cy.get('.pageTwo > :nth-child(6) > :nth-child(2) > .placeHolder').contains(placeHolderSubtitle)
 
   })
 })

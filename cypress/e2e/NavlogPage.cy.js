@@ -1,9 +1,9 @@
-import { visitAndCloseBanner, newPage } from './shared'
+import { visitAndCloseBanner, newPage, placeHolderSubtitle } from './shared'
 
 function checkBlankState() {
     cy.get(':nth-child(1) > .headerTitle').contains("NavLog")
     cy.get('.placeHolder').contains('No Entries')
-    cy.get('.placeHolder').contains('Click header to configure')
+    cy.get('.placeHolder').contains(placeHolderSubtitle)
 }
 
 describe('navlog Page', () => {
