@@ -10,8 +10,7 @@ import InputText from "primevue/inputtext";
 import SelectButton from "primevue/selectbutton"
 
 import { customSheetDelete, maxSheetCount, sheetGetByCode, sheetGetById, urlKneeboard } from "../../assets/data"
-import { describePage } from '../../assets/sheetData'
-import { getSheetBlank, getSheetDemo, getSheetDemoChecklist, getSheetDemoNavlog, getSheetDemoTiles } from '../../assets/sheetData'
+import { describePage, getTemplateDataFromName } from '../../assets/sheetData'
 import { sheetNameDemo, sheetNameDemoChecklist, sheetNameDemoNavlog, sheetNameDemoTiles, sheetNameNew } from '../../assets/sheetData'
 import { getToastData, toastError, toastSuccess } from '../../assets/toast'
 
@@ -28,10 +27,10 @@ const props = defineProps({
 
 function loadProps(props) {
   if( props.user && props.user.sheets) {
-    sheets.value = props.user.sheets
+    templates.value = props.user.sheets
     // console.log('[Sheets.loadProps]', JSON.stringify(sheets.value))
   }
-  targetSheet.value = props.sheet;
+  targetTemplate.value = props.sheet;
 }
 
 onMounted( () => {
@@ -48,50 +47,49 @@ watch( props, async() => {
 const pubPublic = 'Public'
 const pubPrivate = 'Private'
 const publish = ref(pubPrivate)
-const sheetNameText = ref('')
-const sheets = ref([])
+const templateNameText = ref('')
+const templates = ref([])
 const deleteMode = ref(false)
-const sheetCode = ref('')
-const targetSheet = ref(null)
+const templateCode = ref('')
+const targetTemplate = ref(null)
 const fetching = ref(false)
 const directLink = ref('')
 
-function changeTargetSheet(newSheet) {
+function changeTargetTemplate(newTemplate) {
   fetching.value = false;
-  targetSheet.value = newSheet
-  publish.value = newSheet?.publish ? pubPublic : pubPrivate
-  sheetNameText.value = newSheet ? newSheet.name : ''
-  // console.log('[Sheets.changeTargetSheet] publish', publish.value)
-  if( newSheet && newSheet.code) {
-    directLink.value = urlKneeboard + '?sheet=' + newSheet.code
+  targetTemplate.value = newTemplate
+  publish.value = newTemplate?.publish ? pubPublic : pubPrivate
+  templateNameText.value = newTemplate ? newTemplate.name : ''
+  if( newTemplate && newTemplate.code) {
+    directLink.value = urlKneeboard + '?t=' + newTemplate.code
   } else {
     directLink.value = ''
   }
 }
 
-function getSheetName(sheet=null) {
-  if(!sheet || !sheet.name) return '?'
-  let name = sheet.name;
-  if(sheet.publish) name  = name +' (' + sheet.code + ')'
+function getTemplateName(template=null) {
+  if(!template || !template.name) return '?'
+  let name = template.name;
+  if(template.publish) name  = name +' (' + template.code + ')'
   return name;
 }
 
 function onButtonClose() {
-  changeTargetSheet()
+  changeTargetTemplate()
   emits('close')
 }
 
 function onButtonLoad() {
-  emits('load',targetSheet.value)
-  changeTargetSheet()
+  emits('load',targetTemplate.value)
+  changeTargetTemplate()
 }
 
 function onButtonSave() {
-  const targetSheetId = targetSheet?.value?.id
-  const sheet = {id:targetSheetId,name:sheetNameText.value,publish:publish.value==pubPublic}
+  const targetSheetId = targetTemplate?.value?.id
+  const template = {id:targetSheetId,name:templateNameText.value,publish:publish.value==pubPublic}
 
-  emits('save',sheet)
-  changeTargetSheet()
+  emits('save',template)
+  changeTargetTemplate()
 }
 
 async function onCopyURL() {
@@ -109,39 +107,32 @@ async function onCopyURL() {
 }
 
 /**
- * A default sheet has been selected load its data into
- * @param sheetName 
+ * A default template has been selected load its data into
+ * @param name 
  */
-function onLoadDefault(sheetName) {
-  if( sheetName == sheetNameDemo) {
-    changeTargetSheet( getSheetDemo())
-  } else if( sheetName == sheetNameDemoTiles) {
-    changeTargetSheet( getSheetDemoTiles())
-  } else if( sheetName == sheetNameDemoChecklist) {
-    changeTargetSheet( getSheetDemoChecklist())
-  } else if( sheetName == sheetNameDemoNavlog) {
-    changeTargetSheet( getSheetDemoNavlog())
-  } else if( sheetName == sheetNameNew) { 
-    changeTargetSheet( getSheetBlank())
+function onLoadDefault(name) {
+  const data = getTemplateDataFromName(name);
+  if( data) {
+    changeTargetTemplate( data);
   } else {
-    console.log('[Sheets.onLoadDefault] unknown sheetName', sheetName)
-    changeTargetSheet()
+    console.log('[Templates.onLoadDefault] unknown name', name)
+    changeTargetTemplate()
   }
 }
 
-function onNewSheet() {
-  const newSheet = {name:sheetNameText.value, publish:publish.value==pubPublic}
-  changeTargetSheet(newSheet)
+function onNewTemplate() {
+  const newSheet = {name:templateNameText.value, publish:publish.value==pubPublic}
+  changeTargetTemplate(newSheet)
 }
 
 async function onSheetFetchCode() {
   fetching.value = true;
-  await sheetGetByCode(sheetCode.value).then( sheet => {
-    // console.log('[Sheets.onSheetFetch] sheet', JSON.stringify(sheet))
+  await sheetGetByCode(templateCode.value).then( sheet => {
+    // console.log('[Templates.onSheetFetch] sheet', JSON.stringify(sheet))
     // showToast('Fetch', 'Sheet found')
-    changeTargetSheet(sheet)
+    changeTargetTemplate(sheet)
     if(!sheet) {
-      showToast('Fetch','Code not found ' + sheetCode.value, toastError)
+      showToast('Fetch','Code not found ' + templateCode.value, toastError)
     }
   }) 
 }
@@ -154,18 +145,18 @@ async function onSheetSelected(sheet) {
       if( sheet) {
         // remove that sheet from the list
         emits('delete',sheet)
-        changeTargetSheet()
+        changeTargetTemplate()
       }
     })
   } else { // load or save
-    // console.log('[Sheets.onSheetSelected] load', JSON.stringify(sheet))
+    // console.log('[Templates.onSheetSelected] load', JSON.stringify(sheet))
     fetching.value = true;
     await sheetGetById(sheet.id).then( sheet => {
-      // console.log('[Sheets.fetchSheet]', JSON.stringify(sheet))
-      changeTargetSheet(sheet)
+      // console.log('[Templates.fetchSheet]', JSON.stringify(sheet))
+      changeTargetTemplate(sheet)
     }).catch( e => {
-      console.log('[Sheets.onSheetSelected] fetch failed', e)    
-      changeTargetSheet()
+      reportError('[Templates.onSheetSelected] fetch failed ' + e)    
+      changeTargetTemplate()
     })
   }
 }
@@ -182,12 +173,12 @@ function showToast(summary,details,severity=toastSuccess) {
 </script>
 
 <template>
-  <Dialog modal :header="mode=='load'?'Load':'Save'" style="width:45rem">
+  <Dialog modal :header="mode=='load'?'Load Template':'Save Template'" style="width:45rem">
     <div v-if="mode=='save'">
-      <FieldSet :legend="'Your'+(sheets.length?(' '+sheets.length):'')+' sheets'">
-        <div v-if="sheets.length" class="sheetAndToggle">
-          <div class="sheetList">
-            <Button v-for="sheet in sheets" :label="getSheetName(sheet)" 
+      <FieldSet :legend="'Your'+(templates.length?(' '+templates.length):'')+' Templates'">
+        <div v-if="templates.length" class="sheetAndToggle">
+          <div class="templateList">
+            <Button v-for="sheet in templates" :label="getTemplateName(sheet)" 
               :icon="deleteMode?'pi pi-times':'pi pi-copy'" 
               :severity="deleteMode?'danger':'primary'"
               :title="(deleteMode?'Delete':'Overwrite')+' \''+sheet.name+'\''"
@@ -198,47 +189,47 @@ function showToast(summary,details,severity=toastSuccess) {
               @click="onToggleDeleteMode"></Button>
           </div>
         </div>
-        <div v-else class="sheetList">
+        <div v-else class="templateList">
           <label>Your custom sheets will show here once you save them.</label>
         </div>
       </FieldSet>
       <FieldSet legend="Properties">
-        <div class="sheetProps">
+        <div class="templateProps">
           <InputGroup class="pageName">
             <InputGroupAddon>Name</InputGroupAddon>
-            <InputText v-model="sheetNameText"/>
+            <InputText v-model="templateNameText"/>
           </InputGroup>
           <Button label="Make Copy" icon="pi pi-file" severity="secondary" title="Create a copy instead or overwritting"
-            :disabled="!(targetSheet?.id)"
-            @click="onNewSheet"></Button>
+            :disabled="!(targetTemplate?.id)"
+            @click="onNewTemplate"></Button>
           <div class="alignedRow">
             <div>Access:</div>
             <SelectButton v-model="publish" :options="[pubPublic, pubPrivate]" aria-labelledby="basic" />
           </div>
           <div class="alignedRow codeAndLink" v-show="directLink">
             <div>Share code </div>
-            <div class="bold"><a :href="directLink" target="_blank">{{ targetSheet?.code ? targetSheet.code:'(none)' }}</a></div>
+            <div class="bold"><a :href="directLink" target="_blank">{{ targetTemplate?.code ? targetTemplate.code:'(none)' }}</a></div>
             <Button icon="pi pi-clipboard" title="Copy link to clipboard" @click="onCopyURL"></Button>
           </div>
-          <div class="sheetDescription">
-            <div class="bold pageDescription">Front</div><div class="pageDescription">{{ describePage(targetSheet, 0) }}</div>
-            <div class="bold pageDescription">Back</div><div class="pageDescription">{{ describePage(targetSheet, 1) }}</div>
+          <div class="templateDescription">
+            <div class="bold pageDescription">Front</div><div class="pageDescription">{{ describePage(targetTemplate, 0) }}</div>
+            <div class="bold pageDescription">Back</div><div class="pageDescription">{{ describePage(targetTemplate, 1) }}</div>
           </div>
         </div>
       </FieldSet>
-      <label v-if="sheets.length > maxSheetCount || (sheets.length==maxSheetCount && !(targetSheet?.id))" class="experiment">We are currently experimenting with a limit of {{ maxSheetCount }} sheets</label>
+      <label v-if="templates.length > maxSheetCount || (templates.length==maxSheetCount && !(targetTemplate?.id))" class="experiment">We are currently experimenting with a limit of {{ maxSheetCount }} sheets</label>
       <div v-else class="actionDialog gap-2">
         <Button label="Do Not Save" @click="onButtonClose" link></Button>
-        <Button :label="targetSheet?.id ? 'Overwrite Sheet' : 'Save Sheet'" 
+        <Button :label="targetTemplate?.id ? 'Overwrite Sheet' : 'Save Sheet'" 
           @click="onButtonSave" 
-          :disabled="!sheetNameText.length"></Button>
+          :disabled="!templateNameText.length"></Button>
       </div>
     </div>
   <div v-else><!-- load -->
-    <FieldSet legend="Your Sheets">
-      <div v-if="sheets.length" class="sheetAndToggle">
-        <div class="sheetList">
-          <Button v-for="sheet in sheets" :label="getSheetName(sheet)" 
+    <FieldSet legend="Your Templates">
+      <div v-if="templates.length" class="sheetAndToggle">
+        <div class="templateList">
+          <Button v-for="sheet in templates" :label="getTemplateName(sheet)" 
             :icon="deleteMode?'pi pi-times':'pi pi-copy'" 
             :severity="deleteMode?'danger':'primary'"
             :title="(deleteMode?'Delete':'Load')+' \''+sheet.name+'\''"
@@ -249,7 +240,7 @@ function showToast(summary,details,severity=toastSuccess) {
             @click="onToggleDeleteMode"></Button>
         </div>
       </div>
-      <div v-else class="sheetList">
+      <div v-else class="templateList">
         <label>Your custom sheets will show here once you save them.</label>
       </div>
     </FieldSet>
@@ -257,37 +248,37 @@ function showToast(summary,details,severity=toastSuccess) {
       <div class="alignedRow mb-2">
         <InputGroup class="sharedCode">
           <InputGroupAddon>Code</InputGroupAddon>
-          <InputText v-model="sheetCode" />
-          <Button icon="pi pi-search" @click="onSheetFetchCode" :disabled="!sheetCode.length" severity="secondary"></Button>
+          <InputText v-model="templateCode" />
+          <Button icon="pi pi-search" @click="onSheetFetchCode" :disabled="!templateCode.length" severity="secondary"></Button>
         </InputGroup>
-        <Button label="Default" icon="pi pi-clipboard"  title="Load Default Sheet" 
+        <Button label="Default" icon="pi pi-clipboard"  title="Load Default Demo" 
           @click="onLoadDefault(sheetNameDemo)"></Button>
-        <Button label="Tiles" icon="pi pi-clipboard"  title="Replace all with Tiles Demo" 
+        <Button label="Tiles" icon="pi pi-clipboard"  title="Load Tiles Demo" 
           @click="onLoadDefault(sheetNameDemoTiles)"></Button>
-        <Button label="Checklist" icon="pi pi-clipboard"  title="Replace all with Checklist Demo" 
+        <Button label="Checklist" icon="pi pi-clipboard"  title="Load Checklist Demo" 
           @click="onLoadDefault(sheetNameDemoChecklist)"></Button>
-        <Button label="Navlog" icon="pi pi-clipboard"  title="Replace all with Navlog Demo" 
+        <Button label="Navlog" icon="pi pi-clipboard"  title="Load Navlog Demo" 
           @click="onLoadDefault(sheetNameDemoNavlog)"></Button>
     </div>
   </FieldSet>
     <FieldSet legend="Content">
-      <div v-if="targetSheet" class="sheetDescription">
-        <div class="bold">Name</div><div>{{fetching ? 'Fetching...' : targetSheet.name}}</div>
-        <div class="bold pageDescription">Front</div><div class="pageDescription">{{ fetching ? '' : describePage(targetSheet, 0, 90) }}</div>
-        <div class="bold pageDescription">Back</div><div class="pageDescription">{{ fetching ? '' : describePage(targetSheet, 1, 90) }}</div>
+      <div v-if="targetTemplate" class="templateDescription">
+        <div class="bold">Name</div><div>{{fetching ? 'Fetching...' : targetTemplate.name}}</div>
+        <div class="bold pageDescription">Front</div><div class="pageDescription">{{ fetching ? '' : describePage(targetTemplate, 0) }}</div>
+        <div class="bold pageDescription">Back</div><div class="pageDescription">{{ fetching ? '' : describePage(targetTemplate, 1) }}</div>
       </div>
-      <div v-else class="contentPlaceholder">Select a sheet above to view its content</div>
+      <div v-else class="contentPlaceholder">Select a template above to view its content</div>
     </FieldSet>
     <div class="actionDialog gap-2">
       <Button label="Do Not Load" @click="onButtonClose" link></Button>
-      <Button label="Load Sheet" @click="onButtonLoad" :disabled="!targetSheet || fetching"></Button>
+      <Button label="Load Sheet" @click="onButtonLoad" :disabled="!targetTemplate || fetching"></Button>
     </div>
   </div>
   </Dialog>
 </template>
 
 <style scoped>
-.sheetList {
+.templateList {
   display: flex;
   flex-flow: wrap;
   gap: 5px;
@@ -319,13 +310,13 @@ function showToast(summary,details,severity=toastSuccess) {
   color:brown;
   font-size: 0.8rem;
 }
-.sheetDescription {
+.templateDescription {
   display: grid;
   gap: 5px;
   grid-template-columns: 3.5rem auto;
   grid-column: 1 / span 3;
 }
-.sheetProps {
+.templateProps {
   display: grid;
   gap: 10px;
   grid-template-columns: 35% 30% auto;
