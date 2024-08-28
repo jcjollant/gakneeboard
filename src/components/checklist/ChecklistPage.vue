@@ -127,7 +127,7 @@ Create sections using '##Section Name':
             <ThemeSelector @change="onThemeChange" :theme="theme" />
             <ActionBar @cancel="onCancel" @apply="onApply" :help="urlGuideChecklist" />
         </div>
-        <div v-else>
+        <div v-else class="viewMode">
             <div v-if="columns == colSingle">
                 <ChecklistViewer :items="data ? data.items : []" :theme="theme" />
             </div>
@@ -169,6 +169,11 @@ Create sections using '##Section Name':
     font-family: 'Courier New', Courier, monospace;
 }
 
+.leftList {
+    border-right: 1px solid lightgrey;
+
+}
+
 .smallTextarea {
     overflow-wrap: normal;
     overflow-x: scroll;
@@ -180,16 +185,7 @@ Create sections using '##Section Name':
     display: grid;
     grid-template-columns: 49% 49%;
     gap: 2%;
-    /* width: 100%; */
-}
-
-.leftList {
-    border-right: 1px solid lightgrey;
-
-}
-
-.rightList {
-    border-left: 1px solid lightgrey;
+    height: 100%;
 }
 
 .oneOrTwoLists {
@@ -197,4 +193,12 @@ Create sections using '##Section Name':
     gap: 5px;
 }
 
+.rightList {
+    border-left: 1px solid lightgrey;
+}
+
+
+.viewMode {
+    height: 100%;
+}
 </style>
