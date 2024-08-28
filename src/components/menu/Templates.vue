@@ -9,7 +9,7 @@ import InputGroupAddon from "primevue/inputgroupaddon";
 import InputText from "primevue/inputtext";
 import SelectButton from "primevue/selectbutton"
 
-import { customSheetDelete, maxSheetCount, sheetGetByCode, sheetGetById, urlKneeboard } from "../../assets/data"
+import { customSheetDelete, sheetGetByCode, sheetGetById, urlKneeboard } from "../../assets/data"
 import { describePage, getTemplateDataFromName } from '../../assets/sheetData'
 import { sheetNameDemo, sheetNameDemoChecklist, sheetNameDemoNavlog, sheetNameDemoTiles, sheetNameNew } from '../../assets/sheetData'
 import { getToastData, toastError, toastSuccess } from '../../assets/toast'
@@ -27,6 +27,7 @@ const props = defineProps({
 
 function loadProps(props) {
   if( props.user && props.user.sheets) {
+    if( props.user.sha256 == 'bfaa2eb49bf63f41c05a016e03653fe2d7f8bf196ba6fb3f3340d3dcd7016770') maxTemplateCount = 20
     templates.value = props.user.sheets
     // console.log('[Sheets.loadProps]', JSON.stringify(sheets.value))
   }
@@ -54,6 +55,7 @@ const templateCode = ref('')
 const targetTemplate = ref(null)
 const fetching = ref(false)
 const directLink = ref('')
+let maxTemplateCount = 10
 
 function changeTargetTemplate(newTemplate) {
   fetching.value = false;
@@ -217,7 +219,7 @@ function showToast(summary,details,severity=toastSuccess) {
           </div>
         </div>
       </FieldSet>
-      <label v-if="templates.length > maxSheetCount || (templates.length==maxSheetCount && !(targetTemplate?.id))" class="experiment">We are currently experimenting with a limit of {{ maxSheetCount }} sheets</label>
+      <label v-if="templates.length > maxTemplateCount || (templates.length==maxTemplateCount && !(targetTemplate?.id))" class="experiment">We are currently experimenting with a limit of {{ maxTemplateCount }} templates</label>
       <div v-else class="actionDialog gap-2">
         <Button label="Do Not Save" @click="onButtonClose" link></Button>
         <Button :label="targetTemplate?.id ? 'Overwrite Sheet' : 'Save Sheet'" 
