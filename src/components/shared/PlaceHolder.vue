@@ -21,7 +21,7 @@ const title = ref('')
     <div class="placeHolder">
         <div>
             <div>{{title}}</div>
-            <div class="small">Click the header to configure</div>
+            <div class="small">Click header to configure</div>
         </div>
     </div>
 
