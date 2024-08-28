@@ -56,9 +56,9 @@ describe('Checklist Tile', () => {
     cy.get('.p-inputtextarea').type('{selectall}{backspace}')
     // Apply changes
     cy.get('[aria-label="Apply"]').click()
-    // There should be not items
-    cy.get('.pageTwo > :nth-child(1) > .content > .placeHolder').contains('No Items')
-    cy.get('.pageTwo > :nth-child(1) > .content > .placeHolder').contains(placeHolderSubtitle)
+    // There should be no items
+    cy.get('.pageTwo > :nth-child(1) > .checklistMain > .placeHolder').contains('No Items')
+    cy.get('.pageTwo > :nth-child(1) > .checklistMain > .placeHolder').contains(placeHolderSubtitle)
 
   })
 
