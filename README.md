@@ -17,6 +17,9 @@ Run the test suite:
 ## TODO
 
 # Done
+## 8/27/2024
+* Renamed Sheets to Templates
+* Save page is also truncated
 ## 8/26/2024
 * Maintenance showing toasts
 * Editor button removed from Menu and added Main page bottom left corner
