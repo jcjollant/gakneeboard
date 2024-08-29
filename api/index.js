@@ -36,13 +36,14 @@ app.use(express.json()) // for parsing application/json
 //     next();
 // });
 
-app.get("/", (req, res) => {
-    const user = UserTools.userMiniFromRequest(req)
+app.get("/", async (req, res) => {
+    const user = await UserTools.userMiniFromRequest(req)
     const output = {
         version: version,
         aced: GApi.getAirportCurrentEffectiveDate(),
         camv: AirportView.currentVersion,
     }
+    // console.log('[index.get.root]', user, output)
     if(user) {
         output.user = user
     }
