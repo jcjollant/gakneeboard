@@ -23,6 +23,7 @@ ts-node .\willie.ts
 # Done
 ## 8/28/2024
 * Add navlog page count to report
+* Added user mini to root
 ## 8/27/2024
 * Added navlog to page count details (Waylon)
 ## 8/25/2024
