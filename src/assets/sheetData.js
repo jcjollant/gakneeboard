@@ -1,3 +1,5 @@
+import { PageType } from './TemplateData'
+
 const demoRadioData = [
   {'target':'NAV1','freq':'116.8','name':'SEA VOR'},
   {'target':'NAV2','freq':'113.4','name':'OLM VOR'},
@@ -8,14 +10,6 @@ const demoRadioData = [
   {'target':'COM1','freq':'120.2','name':'PAE TWR 34R'},
   {'target':'COM1','freq':'132.95','name':'PAE TWR 34L'}
 ]
-
-export class PageType {
-  static selection = 'selection'
-  static tiles = 'tiles'
-  static checklist = 'checklist'
-  static cover = 'cover'
-  static navLog = 'navlog'
-}
 
 
 export const sheetNameDemo = 'default-demo'
@@ -353,30 +347,6 @@ export function isDefaultName(name) {
 export function localSheetSave(sheet,modified=false) {
   if(sheet) sheet.modified = modified;
   localStorage.setItem(activeSheetLocal, JSON.stringify( sheet))
-}
-
-/**
- * transform old format sheet (tiles without pages) into new format
- * @param {*} sheet 
- * @returns 
- */
-export function normalizeSheetData(data) {
-  if(!data) return data;
-  if( typeof data == 'string') data = JSON.parse(data)
-
-  // console.log('[sheetData.normalizeSheetData]', JSON.stringify(data))
-  if(data.length == 12) { // old format with 12 tiles
-    // transform into new format
-    const front = {type:PageType.tiles,data:[data[0],data[1],data[2],data[3],data[4],data[5]]}
-    // adjust ids to 6->0 ... 11->5
-    for(let index = 6; index < 12; index++) {
-      data[index].id -= 6;
-    }
-    const back = {type:PageType.tiles,data:[data[6],data[7],data[8],data[9],data[10],data[11]]}
-    data = [front, back]
-  }
-
-  return data;
 }
 
 // See whether a page data string is valid
