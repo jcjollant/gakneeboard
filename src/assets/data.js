@@ -1,7 +1,7 @@
-export const version = 827
+export const version = 829
 export const keyUser = 'kb-user'
 
-const apiRootUrl = 'https://ga-api-seven.vercel.app/'
+export const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // const apiRootUrl = 'http://localhost:3000/'
 
 export const urlBlog = 'https://gakneeboard.wordpress.com/'
@@ -16,9 +16,9 @@ export const urlKneeboard = 'https://kneeboard.ga'
 
 import { Airport } from './Airport.ts'
 import axios from 'axios'
-import { isDefaultName, normalizeSheetData } from './sheetData.js'
+import { isDefaultName } from './sheetData.js'
 import { Backend } from './Backend.ts'
-
+// import { CurrentUser } from './CurrentUser.ts'
 
 const contentTypeJson = { headers: {'Content-Type':'application/json'} }
 // const contentTypeTextPlain = { headers: {'Content-Type':'text/plain'} }
@@ -32,6 +32,7 @@ let sunlightCache = {}
 // let effectiveDatePromise = null
 // let backendPromise = null
 export const backend = new Backend()
+// export const newCurrentUser = new CurrentUser()
 
 function airportCurrent( airport) {
   if( !backend.ready && !airport) return false;
@@ -69,7 +70,7 @@ export function duplicate(source) {
  * @param {*} url 
  * @returns 
  */
-async function getUrlWithUser(url) {
+export async function getUrlWithUser(url) {
   if( currentUser) {
     return axios.get(url,{params:{user:currentUser.sha256}})
   } else {
@@ -266,7 +267,7 @@ export async function getAirport( codeParam, group = false) {
  */
 export async function getBackend() {
   backend.promise = new Promise( (resolve) => {
-    axios.get(apiRootUrl)
+    getUrlWithUser(apiRootUrl)
       .then( response => {
         // console.log('[data.getBackend]', JSON.stringify(response.data))
         if( !response || !response.data) {
@@ -276,7 +277,15 @@ export async function getBackend() {
           backend.airportEffectiveDate = Number(response.data.aced)
           backend.airportModelVersion = Number(response.data.camv)
           backend.ready = true;
-          // console.log('[data.getBackend] backend', JSON.stringify(backend))
+
+          // Do we have anything about the user?
+          if( response.data.user) {
+            currentUser = response.data.user
+            userSortSheets()
+          } else {
+            currentUser = null
+          }
+
           resolve(backend)
         }
       })
@@ -299,6 +308,10 @@ export function getAirports() {
  */
 export function getCurrentUser() {
   return currentUser
+}
+
+export function getCurrentUser2() {
+  return newCurrentUser;
 }
 
 export function getFrequency(freqList, name) {
@@ -501,6 +514,11 @@ export function setCurrentUser( user) {
   currentUser = user
 }
 
+export function setCurrentUserTemplates( templates) {
+  currentUser.sheets = templates
+  userSortSheets()
+}
+
 /**
  * 
  * @returns Sorts sheets for a user
@@ -536,50 +554,5 @@ export async function saveCustomAirport(airport) {
     .catch( error => {
       reportError( '[data.saveCustomAirport] custom airport save error ' + JSON.stringify(error))
     })
-
-}
-
-/**
- * Gets a sheet from its publication code
- * @param {*} code 
- * @returns 
- */
-export async function sheetGetByCode(code) {
-  const url = apiRootUrl + 'sheetByCode/' + code
-  return axios.get( url)
-    .then( response => response.data)
-    .catch( error => {
-      reportError( '[data.sheetGetByCode] error ' + JSON.stringify(error))
-      return null
-    })
-
-}
-
-export async function sheetGetById(id) {
-  const url = apiRootUrl + 'sheet/' + id
-  return getUrlWithUser(url).then( response => {
-    // console.log('[data.sheetGetById]', JSON.stringify(response))
-    const sheet = response.data;
-    sheet.data = normalizeSheetData(sheet.data)
-    return sheet;
-  }).catch( error => {
-      if(error.response.status != 404) {
-        reportError( '[data.sheetGetById] error ' + error.response.status + ' ' + error.response.statusText)
-      }
-      return null
-    })
-}
-
-export async function sheetGetList() {
-  const url = apiRootUrl + 'sheets'
-  return getUrlWithUser(url).then( response => {
-    currentUser.sheets = response.data;
-    userSortSheets()
-    return currentUser.sheets;
-  })
-  .catch( error => {
-    reportError( '[data.sheetGetList] error ' + JSON.stringify(error))
-    return null
-  })
 
 }
