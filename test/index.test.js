@@ -1,6 +1,6 @@
 const axios = require('axios')
 
-import { jcHash, jcHash2, currentAirportModelVersion, currentAsOf, jcTestSheetId as jcTestTemplateId, samplePublicationCode } from './constants.ts'
+import { jcHash, jcHash2, currentAirportModelVersion, currentAsOf, jcTestTemplateId, samplePublicationCode } from './constants.ts'
 import { version } from '../backend/constants.js'
 import { Maintenance } from '../backend/Maintenance.ts'
 
@@ -104,11 +104,12 @@ describe('index', () => {
     // })
 
     test('Templates and publications', async () => {
-        await axios.get( apiRootUrl + 'template/' + jcTestTemplateId)
+        await axios.get( apiRootUrl + 'template/' + jcTestTemplateId + '?user=' + jcHash)
             .then( (res) => {
                 expect(res.data).toBeDefined();
             })
-        .catch( () => {
+        .catch( (e) => {
+            console.log(e)
             expect(true).toBe(false)
         })
         await axios.get( apiRootUrl + 'templates')

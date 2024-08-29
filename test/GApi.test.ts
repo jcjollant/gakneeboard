@@ -1,8 +1,9 @@
 import { describe, expect, test} from '@jest/globals';
 import { GApi, GApiError } from '../backend/GApi'
-import { jcHash, jcUserId, jcTestSheetData, jcToken, jcName, jcTestSheetName, jcTestSheetId } from './constants'
+import { jcHash, jcUserId, jcTestTemplateData, jcToken, jcName, jcTestTemplateName, jcTestTemplateId } from './constants'
 import { currentAsOf, postgresUrl } from './constants';
-import { Sheet } from '../backend/models/Sheet'
+import { Template } from '../backend/models/Template'
+import { UserMiniView } from '../backend/models/UserMiniView';
 
 process.env.POSTGRES_URL=postgresUrl
 
@@ -122,77 +123,77 @@ describe( 'GApi Tests', () => {
         expect(airport?.code).toBe('TEST') 
     })
 
-    test('Sheet List', async () => {
-        await GApi.sheetGetList(jcUserId).then( list => {
+    test('Template List', async () => {
+        await GApi.templateGetList(jcUserId).then( list => {
             expect(list.length).toBeGreaterThan(0)
-            const testSheet = list.find( sheet => sheet.name == jcTestSheetName);
-            expect(testSheet).toBeDefined()
+            const testTemplate = list.find( sheet => sheet.name == jcTestTemplateName);
+            expect(testTemplate).toBeDefined()
         }).catch( (e) => {
             console.log(e)
             expect(true).toBe(false) // should not get here
         })
     })
 
-    test('Sheet Get', async () => {
+    test('Template Get', async () => {
         // invalid pageId should throw error
-        await GApi.sheetGet(0,jcUserId).then( () => {
+        await GApi.templateGet(0,jcUserId).then( () => {
             expect(true).toBe(false) // should not get here
         }).catch( e => {
             expect(e).toBeInstanceOf(GApiError)
         })
 
-        // custom sheet should check out
-        await GApi.sheetGet(jcTestSheetId,jcUserId).then( sheet => {
-            expect(sheet.name).toBe(jcTestSheetName)
+        // custom template should check out
+        await GApi.templateGet(jcTestTemplateId,jcUserId).then( template => {
+            expect(template.name).toBe(jcTestTemplateName)
         }).catch( e => {
             expect(true).toBe(false) // should not get here
         })
 
     })
 
-    test('Sheet Publication', async() => {
-        const sheetIn = new Sheet( jcTestSheetId, jcTestSheetName, jcTestSheetData)
-        expect(sheetIn.publish).toBeFalsy()
-        expect(sheetIn.code).toBeUndefined()
-        let sheetOut = await GApi.sheetSave(jcHash, sheetIn)
-        expect(sheetOut.publish).toBeFalsy()
-        expect(sheetOut.code).toBeUndefined()
-        expect(sheetOut.id).toBe(jcTestSheetId)
-        // Now publish that sheet
-        sheetIn.publish = true
-        sheetOut = await GApi.sheetSave(jcHash, sheetIn)
-        expect(sheetOut.publish).toBeTruthy()
-        expect(sheetOut.code).toBeDefined()
-        expect(sheetOut.code).toHaveLength(2)
+    test('Template Publication', async() => {
+        const templateIn = new Template( jcTestTemplateId, jcTestTemplateName, jcTestTemplateData)
+        expect(templateIn.publish).toBeFalsy()
+        expect(templateIn.code).toBeUndefined()
+        let templateOut = await GApi.templateSave(jcHash, templateIn)
+        expect(templateOut.publish).toBeFalsy()
+        expect(templateOut.code).toBeUndefined()
+        expect(templateOut.id).toBe(jcTestTemplateId)
+        // Now publish that template
+        templateIn.publish = true
+        templateOut = await GApi.templateSave(jcHash, templateIn)
+        expect(templateOut.publish).toBeTruthy()
+        expect(templateOut.code).toBeDefined()
+        expect(templateOut.code).toHaveLength(2)
 
         // get that publication by code
-        expect(sheetOut.code).toBeTruthy()
-        const publicationCode = sheetOut.code
+        expect(templateOut.code).toBeTruthy()
+        const publicationCode = templateOut.code
         if(!publicationCode) return; // to help VS COde
-        let sheetByCode = await GApi.sheetGetByCode(publicationCode)
+        let templateByCode = await GApi.publicationGet(publicationCode)
         // it should be the same as the original
-        expect(sheetByCode).toBeDefined()
-        expect(sheetByCode?.id).toBe(sheetOut.id)
-        expect(sheetByCode?.name).toBe(sheetOut.name)
-        expect(JSON.stringify(sheetByCode?.data)).toBe(JSON.stringify(sheetOut.data))
+        expect(templateByCode).toBeDefined()
+        expect(templateByCode?.id).toBe(templateOut.id)
+        expect(templateByCode?.name).toBe(templateOut.name)
+        expect(JSON.stringify(templateByCode?.data)).toBe(JSON.stringify(templateOut.data))
 
-        // get that sheet by id
-        let sheetById = await GApi.sheetGet(sheetOut.id, jcUserId)
-        expect(sheetById).toBeDefined()
-        expect(sheetById?.id).toBe(sheetOut.id)
-        expect(sheetById?.name).toBe(sheetOut.name)
-        expect(JSON.stringify(sheetById?.data)).toBe(JSON.stringify(sheetOut.data))
-        expect(sheetById?.publish).toBeTruthy()
-        expect(sheetById?.code).toBe(publicationCode)
+        // get that template by id
+        let templateById = await GApi.templateGet(templateOut.id, jcUserId)
+        expect(templateById).toBeDefined()
+        expect(templateById?.id).toBe(templateOut.id)
+        expect(templateById?.name).toBe(templateOut.name)
+        expect(JSON.stringify(templateById?.data)).toBe(JSON.stringify(templateOut.data))
+        expect(templateById?.publish).toBeTruthy()
+        expect(templateById?.code).toBe(publicationCode)
 
-        // now unpublish that sheet
-        sheetIn.publish = false
-        sheetOut = await GApi.sheetSave(jcHash, sheetIn)
-        expect(sheetOut.publish).toBeFalsy()
-        expect(sheetOut.code).toBeUndefined()
+        // now unpublish that template
+        templateIn.publish = false
+        templateOut = await GApi.templateSave(jcHash, templateIn)
+        expect(templateOut.publish).toBeFalsy()
+        expect(templateOut.code).toBeUndefined()
 
         // get that publication by code should fail with 404
-        await GApi.sheetGetByCode(publicationCode).then( () => {
+        await GApi.publicationGet(publicationCode).then( () => {
             expect(true).toBeFalsy() // should not get here ()
         }).catch( e => {
             expect(e).toBeInstanceOf(GApiError)
@@ -202,13 +203,12 @@ describe( 'GApi Tests', () => {
 
     test('Authenticate', async () => {
         const body = { 'source':'google', 'token':jcToken}
-        await GApi.authenticate(body).then( user => {
+        await GApi.authenticate(body).then( (user:UserMiniView) => {
             // console.log(JSON.stringify(user))
-            expect(user.id).toBeUndefined()
             expect(user.name).toBe(jcName)
             expect(user.sha256).toBe(jcHash)
-            expect(user.sheets).toBeDefined()
-            expect(user.sheets.length).toBeGreaterThan(1)
+            expect(user.templates).toBeDefined()
+            expect(user.templates.length).toBeGreaterThan(1)
         }).catch( (e) => {
             console.log(e)
             expect(true).toBe(false) // should not get here

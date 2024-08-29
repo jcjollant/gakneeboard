@@ -1,11 +1,11 @@
 import {describe, expect, test} from '@jest/globals';
 import { User } from '../backend/models/User'
 import { UserTools } from '../backend/UserTools'
-import { postgresUrl } from './constants'
+import { jcSource, postgresUrl } from './constants'
 import { jcHash, jcUserId, jcToken, jcName, jcEmail } from './constants'
 import { UserDao } from '../backend/UserDao';
 import { UserMiniView } from '../backend/models/UserMiniView';
-import exp from 'constants';
+import { exitCode } from 'process';
 
 process.env.POSTGRES_URL=postgresUrl
 
@@ -14,12 +14,46 @@ const jc = { 'source':'google','email':jcEmail}
 describe( 'User', () => {
     test('Encryption', async () => {
         expect(User.createSha256(jc)).toBe(jcHash)
+        expect(UserTools.createUserSha(jcSource, jcEmail)).toBe(jcHash)
     })
+
     test('Constructor', () => {
-        const userJc = new User('google', jcEmail)
-        expect(userJc.sha256).toBe(jcHash)
-        expect(userJc.maxTemplates).toBe(User.defaultMaxTemplates)
+        const hash = 'hash'
+        const u = new User( 1, hash)
+        expect(u.id).toBe(1)
+        expect(u.sha256).toBe(hash)
+        expect(u.source).toBe('')
+        expect(u.email).toBe('')
+        expect(u.name).toBe('')
+        expect(u.maxTemplates).toBe(User.defaultMaxTemplates)
     })    
+
+    test('setters', () => {
+        const u = new User(1, 'hash')
+        u.setEmail('email')
+        u.setSource('source')
+        u.setMaxTemplates(10)
+        u.setName('name')
+        expect(u.email).toBe('email')
+        expect(u.source).toBe('source')
+        expect(u.maxTemplates).toBe(10)
+        expect(u.name).toBe('name')
+    })
+
+    test('fromJson', () => {
+        const name = 'Paul'
+        const source = 'SomeSource'
+        const email = 'paul@example.com'
+        const maxTemplates = 12
+        const data:string = JSON.stringify( {name:name,source:source,email:email,maxTemplates:maxTemplates})
+        const user:User = User.fromJson(1,'sha',data)
+        expect(user.id).toBe(1)
+        expect(user.sha256).toBe('sha')
+        expect(user.name).toBe(name)
+        expect(user.source).toBe(source)
+        expect(user.email).toBe(email)
+        expect(user.maxTemplates).toBe(maxTemplates)
+    })
 })
 
 describe('UserTool', () => {
@@ -53,21 +87,40 @@ describe('UserTool', () => {
         })
     })
 
-    test('userFromRequest', async () => {
-        expect( await UserTools.userFromRequest(undefined)).toBeUndefined()
+    test('userIdFromRequest', async () => {
+        expect( await UserTools.userIdFromRequest(undefined)).toBeUndefined()
         const req1 = {}
-        expect( await UserTools.userFromRequest(req1)).toBeUndefined()
+        expect( await UserTools.userIdFromRequest(req1)).toBeUndefined()
         const req2 = { query: {}}
-        expect( await UserTools.userFromRequest(req2)).toBeUndefined()
+        expect( await UserTools.userIdFromRequest(req2)).toBeUndefined()
         const req3 = { query: { user: {}}}
-        expect( await UserTools.userFromRequest(req3)).toBeUndefined()
+        expect( await UserTools.userIdFromRequest(req3)).toBeUndefined()
         const req4 = { query: { user: jcHash}}
-        expect( await UserTools.userFromRequest(req4)).toBe( jcUserId)
+        expect( await UserTools.userIdFromRequest(req4)).toBe( jcUserId)
+    })
+
+    test('userMiniFromRequest', async () => {
+        expect( await UserTools.userMiniFromRequest(undefined)).toBeUndefined()
+        const req1 = {}
+        expect( await UserTools.userMiniFromRequest(req1)).toBeUndefined()
+        const req2 = { query: {}}
+        expect( await UserTools.userMiniFromRequest(req2)).toBeUndefined()
+        const req3 = { query: { user: {}}}
+        expect( await UserTools.userMiniFromRequest(req3)).toBeUndefined()
+        const req4 = { query: { user: jcHash}}
+        const miniUser:UserMiniView|undefined = await UserTools.userMiniFromRequest(req4)
+        expect(miniUser).toBeDefined()
+        if(miniUser) {
+            expect(miniUser.sha256).toBe(jcHash)
+            expect(miniUser.name).toBe(jcName)
+            expect(miniUser.maxTemp).toBe(User.defaultMaxTemplates)
+            expect(miniUser.templates.length).toBeGreaterThan(0)
+        }
 
     })
-        
+
     test('Save', async () => {
-        const input:User = new User('google', jcEmail)
+        const input:User = new User(jcUserId, jcHash)
         // Saving an existing user should return its id
         const output = await UserDao.save(input)
         expect(output.id).toBe(jcUserId)

@@ -12,7 +12,7 @@ describe('Publication', () => {
         const pub:Publication = new Publication(someId, someCode, someSheetId)
         expect(pub.id).toBe(someId) 
         expect(pub.code).toBe(someCode) 
-        expect(pub.sheetid).toBe(someSheetId)
+        expect(pub.templateId).toBe(someSheetId)
     })
 
 })
