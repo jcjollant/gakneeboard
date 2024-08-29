@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { apiRootUrl, getUrlWithUser } from './data'
+import { apiRootUrl, getUrlWithUser, setCurrentUserTemplates } from './data'
 
 export class PageType {
   static selection = 'selection'
@@ -65,16 +65,15 @@ export class TemplateData {
         })
     }
 
-    static sheetGetList() {
-        // const url = apiRootUrl + 'sheets'
-        // return getUrlWithUser(url).then( response => {
-        //     currentUser.sheets = response.data;
-        //     userSortSheets()
-        //     return currentUser.sheets;
-        // })
-        // .catch( error => {
-        //     reportError( '[data.sheetGetList] error ' + JSON.stringify(error))
-        //     return null
-        // })
+    static getList() {
+        const url = apiRootUrl + 'templates'
+        return getUrlWithUser(url).then( response => {
+            setCurrentUserTemplates(response.data)
+            return response.data;
+        })
+        .catch( error => {
+            reportError( '[data.sheetGetList] error ' + JSON.stringify(error))
+            return null
+        })
     }    
 }
