@@ -123,29 +123,32 @@ app.get('/maintenance/:code', async (req, res) => {
     })
 })
 
-app.get('/sheet/:id', async (req, res) => {
+app.get(['/sheet/:id','/template/:id'], async (req, res) => {
     const userId = await UserTools.userFromRequest(req)
     try {
-        let sheet = await GApi.sheetGet(req.params.id, userId);
+        let sheet = await GApi.templateGet(req.params.id, userId);
         res.send(sheet)
     } catch( e) {
-        catchError(res, e, 'GET /sheet/:id')
+        catchError(res, e, 'GET /template/:id')
     }
 })
 
-app.get('/sheetbycode/:code', async (req, res) => {
+app.get(['/sheetbycode/:code','/publication/:code'], async (req, res) => {
     try {
-        let sheet = await GApi.sheetGetByCode(req.params.code);
+        let sheet = await GApi.publicationGet(req.params.code);
         res.send(sheet)
     } catch( e) {
-        catchError(res, e, 'GET /sheetbycode/:code')
+        catchError(res, e, 'GET /publication/:code')
     }
 })
 
-app.get('/sheets', async (req, res) => {
+/**
+ * Builds a template list for the current user
+ */
+app.get(['/sheets','/templates'], async (req, res) => {
     const userId = await UserTools.userFromRequest(req)
     try {
-        const sheets = await GApi.sheetGetList(userId);
+        const sheets = await GApi.templateGetList(userId);
         res.send(sheets)
     } catch( e) {
         catchError(res, e, 'GET /sheets')
@@ -153,11 +156,11 @@ app.get('/sheets', async (req, res) => {
 })
 
 /**
- * The expected payload is a user and a sheet
+ * The expected payload is a user and template data
  */
-app.post('/sheet', async (req, res) => {
+app.post(['/sheet','/template'], async (req, res) => {
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
-    GApi.sheetSave(payload.user, payload.sheet).then( (sheet) => {
+    GApi.templateSave(payload.user, payload.sheet).then( (sheet) => {
         // console.log('[index.post/sheet]', JSON.stringify(sheet))
         res.send(sheet)
     }).catch( (e) => {
@@ -165,14 +168,14 @@ app.post('/sheet', async (req, res) => {
     })
 })
 
-app.delete('/sheet/:id', async (req, res) => {
+app.delete(['/sheet/:id','/template/:id'], async (req, res) => {
     const sheetId = req.params.id
     const userId = await UserTools.userFromRequest(req)
     try {
         if( !sheetId || !userId) { 
             throw new GApiError(400, 'Invalid request')
         }
-        await GApi.sheetDelete(sheetId, userId).then( (sheet) => {
+        await GApi.templateDelete(sheetId, userId).then( (sheet) => {
             res.send(sheet.name + ' deleted')
         })
     } catch( e) {
