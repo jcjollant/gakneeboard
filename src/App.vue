@@ -3,11 +3,12 @@
 import { onBeforeMount, onMounted,ref} from 'vue'
 import { inject } from "@vercel/analytics"
 
-import { duplicate, getBackend, keyUser, reportError, setCurrentUser, sheetGetByCode } from './assets/data.js'
+import { duplicate, getBackend, keyUser, reportError, setCurrentUser } from './assets/data.js'
 import { backend, version } from './assets/data.js'
 import { EditorAction } from './assets/Editor.ts'
-import { getSheetDemoTiles, getSheetLocal, localSheetSave, normalizeSheetData, pageDataBlank, readPageFromClipboard } from './assets/sheetData'
+import { getSheetDemoTiles, getSheetLocal, localSheetSave, pageDataBlank, readPageFromClipboard } from './assets/sheetData'
 import { getToastData, toastError, toastWarning } from './assets/toast'
+import { TemplateData } from './assets/TemplateData'
 
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
@@ -50,7 +51,7 @@ function getSheetName() {
 }
 
 // update all widgets with provided data
-function loadSheet(sheet=null) {
+function loadTemplate(sheet=null) {
   // console.log( '[App.loadSheet]', typeof data, JSON.stringify(sheet))
 
   // if we don't know what to show, we load a copy of the demo page
@@ -59,7 +60,7 @@ function loadSheet(sheet=null) {
   }
 
   // make sure data is at the latest format
-  const data = normalizeSheetData(sheet.data)
+  const data = TemplateData.normalize(sheet.data)
   if( data.length == 2){
     frontPageData.value = data[0]
     backPageData.value = data[1]
@@ -80,15 +81,16 @@ function onCloseHowDoesItWork() {
 
 // Before the app starts, we request backend information, load user and potentially show how does it work
 onBeforeMount(()=>{
-  // console.log('[App.onBeforeMount]')
-  getBackend().then(() => {
-    versionText.value = version + '/' + backend.version
-  })
   // activate the last known user
   const user = JSON.parse(localStorage.getItem(keyUser))
   if( user) {
     setCurrentUser( user)
   }
+
+  // console.log('[App.onBeforeMount]')
+  getBackend().then(() => {
+    versionText.value = version + '/' + backend.version
+  })
 
   // How does it work popup check
   if( localStorage.getItem( keyHowDoesItWork) == 'false') {
@@ -96,6 +98,7 @@ onBeforeMount(()=>{
   }
 })
 
+// Pages are manipulated via editor buttons
 async function onEditorAction(action) {
   if(action == EditorAction.swapPages) {
     const swap = duplicate(frontPageData.value)
@@ -144,7 +147,7 @@ function onMenuEditor() {
 function onMenuLoad(sheet) {
   // console.log('[App.onMenuLoad]', JSON.stringify(sheet))
   if(sheet && sheet.data) {
-    loadSheet(sheet)
+    loadTemplate(sheet)
     saveActiveSheet(false)
   } else {
     console.log('[App.onMenuLoad] could not load', JSON.stringify(sheet))
@@ -166,30 +169,30 @@ onMounted(async () => {
     // console.log( '[App.onMounted]', JSON.stringify(window.location.search))
     let urlParams = new URLSearchParams(window.location.search);
     if( urlParams.has('sheet') || urlParams.has('t')) {
-      const sheetCode = urlParams.has('t') ? urlParams.get('t') : urlParams.get('sheet')
+      const code = urlParams.has('t') ? urlParams.get('t') : urlParams.get('sheet')
       // console.log('[App.onMounted] sheet code', sheetCode)
 
       // TODO go get that sheet
-      sheetGetByCode(sheetCode).then( sheet => {
+      Templates.getPublication(code).then( template => {
         // console.log('[App.onMounted] sheet', JSON.stringify(sheet))
         // showToast('Fetch', 'Sheet found')
-        if(sheet) {
-          loadSheet(sheet)
+        if(template) {
+          loadTemplate(template)
         } else {
-          showToast( getToastData( 'Load Sheet','Sheet Code not found ' + sheetCode, toastError))
-          loadSheet(getSheetLocal())
+          showToast( getToastData( 'Load Template','Code not found ' + code, toastError))
+          loadTemplate(getSheetLocal())
         }
       }).catch(e => {
-          showToast( getToastData( 'Load Sheet','Error fetching sheet ' + sheetCode, toastError))
-          loadSheet(getSheetLocal())
+          showToast( getToastData( 'Load Template','Error fetching template ' + code, toastError))
+          loadTemplate(getSheetLocal())
       }) 
     } else {
-      loadSheet(getSheetLocal())
+      loadTemplate(getSheetLocal())
     }
   } catch(e) {
     console.log('[App.onMounted] local data is corrupted', JSON.stringify(e))
     // revert to demo tiles
-    loadSheet(getSheetDemoTiles())
+    loadTemplate(getSheetDemoTiles())
     saveActiveSheet()
   }
   // Analytics
