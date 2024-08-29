@@ -36,11 +36,18 @@ app.use(express.json()) // for parsing application/json
 //     next();
 // });
 
-app.get("/", (req, res) => res.send({
-    version: version, 
-    aced: GApi.getAirportCurrentEffectiveDate(),
-    camv: AirportView.currentVersion
-    }));
+app.get("/", (req, res) => {
+    const user = UserTools.userMiniFromRequest(req)
+    const output = {
+        version: version,
+        aced: GApi.getAirportCurrentEffectiveDate(),
+        camv: AirportView.currentVersion,
+    }
+    if(user) {
+        output.user = user
+    }
+    res.send(output)
+});
 
 /**
  * Create a new custom airport
@@ -61,7 +68,7 @@ app.post("/airport", async (req,res) => {
 })
 
 app.get("/airport/:id", async (req,res) => {
-    const userId = await UserTools.userFromRequest(req)
+    const userId = await UserTools.userIdFromRequest(req)
     // console.log( "[index.get.airport]", req.params.id, userId);
 
     GApi.getAirportView(req.params.id, userId)
@@ -78,7 +85,7 @@ app.get("/airport/:id", async (req,res) => {
  */
 app.get('/airports/:list', async (req, res) => {
 
-    const userId = await UserTools.userFromRequest(req)
+    const userId = await UserTools.userIdFromRequest(req)
     // console.log( "[index] /airports/", req.params.list, "userId", userId);
     const airports = await GApi.getAirportViewList(req.params.list.split('-'),userId);
     // console.log( "[index] Returning airports " + JSON.stringify(airports));
@@ -124,8 +131,13 @@ app.get('/maintenance/:code', async (req, res) => {
 })
 
 app.get(['/sheet/:id','/template/:id'], async (req, res) => {
-    const userId = await UserTools.userFromRequest(req)
+    const userId = await UserTools.userIdFromRequest(req)
     try {
+        // console.log( "[index] GET template " + req.params.id + " userId " + userId);
+        if(!userId) {
+            throw new GApiError(401, 'Unauthorized')
+        }
+        // console.log( "[index] GET template " + req.params.id + " userId " + userId
         let sheet = await GApi.templateGet(req.params.id, userId);
         res.send(sheet)
     } catch( e) {
@@ -146,7 +158,7 @@ app.get(['/sheetbycode/:code','/publication/:code'], async (req, res) => {
  * Builds a template list for the current user
  */
 app.get(['/sheets','/templates'], async (req, res) => {
-    const userId = await UserTools.userFromRequest(req)
+    const userId = await UserTools.userIdFromRequest(req)
     try {
         const sheets = await GApi.templateGetList(userId);
         res.send(sheets)
@@ -170,7 +182,7 @@ app.post(['/sheet','/template'], async (req, res) => {
 
 app.delete(['/sheet/:id','/template/:id'], async (req, res) => {
     const sheetId = req.params.id
-    const userId = await UserTools.userFromRequest(req)
+    const userId = await UserTools.userIdFromRequest(req)
     try {
         if( !sheetId || !userId) { 
             throw new GApiError(400, 'Invalid request')
