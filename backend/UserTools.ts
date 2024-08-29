@@ -1,4 +1,7 @@
+import { Template } from './models/Template';
 import { User } from './models/User'
+import { UserMiniView } from './models/UserMiniView';
+import { TemplateDao } from './TemplateDao';
 import { UserDao } from './UserDao'
 
 export class UserTools {
@@ -17,6 +20,15 @@ export class UserTools {
         return await UserDao.save(user);
     }
     
+    static createUserSha(source:string, email:string) {
+        const user = {
+            source: source,
+            email: email,
+        }
+        return User.createSha256(user)
+    }
+
+
     /**
      * Decode a google credential into a user
      * @param {*} credential 
@@ -38,8 +50,12 @@ export class UserTools {
         //   id: decodedToken.sub,
         //   iat: decodedToken.iat,
         //   exp: decodedToken.exp,
-        const user:User = new User( 'google', decodedToken.email)
-        
+        const sha256:string = UserTools.createUserSha('google', decodedToken.email)
+        const user:User = new User( 0, sha256)
+        user.setSource('google')
+        user.setEmail(decodedToken.email)
+
+
         // figure out a name for this dude
         let userName = ''
         if('given_name' in decodedToken) {
@@ -53,8 +69,27 @@ export class UserTools {
         return user
     }
 
-    public static async userFromRequest(req:any):Promise<number|undefined> {
+    /**
+     * Finds a user from a request (if provided)
+     * @param req Inbound request to parse
+     * @returns Matching user or undefined if not found
+     */
+    public static async userMiniFromRequest(req:any):Promise<UserMiniView|undefined> {
         if( req == undefined || req.query == undefined || req.query.user == undefined) return undefined
-        return UserDao.find(req.query.user)
+        const user:User|undefined = await UserDao.getUserFromHash(req.query.user)
+        if( !user) return undefined
+        const templates:Template[] = await TemplateDao.getOverviewListForUser(user.id)
+        const userMini:UserMiniView = new UserMiniView(user, templates)
+        return userMini
+    }
+
+    /**
+     * Finds a user id from a request (if provided)
+     * @param req Inbound request to parse
+     * @returns Matching user id or undefined if not found
+     */
+    public static async userIdFromRequest(req:any):Promise<number|undefined> {
+        if( req == undefined || req.query == undefined || req.query.user == undefined) return undefined
+        return UserDao.getIdFromHash(req.query.user)
     }
 }
