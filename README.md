@@ -17,6 +17,8 @@ Run the test suite:
 ## TODO
 
 # Done
+## 8/29/2024
+* New format for How Does it Work
 ## 8/27/2024
 * Renamed Sheets to Templates
 * Save page is also truncated
