@@ -7,7 +7,7 @@ const emits = defineEmits(["close"]);
 
 </script>
 <template>
-    <Dialog modal header="How Does It Work ?">
+    <Dialog modal header="Customizable Kneeboard Templates">
         <div class="hdiw">
             <div class="item">
                 <i class="pi pi-file-edit"></i>
@@ -22,6 +22,7 @@ const emits = defineEmits(["close"]);
                 <span>3. Clip</span>
             </div>
         </div>
+        <div class="intro mb-5">When I’m flying, my IQ decreases by 30 points. To mitigate, I prioritize having essential information easily accessible on the kneeboard. Originally intended as a supplement to my EFB, the kneeboard printout has now become my primary source of information due to its sheer convenience.</div>
         <div class="detailed-content mb-5">
             <div>1. Click on tiles to match your preferences</div>
             <div>2. Print on Letter size paper</div>
@@ -44,6 +45,10 @@ const emits = defineEmits(["close"]);
 
 i {
     font-size: 5rem;
+}
+
+.intro {
+    width: 35rem;
 }
 
 .item {
