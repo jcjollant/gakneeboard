@@ -8,7 +8,7 @@ export class UserDao {
      * @param sha256 User sha256
      * @returns User Id
      */
-    public static async find(sha256:string):Promise<number | undefined> {
+    public static async getIdFromHash(sha256:string):Promise<number | undefined> {
         // console.log( '[UserDao] find user with sha256 ' + sha256)
         const result = await sql`SELECT id FROM users WHERE sha256=${sha256}`;
         // console.log( '[UserDao] found ' + result.rowCount + ' entries')
@@ -17,6 +17,13 @@ export class UserDao {
 
         // console.log( '[db] fetchAirportList found ' + JSON.stringify(result.rows[0]))
         return result.rows[0].id
+    }
+
+    // builds a user using the sha256 as a key
+    public static async getUserFromHash(sha256:string):Promise<User | undefined> {
+        const result = await sql`SELECT id,data FROM users WHERE sha256=${sha256}`;
+        if( result.rowCount == 0) return undefined
+        return User.fromJson(result.rows[0].id, sha256, result.rows[0].data)
     }
 
     /**
