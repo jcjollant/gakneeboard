@@ -3,9 +3,10 @@ import { watch } from 'vue';
 import { ref, onMounted } from 'vue';
 
 import { customSheetSave, keyUser } from '../../assets/data'
-import { getCurrentUser, setCurrentUser, sheetGetList } from '../../assets/data'
+import { getCurrentUser, setCurrentUser } from '../../assets/data'
 import { getSheetBlank, getSheetDemo } from '../../assets/sheetData'
 import { getToastData, toastError, toastSuccess, toastWarning, toastInfo } from '../../assets/toast'
+import { TemplateData } from '../../assets/TemplateData'
 
 import Button from 'primevue/button'
 import { useConfirm } from 'primevue/useconfirm'
@@ -21,7 +22,7 @@ import Maintenance from './Maintenance.vue'
 
 const emits = defineEmits(['authentication','howDoesItWork','load','print','printOptions','save','toast','toggle'])
 
-const activeSheet = ref(null)
+const activeTemplate = ref(null)
 const confirm = useConfirm()
 const refreshPrint = ref(0)
 const showAbout = ref(false)
@@ -30,7 +31,7 @@ const showMaintenance = ref(false)
 const showMenu = ref(false)
 const showPrint = ref(false)
 const showSignIn = ref(false)
-const showSheets = ref(false)
+const showTemplates = ref(false)
 const user = ref(null)
 const pageMode = ref('load')
 let pageData = null;
@@ -80,7 +81,7 @@ function confirmAndLoad(title, sheet) {
       rejectLabel: 'No',
       acceptLabel: 'Yes, Replace',
       accept: () => {
-        activeSheet.value = sheet
+        activeTemplate.value = sheet
         emits('load', sheet)
       }
     })
@@ -141,7 +142,7 @@ function onPrintPrint(options) {
 function onSheetDialog(mode) {
   if( user.value) {
     // console.log("[Menu.onSaveAs] valid request")
-    showSheets.value = true;
+    showTemplates.value = true;
     pageMode.value = mode
   } else {
     showToast('Squawk and Ident','Please sign in to use custom sheets', toastWarning)
@@ -152,7 +153,7 @@ function onSheetDialog(mode) {
  * Hide the sheet dialog
  */
 function onTemplateClose() {
-  showSheets.value = false;
+  showTemplates.value = false;
 }
 
 // a sheet has been deleted, it should be removed from the user
@@ -170,7 +171,7 @@ function onTemplateDelete(template) {
  */
  function onTemplateLoad(template) {
   // console.log('[menu.onPageLoad]',pageName)
-  showSheets.value = false
+  showTemplates.value = false
   const title = 'Load Template "' + template.name + '"'
   confirmAndLoad( title, template)
 }
@@ -181,7 +182,7 @@ function onTemplateDelete(template) {
  */
  async function onTemplateSave(template) {
   // console.log('[Menu.onSheetSave]',JSON.stringify(template))
-  showSheets.value = false;
+  showTemplates.value = false;
   try {
       template.data = pageData;
       await customSheetSave(template).then(returnSheet => {
@@ -246,7 +247,7 @@ function userChange(newUser, save=true) {
 
     setTimeout( async () => {
       // console.log( '[data.setCurrentUser] refreshing sheets')
-      const templates = await sheetGetList();
+      const templates = await TemplateData.getList();
       // console.log('[Menu.onMounted] sheets', JSON.stringify(sheets))
       userUpdateSheets(templates)
     }, 2000)
@@ -255,7 +256,6 @@ function userChange(newUser, save=true) {
       setCurrentUser(null)
       // remove the cookie
       localStorage.removeItem(keyUser)
-
     }
   }
 
@@ -287,7 +287,7 @@ function userUpdateSheets(newList) {
     <About v-model:visible="showAbout" @close="showAbout=false" @hdiw="onHdiw"/>
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
       @authentication="onAuthentication" />
-    <Templates v-model:visible="showSheets" :mode="pageMode" :user="user" :sheet="activeSheet"
+    <Templates v-model:visible="showTemplates" :mode="pageMode" :user="user" :sheet="activeTemplate"
       @close="onTemplateClose"
       @delete="onTemplateDelete"
       @load="onTemplateLoad" 
