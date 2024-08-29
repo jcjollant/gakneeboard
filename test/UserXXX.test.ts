@@ -4,6 +4,8 @@ import { UserTools } from '../backend/UserTools'
 import { postgresUrl } from './constants'
 import { jcHash, jcUserId, jcToken, jcName, jcEmail } from './constants'
 import { UserDao } from '../backend/UserDao';
+import { UserMiniView } from '../backend/models/UserMiniView';
+import exp from 'constants';
 
 process.env.POSTGRES_URL=postgresUrl
 
@@ -12,14 +14,16 @@ const jc = { 'source':'google','email':jcEmail}
 describe( 'User', () => {
     test('Encryption', async () => {
         expect(User.createSha256(jc)).toBe(jcHash)
+    })
+    test('Constructor', () => {
         const userJc = new User('google', jcEmail)
         expect(userJc.sha256).toBe(jcHash)
-    })
-    
+        expect(userJc.maxTemplates).toBe(User.defaultMaxTemplates)
+    })    
 })
 
 describe('UserTool', () => {
-    test('Authenticate and getMini', async () => {
+    test('Authenticate and UserMiniView', async () => {
         const body = { 'source':'google', 'token': jcToken }
         const user = await UserTools.authenticate(body)
         // console.log('user '+JSON.stringify(user))
@@ -27,7 +31,7 @@ describe('UserTool', () => {
         expect(user.email).toBe(jcEmail)
         expect(user.sha256).toBe(jcHash)
 
-        const miniUser = user.getMini();
+        const miniUser:UserMiniView = new UserMiniView(user,[])
         // should only have sha256 and name
         expect(miniUser.sha256).toBe(jcHash)
         expect(miniUser.name).toBe(jcName)

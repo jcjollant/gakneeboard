@@ -9,7 +9,7 @@ import { UserTools } from './UserTools'
 import { Publication } from './models/Publication'
 import { PublicationDao } from './PublicationDao'
 import { Template } from './models/Template'
-import { SheetDao } from './SheetDao'
+import { TemplateDao } from './TemplateDao'
 import { Sunlight } from './models/Sunlight'
 import { UserMiniView } from './models/UserMiniView'
 
@@ -29,7 +29,7 @@ export class GApi {
     public static async authenticate(body:any):Promise<UserMiniView> {
         try {
             const user:User = await UserTools.authenticate(body);
-            const templates:Template[] = await SheetDao.getListForUser(user.id);
+            const templates:Template[] = await TemplateDao.getListForUser(user.id);
             const output:UserMiniView = new UserMiniView(user, templates);
             return output;
         } catch(e) {
@@ -237,79 +237,77 @@ export class GApi {
 
     public static async publicationGet(code:string):Promise<Template|undefined> {
         const pub:Publication|undefined = await PublicationDao.findByCode(code)
-        if(!pub || !pub.sheetid) throw new GApiError(404, 'Publication not found');
-        return SheetDao.readById(pub.sheetid)
+        if(!pub || !pub.templateId) throw new GApiError(404, 'Publication not found');
+        return TemplateDao.readById(pub.templateId)
     }
 
     /**
      * Delete a sheet by id and user id
-     * @param sheetId 
+     * @param templateId 
      * @param userId 
      * @returns 
      */
-    public static async templateDelete(sheetId:number, userId:number):Promise<string> {
-        const sheet:Template|undefined = await SheetDao.readById(sheetId, userId)
+    public static async templateDelete(templateId:number, userId:number):Promise<string> {
+        const template:Template|undefined = await TemplateDao.readById(templateId, userId)
         // console.log( '[gapi.sheetDelete] ' + sheetId + ' -> ' + output)
-        if( sheet) {
-            await SheetDao.delete(sheetId, userId)
-            return sheet.name
+        if( template) {
+            await TemplateDao.delete(templateId, userId)
+            return template.name
         }
-        throw new GApiError(404, 'Sheet not found');
+        throw new GApiError(404, 'Template not found');
     }
 
     /**
      * Gets a sheet by id and user id
-     * @param sheetId 
+     * @param templateId 
      * @param userId 
      * @returns 
      * @throws 404 if not found
      */
-    public static async templateGet(sheetId:number,userId:number):Promise<Template> {
-        const sheet:Template|undefined = await SheetDao.readById(sheetId, userId)
+    public static async templateGet(templateId:number,userId:number):Promise<Template> {
+        const template:Template|undefined = await TemplateDao.readById(templateId, userId)
         // console.log( '[gapi.sheetGet] ' + sheetId + ' -> ' + output)
-        if( !sheet) throw new GApiError(404, 'Sheet not found')
+        if( !template) throw new GApiError(404, 'Template not found')
         // is this published?
-        const pub:Publication|undefined = await PublicationDao.findBySheet(sheet.id)
-        sheet.setPublication(pub);
+        const pub:Publication|undefined = await PublicationDao.findByTemplate(template.id)
+        template.setPublication(pub);
         
-        return sheet;
+        return template;
     }
 
     public static async templateGetList(userId:number):Promise<Template[]> {
-        const sheets:Template[] = await SheetDao.getListForUser(userId)
-        // console.log( '[gapi.sheetGetList] ' + output)
-        return sheets
+        const templates:Template[] = await TemplateDao.getListForUser(userId)
+        return templates
     }
 
     /**
-     * Save a new sheet in DB or update it if it's existing
+     * Save a new template in DB or update it if it's existing
      * @param userSha256 
      * @param name 
      * @param data 
-     * @returns Sheet name
+     * @returns Template name
      * @throws
      */
-    public static async templateSave(userSha256:string, sheet:Template):Promise<Template> {
-        // console.log( '[gapi.sheetSave]', user, name, data);
+    public static async templateSave(userSha256:string, template:Template):Promise<Template> {
         const userId:number|undefined = await UserDao.find(userSha256)
         // update record
         if( !userId) throw new GApiError( 400,"Invalid user");
 
-        const newSheet:Template = await SheetDao.createOrUpdate(sheet, userId)
-        if(sheet.publish) {
+        const newTemplate:Template = await TemplateDao.createOrUpdate(template, userId)
+        if(template.publish) {
             // we need to create a new publication
-            const newPublication = await PublicationDao.publish(newSheet.id)
-            // console.log('[GApi.sheetSave] publication', JSON.stringify(newPublication)); 
+            const newPublication = await PublicationDao.publish(newTemplate.id)
+            // console.log('[GApi.templateSave] publication', JSON.stringify(newPublication)); 
             if(!newPublication) throw new GApiError(500, "Publication failed");
-            newSheet.code = newPublication.code;
+            newTemplate.code = newPublication.code;
         } else {
-            // we need to unpublish that sheet
-            await PublicationDao.unpublish(newSheet.id)
-            newSheet.code = undefined;
+            // we need to unpublish that template
+            await PublicationDao.unpublish(newTemplate.id)
+            newTemplate.code = undefined;
         }
-        // otherwise, sheet publication status is current
-        // console.log('[GApi.sheetSave]', JSON.stringify(newSheet)); 
-        return newSheet;
+        // otherwise, template publication status is current
+        // console.log('[GApi.templateSave]', JSON.stringify(newSheet)); 
+        return newTemplate;
     }
 
     /**

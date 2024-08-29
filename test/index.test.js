@@ -1,6 +1,6 @@
 const axios = require('axios')
 
-import { jcHash, jcHash2, currentAirportModelVersion, currentAsOf } from './constants.ts'
+import { jcHash, jcHash2, currentAirportModelVersion, currentAsOf, jcTestSheetId as jcTestTemplateId, samplePublicationCode } from './constants.ts'
 import { version } from '../backend/constants.js'
 import { Maintenance } from '../backend/Maintenance.ts'
 
@@ -42,7 +42,7 @@ describe('index', () => {
             })
     })
 
-    test('Get Maintenance', async () => {
+    test('Maintenance invalid code', async () => {
         await axios.get( apiRootUrl + 'maintenance/invalidcode')
             .then( () => {
                 expect(true).toBe(false)
@@ -53,6 +53,9 @@ describe('index', () => {
                 expect(error.response.status).toBeDefined();
                 expect(error.response.status).toBe(404);
             })
+    })
+
+    test('Get Maintenance', async () => {
         await axios.get( apiRootUrl + 'maintenance/' + Maintenance.codeTest)
             .then( (res) => {
                 expect(res.data).toBeDefined();
@@ -99,6 +102,31 @@ describe('index', () => {
     //             expect(true).toBe(false)
     //         })
     // })
+
+    test('Templates and publications', async () => {
+        await axios.get( apiRootUrl + 'template/' + jcTestTemplateId)
+            .then( (res) => {
+                expect(res.data).toBeDefined();
+            })
+        .catch( () => {
+            expect(true).toBe(false)
+        })
+        await axios.get( apiRootUrl + 'templates')
+            .then( (res) => {
+                expect(res.data).toBeDefined();
+            })
+        .catch( () => {
+            expect(true).toBe(false)
+        })
+
+        await axios.get( apiRootUrl + 'publication/' + samplePublicationCode)
+            .then( (res) => {
+                expect(res.data).toBeDefined();
+            })
+        .catch( () => {
+            expect(true).toBe(false)
+        })
+    })
 
     // test('Create custom page', async () => {
     // })

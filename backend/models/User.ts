@@ -6,8 +6,11 @@ export class User {
     email:string;
     sha256:string;
     name:string;
+    maxTemplates:number;
 
-    constructor( source:string, email:string) {
+    public static defaultMaxTemplates:number = 5;
+
+    constructor( source:string, email:string, maxTemplates:number|undefined=undefined) {
         this.id = 0;
         this.source = source;
         this.email = email;
@@ -17,6 +20,7 @@ export class User {
         }
         this.sha256 = User.createSha256(user)
         this.name = ""
+        this.maxTemplates = maxTemplates ? maxTemplates : User.defaultMaxTemplates;
     };
 
     // public getSha256():string {
@@ -27,11 +31,6 @@ export class User {
         return createHash('sha256').update(JSON.stringify(input)).digest('hex')
     }
  
-    public getMini():any {
-        const miniUser = { sha256: this.sha256 , name: this.name}
-        return miniUser;
-    }
-
     public setName( newName:string) {
         this.name = newName;
     }    

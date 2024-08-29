@@ -1,6 +1,6 @@
 import { Publication } from "./Publication";
 
-export class Sheet {
+export class Template {
     id:number;
     name:string;
     data:any;

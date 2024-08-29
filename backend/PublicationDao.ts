@@ -19,24 +19,25 @@ export class PublicationDao {
     }
     /**
      * 
-     * @param sheetid 
+     * @param templateId 
      * @returns undefined if a publication code could not be allocated, otherwise, the new publication
      */
 
-    public static async publish(sheetid:number):Promise<Publication|undefined> {
-        let result = await sql`SELECT id,code FROM publications WHERE sheetid = ${sheetid}`
+    public static async publish(templateId:number):Promise<Publication|undefined> {
+        let result = await sql`SELECT id,code FROM publications WHERE sheetid = ${templateId}`
         if( result.rowCount == 0) {
             // find the first available row
             result = await sql`SELECT id,code FROM publications WHERE sheetid IS NULL LIMIT 1`
             if(result.rowCount == 0) return undefined;
-            await sql`UPDATE publications SET sheetid = ${sheetid} WHERE id = ${result.rows[0]['id']}`
+            await sql`UPDATE publications SET sheetid = ${templateId} WHERE id = ${result.rows[0]['id']}`
         } 
         // create a publication from the result
-        return new Publication(result.rows[0]['id'], result.rows[0]['code'], sheetid)
+        return new Publication(result.rows[0]['id'], result.rows[0]['code'], templateId)
     }
 
-    public static async unpublish(sheetid:number):Promise<void> {
-        await sql`UPDATE publications SET sheetid = NULL WHERE sheetid = ${sheetid}`
+    // unpublish a teamplate (by template Id)
+    public static async unpublish(templateId:number):Promise<void> {
+        await sql`UPDATE publications SET sheetid = NULL WHERE sheetid = ${templateId}`
     }
 
     /**
@@ -52,12 +53,12 @@ export class PublicationDao {
 
     /**
      * Look for a publication for a given sheetid
-     * @param sheetid Sheet of interest
-     * @returns A publication or undefined if that sheet was not found
+     * @param templateId Template of interest
+     * @returns A publication or undefined if that template was not found
      */
-    public static async findBySheet(sheetid:number):Promise<Publication|undefined> {
-        let result = await sql`SELECT id,code FROM publications WHERE sheetid = ${sheetid}`
+    public static async findByTemplate(templateId:number):Promise<Publication|undefined> {
+        let result = await sql`SELECT id,code FROM publications WHERE sheetid = ${templateId}`
         if( result.rowCount == 0) return undefined;
-        return new Publication(result.rows[0]['id'], result.rows[0]['code'], sheetid)
+        return new Publication(result.rows[0]['id'], result.rows[0]['code'], templateId)
     }
 }

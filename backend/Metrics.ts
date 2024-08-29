@@ -4,8 +4,8 @@ import { FeedbackDao } from "./FeedbackDao"
 import { AirportDao } from "./AirportDao";
 import { createTransport } from 'nodemailer'
 import { PublicationDao } from './PublicationDao'
-import { SheetDao } from "./SheetDao";
-import { Sheet } from "./models/Sheet";
+import { TemplateDao } from "./TemplateDao";
+import { Template } from "./models/Template";
 
 
 export class Metric {
@@ -39,15 +39,15 @@ export class Metrics {
         return new Metric('feedbacks', feedbackCount)
     }
 
-    static async sheets():Promise<Metric> {
-        const sheetsCount:number = await SheetDao.count()
-        return new Metric('sheets', sheetsCount)
+    static async templates():Promise<Metric> {
+        const templateCount:number = await TemplateDao.count()
+        return new Metric('templates', templateCount)
     }
 
-    static async sheetDetails():Promise<Metric[]> {
-        const sheets:Sheet[] = await SheetDao.getAllSheetData()
+    static async templateDetails():Promise<Metric[]> {
+        const templates:Template[] = await TemplateDao.getAllTemplateData()
 
-        const staleSheetCount = new Metric('staleSheetCount', 0)
+        const staleTemplateCount = new Metric('staleTemplateCount', 0)
 
         const totalPageCount = new Metric('totalPageCount', 0)
         const tilePageCount = new Metric('tilePageCount', 0)
@@ -65,13 +65,12 @@ export class Metrics {
         const notesTileCount = new Metric('notesTileCount', 0)
         const radiosTileCount = new Metric('radiosTileCount', 0)
         const sunlightTileCount = new Metric('sunlightTileCount', 0)
-        for(let sheet of sheets) {
-            if(sheet.data.length != 2) {
-                // console.log('sheet.data.length != 2 for', sheet.id)
-                staleSheetCount.addOne()
+        for(let template of templates) {
+            if(template.data.length != 2) {
+                staleTemplateCount.addOne()
                 continue
             }
-            for(let page of sheet.data) {
+            for(let page of template.data) {
                 if(page.type == 'tiles') {
                     tilePageCount.addOne()
                     for(let tile of page.data) {
@@ -110,7 +109,7 @@ export class Metrics {
         const allMetrics = [
             totalPageCount, tilePageCount, checklistPageCount, coverPageCount, selectionPageCount, navlogPageCount,
             totalTileCount, airportTileCount, atisTileCount, checklistTileCount, clearanceTileCount, fuelTileCount, notesTileCount, radiosTileCount, sunlightTileCount, 
-            staleSheetCount]
+            staleTemplateCount]
         return allMetrics
     }
 
@@ -163,8 +162,8 @@ export class Metrics {
                 Metrics.airports(), 
                 Metrics.feedbacks(),
                 Metrics.publicationsCheck(),
-                Metrics.sheetDetails(),
-                Metrics.sheets(),
+                Metrics.templateDetails(),
+                Metrics.templates(),
                 Metrics.users()
             ]).then( async allMetrics => {
             const data:any = {}
