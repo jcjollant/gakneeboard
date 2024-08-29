@@ -90,7 +90,7 @@ export class TemplateDao {
      * @param userId 
      * @returns list of found sheets
      */
-    public static async getListForUser(userId:number):Promise<Template[]> {
+    public static async getOverviewListForUser(userId:number):Promise<Template[]> {
         // console.log('[SheetDao.getListForUser] user', userId)
         return await sql`
             SELECT sheets.id as id,name,publications.code as code FROM sheets LEFT JOIN publications ON sheets.id=publications.sheetid WHERE user_id=${userId}
