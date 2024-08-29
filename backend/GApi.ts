@@ -29,7 +29,7 @@ export class GApi {
     public static async authenticate(body:any):Promise<UserMiniView> {
         try {
             const user:User = await UserTools.authenticate(body);
-            const templates:Template[] = await TemplateDao.getListForUser(user.id);
+            const templates:Template[] = await TemplateDao.getOverviewListForUser(user.id);
             const output:UserMiniView = new UserMiniView(user, templates);
             return output;
         } catch(e) {
@@ -44,7 +44,7 @@ export class GApi {
     public static async createCustomAirport(userSha256:string,airport:any) {
         // console.log('[gapi.createCustomAirport]', userSha256, airport)
         // resolve user
-        const userId = await UserDao.find(userSha256)
+        const userId = await UserDao.getIdFromHash(userSha256)
         // update record
         if( !userId) throw new GApiError(400,"Invalid User"); 
 
@@ -276,7 +276,7 @@ export class GApi {
     }
 
     public static async templateGetList(userId:number):Promise<Template[]> {
-        const templates:Template[] = await TemplateDao.getListForUser(userId)
+        const templates:Template[] = await TemplateDao.getOverviewListForUser(userId)
         return templates
     }
 
@@ -289,7 +289,7 @@ export class GApi {
      * @throws
      */
     public static async templateSave(userSha256:string, template:Template):Promise<Template> {
-        const userId:number|undefined = await UserDao.find(userSha256)
+        const userId:number|undefined = await UserDao.getIdFromHash(userSha256)
         // update record
         if( !userId) throw new GApiError( 400,"Invalid user");
 
@@ -316,6 +316,6 @@ export class GApi {
      * @returns User Id or undefined if not found
      */
     public static async userShaToId(sha256:string):Promise<number|undefined> {
-        return await UserDao.find(sha256)
+        return await UserDao.getIdFromHash(sha256)
     }
 }
