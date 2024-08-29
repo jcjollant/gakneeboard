@@ -154,7 +154,7 @@ async function onSheetSelected(sheet) {
   } else { // load or save
     // console.log('[Templates.onSheetSelected] load', JSON.stringify(sheet))
     fetching.value = true;
-    await Templates.get(sheet.id).then( sheet => {
+    await TemplateData.get(sheet.id).then( sheet => {
       // console.log('[Templates.fetchSheet]', JSON.stringify(sheet))
       changeTargetTemplate(sheet)
     }).catch( e => {
