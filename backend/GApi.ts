@@ -8,9 +8,10 @@ import { UserDao } from './UserDao'
 import { UserTools } from './UserTools'
 import { Publication } from './models/Publication'
 import { PublicationDao } from './PublicationDao'
-import { Sheet } from './models/Sheet'
+import { Template } from './models/Template'
 import { SheetDao } from './SheetDao'
 import { Sunlight } from './models/Sunlight'
+import { UserMiniView } from './models/UserMiniView'
 
 // Google API key
 
@@ -25,13 +26,11 @@ export class GApiError {
 
 export class GApi {
 
-    public static async authenticate(body:any):Promise<any> {
+    public static async authenticate(body:any):Promise<UserMiniView> {
         try {
             const user:User = await UserTools.authenticate(body);
-            const output:any = user.getMini();
-            // console.log('[gapi.authenticate]', JSON.stringify(output))
-            output.sheets = await SheetDao.getListForUser(user.id);
-            // console.log('[gapi.authenticate]', JSON.stringify(output))
+            const templates:Template[] = await SheetDao.getListForUser(user.id);
+            const output:UserMiniView = new UserMiniView(user, templates);
             return output;
         } catch(e) {
             let message = ''
@@ -236,7 +235,7 @@ export class GApi {
         return Adip.isMilitary(Number(freq))
     }
 
-    public static async sheetGetByCode(code:string):Promise<Sheet|undefined> {
+    public static async publicationGet(code:string):Promise<Template|undefined> {
         const pub:Publication|undefined = await PublicationDao.findByCode(code)
         if(!pub || !pub.sheetid) throw new GApiError(404, 'Publication not found');
         return SheetDao.readById(pub.sheetid)
@@ -248,8 +247,8 @@ export class GApi {
      * @param userId 
      * @returns 
      */
-    public static async sheetDelete(sheetId:number, userId:number):Promise<string> {
-        const sheet:Sheet|undefined = await SheetDao.readById(sheetId, userId)
+    public static async templateDelete(sheetId:number, userId:number):Promise<string> {
+        const sheet:Template|undefined = await SheetDao.readById(sheetId, userId)
         // console.log( '[gapi.sheetDelete] ' + sheetId + ' -> ' + output)
         if( sheet) {
             await SheetDao.delete(sheetId, userId)
@@ -265,8 +264,8 @@ export class GApi {
      * @returns 
      * @throws 404 if not found
      */
-    public static async sheetGet(sheetId:number,userId:number):Promise<Sheet> {
-        const sheet:Sheet|undefined = await SheetDao.readById(sheetId, userId)
+    public static async templateGet(sheetId:number,userId:number):Promise<Template> {
+        const sheet:Template|undefined = await SheetDao.readById(sheetId, userId)
         // console.log( '[gapi.sheetGet] ' + sheetId + ' -> ' + output)
         if( !sheet) throw new GApiError(404, 'Sheet not found')
         // is this published?
@@ -276,8 +275,8 @@ export class GApi {
         return sheet;
     }
 
-    public static async sheetGetList(userId:number):Promise<Sheet[]> {
-        const sheets:Sheet[] = await SheetDao.getListForUser(userId)
+    public static async templateGetList(userId:number):Promise<Template[]> {
+        const sheets:Template[] = await SheetDao.getListForUser(userId)
         // console.log( '[gapi.sheetGetList] ' + output)
         return sheets
     }
@@ -290,13 +289,13 @@ export class GApi {
      * @returns Sheet name
      * @throws
      */
-    public static async sheetSave(userSha256:string, sheet:Sheet):Promise<Sheet> {
+    public static async templateSave(userSha256:string, sheet:Template):Promise<Template> {
         // console.log( '[gapi.sheetSave]', user, name, data);
         const userId:number|undefined = await UserDao.find(userSha256)
         // update record
         if( !userId) throw new GApiError( 400,"Invalid user");
 
-        const newSheet:Sheet = await SheetDao.createOrUpdate(sheet, userId)
+        const newSheet:Template = await SheetDao.createOrUpdate(sheet, userId)
         if(sheet.publish) {
             // we need to create a new publication
             const newPublication = await PublicationDao.publish(newSheet.id)
