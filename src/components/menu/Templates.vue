@@ -9,10 +9,11 @@ import InputGroupAddon from "primevue/inputgroupaddon";
 import InputText from "primevue/inputtext";
 import SelectButton from "primevue/selectbutton"
 
-import { customSheetDelete, sheetGetByCode, sheetGetById, urlKneeboard } from "../../assets/data"
+import { customSheetDelete, urlKneeboard } from "../../assets/data"
 import { describePage, getTemplateDataFromName } from '../../assets/sheetData'
 import { sheetNameDemo, sheetNameDemoChecklist, sheetNameDemoNavlog, sheetNameDemoTiles } from '../../assets/sheetData'
 import { getToastData, toastError, toastSuccess } from '../../assets/toast'
+import { TemplateData } from '../../assets/TemplateData'
 
 const emits = defineEmits(["close","delete","load","save","toast"]);
 
@@ -129,7 +130,7 @@ function onNewTemplate() {
 
 async function onSheetFetchCode() {
   fetching.value = true;
-  await sheetGetByCode(templateCode.value).then( sheet => {
+  await TemplateData.getPublication(templateCode.value).then( sheet => {
     // console.log('[Templates.onSheetFetch] sheet', JSON.stringify(sheet))
     // showToast('Fetch', 'Sheet found')
     changeTargetTemplate(sheet)
@@ -153,7 +154,7 @@ async function onSheetSelected(sheet) {
   } else { // load or save
     // console.log('[Templates.onSheetSelected] load', JSON.stringify(sheet))
     fetching.value = true;
-    await sheetGetById(sheet.id).then( sheet => {
+    await Templates.get(sheet.id).then( sheet => {
       // console.log('[Templates.fetchSheet]', JSON.stringify(sheet))
       changeTargetTemplate(sheet)
     }).catch( e => {
