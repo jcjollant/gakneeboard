@@ -107,7 +107,7 @@ describe('Custom Templates', () => {
             console.log('Failed to update test Template ' + e)
             expect(false).toBeTruthy()
         })
-        await TemplateDao.getListForUser(jcUserId).then( async (templates:any) => {
+        await TemplateDao.getOverviewListForUser(jcUserId).then( async (templates:any) => {
             expect(templates.length).toBeGreaterThan(0)
             const Template0 = templates[0]
             expect(Template0.id).toBeDefined()
