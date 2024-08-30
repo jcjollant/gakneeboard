@@ -1,7 +1,7 @@
 export const version = 829.2
 
-export const apiRootUrl = 'https://ga-api-seven.vercel.app/'
-// export const apiRootUrl = 'http://localhost:3000/'
+// export const apiRootUrl = 'https://ga-api-seven.vercel.app/'
+export const apiRootUrl = 'http://localhost:3000/'
 
 export const urlBlog = 'https://gakneeboard.wordpress.com/'
 export const urlFacebookGroup = 'https://www.facebook.com/groups/1479675382917767'
