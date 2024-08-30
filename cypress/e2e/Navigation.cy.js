@@ -146,7 +146,11 @@ describe('Navigation', () => {
     // load page should open
     cy.get('[aria-label="Load"]').click()
     cy.get('.contentPlaceholder').contains('Select a template above')
-    // Check demo pages work
+
+    // Should have at least the 'Anchor' page
+    cy.get('[aria-label="Anchor"]').should('exist')
+
+    // Check demo pages description work
     cy.get('[aria-label="Default"]').click()
     cy.get('.templateDescription > :nth-child(2)').contains('Default Demo')
     cy.get('[aria-label="Tiles"]').click()
@@ -157,6 +161,24 @@ describe('Navigation', () => {
     cy.get('.templateDescription > :nth-child(2)').contains('Navlog Demo')
 
     // Do Not Load
+    cy.get('.p-button-link').click()
+
+    // Save the page into something disposable
+    cy.get('[aria-label="Save"]').click()
+    cy.get('.p-inputtext').type('Temp')
+    cy.get('[aria-label="Save Sheet"]').click()
+    // Now delete it
+    cy.get('[aria-label="Load"]').click()
+    // Delete mode
+    cy.get('.templateList > .p-button-icon-only').click()
+    cy.intercept({
+      method: 'DELETE',
+      url: '**/sheet/**',
+    }).as('deleteSheet');
+    // Delete Temp
+    cy.get('[aria-label="Temp"]').click()
+    cy.wait('@deleteSheet').its('response.statusCode').should('equal', 200)
+    // Close dialog
     cy.get('.p-button-link').click()
 
     // Check Sign out
