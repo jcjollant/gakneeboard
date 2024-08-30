@@ -117,12 +117,12 @@ function onToast(data) {
                         <i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(e.att=='+'),'pi-arrow-down-right attDesc':(e.att=='-'),'pi-arrow-right attCruise':(e.att!='+'&&e.att!='-')}"></i>
                     </div>
                     <div class="bl">{{ Formatter.legTime(e.lt) }}</div>
-                    <div class="bl fuel">{{ e.lf }}<span class="fuelRemaining">{{ Formatter.fuel(e.fr) }}</span></div>
+                    <div class="bl fuel" :class="{'fuelBingo': e.fr < navlog.fr}">{{ e.lf }}<span class="fuelRemaining">{{ Formatter.fuel(e.fr) }}</span></div>
                 </div>
                 <div class="legsGrid legsFooter">
                     <div class="totalDistance bl br bb">{{ Formatter.distance(navlog.td) }}</div>
                     <div class="totalTime bl bb">{{ Formatter.legTime(navlog.tt) }}</div>
-                    <div class="totalFuel bl bb">{{ Formatter.fuel(navlog.ft) }}</div>
+                    <div class="totalFuel bl bb" :class="{'fuelBingo': navlog.ft < navlog.fr}">{{ Formatter.fuel(navlog.ft) }}</div>
                 </div>
             </div>
             <div class="notes">Notes</div>
@@ -181,6 +181,10 @@ function onToast(data) {
 
 .fuel {
     position: relative;
+}
+.fuelBingo {
+    color:white;
+    background-color: orangered;
 }
 .fuelRemaining {
     font-size: 0.7rem;
@@ -272,6 +276,9 @@ function onToast(data) {
 .totalFuel {
     grid-column: 6;
     color: blue;
+}
+.totalFuel.fuelBingo {
+    color: white;
 }
 .totalGrid {
     display: grid;
