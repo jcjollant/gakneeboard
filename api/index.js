@@ -4,11 +4,10 @@ import cors from "cors";
 import { version } from '../backend/constants.js'
 import { GApi, GApiError } from '../backend/GApi'
 import { UserTools } from '../backend/UserTools'
-import { HealthCheck } from "../backend/HealthChecks";
 import { AirportView } from "../backend/models/AirportView";
 import { FeedbackDao } from "../backend/FeedbackDao";
 import { Maintenance } from '../backend/Maintenance'
-const port = 3002
+const port = 3000
 const app = express();
 
 app.use(cors())
@@ -213,7 +212,9 @@ app.get('/sunlight/:from/:to/:dateFrom/:dateTo?', async (req, res) => {
     }        
 })
 
-app.listen(port, () => console.log("[index] Server ready on port " + port));
+if(process.env.__VERCEL_DEV_RUNNING != "1") {
+    app.listen(port, () => console.log("[index] Server ready on port " + port));
+}
 
 /**
  * Prints an error in the console and send an error response
@@ -222,13 +223,12 @@ app.listen(port, () => console.log("[index] Server ready on port " + port));
  * @param {*} msg 
  */
 function catchError(res, e, msg) {
-    console.log( "[index] " + msg + " error " + JSON.stringify(e))
+    // console.log( "[index] " + msg + " error " + JSON.stringify(e))
     if( e instanceof GApiError) {
         res.status(e.status).send(e.message)
     } else {
         res.status(500).send(e)
     }
 }
-
 
 export default app;
