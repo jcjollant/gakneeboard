@@ -32,23 +32,27 @@ export class UserDao {
      * @throws Error if sha256 is missing
      */
 
-    public static async save(user:User):Promise<User> {
+    public static async save(user:User, overwrite:boolean=false):Promise<User> {
         // console.log( '[UserDao.save]  ' + JSON.stringify(user))
-    
-        if( !user.sha256) throw new Error('sha256 missing')
-        const result = await sql`SELECT id from Users WHERE sha256 = ${user.sha256}`;
-        // console.log( '[UserDao.save] match count ' + result.rowCount)
-        if(result.rowCount == 0) {
-            // console.log( '[UserDao.save] adding ' + user.sha256)
-            const insert = await sql`INSERT INTO Users (sha256,data,version) VALUES (${user.sha256},${JSON.stringify(user)},${this.modelVersion}) RETURNING id`
-            user.id = insert.rows[0].id
-            // console.log( '[UserDao.save] ' + user.sha256)
-        } else { // this user is known
-            // console.log( '[UserDao.save] known user ' + user.sha256)
-            user.id = result.rows[0].id
-            await sql`UPDATE Users SET data = ${JSON.stringify(user)}, version=${this.modelVersion} WHERE id = ${user.id}`
-        }
-        return user
+        return new Promise<User>(async (resolve, reject) => {
+            if( !user.sha256) throw new Error('sha256 missing')
+            const result = await sql`SELECT id from Users WHERE sha256 = ${user.sha256}`;
+            // console.log( '[UserDao.save] match count ' + result.rowCount)
+            if(result.rowCount == 0) {
+                // console.log( '[UserDao.save] adding ' + user.sha256)
+                const insert = await sql`INSERT INTO Users (sha256,data,version) VALUES (${user.sha256},${JSON.stringify(user)},${this.modelVersion}) RETURNING id`
+                user.id = insert.rows[0].id
+                // console.log( '[UserDao.save] ' + user.sha256)
+            } else if( overwrite){ // this user is known
+                // console.log( '[UserDao.save] known user ' + user.sha256)
+                user.id = result.rows[0].id
+                await sql`UPDATE Users SET data = ${JSON.stringify(user)}, version=${this.modelVersion} WHERE id = ${user.id}`
+            } else {
+                reject('Cannot save existing user without overwrite')
+                return
+            }
+            resolve( user)
+        })
     }
 
     public static async count():Promise<number> {
