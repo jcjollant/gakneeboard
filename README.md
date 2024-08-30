@@ -18,7 +18,8 @@ Run the test suite:
 
 # Done
 ## 8/29/2024
-* New format for How Does it Work
+1) New format for How Does it Work
+2) Improved maxTemplate processing
 ## 8/27/2024
 * Renamed Sheets to Templates
 * Save page is also truncated
