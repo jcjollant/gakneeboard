@@ -2,11 +2,10 @@
 import { watch } from 'vue';
 import { ref, onMounted } from 'vue';
 
-import { customSheetSave, keyUser } from '../../assets/data'
-import { getCurrentUser, setCurrentUser } from '../../assets/data'
+import { customSheetSave } from '../../assets/data'
+import { newCurrentUser } from '../../assets/data'
 import { getSheetBlank, getSheetDemo } from '../../assets/sheetData'
 import { getToastData, toastError, toastSuccess, toastWarning, toastInfo } from '../../assets/toast'
-import { TemplateData } from '../../assets/TemplateData'
 
 import Button from 'primevue/button'
 import { useConfirm } from 'primevue/useconfirm'
@@ -49,7 +48,7 @@ function loadProps( props) {
 }
 
 onMounted( () => {
-  setTimeout( () => userChange(getCurrentUser(), false), 1500)
+  newCurrentUser.addListener(onUserUpdate)
   
   loadProps(props)
 })  
@@ -92,7 +91,6 @@ function onAuthentication(newUser) {
   // console.log('[Menu.onAuthentication] ' + JSON.stringify(userParam))
   showSignIn.value = false
   if( newUser) {
-    userChange(newUser)
     emits('toast', getToastData( 'Clear', 'Welcome ' + newUser.name))
   } else {
     emits('toast', getToastData('Engine Roughness', 'Authentication failed', toastWarning));  
@@ -113,7 +111,6 @@ function onHdiw() {
 
 // maintenance user
 function onMaintenance() {
-  userChange(getCurrentUser(), false)  
   showMaintenance.value = false;
 }
 
@@ -158,10 +155,7 @@ function onTemplateClose() {
 
 // a sheet has been deleted, it should be removed from the user
 function onTemplateDelete(template) {
-    if(!user.value || !user.value.sheets) return;
-
-    const newList = user.value.sheets.filter( s => s.id != template.id)
-    userUpdateSheets(newList);
+  newCurrentUser.removeTemplate(template.id)
     showToast('Clear', 'Template "' + template.name + '" deleted')
 }
 
@@ -192,7 +186,7 @@ function onTemplateDelete(template) {
           message += '\nShare code is ' + returnSheet.code
         }
         showToast('Clear', message)
-        userUpdateSheets(getCurrentUser().sheets)
+        newCurrentUser.updateTemplate(template.id)
         emits('save', template)
       })
   } catch( e) {
@@ -208,7 +202,9 @@ function onSignOut() {
       rejectLabel: 'Stay in',
       acceptLabel: 'Ok',
       accept: () => {
-        userChange(null)
+        // logout and remo
+        newCurrentUser.logout()
+
         // reload the page
         location.reload()
       }
@@ -219,6 +215,11 @@ function onToast(data) {
   emits('toast', data)
 }
 
+function onUserUpdate(currentUser) {
+  // console.log('[Menu.onUserUpdate]', JSON.stringify(currentUser))
+  user.value = currentUser
+}
+
 function showToast( summary, detail, severity=toastSuccess) {
   emits('toast', getToastData(summary, detail, severity))
 }
@@ -227,46 +228,6 @@ function showToast( summary, detail, severity=toastSuccess) {
 function toggleMenu() {
     showMenu.value = !showMenu.value;
     emits('toggle', showMenu.value)
-}
-
-/**
- * A new user should be considered
- * @param {*} newUser 
- * @param {*} save Save Cookie and update user in data.
- */
-function userChange(newUser, save=true) {
-  user.value = newUser
-
-  // request sheets after waiting 2 seconds
-  if(newUser) {
-    // save the cookie
-    if(save) {
-      setCurrentUser(newUser)
-      localStorage.setItem(keyUser,JSON.stringify(newUser))
-    }
-
-    setTimeout( async () => {
-      // console.log( '[data.setCurrentUser] refreshing sheets')
-      const templates = await TemplateData.getList();
-      // console.log('[Menu.onMounted] sheets', JSON.stringify(sheets))
-      userUpdateSheets(templates)
-    }, 2000)
-  } else {
-    if(save) {
-      setCurrentUser(null)
-      // remove the cookie
-      localStorage.removeItem(keyUser)
-    }
-  }
-
-}
-
-function userUpdateSheets(newList) {
-  if(!user.value) return;
-  const tempUser = JSON.parse(JSON.stringify(user.value))
-  tempUser.sheets = newList;
-  user.value = tempUser
-  // console.log('[Menu.userUpdateSheets] new list', JSON.stringify(newList))
 }
 
 </script>

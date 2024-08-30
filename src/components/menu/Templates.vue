@@ -27,10 +27,9 @@ const props = defineProps({
 
 
 function loadProps(props) {
+    // console.log('[Sheets.loadProps]', JSON.stringify(props))
   if( props.user && props.user.sheets) {
-    if( props.user.sha256 == 'bfaa2eb49bf63f41c05a016e03653fe2d7f8bf196ba6fb3f3340d3dcd7016770') maxTemplateCount = 20
     templates.value = props.user.sheets
-    // console.log('[Sheets.loadProps]', JSON.stringify(sheets.value))
   }
   targetTemplate.value = props.sheet;
 }
@@ -50,13 +49,11 @@ const pubPublic = 'Public'
 const pubPrivate = 'Private'
 const publish = ref(pubPrivate)
 const templateNameText = ref('')
-const templates = ref([])
 const deleteMode = ref(false)
 const templateCode = ref('')
 const targetTemplate = ref(null)
 const fetching = ref(false)
 const directLink = ref('')
-let maxTemplateCount = 10
 
 function changeTargetTemplate(newTemplate) {
   fetching.value = false;
@@ -140,7 +137,7 @@ async function onSheetFetchCode() {
   }) 
 }
 
-async function onSheetSelected(sheet) {
+async function onTemplateSelected(sheet) {
   // console.log('[Sheets.onSheetSelected] deleteMode', deleteMode.value,'mode', props.mode)
   if(deleteMode.value) {
     await customSheetDelete(sheet).then( () => {
@@ -178,14 +175,14 @@ function showToast(summary,details,severity=toastSuccess) {
 <template>
   <Dialog modal :header="mode=='load'?'Load Template':'Save Template'" style="width:45rem">
     <div v-if="mode=='save'">
-      <FieldSet :legend="'Your'+(templates.length?(' '+templates.length):'')+' Templates'">
-        <div v-if="templates.length" class="sheetAndToggle">
+      <FieldSet :legend="'Your'+(user.templates.length?(' '+user.templates.length):'')+' Templates'">
+        <div v-if="user.templates.length" class="sheetAndToggle">
           <div class="templateList">
-            <Button v-for="sheet in templates" :label="getTemplateName(sheet)" 
+            <Button v-for="t in user.templates" :label="getTemplateName(t)" 
               :icon="deleteMode?'pi pi-times':'pi pi-copy'" 
               :severity="deleteMode?'danger':'primary'"
-              :title="(deleteMode?'Delete':'Overwrite')+' \''+sheet.name+'\''"
-              @click="onSheetSelected(sheet)"></Button>
+              :title="(deleteMode?'Delete':'Overwrite')+' \''+t.name+'\''"
+              @click="onTemplateSelected(t)"></Button>
             <Button title="Toggle delete mode"
               :severity="deleteMode?'primary':'danger'" 
               :icon="deleteMode?'pi pi-copy':'pi pi-trash'"
@@ -220,7 +217,7 @@ function showToast(summary,details,severity=toastSuccess) {
           </div>
         </div>
       </FieldSet>
-      <label v-if="templates.length > maxTemplateCount || (templates.length==maxTemplateCount && !(targetTemplate?.id))" class="experiment">We are currently experimenting with a limit of {{ maxTemplateCount }} templates</label>
+      <label v-if="user.templates.length >= user.maxTemplateCount || (user.templates.length==user.maxTemplateCount && !(targetTemplate?.id))" class="experiment">We are currently experimenting with a limit of {{ user.maxTemplateCount }} templates</label>
       <div v-else class="actionDialog gap-2">
         <Button label="Do Not Save" @click="onButtonClose" link></Button>
         <Button :label="targetTemplate?.id ? 'Overwrite Sheet' : 'Save Sheet'" 
@@ -230,13 +227,13 @@ function showToast(summary,details,severity=toastSuccess) {
     </div>
   <div v-else><!-- load -->
     <FieldSet legend="Your Templates">
-      <div v-if="templates.length" class="sheetAndToggle">
+      <div v-if="user.templates.length" class="sheetAndToggle">
         <div class="templateList">
-          <Button v-for="sheet in templates" :label="getTemplateName(sheet)" 
+          <Button v-for="t in user.templates" :label="getTemplateName(t)" 
             :icon="deleteMode?'pi pi-times':'pi pi-copy'" 
             :severity="deleteMode?'danger':'primary'"
-            :title="(deleteMode?'Delete':'Load')+' \''+sheet.name+'\''"
-            @click="onSheetSelected(sheet)"></Button>
+            :title="(deleteMode?'Delete':'Load')+' \''+t.name+'\''"
+            @click="onTemplateSelected(t)"></Button>
           <Button title="Toggle delete mode"
             :severity="deleteMode?'primary':'danger'" 
             :icon="deleteMode?'pi pi-copy':'pi pi-trash'"
@@ -308,7 +305,9 @@ function showToast(summary,details,severity=toastSuccess) {
   display: flex;
   gap:5px;
 }
-
+.contentPlaceholder {
+  height:4rem;
+}
 .experiment {
   color:brown;
   font-size: 0.8rem;

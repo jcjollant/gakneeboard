@@ -3,7 +3,7 @@
 import { onBeforeMount, onMounted,ref} from 'vue'
 import { inject } from "@vercel/analytics"
 
-import { duplicate, getBackend, keyUser, reportError, setCurrentUser } from './assets/data.js'
+import { duplicate, getBackend, newCurrentUser, reportError } from './assets/data.js'
 import { backend, version } from './assets/data.js'
 import { EditorAction } from './assets/Editor.ts'
 import { getSheetDemoTiles, getSheetLocal, localSheetSave, pageDataBlank, readPageFromClipboard } from './assets/sheetData'
@@ -82,10 +82,7 @@ function onCloseHowDoesItWork() {
 // Before the app starts, we request backend information, load user and potentially show how does it work
 onBeforeMount(()=>{
   // activate the last known user
-  const user = JSON.parse(localStorage.getItem(keyUser))
-  if( user) {
-    setCurrentUser( user)
-  }
+  newCurrentUser.restore()
 
   // console.log('[App.onBeforeMount]')
   getBackend().then(() => {

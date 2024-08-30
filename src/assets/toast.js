@@ -8,7 +8,7 @@ export function getToastData(summary,detail,severity=toastSuccess,life=3000) {
 }
 
 export function getToastError(summary,detail,life=3000) {
-    return { severity: toastSevError, summary: summary, detail: detail, life: life}
+    return { severity: toastError, summary: summary, detail: detail, life: life}
 }
 
 export function emitToast(emits, title,message, life=3000) {

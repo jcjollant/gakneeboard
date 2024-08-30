@@ -1,6 +1,105 @@
+import { LocalStore } from "./LocalStore";
+
 export class CurrentUser {
+    loggedIn:boolean
     sha256:string;
     name:string;
-    promise:Promise<CurrentUser>;
     templates:any[]
+    maxTemplateCount:number;
+    listenners:{(user: CurrentUser):void}[];
+
+
+    constructor() {
+        // console.log('[CurrentUser.constructor] constructor called')
+        this.loggedIn = false;
+        this.sha256 = "";
+        this.name = "";
+        this.templates = [];
+        this.maxTemplateCount = 0;
+        this.listenners = [];
+    }
+
+    addListener(listener:(user: CurrentUser)=>void) {
+      this.listenners.push(listener)
+      // console.log('[CurrentUser.addListener] added a listener', this.listenners.length)
+    }
+
+    login(data:any) {
+      // console.log('[CurrentUser.login] logging in')
+      this.loggedIn = true;
+      this.update(data)
+      localStorage.setItem(LocalStore.user, JSON.stringify(data))
+    }
+
+    logout() {
+        this.loggedIn = false;
+        this.sha256 = "";
+        this.name = "";
+        this.templates = [];
+        localStorage.removeItem(LocalStore.user)
+    }
+
+    removeTemplate(id:number) {
+      this.templates = this.templates.filter((t) => t.id !== id);
+      // no need to resort, just remove the entry
+    }
+
+    restore() {
+      // attempt to restore user from localstore
+      let lsUser:string|null = localStorage.getItem(LocalStore.user);
+      if(!lsUser) {
+        // second chance with old key
+        lsUser = localStorage.getItem(LocalStore.userOld);
+        if(lsUser) {
+          // refresh key
+          localStorage.removeItem(LocalStore.userOld)
+          localStorage.setItem(LocalStore.user, lsUser)
+        }
+      }
+
+      if( lsUser) {
+        this.login(JSON.parse(lsUser))
+      }
+    }
+
+    sortTemplates() {
+      if(this.templates && this.templates.length > 2) {
+        this.templates.sort((a, b) => a.name.localeCompare(b.name));
+      }
+    }
+
+    update( data:any) {
+      // console.log('[CurrentUser.update] updating', data)
+      if(data) {
+          this.sha256 = data.sha256;
+          this.name = data.name;
+          this.templates = data.templates ? data.templates : [];
+          this.sortTemplates()
+          this.maxTemplateCount = Number(data.maxTemp ? data.maxTemp : 0);
+
+          // notify listeners
+          // console.log('[CurrentUser.update] notifying listeners', this.listenners.length)
+          for(const listener of this.listenners) {
+            listener(this)
+          }
+      }
+    }
+
+    updateTemplate(updatedTemplate:any) {
+      // console.log('[data.customSheetSave] sheet saved', JSON.stringify(responseSheet))
+      // update that sheet in currentUser.sheets if it exists
+      let index = -1
+      if( updatedTemplate.id != 0 && this.templates.length > 0) {
+        index = this.templates.findIndex( t => t.id == updatedTemplate.id)
+      }
+      // add new template or or update existing sheet
+      if( index == -1) {
+        this.templates.push(updatedTemplate)
+      } else {
+        // update existing entry
+        this.templates[index] = updatedTemplate;
+      }
+      this.sortTemplates()
+    }
+
 }

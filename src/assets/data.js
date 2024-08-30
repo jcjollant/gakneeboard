@@ -1,8 +1,7 @@
 export const version = 829
-export const keyUser = 'kb-user'
 
 export const apiRootUrl = 'https://ga-api-seven.vercel.app/'
-// const apiRootUrl = 'http://localhost:3000/'
+// export const apiRootUrl = 'http://localhost:3000/'
 
 export const urlBlog = 'https://gakneeboard.wordpress.com/'
 export const urlFacebookGroup = 'https://www.facebook.com/groups/1479675382917767'
@@ -18,21 +17,17 @@ import { Airport } from './Airport.ts'
 import axios from 'axios'
 import { isDefaultName } from './sheetData.js'
 import { Backend } from './Backend.ts'
-// import { CurrentUser } from './CurrentUser.ts'
+import { CurrentUser } from './CurrentUser.ts'
 
 const contentTypeJson = { headers: {'Content-Type':'application/json'} }
 // const contentTypeTextPlain = { headers: {'Content-Type':'text/plain'} }
 const contentType = contentTypeJson;
-let currentUser = null
+// let currentUser = null
 let airports = {}
 let pendingCodes = []
 let sunlightCache = {}
-// export let backendVersion = null
-// export let currentAirportEffectiveDate = null
-// let effectiveDatePromise = null
-// let backendPromise = null
 export const backend = new Backend()
-// export const newCurrentUser = new CurrentUser()
+export const newCurrentUser = new CurrentUser()
 
 function airportCurrent( airport) {
   if( !backend.ready && !airport) return false;
@@ -51,8 +46,8 @@ export async function authenticate( source, token) {
         // remove unknown airports because some may be due to unauhtenticated user
         removeUnknowAirports()
 
-        currentUser = response.data
-        resolve(currentUser)
+        newCurrentUser.login( response.data)
+        resolve(newCurrentUser)
       })
       .catch( e => {
         reportError( '[data.authenticate] ' + JSON.stringify(e))
@@ -71,8 +66,9 @@ export function duplicate(source) {
  * @returns 
  */
 export async function getUrlWithUser(url) {
-  if( currentUser) {
-    return axios.get(url,{params:{user:currentUser.sha256}})
+  console.log('[data.getUrlWithUser]', JSON.stringify(newCurrentUser))
+  if( newCurrentUser.loggedIn) {
+    return axios.get(url,{params:{user:newCurrentUser.sha256}})
   } else {
     return axios.get(url)
   }
@@ -80,18 +76,18 @@ export async function getUrlWithUser(url) {
 
 /**
  * Delete custom sheet
- * @param {*} sheet 
+ * @param {*} template 
  */
-export async function customSheetDelete(sheet) {
-  const url = apiRootUrl + 'sheet/' + sheet.id
-  if( !currentUser) {
+export async function customSheetDelete(template) {
+  const url = apiRootUrl + 'sheet/' + template.id
+  if( !newCurrentUser.loggedIn) {
     throw new Error('Cannot delete sheet without user')
   }
-  await axios.delete(url,{params:{user:currentUser.sha256}})
+  await axios.delete(url,{params:{user:newCurrentUser.sha256}})
     .then( response => {
       // console.log('[data.customSheetDelete] sheet deleted', sheet.id)
-      currentUser.sheets = currentUser.sheets.filter( s => s.id != sheet.id)
-      return sheet
+      newCurrentUser.removeTemplate(template.id)
+      return template
     })
     .catch( error => {
       reportError('[data.customSheetDelete] error ' + JSON.stringify(error))
@@ -105,36 +101,22 @@ export async function customSheetDelete(sheet) {
  * @param {*} data 
  * @returns Created sheet on success or null on failure
  */
-export async function customSheetSave(sheet) {
-  const url = apiRootUrl + 'sheet'
-  if( !currentUser) {
-    throw new Error('Cannot save sheet without user')
+export async function customSheetSave(template) {
+  const url = apiRootUrl + 'template'
+  if( !newCurrentUser.loggedIn) {
+    throw new Error('Cannot save template without user')
   }
-  if( isDefaultName(sheet.name)) {
-    throw new Error('Sheet name conflicts with defaults')
+  if( isDefaultName(template.name)) {
+    throw new Error('Template name conflicts with defaults')
   }
-  const payload = {user:currentUser.sha256, sheet:sheet}
+  const payload = {user:newCurrentUser.sha256, sheet:template}
   return axios.post(url, payload, contentTypeJson)
     .then( response => {
-      const responseSheet = response.data
+      const updatedTemplate = response.data
       // we don't need the data
-      responseSheet.data = []
-      // console.log('[data.customSheetSave] sheet saved', JSON.stringify(responseSheet))
-      // update that sheet in currentUser.sheets if it exists
-      let index = -1
-      if( sheet.id != 0 && currentUser.sheets.length > 0) {
-        index = currentUser.sheets.findIndex( s => s.id == sheet.id)
-        // console.log('[data.customSheetSave] index', index)
-      }
-      // add new sheet or update existing sheet
-      if( index == -1) {
-        currentUser.sheets.push(responseSheet)
-      } else {
-        // update existing entry
-        currentUser.sheets[index] = responseSheet;
-      }
-      userSortSheets()
-      return responseSheet
+      updatedTemplate.data = []
+      newCurrentUser.updateTemplate(updatedTemplate)
+      return updatedTemplate
     })
     .catch( error => {
       reportError('[data.customSheetSave] error ' + JSON.stringify(error))
@@ -269,7 +251,7 @@ export async function getBackend() {
   backend.promise = new Promise( (resolve) => {
     getUrlWithUser(apiRootUrl)
       .then( response => {
-        // console.log('[data.getBackend]', JSON.stringify(response.data))
+        console.log('[data.getBackend]', JSON.stringify(response.data))
         if( !response || !response.data) {
           resolve(null)
         } else {
@@ -280,17 +262,16 @@ export async function getBackend() {
 
           // Do we have anything about the user?
           if( response.data.user) {
-            currentUser = response.data.user
-            userSortSheets()
+            newCurrentUser.update( response.data.user)
           } else {
-            currentUser = null
+            newCurrentUser.logout()
           }
 
           resolve(backend)
         }
       })
       .catch( error => {
-        reportError( '[data.getBackend] error' + JSON.stringify(error))
+        reportError( '[data.getBackend] error' + error)
         resolve(null)
       })
   })
@@ -307,11 +288,7 @@ export function getAirports() {
  * @returns Whatever the current user is. Could be null if user is not authenticated
  */
 export function getCurrentUser() {
-  return currentUser
-}
-
-export function getCurrentUser2() {
-  return newCurrentUser;
+  return newCurrentUser
 }
 
 export function getFrequency(freqList, name) {
@@ -350,7 +327,7 @@ export async function getMaintenance(code) {
     axios.get(url).then( response => {
         // console.log('[data.getMaintenance]', JSON.stringify(response.data))
         if( typeof response.data === 'object' && 'sha256' in response.data) {
-          setCurrentUser( response.data)
+          newCurrentUser.login( response.data)
         }
         resolve()
       }).catch( error => {
@@ -492,7 +469,7 @@ export async function sendFeedback(text,contactMe) {
   const url = apiRootUrl + 'feedback'
   const payload = {version:version,feedback:text}
   if( contactMe) {
-    payload.user = currentUser.sha256;
+    payload.user = newCurrentUser.sha256;
   }
 
   axios.post( url, payload, contentTypeJson)
@@ -503,29 +480,6 @@ export async function sendFeedback(text,contactMe) {
     .catch( error => {
       reportError( '[data.sendFeedback] error ' + JSON.stringify(error))
     })
-}
-
-/**
- * Memorize the current user and refresh all sheets if requested
- * @param {*} user 
- */
-export function setCurrentUser( user) {
-  // console.log('[data.setCurrentUser]', JSON.stringify(user))
-  currentUser = user
-}
-
-export function setCurrentUserTemplates( templates) {
-  currentUser.sheets = templates
-  userSortSheets()
-}
-
-/**
- * 
- * @returns Sorts sheets for a user
- */
-function userSortSheets() {
-  if(!currentUser || !currentUser.sheets || !currentUser.sheets.length) return
-  currentUser.sheets.sort( (a,b) => a.name.localeCompare(b.name))
 }
 
 /**
@@ -544,9 +498,7 @@ async function waitForAirportData( code) {
 
 export async function saveCustomAirport(airport) {
   const url = apiRootUrl + 'airport'
-  const payload = {user:currentUser.sha256, airport:airport}
-  // const headers = { 'Content-Type':'text/plain', 'Authorization':'Bearer ' + currentUser.sha256}
-//  await axios.post( url, JSON.stringify(payload), contentTypeTextPlain)
+  const payload = {user:newCurrentUser.sha256, airport:airport}
   await axios.post( url, payload, contentType)
     .then( response => {
       // console.log( '[data] custom airport saved', airport.code)
