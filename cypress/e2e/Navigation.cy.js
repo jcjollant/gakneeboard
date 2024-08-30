@@ -166,7 +166,14 @@ describe('Navigation', () => {
     // Save the page into something disposable
     cy.get('[aria-label="Save"]').click()
     cy.get('.p-inputtext').type('Temp')
+
+    cy.intercept({
+      method: 'POST',
+      url: '**/template',
+    }).as('postTemplate');
     cy.get('[aria-label="Save Sheet"]').click()
+    cy.wait('@postTemplate').its('response.statusCode').should('equal', 200)
+    
     // Now delete it
     cy.get('[aria-label="Load"]').click()
     // Delete mode
@@ -175,9 +182,10 @@ describe('Navigation', () => {
       method: 'DELETE',
       url: '**/sheet/**',
     }).as('deleteSheet');
-    // Delete Temp
     cy.get('[aria-label="Temp"]').click()
+    // Delete Temp
     cy.wait('@deleteSheet').its('response.statusCode').should('equal', 200)
+
     // Close dialog
     cy.get('.p-button-link').click()
 
