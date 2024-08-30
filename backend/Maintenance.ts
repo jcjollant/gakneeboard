@@ -1,5 +1,8 @@
 import { HealthCheck } from './HealthChecks'
 import { Metrics } from '../backend/Metrics'
+import { UserDao } from './UserDao';
+import { User } from './models/User';
+import { UserMiniView } from './models/UserMiniView';
 
 export class Maintenance {
     code:string;
@@ -27,8 +30,16 @@ export class Maintenance {
                     rej(e)
                 })
             } else if(this.code == Maintenance.codeLogin) {
-                const user =  {"sha256":"357c3920bbfc6eefef7e014ca49ef12c78bb875c0826efe90194c9978303a8d3","name":"Jc","sheets":[]}
-                res(user)
+                const hash =  "357c3920bbfc6eefef7e014ca49ef12c78bb875c0826efe90194c9978303a8d3"
+                UserMiniView.fromHash(hash).then( (umv:UserMiniView|undefined) => {
+                    if(umv) {
+                        res(umv)
+                    } else {
+                        rej('Invalid User')
+                    }
+                }).catch(e => {
+                    rej(e)
+                })
             } else if(this.code == Maintenance.codeMetrics) {
                 Metrics.perform().then( () =>{
                     res( 'OK' )
