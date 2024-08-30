@@ -8,6 +8,7 @@ const jcTestPageBack = {type:'tiles',data:[{"id":0,"name":"airport","data":{"cod
 export const jcTestTemplateData = [jcTestPageFront,jcTestPageBack]
 export const jcTestTemplateName = 'TestJC'
 export const jcTestTemplateId = 55
+export const jcMaxTemplates = 15
 export const jcTestTemplate = {id:jcTestTemplateId, name:jcTestTemplateName, publish:false, data:jcTestTemplateData}
 export const postgresUrl = "postgres://default:94chrayEvOLG@ep-shrill-silence-a6ypne6y-pooler.us-west-2.aws.neon.tech/verceldb?sslmode=require"
 export const jcTestAirport = {"code":"TEST","name":"Test Airport JC","elev":1000,"freq":[{"name":"CTAF","mhz":124.7},{"name":"TWR","mhz":null},{"name":"Weather","mhz":126.95},{"name":"GND","mhz":121.6}],"rwys":[{"name":"16-34","length":5400,"width":120,"ends":[null]}],"custom":false,"version":6,"effectiveDate":""}

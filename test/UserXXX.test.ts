@@ -1,7 +1,7 @@
 import {describe, expect, test} from '@jest/globals';
 import { User } from '../backend/models/User'
 import { UserTools } from '../backend/UserTools'
-import { jcSource, postgresUrl } from './constants'
+import { jcMaxTemplates, jcSource, postgresUrl } from './constants'
 import { jcHash, jcUserId, jcToken, jcName, jcEmail } from './constants'
 import { UserDao } from '../backend/UserDao';
 import { UserMiniView } from '../backend/models/UserMiniView';
@@ -113,7 +113,7 @@ describe('UserTool', () => {
         if(miniUser) {
             expect(miniUser.sha256).toBe(jcHash)
             expect(miniUser.name).toBe(jcName)
-            expect(miniUser.maxTemp).toBe(User.defaultMaxTemplates)
+            expect(miniUser.maxTemp).toBe(jcMaxTemplates)
             expect(miniUser.templates.length).toBeGreaterThan(0)
         }
 
@@ -121,9 +121,8 @@ describe('UserTool', () => {
 
     test('Save', async () => {
         const input:User = new User(jcUserId, jcHash)
-        // Saving an existing user should return its id
-        const output = await UserDao.save(input)
-        expect(output.id).toBe(jcUserId)
+        // Saving an existing user without overwrite should fail
+        await expect(UserDao.save(input)).rejects.toEqual('Cannot save existing user without overwrite')
     })
 })
 
