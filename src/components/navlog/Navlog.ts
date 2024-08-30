@@ -6,6 +6,7 @@ export class Navlog {
     to:string
     ff:number // Initial fuel (Fuel From)
     ft:number // Fuel at destination (Fuel To)
+    fr:number // Fuel Reserve
     mv:number|undefined // magnetic variation
     md:number|undefined // magnetic deviation
     tt:number // Total Time
@@ -17,6 +18,7 @@ export class Navlog {
         this.to = to;
         this.ff = 0;
         this.ft = 0;
+        this.fr = 0;
         this.md = undefined;
         this.mv = undefined;
         this.tt = 0;
@@ -48,6 +50,10 @@ export class Navlog {
         return this.ff;
     }
 
+    getFuelReserve():number {
+        return this.fr;
+    }
+
     getMagneticDeviation():number|undefined {
         return this.md;
     }
@@ -64,6 +70,10 @@ export class Navlog {
 
     setFuelFrom(value:any) {
         this.ff = Number(value)
+    }
+
+    setFuelReserve(value:any) {
+        this.fr = Number(value)
     }
 
     setFuelTo(value:any) {
