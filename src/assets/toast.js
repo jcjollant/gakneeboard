@@ -18,3 +18,7 @@ export function emitToast(emits, title,message, life=3000) {
 export function emitToastError(emits, title,message,life=3000) {
     emits('toast', getToastData(title, message, toastError, life))
 }
+
+export function emitToastWarning(emits, title,message,life=3000) {
+    emits('toast', getToastData(title, message, toastWarning, life))
+}
