@@ -11,6 +11,16 @@ process.env.POSTGRES_URL=postgresUrl
 
 const jc = { 'source':'google','email':jcEmail}
 
+function testJcUmv(umv:UserMiniView|undefined) {
+    expect(umv).toBeDefined()
+    if(umv) {
+        expect(umv.sha256).toBe(jcHash)
+        expect(umv.name).toBe(jcName)
+        expect(umv.maxTemp).toBe(jcMaxTemplates)
+        expect(umv.templates.length).toBeGreaterThan(2)
+    }
+}
+
 describe( 'User', () => {
     test('Encryption', async () => {
         expect(User.createSha256(jc)).toBe(jcHash)
@@ -109,13 +119,7 @@ describe('UserTool', () => {
         expect( await UserTools.userMiniFromRequest(req3)).toBeUndefined()
         const req4 = { query: { user: jcHash}}
         const miniUser:UserMiniView|undefined = await UserTools.userMiniFromRequest(req4)
-        expect(miniUser).toBeDefined()
-        if(miniUser) {
-            expect(miniUser.sha256).toBe(jcHash)
-            expect(miniUser.name).toBe(jcName)
-            expect(miniUser.maxTemp).toBe(jcMaxTemplates)
-            expect(miniUser.templates.length).toBeGreaterThan(0)
-        }
+        testJcUmv( miniUser)
 
     })
 
@@ -123,6 +127,13 @@ describe('UserTool', () => {
         const input:User = new User(jcUserId, jcHash)
         // Saving an existing user without overwrite should fail
         await expect(UserDao.save(input)).rejects.toEqual('Cannot save existing user without overwrite')
+    })
+})
+
+describe('UserMiniView', () => {
+    test('fromHash', async () => {
+        const umv:UserMiniView|undefined = await UserMiniView.fromHash(jcHash)
+        testJcUmv(umv)
     })
 })
 
