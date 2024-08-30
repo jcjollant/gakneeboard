@@ -17,6 +17,11 @@ export class UserTools {
         if( !user) throw new Error('Invalid User');
         // console.log('[user.authenticate] decoded ' + JSON.stringify(user))
         // console.log('[user.authenticate] ' + user.sha256)
+
+        const dbUser:User|undefined = await UserDao.getUserFromHash(user.sha256)
+        if(dbUser) return dbUser;
+        
+        // new user => creation
         return await UserDao.save(user);
     }
     
