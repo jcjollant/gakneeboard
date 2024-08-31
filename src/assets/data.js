@@ -1,4 +1,4 @@
-export const version = 829.2
+export const version = 830
 
 export const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // export const apiRootUrl = 'http://localhost:3000/'
@@ -15,11 +15,10 @@ export const urlKneeboard = 'https://kneeboard.ga'
 
 import { Airport } from './Airport.ts'
 import axios from 'axios'
-import { isDefaultName } from './sheetData.js'
 import { Backend } from './Backend.ts'
 import { CurrentUser } from './CurrentUser.ts'
 
-const contentTypeJson = { headers: {'Content-Type':'application/json'} }
+export const contentTypeJson = { headers: {'Content-Type':'application/json'} }
 // const contentTypeTextPlain = { headers: {'Content-Type':'text/plain'} }
 const contentType = contentTypeJson;
 // let currentUser = null
@@ -66,7 +65,7 @@ export function duplicate(source) {
  * @returns 
  */
 export async function getUrlWithUser(url) {
-  console.log('[data.getUrlWithUser]', JSON.stringify(newCurrentUser))
+  // console.log('[data.getUrlWithUser]', JSON.stringify(newCurrentUser))
   if( newCurrentUser.loggedIn) {
     return axios.get(url,{params:{user:newCurrentUser.sha256}})
   } else {
@@ -91,35 +90,6 @@ export async function customSheetDelete(template) {
     })
     .catch( error => {
       reportError('[data.customSheetDelete] error ' + JSON.stringify(error))
-      return null
-    })
-}
-
-/**
- * Save custom sheet to the backend
- * @param {*} name 
- * @param {*} data 
- * @returns Created sheet on success or null on failure
- */
-export async function customSheetSave(template) {
-  const url = apiRootUrl + 'template'
-  if( !newCurrentUser.loggedIn) {
-    throw new Error('Cannot save template without user')
-  }
-  if( isDefaultName(template.name)) {
-    throw new Error('Template name conflicts with defaults')
-  }
-  const payload = {user:newCurrentUser.sha256, sheet:template}
-  return axios.post(url, payload, contentTypeJson)
-    .then( response => {
-      const updatedTemplate = response.data
-      // we don't need the data
-      updatedTemplate.data = []
-      newCurrentUser.updateTemplate(updatedTemplate)
-      return updatedTemplate
-    })
-    .catch( error => {
-      reportError('[data.customSheetSave] error ' + JSON.stringify(error))
       return null
     })
 }
@@ -251,7 +221,7 @@ export async function getBackend() {
   backend.promise = new Promise( (resolve) => {
     getUrlWithUser(apiRootUrl)
       .then( response => {
-        console.log('[data.getBackend]', JSON.stringify(response.data))
+        // console.log('[data.getBackend]', JSON.stringify(response.data))
         if( !response || !response.data) {
           resolve(null)
         } else {
