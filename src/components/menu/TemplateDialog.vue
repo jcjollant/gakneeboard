@@ -7,31 +7,32 @@ import FieldSet from 'primevue/fieldset'
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputText from "primevue/inputtext";
-import SelectButton from "primevue/selectbutton"
 
-import { customSheetDelete, urlKneeboard } from "../../assets/data"
+import { customSheetDelete } from "../../assets/data"
 import { describePage, getTemplateDataFromName } from '../../assets/sheetData'
 import { sheetNameDemo, sheetNameDemoChecklist, sheetNameDemoNavlog, sheetNameDemoTiles } from '../../assets/sheetData'
 import { getToastData, toastError, toastSuccess } from '../../assets/toast'
-import { TemplateData } from '../../assets/TemplateData'
+import { TemplateData, TemplateDialogMode } from '../../assets/Templates'
+import TemplateDescription from './TemplateDescription.vue'
+import TemplateSharing from "./TemplateSharing.vue";
 
-const emits = defineEmits(["close","delete","load","save","toast"]);
+const emits = defineEmits(["close","delete","load","save","mode","toast"]);
 
 //-----------------
 // Props management
 const props = defineProps({ 
   mode: { type: String, default: 'load'},
   user: { type: Object, default: null},
-  sheet: { type: Object, default: null},
+  template: { type: Object, default: null},
 })
 
 
 function loadProps(props) {
-    // console.log('[Sheets.loadProps]', JSON.stringify(props))
-  if( props.user && props.user.sheets) {
-    templates.value = props.user.sheets
-  }
-  targetTemplate.value = props.sheet;
+  // console.log('[TemplateDialog.loadProps]', JSON.stringify(props.mode))
+  mode.value = props.mode;
+  // Active template
+  // console.log('[TemplateDialog.loadProps]', JSON.stringify(props.template))
+  targetTemplate.value = props.template;
 }
 
 onMounted( () => {
@@ -45,26 +46,17 @@ watch( props, async() => {
 // End of props management
 //------------------------
 
-const pubPublic = 'Public'
-const pubPrivate = 'Private'
-const publish = ref(pubPrivate)
+const mode = ref(null)
 const templateNameText = ref('')
 const deleteMode = ref(false)
 const templateCode = ref('')
 const targetTemplate = ref(null)
 const fetching = ref(false)
-const directLink = ref('')
 
 function changeTargetTemplate(newTemplate) {
   fetching.value = false;
   targetTemplate.value = newTemplate
-  publish.value = newTemplate?.publish ? pubPublic : pubPrivate
   templateNameText.value = newTemplate ? newTemplate.name : ''
-  if( newTemplate && newTemplate.code) {
-    directLink.value = urlKneeboard + '?t=' + newTemplate.code
-  } else {
-    directLink.value = ''
-  }
 }
 
 function getTemplateName(template=null) {
@@ -72,6 +64,17 @@ function getTemplateName(template=null) {
   let name = template.name;
   if(template.publish) name  = name +' (' + template.code + ')'
   return name;
+}
+
+function getTitle(mode) {
+  if(mode == TemplateDialogMode.save) {
+    return 'Save "' + (targetTemplate.value ? targetTemplate.value.name : '?') + '"'
+  } else if(mode == TemplateDialogMode.saveAs) {
+    return 'Save New Template'
+  } else {
+   // mode == TemplateDialogMode.load ?
+    return 'Load Template'
+  }
 }
 
 function onButtonClose() {
@@ -84,26 +87,15 @@ function onButtonLoad() {
   changeTargetTemplate()
 }
 
-function onButtonSave() {
-  const targetSheetId = targetTemplate?.value?.id
-  const template = {id:targetSheetId,name:templateNameText.value,publish:publish.value==pubPublic}
-
-  emits('save',template)
-  changeTargetTemplate()
+function onButtonOverwrite () {
+  emits('save',targetTemplate.value)
 }
 
-async function onCopyURL() {
-  const toastTitle = 'Copy to Clipboard'
-    if(!directLink.value) {
-      showToast(toastTitle, 'Nothing to copy', toastError)
-      return;
-    }
-    try {
-      await navigator.clipboard.writeText(directLink.value);
-      showToast(toastTitle, directLink.value + ' copied to clipboard')
-    } catch($e) {
-      showToast(toastTitle, 'Could not copy to clipboard', toastError)
-    }  
+function onButtonSaveNew() {
+  // create a new template with form data
+  const template = {name:templateNameText.value,publish:false}
+  emits('save',template)
+  changeTargetTemplate()
 }
 
 /**
@@ -120,10 +112,10 @@ function onLoadDefault(name) {
   }
 }
 
-function onNewTemplate() {
-  const newSheet = {name:templateNameText.value, publish:publish.value==pubPublic}
-  changeTargetTemplate(newSheet)
-}
+// function onNewTemplate() {
+//   const newSheet = {name:templateNameText.value, publish:publish.value==pubPublic}
+//   changeTargetTemplate(newSheet)
+// }
 
 async function onSheetFetchCode() {
   fetching.value = true;
@@ -161,6 +153,10 @@ async function onTemplateSelected(sheet) {
   }
 }
 
+function onToast(data) {
+  emits('toast',data)
+}
+
 function onToggleDeleteMode() {
   deleteMode.value = !deleteMode.value
 }
@@ -169,12 +165,45 @@ function showToast(summary,details,severity=toastSuccess) {
   emits('toast',getToastData(summary,details, severity))
 }
 
-
 </script>
 
 <template>
-  <Dialog modal :header="mode=='load'?'Load Template':'Save Template'" style="width:45rem">
-    <div v-if="mode=='save'">
+  <Dialog modal :header="getTitle(mode)" :style="{width: mode=='save' ? '35rem' : '45rem'}">
+    <div v-if="mode==TemplateDialogMode.save">
+      <div class="properties">
+        <TemplateSharing :template="targetTemplate" @toast="onToast" />
+        <TemplateDescription :template="targetTemplate" />
+        <div>
+        </div>
+      </div>
+      <div class="actionDialog gap-2">
+        <Button label="Save As..." @click="emits('mode', TemplateDialogMode.saveAs)" title="Copy this template into a new one" link></Button>
+        <Button label="Replace..." @click="emits('mode', TemplateDialogMode.overwrite)" title="Overwrite an existing template with this one" link></Button>
+        <Button label="Do Not Save" @click="onButtonClose" link></Button>
+        <Button label="Save" 
+          @click="onButtonOverwrite"></Button>
+      </div>
+    </div>
+    <div v-else-if="mode==TemplateDialogMode.saveAs">
+      <div class="templateProps">
+        <InputGroup class="pageName">
+          <InputGroupAddon>Name</InputGroupAddon>
+          <InputText v-model="templateNameText"/>
+        </InputGroup>
+        <!-- <TemplateSharing :template="targetTemplate" @toast="onToast" /> -->
+        <!-- <Button label="Make Copy" icon="pi pi-file" severity="secondary" title="Create a copy instead or overwritting"
+          :disabled="!(targetTemplate?.id)"
+          @click="onNewTemplate"></Button> -->
+        <TemplateDescription :template="targetTemplate" />
+      </div>
+      <label v-if="user.templates.length >= user.maxTemplateCount || (user.templates.length==user.maxTemplateCount && !(targetTemplate?.id))" class="experiment">We are currently experimenting with a limit of {{ user.maxTemplateCount }} templates</label>
+      <div v-else class="actionDialog gap-2">
+        <Button label="Do Not Save" @click="onButtonClose" link></Button>
+        <Button label="Save" :disabled="!templateNameText.length"
+          @click="onButtonSaveNew"></Button>
+      </div>
+    </div>
+    <div v-else-if="mode==TemplateDialogMode.overwrite">
       <FieldSet :legend="'Your'+(user.templates.length?(' '+user.templates.length):'')+' Templates'">
         <div v-if="user.templates.length" class="sheetAndToggle">
           <div class="templateList">
@@ -193,37 +222,6 @@ function showToast(summary,details,severity=toastSuccess) {
           <label>Your custom sheets will show here once you save them.</label>
         </div>
       </FieldSet>
-      <FieldSet legend="Properties">
-        <div class="templateProps">
-          <InputGroup class="pageName">
-            <InputGroupAddon>Name</InputGroupAddon>
-            <InputText v-model="templateNameText"/>
-          </InputGroup>
-          <Button label="Make Copy" icon="pi pi-file" severity="secondary" title="Create a copy instead or overwritting"
-            :disabled="!(targetTemplate?.id)"
-            @click="onNewTemplate"></Button>
-          <div class="alignedRow">
-            <div>Access:</div>
-            <SelectButton v-model="publish" :options="[pubPublic, pubPrivate]" aria-labelledby="basic" />
-          </div>
-          <div class="alignedRow codeAndLink" v-show="directLink">
-            <div>Share code </div>
-            <div class="bold"><a :href="directLink" target="_blank">{{ targetTemplate?.code ? targetTemplate.code:'(none)' }}</a></div>
-            <Button icon="pi pi-clipboard" title="Copy link to clipboard" @click="onCopyURL"></Button>
-          </div>
-          <div class="templateDescription">
-            <div class="bold pageDescription">Front</div><div class="pageDescription">{{ describePage(targetTemplate, 0) }}</div>
-            <div class="bold pageDescription">Back</div><div class="pageDescription">{{ describePage(targetTemplate, 1) }}</div>
-          </div>
-        </div>
-      </FieldSet>
-      <label v-if="user.templates.length >= user.maxTemplateCount || (user.templates.length==user.maxTemplateCount && !(targetTemplate?.id))" class="experiment">We are currently experimenting with a limit of {{ user.maxTemplateCount }} templates</label>
-      <div v-else class="actionDialog gap-2">
-        <Button label="Do Not Save" @click="onButtonClose" link></Button>
-        <Button :label="targetTemplate?.id ? 'Overwrite Sheet' : 'Save Sheet'" 
-          @click="onButtonSave" 
-          :disabled="!templateNameText.length"></Button>
-      </div>
     </div>
   <div v-else><!-- load -->
     <FieldSet legend="Your Templates">
@@ -262,11 +260,7 @@ function showToast(summary,details,severity=toastSuccess) {
     </div>
   </FieldSet>
     <FieldSet legend="Content">
-      <div v-if="targetTemplate" class="templateDescription">
-        <div class="bold">Name</div><div>{{fetching ? 'Fetching...' : targetTemplate.name}}</div>
-        <div class="bold pageDescription">Front</div><div class="pageDescription">{{ fetching ? '' : describePage(targetTemplate, 0) }}</div>
-        <div class="bold pageDescription">Back</div><div class="pageDescription">{{ fetching ? '' : describePage(targetTemplate, 1) }}</div>
-      </div>
+      <TemplateDescription v-if="targetTemplate" :template="targetTemplate" />
       <div v-else class="contentPlaceholder">Select a template above to view its content</div>
     </FieldSet>
     <div class="actionDialog gap-2">
@@ -292,19 +286,6 @@ function showToast(summary,details,severity=toastSuccess) {
   font-weight: bold;
 }
 
-.code {
-  padding-left: 0.5rem;
-  font-weight: bold;
-}
-
-.codeAndLink {
-  grid-column: 2 / span 2;
-  justify-content: end;
-}
-.codeFetch {
-  display: flex;
-  gap:5px;
-}
 .contentPlaceholder {
   height:4rem;
 }
@@ -319,9 +300,9 @@ function showToast(summary,details,severity=toastSuccess) {
   grid-column: 1 / span 3;
 }
 .templateProps {
-  display: grid;
+  display: flex;
+  flex-flow: column;
   gap: 10px;
-  grid-template-columns: 35% 30% auto;
 }
 .alignedRow {
   display: flex;
@@ -340,6 +321,13 @@ function showToast(summary,details,severity=toastSuccess) {
   font-size: 0.8rem;
   overflow: hidden;
 }
+
+.properties {
+  display: flex;
+  flex-flow: column;
+  gap: 0.8rem;
+}
+
 .newSheetButton {
     grid-column: 2 / span 2;
 }
