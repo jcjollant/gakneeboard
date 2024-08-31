@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
-import { PageType } from '../assets/TemplateData'
+import { PageType } from '../assets/Templates'
 
 import ChecklistPage from './checklist/ChecklistPage.vue'
 import CoverPage from './cover/CoverPage.vue'
