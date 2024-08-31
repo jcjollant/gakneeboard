@@ -72,15 +72,15 @@ watch(showPrint, async( newValue, oldValue) => {
 // End props management
 //---------------------
 
-function confirmAndLoad(title, sheet) {
+function confirmAndLoad(title, template) {
   confirm.require({
-      message: 'Do you want to replace all pages in the current Template?',
+      message: 'Do you want to replace all pages in the current template?',
       header: title,
       rejectLabel: 'No',
       acceptLabel: 'Yes, Replace',
       accept: () => {
-        activeTemplate.value = sheet
-        emits('load', sheet)
+        activeTemplate.value = template
+        emits('load', template)
       }
     })
 }
@@ -135,6 +135,22 @@ function onPrintPrint(options) {
   emits('print', options);
 }
 
+function onSignOut() {
+  confirm.require({
+      message: 'You will loose access to your custom content.',
+      header: 'Sign Out',
+      rejectLabel: 'Stay in',
+      acceptLabel: 'Ok',
+      accept: () => {
+        // logout and remo
+        newCurrentUser.logout()
+
+        // reload the page
+        location.reload()
+      }
+    })
+}
+
 function onTemplateDialog(save=false) {
   // console.log('[Menu.onTemplateDialog]', save, JSON.stringify(activeTemplate.value))
   if( user.value) {
@@ -178,20 +194,22 @@ function onTemplateMode(mode) {
   templateDialogMode.value=mode
 }
 
-function onSignOut() {
+function onTemplateOverwrite(from,to) {
+  if(!from || !to) {
+    emitToastError('Overwrite', 'Invalid Templates')
+    return;
+  }
   confirm.require({
-      message: 'You will loose access to your custom content.',
-      header: 'Sign Out',
-      rejectLabel: 'Stay in',
-      acceptLabel: 'Ok',
+      message: "\'" + to.name + "\' template is about to be overwritten with \'" + from.name  + "\'. ",
+      header: "Overwrite Template",
+      rejectLabel: 'Do Not Overwrite',
+      acceptLabel: 'Overwrite',
       accept: () => {
-        // logout and remo
-        newCurrentUser.logout()
-
-        // reload the page
-        location.reload()
+        // activeTemplate.value = template
+        // emits('load', template)
       }
     })
+
 }
 
 /**
@@ -259,6 +277,7 @@ function toggleMenu() {
       @load="onTemplateLoad" 
       @save="onTemplateSave"
       @mode="onTemplateMode"
+      @overwrite="onTemplateOverwrite"
       @toast="onToast" />
     <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu">
       <div class="bar1"></div>
@@ -267,7 +286,7 @@ function toggleMenu() {
     </div>
     <div v-show="showMenu" class="expandedMenu">
       <div class="buttonsList">
-        <Button v-if="user" :label="user.name" icon="pi pi-user" title="Sign Out" class="active"
+        <Button v-if="user.loggedIn" :label="user.name" icon="pi pi-user" title="Sign Out" class="active"
           @click="onSignOut"></Button>
         <Button v-else label="Sign In" icon="pi pi-user" title="Sign In to enable custom data"
           @click="showSignIn=true"></Button>
