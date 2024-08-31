@@ -2,10 +2,10 @@
 import { watch } from 'vue';
 import { ref, onMounted } from 'vue';
 
-import { customSheetSave } from '../../assets/data'
 import { newCurrentUser } from '../../assets/data'
 import { getSheetBlank, getSheetDemo } from '../../assets/sheetData'
-import { getToastData, toastError, toastSuccess, toastWarning, toastInfo } from '../../assets/toast'
+import { emitToast, emitToastError, emitToastInfo, emitToastWarning } from '../../assets/toast'
+import { TemplateData, TemplateDialogMode } from '../../assets/Templates'
 
 import Button from 'primevue/button'
 import { useConfirm } from 'primevue/useconfirm'
@@ -13,7 +13,7 @@ import ConfirmDialog from 'primevue/confirmdialog';
 
 import Feedback from './Feedback.vue';
 import Print from './Print.vue'
-import Templates from './Templates.vue'
+import TemplateDialog from './TemplateDialog.vue'
 import SignIn from './SignIn.vue';
 import About from './About.vue'
 import Maintenance from './Maintenance.vue'
@@ -31,20 +31,19 @@ const showMenu = ref(false)
 const showPrint = ref(false)
 const showSignIn = ref(false)
 const showTemplates = ref(false)
-const user = ref(null)
-const pageMode = ref('load')
-let pageData = null;
+const user = ref(newCurrentUser)
+const templateDialogMode = ref('load')
 let readyToPrint = false;
 
 //---------------------
 // Props management
 const props = defineProps({
-  pageData: { type: Object, default: null},
+  activeTemplate: { type: Object, default: null},
 })
 
 function loadProps( props) {
   // console.log('Menu loadProps', JSON.stringify(props))
-  pageData = props.pageData;
+  activeTemplate.value = props.activeTemplate;
 }
 
 onMounted( () => {
@@ -91,16 +90,16 @@ function onAuthentication(newUser) {
   // console.log('[Menu.onAuthentication] ' + JSON.stringify(userParam))
   showSignIn.value = false
   if( newUser) {
-    emits('toast', getToastData( 'Clear', 'Welcome ' + newUser.name))
+    emitToast(emits, 'Clear', 'Welcome ' + newUser.name)
   } else {
-    emits('toast', getToastData('Engine Roughness', 'Authentication failed', toastWarning));  
+    emitToastWarning(emits, 'Engine Roughness', 'Authentication failed');  
   }
 }
 
 function onFeedbackSent() {
   // console.log('[menu] onFeedbackSent')
   showFeedback.value = false
-  showToast('Readback Correct', 'Thanks for your feedback!', toastInfo)
+  emitToastInfo(emits, 'Readback Correct', 'Thanks for your feedback!')
 }
 
 // how does it work? close about and emit to parent
@@ -136,13 +135,18 @@ function onPrintPrint(options) {
   emits('print', options);
 }
 
-function onSheetDialog(mode) {
+function onTemplateDialog(save=false) {
+  // console.log('[Menu.onTemplateDialog]', save, JSON.stringify(activeTemplate.value))
   if( user.value) {
-    // console.log("[Menu.onSaveAs] valid request")
     showTemplates.value = true;
-    pageMode.value = mode
+    // console.log('[Menu.onTemplateDialog]', JSON.stringify(activeTemplate.value))
+    if(save) {
+      templateDialogMode.value = (activeTemplate.value && activeTemplate.value.id) ? TemplateDialogMode.save : 'saveAs'
+    } else {
+      templateDialogMode.value = TemplateDialogMode.load
+    }
   } else {
-    showToast('Squawk and Ident','Please sign in to use custom sheets', toastWarning)
+    emitToastWarning(emits, 'Squawk and Ident','Please sign in to use custom sheets')
   }
 }
 
@@ -156,7 +160,7 @@ function onTemplateClose() {
 // a sheet has been deleted, it should be removed from the user
 function onTemplateDelete(template) {
   newCurrentUser.removeTemplate(template.id)
-    showToast('Clear', 'Template "' + template.name + '" deleted')
+  emitToast(emits, 'Clear', 'Template "' + template.name + '" deleted')
 }
 
 /**
@@ -170,29 +174,8 @@ function onTemplateDelete(template) {
   confirmAndLoad( title, template)
 }
 
-/**
- * Page Dialog wants to save a page
- * @param {*} template 
- */
- async function onTemplateSave(template) {
-  // console.log('[Menu.onSheetSave]',JSON.stringify(template))
-  showTemplates.value = false;
-  try {
-      template.data = pageData;
-      await customSheetSave(template).then(returnSheet => {
-        // console.log('[Menu.onSheetSave]', JSON.stringify(returnSheet))
-        let message = 'Template "' + returnSheet.name + '" saved';
-        if(returnSheet.publish && returnSheet.code) {
-          message += '\nShare code is ' + returnSheet.code
-        }
-        showToast('Clear', message)
-        newCurrentUser.updateTemplate(template.id)
-        emits('save', template)
-      })
-  } catch( e) {
-    // console.log('[Menu.onSheetSave]', e)
-    showToast('Save Template','Could not save template "' + template.name + '"', toastError)
-  }
+function onTemplateMode(mode) {
+  templateDialogMode.value=mode
 }
 
 function onSignOut() {
@@ -211,6 +194,32 @@ function onSignOut() {
     })
 }
 
+/**
+ * Page Dialog wants to save a page
+ * @param {*} template 
+ */
+ async function onTemplateSave(template) {
+  // console.log('[Menu.onTemplateSave]',JSON.stringify(template))
+  showTemplates.value = false;
+  try {
+      // retreive data from active template
+      template.data = activeTemplate.value.data;
+      await TemplateData.save(template).then(t => {
+        // console.log('[Menu.onTemplateSave]', JSON.stringify(t))
+        let message = 'Template "' + t.name + '" saved';
+        if(t.publish && t.code) {
+          message += '\nShare code is ' + t.code
+        }
+        emits('save', t)
+        emitToast(emits, 'Clear', message)
+      })
+  } catch( e) {
+    console.log('[Menu.onTemplateSave]', e)
+    emitToastError(emits, 'Save Template','Could not save template "' + template.name + '"')
+  }
+}
+
+// pass on toast events to App
 function onToast(data) {
   emits('toast', data)
 }
@@ -218,10 +227,6 @@ function onToast(data) {
 function onUserUpdate(currentUser) {
   // console.log('[Menu.onUserUpdate]', JSON.stringify(currentUser))
   user.value = currentUser
-}
-
-function showToast( summary, detail, severity=toastSuccess) {
-  emits('toast', getToastData(summary, detail, severity))
 }
 
 // Toggle menu visibility which will update component layout
@@ -248,11 +253,12 @@ function toggleMenu() {
     <About v-model:visible="showAbout" @close="showAbout=false" @hdiw="onHdiw"/>
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
       @authentication="onAuthentication" />
-    <Templates v-model:visible="showTemplates" :mode="pageMode" :user="user" :sheet="activeTemplate"
+    <TemplateDialog v-model:visible="showTemplates" :mode="templateDialogMode" :user="user" :template="activeTemplate"
       @close="onTemplateClose"
       @delete="onTemplateDelete"
       @load="onTemplateLoad" 
       @save="onTemplateSave"
+      @mode="onTemplateMode"
       @toast="onToast" />
     <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu">
       <div class="bar1"></div>
@@ -269,8 +275,8 @@ function toggleMenu() {
           @click="onPrint"></Button>
         <div class="separator"></div>
         <Button label="New" icon="pi pi-file" title="Reset Template" @click="onTemplateLoad(getSheetBlank())"></Button>
-        <Button label="Load" icon="pi pi-folder-open" title="Open Existing Template" @click="onSheetDialog('load')"></Button>
-        <Button label="Save" icon="pi pi-save" title="Save this Template" @click="onSheetDialog('save')"></Button>
+        <Button label="Load" icon="pi pi-folder-open" title="Open Existing Template" @click="onTemplateDialog(false)"></Button>
+        <Button label="Save" icon="pi pi-save" title="Save this Template" @click="onTemplateDialog(true)"></Button>
         <Button label="Demo" icon="pi pi-clipboard" title="Load demo Template" @click="onTemplateLoad(getSheetDemo())"></Button>
         <div class="separator" @click="showMaintenance=true"></div>
         <Button label="Feedback" icon="pi pi-megaphone" title="Send Feedback"
