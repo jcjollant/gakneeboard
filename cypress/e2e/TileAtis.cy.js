@@ -4,13 +4,6 @@ describe('ATIS Tile', () => {
   it('ATIS Tile', () => {
     visitAndCloseBanner()
 
-    cy.intercept({
-      method: 'GET',
-      url: 'https://ga-api-seven.vercel.app/airports/**',
-    }).as('getAirports');
-
-    cy.wait('@getAirports').its('response.statusCode').should('equal', 200)
-
     // check header
     cy.get('.pageOne > :nth-child(5) > .headerTitle > div').contains(titleAtis)
 

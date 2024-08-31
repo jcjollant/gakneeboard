@@ -4,13 +4,6 @@ describe('Checklist Tile', () => {
   it('Checklist Tile', () => {
     visitAndCloseBanner()
 
-    cy.intercept({
-      method: 'GET',
-      url: 'https://ga-api-seven.vercel.app/airports/**',
-    }).as('getAirports');
-
-    cy.wait(1000)
-
     const title = 'Power OFF stalls'
     const title3 = 'Name3'
 
