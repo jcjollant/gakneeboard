@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 
-import { PageType } from '../assets/TemplateData'
+import { PageType } from '../assets/Templates'
 
 import Header from '../components/shared/Header.vue'
 
