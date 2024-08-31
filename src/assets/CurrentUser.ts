@@ -33,7 +33,7 @@ export class CurrentUser {
     }
 
     logout() {
-      console.log('[CurrentUser.logout]')
+      // console.log('[CurrentUser.logout]')
         this.loggedIn = false;
         this.sha256 = "";
         this.name = "";
