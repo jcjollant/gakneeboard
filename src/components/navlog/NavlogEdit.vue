@@ -123,7 +123,7 @@ function onApply() {
     // copy Editor Items entries into navlog
     newNavLog.setEntries( items.value.map( i => NavlogEntry.copy(i.entry)))
 
-    console.log('[NavlogEdit.onApply]', JSON.stringify(newNavLog))
+//    console.log('[NavlogEdit.onApply]', JSON.stringify(newNavLog))
     if(newNavLog.getFuelFrom() <= 0) {
         emitToastError( emits, 'Bingo Fuel', 'Like aircrafts, navlogs need initial fuel')
         return;
@@ -134,7 +134,7 @@ function onApply() {
         return;
     }
     if(newNavLog.getFuelReserve() == 0) {
-        emitToastWarning(emits, 'No Reserve', 'Fuel reserve is set to 0. Remind me to take the next flight.')
+        emitToastWarning(emits, 'No Reserve?', 'Fuel reserve is set to 0.\nRemind me to take the next flight.', 5000)
     }
     emits('apply', newNavLog)
 }
@@ -180,10 +180,9 @@ function doCreate() {
     
 
     const altList = altitudes.value.split(' ').map( a => Number(a)).filter( a => !isNaN(a))
-    console.log('[NavlogEdit.doCreate]', JSON.stringify(altList))
+    // console.log('[NavlogEdit.doCreate]', JSON.stringify(altList))
 
     newList.push( EditorItem.vanilla( codeFrom.value, elevFrom, false, true))
-    let previousAlt = elevFrom
     const altItems = altList.map( (alt,index) => {
         const level = Math.trunc(alt / 100)
         const previousAlt = index == 0 ? elevFrom : altList[index-1]
@@ -202,7 +201,6 @@ function doCreate() {
                 return EditorItem.vanilla('TOD ' + codeTo.value, alt)
             return EditorItem.vanilla('TOD ' + level, alt)
         }
-        previousAlt = alt;
     })
     newList.push.apply(newList, altItems)
     newList.push( EditorItem.vanilla( codeTo.value, elevTo, false, false))
@@ -331,8 +329,8 @@ function onMagneticChange() {
                     <i v-if="i.canAdd" class="pi pi-plus actionAdd clickable" title="Add new checkpoint after"
                         @click="onItemAdd(index+1)"></i>
                 </div>
-                <div class="bl name editable" @click="onItemEdit(index)">{{ formatName(i.entry.name) }}</div>
-                <div class="bl br editable" @click="onItemEdit(index)">{{ formatAltitude(i.entry.alt) }}</div>
+                <div class="bl checkpointName editable" @click="onItemEdit(index)">{{ formatName(i.entry.name) }}</div>
+                <div class="bl br checkpointAlt editable" @click="onItemEdit(index)">{{ formatAltitude(i.entry.alt) }}</div>
             </div>
         </div>
         <div class="legs"><!-- legs -->
@@ -412,7 +410,7 @@ function onMagneticChange() {
 .legs {
     margin-top: 1rem;
 }
-.name {
+.checkpointName {
     display: flex;
     align-items: center;
     justify-content: center;
