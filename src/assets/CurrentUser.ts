@@ -1,3 +1,4 @@
+import { duplicate } from "./data";
 import { LocalStore } from "./LocalStore";
 
 export class CurrentUser {
@@ -32,6 +33,7 @@ export class CurrentUser {
     }
 
     logout() {
+      console.log('[CurrentUser.logout]')
         this.loggedIn = false;
         this.sha256 = "";
         this.name = "";
@@ -39,9 +41,17 @@ export class CurrentUser {
         localStorage.removeItem(LocalStore.user)
     }
 
+    notify() {
+      // console.log('[CurrentUser.update] notifying listeners', this.listenners.length)
+      for(const listener of this.listenners) {
+        listener(this)
+      }
+    }
+
     removeTemplate(id:number) {
-      this.templates = this.templates.filter((t) => t.id !== id);
       // no need to resort, just remove the entry
+      this.templates = this.templates.filter((t) => t.id !== id);
+      this.notify()
     }
 
     restore() {
@@ -78,10 +88,7 @@ export class CurrentUser {
           this.maxTemplateCount = Number(data.maxTemp ? data.maxTemp : 0);
 
           // notify listeners
-          // console.log('[CurrentUser.update] notifying listeners', this.listenners.length)
-          for(const listener of this.listenners) {
-            listener(this)
-          }
+          this.notify()
       }
     }
 
@@ -92,14 +99,17 @@ export class CurrentUser {
       if( updatedTemplate.id != 0 && this.templates.length > 0) {
         index = this.templates.findIndex( t => t.id == updatedTemplate.id)
       }
+      // we don't need the data
+      const templateNoData = duplicate(updatedTemplate)
+      templateNoData.data = []
+
       // add new template or or update existing sheet
       if( index == -1) {
-        this.templates.push(updatedTemplate)
+        this.templates.push(templateNoData)
       } else {
         // update existing entry
-        this.templates[index] = updatedTemplate;
+        this.templates[index] = templateNoData;
       }
       this.sortTemplates()
     }
-
 }
