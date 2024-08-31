@@ -17,6 +17,9 @@ Run the test suite:
 ## TODO
 
 # Done
+## 8/31/2024
+* Improved navlog creation process with altitude
+* Navlog now include a reserve fuel
 ## 8/29/2024
 1) New format for How Does it Work
 2) Improved maxTemplate processing
