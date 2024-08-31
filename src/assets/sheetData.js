@@ -1,4 +1,6 @@
-import { PageType } from './TemplateData'
+import { LocalStore } from './LocalStore'
+import { PageType } from './Templates'
+
 
 const demoRadioData = [
   {'target':'NAV1','freq':'116.8','name':'SEA VOR'},
@@ -18,13 +20,11 @@ export const sheetNameDemoNavlog = 'default-demo-navlog'
 export const sheetNameDemoTiles = 'default-demo-tiles'
 export const sheetNameNew = 'default-new-sheet'
 export const sheetNameReset = 'default-reset'
-const activeSheetLocal = 'sheet'
-const oldSheetData = 'page1'
 
 import { duplicate } from './data'
 
 // used to check if a sheet name is already taken by defaults
-const defaultSheetNames = [sheetNameDemo, sheetNameDemoTiles, sheetNameDemoChecklist, sheetNameReset, activeSheetLocal, oldSheetData]
+const defaultNames = [sheetNameDemo, sheetNameDemoTiles, sheetNameDemoChecklist, sheetNameReset]
 
 // blank pages
 const pageDataBlankTiles = {type:PageType.tiles,data:[
@@ -213,7 +213,7 @@ export const sheetDemoNavlog = {
   data: [pageDemoNavlog0,pageDemoNavlog1]
 }
 
-export function describePage(sheet, pageNumber, maxLength=90) {
+export function describePage(sheet, pageNumber, maxLength=undefined) {
   if(!sheet) return "empty";
 
   let output = '?'
@@ -306,21 +306,6 @@ export function getSheetDemoChecklist() {
   return duplicate(sheetDemoChecklist)
 }  
 
-// Load active sheet from localstorage
-export function getSheetLocal() {
-  const localSheet = JSON.parse(localStorage.getItem(activeSheetLocal))  
-  if(!localSheet) { 
-    // try old page system
-    let data = JSON.parse(localStorage.getItem(oldSheetData))
-    // create a local sheet with no name
-    localSheet = {data:data}
-    // TODO remove data from localstorage
-    // Save activeSheet locally
-    localSheetSave(localSheet)
-  }
-  return localSheet
-}
-
 // turn a default name into its data or null if the name is unkown
 export function getTemplateDataFromName(name) {
   if( name == sheetNameDemo) {
@@ -340,13 +325,7 @@ export function getTemplateDataFromName(name) {
 }
 
 export function isDefaultName(name) {
-  return name in defaultSheetNames
-}
-
-// Save sheet data to browser
-export function localSheetSave(sheet,modified=false) {
-  if(sheet) sheet.modified = modified;
-  localStorage.setItem(activeSheetLocal, JSON.stringify( sheet))
+  return name in defaultNames
 }
 
 // See whether a page data string is valid
