@@ -16,7 +16,7 @@ import { TemplateData, TemplateDialogMode } from '../../assets/Templates'
 import TemplateDescription from './TemplateDescription.vue'
 import TemplateSharing from "./TemplateSharing.vue";
 
-const emits = defineEmits(["close","delete","load","save","mode","toast"]);
+const emits = defineEmits(["close","delete","load","save","mode", "overwrite","toast"]);
 
 //-----------------
 // Props management
@@ -46,14 +46,20 @@ watch( props, async() => {
 // End of props management
 //------------------------
 
+const deleteMode = ref(false)
+const loadTemplate = ref(null)
 const mode = ref(null)
 const templateNameText = ref('')
-const deleteMode = ref(false)
 const templateCode = ref('')
 const targetTemplate = ref(null)
 const fetching = ref(false)
 
-function changeTargetTemplate(newTemplate) {
+function changeTemplateLoad(newTemplate=null) {
+  fetching.value = false;
+  loadTemplate.value = newTemplate;
+}
+
+function changeTemplateTarget(newTemplate=null) {
   fetching.value = false;
   targetTemplate.value = newTemplate
   templateNameText.value = newTemplate ? newTemplate.name : ''
@@ -71,6 +77,8 @@ function getTitle(mode) {
     return 'Save "' + (targetTemplate.value ? targetTemplate.value.name : '?') + '"'
   } else if(mode == TemplateDialogMode.saveAs) {
     return 'Save New Template'
+  } else if(mode == TemplateDialogMode.overwrite) {
+    return 'Overwrite Existing Template'
   } else {
    // mode == TemplateDialogMode.load ?
     return 'Load Template'
@@ -78,13 +86,13 @@ function getTitle(mode) {
 }
 
 function onButtonClose() {
-  changeTargetTemplate()
+  changeTemplateTarget()
   emits('close')
 }
 
 function onButtonLoad() {
-  emits('load',targetTemplate.value)
-  changeTargetTemplate()
+  emits('load',loadTemplate.value)
+  changeTemplateLoad()
 }
 
 function onButtonOverwrite () {
@@ -95,7 +103,7 @@ function onButtonSaveNew() {
   // create a new template with form data
   const template = {name:templateNameText.value,publish:false}
   emits('save',template)
-  changeTargetTemplate()
+  changeTemplateTarget()
 }
 
 /**
@@ -105,51 +113,49 @@ function onButtonSaveNew() {
 function onLoadDefault(name) {
   const data = getTemplateDataFromName(name);
   if( data) {
-    changeTargetTemplate( data);
+    changeTemplateLoad(data)
   } else {
     console.log('[Templates.onLoadDefault] unknown name', name)
-    changeTargetTemplate()
+    changeTemplateLoad()
   }
 }
 
-// function onNewTemplate() {
-//   const newSheet = {name:templateNameText.value, publish:publish.value==pubPublic}
-//   changeTargetTemplate(newSheet)
-// }
-
 async function onSheetFetchCode() {
   fetching.value = true;
-  await TemplateData.getPublication(templateCode.value).then( sheet => {
+  await TemplateData.getPublication(templateCode.value).then( template => {
     // console.log('[Templates.onSheetFetch] sheet', JSON.stringify(sheet))
     // showToast('Fetch', 'Sheet found')
-    changeTargetTemplate(sheet)
-    if(!sheet) {
+    changeTemplateLoad(template)
+    if(!template) {
       showToast('Fetch','Code not found ' + templateCode.value, toastError)
     }
   }) 
 }
 
-async function onTemplateSelected(sheet) {
+async function onTemplateSelected(template) {
   // console.log('[Sheets.onSheetSelected] deleteMode', deleteMode.value,'mode', props.mode)
-  if(deleteMode.value) {
-    await customSheetDelete(sheet).then( () => {
-      // console.log('[Sheets.onSheetSelected]', sheet)
-      if( sheet) {
-        // remove that sheet from the list
-        emits('delete',sheet)
-        changeTargetTemplate()
-      }
-    })
-  } else { // load or save
-    // console.log('[Templates.onSheetSelected] load', JSON.stringify(sheet))
-    fetching.value = true;
-    await TemplateData.get(sheet.id).then( sheet => {
-      // console.log('[Templates.fetchSheet]', JSON.stringify(sheet))
-      changeTargetTemplate(sheet)
-    }).catch( e => {
-      reportError('[Templates.onSheetSelected] fetch failed ' + e)    
-      changeTargetTemplate()
-    })
+  if( mode.value == TemplateDialogMode.load) {
+    if(deleteMode.value) {
+      await customSheetDelete(template).then( () => {
+        // console.log('[Sheets.onSheetSelected]', sheet)
+        if( template) {
+          // remove that sheet from the list
+          emits('delete',template)
+          changeTemplateTarget()
+        }
+      })
+    } else { // load template
+      fetching.value = true;
+      await TemplateData.get(template.id).then( template => {
+        // console.log('[Templates.fetchSheet]', JSON.stringify(sheet))
+        changeTemplateLoad(template)
+      }).catch( e => {
+        reportError('[Templates.onSheetSelected] fetch failed ' + e)    
+        changeTemplateLoad()
+      })
+    }
+  } else if( mode.value == TemplateDialogMode.overwrite) {
+    emits('overwrite', targetTemplate.value, template)
   }
 }
 
@@ -208,20 +214,19 @@ function showToast(summary,details,severity=toastSuccess) {
         <div v-if="user.templates.length" class="sheetAndToggle">
           <div class="templateList">
             <Button v-for="t in user.templates" :label="getTemplateName(t)" 
-              :icon="deleteMode?'pi pi-times':'pi pi-copy'" 
-              :severity="deleteMode?'danger':'primary'"
-              :title="(deleteMode?'Delete':'Overwrite')+' \''+t.name+'\''"
+              :icon="'pi pi-copy'" 
+              :severity="'primary'"
+              :title="'Overwrite'+' \''+t.name+'\''"
               @click="onTemplateSelected(t)"></Button>
-            <Button title="Toggle delete mode"
-              :severity="deleteMode?'primary':'danger'" 
-              :icon="deleteMode?'pi pi-copy':'pi pi-trash'"
-              @click="onToggleDeleteMode"></Button>
           </div>
         </div>
         <div v-else class="templateList">
           <label>Your custom sheets will show here once you save them.</label>
         </div>
       </FieldSet>
+      <div class="actionDialog gap-2">
+        <Button label="Do Not Overwrite" @click="onButtonClose" link></Button>
+      </div>
     </div>
   <div v-else><!-- load -->
     <FieldSet legend="Your Templates">
@@ -259,8 +264,8 @@ function showToast(summary,details,severity=toastSuccess) {
           @click="onLoadDefault(sheetNameDemoNavlog)"></Button>
     </div>
   </FieldSet>
-    <FieldSet legend="Content">
-      <TemplateDescription v-if="targetTemplate" :template="targetTemplate" />
+    <FieldSet :legend="loadTemplate ? loadTemplate.name : 'Description'">
+      <TemplateDescription v-if="loadTemplate" :template="loadTemplate" />
       <div v-else class="contentPlaceholder">Select a template above to view its content</div>
     </FieldSet>
     <div class="actionDialog gap-2">
