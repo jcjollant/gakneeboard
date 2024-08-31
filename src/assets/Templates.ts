@@ -1,5 +1,7 @@
 import axios from 'axios'
-import { apiRootUrl, getUrlWithUser, newCurrentUser } from './data'
+import { apiRootUrl, contentTypeJson, getUrlWithUser, newCurrentUser } from './data.js'
+import { isDefaultName } from './sheetData.js'
+
 
 export class PageType {
   static selection = 'selection'
@@ -9,6 +11,12 @@ export class PageType {
   static navLog = 'navlog'
 }
 
+export class TemplateDialogMode {
+    static save = 'save'
+    static saveAs = 'saveAs'
+    static load = 'load'
+    static overwrite = 'overwrite'
+}
 
 export class TemplateData {
     /**
@@ -21,7 +29,7 @@ export class TemplateData {
         return axios.get( url)
             .then( response => response.data)
             .catch( error => {
-                reportError( '[data.sheetGetByCode] error ' + JSON.stringify(error))
+                reportError( '[Templates.sheetGetByCode] error ' + JSON.stringify(error))
                 return null
             })
     }
@@ -50,20 +58,54 @@ export class TemplateData {
         return data;
     }
 
+    /**
+     * Read template data from backend
+     * @param id 
+     * @returns 
+     */
     static get(id:number):any {
         const url = apiRootUrl + 'sheet/' + id
         return getUrlWithUser(url).then( response => {
             // console.log('[data.sheetGetById]', JSON.stringify(response))
-            const sheet = response.data;
-            sheet.data = TemplateData.normalize(sheet.data)
-            return sheet;
+            const template = response.data;
+            template.data = TemplateData.normalize(template.data)
+            return template;
         }).catch( error => {
             if(error.response.status != 404) {
-                reportError( '[data.sheetGetById] error ' + error.response.status + ' ' + error.response.statusText)
+                reportError( '[Templates.get] error ' + error.response.status + ' ' + error.response.statusText)
             }
             return null
         })
     }
+
+    /**
+    * Save template to the backend. User must be logged in. Name must not conflict with defaults.
+    * @param {*} template 
+    * @returns Created template on success or null on failure
+    */
+    static save(template:any):any {
+        const url = apiRootUrl + 'template'
+        if( !newCurrentUser.loggedIn) {
+            throw new Error('Cannot save template without user')
+        }
+        if( isDefaultName(template.name)) {
+            throw new Error('Template name conflicts with defaults')
+        }
+        const payload = {user:newCurrentUser.sha256, sheet:template}
+        return axios.post(url, payload, contentTypeJson)
+            .then( response => {
+                // console.log('[Templates.save]', JSON.stringify(response))
+                const updatedTemplate = response.data
+                newCurrentUser.updateTemplate(updatedTemplate)
+                return updatedTemplate
+            })
+            .catch( error => {
+                reportError('[Templates.save] error ' + JSON.stringify(error))
+                return null
+            })
+    }
+
+    
 
     // static getList() {
     //     const url = apiRootUrl + 'templates'
