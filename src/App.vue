@@ -6,9 +6,10 @@ import { inject } from "@vercel/analytics"
 import { duplicate, getBackend, newCurrentUser, reportError } from './assets/data.js'
 import { backend, version } from './assets/data.js'
 import { EditorAction } from './assets/Editor.ts'
-import { getSheetDemoTiles, getSheetLocal, localSheetSave, pageDataBlank, readPageFromClipboard } from './assets/sheetData'
+import { getSheetDemoTiles, pageDataBlank, readPageFromClipboard } from './assets/sheetData'
 import { getToastData, toastError, toastWarning } from './assets/toast'
-import { TemplateData } from './assets/TemplateData'
+import { LocalStore } from './assets/LocalStore'
+import { TemplateData } from './assets/Templates'
 
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
@@ -21,11 +22,10 @@ import Page from './components/Page.vue'
 
 const frontPageData = ref(null)
 const backPageData = ref(null)
-const activeSheet = ref(null)
+const activeTemplate = ref(null)
 const sheetModified = ref(false)
 
 const flipMode = ref(false)
-const keyHowDoesItWork = 'howDoesItWork'
 const showEditor = ref(false)
 const showHowDoesItWork = ref(true)
 const showVersion = ref(true)
@@ -46,37 +46,38 @@ function doPrint() {
 }
 
 function getSheetName() {
-  if( !activeSheet.value || !activeSheet.value.name) return ''
-  return activeSheet.value.name 
+  if( !activeTemplate.value || !activeTemplate.value.name) return ''
+  return activeTemplate.value.name 
 }
 
 // update all widgets with provided data
-function loadTemplate(sheet=null) {
-  // console.log( '[App.loadSheet]', typeof data, JSON.stringify(sheet))
+function loadTemplate(template=null) {
+  // console.log( '[App.loadTemplate]', typeof data, JSON.stringify(sheet))
 
   // if we don't know what to show, we load a copy of the demo page
-  if( !sheet) {
-    sheet = getSheetDemoTiles();
+  if( !template) {
+    template = getSheetDemoTiles();
   }
 
   // make sure data is at the latest format
-  const data = TemplateData.normalize(sheet.data)
+  const data = TemplateData.normalize(template.data)
   if( data.length == 2){
     frontPageData.value = data[0]
     backPageData.value = data[1]
   } else {
-    console.log('[App.loadSheet] unexpected data length', data.length)
+    console.log('[App.loadTemplate] unexpected data length', data.length)
     frontPageData.value = null
     backPageData.value = null
   }
-  sheet.data = [frontPageData.value, backPageData.value]
-  activeSheet.value = sheet;
-  sheetModified.value = sheet.modified;
+  template.data = [frontPageData.value, backPageData.value]
+  activeTemplate.value = template;
+  // restore modified state
+  sheetModified.value = template.modified;
 }
 
 function onCloseHowDoesItWork() {
   showHowDoesItWork.value =  false
-  localStorage.setItem(keyHowDoesItWork, "false")
+  LocalStore.stopHowDoesItWork()
 }
 
 // Before the app starts, we request backend information, load user and potentially show how does it work
@@ -90,10 +91,9 @@ onBeforeMount(()=>{
   })
 
   // How does it work popup check
-  if( localStorage.getItem( keyHowDoesItWork) == 'false') {
-    showHowDoesItWork.value = false;
-  }
+  showHowDoesItWork.value = LocalStore.showHowDoesItWork()
 })
+
 
 // Pages are manipulated via editor buttons
 async function onEditorAction(action) {
@@ -126,8 +126,8 @@ async function onEditorAction(action) {
     reportError('[App.oneditorAction] unknown action ' + action)
   }
   // update active sheet with new values
-  activeSheet.value.data = [frontPageData.value, backPageData.value];
-  saveActiveSheet(true)
+  activeTemplate.value.data = [frontPageData.value, backPageData.value];
+  saveActiveTemplate(true)
 
 }
 
@@ -145,15 +145,16 @@ function onMenuLoad(sheet) {
   // console.log('[App.onMenuLoad]', JSON.stringify(sheet))
   if(sheet && sheet.data) {
     loadTemplate(sheet)
-    saveActiveSheet(false)
+    saveActiveTemplate(false)
   } else {
     console.log('[App.onMenuLoad] could not load', JSON.stringify(sheet))
   }
 }
 
-function onMenuSave(sheet) {
-  activeSheet.value = sheet;
-  saveActiveSheet(false)
+function onMenuSave(template) {
+  // console.log('[App.onMenuSave]', JSON.stringify(template))
+  activeTemplate.value = template;
+  saveActiveTemplate(false)
 }
 
 function onMenuToggle(value) {
@@ -169,7 +170,7 @@ onMounted(async () => {
       const code = urlParams.has('t') ? urlParams.get('t') : urlParams.get('sheet')
       // console.log('[App.onMounted] sheet code', sheetCode)
 
-      // TODO go get that sheet
+      // Get that publication data
       Templates.getPublication(code).then( template => {
         // console.log('[App.onMounted] sheet', JSON.stringify(sheet))
         // showToast('Fetch', 'Sheet found')
@@ -177,20 +178,21 @@ onMounted(async () => {
           loadTemplate(template)
         } else {
           showToast( getToastData( 'Load Template','Code not found ' + code, toastError))
-          loadTemplate(getSheetLocal())
+          loadTemplate(LocalStore.getTemplate())
         }
       }).catch(e => {
           showToast( getToastData( 'Load Template','Error fetching template ' + code, toastError))
-          loadTemplate(getSheetLocal())
+          loadTemplate(LocalStore.getTemplate())
       }) 
     } else {
-      loadTemplate(getSheetLocal())
+      // Vanilla scenario load local sheet
+      loadTemplate(LocalStore.getTemplate())
     }
   } catch(e) {
-    console.log('[App.onMounted] local data is corrupted', JSON.stringify(e))
+    console.log('[App.onMounted] local data is corrupted' + e)
     // revert to demo tiles
     loadTemplate(getSheetDemoTiles())
-    saveActiveSheet()
+    saveActiveTemplate()
   }
   // Analytics
   inject();
@@ -226,15 +228,15 @@ function onPrintOptions(options) {
 function onPageUpdateBack( pageData) {
   // console.log('[App.onPageUpdateBack]', JSON.stringify(pageData))
   backPageData.value = pageData;
-  activeSheet.value.data[1] = pageData
-  saveActiveSheet(true)
+  activeTemplate.value.data[1] = pageData
+  saveActiveTemplate(true)
 }
 
 function onPageUpdateFront(pageData) {
   // console.log('[App.onPageUpdateFront]')
   frontPageData.value = pageData
-  activeSheet.value.data[0] = pageData
-  saveActiveSheet(true)
+  activeTemplate.value.data[0] = pageData
+  saveActiveTemplate(true)
 }
 
 function restorePrintOptions() {
@@ -249,9 +251,9 @@ function restorePrintOptions() {
     showHowDoesItWork.value = false;
 }
 
-function saveActiveSheet(modified=false) {
+function saveActiveTemplate(modified=false) {
   // console.log('[App.saveActiveSheet]', modified)
-  localSheetSave(activeSheet.value, modified)
+  LocalStore.saveTemplate(activeTemplate.value, modified)
   sheetModified.value = modified
 }
 
@@ -274,7 +276,7 @@ function showToast(data) {
       @toast="toast.add" />
   </div>
   <Editor v-if="showEditor" @action="onEditorAction" />
-  <Menu class="menu" :pageData="activeSheet?activeSheet.data:null" v-show="showMenu"
+  <Menu class="menu" :activeTemplate="activeTemplate" v-show="showMenu"
     @howDoesItWork="showHowDoesItWork=true"
     @load="onMenuLoad" 
     @print="onPrint" @printOptions="onPrintOptions"
