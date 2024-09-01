@@ -9,7 +9,7 @@ import InputGroupAddon from "primevue/inputgroupaddon";
 import InputText from "primevue/inputtext";
 
 import { customSheetDelete } from "../../assets/data"
-import { describePage, getTemplateDataFromName } from '../../assets/sheetData'
+import { getTemplateDataFromName } from '../../assets/sheetData'
 import { sheetNameDemo, sheetNameDemoChecklist, sheetNameDemoNavlog, sheetNameDemoTiles } from '../../assets/sheetData'
 import { getToastData, toastError, toastSuccess } from '../../assets/toast'
 import { TemplateData, TemplateDialogMode } from '../../assets/Templates'
@@ -312,7 +312,6 @@ function showToast(summary,details,severity=toastSuccess) {
 .alignedRow {
   display: flex;
   flex-wrap: wrap;
-  /* line-height: 2rem; */
   align-items: center;
   gap: 5px;
 }
@@ -321,10 +320,7 @@ function showToast(summary,details,severity=toastSuccess) {
 }
 .pageName {
   grid-column: 1 / span 2;
-}
-.pageDescription {
-  font-size: 0.8rem;
-  overflow: hidden;
+  padding: 3px;
 }
 
 .properties {
