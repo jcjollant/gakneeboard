@@ -31,6 +31,7 @@ export class Navlog {
         const output:Navlog = new Navlog(source.from, source.to)
         output.ff = Number(source.ff)
         output.ft = Number(source.ft)
+        output.fr = Number(source.fr)
         output.mv = Number(source.mv)
         output.md = Number(source.md)
         output.tt = Number(source.tt)
@@ -104,6 +105,36 @@ export class Navlog {
         this.tt = Number(value)
     }
 
+    static updateAllAttitudes(entries:NavlogEntry[]) {
+        for(let index = 0; index < entries.length -1; index++) {
+            const from = entries[index]
+            const to = entries[index+1]
+            Navlog.updateAttitude(from, to)
+        }
+    }
+
+    /**
+     * Adjust one attitude (from parameters) in relationship to "to"
+     * @param from 
+     * @param to 
+     */
+    static updateAttitude(from:NavlogEntry, to:NavlogEntry|undefined) {
+        // attitudes
+        // attitude is set to neutral (undefined) if altitudes are unknown or equal
+        if( to == undefined 
+            || from.alt === undefined 
+            || to.alt === undefined 
+            || from.alt == to.alt) {
+            from.att = undefined;
+        } else if( from.alt < to.alt) {
+            from.att = '+'
+        } else {
+            from.att = '-'
+        }
+    }
+
+
+
     updateRelationships() {
         // calculate total time and distance
         // based on leg times and distances
@@ -128,20 +159,9 @@ export class Navlog {
             // update compass headings
             entry.ch = this.getEntryCompassHeading(entry)
 
-            // attitudes
+            // Attitude
             const nextEntry = (index < entriesCount - 1) ? this.entries[index+1] : undefined;
-            // attitude is set to neutral (undefined) if altitudes are unknown or equal
-            if( nextEntry == undefined 
-                || entry.alt === undefined 
-                || nextEntry.alt === undefined 
-                || entry.alt == nextEntry.alt) {
-                entry.att = undefined;
-            } else if( entry.alt < nextEntry.alt) {
-                entry.att = '+'
-            } else {
-                entry.att = '-'
-            }
+            Navlog.updateAttitude(entry, nextEntry)
         }
     }
-
 }
