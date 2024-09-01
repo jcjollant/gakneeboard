@@ -10,7 +10,8 @@ import { EditorItem } from './EditorItem'
 
 import ActionBar from '../shared/ActionBar.vue'
 import AirportInput from '../shared/AirportInput.vue'
-import NavlogEntryEditor from './NavlogEntryEditor.vue'
+import NavlogLegEditor from './NavlogLegEditor.vue'
+import NavlogCheckpointEditor from './NavlogCheckpointEditor.vue'
 
 import Button from 'primevue/button'
 import InputGroup from 'primevue/inputgroup'
@@ -30,9 +31,11 @@ const initialFuel = ref(null)
 const items = ref([])
 const magneticVariation = ref(null)
 const magneticDeviation = ref(0)
+const nextEntry = ref(null)
+const prevEntry = ref(null)
 const reserveFuel = ref(null)
-const showEditor = ref(false)
-const showLeg = ref(true)
+const showEditorCheckpoint = ref(false)
+const showEditorLeg = ref(false)
 const totalDistance = ref(0)
 const totalTime = ref(0)
 const totalFuel = ref(0)
@@ -55,6 +58,7 @@ function loadProps(newProps) {
         codeFrom.value = navlog.from;
         codeTo.value = navlog.to;
         initialFuel.value = navlog.getFuelFrom();
+        reserveFuel.value = navlog.getFuelReserve();
         magneticVariation.value = navlog.getMagneticVariation()
         magneticDeviation.value = 0
 
@@ -139,14 +143,14 @@ function onApply() {
     emits('apply', newNavLog)
 }
 
-function onCheat() {
-    codeFrom.value = 'KRNT'
-    elevFrom = 32
-    codeTo.value = 'KELN'
-    elevTo = 1763
-    altitudes.value = "2500 2500 4500 4500 7500 7500 5500"
-    doCreate()
-}
+// function onCheat() {
+//     codeFrom.value = 'KRNT'
+//     elevFrom = 32
+//     codeTo.value = 'KELN'
+//     elevTo = 1763
+//     altitudes.value = "2500 2500 4500 4500 7500 7500 5500"
+//     doCreate()
+// }
 
 /**
  * Create a new items list using from and to
@@ -204,33 +208,52 @@ function doCreate() {
     })
     newList.push.apply(newList, altItems)
     newList.push( EditorItem.vanilla( codeTo.value, elevTo, false, false))
+
     // console.log('[NavlogEdit.onCreate]', JSON.stringify(newNL))
     items.value = newList;
 
-
+    updateAttitudes()
 
     // reset totals
     totalDistance.value = 0
     totalTime.value = 0
     totalFuel.value = 0
 
-    emitToast(emits, 'Navlog Created','Please update TOC/TOD altitudes')
+    emitToast(emits, 'Clear','Navlog Created')
 
 }
-function onEntryEditorClose() {
-    showEditor.value = false;
+
+function onEditCheckpoint(index) {
+    activeIndex = index;
+    activeEntry.value = items.value[index].entry
+    activeTime.value = Date.now()
+    showEditorCheckpoint.value = true
+}
+
+function onEditLeg(index) {
+    activeIndex = index;
+    activeEntry.value = items.value[index].entry
+    nextEntry.value = (index < items.value.length - 1) ? items.value[index+1].entry : null
+    prevEntry.value = index > 0 ? items.value[index-1].entry : null
+    activeTime.value = Date.now()
+    // console.log('[NavlogEdit.onItemEdit]', JSON.stringify(activeEntry.value))
+    showEditorLeg.value = true
 }
 
 function onEntryEditorSave(entry) {
     // refresh this entry
     items.value[activeIndex].entry = entry
     // close editor
-    showEditor.value = false;
+    showEditorCheckpoint.value = false;
+    showEditorLeg.value = false;
 
     // recompute totals
     totalDistance.value = items.value.reduce( (total,i) => i.entry.ld ? total + i.entry.ld : total,0)
     totalTime.value = items.value.reduce( (total,i) => i.entry.lt ? total + i.entry.lt : total,0)
     totalFuel.value = items.value.reduce( (total,i) => i.entry.lf ? total + i.entry.lf : total,0)
+
+    // update attitudes
+    updateAttitudes()
 }
 
 function onItemAdd(index) {
@@ -250,32 +273,23 @@ function onItemAdd(index) {
 function onItemDelete(index) {
     // remove entry at position index from items
     items.value.splice(index, 1)
+    updateAttitudes()
 }
 
-function onItemEdit(index) {
-    activeIndex = index;
-    activeEntry.value = items.value[index].entry
-    activeTime.value = Date.now()
-    // console.log('[NavlogEdit.onItemEdit]', JSON.stringify(activeEntry.value))
-    showLeg.value = index < items.value.length - 1
-    showEditor.value = true
-}
-
-// a magnetic value has been changed, recompute course headings
-function onMagneticChange() {
-    for(const item of items.value) {
-        if( item.entry.th) {
-            item.entry.ch = item.entry.th + Number(magneticVariation.value) + Number(magneticDeviation.value)
-        }
-    }
+function updateAttitudes() {
+    // get a list of NavlogEntries
+    const entries = items.value.map( ei => ei.entry)
+    Navlog.updateAllAttitudes(entries)
 }
 
 </script>
 
 <template>
 <div>
-    <NavlogEntryEditor v-model:visible="showEditor" :entry="activeEntry" :time="activeTime" :showLeg="showLeg" :magVar="compass(magneticVariation)" :magDev="compass(magneticDeviation)"
-        @close="onEntryEditorClose" @save="onEntryEditorSave" />
+    <NavlogCheckpointEditor v-model:visible="showEditorCheckpoint" :entry="activeEntry" :time="activeTime"
+        @close="showEditorCheckpoint=false" @save="onEntryEditorSave" />
+    <NavlogLegEditor v-model:visible="showEditorLeg" :entry="activeEntry" :nextEntry="nextEntry" :prevEntry="prevEntry" :time="activeTime" :magVar="compass(magneticVariation)" :magDev="compass(magneticDeviation)"
+        @close="showEditorLeg=false" @save="onEntryEditorSave" />
     <div class="variables">
         <AirportInput :code="codeFrom" :auto="true" label="From" class="varAirportFrom" @valid="onAirportFromValid" @invalid="onAirportFromInvalid" />
         <AirportInput :code="codeTo" :auto="true" label="To" class="varAirportTo" @valid="onAirportToValid" @invalid="onAirportToInvalid"/>
@@ -329,8 +343,8 @@ function onMagneticChange() {
                     <i v-if="i.canAdd" class="pi pi-plus actionAdd clickable" title="Add new checkpoint after"
                         @click="onItemAdd(index+1)"></i>
                 </div>
-                <div class="bl checkpointName editable" @click="onItemEdit(index)">{{ formatName(i.entry.name) }}</div>
-                <div class="bl br checkpointAlt editable" @click="onItemEdit(index)">{{ formatAltitude(i.entry.alt) }}</div>
+                <div class="bl checkpointName editable" @click="onEditCheckpoint(index)">{{ formatName(i.entry.name) }}</div>
+                <div class="bl br checkpointAlt editable" @click="onEditCheckpoint(index)">{{ formatAltitude(i.entry.alt) }}</div>
             </div>
         </div>
         <div class="legs"><!-- legs -->
@@ -343,14 +357,14 @@ function onMagneticChange() {
                 <div title="Leg Time">Time</div>
                 <div title="Leg Fuel">Fuel</div>
             </div>
-            <div v-for="(i,index) in items.slice(0, items.length - 1)" class="legGrid bb">
+            <div v-for="(i,index) in items.slice(0, items.length - 1)" class="legGrid bb" @click="onEditLeg(index)">
                 <!-- <div class="editable trueHeading" @click="onItemEdit(index)">{{ Formatter.heading(i.entry.th) }}</div> -->
-                <div class="magneticHeading editable" @click="onItemEdit(index)">{{ Formatter.heading(i.entry.mh) }}</div>
+                <div class="magneticHeading editable">{{ Formatter.heading(i.entry.mh) }}</div>
                 <!-- <div class="bl compassHeading">{{ Formatter.heading(i.entry.ch) }}</div> -->
-                <div class="legDistance bl editable" @click="onItemEdit(index)">{{ Formatter.distance( i.entry.ld) }}</div>
-                <div class="groundSpeed bl editable" @click="onItemEdit(index)">{{ Formatter.speed(i.entry.gs) }}</div>
-                <div class="legTime bl editable" @click="onItemEdit(index)">{{ Formatter.legTime(i.entry.lt) }}</div>
-                <div class="legFuel bl editable" @click="onItemEdit(index)">{{ Formatter.fuel(i.entry.lf) }}</div>
+                <div class="legDistance bl editable">{{ Formatter.distance( i.entry.ld) }}</div>
+                <div class="groundSpeed bl editable">{{ Formatter.speed(i.entry.gs) }}</div>
+                <div class="legTime bl editable">{{ Formatter.legTime(i.entry.lt) }}</div>
+                <div class="legFuel bl editable">{{ Formatter.fuel(i.entry.lf) }}</div>
             </div>
             <div class="legGrid">
                 <div class="total totalDistance">{{ Formatter.distance(totalDistance) }}</div>
@@ -465,14 +479,9 @@ function onMagneticChange() {
 .varInitialFuel {
     grid-column: 1;
 }
-.varTaxiFuel {
-
-}
-
 :deep(.p-component), :deep(.p-inputgroup-addon) {
     font-size: 0.8rem;
     height: 1.5rem;
-    
 }
 
 :deep(.variables .p-inputtext) {
