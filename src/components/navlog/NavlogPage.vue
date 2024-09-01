@@ -43,7 +43,7 @@ const title = ref('NavLog')
 let navlogBeforeEdit = null
 
 function onEditApply(newNavlog) {
-    // console.log('[NavlogPage.onEditApply]', JSON.stringify(newNavlog))
+    console.log('[NavlogPage.onEditApply]', JSON.stringify(newNavlog))
     navlog.value = newNavlog
     mode.value = ''
     emits('update',newNavlog)
