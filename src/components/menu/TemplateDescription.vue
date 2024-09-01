@@ -46,7 +46,7 @@ watch( props, async() => {
 .pageDescription {
   font-size: 0.8rem;
   overflow: hidden;
-  height: 1rem;
+  height: 1.1rem;
 }
 
 .templateDescription {
