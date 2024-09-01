@@ -48,6 +48,11 @@ function openUrl(url) {
         <div class="mb-5 justify">last, GA Kneeboard public <a :href="urlFacebookGroup" target="_blank">Facebook Group</a> is a good place to interract.</div>
       </div>
       <div v-else-if="activeTopic.value==topicWarning.value" class="warning-content mb-5">
+        <div class="topWarning">
+          <i class='pi pi-exclamation-triangle bigIcon'></i>
+          <span>Always confirm all data provided by this app</span>
+          <i class='pi pi-exclamation-triangle bigIcon'></i>
+        </div>
         <div class="warning-item mr-3">Airport information</div>
         <div>May not be current. Cross check with an official source before you fly.</div>
         <div class="warning-item mr-3">Traffic Pattern Altitude</div>
@@ -58,6 +63,8 @@ function openUrl(url) {
         <div>Does not account for aircraft direction. Check chart supplements.</div>
         <div class="warning-item mr-3">Runway Frequency</div>
         <div>May not be displayed for airport that have a complex frequency allocation.</div>
+        <div class="warning-item mr-3">Radio Flow Frequencies</div>
+        <div>Are user defined (by you) and are not updated with data refresh.</div>
         <div class="warning-item mr-3">Magnetic Headings</div>
         <div>Are calculated with FAA variation data which can be quite old at some locations</div>
       </div>    
@@ -72,7 +79,10 @@ function openUrl(url) {
 <style scoped>
 .aboutPopup {
   width:45rem;
+}
 
+.bigIcon {
+  font-size: 2rem;
 }
 .guides {
   display: grid;
@@ -85,6 +95,17 @@ function openUrl(url) {
   justify-content: center;
 }
 
+.topWarning {
+  grid-column: 1 / span 2;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: larger;
+  font-weight: bold;
+  padding-bottom: 2rem;
+  color: darkorange;
+  margin: auto;
+}
 .warning-content {
   display: grid;
   grid-template-columns: auto auto;
