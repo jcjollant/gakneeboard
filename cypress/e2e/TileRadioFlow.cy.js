@@ -4,10 +4,6 @@ describe('Radio Flow Tile', () => {
   it('Radio Flow Tile', () => {
     visitAndCloseBanner()
 
-    // give it a sec to digest airports
-    cy.wait(1000)
-
-
     // Check all fields are present in Radio flow
     cy.fixture('radioFlow').then((radioFlow) => {
       for(let index=0; index<radioFlow.length; index++) {
@@ -68,7 +64,7 @@ describe('Radio Flow Tile', () => {
     // close lookup
     cy.get('.p-dialog-header-icon').click()
     // Test textarea content
-    cy.get('.p-inputtextarea').should('have.value','124.7,KRNT CTAF\n110.6,PAE VOR/DME\n119.2,SEATTLE-TACOMA APPROACH CONTROL')
+    cy.get('.p-inputtextarea').should('have.value','124.700,KRNT CTAF\n110.600,PAE VOR/DME\n119.200,SEATTLE-TACOMA APPROACH CONTROL')
 
     // Switch tile type to notes then coma back to radio
     // cy.get('.pageTwo > :nth-child(6) > .headerTitle > div').click()
