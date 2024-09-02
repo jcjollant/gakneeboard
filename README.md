@@ -17,6 +17,10 @@ Run the test suite:
 ## TODO
 
 # Done
+## 9/01/2024
+* Refreshed Warning with banner
+* Leg and CHeckpoint have their own editor
+* Leg editor has built in calculations
 ## 8/31/2024
 * Improved navlog creation process with altitude
 * Navlog now include a reserve fuel
