@@ -1,5 +1,6 @@
 <script setup>
-import { formatMhz } from '../../assets/data'
+import { Formatter } from '../../assets/Formatter'
+
 const props = defineProps({
     freq: { type: Object, default: null},
     small: { type: Boolean, default: false},
@@ -9,7 +10,7 @@ const props = defineProps({
 
 <template>
     <div class="frequencyBox" :class="small?'fbSmall':'fbMedium'">
-        <div :class="small?'freqSmall':'freqMedium'">{{ formatMhz( freq.mhz) }}</div>
+        <div :class="small?'freqSmall':'freqMedium'">{{ Formatter.frequency(freq) }}</div>
         <div class="name" :class="small?'nameSmall':'nameMedium'">{{freq.name}}</div>
     </div>
 </template>

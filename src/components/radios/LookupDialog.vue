@@ -9,13 +9,12 @@ import FieldSet from 'primevue/fieldset'
 
 import AirportInput from '../shared/AirportInput.vue'
 
-                    // <Button v-for="kf in knownFrequencies" :label="kf.display" 
-                    //     :title="formatMhz(kf.mhz) + ',' + kf.name"
-                    //     @click="addFrequency(kf)" :icon="kf.nav?'pi pi-compass':''"></Button>
-
-
 const emits = defineEmits(["add"]);
-
+const airports = ref([])
+const selectedAirport = ref(null)
+const localFrequencies = ref([])
+const navaidFrequencies = ref([])
+const atcGroups = ref([])
 
 //--------------------------------
 // Props management
@@ -31,12 +30,6 @@ watch(props, () => {
     refreshAirportList()
 })
 //--------------------------------
-
-const airports = ref([])
-const selectedAirport = ref(null)
-const localFrequencies = ref([])
-const navaidFrequencies = ref([])
-const atcGroups = ref([])
 
 function addFrequency(mhz,name) {
     emits('add', {mhz:mhz,name:name})

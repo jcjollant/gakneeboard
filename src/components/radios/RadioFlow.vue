@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { formatMhz, urlGuideRadioFlow } from '../../assets/data'
+import { urlGuideRadioFlow } from '../../assets/data'
+import { Formatter } from '../../assets/Formatter'
 
 import ActionBar from '../shared/ActionBar.vue'
 import Header from '../shared/Header.vue';
@@ -119,7 +120,7 @@ function toast(message, severity='success') {
 }
 
 function updateTextarea() {
-    textData.value = frequencies.value.map( f => f.mhz + ',' + f.name).join('\n')
+    textData.value = frequencies.value.map( f => Formatter.frequency(f.mhz) + ',' + f.name).join('\n')
 }
 </script>
 
