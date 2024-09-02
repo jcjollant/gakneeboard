@@ -97,8 +97,9 @@ function calculation() {
             legTime = legDistance / groundSpeed * 60
         }
     } else if( descent) {
-        const altFrom = Number(editEntry.value.alt)
-        const altTo = Number(nextEntry.value.alt)
+        const altFrom = editEntry.value ? Number(editEntry.value?.alt) : undefined
+        // const altTo = nextEntry.value ? Number(nextEntry.value?.alt) : undefined
+        const altTo = Number(nextEntry.value?.alt)
         const descentRateValue = Number(descentRate.value)
         // altitude difference / descent rate
         if( !(isNaN(altFrom) || isNaN(altTo) || isNaN(descentRateValue) || descentRateValue <= 0)) {
@@ -110,7 +111,7 @@ function calculation() {
     // Fuel
     const fuelFlowValue = cruise ? Number(fuelFlowCruise.value) : (descent ? Number(fuelFlowDescent.value) : undefined)
     let legFuel = undefined
-    console.log('[NavlogLegEditor,calculation]', fuelFlowValue, legTime)
+    // console.log('[NavlogLegEditor.calculation]', fuelFlowValue, legTime)
     if(legTime && !(isNaN(fuelFlowValue) || fuelFlowValue <= 0)) {
         legFuel = fuelFlowValue * legTime / 60;
     }
@@ -167,15 +168,15 @@ function onSave() {
             <div class="legParamGroup">
                 <InputGroup class="legParameter" title="POH Cruise Fuel Flow (GPH)">
                     <InputGroupAddon>Cruise Fuel Flow</InputGroupAddon>
-                    <InputText v-model="fuelFlowCruise" @input="calculation" />
+                    <InputText id="cruiseGPH" v-model="fuelFlowCruise" @input="calculation" />
                 </InputGroup>
                 <InputGroup class="legParameter" title="POH Descent Fuel Flow (GPH)">
                     <InputGroupAddon>Descent Fuel Flow</InputGroupAddon>
-                    <InputText v-model="fuelFlowDescent" @input="calculation" />
+                    <InputText id="descentGPH" v-model="fuelFlowDescent" @input="calculation" />
                 </InputGroup>
                 <InputGroup class="legParameter" title="Descent Rate (FPM)">
                     <InputGroupAddon>Descent Rate</InputGroupAddon>
-                    <InputText v-model="descentRate" @input="calculation" />
+                    <InputText id="descentFPM" v-model="descentRate" @input="calculation" />
                 </InputGroup>
             </div>
             <FieldSet legend="Log Data" class="mt-2">
@@ -199,14 +200,14 @@ function onSave() {
                     <div title="Magnetic Heading" class="legField">
                         <div class="label">Mag Hdg</div>
                         <InputText id="mh" v-model="editEntry.mh" />
-                        <div class="hint clickable" 
+                        <div class="hint clickable" id="mhHint"
                             title="Previous leg heading. Click to use." 
                             @click="editEntry.mh=prevHeading">{{ prevHeading }}</div>
                     </div>
                     <div title="Leg Distance (NM). Supports calculation for cruise legs (ex: 24-15.4)" class="legField">
                         <div class="label">Distance</div>
                         <InputText id="ld" v-model="editEntry.ld" @input="calculation" />
-                        <div class="hint clickable" 
+                        <div class="hint clickable" id="ldHint"
                             title="Calculated Distance (For descent only). Click to use." 
                             @click="editEntry.ld=calculatedDistance">{{ calculatedDistance }}</div>
                     </div>
@@ -217,14 +218,14 @@ function onSave() {
                     <div class="legField" title="Leg Time (Min). Supports decimal and time format (3:30 = 3.5)">
                         <div class="label">Time</div>
                         <InputText id="lt" v-model="editEntry.lt" />
-                        <div class="hint clickable" 
+                        <div class="hint clickable" id="ltHint"
                             title="Calculated Leg Time [formula varies with leg type]. Click to use." 
                             @click="editEntry.lt=calculatedTime">{{ calculatedTime }}</div>
                     </div>
                     <div class="legField" title="Leg Fuel (Gal)">
                         <div class="label">Leg Fuel</div>
                         <InputText id="lf" v-model="editEntry.lf" />
-                        <div class="hint clickable" 
+                        <div class="hint clickable" id="lfHint"
                             title="Calculated Leg Fuel [formula varies with leg type]. Click to use." 
                             @click="editEntry.lf=calculatedFuel">{{ calculatedFuel }}</div>
                     </div>
