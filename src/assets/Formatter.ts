@@ -1,7 +1,9 @@
 export class Formatter {
     static noFuel:string = '-.-'
     static noTime:string = '--:--'
-
+    static noFrequency:string = '-.-'
+    static noHeading:string = '---'
+    static noSpeed:string = '--'
 
     static distance(dist:any) {
         if(dist == null || dist === undefined) return '?'
@@ -9,6 +11,17 @@ export class Formatter {
         return dist.toFixed(1)
     }
 
+    /**
+     * Turns a frequency into it's string representation
+     * @param freq can be a number, an object with a 'mhz' or 'freq' property, or a string
+     * @returns 
+     */
+    static frequency(freq:any) {
+        // console.log('[Formatter.frequency]', typeof freq, JSON.stringify(freq))
+        if( !freq && !freq.mhz && !freq.freq) return Formatter.noFrequency
+        const value = freq.mhz ? freq.mhz : (freq.freq ? freq.freq : freq);
+        return Number(value).toFixed(3)
+    }
 
     static fuel(fuel:any) {
         if(fuel == null || fuel == undefined) return Formatter.noFuel
@@ -17,7 +30,7 @@ export class Formatter {
     }
 
     static heading(raw:any) {
-        if(raw == null || raw == undefined) return '?'
+        if(raw == null || raw == undefined) return Formatter.noHeading
         let value:number
         if(typeof raw != 'number') {
             value = Number(raw)
@@ -38,7 +51,7 @@ export class Formatter {
     }
 
     static speed(value:any) {
-        if(value == null || value == undefined) return '?'
+        if(value == null || value == undefined) return Formatter.noSpeed
         if(typeof value == 'string') return Number(value).toFixed(0)
         return value.toFixed(0)
     }
