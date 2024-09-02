@@ -1,4 +1,4 @@
-export const version = 901
+export const version = 902
 
 export const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // export const apiRootUrl = 'http://localhost:3000/'
@@ -92,11 +92,6 @@ export async function customSheetDelete(template) {
       reportError('[data.customSheetDelete] error ' + JSON.stringify(error))
       return null
     })
-}
-
-export function formatMhz(mhz) {
-    if( !mhz) return '-.-'
-    return Number(mhz).toFixed(3)
 }
 
 /**
