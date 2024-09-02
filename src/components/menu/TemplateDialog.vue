@@ -65,6 +65,12 @@ function changeTemplateTarget(newTemplate=null) {
   templateNameText.value = newTemplate ? newTemplate.name : ''
 }
 
+function getDescriptionTitle() {
+  if(fetching.value) return 'Fetching ...'
+  if(loadTemplate.value) return loadTemplate.value.name
+  return 'Description'
+}
+
 function getTemplateName(template=null) {
   if(!template || !template.name) return '?'
   let name = template.name;
@@ -264,7 +270,7 @@ function showToast(summary,details,severity=toastSuccess) {
           @click="onLoadDefault(sheetNameDemoNavlog)"></Button>
     </div>
   </FieldSet>
-    <FieldSet :legend="loadTemplate ? loadTemplate.name : 'Description'">
+    <FieldSet :legend="getDescriptionTitle()">
       <TemplateDescription v-if="loadTemplate" :template="loadTemplate" />
       <div v-else class="contentPlaceholder">Select a template above to view its content</div>
     </FieldSet>
