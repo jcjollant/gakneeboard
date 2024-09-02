@@ -227,7 +227,7 @@ function onEditCheckpoint(index) {
     activeIndex = index;
     activeEntry.value = items.value[index].entry
     activeTime.value = Date.now()
-    nextEntry.value = items.value[index+1].entry
+    nextEntry.value = items.value[index+1]?.entry
     showEditorCheckpoint.value = true
 }
 
