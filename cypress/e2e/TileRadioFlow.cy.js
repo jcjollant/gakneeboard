@@ -4,6 +4,8 @@ describe('Radio Flow Tile', () => {
   it('Radio Flow Tile', () => {
     visitAndCloseBanner()
 
+    cy.wait(2000)
+    
     // Check all fields are present in Radio flow
     cy.fixture('radioFlow').then((radioFlow) => {
       for(let index=0; index<radioFlow.length; index++) {
