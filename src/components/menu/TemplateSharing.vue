@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue'
 
 import { urlKneeboard } from '../../assets/data'
-import { emitToastError } from '../../assets/toast'
+import { emitToast, emitToastError } from '../../assets/toast'
 
 import Button from 'primevue/button'
 import SelectButton from 'primevue/selectbutton'
@@ -56,15 +56,16 @@ watch(publish, () => {
 async function onCopyURL() {
   const toastTitle = 'Copy to Clipboard'
     if(!directLink.value) {
-      emitToastError(toastTitle, 'Nothing to copy')
+      emitToastError(emits, toastTitle, 'Nothing to copy')
       return;
     }
     try {
       await navigator.clipboard.writeText(directLink.value);
-      emitToast(toastTitle, directLink.value + ' copied to clipboard')
-    } catch($e) {
-      emitToastError(toastTitle, 'Could not copy to clipboard', toastError)
-    }  
+      emitToast(emits, toastTitle, 'URL copied to clipboard')
+    } catch(e) {
+      console.log('[TemplateSharing.onCopyURL]' + e)
+      emitToastError(emits, toastTitle, 'Could not copy to clipboard')
+    } 
 }
 
 
