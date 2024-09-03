@@ -70,6 +70,10 @@ body {
   justify-content: end;
 }
 
+.noShow {
+  visibility: hidden;
+}
+
 .redBorder {
   border: 1px solid red;
 }
