@@ -8,6 +8,9 @@ SELECT * FROM airports
 # How many airports are there
 SELECT COUNT(*) FROM airports
 
+# Show version distribution
+SELECT version, COUNT(*) FROM airports GROUP BY version ORDER BY version DESC
+
 #--------------------------------------------------------
 # Known Unknowns
 SELECT * FROM airports WHERE version=-1
@@ -22,8 +25,6 @@ SELECT COUNT(*) FROM airports WHERE data ISNULL
 # Count outdated by model?
 SELECT COUNT(*) FROM airports WHERE version<9
 
-# Show version distribution
-SELECT version, COUNT(*) FROM airports GROUP BY version ORDER BY version DESC
 
 # How many are current?
 SELECT COUNT(*) FROM airports WHERE version=9
