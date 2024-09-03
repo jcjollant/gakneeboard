@@ -33,8 +33,8 @@ watch( props, async() => {
 
 <template>
     <div class="templateDescription">
-        <div class="label">Front</div><div class="pageDescription">{{ describePage(template, 0) }}</div>
-        <div class="label">Back</div><div class="pageDescription">{{ describePage(template, 1) }}</div>
+        <div class="label">Page 1</div><div class="pageDescription">{{ describePage(template, 0) }}</div>
+        <div class="label">Page 2</div><div class="pageDescription">{{ describePage(template, 1) }}</div>
     </div>
 </template>
 
