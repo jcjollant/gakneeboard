@@ -18,6 +18,16 @@ export class TemplateDialogMode {
     static overwrite = 'overwrite'
 }
 
+export class TemplatePage {
+    type:string
+    data:any
+
+    constructor(type:string, data:any) {
+        this.type = type
+        this.data = data
+    }
+}
+
 export class TemplateData {
     /**
     * Gets a publication from its public code
@@ -49,7 +59,7 @@ export class TemplateData {
             const front = {type:PageType.tiles,data:[data[0],data[1],data[2],data[3],data[4],data[5]]}
             // adjust ids to 6->0 ... 11->5
             for(let index = 6; index < 12; index++) {
-            data[index].id -= 6;
+                data[index].id -= 6;
             }
             const back = {type:PageType.tiles,data:[data[6],data[7],data[8],data[9],data[10],data[11]]}
             data = [front, back]
@@ -104,18 +114,4 @@ export class TemplateData {
                 return null
             })
     }
-
-    
-
-    // static getList() {
-    //     const url = apiRootUrl + 'templates'
-    //     return getUrlWithUser(url).then( response => {
-    //         newCurrentUser.setTemplates(response.data)
-    //         return response.data;
-    //     })
-    //     .catch( error => {
-    //         reportError( '[data.sheetGetList] error ' + JSON.stringify(error))
-    //         return null
-    //     })
-    // }    
 }
