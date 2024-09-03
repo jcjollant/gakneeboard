@@ -17,7 +17,10 @@ Run the test suite:
 ## TODO
 
 # Done
-## Next
+## 9/03/2024
+* Fixed get publication bug
+* Fixed page number issue
+## 9/02/2024
 * Load Template shows "Fetching..." when fetching
 * Radio Flows formats frequency upon selection
 * You can now rename templates when saving
