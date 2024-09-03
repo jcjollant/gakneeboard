@@ -113,6 +113,9 @@ export class Adip {
         if( adip.arp) {
             airport.setLocation(adip.arp)
         }
+        if(adip.trafficPatternAltitude) {
+            airport.setTrafficPatternAltitude(adip.trafficPatternAltitude)
+        }
 
         // read frequencies
         let weatherFound:boolean = false
