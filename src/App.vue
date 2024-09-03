@@ -11,7 +11,6 @@ import { getToastData, toastError, toastWarning } from './assets/toast'
 import { LocalStore } from './assets/LocalStore'
 import { TemplateData } from './assets/Templates'
 
-import Button from 'primevue/button'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
 
