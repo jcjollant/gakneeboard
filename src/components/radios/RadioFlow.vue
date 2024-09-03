@@ -14,17 +14,16 @@ import Textarea from 'primevue/textarea';
 
 const emits = defineEmits(['replace','update','toast'])
 const maxFreqCount = 15
-
-const props = defineProps({
-    params: { type: Object, default: null}, // expecting a list of radio {'target':'COM1', 'freq':'-.-', 'name':'-'}
-})
-
 const mode=ref('')
 const textData = ref('')
 const frequencies = ref([])
 const showLookup = ref(false)
 const lookupTime = ref(0)
 let listBeforeEdit = []
+
+const props = defineProps({
+    params: { type: Object, default: null}, // expecting a list of radio {'target':'COM1', 'freq':'-.-', 'name':'-'}
+})
 
 onMounted(() => {
     // console.log('onMounted ' + JSON.stringify(props.params))
