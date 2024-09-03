@@ -54,7 +54,7 @@ function getSheetName() {
 }
 
 function getSheetNumber() {
-  if(offsetLast == 0) return ''
+  if(offsetLast.value == 0) return ''
   // add the sheet number
   return '[' + (offset.value / 2 + 1) + '/' + (offsetLast.value / 2 + 1) + ']'
 }
@@ -238,7 +238,7 @@ onMounted(async () => {
       // console.log('[App.onMounted] sheet code', sheetCode)
 
       // Get that publication data
-      Templates.getPublication(code).then( template => {
+      TemplateData.getPublication(code).then( template => {
         // console.log('[App.onMounted] sheet', JSON.stringify(sheet))
         // showToast('Fetch', 'Sheet found')
         if(template) {
