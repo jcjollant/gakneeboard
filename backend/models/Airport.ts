@@ -1,4 +1,4 @@
-const modelVersion:number = 9;
+const modelVersion:number = 10;
 export const versionInvalid:number = -1
 
 import { Atc } from './Atc'
@@ -12,6 +12,7 @@ export class Airport {
     code: string;
     name: string;
     elev: number;
+    tpa:number|undefined;
     freq: Frequency[];
     rwys: Runway[];
     navaids: Navaid[];
@@ -27,6 +28,7 @@ export class Airport {
         this.code = code;
         this.name = name;
         this.elev = elevation;
+        this.tpa = undefined;
         this.freq = [];
         this.rwys = [];
         this.navaids = [];
@@ -118,5 +120,9 @@ export class Airport {
             rwy.freq = frequency;
             this.addFrequency('RWY ' + rwyName, frequency)
         }
+    }
+
+    setTrafficPatternAltitude(newTpa:number) {
+        this.tpa = newTpa;
     }
 }
