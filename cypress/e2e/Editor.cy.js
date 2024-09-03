@@ -1,13 +1,22 @@
-import { currentVersionNumber, environment, visitAndCloseBanner, maintenanceMode } from './shared'
+import { visitAndCloseBanner } from './shared'
+
+function reloadDemo() {
+    cy.get('#btnEditor').click()
+    cy.get('.menuIcon').click()
+    cy.get('[aria-label="Demo"]').click()
+    cy.get('.p-confirm-dialog-accept').click()
+    cy.get('.menuIcon').click()
+    cy.get('#btnEditor').click()
+}
 
 describe('Editor', () => {
  it('Editor', () => {
     visitAndCloseBanner()
 
-    cy.wait(1000)
-
+    cy.wait(500)
+    cy.viewport('macbook-13')
     // enable editor
-    cy.get('.pi-file-edit').click()
+    cy.get('#btnEditor').click()
 
     // Check we have action buttons
     cy.get(':nth-child(1) > [aria-label="Reset"]')
@@ -23,10 +32,13 @@ describe('Editor', () => {
     cy.get('.pageOne').contains('Page Selection')
     cy.get('.pageTwo').contains('Page Selection').should('not.exist')
 
-    // reload demo
+    // close editor and reload demo
+    cy.get('#btnEditor').click()
     cy.get('.menuIcon').click()
     cy.get('[aria-label="Demo"]').click()
     cy.get('.p-confirm-dialog-accept').click()
+    // back to editor mode
+    cy.get('#btnEditor').click()
 
     // reset right
     cy.get(':nth-child(3) > [aria-label="Reset"]').click()
@@ -34,8 +46,7 @@ describe('Editor', () => {
     cy.get('.pageTwo').contains('Page Selection')
 
     // reload demo
-    cy.get('[aria-label="Demo"]').click()
-    cy.get('.p-confirm-dialog-accept').click()
+    reloadDemo()
 
     // swap
     cy.get('.pageOne > :nth-child(6) > .headerTitle').contains('Clearance @')
@@ -45,8 +56,7 @@ describe('Editor', () => {
     cy.get('.pageTwo > :nth-child(6) > .headerTitle').contains('Clearance @')
 
     // reload demo
-    cy.get('[aria-label="Demo"]').click()
-    cy.get('.p-confirm-dialog-accept').click()
+    reloadDemo()
 
     // Copy Front to Back
     cy.get(':nth-child(1) > [aria-label="Copy"]').click()
@@ -55,15 +65,20 @@ describe('Editor', () => {
     cy.get('.pageOne > :nth-child(6) > .headerTitle').contains('Clearance @')
     cy.get('.pageTwo > :nth-child(6) > .headerTitle').contains('Clearance @')
 
-    // reload demo
-    cy.get('[aria-label="Demo"]').click()
-    cy.get('.p-confirm-dialog-accept').click()
+    reloadDemo()
 
     // Copy Back to Front
     cy.get(':nth-child(3) > [aria-label="Copy"]').click()
     cy.get(':nth-child(1) > [aria-label="Paste"]').click()
     cy.get('.pageOne > :nth-child(2) > .twoLists > .leftList > :nth-child(19)').contains('FIRE')
     cy.get('.pageTwo > :nth-child(2) > .twoLists > .leftList > :nth-child(19)').contains('FIRE')
+
+    // Add a page
+    cy.get('[title="Add 2 Pages"]').click()
+    // select new page
+    cy.get('[aria-label="3 | 4"]').click()
+    cy.get('.pageOne').contains('Page Selection')
+    cy.get('.pageTwo').contains('Page Selection')
 
   })
   

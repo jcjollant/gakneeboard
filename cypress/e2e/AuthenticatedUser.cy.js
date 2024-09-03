@@ -35,7 +35,7 @@ describe('Authenticated User', () => {
     // Save the page into something disposable
     cy.get('[aria-label="Save"]').click()
     cy.get('.p-dialog-header').contains('Save New Template')
-    cy.get('.p-inputtext').type('Temp')
+    cy.get('.p-inputtext').type('{selectAll}').type('Temp')
 
     cy.intercept({
       method: 'POST',
