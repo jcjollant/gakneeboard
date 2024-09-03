@@ -20,6 +20,9 @@ Run the test suite:
 ## Next
 * Load Template shows "Fetching..." when fetching
 * Radio Flows formats frequency upon selection
+* You can now rename templates when saving
+* You can now have more than two pages per template
+* Editor mode now shows a grey overlay
 ## 9/01/2024
 * Refreshed Warning with banner
 * Leg and CHeckpoint have their own editor

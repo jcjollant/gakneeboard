@@ -118,5 +118,6 @@ function onToast(data) {
 
 .tile {
     background-color: white;
+    background: white;
 }
 </style>
