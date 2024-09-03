@@ -172,9 +172,9 @@ app.get(['/sheets','/templates'], async (req, res) => {
  */
 app.post(['/sheet','/template'], async (req, res) => {
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
-    GApi.templateSave(payload.user, payload.sheet).then( (sheet) => {
+    GApi.templateSave(payload.user, payload.sheet).then( (template) => {
         // console.log('[index.post/sheet]', JSON.stringify(sheet))
-        res.send(sheet)
+        res.send(template)
     }).catch( (e) => {
         catchError(res, e, 'POST /sheet')
     })
