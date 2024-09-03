@@ -166,7 +166,8 @@ function showField( field) {
                 label.value = 'Elev'
                 break
             case 'tpa':
-                value.value = Math.round(airport.elev + 1000).toString()
+                const tpa = airport.tpa ? airport.tpa : airport.elev + 1000;
+                value.value = Math.round(tpa).toString()
                 label.value = 'TPA'
                 break
             case 'gnd':
