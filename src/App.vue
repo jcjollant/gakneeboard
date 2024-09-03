@@ -376,7 +376,7 @@ function showToast(data) {
       @toast="toast.add" @toggle="onMenuToggle"
       >
     </Menu>
-    <i class="pi pi-file-edit editorButton clickable" v-show="showMenu" :class="{'editorButtonActive':showEditor}"
+    <i class="pi pi-file-edit editorButton clickable" id="btnEditor" v-show="showMenu" :class="{'editorButtonActive':showEditor}"
       @click="onEditor" title="Toggle Editor Mode"></i>
     <div class="versionDialog" v-show="showVersion">{{ versionText }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span>
     </div>
