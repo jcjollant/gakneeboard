@@ -5,11 +5,12 @@ import { Navaid } from './Navaid'
 import { Runway } from './Runway'
 
 export class AirportView {
-    public static currentVersion:number = 4;
+    public static currentVersion:number = 5;
     public static invalidVersion:number = -1;
     code: string;
     name: string;
     elev: number;
+    tpa:number|undefined;
     freq: Frequency[];
     rwys: Runway[];
     navaids: Navaid[];
@@ -24,11 +25,13 @@ export class AirportView {
             this.name = airport.name;
             this.elev = airport.elev;
             this.custom = airport.custom;
+            this.tpa = airport.tpa ? (airport.tpa + airport.elev) : undefined;
             this.asof = AirportView.formatAsOf(airport.effectiveDate);
         } else {
             this.code = '';
             this.name = '';
             this.elev = 0;
+            this.tpa = undefined;
             this.custom = false;
             this.asof = 0;
             this.version = AirportView.invalidVersion;
