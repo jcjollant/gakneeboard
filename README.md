@@ -17,6 +17,9 @@ Run the test suite:
 ## TODO
 
 # Done
+## Next
+* Load Template shows "Fetching..." when fetching
+* Radio Flows formats frequency upon selection
 ## 9/01/2024
 * Refreshed Warning with banner
 * Leg and CHeckpoint have their own editor
