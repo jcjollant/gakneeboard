@@ -87,7 +87,7 @@ function loadTemplate(template=null) {
   activeTemplate.value = template;
   // restore modified state
   sheetModified.value = template.modified;
-  console.log('[App.loadTemplate]', offset.value, offsetLast.value)
+  // console.log('[App.loadTemplate]', offset.value, offsetLast.value)
 }
 
 function onCloseHowDoesItWork() {
@@ -112,7 +112,7 @@ onBeforeMount(()=>{
 
 // Pages are manipulated via editor buttons
 async function onEditorAction(ea) {
-  console.log('[App.onEditoAction]', JSON.stringify(ea))
+  // console.log('[App.onEditorAction]', JSON.stringify(ea))
   let updateFront = false;
   let updateBack = false;
   let saveTemplate = false;
@@ -274,7 +274,7 @@ function onOffset(newOffset) {
   offset.value = newOffset;
   frontPageData.value = activeTemplate.value.data[newOffset]
   backPageData.value = activeTemplate.value.data[newOffset+1]
-  console.log('[App.onOffset]', JSON.stringify(frontPageData.value))
+  // console.log('[App.onOffset]', JSON.stringify(frontPageData.value))
 }
 
 function onPrint(options) {

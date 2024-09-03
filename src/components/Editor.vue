@@ -29,7 +29,7 @@ function loadProps( props) {
     const output = {name: (offset+1) + ' | ' + (offset+2), offset:index*2}
     return output
   }) 
-  console.log('[Editor.loadProps]', JSON.stringify(sheets.value))
+  // console.log('[Editor.loadProps]', JSON.stringify(sheets.value))
 }
 
 onMounted( () => {
