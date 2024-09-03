@@ -17,6 +17,13 @@ import TemplateDescription from './TemplateDescription.vue'
 import TemplateSharing from "./TemplateSharing.vue";
 
 const emits = defineEmits(["close","delete","load","save","mode", "overwrite","toast"]);
+const deleteMode = ref(false)
+const loadTemplate = ref(null)
+const mode = ref(null)
+const templateNameText = ref('')
+const templateCode = ref('')
+const targetTemplate = ref(null)
+const fetching = ref(false)
 
 //-----------------
 // Props management
@@ -33,6 +40,7 @@ function loadProps(props) {
   // Active template
   // console.log('[TemplateDialog.loadProps]', JSON.stringify(props.template))
   targetTemplate.value = props.template;
+  if(props.template) templateNameText.value = props.template.name
 }
 
 onMounted( () => {
@@ -45,14 +53,6 @@ watch( props, async() => {
 
 // End of props management
 //------------------------
-
-const deleteMode = ref(false)
-const loadTemplate = ref(null)
-const mode = ref(null)
-const templateNameText = ref('')
-const templateCode = ref('')
-const targetTemplate = ref(null)
-const fetching = ref(false)
 
 function changeTemplateLoad(newTemplate=null) {
   fetching.value = false;
@@ -102,6 +102,8 @@ function onButtonLoad() {
 }
 
 function onButtonOverwrite () {
+  // refresh the name
+  targetTemplate.value.name = templateNameText.value
   emits('save',targetTemplate.value)
 }
 
@@ -183,6 +185,10 @@ function showToast(summary,details,severity=toastSuccess) {
   <Dialog modal :header="getTitle(mode)" :style="{width: mode=='save' ? '35rem' : '45rem'}">
     <div v-if="mode==TemplateDialogMode.save">
       <div class="properties">
+        <InputGroup class="pageName">
+          <InputGroupAddon>Rename</InputGroupAddon>
+          <InputText v-model="templateNameText"/>
+        </InputGroup>
         <TemplateSharing :template="targetTemplate" @toast="onToast" />
         <TemplateDescription :template="targetTemplate" />
         <div>
