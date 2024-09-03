@@ -1,4 +1,3 @@
-import { LocalStore } from './LocalStore'
 import { PageType } from './Templates'
 
 
