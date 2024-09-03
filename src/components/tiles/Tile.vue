@@ -116,4 +116,7 @@ function onToast(data) {
     grid-column: 1 / span 2;
 }
 
+.tile {
+    background-color: white;
+}
 </style>
