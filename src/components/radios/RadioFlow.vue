@@ -230,4 +230,7 @@ function updateTextarea() {
 .counter {
     font-size: 0.9rem;
 }
+.tile {
+    background: white;
+}
 </style>
