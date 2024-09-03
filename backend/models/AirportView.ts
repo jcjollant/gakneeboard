@@ -25,7 +25,8 @@ export class AirportView {
             this.name = airport.name;
             this.elev = airport.elev;
             this.custom = airport.custom;
-            this.tpa = airport.tpa ? (airport.tpa + airport.elev) : undefined;
+            // rewrite this
+            this.tpa = airport.tpa || undefined;
             this.asof = AirportView.formatAsOf(airport.effectiveDate);
         } else {
             this.code = '';

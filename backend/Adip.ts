@@ -114,7 +114,7 @@ export class Adip {
             airport.setLocation(adip.arp)
         }
         if(adip.trafficPatternAltitude) {
-            airport.setTrafficPatternAltitude(adip.trafficPatternAltitude)
+            airport.setTrafficPatternAltitude(elevation + adip.trafficPatternAltitude)
         }
 
         // read frequencies
