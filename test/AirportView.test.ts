@@ -4,7 +4,7 @@ import { Airport } from '../backend/models/Airport';
 import { AirportView } from '../backend/models/AirportView';
 import { PatternDirection } from '../backend/models/Runway'
 
-import { kbfiData, krntData } from './adipData'
+import { k1w1Data, kbfiData, krntData } from './adipData'
 import { krntAtcs } from './constants';
 
 function checkAtc(airport:AirportView,expectedAtcs:any) {
@@ -118,6 +118,12 @@ describe( 'Airport View', () => {
         }
         // check ATCs
         checkAtc(view, krntAtcs)
+    })
+
+    test('1W1 view', () => {
+        const view = new AirportView(Adip.airportFromData(k1w1Data));
+        expect(view).toBeDefined()
+        expect(view.tpa).toBe(1229)
     })
 
     test('Format as of', () => {
