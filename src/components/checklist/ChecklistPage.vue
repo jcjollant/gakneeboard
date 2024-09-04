@@ -103,7 +103,7 @@ function onThemeChange(newTheme) {
 </script>
 
 <template>
-    <div class="contentPage checklistPage">
+    <div class="contentPage pageChecklist">
         <Header :title="title" :page="data!=null" @click="onHeaderClick"></Header>
         <div v-if="mode == 'edit'" class="settings">
             <InputGroup>
@@ -144,17 +144,26 @@ Create sections using '##Section Name':
 </template>
 
 <style scoped>
-.checklistPage {
-    overflow: hidden;
+.checklistNameAddon {
+    width: 3rem;
 }
 
+.editList {
+    resize: none;
+    font-family: 'Courier New', Courier, monospace;
+}
 .heading {
     font-weight: bolder;
     font-size: 1.2rem;
 }
 
-.checklistNameAddon {
-    width: 3rem;
+
+.leftList {
+    border-right: 1px solid lightgrey;
+
+}
+.pageChecklist {
+    overflow: hidden;
 }
 
 .settings {
@@ -164,15 +173,6 @@ Create sections using '##Section Name':
     padding: 5px;
 }
 
-.editList {
-    resize: none;
-    font-family: 'Courier New', Courier, monospace;
-}
-
-.leftList {
-    border-right: 1px solid lightgrey;
-
-}
 
 .smallTextarea {
     overflow-wrap: normal;
