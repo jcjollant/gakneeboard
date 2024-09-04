@@ -1,4 +1,4 @@
-export const currentVersionNumber = '902/829'
+export const currentVersionNumber = '903/829'
 const devEnv = 'http://localhost:5173/'
 const prodEnv = 'https://kneeboard.ga'
 export const environment = devEnv
