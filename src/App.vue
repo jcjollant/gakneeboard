@@ -354,7 +354,7 @@ function showToast(data) {
     </div>
     <div class="pageGroup">
       <i class="pi pi-chevron-circle-left offsetButton" :class="{'noShow':(offset == 0 || showEditor)}"
-        title="Previous Pages"
+        title="Previous Pages" id="offsetPrev"
         @click="onOffset(offset - 2)"></i>
       <div :class="{'twoPages':showPageOne && showPageTwo}">
         <Page :data="frontPageData" v-if="showPageOne" class="pageOne"
@@ -365,7 +365,7 @@ function showToast(data) {
           @toast="toast.add" />
       </div>
       <i class="pi pi-chevron-circle-right offsetButton"  :class="{'noShow':(offset >= offsetLast || showEditor)}"
-        title="Next Pages"
+        title="Next Pages" id="offsetNext"
         @click="onOffset(offset + 2)"></i>
     </div>
     <Menu class="menu" :activeTemplate="activeTemplate" v-show="showMenu" v-if="!showEditor" title="Toggle Menu"
