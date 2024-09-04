@@ -26,6 +26,15 @@ describe('Airport', () => {
         expect(Airport.isValidCode("")).toBeFalsy()
     })
 
+    test('Cleanup code', () => {
+        expect(Airport.cleanupCode("JCJ")).toBe("JCJ")
+        expect(Airport.cleanupCode("jCj")).toBe("JCJ")
+        expect(Airport.cleanupCode(" jCj ")).toBe("JCJ")
+        expect(Airport.cleanupCode(" j#Cj ")).toBe("JCJ")
+        expect(Airport.cleanupCode("JCJ;")).toBe("JCJ")
+        expect(Airport.cleanupCode("JCJ'")).toBe("JCJ")
+    })
+
     test('Frequencies, ATC', () => {
         const airport = new Airport("name", "JCJ", 32);
         const ctaf:string = "CTAF"

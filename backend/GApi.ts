@@ -73,11 +73,11 @@ export class GApi {
     }
 
     public static async getAirportList(airportCodes:string[],userId:any=undefined):Promise<([string,Airport|undefined])[]> {
-        const upperCodes:string[] = airportCodes.map( code => code.toUpperCase()) 
-        const airports:[string,Airport][] = await AirportDao.readList(upperCodes, userId)
+        const cleanCodes:string[] = airportCodes.map( code => Airport.cleanupCode(code)) 
+        const airports:[string,Airport][] = await AirportDao.readList(cleanCodes, userId)
         // rebuild the full list along with unknowns(undefined)
         const output:([string,Airport|undefined])[] = []
-        for( const code of upperCodes) {
+        for( const code of cleanCodes) {
             // store the found value [code,airport]
             const found = airports.find( ([upperCode,airport]) => upperCode == code)
             // console.log('[GApi.getAirportList] found', found, 'code', code)
