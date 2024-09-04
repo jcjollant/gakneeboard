@@ -66,10 +66,6 @@ export class Metrics {
         const radiosTileCount = new Metric('radiosTileCount', 0)
         const sunlightTileCount = new Metric('sunlightTileCount', 0)
         for(let template of templates) {
-            if(template.data.length == 1) {
-                staleTemplateCount.addOne()
-                continue
-            }
             for(let page of template.data) {
                 if(page.type == 'tiles') {
                     tilePageCount.addOne()
@@ -101,8 +97,14 @@ export class Metrics {
                     selectionPageCount.addOne()
                 } else if(page.type == 'navlog') {
                     navlogPageCount.addOne()
+                } else {
+                    continue
                 }
                 totalPageCount.addOne()
+            }
+            // we assume that 12 data means stale
+            if(template.data.length == 12) {
+                staleTemplateCount.addOne()
             }
         }
         // build a list of all metrics

@@ -73,7 +73,7 @@ export class Adip {
                 try {
                     AdipDao.save(fetchCode, response.data)
                 } catch(e) {
-                    reportError( '[Adip.fetchAirport] cannot save Adip data')
+                    console.log( '[Adip.fetchAirport] cannot save Adip data')
                 }
             }
 

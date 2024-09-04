@@ -21,7 +21,10 @@ ts-node .\willie.ts
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
+## 9/04/2024
+* fixed pageCount metrics
 ## 9/03/2024
+* Airport code cleanup
 * Custom TPA
 ## 8/29/2024
 * Fixed authentication maxTemplate overwrite
