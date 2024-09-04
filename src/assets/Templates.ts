@@ -35,7 +35,7 @@ export class TemplateData {
     * @returns 
     */
     static getPublication(code:string):any {
-        const url = apiRootUrl + 'sheetByCode/' + code
+        const url = apiRootUrl + 'publication/' + code
         return axios.get( url)
             .then( response => response.data)
             .catch( error => {
