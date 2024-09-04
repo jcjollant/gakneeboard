@@ -1,27 +1,69 @@
 import { currentVersionNumber, environment, visitAndCloseBanner, maintenanceMode } from './shared'
 
 describe('Navigation', () => {
-    it('How Does It Work', () => {
-      cy.visit(environment)
+  it('HDIW and default nav', () => {
+    cy.visit(environment)
 
-      function checkHdiw() {
-        cy.get('.hdiw').contains('1. Edit')
-        cy.get('.hdiw').contains('2. Print')
-        cy.get('.hdiw').contains('3. Clip')
-      }
-      checkHdiw();
+    function checkHdiw() {
+      cy.get('.hdiw').contains('1. Edit')
+      cy.get('.hdiw').contains('2. Print')
+      cy.get('.hdiw').contains('3. Clip')
+    }
+    checkHdiw();
 
-      // remove banner
-      cy.contains('Got it').click()
+    // remove banner
+    cy.contains('Got it').click()
 
-      // reopen how does it work via About page
-      cy.get('.menuIcon').click()
-      cy.get('.p-button-icon-only').click()
-      cy.get('.p-button-link').click()
+    // reopen how does it work via About page
+    cy.get('.menuIcon').click()
+    cy.get('.p-button-icon-only').click()
+    cy.get('.p-button-link').click()
 
-      checkHdiw();
+    checkHdiw();
 
-    })
+    // remove banner
+    cy.contains('Got it').click()
+
+    cy.get('#offsetPrev').should('have.class','noShow')
+    cy.get('#offsetNext').should('have.class','noShow')
+    cy.get('.sheetNumber').should('match',':empty')
+
+  })
+
+  it('Publication', () => {
+    cy.intercept({
+      method: 'GET',
+      url: '/publication/**',
+    }).as('getPublication');
+    cy.visit(environment + '?t=RC')
+    cy.wait('@getPublication').its('response.statusCode').should('equal', 200)
+
+    // remove banner
+    cy.contains('Got it').click()
+
+    cy.get('#app').contains('C172 G1000')
+    cy.get('#offsetPrev').should('have.class','noShow')
+    cy.get('#offsetNext').should('not.have.class','noShow')
+    cy.get('.pageOne').should('have.class','pageCover')
+    cy.get('.pageTwo').should('have.class','pageChecklist')
+    cy.get('.sheetNumber').contains('1/3')
+    // click next
+    cy.get('#offsetNext').click()
+    // Now both should be visible
+    cy.get('#offsetPrev').should('not.have.class','noShow')
+    cy.get('#offsetNext').should('not.have.class','noShow')
+    cy.get('.pageOne').should('have.class','pageChecklist')
+    cy.get('.pageTwo').should('have.class','pageChecklist')
+    cy.get('.sheetNumber').contains('2/3')
+    // click next
+    cy.get('#offsetNext').click()
+    // Next should be hidden, prev should be visible
+    cy.get('#offsetPrev').should('not.have.class','noShow')
+    cy.get('#offsetNext').should('have.class','noShow')
+    cy.get('.pageOne').should('have.class','pageChecklist')
+    cy.get('.pageTwo').should('have.class','pageChecklist')
+    cy.get('.sheetNumber').contains('3/3')
+  })
 
   it('Print Dialog', () =>{
     visitAndCloseBanner()
@@ -41,8 +83,6 @@ describe('Navigation', () => {
     cy.get('[aria-label="Back Page"]')
     // click do not print
     cy.get('.actionDialog > .p-button-link').click()
-
-    
   })
 
 
