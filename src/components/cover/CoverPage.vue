@@ -66,7 +66,7 @@ function onCancel() {
 </script>
 
 <template>
-    <div class="contentPage">
+    <div class="contentPage pageCover">
         <div v-if="mode=='edit'" class="settings">
             <InputGroup>
                 <InputGroupAddon class="coverAddon">Title</InputGroupAddon>
