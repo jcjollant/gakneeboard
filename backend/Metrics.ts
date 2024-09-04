@@ -66,7 +66,7 @@ export class Metrics {
         const radiosTileCount = new Metric('radiosTileCount', 0)
         const sunlightTileCount = new Metric('sunlightTileCount', 0)
         for(let template of templates) {
-            if(template.data.length != 2) {
+            if(template.data.length == 1) {
                 staleTemplateCount.addOne()
                 continue
             }
