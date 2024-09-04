@@ -21,6 +21,8 @@ ts-node .\willie.ts
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
+## 9/03/2024
+* Custom TPA
 ## 8/29/2024
 * Fixed authentication maxTemplate overwrite
 ## 8/28/2024
