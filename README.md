@@ -22,7 +22,8 @@ ts-node .\willie.ts
 
 # Done
 ## 9/04/2024
-* fixed pageCount metrics
+1) fixed pageCount metrics
+2) New effective date
 ## 9/03/2024
 * Airport code cleanup
 * Custom TPA
