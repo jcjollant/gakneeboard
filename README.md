@@ -18,7 +18,8 @@ Run the test suite:
 
 # Done
 ## 9/04/2024
-* User can print multiple pages at once
+1) User can print multiple pages at once
+2) Enlarged tiles for better aspect ratio
 ## 9/03/2024
 * Fixed get publication bug
 * Fixed page number issue
