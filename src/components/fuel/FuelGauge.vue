@@ -32,7 +32,7 @@ const myCanvas = ref()
 
 function draw() {
     const ctx = myCanvas.value.getContext('2d');
-    const height = 200;
+    const height = 239;
     const barWidth = 20;
     const width = 100
     myCanvas.value.width = width;
@@ -72,7 +72,7 @@ function draw() {
     }
 
     // boxes tick marks
-    for( let y = 25; y < height; y += 50) {
+    for( let y = height / 8; y < height; y += height / 4) {
         ctx.moveTo( 0, y)
         ctx.lineTo( tickMarkSize, y)
         ctx.moveTo( width - tickMarkSize, y)

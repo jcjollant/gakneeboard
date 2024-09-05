@@ -28,16 +28,18 @@ body {
 }
 
 
-.content {
+.content, .tileContent {
   width: 240px; 
-  height: 200px;
+  height: 240px;
   position: relative; /* Needed for absolute positioning fo children */
   /* border: 1px solid red; */
 }
 
 .contentPage {
-  width: 485px;
-  height: 730px;
+  width: 490px;
+  /* width: 485px; */
+  /* height: 730px; */
+  height: 800px;
   position: relative;
   border: 1px solid darkgray;
 }
@@ -76,15 +78,6 @@ body {
 .redBorder {
   border: 1px solid red;
 }
-
-.tile {
-  position: relative;
-  border: 1px solid darkgrey;
-  font-family: Verdana, sans-serif;
-  width: 240px;
-  height: 240px;
-}
-
 
 .gap-2 {
   gap: 0.5rem;

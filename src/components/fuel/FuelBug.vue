@@ -86,7 +86,7 @@ function onSettingsUpdate(newUsable, newFuelFlow, newReserve) {
 .fuelGrid{
     display:grid;
     grid-template-columns: 70px 99px 70px;
-    grid-template-rows: 50px 50px 50px 50px;
+    grid-template-rows: 60px 60px 60px 59px;
     font-size:2.5rem;
     font-weight: 900;
     color: #eee;

@@ -91,7 +91,7 @@ function show(runway) {
     }
 
     const ctx = myCanvas.value.getContext('2d');
-    const referenceSize = 200;
+    const referenceSize = 240;
     myCanvas.value.width = referenceSize;
     myCanvas.value.height = referenceSize;
 
@@ -212,7 +212,7 @@ function show(runway) {
             ctx.lineTo( tpDownwindDist, -tpBaseDist);
             ctx.lineTo( tpDownwindDist, 0);
             ctx.lineTo( tpDownwindDist * 2, tpDownwindDist);
-            ctx.fillText( getAngle(southEnd.mag - 225)+'°', tpDownwindDist * 2.5, tpDownwindDist + 15);
+            ctx.fillText( getAngle(southEnd.mag - 225)+'°', tpDownwindDist * 2.5, tpDownwindDist + 20);
             if(showSouthMidField) {
                 const startingAngle = 3 * Math.PI / 4
                 const endingAngle = -Math.PI / 2
@@ -226,7 +226,7 @@ function show(runway) {
             ctx.lineTo( -tpDownwindDist, -tpBaseDist);
             ctx.lineTo( -tpDownwindDist, 0);
             ctx.lineTo( -tpDownwindDist * 2, tpDownwindDist);
-            ctx.fillText( getAngle(southEnd.mag - 135)+'°', -tpDownwindDist * 2.5, tpDownwindDist + 15);
+            ctx.fillText( getAngle(southEnd.mag - 135)+'°', -tpDownwindDist * 2.5, tpDownwindDist + 20);
             if(showSouthMidField) {
                 const startingAngle = Math.PI / 4
                 const endingAngle = -Math.PI / 2

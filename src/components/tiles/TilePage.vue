@@ -53,6 +53,6 @@ function onUpdate(newTileData) {
 .tiles {
   display: grid;
   grid-template-columns: auto auto;
-  gap: 5px;
+  gap: 1px;
 }
 </style>

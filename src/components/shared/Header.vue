@@ -51,12 +51,12 @@ watch( props, async() => {
 <style scoped>
     .headerTitle {
         text-align: center;
-        padding: 5px;
+        padding: 0 5px;
         border-bottom: 1px dashed darkgrey;
         position: relative;
         overflow: hidden;
-        height: 39px;
-        line-height: 30px;
+        height: 25px;
+        line-height: 25px;
     }
     .clickable:hover {
         color: darkblue;

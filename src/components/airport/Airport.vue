@@ -414,7 +414,7 @@ function updateWidget() {
     .airportCode {
         font-weight: 900;
         font-size: 4rem;
-        line-height: 200px;
+        line-height: 240px;
         opacity: 0.10;
         position: absolute;
         top: 0;

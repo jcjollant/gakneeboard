@@ -115,6 +115,7 @@ watch( props, async() => {
 }
 .content {
     display: grid;
+    grid-template-rows: 60px 60px 60px 59px;
 }
 .list {
     display: grid;

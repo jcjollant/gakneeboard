@@ -83,8 +83,8 @@ watch(props, () => {
 
 .smallFont {
     font-size: 0.8rem;
-    line-height: 1.5rem;
-    height: 1.5rem;
+    line-height: 23px;
+    height: 23px;
 }
 
 /* .smallPlaceHolder {

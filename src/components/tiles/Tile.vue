@@ -117,7 +117,14 @@ function onToast(data) {
 }
 
 .tile {
-    background-color: white;
-    background: white;
+  position: relative;
+  border: 1px solid darkgrey;
+  font-family: Verdana, sans-serif;
+  width: 245px;
+  height: 265px;
+  background: white;
 }
+
+
+
 </style>

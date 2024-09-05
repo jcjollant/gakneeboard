@@ -13,7 +13,7 @@ import Button from 'primevue/button'
 import Textarea from 'primevue/textarea';
 
 const emits = defineEmits(['replace','update','toast'])
-const maxFreqCount = 15
+const maxFreqCount = 18
 const mode=ref('')
 const textData = ref('')
 const frequencies = ref([])
@@ -124,8 +124,8 @@ function updateTextarea() {
 </script>
 
 <template>
-    <LookupDialog v-model:visible="showLookup" :time="lookupTime" @add="addFrequency" />
     <div class="tile">
+        <LookupDialog v-model:visible="showLookup" :time="lookupTime" @add="addFrequency" />
         <Header :title="'Radio Flow'" :replace="mode=='edit'"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div v-if="mode==''">
@@ -229,8 +229,5 @@ function updateTextarea() {
 }
 .counter {
     font-size: 0.9rem;
-}
-.tile {
-    background: white;
 }
 </style>

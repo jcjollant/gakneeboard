@@ -28,7 +28,7 @@ function draw() {
     if( !circleCanvas || !circleCanvas.value) return;
     // console.log('[Circle.draw] getContext')
     const ctx = circleCanvas.value.getContext('2d');
-    const referenceSize = 200;
+    const referenceSize = 240;
     circleCanvas.value.width = referenceSize;
     circleCanvas.value.height = referenceSize;
     ctx.lineWidth = 10;

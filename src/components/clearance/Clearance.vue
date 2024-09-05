@@ -59,6 +59,7 @@ function onMenuClick() {
 .clearance {
     display: grid;
     grid-template-columns: auto auto;
+    grid-template-rows: 60px 60px 60px 59px;
 }
 .watermrk {
     line-height: 1;

@@ -31,15 +31,15 @@ const props = defineProps({
     font-size: 0.9rem;
 }
 .fbMedium {
-    height: 2.7rem;
+    height: 3.3rem;
     width: 7rem;
-    font-size: 1.4rem;
+    font-size: 1.6rem;
 }
 .freqSmall {
     line-height: 0.8rem;
 }
 .freqMedium {
-    line-height: 1.1rem;
+    line-height: 1.3rem;
 }
 .name {
     text-align: right;
@@ -50,6 +50,7 @@ const props = defineProps({
     font-size: 0.5rem;
 }
 .nameMedium {
-    font-size: 0.8rem;
+    padding-top: 5px;
+    font-size: 1rem;
 }
 </style>
