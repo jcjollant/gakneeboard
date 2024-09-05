@@ -4,17 +4,17 @@ import { onMounted, ref, watch } from 'vue'
 import Button from "primevue/button";
 import Dialog from 'primevue/dialog'
 import FieldSet from 'primevue/fieldset'
-import Checkbox from 'primevue/checkbox'
 import SelectButton from 'primevue/selectbutton'
 
 const emits = defineEmits(["close","print","options"]);
 
-const frontOption = {name:'Front Page',front:true,back:false,flipped:false}
-const bothOption = {name:'Both',front:true,back:true,flipped:false}
-const flippedOption = {name:'Flipped',front:true,back:true,flipped:true}
-const backOption = {name:'Back Page',front:false,back:true,flipped:false}
+const onePage = {name:'One', value:1}
+const twoPages = {name:'Two', value:2}
+const normalOrientation = {name:'Normal', value:false}
+const flippedOrientation = {name:'Flipped', value:true}
 
-const pageOption = ref(bothOption)
+const pagePerSheet = ref(twoPages)
+const flipBackPage = ref(normalOrientation)
 
 //---------------------
 // Props management
@@ -23,7 +23,6 @@ const props = defineProps({
 })
 
 function loadProps( props) {
-  pageOption.value = bothOption
 }
 
 onMounted( () => {
@@ -36,10 +35,10 @@ watch( props, async() => {
 //---------------------
 
 function getOptions() {
+  if(!pagePerSheet.value || !flipBackPage.value) return null;
   const printOptions = {
-    flipped:pageOption.value.flipped,
-    showFront:pageOption.value.front,
-    showBack:pageOption.value.back,
+    pagePerSheet: pagePerSheet.value.value,
+    flipBackPage: flipBackPage.value.value
   }
   return printOptions
 }
@@ -63,17 +62,20 @@ function onNewOptions() {
 <template>
   <Dialog modal header="Print">
   <div class="printPopup">
-    <FieldSet legend="What are we printing?">
+    <!-- <FieldSet legend="Layout"> -->
       <div class="pageOptions">
-        <SelectButton v-model="pageOption" :options="[frontOption, bothOption, flippedOption, backOption]" optionLabel="name" aria-labelledby="basic" class="mb-2" @change="onNewOptions" />
+        <div class="pageOptionLabel">Pages per sheet</div>
+        <SelectButton v-model="pagePerSheet" :options="[onePage,twoPages]" optionLabel="name" aria-labelledby="basic" @change="onNewOptions" />
+        <div class="pageOptionLabel">Back Page Orientation</div>
+        <SelectButton v-model="flipBackPage" :options="[normalOrientation, flippedOrientation]" optionLabel="name" aria-labelledby="basic" @change="onNewOptions" />
       </div>
-    </FieldSet>
+    <!-- </FieldSet> -->
     <FieldSet legend="Tips">
       <p class="note">
-        <div>Use Flipped print to read back page while front is clipped </div>
-        <div>'Letter' paper size and 'Landscape' layout will fold between pages to kneeboard size</div>
-        <div>Enable 'Background graphics' in your print settings for best results for Checklists</div>
-        <div>Single pages in 'Portrait' layout make great PDFs</div>
+        <li>Enable 'Background graphics' print setting for best results with Checklists</li>
+        <li>Use 'Flipped' back page to read both page when clipped on top</li>
+        <li>Two pages per sheet in 'Landscape' layout will fold to kneeboard size</li>
+        <li>One page per sheet in 'Portrait' layout make great PDFs</li>
       </p>
       </FieldSet>
     <div class="actionDialog gap-2">
@@ -92,8 +94,17 @@ function onNewOptions() {
 }
 
 .pageOptions {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  line-height: 1rem;
+  /* line-height: 2rem; */
+  /* vertical-align: middle; */
+  /* line-height: 1.5rem;; */
+}
+.pageOptionLabel {
+  text-align: right;
 }
 
 .printPopup {
@@ -111,11 +122,11 @@ p.note {
 }
 
 :deep(.p-fieldset-legend) {
-      border: none;
-      background: none;
+  border: none;
+  background: none;
 }
 :deep(.p-fieldset-content) {
-      padding: 0;
+  padding: 0;
 }
 
 

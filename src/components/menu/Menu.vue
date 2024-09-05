@@ -19,7 +19,7 @@ import About from './About.vue'
 import Maintenance from './Maintenance.vue'
 
 
-const emits = defineEmits(['authentication','howDoesItWork','load','print','printOptions','save','toast','toggle'])
+const emits = defineEmits(['authentication','howDoesItWork','load','print','printOptions', 'printPreview','save','toast','toggle'])
 
 const activeTemplate = ref(null)
 const confirm = useConfirm()
@@ -63,7 +63,7 @@ watch(showPrint, async( newValue, oldValue) => {
     if( readyToPrint) {
       readyToPrint = false;
     } else {
-      emits('printOptions', null)
+      emits('printPreview', false)
     }
   }
 
@@ -117,7 +117,7 @@ function onPrint() {
   showPrint.value = true;
   refreshPrint.value++;
   toggleMenu()
-  emits('printOptions');
+  emits('printPreview', true);
 }
 
 function onPrintClose() {

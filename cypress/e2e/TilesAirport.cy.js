@@ -11,7 +11,7 @@ describe('Tiles', () => {
     // }).as('getAirports');
 
 //    cy.wait('@getAirports').its('response.statusCode').should('equal', 200)
-    cy.wait(2000)
+    cy.wait(1000)
 
     newPage()
 
@@ -49,7 +49,7 @@ describe('Tiles', () => {
 
     // Renton and Boeing fields
     const expectedValues = []
-    expectedValues.push({'tile':'Renton Muni','label0':'ATIS','value0':'126.950','label1':'TWR','value1':'124.700','label2':'Elev','value2':'32','label3':'TPA','value3':'1032','watermark':'KRNT','dimensions':'5382x200'})
+    expectedValues.push({tile:'Renton Muni','label0':'ATIS','value0':'126.950','label1':'TWR','value1':'124.700','label2':'Elev','value2':'32','label3':'TPA',value3:'1250',watermark:'KRNT','dimensions':'5382x200'})
     expectedValues.push({'tile':'Boeing Fld/king County Intl','label0':'ATIS','value0':'127.750','label1':'RWY 14L-32R','value1':'118.300','label2':'Elev','value2':'22','label3':'TPA','value3':'1022','watermark':'KBFI','dimensions':'3709x100'})
     for(let index = 0; index < 2; index++) {
       const value = expectedValues[index]
@@ -109,7 +109,7 @@ describe('Tiles', () => {
     cy.get('.pageOne > :nth-child(3) > .content > .settings > .airportCode > .airportName').contains('Bellingham Intl')
     cy.get('.pageOne > :nth-child(3) > .content > .actionBar > [aria-label="Apply"]').click()
     // Check for bellingham fields
-    const kbliValues = {'tile':'Bellingham Intl','label0':'ATIS','value0':'134.450','label1':'TWR','value1':'124.900','label2':'Elev','value2':'171','label3':'TPA','value3':'1171','watermark':'KBLI','dimensions':'6700x150'}
+    const kbliValues = {tile:'Bellingham Intl',label0:'ATIS',value0:'134.450',label1:'TWR',value1:'124.900',label2:'Elev',value2:'171',label3:'TPA',value3:'1201',watermark:'KBLI',dimensions:'6700x150'}
     cy.get('.pageOne > :nth-child(3) > .headerTitle > div').contains(kbliValues.tile)
     cy.get(':nth-child(3) > .content > :nth-child(1) > .top.left > .clickable > :nth-child(1) > .label').contains(kbliValues.label0)
     cy.get(':nth-child(3) > .content > :nth-child(1) > .top.left > .clickable > :nth-child(1) > :nth-child(1)').contains(kbliValues.value0)

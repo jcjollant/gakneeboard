@@ -1,7 +1,7 @@
 import { currentVersionNumber, environment, visitAndCloseBanner, maintenanceMode } from './shared'
 
 describe('Navigation', () => {
-  it('HDIW and default nav', () => {
+  it('HDIW / Version / Offset', () => {
     cy.visit(environment)
 
     function checkHdiw() {
@@ -13,6 +13,9 @@ describe('Navigation', () => {
 
     // remove banner
     cy.contains('Got it').click()
+
+    // check version number
+    cy.get('.versionDialog').contains(currentVersionNumber)
 
     // reopen how does it work via About page
     cy.get('.menuIcon').click()
@@ -68,19 +71,18 @@ describe('Navigation', () => {
   it('Print Dialog', () =>{
     visitAndCloseBanner()
 
-    // check version number
-    cy.get('.versionDialog').contains(currentVersionNumber)
-
     // Test print dialog show up
     cy.get('.menuIcon').click()
     cy.get('[aria-label="Print"]').click()
     // check title
     cy.get('.p-dialog-header').contains('Print')
     // Check Page options
-    cy.get('[aria-label="Front Page"]')
-    cy.get('[aria-label="Both"]')
+    cy.get('.pageOptions').contains('Pages per sheet')
+    cy.get('.pageOptions').contains('Back Page Orientation')
+    cy.get('[aria-label="One"]')
+    cy.get('[aria-label="Two"]')
+    cy.get('[aria-label="Normal"]')
     cy.get('[aria-label="Flipped"]')
-    cy.get('[aria-label="Back Page"]')
     // click do not print
     cy.get('.actionDialog > .p-button-link').click()
   })

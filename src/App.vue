@@ -27,15 +27,12 @@ const offset = ref(0)
 const offsetLast = ref(0)
 const sheetModified = ref(false)
 
-const flipMode = ref(false)
+const printFlipMode = ref(false)
+const printPreview = ref(false)
+const printSingles = ref(false)
 const showEditor = ref(false)
 const showHowDoesItWork = ref(true)
-const showVersion = ref(true)
-const showMenu = ref(true)
 const menuOpen = ref(false)
-const showSheetName = ref(true)
-const showPageOne = ref(true)
-const showPageTwo = ref(true)
 const toast = useToast()
 const versionText = ref('')
 
@@ -116,8 +113,6 @@ async function onEditorAction(ea) {
   let updateFront = false;
   let updateBack = false;
   let saveTemplate = false;
-
-
 
   if(ea.action == EditorAction._add2Pages) {
     // add two blank pages to the end
@@ -277,34 +272,7 @@ function onOffset(newOffset) {
   // console.log('[App.onOffset]', JSON.stringify(frontPageData.value))
 }
 
-function onPrint(options) {
-  // console.log('[App.onPrint]')
-  flipMode.value = options.flipped;
-  showPageOne.value = options.showFront;
-  showPageTwo.value = options.showBack;
-  // These things don't change
-  showVersion.value = false;
-  showSheetName.value = false
-  showMenu.value = false
-  showEditor.value = false;
-  showHowDoesItWork.value = false;
-
-  // print window content after a short timeout to let flipmode kickin
-  setTimeout(doPrint, 500);
-}
-
-function onPrintOptions(options) {
-  // console.log('[App.onPrintOptions]', JSON.stringify(options))
-  if( options) {
-    flipMode.value = options.flipped;
-    showPageOne.value = options.showFront;
-    showPageTwo.value = options.showBack;
-  } else {
-    restorePrintOptions();
-  }
-}
-
-function onPageUpdateBack( pageData) {
+function onPageUpdateBack(pageData) {
   // console.log('[App.onPageUpdateBack]', JSON.stringify(pageData))
   backPageData.value = pageData;
   activeTemplate.value.data[offset.value + 1] = pageData
@@ -318,14 +286,40 @@ function onPageUpdateFront(pageData) {
   saveActiveTemplate(true)
 }
 
+
+function onPrint(options) {
+  // console.log('[App.onPrint]')
+  printPreview.value = true;
+  printFlipMode.value = options.flipBackPage;
+  printSingles.value = (options.pagePerSheet == 1)
+
+  // These things don't change
+  showEditor.value = false;
+  showHowDoesItWork.value = false;
+
+  // print window content after a short timeout to let flipmode kickin
+  setTimeout(doPrint, 500);
+}
+
+function onPrintOptions(options) {
+  // console.log('[App.onPrintOptions]', JSON.stringify(options))
+  if( options) {
+    printFlipMode.value = options.flipBackPage;
+    printSingles.value = (options.pagePerSheet == 1)
+  } else {
+    restorePrintOptions();
+  }
+}
+
+function onPrintPreview(show) {
+  // console.log('[App.onPrintPreview]', show)
+  printPreview.value = show
+}
+
 function restorePrintOptions() {
     // Bring everything back to normal
-    flipMode.value = false;
-    showVersion.value = true;
-    showMenu.value = true
-    showSheetName.value = true;
-    showPageOne.value = true;
-    showPageTwo.value = true;
+    printPreview.value = false;
+    printFlipMode.value = false;
     showEditor.value = false;
     showHowDoesItWork.value = false;
 }
@@ -342,12 +336,12 @@ function showToast(data) {
 </script>
 
 <template>
-  <div class="main">
+  <div v-if="!printPreview" class="main">
     <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
     <Editor v-if="showEditor" :template="activeTemplate" :offset="offset"
       @action="onEditorAction" @offset="onOffset"/>
     <Toast />
-    <div class="sheetName" v-show="showSheetName"
+    <div class="sheetName"
       :class="{'sheetNameOffset':menuOpen, 'sheetNameModified': sheetModified}">
       <div>{{ getSheetName() }}</div>
       <div class="sheetNumber">{{ getSheetNumber() }}</div>
@@ -356,11 +350,11 @@ function showToast(data) {
       <i class="pi pi-chevron-circle-left offsetButton" :class="{'noShow':(offset == 0 || showEditor)}"
         title="Previous Pages" id="offsetPrev"
         @click="onOffset(offset - 2)"></i>
-      <div :class="{'twoPages':showPageOne && showPageTwo}">
-        <Page :data="frontPageData" v-if="showPageOne" class="pageOne"
+      <div class="twoPages">
+        <Page :data="frontPageData" class="pageOne"
           @update="onPageUpdateFront" 
           @toast="toast.add" />
-        <Page :data="backPageData" v-if="showPageTwo" class="pageTwo" :class="{flipMode:flipMode}"
+        <Page :data="backPageData" class="pageTwo"
           @update="onPageUpdateBack" 
           @toast="toast.add" />
       </div>
@@ -368,20 +362,28 @@ function showToast(data) {
         title="Next Pages" id="offsetNext"
         @click="onOffset(offset + 2)"></i>
     </div>
-    <Menu class="menu" :activeTemplate="activeTemplate" v-show="showMenu" v-if="!showEditor" title="Toggle Menu"
-      @howDoesItWork="showHowDoesItWork=true"
-      @load="onMenuLoad" 
-      @print="onPrint" @printOptions="onPrintOptions"
-      @save="onMenuSave"
-      @toast="toast.add" @toggle="onMenuToggle"
-      >
-    </Menu>
-    <i class="pi pi-file-edit editorButton clickable" id="btnEditor" v-show="showMenu" :class="{'editorButtonActive':showEditor}"
+    <i class="pi pi-file-edit editorButton clickable" id="btnEditor" :class="{'editorButtonActive':showEditor}"
       @click="onEditor" title="Toggle Editor Mode"></i>
-    <div class="versionDialog" v-show="showVersion">{{ versionText }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span>
+    <div class="versionDialog" >{{ versionText }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span>
     </div>
   </div>
-  
+  <div v-else>
+    <div v-if="activeTemplate" :class="{printDouble:!printSingles}">
+      <Page v-for="(page,index) in activeTemplate.data"  :data="page" class="pageOne" 
+        :class="{flipMode:(index % 2 == 1 && printFlipMode),printPageBreak:(printSingles || index % 2 == 1)}"
+        @update="onPageUpdateFront"
+        @toast="toast.add" />
+      <!-- <div style="break-after: page;"></div> -->
+    </div>
+  </div>
+  <Menu class="menu" :activeTemplate="activeTemplate" v-show="!printPreview" v-if="!showEditor" title="Toggle Menu"
+    @howDoesItWork="showHowDoesItWork=true"
+    @load="onMenuLoad" 
+    @print="onPrint" @printOptions="onPrintOptions" @printPreview="onPrintPreview"
+    @save="onMenuSave"
+    @toast="toast.add" @toggle="onMenuToggle"
+    >
+  </Menu>
 </template>
 
 <style scoped>
@@ -413,9 +415,16 @@ function showToast(data) {
   background:white;
 }
 
-.twoPages {
+.printDouble {
   display: grid;
   grid-template-columns: auto auto;
+  gap:0 80px;
+}
+.printPageBreak {
+  break-after: page;
+}
+.twoPages {
+  display: flex;
   gap: 80px;
 }
 .onePage {

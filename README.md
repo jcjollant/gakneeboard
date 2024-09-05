@@ -17,6 +17,8 @@ Run the test suite:
 ## TODO
 
 # Done
+## 9/04/2024
+* User can print multiple pages at once
 ## 9/03/2024
 * Fixed get publication bug
 * Fixed page number issue
