@@ -163,6 +163,7 @@ function onCreate() {
 
     // are we overwritting something?
     if(items.value.length > 0) {
+        // console.log('[NavlogEdit.onCreate]', (typeof confirm))
         // call confirmation after short delay
         confirm.require({
             message: 'Do you want to replace all entries in the current log?',
