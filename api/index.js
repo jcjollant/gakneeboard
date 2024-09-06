@@ -181,17 +181,17 @@ app.post(['/sheet','/template'], async (req, res) => {
 })
 
 app.delete(['/sheet/:id','/template/:id'], async (req, res) => {
-    const sheetId = req.params.id
+    const templateId = req.params.id
     const userId = await UserTools.userIdFromRequest(req)
     try {
-        if( !sheetId || !userId) { 
+        if( !templateId || !userId) { 
             throw new GApiError(400, 'Invalid request')
         }
-        await GApi.templateDelete(sheetId, userId).then( (sheet) => {
-            res.send(sheet.name + ' deleted')
+        await GApi.templateDelete(templateId, userId).then( (template) => {
+            res.send(template.name + ' deleted')
         })
     } catch( e) {
-        catchError(res, e, 'DELETE /sheet/:id')
+        catchError(res, e, 'DELETE /template/:id')
     }
     // console.log( "[index] DELETE sheet " + req.params.id
 })
