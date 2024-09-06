@@ -137,7 +137,7 @@ function onSheetSelection(newOffset) {
   justify-content: center;
 }
 .editorMask {
-  height: 730px;
+  height: 800px;
   /* border: 2px solid green; */
 }
 .editorPage {

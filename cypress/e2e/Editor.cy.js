@@ -14,7 +14,7 @@ describe('Editor', () => {
     visitAndCloseBanner()
 
     cy.wait(500)
-    cy.viewport('macbook-15')
+    cy.viewport('macbook-16')
     // enable editor
     cy.get('#btnEditor').click()
 

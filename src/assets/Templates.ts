@@ -30,6 +30,28 @@ export class TemplatePage {
 
 export class TemplateData {
     /**
+     * Delete custom sheet
+     * @param {*} template 
+     */
+    static async delete(template:any) {
+        const url = apiRootUrl + 'template/' + template.id
+        if( !newCurrentUser.loggedIn) {
+            throw new Error('Cannot delete template without user')
+        }
+        return axios.delete(url,{params:{user:newCurrentUser.sha256}})
+            .then( response => {
+                // console.log('[TemplateData.delete] template deleted', sheet.id)
+                newCurrentUser.removeTemplate(template.id)
+                return template
+            })
+            .catch( error => {
+                reportError('[TemplateData.delete] error ' + error)
+                return null
+            })
+    }
+    
+  
+    /**
     * Gets a publication from its public code
     * @param {*} code 
     * @returns 

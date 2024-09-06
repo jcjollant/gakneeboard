@@ -33,6 +33,7 @@ const showSignIn = ref(false)
 const showTemplates = ref(false)
 const user = ref(newCurrentUser)
 const templateDialogMode = ref('load')
+const templateTime = ref(0)
 let readyToPrint = false;
 
 //---------------------
@@ -175,8 +176,8 @@ function onTemplateClose() {
 
 // a sheet has been deleted, it should be removed from the user
 function onTemplateDelete(template) {
-  newCurrentUser.removeTemplate(template.id)
-  emitToast(emits, 'Clear', 'Template "' + template.name + '" deleted')
+  // newCurrentUser.removeTemplate(template.id)
+  // emitToast(emits, 'Clear', 'Template "' + template.name + '" deleted')
 }
 
 /**
@@ -222,6 +223,7 @@ function onTemplateOverwrite(from,to) {
   try {
       // retreive data from active template
       template.data = activeTemplate.value.data;
+      emitToastInfo( emits, 'Say Request', 'Saving template ' + template.name)
       await TemplateData.save(template).then(t => {
         // console.log('[Menu.onTemplateSave]', JSON.stringify(t))
         let message = 'Template "' + t.name + '" saved';
@@ -245,6 +247,7 @@ function onToast(data) {
 function onUserUpdate(currentUser) {
   // console.log('[Menu.onUserUpdate]', JSON.stringify(currentUser))
   user.value = currentUser
+  templateTime.value = Date.now()
 }
 
 // Toggle menu visibility which will update component layout
@@ -271,7 +274,7 @@ function toggleMenu() {
     <About v-model:visible="showAbout" @close="showAbout=false" @hdiw="onHdiw"/>
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
       @authentication="onAuthentication" />
-    <TemplateDialog v-model:visible="showTemplates" :mode="templateDialogMode" :user="user" :template="activeTemplate"
+    <TemplateDialog v-model:visible="showTemplates" :mode="templateDialogMode" :time="templateTime" :template="activeTemplate"
       @close="onTemplateClose"
       @delete="onTemplateDelete"
       @load="onTemplateLoad" 

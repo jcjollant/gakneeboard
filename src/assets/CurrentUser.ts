@@ -7,7 +7,7 @@ export class CurrentUser {
     name:string;
     templates:any[]
     maxTemplateCount:number;
-    listenners:{(user: CurrentUser):void}[];
+    listeners:{(user: CurrentUser):void}[];
 
 
     constructor() {
@@ -17,11 +17,12 @@ export class CurrentUser {
         this.name = "";
         this.templates = [];
         this.maxTemplateCount = 0;
-        this.listenners = [];
+        this.listeners = [];
     }
 
-    addListener(listener:(user: CurrentUser)=>void) {
-      this.listenners.push(listener)
+    addListener(listener:any) {
+      // console.log('[CurrentUser.addListener] Adding listener', listener)
+      this.listeners.push(listener)
       // console.log('[CurrentUser.addListener] added a listener', this.listenners.length)
     }
 
@@ -43,7 +44,7 @@ export class CurrentUser {
 
     notify() {
       // console.log('[CurrentUser.update] notifying listeners', this.listenners.length)
-      for(const listener of this.listenners) {
+      for(const listener of this.listeners) {
         listener(this)
       }
     }

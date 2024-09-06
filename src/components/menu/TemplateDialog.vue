@@ -7,16 +7,18 @@ import FieldSet from 'primevue/fieldset'
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputText from "primevue/inputtext";
+import { useConfirm } from 'primevue/useconfirm'
 
-import { customSheetDelete } from "../../assets/data"
+import { newCurrentUser } from "../../assets/data"
 import { getTemplateDataFromName } from '../../assets/sheetData'
 import { sheetNameDemo, sheetNameDemoChecklist, sheetNameDemoNavlog, sheetNameDemoTiles } from '../../assets/sheetData'
-import { getToastData, toastError, toastSuccess } from '../../assets/toast'
+import { emitToast, emitToastError, emitToastInfo, getToastData, toastError, toastSuccess } from '../../assets/toast'
 import { TemplateData, TemplateDialogMode } from '../../assets/Templates'
 import TemplateDescription from './TemplateDescription.vue'
 import TemplateSharing from "./TemplateSharing.vue";
 
 const emits = defineEmits(["close","delete","load","save","mode", "overwrite","toast"]);
+const confirm = useConfirm()
 const deleteMode = ref(false)
 const loadTemplate = ref(null)
 const mode = ref(null)
@@ -24,23 +26,29 @@ const templateNameText = ref('')
 const templateCode = ref('')
 const targetTemplate = ref(null)
 const fetching = ref(false)
+const user = ref(null)
 
 //-----------------
 // Props management
 const props = defineProps({ 
   mode: { type: String, default: 'load'},
-  user: { type: Object, default: null},
   template: { type: Object, default: null},
+  time: { type: Number, default: 0}
 })
 
 
 function loadProps(props) {
   // console.log('[TemplateDialog.loadProps]', JSON.stringify(props.mode))
+  // console.log('[TemplateDialog.loadProps]', JSON.stringify(props.user))
   mode.value = props.mode;
+
   // Active template
   // console.log('[TemplateDialog.loadProps]', JSON.stringify(props.template))
   targetTemplate.value = props.template;
   if(props.template) templateNameText.value = props.template.name
+
+  // Current user
+  user.value = newCurrentUser
 }
 
 onMounted( () => {
@@ -64,6 +72,26 @@ function changeTemplateTarget(newTemplate=null) {
   targetTemplate.value = newTemplate
   templateNameText.value = newTemplate ? newTemplate.name : ''
 }
+
+function confirmAndDelete(template) {
+  if( !template || !template.name) return;
+
+  confirm.require({
+      message: 'Do you want to delete \'' + template.name + '\'',
+      header: 'Delete Template',
+      rejectLabel: 'No',
+      acceptLabel: 'Yes, Delete',
+      accept: async () => {
+        // console.log('[TemplateDialog.confirmAndDelete] deleting', JSON.stringify(template))
+        emitToastInfo(emits, 'Calling Tower', 'Requesting deletion of ' + template.name)
+        await TemplateData.delete(template).then( () => {
+          // console.log('[TemplateDialog.onSheetSelected]', sheet)
+          emitToast(emits, 'Clear', 'Template "' + template.name + '" deleted')
+        })
+      }
+  })
+}
+
 
 function getDescriptionTitle() {
   if(fetching.value) return 'Fetching ...'
@@ -132,10 +160,9 @@ async function onSheetFetchCode() {
   fetching.value = true;
   await TemplateData.getPublication(templateCode.value).then( template => {
     // console.log('[Templates.onSheetFetch] sheet', JSON.stringify(sheet))
-    // showToast('Fetch', 'Sheet found')
     changeTemplateLoad(template)
     if(!template) {
-      showToast('Fetch','Code not found ' + templateCode.value, toastError)
+      emitToastError(emits, 'Fetch','Code not found ' + templateCode.value)
     }
   }) 
 }
@@ -144,14 +171,7 @@ async function onTemplateSelected(template) {
   // console.log('[Sheets.onSheetSelected] deleteMode', deleteMode.value,'mode', props.mode)
   if( mode.value == TemplateDialogMode.load) {
     if(deleteMode.value) {
-      await customSheetDelete(template).then( () => {
-        // console.log('[Sheets.onSheetSelected]', sheet)
-        if( template) {
-          // remove that sheet from the list
-          emits('delete',template)
-          changeTemplateTarget()
-        }
-      })
+      confirmAndDelete(template)
     } else { // load template
       fetching.value = true;
       await TemplateData.get(template.id).then( template => {
@@ -173,10 +193,6 @@ function onToast(data) {
 
 function onToggleDeleteMode() {
   deleteMode.value = !deleteMode.value
-}
-
-function showToast(summary,details,severity=toastSuccess) {
-  emits('toast',getToastData(summary,details, severity))
 }
 
 </script>
@@ -208,10 +224,6 @@ function showToast(summary,details,severity=toastSuccess) {
           <InputGroupAddon>Name</InputGroupAddon>
           <InputText v-model="templateNameText"/>
         </InputGroup>
-        <!-- <TemplateSharing :template="targetTemplate" @toast="onToast" /> -->
-        <!-- <Button label="Make Copy" icon="pi pi-file" severity="secondary" title="Create a copy instead or overwritting"
-          :disabled="!(targetTemplate?.id)"
-          @click="onNewTemplate"></Button> -->
         <TemplateDescription :template="targetTemplate" />
       </div>
       <label v-if="user.templates.length >= user.maxTemplateCount || (user.templates.length==user.maxTemplateCount && !(targetTemplate?.id))" class="experiment">We are currently experimenting with a limit of {{ user.maxTemplateCount }} templates</label>

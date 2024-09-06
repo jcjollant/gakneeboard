@@ -17,6 +17,10 @@ Run the test suite:
 ## TODO
 
 # Done
+## 9/05/2024
+* Delete template confirmation
+* Fixed template deletion bug
+* Fixed editor mask size
 ## 9/04/2024
 1) User can print multiple pages at once
 2) Enlarged tiles for better aspect ratio

@@ -1,4 +1,4 @@
-export const version = 904.2
+export const version = 905
 
 export const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // export const apiRootUrl = 'http://localhost:3000/'
@@ -71,27 +71,6 @@ export async function getUrlWithUser(url) {
   } else {
     return axios.get(url)
   }
-}
-
-/**
- * Delete custom sheet
- * @param {*} template 
- */
-export async function customSheetDelete(template) {
-  const url = apiRootUrl + 'sheet/' + template.id
-  if( !newCurrentUser.loggedIn) {
-    throw new Error('Cannot delete sheet without user')
-  }
-  await axios.delete(url,{params:{user:newCurrentUser.sha256}})
-    .then( response => {
-      // console.log('[data.customSheetDelete] sheet deleted', sheet.id)
-      newCurrentUser.removeTemplate(template.id)
-      return template
-    })
-    .catch( error => {
-      reportError('[data.customSheetDelete] error ' + JSON.stringify(error))
-      return null
-    })
 }
 
 /**
