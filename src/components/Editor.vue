@@ -28,7 +28,7 @@ function loadProps( props) {
     const offset = index * 2
     const output = {name: (offset+1) + ' | ' + (offset+2), offset:index*2}
     return output
-  }) 
+  })
   // console.log('[Editor.loadProps]', JSON.stringify(sheets.value))
 }
 
@@ -44,13 +44,15 @@ watch( props, async() => {
 //---------------------
 
 function confirmAndDelete() {
+  // console.log('[Editor.confirmAndDelete]')
   confirm.require({
       message: 'Are you positive you will not regret deleting pages ' + (activeOffset.value + 1) + ' and ' + (activeOffset.value + 2),
       header: "Delete Pages",
       rejectLabel: 'No',
       acceptLabel: 'Yes, Delete',
       accept: () => {
-        onAction(EditorAction.delete2Pages(activeOffset.value))
+        console.log('ACcept')
+        // onAction(EditorAction.delete2Pages(activeOffset.value))
       }
     })
 }
@@ -91,7 +93,7 @@ function onSheetSelection(newOffset) {
     </div>
     <div class="editorBottom">
       <div class="editorPage">
-        <Button icon="pi pi-trash" label="Reset" title="Reset Front Page" 
+        <Button icon="pi pi-eject" label="Replace" title="Replace Front Page" 
           @click="onAction(EditorAction.reset(activeOffset))"></Button>
         <Button icon="pi pi-copy" label="Copy" title="Copy Front Page to Clipboard" 
           @click="onAction(EditorAction.copy(activeOffset))"></Button>
@@ -103,7 +105,7 @@ function onSheetSelection(newOffset) {
               @click="onActionName(EditorAction._swapPages)" ></Button>
       </div>
       <div class="editorPage">
-        <Button icon="pi pi-trash" label="Reset" title="Reset Back Page" 
+        <Button icon="pi pi-eject" label="Replace" title="Replace Back Page" 
           @click="onAction(EditorAction.reset(activeOffset+1))"></Button>
         <Button icon="pi pi-copy" label="Copy" title="Copy Back Page to Clipboard" 
           @click="onAction(EditorAction.copy(activeOffset+1))"></Button>
