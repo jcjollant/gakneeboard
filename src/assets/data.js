@@ -74,27 +74,6 @@ export async function getUrlWithUser(url) {
 }
 
 /**
- * Delete custom sheet
- * @param {*} template 
- */
-export async function customSheetDelete(template) {
-  const url = apiRootUrl + 'sheet/' + template.id
-  if( !newCurrentUser.loggedIn) {
-    throw new Error('Cannot delete sheet without user')
-  }
-  await axios.delete(url,{params:{user:newCurrentUser.sha256}})
-    .then( response => {
-      // console.log('[data.customSheetDelete] sheet deleted', sheet.id)
-      newCurrentUser.removeTemplate(template.id)
-      return template
-    })
-    .catch( error => {
-      reportError('[data.customSheetDelete] error ' + JSON.stringify(error))
-      return null
-    })
-}
-
-/**
  * Query airport data backend
  * @param {*} codeParam airport code, case doesn't matter
  * @param {*} group whether this request should be grouped with others
