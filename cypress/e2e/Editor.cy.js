@@ -18,6 +18,11 @@ describe('Editor', () => {
     // enable editor
     cy.get('#btnEditor').click()
 
+    // check size makes sense
+    const expectedHeight = 800
+    cy.get('.twoPages').invoke('outerHeight').should('be.equal', expectedHeight - 3)
+    cy.get('.editorMask').invoke('outerHeight').should('be.equal', expectedHeight)
+
     // Check we have action buttons
     cy.get(':nth-child(1) > [aria-label="Reset"]')
     cy.get(':nth-child(1) > [aria-label="Copy"]')
