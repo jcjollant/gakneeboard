@@ -49,6 +49,9 @@ function loadProps(props) {
 
   // Current user
   user.value = newCurrentUser
+
+  // reset delete mode
+  deleteMode.value = false;
 }
 
 onMounted( () => {

@@ -156,6 +156,7 @@ function onTemplateDialog(save=false) {
   // console.log('[Menu.onTemplateDialog]', save, JSON.stringify(activeTemplate.value))
   if( user.value) {
     showTemplates.value = true;
+    templateTime.value = Date.now()
     // console.log('[Menu.onTemplateDialog]', JSON.stringify(activeTemplate.value))
     if(save) {
       templateDialogMode.value = (activeTemplate.value && activeTemplate.value.id) ? TemplateDialogMode.save : 'saveAs'
