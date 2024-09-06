@@ -93,20 +93,25 @@ function onSheetSelection(newOffset) {
         @click="confirmAndDelete"></Button>
     </div>
     <div class="editorMask">
+      <div class="middle">
+          <Button icon="pi pi-arrow-right" title="Copy Left to Right" 
+              @click="onAction(EditorAction.copyToPage(activeOffset, activeOffset+1))" ></Button>
+          <Button icon="pi pi-arrow-right-arrow-left" title="Swap Left and Right" 
+              @click="onActionName(EditorAction._swapPages)" ></Button>
+          <Button icon="pi pi-arrow-left" title="Copy Right to Left" 
+              @click="onAction(EditorAction.copyToPage(activeOffset+1, activeOffset))" ></Button>
+      </div>
     </div>
     <div class="editorBottom">
       <div class="editorPage">
-        <Button icon="pi pi-eject" label="Replace" title="Replace Front Page" 
+        <Button icon="pi pi-eject" label="Replace" title="Replace Left Page" 
           @click="onAction(EditorAction.reset(activeOffset))"></Button>
-        <Button icon="pi pi-copy" label="Copy" title="Copy Front Page to Clipboard" 
-          @click="onAction(EditorAction.copy(activeOffset))"></Button>
-        <Button icon="pi pi-clipboard" label="Paste" title="Paste Clipboard to Front Page" 
+        <Button icon="pi pi-copy" label="Copy" title="Copy Left Page to Clipboard" 
+          @click="onAction(EditorAction.copyToClipboard(activeOffset))"></Button>
+        <Button icon="pi pi-clipboard" label="Paste" title="Paste Clipboard to Left Page" 
           @click="onAction(EditorAction.paste(activeOffset))"></Button>
       </div>
-      <div class="middle">
-          <Button icon="pi pi-arrow-right-arrow-left" title="Swap Front and Back" 
-              @click="onActionName(EditorAction._swapPages)" ></Button>
-      </div>
+      <div class="editorSpacer"></div>
       <div class="editorPage">
         <Button icon="pi pi-eject" label="Replace" title="Replace Back Page" 
           @click="onAction(EditorAction.reset(activeOffset+1))"></Button>
@@ -156,12 +161,20 @@ function onSheetSelection(newOffset) {
   color: lightgray;
   line-height: 2.5rem;
 }
+.editorSpacer {
+  width: 80px;
+}
 .editorTop {
   display: flex;
   gap: 0.5rem;
   justify-content: center;
 }
 .middle {
-    width: 80px;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 100%;
 }
 </style>

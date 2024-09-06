@@ -1,7 +1,8 @@
 export class EditorAction {
     static _add2Pages:string = 'add2Pages';
     static _changeOffset:string = 'changeOffset';
-    static _copyPage:string = 'copyPage';
+    static _copyToClipboard:string = 'copyToClip';
+    static _copyToPage:string = 'copyToPage';
     static _delete2Pages:string = 'delete2Pages';
     static _pastePage:string = 'paste';
     static _resetPage:string = 'reset';
@@ -9,10 +10,12 @@ export class EditorAction {
 
     action:string;
     offset:number;
+    offsetTo:number;
 
-    constructor(action:string, offset:number=0) {
+    constructor(action:string, offset:number=0, offsetTo:number=0) {
         this.action = action;
         this.offset = offset;
+        this.offsetTo = offsetTo;
     }
 
     static add2Pages():EditorAction {
@@ -23,8 +26,12 @@ export class EditorAction {
         return new EditorAction(EditorAction._changeOffset, offset);
     }
 
-    static copy(offset:number):EditorAction {
-        return new EditorAction(EditorAction._copyPage, offset);
+    static copyToClipboard(offset:number):EditorAction {
+        return new EditorAction(EditorAction._copyToClipboard, offset);
+    }
+
+    static copyToPage(offsetFrom:number,offsetTo:number):EditorAction {
+        return new EditorAction(EditorAction._copyToPage, offsetFrom, offsetTo);
     }
 
     static delete2Pages(offset:number):EditorAction {

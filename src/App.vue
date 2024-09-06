@@ -122,11 +122,19 @@ async function onEditorAction(ea) {
     saveTemplate = true;
   } else if(ea.action == EditorAction._changeOffset) {
     onOffset(ea.offset)
-  } else if(ea.action == EditorAction._copyPage) {
+  } else if(ea.action == EditorAction._copyToClipboard) {
     const pageData = activeTemplate.value.data[ea.offset]
     // grab data and show toast
     navigator.clipboard.writeText(JSON.stringify(pageData));
     showToast( getToastData('Page ' + ea.offset + ' copied to clipboard'))
+  } else if(ea.action == EditorAction._copyToPage) {
+    if(ea.offset == offset.value && ea.offsetTo == offset.value + 1) {
+      backPageData.value = duplicate(frontPageData.value)
+      updateBack = true;
+    } else if(ea.offset == offset.value + 1 && ea.offsetTo == offset.value) {
+      frontPageData.value = duplicate(backPageData.value)
+      updateFront = true;
+    }
   } else if(ea.action == EditorAction._delete2Pages) {
     // protection against invalid offset
     if(ea.offset < 0 || ea.offset > offsetLast.value) return;
@@ -154,7 +162,6 @@ async function onEditorAction(ea) {
     backPageData.value = activeTemplate.value.data[offset.value+1]
 
   } else if(ea.action == EditorAction._swapPages) {
-
     const swap = duplicate(frontPageData.value)
     frontPageData.value = duplicate(backPageData.value)
     backPageData.value = swap;
