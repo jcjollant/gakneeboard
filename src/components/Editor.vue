@@ -3,6 +3,7 @@ import { onMounted, ref, watch } from 'vue'
 import { EditorAction } from '../assets/Editor'
 
 import Button from 'primevue/button'
+import ConfirmDialog from 'primevue/confirmdialog'
 import { useConfirm } from 'primevue/useconfirm'
 
 
@@ -22,6 +23,7 @@ const props = defineProps({
 function loadProps( props) {
   // console.log('Menu loadProps', JSON.stringify(props))
   activeTemplate.value = props.template;
+  // console.log('[Editor.loadProps] offset', props.offset)
   activeOffset.value = props.offset;
   // list offsets
   sheets.value = props.template.data.filter((d,index)=>index % 2 == 0).map((d,index) => {
@@ -44,15 +46,15 @@ watch( props, async() => {
 //---------------------
 
 function confirmAndDelete() {
-  // console.log('[Editor.confirmAndDelete]')
+  // console.log('[Editor.confirmAndDelete]', activeOffset.value, (typeof confirm))
+
   confirm.require({
       message: 'Are you positive you will not regret deleting pages ' + (activeOffset.value + 1) + ' and ' + (activeOffset.value + 2),
       header: "Delete Pages",
       rejectLabel: 'No',
       acceptLabel: 'Yes, Delete',
       accept: () => {
-        console.log('ACcept')
-        // onAction(EditorAction.delete2Pages(activeOffset.value))
+        onAction(EditorAction.delete2Pages(activeOffset.value))
       }
     })
 }
@@ -79,6 +81,7 @@ function onSheetSelection(newOffset) {
 
 <template>
   <div class="editor">
+    <ConfirmDialog></ConfirmDialog>
     <div class="editorTop">
       <div class="editorSheets">Pages</div>
       <Button v-for="(s,index) in sheets" 
