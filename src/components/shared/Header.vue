@@ -44,7 +44,8 @@ watch( props, async() => {
 <template>
     <div class="headerTitle" :class="{ clickable: clickable, left: left, page: page, stealth: stealth }">
         <div>{{ title }}</div>
-        <Button class="replace" v-if="replace" icon="pi pi-trash" title="Replace Tile" @click="emits('replace')"></Button>
+        <Button class="replace" v-if="replace" icon="pi pi-trash" title="Replace Tile" link
+            @click="emits('replace')"></Button>
     </div>
 </template>
 
@@ -69,15 +70,19 @@ watch( props, async() => {
     .replace {
         position:absolute;
         font-size: 15px;
-        right: 3px;
-        top:5px;
-        width: 28px;
-        height: 28px;
-        padding: 5px;
+        right: 1px;
+        top:1px;
+        width: 23px;
+        height: 23px;
+        /* padding: 5px; */
         margin: 0;
-        background-color: darkred;
-        color: white;
+        /* background-color: darkred; */
+        /* color: green; */
         border: 0
+    }
+    .replace:hover {
+        background-color: darkblue;
+        color:white;
     }
     .left {
         text-align: left;
