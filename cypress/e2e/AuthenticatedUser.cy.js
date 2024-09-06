@@ -64,11 +64,15 @@ describe('Authenticated User', () => {
     cy.get('.templateList > .p-button-icon-only').click()
     cy.intercept({
       method: 'DELETE',
-      url: '**/sheet/**',
-    }).as('deleteSheet');
+      url: '**/template/**',
+    }).as('deleteTemplate');
+
     cy.get('[aria-label="Temp"]').click()
+    // confirmation
+    cy.get('.p-confirm-dialog-accept').click()
+
     // Delete Temp
-    cy.wait('@deleteSheet').its('response.statusCode').should('equal', 200)
+    cy.wait('@deleteTemplate').its('response.statusCode').should('equal', 200)
 
     // Close dialog
     cy.get('.p-button-link').click()
