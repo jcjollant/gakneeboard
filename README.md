@@ -18,9 +18,11 @@ Run the test suite:
 
 # Done
 ## 9/06/2024
+1) 
 * Fixed missing confirmation on Editor Delete sheet
 * Fixed invalid offset on editor delete sheet
 * Editor reset button updated to Replace with Eject button to match tiles
+2) Boosted max log to 15
 ## 9/05/2024
 * Delete template confirmation
 * Fixed template deletion bug
