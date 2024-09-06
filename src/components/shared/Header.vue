@@ -44,7 +44,7 @@ watch( props, async() => {
 <template>
     <div class="headerTitle" :class="{ clickable: clickable, left: left, page: page, stealth: stealth }">
         <div>{{ title }}</div>
-        <Button class="replace" v-if="replace" icon="pi pi-trash" title="Replace Tile" link
+        <Button class="replaceButton" v-if="replace" icon="pi pi-eject" title="Replace Tile" link
             @click="emits('replace')"></Button>
     </div>
 </template>
@@ -67,7 +67,7 @@ watch( props, async() => {
         font-size: 1.2rem;
         font-weight: bolder;
     }
-    .replace {
+    .replaceButton {
         position:absolute;
         font-size: 15px;
         right: 1px;
@@ -80,7 +80,7 @@ watch( props, async() => {
         /* color: green; */
         border: 0
     }
-    .replace:hover {
+    .replaceButton:hover {
         background-color: darkblue;
         color:white;
     }
