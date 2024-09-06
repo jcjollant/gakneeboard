@@ -129,10 +129,8 @@ async function onEditorAction(ea) {
     showToast( getToastData('Page ' + ea.offset + ' copied to clipboard'))
   } else if(ea.action == EditorAction._delete2Pages) {
     // protection against invalid offset
-    if(ea.offset < 0 || ea.offset > offsetLast.value) {
-      console.log('[Add.onEditorAction] delete page invalid offset')
-      return
-    }
+    if(ea.offset < 0 || ea.offset > offsetLast.value) return;
+
     // protection against last page removal
     if( offset.value == 0 && offsetLast.value == 0) {
       showToast( getToastData( 'Delete Pages', 'Last two pages cannot be deleted. Delete the template instead.', toastError))
@@ -148,7 +146,7 @@ async function onEditorAction(ea) {
     // reduce the whole size
     offsetLast.value -= 2;
     // shift offset left if we are removing the last page
-    if(offset.value < offsetLast.value) {
+    if(offset.value > offsetLast.value) {
       offset.value = offsetLast.value;
     } 
     // refresh active pages
