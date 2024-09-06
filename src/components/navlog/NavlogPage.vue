@@ -71,7 +71,7 @@ function onToast(data) {
 <template>
     <div class="contentPage navlogPage">
         <div v-if="mode == 'edit'">
-            <Header :title="title" :page="true" @click="onHeaderClick"></Header>
+            <Header title="NavLog Editor" :clickable="false"></Header>
             <NavlogEdit :navlog="navlog"
                 @toast="onToast" @cancel="onEditCancel" @apply="onEditApply" />
         </div>
