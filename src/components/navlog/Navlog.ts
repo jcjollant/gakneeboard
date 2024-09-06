@@ -13,6 +13,8 @@ export class Navlog {
     td:number // Total Distance
     entries:NavlogEntry[]
 
+    static maxItems:number = 15
+
     constructor(from:string,to:string) {
         this.from = from;
         this.to = to;

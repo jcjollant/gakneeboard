@@ -39,7 +39,6 @@ const showEditorLeg = ref(false)
 const totalDistance = ref(0)
 const totalTime = ref(0)
 const totalFuel = ref(0)
-const maxLogItems = 14
 
 let elevFrom = 0;
 let elevTo = 0;
@@ -260,8 +259,8 @@ function onEntryEditorSave(entry) {
 
 function onItemAdd(index) {
     // console.log('[NavlogEdit.onAddItem]', index, items.value.length)
-    if(items.value.length >= maxLogItems) {
-        emitToastError( emits, 'Log Full', `We cannot display more than ${maxLogItems} checkpoints in the navlog`)
+    if(items.value.length >= Navlog.maxItems) {
+        emitToastError( emits, 'Log Full', `We cannot display more than ${Navlog.maxItems} checkpoints in the navlog`)
         return
     }
     const newItem = EditorItem.vanilla('?')
