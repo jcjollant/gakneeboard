@@ -224,20 +224,27 @@ export function describePage(sheet, pageNumber, maxLength=undefined) {
   try {
     if(page.type == PageType.tiles) {
       output = "[Tiles] "
+      // build the list of tiles
       const tiles = page.data.map( t => {
         if(t.name=='airport') {
-          return "Airport(" + t.data.code.toUpperCase() + ")"
+          let tileName = "Airport";
+          if(t.data.code) tileName += '(' + t.data.code.toUpperCase() + ')'
+          return tileName
         } else  {
+          // Just capitalize the tile name
           return t.name[0].toUpperCase() + t.name.substring(1)
         }
       })
       output += tiles.join(',');
     } else if(page.type == PageType.checklist) {
-      output = "[Checklist] " + page.data.name
+      output = "[Checklist] "
+      if(page.data.name) output += page.data.name;
       // build a list of sections within that list
-      const sections = page.data.items.filter(i => 's' in i).map(i => i.s);
-      if(sections.length) {
-        output += " : " + sections.join(' / ')
+      if(page.data.items) {
+        const sections = page.data.items.filter(i => 's' in i).map(i => i.s);
+        if(sections.length) {
+          output += " : " + sections.join(' / ')
+        }
       }
     } else if(page.type == PageType.selection) {
       output = "[Selection]"
