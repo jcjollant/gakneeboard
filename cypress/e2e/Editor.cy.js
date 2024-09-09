@@ -1,5 +1,9 @@
 import { visitAndCloseBanner } from './shared'
 
+function demoChecklistOn(page) {
+    cy.get(`${page} > :nth-child(2) > .twoLists > .leftList > :nth-child(19)`).contains('FIRE')
+}
+
 function reloadDemo() {
     cy.get('#btnEditor').click()
     cy.get('.menuIcon').click()
@@ -27,7 +31,9 @@ describe('Editor', () => {
     cy.get(':nth-child(1) > [aria-label="Replace"]')
     cy.get(':nth-child(1) > [aria-label="Copy"]')
     cy.get(':nth-child(1) > [aria-label="Paste"]')
-    cy.get('.middle > .p-button').should('have.class','p-button-icon-only')
+    cy.get('#editorCopyToRight').should('have.class','p-button-icon-only')
+    cy.get('#editorSwap').should('have.class','p-button-icon-only')
+    cy.get('#editorCopyToLeft').should('have.class','p-button-icon-only')
     cy.get(':nth-child(3) > [aria-label="Replace"]')
     cy.get(':nth-child(3) > [aria-label="Copy"]')
     cy.get(':nth-child(3) > [aria-label="Paste"]')
@@ -55,15 +61,31 @@ describe('Editor', () => {
 
     // swap
     cy.get('.pageOne > :nth-child(6) > .headerTitle').contains('Clearance @')
-    cy.get('.pageTwo > :nth-child(2) > .twoLists > .leftList > :nth-child(19)').contains('FIRE')
-    cy.get('.middle > .p-button').click()
-    cy.get('.pageOne > :nth-child(2) > .twoLists > .leftList > :nth-child(19)').contains('FIRE')
+    demoChecklistOn('.pageTwo')
+    cy.get('#editorSwap').click()
+    demoChecklistOn('.pageOne')
     cy.get('.pageTwo > :nth-child(6) > .headerTitle').contains('Clearance @')
 
     // reload demo
     reloadDemo()
 
-    // Copy Front to Back
+    // Copy left to right
+    cy.get('#editorCopyToRight').click()
+    cy.get('.pageOne > :nth-child(6) > .headerTitle').contains('Clearance @')
+    cy.get('.pageTwo > :nth-child(6) > .headerTitle').contains('Clearance @')
+
+    // reload demo
+    reloadDemo()
+
+    // Copy left to right
+    cy.get('#editorCopyToLeft').click()
+    demoChecklistOn('.pageOne')
+    demoChecklistOn('.pageTwo')
+
+    // reload demo
+    reloadDemo()
+
+    // Copy Front to Back via clip board
     cy.get(':nth-child(1) > [aria-label="Copy"]').click()
     cy.get(':nth-child(3) > [aria-label="Paste"]').click()
 
