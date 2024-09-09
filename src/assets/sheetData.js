@@ -191,7 +191,11 @@ const pageDemoNavlog0 = {
     "ff":53,
     "ft":43.5,
     "mv":-15,
-    "md":0
+    "md":0,
+    cta: 105,
+    cff: 9,
+    dr: 500,
+    dff :6,
   }    
 }
 
