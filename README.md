@@ -22,6 +22,7 @@ Run the test suite:
 * Leg Editor is now only showing relevant variables
 * navlog now supports continued mode
 * navlog page now show fuel recap
+* Navlog support cruise GPH, TAS, descent GPH and FPM
 ## 9/06/2024
 1) 
 * Fixed missing confirmation on Editor Delete sheet
