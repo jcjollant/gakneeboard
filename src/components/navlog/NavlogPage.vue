@@ -1,9 +1,9 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
-import { duplicate } from '../../assets/data'
-import { formatAltitude } from '../../assets/format'
+import { duplicate, navlogQueue } from '../../assets/data'
 import { Formatter } from '../../assets/Formatter'
+import { Navlog } from '../../assets/Navlog'
 
 import Header from '../shared/Header.vue'
 import NavlogEdit from './NavlogEdit.vue'
@@ -11,6 +11,16 @@ import PlaceHolder from '../shared/PlaceHolder.vue'
 
 
 const emits = defineEmits(['toast','update'])
+const modeEdit = 'edit'
+const modeDisplay = ''
+const continued = ref(false)
+const truncated = ref(false)
+const navlog = ref(null)
+const checkpoints = ref(null)
+const legs = ref(null)
+const mode = ref(modeDisplay)
+const title = ref('NavLog')
+let navlogBeforeEdit = null
 
 const props = defineProps({
     data: { type: Object, default: null },
@@ -19,14 +29,18 @@ const props = defineProps({
 function loadProps(newProps) {
     // console.log('[NavlogPage.loadProps]', JSON.stringify(newProps))
     if (newProps.data) {
-        navlog.value = newProps.data;
+        continued.value = 'continued' in newProps.data
+        applyData(newProps.data);
     } else {
         navlog.value = null
     }
 }
 
 onMounted(() => {
+    // register listener for navlog updates
     loadProps(props)
+    const existingNavlog = navlogQueue.addListener(onNavlogUpdate)
+    if(existingNavlog && continued.value) applyData(existingNavlog)
 })
 
 watch(props, () => {
@@ -36,46 +50,87 @@ watch(props, () => {
 // End of props management
 //------------------------
 
-// create a list of ten objects with one 'ch' key which has a number value between 0 and 359
-const navlog = ref(null)
-const mode = ref('')
-const title = ref('NavLog')
-let navlogBeforeEdit = null
+// refresh navlog, checkpoints and legs with new data
+// update title
+function applyData(logData) {
+    if( !logData || !logData.entries) return;
+    // console.log('[NavlogPage.applyData]', continued.value, JSON.stringify(logData))
 
+    if( continued.value) {
+        // use navlog.entries elements from index 14
+        checkpoints.value = logData.entries.slice(14)
+        const numCheckpoints = checkpoints.value.length
+        legs.value = checkpoints.value.slice(0, numCheckpoints - 1)
+        truncated.value = false
+        navlog.value = Navlog.copy(logData, true)
+        navlog.value.continued = true;
+        title.value = "NavLog (Cont'd)"
+    } else {
+        // we only display the first 15 entries
+        checkpoints.value = logData.entries.slice(0, 15)
+        const numCheckpoints = checkpoints.value.length
+        legs.value = checkpoints.value.slice(0, numCheckpoints - 1)
+        truncated.value = logData.entries.length > 15
+        navlog.value = logData
+        title.value = "NavLog"
+        navlogQueue.notify(logData)
+    }
+}
+
+function formatFuelRecapTime(value) {
+    if(!value) return Formatter.noTime
+    if(navlog.value.cff > 0) {
+        return Formatter.legTime(value / navlog.value.cff * 60)
+    }
+    return '';
+}
+
+// New NavLog configuration is available
+// If newNavLog is 'continue' we continue the previous page
 function onEditApply(newNavlog) {
-    console.log('[NavlogPage.onEditApply]', JSON.stringify(newNavlog))
-    navlog.value = newNavlog
-    mode.value = ''
+    // console.log('[NavlogPage.onEditApply]', JSON.stringify(newNavlog))
+    continued.value = newNavlog.continued
+    applyData(newNavlog)
+    // save data
     emits('update',newNavlog)
+    // display mode
+    mode.value = modeDisplay
 }
 
 // Edit has been cancelled, we restore previous state
 function onEditCancel() {
     // restore previous values
     navlog.value = navlogBeforeEdit
-    mode.value = ''
+    mode.value = modeDisplay
 }
 
 function onHeaderClick() {
     if(mode.value=='') {
         navlogBeforeEdit = duplicate( navlog.value)
     }
-    mode.value = (mode.value == 'edit' ? '' : 'edit')
+    mode.value = (mode.value == modeEdit ? modeDisplay : modeEdit)
+}
+
+function onNavlogUpdate(navlog) {
+    if(!continued.value) return;
+    // console.log('[NavlogPage.onNavlogUpdate]', JSON.stringify(navlog))
+    applyData(navlog)
 }
 
 function onToast(data) {
     emits('toast', data)
 }
+
 </script>
 
 <template>
     <div class="contentPage navlogPage">
-        <div v-if="mode == 'edit'">
+        <div v-if="mode == modeEdit">
             <Header title="NavLog Editor" :clickable="false"></Header>
             <NavlogEdit :navlog="navlog"
                 @toast="onToast" @cancel="onEditCancel" @apply="onEditApply" />
         </div>
-        <div v-else-if="navlog==null || navlog.entries==null">
+        <div v-else-if="checkpoints==null">
             <Header :title="title" :page="true" @click="onHeaderClick"></Header>
             <PlaceHolder title="No Entries"></PlaceHolder>
         </div>
@@ -85,16 +140,16 @@ function onToast(data) {
                     <div title="Checkpoint">CheckPt</div>
                     <div title="Altitude">Alt.</div>
                 </div>
-                <div v-for="v in navlog.entries" class="checkpointGrid bb">
+                <div v-for="v in checkpoints" class="checkpointGrid bb">
                     <div class="name br" :class="{'checkpointStrong':(v.name.length < 7)}">{{ v.name }}</div>
                     <div class="altitudeGroup">
-                        <span class="altitude checkpointStrong">{{ formatAltitude( v.alt) }}</span>
+                        <span class="altitude checkpointStrong">{{ Formatter.altitude( v.alt) }}</span>
                         <i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(v.att=='+'),'pi-arrow-down-right attDesc':(v.att=='-')}"></i>
                     </div>
                     
                 </div>
             </div>
-            <div class="legs">
+            <div class="legs" v-if="legs">
                 <div class="title clickable" @click="onHeaderClick">{{title}}</div>
                 <div class="legsHeader legsGrid navlogHeader bb">
                     <div title="Magnetic Heading">MH</div>
@@ -105,7 +160,7 @@ function onToast(data) {
                     <div>Time</div>
                     <div>Fuel</div>
                 </div>
-                <div v-for="e in navlog.entries.slice(0, navlog.entries.length - 1)" 
+                <div v-if="legs" v-for="e in legs" 
                     class="legsGrid bb"  :class="{'legClimb':(e.att=='+'),'legDesc':(e.att=='-')}">
                     <div class="headingGroup">
                         <div class="heading">{{ e.mh }}</div>
@@ -117,15 +172,40 @@ function onToast(data) {
                         <i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(e.att=='+'),'pi-arrow-down-right attDesc':(e.att=='-'),'pi-arrow-right attCruise':(e.att!='+'&&e.att!='-')}"></i>
                     </div>
                     <div class="bl">{{ Formatter.legTime(e.lt) }}</div>
-                    <div class="bl fuel" :class="{'fuelBingo': e.fr < navlog.fr}">{{ e.lf }}<span class="fuelRemaining">{{ Formatter.fuel(e.fr) }}</span></div>
+                    <div class="bl fuel" :class="{'fuelBingo': e.fr < navlog.fr}">{{ e.lf }}<span class="fuelRemaining"  :class="{'fuelRemainingBingo': e.fr < navlog.fr}">{{ Formatter.fuel(e.fr) }}</span></div>
                 </div>
-                <div class="legsGrid legsFooter">
+                <div v-if="truncated" class="legsFooterTruncated">
+                    <div>{{ navlog.entries.length - legs.length - 1 }} more legs</div>
+                    <i class="pi pi-arrow-right"></i>
+                </div>
+                <div v-else class="legsGrid legsFooter">
                     <div class="totalDistance bl br bb">{{ Formatter.distance(navlog.td) }}</div>
                     <div class="totalTime bl bb">{{ Formatter.legTime(navlog.tt) }}</div>
-                    <div class="totalFuel bl bb" :class="{'fuelBingo': navlog.ft < navlog.fr}">{{ Formatter.fuel(navlog.ft) }}</div>
+                    <div class="totalFuel bl bb">{{ Formatter.fuel(navlog.ff - navlog.ft) }}</div>
                 </div>
             </div>
-            <div class="notes">Notes</div>
+            <!-- <div class="notes">Notes</div> -->
+            <div class="fuelRecap" v-if="navlog && mode!=modeEdit">
+                <div class="fuelRecapGroup">
+                    <div class="fuelRecapGroupLabel">Departure Fuel</div>
+                    <div class="fuelRecapAvailable fuelRecapFuel">{{ Formatter.fuel(navlog.ff) }}</div>
+                    <div class="fuelRecapTime">{{ formatFuelRecapTime(navlog.ff)}}</div>
+                </div>
+                <div class="fuelRecapGroup">
+                    <div class="fuelRecapGroupLabel">Used</div>
+                    <div class="fuelRecapUsed fuelRecapFuel">{{ Formatter.fuel(navlog.ff - navlog.ft) }}</div>
+                </div>
+                <div class="fuelRecapGroup">
+                    <div class="fuelRecapGroupLabel">Destination Fuel</div>
+                    <div class="fuelRecapAvailable fuelRecapFuel" :class="{'fuelRecapAvailableReserve':navlog.ft < navlog.fr}">{{ Formatter.fuel(navlog.ft) }}</div>
+                    <div class="fuelRecapTime"  :class="{'fuelRecapAvailableReserve':navlog.ft < navlog.fr}">{{ formatFuelRecapTime(navlog.ft) }}</div>
+                </div>
+                <div class="fuelRecapGroup">
+                    <div class="fuelRecapGroupLabel">Fuel Reserve</div>
+                    <div class="fuelRecapReserve fuelRecapFuel">{{ Formatter.fuel(navlog.fr) }}</div>
+                    <div class="fuelRecapTime">{{ formatFuelRecapTime(navlog.fr) }}</div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -186,6 +266,46 @@ function onToast(data) {
     color:white;
     background-color: orangered;
 }
+.fuelRecap{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    font-size: 0.8rem;
+    font-weight: bold;
+    justify-content: space-around;
+    width: 100%;
+    align-items: center;
+    padding: 0 5px;
+    background-color: rgba(0,0,255,0.1);
+    grid-column: 1 / span 2;
+    line-height: normal;
+    height:36px;
+}
+.fuelRecapAvailable {
+    color: blue;
+}
+.fuelRecapAvailableReserve {
+    color: red;
+}
+.fuelRecapGroup {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 0 5px;
+}
+.fuelRecapGroupLabel {
+    display: flex;
+    flex-flow: column;
+    opacity: 0.5;
+    grid-column: 1 / span 2;
+}
+.fuelRecapTime {
+    font-weight: normal;
+    opacity: 1;
+}
+.fuelRecapUsed {
+    grid-column: 1 / span 2;
+}
 .fuelRemaining {
     font-size: 0.7rem;
     font-weight: bold;
@@ -195,6 +315,11 @@ function onToast(data) {
     right: 2px;
     opacity: 0.3;
     color: blue;
+}
+.fuelRemainingBingo {
+    font-weight: bolder;
+    opacity: 1;
+    color: white;
 }
 .navlogHeader {
     font-size: 0.8rem;
@@ -224,6 +349,17 @@ function onToast(data) {
     line-height: 1.5rem;
     font-size: 0.8rem;
     font-weight: bold;
+}
+.legsFooterTruncated {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    line-height: 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    opacity: 0.2;
+    gap: 10px;
+    padding-right: 10px;
 }
 .legsGrid {
     display: grid;
@@ -275,7 +411,6 @@ function onToast(data) {
 }
 .totalFuel {
     grid-column: 6;
-    color: blue;
 }
 .totalFuel.fuelBingo {
     color: white;
