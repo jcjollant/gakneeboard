@@ -3,11 +3,10 @@ import { onMounted, ref, watch } from 'vue'
 
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
-import FieldSet from 'primevue/fieldset'
 import FloatLabel from 'primevue/floatlabel'
 import InputText from 'primevue/inputtext'
 
-import { NavlogEntry } from './NavlogEntry'
+import { NavlogEntry } from '../../assets/NavlogEntry'
 
 import PlaceHolder from '../shared/PlaceHolder.vue'
 
@@ -41,7 +40,7 @@ watch(props, () => {
 // End of props management
 //------------------------
 
-function onSave() {
+function onApply() {
     // console.log('[NavlogEditor.onSave]', JSON.stringify(editEntry.value))
     const entry = editEntry.value
 
@@ -64,8 +63,8 @@ function onSave() {
                 </FloatLabel>
             </div>
             <div class="actionDialog gap-2">
-                <Button label="Do Not Save" @click="emits('close')" link></Button>
-                <Button label="Save" @click="onSave"></Button>
+                <Button label="Do Not Apply" @click="emits('close')" link></Button>
+                <Button label="Apply" @click="onApply"></Button>
             </div>
          </div>
         <PlaceHolder v-else title="Nothing to edit" />
