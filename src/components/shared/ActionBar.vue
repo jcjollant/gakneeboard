@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue'
 import Button from 'primevue/button'
 
-const emits = defineEmits(['apply','cancel'])
+const emits = defineEmits(['apply','cancel','action'])
 const help = ref(null)
 const canApply = ref(true)
 const canCancel = ref(true)
@@ -13,6 +13,8 @@ const props = defineProps({
     help: { type: String, default: null },
     canApply : { type: Boolean, default: true},
     canCancel : { type: Boolean, default: true},
+    // Should be a list of objects such as {label:"My Action", action:"myaction"}
+    actions : { type: Object, default: null},
 })
 
 function loadProps(newProps) {
@@ -31,6 +33,9 @@ watch( props, async() => {
 
 //------------------------------
 
+function onAction(action) {
+    emits('action', action)
+}
 
 function onHelp() {
     if(help.value) {
@@ -42,7 +47,8 @@ function onHelp() {
 </script>
 <template>
     <div class="actionBar">
-        <Button class="floatLeft" v-if="help" icon="pi pi-info-circle" link @click="onHelp" title="Get help on this topic"></Button>
+        <Button v-if="help" class="floatLeft" icon="pi pi-info-circle" link @click="onHelp" title="Get help on this topic"></Button>
+        <Button v-if="actions" v-for="action in actions" @click="onAction(action.action)" :label="action.label" link></Button>
         <Button v-if="canCancel" @click="emits('cancel')" label="Cancel" link></Button>
         <Button icon="pi pi-check" @click="emits('apply')" label="Apply" :disabled="!canApply"></Button>
     </div>
