@@ -4,26 +4,30 @@ import { onMounted, ref, watch } from 'vue'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import FieldSet from 'primevue/fieldset'
-import FloatLabel from 'primevue/floatlabel'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
 
-import { NavlogEntry } from './NavlogEntry'
+import { NavlogEntry } from '../../assets/NavlogEntry'
 import { Formatter } from '../../assets/Formatter'
 
 import PlaceHolder from '../shared/PlaceHolder.vue'
 
 const emits = defineEmits(['close','save'])
+const attitudeClimb = 'Climb'
+const attitudeDescent = 'Descent'
+const attitudeCruise = 'Cruise'
+
 const attitudeName = ref(null)
 const attitudeClass = ref(null)
 const calculatedDistance = ref(null)
 const calculatedFuel = ref(null)
 const calculatedTime = ref(null)
+const cruiseFuelFlow = ref(null)
+const cruiseTrueAirspeed = ref(null)
+const descentFuelFlow = ref(null)
 const descentRate = ref(null)
 const editEntry = ref(null)
-const fuelFlowCruise = ref(null)
-const fuelFlowDescent = ref(null)
 const magVar = ref(0)
 const magDev = ref(0)
 const nextEntry = ref(null)
@@ -33,6 +37,7 @@ const prevHeading = ref(null)
 // Props management
 const props = defineProps({
   entry: { type: Object, default: null},
+  navlog : {type: Object, default: null},
   nextEntry: { type: Object, default: null},
   prevEntry: { type: Object, default: null},
   magDev: { type: Number, default: 0},
@@ -48,14 +53,20 @@ function loadProps(newProps) {
         // transform leg time
         editEntry.value.lt = editEntry.value.lt ? Formatter.legTime(editEntry.value.lt) : ''
         if( editEntry.value.att == '+') {
-            attitudeName.value='Climb'
-            attitudeClass.value='attClimb'
+            attitudeName.value = attitudeClimb
+            attitudeClass.value = 'attClimb'
         } else if(editEntry.value.att == '-') {
-            attitudeName.value='Descent'
-            attitudeClass.value='attDescent'
+            attitudeName.value = attitudeDescent
+            attitudeClass.value = 'attDescent'
         } else {
-            attitudeName.value='Cruise'
-            attitudeClass.value='attCruise'
+            attitudeName.value = attitudeCruise
+            attitudeClass.value = 'attCruise'
+        }
+        if(newProps.navlog) {
+            cruiseFuelFlow.value = newProps.navlog.cff
+            cruiseTrueAirspeed.value = newProps.navlog.cta
+            descentFuelFlow.value = newProps.navlog.dff
+            descentRate.value = newProps.navlog.dr
         }
     }
     if(newProps.nextEntry) nextEntry.value = newProps.nextEntry
@@ -109,7 +120,7 @@ function calculation() {
     calculatedTime.value = Formatter.legTime( legTime)
 
     // Fuel
-    const fuelFlowValue = cruise ? Number(fuelFlowCruise.value) : (descent ? Number(fuelFlowDescent.value) : undefined)
+    const fuelFlowValue = cruise ? Number(cruiseFuelFlow.value) : (descent ? Number(descentFuelFlow.value) : undefined)
     let legFuel = undefined
     // console.log('[NavlogLegEditor.calculation]', fuelFlowValue, legTime)
     if(legTime && !(isNaN(fuelFlowValue) || fuelFlowValue <= 0)) {
@@ -129,7 +140,7 @@ function calculation() {
     calculatedDistance.value = Formatter.distance(legDistance)
 }
 
-function onSave() {
+function onApply() {
     // console.log('[NavlogEditor.onSave]', JSON.stringify(editEntry.value))
     const entry = editEntry.value
 
@@ -166,15 +177,19 @@ function onSave() {
                 <div v-if="nextEntry">{{ nextEntry.name }} @ {{ nextEntry.alt }}</div>
             </div>
             <div class="legParamGroup">
-                <InputGroup class="legParameter" title="POH Cruise Fuel Flow (GPH)">
-                    <InputGroupAddon>Cruise Fuel Flow</InputGroupAddon>
-                    <InputText id="cruiseGPH" v-model="fuelFlowCruise" @input="calculation" />
+                <InputGroup v-if="attitudeName==attitudeCruise" class="legParameter" title="POH Cruise Fuel Flow (GPH)">
+                    <InputGroupAddon>Fuel Flow</InputGroupAddon>
+                    <InputText id="cruiseGPH" v-model="cruiseFuelFlow" @input="calculation" />
                 </InputGroup>
-                <InputGroup class="legParameter" title="POH Descent Fuel Flow (GPH)">
+                <InputGroup v-if="attitudeName==attitudeCruise" class="legParameter" title="POH Cruise True Airspeed (Kts)">
+                    <InputGroupAddon>True Airspeed</InputGroupAddon>
+                    <InputText id="cruiseGPH" v-model="cruiseTrueAirspeed" @input="calculation" />
+                </InputGroup>
+                <InputGroup v-if="attitudeName==attitudeDescent" class="legParameter" title="POH Descent Fuel Flow (GPH)">
                     <InputGroupAddon>Descent Fuel Flow</InputGroupAddon>
-                    <InputText id="descentGPH" v-model="fuelFlowDescent" @input="calculation" />
+                    <InputText id="descentGPH" v-model="descentFuelFlow" @input="calculation" />
                 </InputGroup>
-                <InputGroup class="legParameter" title="Descent Rate (FPM)">
+                <InputGroup v-if="attitudeName==attitudeDescent" class="legParameter" title="Descent Rate (FPM)">
                     <InputGroupAddon>Descent Rate</InputGroupAddon>
                     <InputText id="descentFPM" v-model="descentRate" @input="calculation" />
                 </InputGroup>
@@ -232,8 +247,8 @@ function onSave() {
                 </div>
             </FieldSet>
             <div class="actionDialog gap-2">
-                <Button label="Do Not Save" @click="emits('close')" link></Button>
-                <Button label="Save" @click="onSave"></Button>
+                <Button label="Do Not Apply" @click="emits('close')" link></Button>
+                <Button label="Apply" @click="onApply"></Button>
             </div>
          </div>
         <PlaceHolder v-else title="Nothing to edit" />
@@ -296,8 +311,8 @@ function onSave() {
     /* grid-template-columns:  auto auto auto auto auto; */
 }
 .legParamGroup {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));;
+    display: flex;
+    justify-content: space-around;
     gap: 5px;
 }
 .others {
