@@ -6,11 +6,25 @@ function checkBlankState() {
     cy.get('.placeHolder').contains(placeHolderSubtitle)
 }
 
+function testRecap(page, depFuel, depFuelTime, usedFuel, destFuel, destFuelTime, resFuel, resFuelTime) {
+  cy.get(`${page} > .main > .fuelRecap > :nth-child(1) > .fuelRecapAvailable`).contains(depFuel)
+  cy.get(`${page} > .main > .fuelRecap > :nth-child(1) > .fuelRecapTime`).contains(depFuelTime)
+  cy.get(`${page} > .main > .fuelRecap > :nth-child(2) > .fuelRecapUsed`).contains(usedFuel)
+  cy.get(`${page} > .main > .fuelRecap > :nth-child(3) > .fuelRecapAvailable`).contains(destFuel)
+  cy.get(`${page} > .main > .fuelRecap > :nth-child(3) > .fuelRecapTime`).contains(destFuelTime)
+  cy.get(`${page} > .main > .fuelRecap > :nth-child(4) > .fuelRecapReserve`).contains(resFuel)
+  cy.get(`${page} > .main > .fuelRecap > :nth-child(4) > .fuelRecapTime`).contains(resFuelTime)
+  if(Number(destFuel) < Number(resFuel)) {
+    cy.get(`${page} > .main > .fuelRecap > :nth-child(3) > .fuelRecapAvailable`).should('have.class', 'fuelRecapAvailableReserve')
+    cy.get(`${page} > .main > .fuelRecap > :nth-child(3) > .fuelRecapTime`).should('have.class', 'fuelRecapAvailableReserve')
+  }
+}
+
 describe('navlog Page', () => {
   it('Basic flow', () => {
     visitAndCloseBanner()
     newPage()
-    // set left page to cover
+    // set left page to Navlog
     cy.get('.pageOne > .list > [aria-label="NavLog"]').click()
 
     // should see the blank state
@@ -18,28 +32,60 @@ describe('navlog Page', () => {
 
     // edit mode
     cy.get(':nth-child(1) > .headerTitle').click()
-    const expectedVariables = ['From', 'To', 
-      'Altitudes', 'Create',
-      'Fuel Tank', 'Descent', 
-      'Init.', 'Res.', 'FPM', 'GPH']
+
+    // should have two modes
+    cy.get('.p-highlight').contains('Create New Log')
+    cy.get('.p-selectbutton').contains('Continue Existing Log')
+
+    const expectedFields = ['From', 'To', 'Altitudes' ]
+    for(const field of expectedFields) {
+      cy.get('.createMode').contains(field)
+    }
+
+// 'Create',
+
+    // create a navlog w/o altitudes
+    cy.get('.createAirportFrom > .p-inputgroup > .p-inputtext').type('KRNT')
+    cy.get('.createAirportTo > .p-inputgroup > .p-inputtext').type('KBLI')
+    cy.get('.createButton > .p-button').click()
+
+    // All variable fields should show
+    const expectedVariables = ['Fuel Tank', 'Descent',  'Init.', 'Res.', 'TAS', 'FPM', 'GPH' ]
     for(const variable of expectedVariables) {
       cy.get('.variables').contains(variable)
     }
 
-    // create a navlog
-    cy.get('.varAirportFrom > .p-inputgroup > .p-inputtext').type('KRNT')
-    cy.get('.varAirportTo > .p-inputgroup > .p-inputtext').type('KSFF')
-    cy.get('.varAltitudes > .p-inputtext').type("2500 2500 4500 4500 7500 7500 5500")
+    const expectedCheckpoints = ['KRNT','TOC','TOD','KBLI']
+    for(const checkpoint of expectedCheckpoints) {
+      cy.get('.checkpoints').contains(checkpoint)
+    }
+
+    // altitudes
+    const expectedAltitudes = ['32','?','?','171']
+    let index = 2
+    for(const altitude of expectedAltitudes) {
+      cy.get(`:nth-child(${index}) > .br`).contains(altitude)
+      index++
+    }
+
+    // reset with altitudes
+    cy.get('[aria-label="Reset Log"]').click()
+    cy.get('.p-confirm-dialog-accept').click()
+
+
+    // replace KBLI with KSFF
+    cy.get('.createAirportTo > .p-inputgroup > .p-inputtext').type('{selectAll}').type('KSFF')
+    cy.get('.createAltitudes > .p-inputtext').type("2500 2500 4500 4500 7500 7500 5500")
     cy.wait(500) // give it time to pull data
     // Click create
-    cy.get('.variables > .p-button').click()
+    cy.get('.createButton > .p-button').click()
 
     // we should see Checkpoints and altitudes
     const expectedItems = [ {c:'KRNT',a:32},
       {c:'TOC 25',a:2500},
-      {c:'CheckPt 1',a:2500},
+      {c:'ChkPt 1',a:2500},
       {c:'TOC 45',a:4500},
-      {c:'CheckPt 3',a:4500},
+      {c:'ChkPt 3',a:4500},
       {c:'TOC 75',a:7500},
       {c:'TOD 55',a:7500},
       {c:'TOD KSFF',a:5500},
@@ -74,7 +120,7 @@ describe('navlog Page', () => {
     // Change values and apply
     cy.get('#name').type('{selectAll}').type('0S9')
     cy.get('#alt').type('00') // just add 00
-    cy.get('.actionDialog > [aria-label="Save"]').click()
+    cy.get('.actionDialog > [aria-label="Apply"]').click()
     // Values should be updated
     cy.get(':nth-child(2) > .checkpointName').contains('0S9')
     cy.get(':nth-child(2) > .checkpointAlt').contains('3200')
@@ -82,7 +128,7 @@ describe('navlog Page', () => {
     cy.get(':nth-child(2) > .checkpointName').click()
     cy.get('#name').type('{selectAll}').type('KRNT')
     cy.get('#alt').type('{selectAll}').type('32')
-    cy.get('.actionDialog > [aria-label="Save"]').click()
+    cy.get('.actionDialog > [aria-label="Apply"]').click()
 
     // Update legs
     cy.get(':nth-child(2) > .magneticHeading').click()
@@ -94,7 +140,7 @@ describe('navlog Page', () => {
     cy.get('#gs').type('2')
     cy.get('#lt').type('3:15')
     cy.get('#lf').type('4')
-    cy.get('.actionDialog > [aria-label="Save"]').click()
+    cy.get('.actionDialog > [aria-label="Apply"]').click()
     // first line should be updated
     cy.get(':nth-child(2) > .magneticHeading').contains('90')
     cy.get(':nth-child(2) > .legDistance').contains('1.0')
@@ -121,7 +167,7 @@ describe('navlog Page', () => {
     cy.get('#lfHint').click()
     cy.get('#lf').should('have.value', '0.9')
     // Save yet
-    cy.get('.actionDialog > [aria-label="Save"]').click()
+    cy.get('.actionDialog > [aria-label="Apply"]').click()
 
     // test descent hints
     cy.get(':nth-child(8) > .magneticHeading').click()
@@ -152,7 +198,7 @@ describe('navlog Page', () => {
       cy.get('#gs').type(data.gs)
       cy.get('#lt').type(data.lt)
       cy.get('#lf').type(data.lf)
-      cy.get('.actionDialog > [aria-label="Save"]').click()
+      cy.get('.actionDialog > [aria-label="Apply"]').click()
     }
 
     // test totals
@@ -161,20 +207,82 @@ describe('navlog Page', () => {
     cy.get('.totalFuel').contains('31.9')
 
     // Apply
+    cy.wait(200)
     cy.get('[aria-label="Apply"]').click()
     cy.get('.p-toast-message-content').contains('Bingo Fuel')
 
-    // enter initial fuel and reserve
+    // enter initial fuel, reserve and cruise values
     cy.get('.varInitialFuel > .p-inputtext').type(53)
     cy.get('.varReserveFuel > .p-inputtext').type(30)
+    cy.get('.varCruiseTas > .p-inputtext').type(105)
+    cy.get('.varCruiseGph > .p-inputtext').type(9)
     // and apply again
     cy.get('[aria-label="Apply"]').click()
 
     // Fuel reserve should pop
     cy.get(':nth-child(7) > .fuel').should('not.have.class','fuelBingo')
-    cy.get(':nth-child(8) > .fuel').should('have.class','fuelBingo')
-    cy.get('.totalFuel').should('have.class', 'fuelBingo')
+    const expectedBingoLegs = [8,9,10]
+    for(const leg of expectedBingoLegs) {
+      cy.get(`:nth-child(${leg}) > .fuel > .fuelRemaining`).should('have.class', 'fuelRemainingBingo')
+    }
+    // Destination leg should be bingo
+    cy.get(':nth-child(3) > .fuelRecapAvailable').should('have.class','fuelRecapAvailableReserve')
+    cy.get(':nth-child(3) > .fuelRecapTime').should('have.class','fuelRecapAvailableReserve')
+    // cy.get('.totalFuel').should('have.class', 'fuelBingo')
 
-    // Delete
+    // Test Footer
+    testRecap('.pageOne', '53.0', '5:53:20', '31.9', '21.1', '2:20:40', '30.0', '3:20:00')
+  })
+
+  it( 'Continued', () => {
+    visitAndCloseBanner()
+    newPage()
+    // set both pages to Navlog
+    cy.get('.pageOne > .list > [aria-label="NavLog"]').click()
+    cy.get('.pageTwo > .list > [aria-label="NavLog"]').click()
+
+    // configure page two as a continuer
+    cy.get('.pageTwo > :nth-child(1) > .headerTitle > div').click()
+    cy.get('[tabindex="-1"]').click()
+    cy.get('.continueHeader').contains('This page will show the overflow')
+    cy.get('[aria-label="Apply"]').click()
+
+    // Add entries to the first page
+    cy.get('.pageOne > :nth-child(1) > .headerTitle').click()
+    cy.get('.createAirportFrom > .p-inputgroup > .p-inputtext').type('KRNT')
+    cy.get('.createAirportTo > .p-inputgroup > .p-inputtext').type('KSFF')
+    const altitudes = [...Array(4).fill(2500), ...Array(8).fill(4500), ...Array(7).fill(4500) , ...Array(4).fill(4500)]
+    cy.get('.createAltitudes > .p-inputtext').type(altitudes.join(' '))
+    cy.wait(500) // give it time to pull data
+    // Click create
+    cy.get('.createButton > .p-button').click()
+    // Enter variables
+    cy.get('.varInitialFuel > .p-inputtext').type(51.6)
+    cy.get('.varReserveFuel > .p-inputtext').type(13.5)
+    cy.get('.varCruiseTas > .p-inputtext').type(105)
+    cy.get('.varCruiseGph > .p-inputtext').type(9)
+    // Every leg will consume 2 gallons
+    for(let index = 2; index < altitudes.length + 3; index++) {
+      cy.get(`:nth-child(${index}) > .legFuel`).click()
+      cy.get('#ld').type('3')
+      cy.get('#lf').type('2')
+      cy.get('#lt').type('1')
+      cy.get('.actionDialog > [aria-label="Apply"]').click()
+    }
+
+    // and create the log
+    cy.wait(200)
+    cy.get('[aria-label="Apply"]').click()
+
+    // test totals
+    cy.get('.legsFooterTruncated').contains('10 more legs')
+    cy.get('.totalDistance').contains('72.0')
+    cy.get('.totalTime').contains('24:00')
+    cy.get('.totalFuel').contains('48.0')
+
+    // check recaps
+    testRecap( '.pageOne', '51.6', '5:44:00', '48', '3.6', '24:00', '13.5', '1:30:00')
+    testRecap( '.pageTwo', '51.6', '5:44:00', '48', '3.6', '24:00', '13.5', '1:30:00')
+
   })
 })

@@ -1,4 +1,4 @@
-import { currentVersionNumber, environment, visitAndCloseBanner, maintenanceMode } from './shared'
+import { currentVersionNumber, environment, visitAndCloseBanner } from './shared'
 
 describe('Navigation', () => {
   it('HDIW / Version / Offset', () => {
