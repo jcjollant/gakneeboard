@@ -16,6 +16,10 @@ export class NavlogQueue {
         return this.lastNavlog
     }
 
+    getLast():Navlog|undefined {
+        return this.lastNavlog
+    }
+
     notify(navlog:any) {
         this.lastNavlog = navlog
         // console.log('[CurrentUser.update] notifying listeners', this.listenners.length)
