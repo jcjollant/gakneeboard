@@ -235,7 +235,9 @@ export function describePage(sheet, pageNumber, maxLength=undefined) {
           let tileName = "Airport";
           if(t.data.code) tileName += '(' + t.data.code.toUpperCase() + ')'
           return tileName
-        } else  {
+        } else if(t.name.length < 2) {
+          return 'Selection'
+        } else {
           // Just capitalize the tile name
           return t.name[0].toUpperCase() + t.name.substring(1)
         }
