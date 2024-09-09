@@ -1,4 +1,4 @@
-export const version = 906.2
+export const version = 908
 
 export const apiRootUrl = 'https://ga-api-seven.vercel.app/'
 // export const apiRootUrl = 'http://localhost:3000/'
@@ -17,6 +17,7 @@ import { Airport } from './Airport.ts'
 import axios from 'axios'
 import { Backend } from './Backend.ts'
 import { CurrentUser } from './CurrentUser.ts'
+import { NavlogQueue } from './NavlogQueue.ts'
 
 export const contentTypeJson = { headers: {'Content-Type':'application/json'} }
 // const contentTypeTextPlain = { headers: {'Content-Type':'text/plain'} }
@@ -27,6 +28,7 @@ let pendingCodes = []
 let sunlightCache = {}
 export const backend = new Backend()
 export const newCurrentUser = new CurrentUser()
+export const navlogQueue = new NavlogQueue()
 
 function airportCurrent( airport) {
   if( !backend.ready && !airport) return false;
