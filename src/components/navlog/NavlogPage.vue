@@ -90,7 +90,11 @@ function formatFuelRecapTime(value) {
 function onEditApply(newNavlog) {
     // console.log('[NavlogPage.onEditApply]', JSON.stringify(newNavlog))
     continued.value = newNavlog.continued
-    applyData(newNavlog)
+    if(continued.value) {
+        applyData(navlogQueue.getLast())
+    } else {
+        applyData(newNavlog)
+    }
     // save data
     emits('update',newNavlog)
     // display mode
