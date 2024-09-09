@@ -5,6 +5,15 @@ export class Formatter {
     static noHeading:string = '---'
     static noSpeed:string = '--'
 
+    static altitude(alt:any) {
+        // console.log('[format.formatAltitude]', typeof alt, alt)
+        if(alt===0) return '0'
+        if(!alt) return '?'
+        if(typeof alt == 'string') return Number(alt).toFixed(0)
+        return alt.toFixed(0)
+    }
+
+
     static distance(dist:any) {
         if(dist == null || dist === undefined) return '?'
         if(typeof dist == 'string') return Number(dist).toFixed(1)
@@ -42,12 +51,20 @@ export class Formatter {
         return value.toFixed(0)
     }
 
+    /**
+     * Turns a time in decimal minutes into a string HH:MM:SS
+     * @param time
+     * @returns
+     */
     static legTime(time:any) {
         if(time == null || time == undefined) return Formatter.noTime
         // transform decimal minutes into minutes and seconds
-        const minutes = Math.floor(time)
-        const seconds = Math.round((time - minutes) * 60)
-        return `${minutes}:${seconds.toString().padStart(2, '0')}`
+        const hours = Math.floor(time / 60)
+        const minutes = Math.floor(time % 60)
+        const seconds = Math.round((time % 1) * 60)
+        const secondsStr = seconds.toString().padStart(2, '0')
+        if(hours > 0) return `${hours}:${minutes.toString().padStart(2, '0')}:${secondsStr}`
+        return `${minutes}:${secondsStr}`
     }
 
     static speed(value:any) {
