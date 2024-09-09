@@ -112,7 +112,7 @@ function onThemeChange(newTheme) {
             </InputGroup>
             <SelectButton v-model="columns" :options="[colSingle, colDouble]" aria-labelledby="basic" />
             <div class="oneOrTwoLists">
-                <Textarea rows="26" cols="48" v-model="textData" class="editList"
+                <Textarea rows="32" cols="48" v-model="textData" class="editList"
                     :class="{ 'smallTextarea': columns == colDouble }" placeholder="Up to 26 items will fit vertically.
 
 Separate Challenge and Response with '##':
@@ -121,7 +121,7 @@ Avionics##OFF
 
 Create sections using '##Section Name':
 ##Left Wing"></Textarea>
-                <Textarea v-if="columns == colDouble" rows="26" cols="48" v-model="textData2" class="editList"
+                <Textarea v-if="columns == colDouble" rows="32" cols="48" v-model="textData2" class="editList"
                     :class="{ 'smallTextarea': columns == colDouble }"></Textarea>
             </div>
             <ThemeSelector @change="onThemeChange" :theme="theme" />
