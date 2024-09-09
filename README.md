@@ -17,6 +17,11 @@ Run the test suite:
 ## TODO
 
 # Done
+## 9/08/2024
+* Editor is now able to copy from left to right
+* Leg Editor is now only showing relevant variables
+* navlog now supports continued mode
+* navlog page now show fuel recap
 ## 9/06/2024
 1) 
 * Fixed missing confirmation on Editor Delete sheet
