@@ -258,7 +258,14 @@ export function describePage(sheet, pageNumber, maxLength=undefined) {
     } else if(page.type == PageType.cover ) {
       output =  "[Cover] " + page.data.title;
     } else if(page.type == PageType.navLog) {
-      output =  '[NavLog] ' + page.data.from + " to " + page.data.to + " (" + page.data.entries.length + " checkpoints)"
+      output = '[NavLog] '
+      if(page.data.from && page.data.to) {
+        output += page.data.from + " to " + page.data.to;
+        if(page.data.entries) output += " (" + page.data.entries.length + " checkpoints)"
+      } else if(page.data.continued) {
+        output += 'continued'
+      }
+      
     }
   } catch(e) {
     console.log('[sheetData.describePage] error', e)
