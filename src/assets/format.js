@@ -1,11 +1,5 @@
 const noFrequency = '-.-'
 
-export function formatAltitude(value) {
-    if(!value) return '?'
-    if(typeof value == 'string') return Number(value).toFixed(0)
-    return value.toFixed(0)
-}
-
 export function formatAtcGroups(airport, enrichment=undefined) {
     if( !airport || !airport.atc) return []
 
