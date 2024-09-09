@@ -98,7 +98,11 @@ function confirmAndDelete(template) {
 
 function getDescriptionTitle() {
   if(fetching.value) return 'Fetching ...'
-  if(loadTemplate.value) return loadTemplate.value.name
+  if(loadTemplate.value) {
+    let output = loadTemplate.value.name
+    if(loadTemplate.value.data) output += ` (${loadTemplate.value.data.length} pages)`
+    return output
+  } 
   return 'Description'
 }
 
