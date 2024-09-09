@@ -131,3 +131,7 @@ body {
 .bt {
   border-top: 1px dashed darkgrey;
 }
+
+.lh-2 {
+  line-height: 2rem;
+}
