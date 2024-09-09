@@ -94,11 +94,11 @@ function onSheetSelection(newOffset) {
     </div>
     <div class="editorMask">
       <div class="middle">
-          <Button icon="pi pi-arrow-right" title="Copy Left to Right" 
+          <Button id="editorCopyToRight" icon="pi pi-arrow-right" title="Copy Left to Right" 
               @click="onAction(EditorAction.copyToPage(activeOffset, activeOffset+1))" ></Button>
-          <Button icon="pi pi-arrow-right-arrow-left" title="Swap Left and Right" 
+          <Button id="editorSwap" icon="pi pi-arrow-right-arrow-left" title="Swap Left and Right" 
               @click="onActionName(EditorAction._swapPages)" ></Button>
-          <Button icon="pi pi-arrow-left" title="Copy Right to Left" 
+          <Button id="editorCopyToLeft" icon="pi pi-arrow-left" title="Copy Right to Left" 
               @click="onAction(EditorAction.copyToPage(activeOffset+1, activeOffset))" ></Button>
       </div>
     </div>
@@ -116,7 +116,7 @@ function onSheetSelection(newOffset) {
         <Button icon="pi pi-eject" label="Replace" title="Replace Back Page" 
           @click="onAction(EditorAction.reset(activeOffset+1))"></Button>
         <Button icon="pi pi-copy" label="Copy" title="Copy Back Page to Clipboard" 
-          @click="onAction(EditorAction.copy(activeOffset+1))"></Button>
+          @click="onAction(EditorAction.copyToClipboard(activeOffset+1))"></Button>
         <Button icon="pi pi-clipboard" label="Paste" title="Paste Clipboard to Back Page" 
           @click="onAction(EditorAction.paste(activeOffset+1))"></Button>
       </div>
