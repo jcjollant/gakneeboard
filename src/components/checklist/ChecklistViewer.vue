@@ -53,7 +53,7 @@ watch(props, () => {
 .checklist {
     display: grid;
     grid-template-columns: 70% auto;
-    line-height: 1.6rem;
+    line-height: 23px;
     border-bottom: 1px solid lightgrey;
 }
 
@@ -86,10 +86,6 @@ watch(props, () => {
     line-height: 23px;
     height: 23px;
 }
-
-/* .smallPlaceHolder {
-    font-size: 0.8rem;
-} */
 
 .spanned {
     grid-column: 1 / span 2
