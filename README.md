@@ -17,6 +17,8 @@ Run the test suite:
 ## TODO
 
 # Done
+## 9/10/2024
+* Refreshed checklist tile and page placeholder and height with new values
 ## 9/09/2024
 * Bigger checlist to match page
 * Fixed Navlog continued page descirption
