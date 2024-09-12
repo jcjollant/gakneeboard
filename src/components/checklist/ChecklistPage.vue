@@ -113,7 +113,7 @@ function onThemeChange(newTheme) {
             <SelectButton v-model="columns" :options="[colSingle, colDouble]" aria-labelledby="basic" />
             <div class="oneOrTwoLists">
                 <Textarea rows="32" cols="48" v-model="textData" class="editList"
-                    :class="{ 'smallTextarea': columns == colDouble }" placeholder="Up to 26 items will fit vertically.
+                    :class="{ 'smallTextarea': columns == colDouble }" placeholder="Up to 32 items will fit vertically.
 
 Separate Challenge and Response with '##':
 Master Switch##ON

@@ -108,7 +108,7 @@ function onThemeChange(newTheme) {
                 <ThemeSelector v-show="true" :short="true" :theme="theme" @change="onThemeChange"/>
             </div>
             <div class="oneOrTwoLists">
-                <Textarea rows="7" cols="24" v-model="textData" class="editList" placeholder="Up to 8 items will fit vertically."></Textarea>
+                <Textarea rows="10" cols="24" v-model="textData" class="editList" placeholder="Up to 10 items will fit vertically."></Textarea>
             </div>
             <ActionBar @apply="onApply" @cancel="onCancel" :help="urlGuideChecklist" />
         </div>
