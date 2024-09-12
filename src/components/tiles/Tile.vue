@@ -1,6 +1,9 @@
 <!-- This component allows the user to pick a widget -->
 <script setup>
 import {onMounted, ref, watch} from 'vue';
+
+import { emitToastInfo } from '../../assets/toast'
+
 import Header from '../shared/Header.vue';
 import Airport from '../airport/Airport.vue';
 import Atis from '../atis/Atis.vue'
@@ -10,9 +13,7 @@ import Clearance from '../clearance/Clearance.vue';
 import RadioFlow from '../radios/RadioFlow.vue';
 import SunLight from '../sunlight/SunLight.vue';
 import FuelBug from '../fuel/FuelBug.vue';
-
-import Button from 'primevue/button';
-
+import FAButton from '../shared/FAButton.vue'
 
 const emits = defineEmits(['update','toast'])
 
@@ -22,14 +23,15 @@ const props = defineProps({
 
 var state = {}
 const knownTiles = ref([
-    {'name':'Airport','tile':'airport', 'class':'', 'tooltip':'Display runway and useful information'},
-    {'name':'ATIS','tile':'atis', 'class':'', 'tooltip':'Write down ATIS information'},
-    {'name':'Checklist','tile':'checklist', 'class':'', 'tooltip':'Short checklist'},
-    {'name':'Clearance','tile':'clearance', 'class':'', 'tooltip':'Write down clearance information'},
-    {'name':'Fuel','tile':'fuel', 'class':'','tooltip':'Track your fuel consumption'},
-    {'name':'Notes','tile':'notes', 'class':'', 'tooltip':'A blank tile to write stuff'},
-    {'name':'Radios','tile':'radios', 'class':'', 'tooltip':'Radio frequencies'},
-    {'name':'Sunlight','tile':'sunlight', 'class':'', 'tooltip':'Sunrise, Sunset, Civil Twilight...'},
+    {name:'Airport',tile:'airport', class:'double', icon:'plane-departure', tooltip:'Display runway and useful information'},
+    {name:'ATIS',tile:'atis', class:'', icon:'cloud-sun-rain', tooltip:'Write down ATIS information'},
+    {name:'Checklist',tile:'checklist', class:'', icon:'list-check', tooltip:'Short checklist'},
+    {name:'Clearance',tile:'clearance', class:'', icon:'plane-circle-check', tooltip:'Write down clearance information'},
+    {name:'Fuel',tile:'fuel', class:'', icon:'gas-pump', tooltip:'Track your fuel consumption'},
+    {name:'Navlog',tile:'navlog', class:'', icon:'route',  tooltip:'Companion Tile to the Navlog Page'},
+    {name:'Notes',tile:'notes', class:'', icon:'pen-to-square',  tooltip:'A blank tile to write stuff'},
+    {name:'Radios',tile:'radios', class:'', icon:'headset',  tooltip:'Radio frequencies'},
+    {name:'Sunlight',tile:'sunlight', class:'', icon:'sun',  tooltip:'Sunrise, Sunset, Civil Twilight...'},
 ])
 const tile = ref({})
 
@@ -52,6 +54,10 @@ function loadProps( props) {
 
 // replace a tile with a new one
 function onReplace(newName = '') {
+    if(newName == 'navlog') {
+        emitToastInfo(emits, 'Work in Progress', 'This tile is comming soon')
+        return;
+    };
     // widget.value = { 'id':widget.value.id,'name': newName.toLowerCase(), 'data':{}}
     state = { 'id':tile.value.id,'name': newName.toLowerCase(), 'data':{}}
     tile.value = state
@@ -71,7 +77,6 @@ function onToast(data) {
     emits('toast', data)
 }
 
-
 </script>
 
 <template>
@@ -79,8 +84,15 @@ function onToast(data) {
         <Header :title="'Tile Selection'" :clickable="false"></Header>
         <!-- <div class="widgetTitle">Tile Selection</div> -->
         <div class="content list">
-            <Button v-for="tile in knownTiles" :label="tile.name" :class="tile.class" :title="tile.tooltip"
-                @click="onReplace(tile.tile)"></Button>
+            <FAButton v-for="tile in knownTiles"
+                :icon="tile.icon" 
+                :label="tile.name" :class="tile.class" :title="tile.tooltip"
+                @click="onReplace(tile.tile)"/>
+
+            <!-- <Button v-for="tile in knownTiles" 
+                :icon="tile.icon"
+                :label="tile.name" :class="tile.class" :title="tile.tooltip"
+                @click="onReplace(tile.tile)"></Button> -->
         </div>
     </div>
     <Airport v-else-if="tile.name=='airport'" :params="tile.data" 
@@ -106,8 +118,8 @@ function onToast(data) {
 .list {
     display: grid;
     padding: 10px;
-    gap:10px;
-    grid-template-columns: 105px 105px;
+    gap:5px;
+    grid-template-columns: 110px 110px;
     grid-template-rows: auto auto auto auto;
     height: 186px;
 }
