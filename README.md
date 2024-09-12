@@ -17,6 +17,10 @@ Run the test suite:
 ## TODO
 
 # Done
+## 9/11/2024
+* Tile selection and page selection use Font Awesome icons
+* New Navlog tile (not functional)
+* Airport Tile defaults to edit mode when no code is present
 ## 9/10/2024
 1) Refreshed checklist tile and page placeholder and height with new values
 2) Fixed Checklist height discrepenacy with section headers
