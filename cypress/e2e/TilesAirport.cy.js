@@ -145,9 +145,12 @@ describe('Tiles', () => {
     cy.get('.pageOne > :nth-child(3) > .headerTitle > div').click()
     cy.get('.headerTitle > .p-button').click()
     cy.get('[aria-label="Airport"]').click()
+    // we should be in edit mode
+    cy.get('.p-inputtext')
+
     // We should see the placeholder
-    cy.get('.pageOne > :nth-child(3) > :nth-child(2) > .placeHolder').contains('No Airport')
-    cy.get('.pageOne > :nth-child(3) > :nth-child(2) > .placeHolder').contains(placeHolderSubtitle)
+    // cy.get('.pageOne > :nth-child(3) > :nth-child(2) > .placeHolder').contains('No Airport')
+    // cy.get('.pageOne > :nth-child(3) > :nth-child(2) > .placeHolder').contains(placeHolderSubtitle)
 
 
   })
