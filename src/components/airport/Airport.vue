@@ -14,9 +14,78 @@ const emits = defineEmits(['replace','update'])
 var previousMode = '';
 var state = {}
 
+//-----------------------------------------------------
+// Props Management
 const props = defineProps({
     params: { type: Object, default: null}, // expects {'code':'ICAO','rwy':'XX-YY'}
 })
+
+// load props can happen on initial load or when settings are changed
+// 1) Airport Code 2) Selected Runway 3) patternMode 4) Corners and 5) Runway orientation
+function loadProps(newProps) {
+    // console.log('Airport loadProps ' + JSON.stringify(newProps))
+    state = newProps.params;
+    if( !state) {
+        console.log( 'Airport cannot load params ' + JSON.stringify(state))
+        return
+    }
+    // console.log('Airport loadProps ' + JSON.stringify(newProps))
+    const code = state.code
+    // Force edit mode if we don't have an airport yet
+    if( !code) {
+        title.value = defaultTitle
+        mode.value = 'edit'
+        return
+    }
+
+    // #2 Runway
+    if( 'rwy' in state && state.rwy) {
+        runwayName.value = state.rwy
+    }
+
+    // #3 Pattern mode
+    if('pattern' in state) {
+        patternMode.value = state.pattern
+    } else {
+        patternMode.value = defaultPatternMode
+    }
+
+    // #4 Restore corner fields
+    let cornerFields = state.corners
+    if( !cornerFields) {
+        // console.log('Airport loading default cornerFields')
+        cornerFields = defaultCornerFields;
+    } 
+    cornerFields.forEach( (field, index) => {
+        corners[index].value = {'id':index,'field':field}
+    })
+    // console.log('Airport loaded corners ' + JSON.stringify(corners))
+
+    // #5 Rwy orientation
+    if('rwyOrientation' in state && state.rwyOrientation) {
+        rwyOrientation.value = state.rwyOrientation;
+    } else {
+        rwyOrientation.value = defaultRwyOrientation;
+    }
+
+    // load data for this airport
+    title.value = "Loading " + code + '...'
+    getAirport( code, true)
+        .then(airport => {
+            onNewAirport(airport)
+            // is there a follow up request?
+            if(airport && airport.promise) {
+                airport.promise.then((outcome) => {
+                    // console.log( '[Airport.loadProps] outcome', JSON.stringify(outcome))
+                    // if data was not curren, load new version
+                    if(!outcome.current && outcome.airport){
+                        // console.log( '[Airport.loadProps] data was not current', JSON.stringify(outcome))
+                        onNewAirport(outcome.airport)
+                    } 
+                })
+            }
+        })
+}
 
 onMounted(() => {
     // console.log('Airport mounted with ' + JSON.stringify(props.params))
@@ -29,6 +98,10 @@ watch( props, async() => {
     mode.value = ''
     loadProps(props)
 })
+
+// End of props management
+//--------------------------
+
 
 const mode = ref('')
 const title = ref('')
@@ -98,73 +171,6 @@ function getEndings(rwys, freq) {
 function getTpClass(end) {
     if(end && end.tp && end.tp=='R') return 'patternRight';
     return 'patternLeft';
-}
-
-// load props can happen on initial load or when settings are changed
-// 1) Airport Code 2) Selected Runway 3) patternMode 4) Corners and 5) Runway orientation
-function loadProps(newProps) {
-    // console.log('Airport loadProps ' + JSON.stringify(newProps))
-    state = newProps.params;
-    if( !state) {
-        console.log( 'Airport cannot load params ' + JSON.stringify(state))
-        return
-    }
-    // console.log('Airport loadProps ' + JSON.stringify(newProps))
-    const code = state.code
-    // Force edit mode if we don't have an airport yet
-    if( !code) {
-        title.value = defaultTitle
-        // mode.value = 'edit'
-        return
-    }
-
-    // #2 Runway
-    if( 'rwy' in state && state.rwy) {
-        runwayName.value = state.rwy
-    }
-
-    // #3 Pattern mode
-    if('pattern' in state) {
-        patternMode.value = state.pattern
-    } else {
-        patternMode.value = defaultPatternMode
-    }
-
-    // #4 Restore corner fields
-    let cornerFields = state.corners
-    if( !cornerFields) {
-        // console.log('Airport loading default cornerFields')
-        cornerFields = defaultCornerFields;
-    } 
-    cornerFields.forEach( (field, index) => {
-        corners[index].value = {'id':index,'field':field}
-    })
-    // console.log('Airport loaded corners ' + JSON.stringify(corners))
-
-    // #5 Rwy orientation
-    if('rwyOrientation' in state && state.rwyOrientation) {
-        rwyOrientation.value = state.rwyOrientation;
-    } else {
-        rwyOrientation.value = defaultRwyOrientation;
-    }
-
-    // load data for this airport
-    title.value = "Loading " + code + '...'
-    getAirport( code, true)
-        .then(airport => {
-            onNewAirport(airport)
-            // is there a follow up request?
-            if(airport && airport.promise) {
-                airport.promise.then((outcome) => {
-                    // console.log( '[Airport.loadProps] outcome', JSON.stringify(outcome))
-                    // if data was not curren, load new version
-                    if(!outcome.current && outcome.airport){
-                        // console.log( '[Airport.loadProps] data was not current', JSON.stringify(outcome))
-                        onNewAirport(outcome.airport)
-                    } 
-                })
-            }
-        })
 }
 
 /**
