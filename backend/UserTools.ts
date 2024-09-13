@@ -9,7 +9,7 @@ export class UserTools {
     static google:string = 'google'
 
     public static async authenticate( body:any):Promise<User> {
-        // console.log("User authenticate " + typeof(body))
+        // console.log("User authenticate", JSON.stringify(body))
         if( typeof(body) == 'string') body = JSON.parse(body);
         if( !('source' in body)) throw new Error('Missing source');
         if( !('token' in body)) throw new Error('Missing token');
@@ -19,7 +19,7 @@ export class UserTools {
             user = UserTools.decodeGoogle( body.token);
         } else if( body.source == UserTools.facebook) {
             // decode user email
-            const user:User = UserTools.decodeFacebook( body.token);
+            user = UserTools.decodeFacebook( body.token);
         } else {
             throw new Error('Invalid source');            
         }
@@ -40,19 +40,19 @@ export class UserTools {
         return User.createSha256(user)
     }
 
-    static decodeFacebook(credentialString:string):User {
-        const credential = JSON.parse(credentialString)
-        if(!('authInfo' in credential)) throw new Error('authInfo missing')
+    static decodeFacebook(credential:any):User {
+        // const credential = JSON.parse(credentialString)
+        if(!('authInfo' in credential)) throw new Error('authInfo is required')
         const authInfo = credential.authInfo;
-        if(!('email' in authInfo)) throw new Error('email missing')
-        const email = authInfo.email;
-        const sha256:string = UserTools.createUserSha(UserTools.facebook, email)
+        if(!('id' in authInfo)) throw new Error('id is required')
+        const userId = authInfo.id;
+        const sha256:string = UserTools.createUserSha(UserTools.facebook, userId)
         const user:User = new User( 0, sha256)
         user.setSource(UserTools.facebook)
-        user.setEmail(email)
+        user.setEmail(authInfo.email)
         user.setName(authInfo.first_name)
 
-        throw new Error('Method not implemented.');
+        return user;
     }
 
     /**
