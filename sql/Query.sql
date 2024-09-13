@@ -54,7 +54,7 @@ SELECT * FROM sheets WHERE id = 45
 SELECT COUNT(*) FROM sheets WHERE user_Id=1
 
 # Sheets per user
-SELECT COUNT(*) as count, user_id FROM sheets GROUP BY user_id
+SELECT COUNT(*) as count, user_id FROM sheets GROUP BY user_id ORDER BY count DESC
 
 # Sheets per user
 SELECT COUNT(*) as count, user_id FROM sheets WHERE user_id IS NOT NULL GROUP BY user_id
@@ -70,9 +70,9 @@ SELECT COUNT(*) as count, user_id FROM sheets WHERE user_id IS NOT NULL AND user
 
 #########################################
 # Publications
+# Publications with user IDs
+SELECT p.*, s.user_id FROM publications AS p LEFT JOIN sheets AS s ON p.sheetid = s.id where s.user_id IS NOT NULL
 
-SELECT * FROM publications WHERE sheetid IS NOT NULL
-
-# Who else than JC has published
+# Publication count by user
 SELECT COUNT(p.*), s.user_id FROM publications as p LEFT JOIN sheets as s ON p.sheetid = s.id  GROUP BY s.user_id ORDER BY count DESC
 
