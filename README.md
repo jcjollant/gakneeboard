@@ -17,6 +17,8 @@ Run the test suite:
 ## TODO
 
 # Done
+## 9/12/2024
+* Facebook login
 ## 9/11/2024
 * Tile selection and page selection use Font Awesome icons
 * New Navlog tile (not functional)
