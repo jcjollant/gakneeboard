@@ -21,6 +21,8 @@ ts-node .\willie.ts
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
+## 9/12/2024
+* Experimenting with facebook login
 ## 9/04/2024
 1) fixed pageCount metrics
 2) New effective date

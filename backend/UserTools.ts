@@ -5,18 +5,25 @@ import { TemplateDao } from './TemplateDao';
 import { UserDao } from './UserDao'
 
 export class UserTools {
+    static facebook:string = 'facebook'
+    static google:string = 'google'
 
     public static async authenticate( body:any):Promise<User> {
         // console.log("User authenticate " + typeof(body))
         if( typeof(body) == 'string') body = JSON.parse(body);
         if( !('source' in body)) throw new Error('Missing source');
-        if( body.source != 'google') throw new Error('Invalid source');
-        // decode user email
         if( !('token' in body)) throw new Error('Missing token');
-        const user:User = UserTools.decodeGoogle( body.token);
+        let user:User|undefined = undefined;
+        if( body.source == UserTools.google) {
+            // decode user email
+            user = UserTools.decodeGoogle( body.token);
+        } else if( body.source == UserTools.facebook) {
+            // decode user email
+            const user:User = UserTools.decodeFacebook( body.token);
+        } else {
+            throw new Error('Invalid source');            
+        }
         if( !user) throw new Error('Invalid User');
-        // console.log('[user.authenticate] decoded ' + JSON.stringify(user))
-        // console.log('[user.authenticate] ' + user.sha256)
 
         const dbUser:User|undefined = await UserDao.getUserFromHash(user.sha256)
         if(dbUser) return dbUser;
@@ -33,6 +40,20 @@ export class UserTools {
         return User.createSha256(user)
     }
 
+    static decodeFacebook(credentialString:string):User {
+        const credential = JSON.parse(credentialString)
+        if(!('authInfo' in credential)) throw new Error('authInfo missing')
+        const authInfo = credential.authInfo;
+        if(!('email' in authInfo)) throw new Error('email missing')
+        const email = authInfo.email;
+        const sha256:string = UserTools.createUserSha(UserTools.facebook, email)
+        const user:User = new User( 0, sha256)
+        user.setSource(UserTools.facebook)
+        user.setEmail(email)
+        user.setName(authInfo.first_name)
+
+        throw new Error('Method not implemented.');
+    }
 
     /**
      * Decode a google credential into a user
@@ -45,19 +66,9 @@ export class UserTools {
         const jsonPayload = atob(base64)
         const decodedToken = JSON.parse(jsonPayload);
         if(!('email' in decodedToken)) throw new Error('email missing')
-        //   email: decodedToken.email,
-        //   email_verified: decodedToken.email_verified,
-        //   hd: decodedToken.hd,
-        //   family_name: decodedToken.family_name,
-        //   given_name: decodedToken.given_name,
-        //   name: decodedToken.name,
-        //   picture: decodedToken.picture,
-        //   id: decodedToken.sub,
-        //   iat: decodedToken.iat,
-        //   exp: decodedToken.exp,
-        const sha256:string = UserTools.createUserSha('google', decodedToken.email)
+        const sha256:string = UserTools.createUserSha(UserTools.google, decodedToken.email)
         const user:User = new User( 0, sha256)
-        user.setSource('google')
+        user.setSource(UserTools.google)
         user.setEmail(decodedToken.email)
 
 
