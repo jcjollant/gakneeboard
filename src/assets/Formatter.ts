@@ -48,7 +48,7 @@ export class Formatter {
         }
         if( value < 0) value += 360
         if( value > 359) value %= 360
-        return value.toFixed(0)
+        return value.toFixed(0) + '°'
     }
 
     /**
