@@ -17,8 +17,12 @@ Run the test suite:
 ## TODO
 
 # Done
-## 9/24/2024
+## 9/14/2024
 * Added privacy policy
+* NavLog tile is active
+* Replacing tile is quicker with access to replace button when mousing over
+* Headings now include ° symbol
+* Navlog demo now has NavLog tile
 ## 9/12/2024
 * Facebook login
 ## 9/11/2024

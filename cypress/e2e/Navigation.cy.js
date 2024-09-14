@@ -19,8 +19,8 @@ describe('Navigation', () => {
 
     // reopen how does it work via About page
     cy.get('.menuIcon').click()
-    cy.get('.p-button-icon-only').click()
-    cy.get('.p-button-link').click()
+    cy.get('.buttonsList > .p-button-icon-only').click()
+    cy.get('.actionDialog > .p-button-link').click()
 
     checkHdiw();
 
