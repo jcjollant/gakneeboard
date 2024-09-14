@@ -128,18 +128,20 @@ function updateTextarea() {
         <LookupDialog v-model:visible="showLookup" :time="lookupTime" @add="addFrequency" />
         <Header :title="'Radio Flow'" :replace="mode=='edit'"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <div v-if="mode==''">
-            <PlaceHolder v-if="frequencies.length==0" title="No Radios" />
-            <div class="freqList" v-else>
-                <FrequencyBox v-for="freq in frequencies" :freq="freq" :small="frequencies.length > 8" />
+        <div class="tileContent">
+            <div v-if="mode==''">
+                <PlaceHolder v-if="frequencies.length==0" title="No Radios" />
+                <div class="freqList" v-else>
+                    <FrequencyBox v-for="freq in frequencies" :freq="freq" :small="frequencies.length > 8" />
+                </div>
             </div>
-        </div>
-        <div v-else-if="mode=='edit'" class="edit">
-            <Button icon="pi pi-search" label="Lookup" link
-                @click="onLookup" class="lookupBtn"></Button>
-            <Textarea class='list' rows="9" cols="24" v-model="textData"
-                placeholder="Enter up to 15 freq."></Textarea>
-            <ActionBar @apply="onApply" @cancel="onCancel" :help="urlGuideRadioFlow" />
+            <div v-else-if="mode=='edit'" class="edit">
+                <Button icon="pi pi-search" label="Lookup" link
+                    @click="onLookup" class="lookupBtn"></Button>
+                <Textarea class='list' rows="11" cols="24" v-model="textData"
+                    placeholder="Enter up to 15 freq."></Textarea>
+                <ActionBar @apply="onApply" @cancel="onCancel" :help="urlGuideRadioFlow" />
+            </div>
         </div>
     </div>
 </template>
@@ -185,12 +187,11 @@ function updateTextarea() {
 
 .edit {
     position: relative;
-    height:200px;
     width:240px;
+    height: 100%;
     font-size: 0.8rem;
-    display: inline-flex;
+    display: flex;
     flex-flow: column;
-    /* gap: 5px; */
     padding: 0 5px;
 }
 
