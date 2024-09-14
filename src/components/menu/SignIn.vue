@@ -48,9 +48,9 @@ function onFacebookSuccess( response) {
         <Button label="Do not sign in" @click="emits('close')" link></Button>
         <GoogleSignInButton 
           @success="onGoogleSuccess" @error="onLoginError" />
-        <FacebookSignInButton
+        <!-- <FacebookSignInButton
           @onSuccess="onFacebookSuccess" 
-          @onFailure="onLoginError" />
+          @onFailure="onLoginError" /> -->
       </div>
     </Dialog>
 </template>
