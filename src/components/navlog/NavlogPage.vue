@@ -167,7 +167,7 @@ function onToast(data) {
                 <div v-if="legs" v-for="e in legs" 
                     class="legsGrid bb"  :class="{'legClimb':(e.att=='+'),'legDesc':(e.att=='-')}">
                     <div class="headingGroup">
-                        <div class="heading">{{ e.mh }}</div>
+                        <div class="heading">{{ Formatter.heading(e.mh) }}</div>
                         <!-- <div class="heading">{{ e.ch }}</div> -->
                     </div>
                     <div class="bl br">{{ e.ld }}</div>
@@ -240,15 +240,7 @@ function onToast(data) {
     opacity: 0.10;
 }
 
-.attClimb {
-    color: red;
-}
-.attCruise {
-    color: darkgray;
-}
-.attDesc {
-    color: green;
-}.checkpointGrid {
+.checkpointGrid {
     display:grid;
     grid-template-columns: 5rem 4rem;
 }
