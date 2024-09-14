@@ -8,6 +8,7 @@ import PlaceHolder from '../shared/PlaceHolder.vue';
 import { Formatter } from '../../assets/Formatter';
 
 const items = ref(null)
+const emits = defineEmits(['replace'])
 
 function applyData(newNavlog) {
     // console.log('[NavlogTile.applyData] new navlog', JSON.stringify(newNavlog))
@@ -45,7 +46,7 @@ onMounted(() => {
 </script>
 <template>
     <div class="navlogTile tile">
-        <Header title="NavLog" />
+        <Header title="NavLog" @replace="emits('replace')"></Header>
         <div class="tileContent">
             <div v-if="items">
                 <div v-for="i in items" class="navlogEntry" :class="i.entryClass">

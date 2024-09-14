@@ -99,13 +99,11 @@ function onToast(data) {
         @replace="onReplace" @update="onUpdate"/>
     <ChecklistTile v-else-if="tile.name==Tile.checklist" :params="tile.data" 
         @replace="onReplace" @update="onUpdate"/>
-    <Clearance v-else-if="tile.name==Tile.clearance" 
-        @replace="onReplace"/>
+    <Clearance v-else-if="tile.name==Tile.clearance" @replace="onReplace"/>
     <FuelBug v-else-if="tile.name==Tile.fuel" :params="tile.data"
         @replace="onReplace" @update="onUpdate"/>  
-    <NavlogTile v-else-if="tile.name==Tile.navlog" />
-    <Notes v-else-if="tile.name==Tile.notes" 
-        @replace="onReplace" />
+    <NavlogTile v-else-if="tile.name==Tile.navlog" @replace="onReplace" />
+    <Notes v-else-if="tile.name==Tile.notes" @replace="onReplace" />
     <RadioFlow v-else-if="tile.name==Tile.radios" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" @toast="onToast" />
     <SunLight v-else-if="tile.name==Tile.sunlight" :params="tile.data" 

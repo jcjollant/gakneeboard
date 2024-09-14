@@ -31,6 +31,11 @@ describe('ATIS Tile', () => {
     cy.get(':nth-child(10)').should('have.class','entryDesc')
     cy.get('.nameArrival').contains('KELN (Arrival)')
 
+    // check replace
+    // cy.get('.pageTwo > :nth-child(6) > .headerTitle').trigger('mous')
+    cy.get('.pageTwo > :nth-child(6) > .headerTitle > .p-button').invoke('show').click()
+    cy.get('.pageTwo > :nth-child(6) > .headerTitle').contains('Tile Selection')
+
   })
 
 })
