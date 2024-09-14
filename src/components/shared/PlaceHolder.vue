@@ -3,7 +3,10 @@ import { onMounted, ref } from 'vue'
 
 const props = defineProps({
     title: { type: String, default: '?'},
+    subtitle: { type: String, default: 'Click header to configure'},
 })
+
+const title = ref('')
 
 function loadProps(props) {
     title.value = props.title;
@@ -13,15 +16,14 @@ onMounted(() => {
     loadProps(props)
 })
 
-const title = ref('')
 
 </script>
 
 <template>
     <div class="placeHolder">
         <div>
-            <div>{{title}}</div>
-            <div class="small">Click header to configure</div>
+            <div>{{ title }}</div>
+            <div class="small">{{subtitle}}</div>
         </div>
     </div>
 
