@@ -44,7 +44,7 @@ watch( props, async() => {
 <template>
     <div class="headerTitle" :class="{ clickable: clickable, left: left, page: page, stealth: stealth }">
         <div>{{ title }}</div>
-        <Button class="replaceButton" v-if="replace" icon="pi pi-eject" title="Replace Tile" link
+        <Button class="replaceButton" :class="{ 'hidden' : !replace }" icon="pi pi-eject" title="Replace Tile" link
             @click="emits('replace')"></Button>
     </div>
 </template>
@@ -58,6 +58,9 @@ watch( props, async() => {
         overflow: hidden;
         height: 25px;
         line-height: 25px;
+    }
+    .clickable:hover .replaceButton {
+        display: inline-flex;
     }
     .clickable:hover {
         color: darkblue;
