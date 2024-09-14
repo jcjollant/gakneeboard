@@ -208,7 +208,7 @@ const pageDemoNavlog1 = {
     {"id":2,"name":"radios","data":[{"mhz":"122.9","name":"CTAF"},{"mhz":"135.275","name":"Stamp. Pass"},{"mhz":"117.9","name":"ELN VOR"},{"mhz":"123","name":"KELN CTAF"},{"mhz":"116.8","name":"SEA VORTAC"},{"mhz":"126.95","name":"KRNT ATIS"},{"mhz":"124.7","name":"KRNT TWR"}]},
     {"id":3,"name":"notes","data":{}},
     {"id":4,"name":"airport","data":{"code":"KELN","rwy":"11-29","rwyOrientation":"magnetic","corners":["weather","twr","field","tpa"]}},
-    {"id":5,"name":"fuel","data":{}}
+    {"id":5,"name":"navlog","data":{}}
   ]
 }
 
