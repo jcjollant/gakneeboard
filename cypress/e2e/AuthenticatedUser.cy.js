@@ -1,4 +1,4 @@
-import { currentVersionNumber, environment, visitAndCloseBanner, maintenanceMode } from './shared'
+import { visitAndCloseBanner, maintenanceMode } from './shared'
 
 describe('Authenticated User', () => {
   it('Sign in and Load Page', () => {
