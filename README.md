@@ -17,6 +17,8 @@ Run the test suite:
 ## TODO
 
 # Done
+## 9/24/2024
+* Added privacy policy
 ## 9/12/2024
 * Facebook login
 ## 9/11/2024
