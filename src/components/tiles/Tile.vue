@@ -3,6 +3,7 @@
 import {onMounted, ref, watch} from 'vue';
 
 import { emitToastInfo } from '../../assets/toast'
+import { Tile } from '../../assets/Tile'
 
 import Header from '../shared/Header.vue';
 import Airport from '../airport/Airport.vue';
@@ -14,6 +15,7 @@ import RadioFlow from '../radios/RadioFlow.vue';
 import SunLight from '../sunlight/SunLight.vue';
 import FuelBug from '../fuel/FuelBug.vue';
 import FAButton from '../shared/FAButton.vue'
+import NavlogTile from '../navlog/NavlogTile.vue';
 
 const emits = defineEmits(['update','toast'])
 
@@ -23,15 +25,15 @@ const props = defineProps({
 
 var state = {}
 const knownTiles = ref([
-    {name:'Airport',tile:'airport', class:'double', icon:'plane-departure', tooltip:'Display runway and useful information'},
-    {name:'ATIS',tile:'atis', class:'', icon:'cloud-sun-rain', tooltip:'Write down ATIS information'},
-    {name:'Checklist',tile:'checklist', class:'', icon:'list-check', tooltip:'Short checklist'},
-    {name:'Clearance',tile:'clearance', class:'', icon:'plane-circle-check', tooltip:'Write down clearance information'},
-    {name:'Fuel',tile:'fuel', class:'', icon:'gas-pump', tooltip:'Track your fuel consumption'},
-    {name:'Navlog',tile:'navlog', class:'', icon:'route',  tooltip:'Companion Tile to the Navlog Page'},
-    {name:'Notes',tile:'notes', class:'', icon:'pen-to-square',  tooltip:'A blank tile to write stuff'},
-    {name:'Radios',tile:'radios', class:'', icon:'headset',  tooltip:'Radio frequencies'},
-    {name:'Sunlight',tile:'sunlight', class:'', icon:'sun',  tooltip:'Sunrise, Sunset, Civil Twilight...'},
+    {name:'Airport',tile:Tile.airport, class:'double', icon:'plane-departure', tooltip:'Display runway and useful information'},
+    {name:'ATIS',tile:Tile.atis, class:'', icon:'cloud-sun-rain', tooltip:'Write down ATIS information'},
+    {name:'Checklist',tile:Tile.checklist, class:'', icon:'list-check', tooltip:'Short checklist'},
+    {name:'Clearance',tile:Tile.clearance, class:'', icon:'plane-circle-check', tooltip:'Write down clearance information'},
+    {name:'Fuel',tile:Tile.fuel, class:'', icon:'gas-pump', tooltip:'Track your fuel consumption'},
+    {name:'Navlog',tile:Tile.navlog, class:'', icon:'route',  tooltip:'Companion Tile to the Navlog Page'},
+    {name:'Notes',tile:Tile.notes, class:'', icon:'pen-to-square',  tooltip:'A blank tile to write stuff'},
+    {name:'Radios',tile:Tile.radios, class:'', icon:'headset',  tooltip:'Radio frequencies'},
+    {name:'Sunlight',tile:Tile.sunlight, class:'', icon:'sun',  tooltip:'Sunrise, Sunset, Civil Twilight...'},
 ])
 const tile = ref({})
 
@@ -54,10 +56,6 @@ function loadProps( props) {
 
 // replace a tile with a new one
 function onReplace(newName = '') {
-    if(newName == 'navlog') {
-        emitToastInfo(emits, 'Work in Progress', 'This tile is comming soon')
-        return;
-    };
     // widget.value = { 'id':widget.value.id,'name': newName.toLowerCase(), 'data':{}}
     state = { 'id':tile.value.id,'name': newName.toLowerCase(), 'data':{}}
     tile.value = state
@@ -83,7 +81,7 @@ function onToast(data) {
     <div v-if="!tile || tile.name==''" class="tile">
         <Header :title="'Tile Selection'" :clickable="false"></Header>
         <!-- <div class="widgetTitle">Tile Selection</div> -->
-        <div class="content list">
+        <div class="tileContent list">
             <FAButton v-for="tile in knownTiles"
                 :icon="tile.icon" 
                 :label="tile.name" :class="tile.class" :title="tile.tooltip"
@@ -95,23 +93,23 @@ function onToast(data) {
                 @click="onReplace(tile.tile)"></Button> -->
         </div>
     </div>
-    <Airport v-else-if="tile.name=='airport'" :params="tile.data" 
+    <Airport v-else-if="tile.name==Tile.airport" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" />
-    <Atis v-else-if="tile.name=='atis'" :params="tile.data"
+    <Atis v-else-if="tile.name==Tile.atis" :params="tile.data"
         @replace="onReplace" @update="onUpdate"/>
-    <ChecklistTile v-else-if="tile.name=='checklist'" :params="tile.data" 
+    <ChecklistTile v-else-if="tile.name==Tile.checklist" :params="tile.data" 
         @replace="onReplace" @update="onUpdate"/>
-    <Clearance v-else-if="tile.name=='clearance'" 
+    <Clearance v-else-if="tile.name==Tile.clearance" 
         @replace="onReplace"/>
-    <FuelBug v-else-if="tile.name=='fuel'" :params="tile.data"
+    <FuelBug v-else-if="tile.name==Tile.fuel" :params="tile.data"
         @replace="onReplace" @update="onUpdate"/>  
-    <Notes v-else-if="tile.name=='notes'" 
+    <NavlogTile v-else-if="tile.name==Tile.navlog" />
+    <Notes v-else-if="tile.name==Tile.notes" 
         @replace="onReplace" />
-    <RadioFlow v-else-if="tile.name=='radios'" :params="tile.data" 
+    <RadioFlow v-else-if="tile.name==Tile.radios" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" @toast="onToast" />
-    <SunLight v-else-if="tile.name=='sunlight'" :params="tile.data" 
+    <SunLight v-else-if="tile.name==Tile.sunlight" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" />
-    <!-- <List v-else-if="widget.name=='list'" @replace="updateWidgetName"/> -->
 </template>
 
 <style scoped>
@@ -126,15 +124,6 @@ function onToast(data) {
 
 .double  {
     grid-column: 1 / span 2;
-}
-
-.tile {
-  position: relative;
-  border: 1px solid darkgrey;
-  font-family: Verdana, sans-serif;
-  width: 245px;
-  height: 265px;
-  background: white;
 }
 
 
