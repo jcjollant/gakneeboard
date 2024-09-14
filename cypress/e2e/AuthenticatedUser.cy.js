@@ -30,7 +30,7 @@ describe('Authenticated User', () => {
     }
 
     // Do Not Load
-    cy.get('.p-button-link').click()
+    cy.get('.actionDialog > .p-button-link').click()
 
     // Save the page into something disposable
     cy.get('[aria-label="Save"]').click()
@@ -75,7 +75,7 @@ describe('Authenticated User', () => {
     cy.wait('@deleteTemplate').its('response.statusCode').should('equal', 200)
 
     // Close dialog
-    cy.get('.p-button-link').click()
+    cy.get('.actionDialog > .p-button-link').click()
 
     // Check Sign out
     cy.get('.active').click()

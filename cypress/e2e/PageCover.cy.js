@@ -28,7 +28,7 @@ describe('Cover Page', () => {
     cy.get(':nth-child(3) > .p-inputtext').type('{selectall}').type(newSubtitle)
 
     // Cancel should revert to default state
-    cy.get('.p-button-link').click()
+    cy.get('.actionBar > .p-button-link').click()
     checkBlankState()
 
     // change everything again

@@ -138,12 +138,12 @@ describe('Tiles', () => {
 
     // Replace tile with Notes
     cy.get('.pageOne > :nth-child(3) > .headerTitle > div').click()
-    cy.get('.headerTitle > .p-button').click()
+    cy.get('.pageOne > :nth-child(3) > .headerTitle > .p-button').click()
     cy.get('[aria-label="Notes"]').click()
     cy.get('.pageOne > :nth-child(3) > .headerTitle > div').contains('Notes')
     // Change tile back to Airport
     cy.get('.pageOne > :nth-child(3) > .headerTitle > div').click()
-    cy.get('.headerTitle > .p-button').click()
+    cy.get('.pageOne > :nth-child(3) > .headerTitle > .p-button').click()
     cy.get('[aria-label="Airport"]').click()
     // we should be in edit mode
     cy.get('.p-inputtext')

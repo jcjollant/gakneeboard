@@ -40,12 +40,12 @@ describe('Tiles', () => {
     cy.get('.date').contains( 'Night Flight')
     // Test Tile can be replaced by Notes
     cy.get('.pageTwo > :nth-child(3) > .headerTitle > div').click()
-    cy.get('.headerTitle > .p-button').click()
+    cy.get('.pageTwo > :nth-child(3) > .headerTitle > .p-button').click()
     cy.get('[aria-label="Notes"]').click()
     cy.get(':nth-child(2) > :nth-child(3) > .headerTitle > div').contains('Notes')
     // Change tile back to Sunlight
     cy.get(':nth-child(2) > :nth-child(3) > .headerTitle > div').click()
-    cy.get('.headerTitle > .p-button').click()
+    cy.get(':nth-child(2) > :nth-child(3) > .headerTitle > .p-button').click()
     cy.get('[aria-label="Sunlight"]').click()
     // We should see the placeholder
     cy.get('.pageTwo > :nth-child(3) > :nth-child(2) > .placeHolder').contains('No Airport')
