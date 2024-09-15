@@ -89,7 +89,7 @@ describe('UserTool', () => {
             expect(err.message).toBe('Missing source')
         })
 
-        const body3 = { 'source':'notgoogle'}
+        const body3 = { 'source':'notgoogle','token':'sometoken'}
         await UserTools.authenticate(body3).then( () => {
             expect(true).toBe(false)
         }).catch( (err) => {
