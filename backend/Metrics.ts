@@ -6,6 +6,7 @@ import { createTransport } from 'nodemailer'
 import { PublicationDao } from './PublicationDao'
 import { TemplateDao } from "./TemplateDao";
 import { Template } from "./models/Template";
+import { AdipDao } from "./AdipDao";
 
 
 export class Metric {
@@ -23,15 +24,29 @@ export class Metric {
 }
 
 export class Metrics {
+    static adipKey:string = 'adip'
+    static airportsTotalKey:string = 'airports-total'
+    static airportsValidKey:string = 'airports-valid'
+    static airportsCurrentKey:string = 'airports-current'
+    static usersKey:string = 'users'
 
-    static async airports():Promise<Metric> {
-        const airportCount = await AirportDao.count()
-        return new Metric('airports', airportCount)
+    static async adip():Promise<Metric> {
+        const adipCount = await AdipDao.count()
+        return new Metric(this.adipKey, adipCount)
+    }
+
+    static async airports():Promise<Metric[]> {
+        const all = await AirportDao.count()
+        const output:Metric[] = []
+        output.push( new Metric(this.airportsTotalKey, await AirportDao.count()))
+        output.push( new Metric(this.airportsValidKey, await AirportDao.countValid()))
+        output.push( new Metric(this.airportsCurrentKey, await AirportDao.countCurrent()))
+        return output
     }
 
     static async users():Promise<Metric> {
         const usersCount = await UserDao.count()
-        return new Metric('users', usersCount)
+        return new Metric(this.usersKey, usersCount)
     }
 
     static async feedbacks():Promise<Metric> {
@@ -62,6 +77,7 @@ export class Metrics {
         const checklistTileCount = new Metric('checklistTileCount', 0)
         const clearanceTileCount = new Metric('clearanceTileCount', 0)
         const fuelTileCount = new Metric('fuelTileCount', 0)
+        const navlogTileCount = new Metric('navlogTileCount', 0)
         const notesTileCount = new Metric('notesTileCount', 0)
         const radiosTileCount = new Metric('radiosTileCount', 0)
         const sunlightTileCount = new Metric('sunlightTileCount', 0)
@@ -81,6 +97,8 @@ export class Metrics {
                             clearanceTileCount.addOne()
                         } else if(tile.name == 'fuel') {
                             fuelTileCount.addOne()
+                        } else if(tile.name == 'navlog') {
+                            navlogTileCount.addOne()
                         } else if(tile.name == 'notes') {
                             notesTileCount.addOne()
                         } else if(tile.name == 'radios') {
@@ -161,12 +179,13 @@ export class Metrics {
 
     public static async perform(commit:boolean=true, sendMail:boolean=true):Promise<String> {
         return Promise.all([
-                Metrics.airports(), 
+                Metrics.users(),
                 Metrics.feedbacks(),
-                Metrics.publicationsCheck(),
                 Metrics.templateDetails(),
+                Metrics.publicationsCheck(),
                 Metrics.templates(),
-                Metrics.users()
+                Metrics.airports(), 
+                Metrics.adip()
             ]).then( async allMetrics => {
             const data:any = {}
             for(const metric of allMetrics) {
