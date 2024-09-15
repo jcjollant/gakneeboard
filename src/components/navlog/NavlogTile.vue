@@ -46,7 +46,7 @@ onMounted(() => {
 </script>
 <template>
     <div class="navlogTile tile">
-        <Header title="NavLog" @replace="emits('replace')"></Header>
+        <Header title="NavLog" :replace="true" @replace="emits('replace')"></Header>
         <div class="tileContent">
             <div v-if="items">
                 <div v-for="i in items" class="navlogEntry" :class="i.entryClass">

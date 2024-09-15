@@ -126,7 +126,7 @@ function updateTextarea() {
 <template>
     <div class="tile">
         <LookupDialog v-model:visible="showLookup" :time="lookupTime" @add="addFrequency" />
-        <Header :title="'Radio Flow'" :replace="mode=='edit'"
+        <Header :title="'Radio Flow'" :replace="true"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div class="tileContent">
             <div v-if="mode==''">

@@ -178,7 +178,7 @@ function onHeaderClick() {
 
 <template>
     <div class="tile">
-        <Header title="Sun Light" :replace="mode=='edit'"
+        <Header title="Sun Light" :replace="true"
             @click="onHeaderClick" 
             @replace="emits('replace')">
         </Header>
