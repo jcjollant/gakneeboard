@@ -7,7 +7,6 @@ console.log('Hello Sir');
 
 
 (async () => {
-    Metrics.perform
     Metrics.perform().then( dataString => {
         // console.log(JSON.stringify( allMetrics))
         console.log('Right Sir!');
