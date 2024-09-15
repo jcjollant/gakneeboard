@@ -21,10 +21,10 @@ const page = ref(false)
 const stealth = ref(false)
 
 onMounted( () => {
-    updateProps()
+    updateProps(props)
 })
 
-function updateProps() {
+function updateProps(props) {
     // console.log('Heeader update props ' + JSON.stringify(props))
     title.value = props.title
     replace.value = props.replace
@@ -35,7 +35,7 @@ function updateProps() {
 }
 
 watch( props, async() => {
-    updateProps()
+    updateProps(props)
 })
 
 </script>

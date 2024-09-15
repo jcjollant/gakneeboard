@@ -20,9 +20,10 @@ Run the test suite:
 ## 9/14/2024
 * Added privacy policy
 * NavLog tile is active
-* Replacing tile is quicker with access to replace button when mousing over
+* New replace behavior (mouse over)
 * Headings now include ° symbol
 * Navlog demo now has NavLog tile
+* Fixed Navlog eject button opacity
 ## 9/12/2024
 * Facebook login
 ## 9/11/2024
