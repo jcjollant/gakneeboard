@@ -21,6 +21,9 @@ ts-node .\willie.ts
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
+## 9/15/2024
+* Metrics : Added valid and current airports, added adip.
+* Metrics : reordered output
 ## 9/12/2024
 * Experimenting with facebook login
 ## 9/04/2024
