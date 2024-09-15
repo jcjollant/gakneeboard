@@ -1,6 +1,5 @@
 import { QueryResult, sql } from  "@vercel/postgres";
 import { Airport, versionInvalid } from "./models/Airport";
-import { version } from "os";
 
 export class AirportDao {
     
@@ -9,6 +8,15 @@ export class AirportDao {
         return Number(result.rows[0].count)
     }
 
+    public static async countCurrent():Promise<number> {
+        const result = await sql`SELECT count(*) FROM Airports WHERE version = ${Airport.currentVersion}`;
+        return Number(result.rows[0].count)
+    }
+
+    public static async countValid():Promise<number> {
+        const result = await sql`SELECT count(*) FROM Airports WHERE version > -1`;
+        return Number(result.rows[0].count)
+    }
 
     public static async create(code:string, data:any) {
         // console.log( '[AirportDao.create] ' + code)
