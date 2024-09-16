@@ -30,8 +30,17 @@ const descentRate = ref(null)
 const editEntry = ref(null)
 const magVar = ref(0)
 const magDev = ref(0)
+const magneticDeviation = ref(null)
+const magneticHeading = ref(null)
+const magneticVariation = ref(null)
 const nextEntry = ref(null)
 const prevHeading = ref(null)
+const trueAirspeed = ref(null)
+const trueCourse = ref(null)
+const trueHeading = ref(null)
+const windCorrectionAngle = ref(null)
+const windDirection = ref(null)
+const windSpeed = ref(null)
 
 //---------------------
 // Props management
@@ -163,20 +172,44 @@ function onApply() {
     emits('save', entry)
 }
 
+function updateMH() {
+    // =asin(B4*SIN((B3-A3)/180*PI())/G3)*180/PI()
+    // B4 = Wind Speed
+    // B3 = Wind Direction
+    // A3 = True Course
+    // G3 = TAS
+    // DegToRadian = 0.0174532925
+    const d2r = 0.0174532925
+    const ws = Number(windSpeed.value)
+    const wd = Number(windDirection.value)
+    const tc = Number(trueCourse.value)
+    const tas = Number(trueAirspeed.value)
+
+    const wca = Math.asin(ws*Math.sin((wd-tc)*d2r)/tas)/d2r
+    const usableWca = isNaN(wca) ? 0 : wca
+    windCorrectionAngle.value = usableWca
+    const th = tc + usableWca
+    trueHeading.value = th
+    const mvd = Number(magneticVariation.value) + Number(magneticDeviation.value)
+    const usableMvd = isNaN(mvd) ? 0 : mvd
+    magneticHeading.value = Math.round(th + usableMvd);
+    // console.log('[NavlogLegEditor.updateMH]', wca)
+}
+
 </script>
 
 <template>
     <Dialog modal header="Navigation Leg" class="editorDialog">
         <div v-if="editEntry">
             <div class="between mb-2" :class="attitudeClass">
-                <div>{{ editEntry.name }} @ {{ editEntry.alt }}</div>
+                <div>{{ editEntry.name }} @ {{ Formatter.altitude(editEntry.alt) }}</div>
                 <div class="attitudeGroup">
                     <i class="pi attIcon" :class="{'pi-arrow-up-right':editEntry.att=='+','pi-arrow-down-right':editEntry.att=='-','pi-arrow-right':(editEntry.att!='+'&&editEntry.att!='-')}"></i>
                     <div class="attitude">{{attitudeName}}</div>
                 </div>
-                <div v-if="nextEntry">{{ nextEntry.name }} @ {{ nextEntry.alt }}</div>
+                <div v-if="nextEntry">{{ nextEntry.name }} @ {{ Formatter.altitude(nextEntry.alt) }}</div>
             </div>
-            <div class="legParamGroup">
+            <div class="legParamGroup mb-2">
                 <InputGroup v-if="attitudeName==attitudeCruise" class="legParameter" title="POH Cruise Fuel Flow (GPH)">
                     <InputGroupAddon>Fuel Flow</InputGroupAddon>
                     <InputText id="cruiseGPH" v-model="cruiseFuelFlow" @input="calculation" />
@@ -194,24 +227,43 @@ function onApply() {
                     <InputText id="descentFPM" v-model="descentRate" @input="calculation" />
                 </InputGroup>
             </div>
-            <FieldSet legend="Log Data" class="mt-2">
+            <div class="headingCalculator">
+                <!-- <div class="headingTitle mb-2">Magnetic Heading Calculator</div> -->
+                <div class="headingGrid headingHeader">
+                    <div>True Course</div>
+                    <!-- <div class="headingWind">Wind</div> -->
+                    <div>Wind Direction</div>
+                    <div>Wind Speed</div>
+                    <div>TAS</div>
+                    <div>WCA</div>
+                    <div>True Heading</div>
+                    <div title="Magnetic Variation (sectional)">Mag. Variation</div>
+                    <div title="Magnetic Deviation (compass card)">Mag. Deviation</div>
+                    <div>Mag. Heading</div>
+                </div>
+                <div class="headingGrid">
+                    <InputText v-model="trueCourse" class="headingInput" title="True Course"
+                        @input="updateMH"></InputText>
+                    <InputText v-model="windDirection" class="headingInput" title="Wind Direction (True)"
+                        @input="updateMH"></InputText>
+                    <InputText v-model="windSpeed" class="headingInput" title="Wind Speed (Kts)"
+                        @input="updateMH"></InputText>
+                    <InputText v-model="trueAirspeed" class="headingInput" title="True Airspeed (Kts)"
+                        @input="updateMH"></InputText>
+                    <div class="headingCalculated" title="Wind Correction Angle">{{ Formatter.heading(windCorrectionAngle,true) }}</div>
+                    <div class="headingCalculated" title="True Heading">{{ Formatter.heading(trueHeading) }}</div>
+                    <InputText v-model="magneticVariation" class="headingInput" title="Magnetic Variation (sectional)"
+                        @input="updateMH"></InputText>
+                    <InputText v-model="magneticDeviation" class="headingInput" title="Magnetic Deviation (Compass card)"
+                        @input="updateMH"></InputText>
+                    <div class="headingResult" title="Calculated Magnetic Heading. Click to copy value in Log Entry."
+                        @click="editEntry.mh=magneticHeading" >{{ Formatter.heading(magneticHeading) }}</div>
+                </div>
+                <!-- <div class="headingTitle">TC ± WCA = TH ± MV ± MD = MH</div> -->
+            </div>
+            <div class="headingCalculator" :class="attitudeClass">
+                <div class="headingTitle">Log Entry</div>
                 <div class="legFieldGroup">
-                    <!-- <FloatLabel title="True Course">
-                        <InputText id="tc" v-model="editEntry.tc" />
-                        <label for="tc">True Course</label>
-                    </FloatLabel>
-                    <FloatLabel title="Wind Speed">
-                        <InputText id="ws" v-model="editEntry.ws" />
-                        <label for="ws">W. Spd.</label>
-                    </FloatLabel>
-                    <FloatLabel title="Wind Direction">
-                        <InputText id="wd" v-model="editEntry.wd" />
-                        <label for="wd">W. Dir.</label>
-                    </FloatLabel>
-                    <FloatLabel title="True Heading">
-                        <InputText id="th" v-model="editEntry.th" />
-                        <label for="th">TH</label>
-                    </FloatLabel> -->
                     <div title="Magnetic Heading" class="legField">
                         <div class="label">Mag Hdg</div>
                         <InputText id="mh" v-model="editEntry.mh" />
@@ -223,7 +275,7 @@ function onApply() {
                         <div class="label">Distance</div>
                         <InputText id="ld" v-model="editEntry.ld" @input="calculation" />
                         <div class="hint clickable" id="ldHint"
-                            title="Calculated Distance (For descent only). Click to use." 
+                            title="Calculated Distance (Descent : LegTime * GroundSpeed). Click to use." 
                             @click="editEntry.ld=calculatedDistance">{{ calculatedDistance }}</div>
                     </div>
                     <div class="legField" title="Ground Speed (Kts)">
@@ -234,18 +286,18 @@ function onApply() {
                         <div class="label">Time</div>
                         <InputText id="lt" v-model="editEntry.lt" />
                         <div class="hint clickable" id="ltHint"
-                            title="Calculated Leg Time [formula varies with leg type]. Click to use." 
+                            title="Calculated Leg Time. Click to use." 
                             @click="editEntry.lt=calculatedTime">{{ calculatedTime }}</div>
                     </div>
                     <div class="legField" title="Leg Fuel (Gal)">
                         <div class="label">Leg Fuel</div>
                         <InputText id="lf" v-model="editEntry.lf" />
                         <div class="hint clickable" id="lfHint"
-                            title="Calculated Leg Fuel [formula varies with leg type]. Click to use." 
+                            title="Calculated Leg Fuel. Click to use." 
                             @click="editEntry.lf=calculatedFuel">{{ calculatedFuel }}</div>
                     </div>
                 </div>
-            </FieldSet>
+            </div>
             <div class="actionDialog gap-2">
                 <Button label="Do Not Apply" @click="emits('close')" link></Button>
                 <Button label="Apply" @click="onApply"></Button>
@@ -260,14 +312,12 @@ function onApply() {
 .attitude {
     font-size: 0.7rem;
     padding: 0.2rem;
-    /* text-align: center; */
 }
 .attitudeGroup {
     display: flex;
     flex-flow: column;
     align-items: center;
     width: 3rem;
-    /* justify-content: center; */
 }
 .attClimb {
     color: #400;
@@ -292,7 +342,49 @@ function onApply() {
     font-size: larger;
     padding: 0.5rem 0;
 }
+.headingCalculated {
+    font-size: 0.9rem;
+    line-height: 1.5rem;
+}
+.headingCalculator {
+    display: flex;
+    flex-flow: column;
+    gap: 5px;
+    border-radius: 10px;
+    /* background: #ddd; */
+    padding: 10px;
+}
+.headingTitle {
+    font-weight: bold;
+    font-size: 0.9rem;
+    /* opacity: 0.5; */
+    text-align: center;
+}
+.headingHeader {
+    /* font-weight: bold; */
+    align-items: center;
+}
+.headingGrid {
+    display: grid;
+    grid-template-columns: repeat(9, 50px);
+    text-align: center;
+    gap: 0 5px;
+    font-size: 0.7rem;
+}
+.headingResult {
+    font-weight: bold;
+    text-decoration: underline;
+    font-size: 0.9rem;
+    line-height: 1.5rem;
+    cursor: pointer;
+}
+.headingWind {
+    grid-column: 2 / span 3;
+    background-color: #eee;
+    text-align: center;
+}
 .hint {
+    font-size: 0.8rem;
     text-align: right;
     padding-right: 0.4rem;
 }
@@ -322,9 +414,15 @@ function onApply() {
     display: flex;
     gap: 0.3rem;
 }
-:deep(.p-inputtext.editorName ) {
+:deep(.p-inputtext.editorName)   {
     width: 10rem;
     text-align: left;
+}
+
+:deep(.p-inputtext.headingInput) {
+    width: 50px;
+    text-align: right;
+    padding: 5px;
 }
 
 :deep(.p-inputtext) {

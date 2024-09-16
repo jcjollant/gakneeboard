@@ -38,7 +38,7 @@ export class Formatter {
         return fuel.toFixed(1)
     }
 
-    static heading(raw:any) {
+    static heading(raw:any,allowNegative:boolean=false) {
         if(raw == null || raw == undefined) return Formatter.noHeading
         let value:number
         if(typeof raw != 'number') {
@@ -46,8 +46,8 @@ export class Formatter {
         } else {
             value = raw
         }
-        if( value < 0) value += 360
-        if( value > 359) value %= 360
+        if( value > 359 || value < -359) value %= 360
+        if( value < 0 && !allowNegative) value += 360
         return value.toFixed(0) + '°'
     }
 
