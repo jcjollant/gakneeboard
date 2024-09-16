@@ -23,6 +23,7 @@ const attitudeClass = ref(null)
 const calculatedDistance = ref(null)
 const calculatedFuel = ref(null)
 const calculatedTime = ref(null)
+const calculatedTimeHint = ref('Calculated Time. Click to user')
 const cruiseFuelFlow = ref(null)
 const cruiseTrueAirspeed = ref(null)
 const descentFuelFlow = ref(null)
@@ -59,6 +60,13 @@ function loadProps(newProps) {
     if(newProps.entry) {
         const entry = NavlogEntry.copy(newProps.entry)
         editEntry.value = entry
+        // Calculator fields
+        trueCourse.value = entry.tc
+        [windDirection.value,windSpeed.value] = entry.getWind()
+        trueAirspeed.value = entry.tas
+        magneticVariation.value = entry.mv
+        magneticDeviation.value = entry.md
+        magneticHeading.value = entry.mv
         // transform leg time
         editEntry.value.lt = editEntry.value.lt ? Formatter.legTime(editEntry.value.lt) : ''
         if( editEntry.value.att == '+') {
@@ -111,10 +119,12 @@ function calculation() {
 
     // leg time
     let legTime = undefined;
+    let ltFormula = ''
     if( cruise) {
         const legDistance = Number(editEntry.value.ld)
         if( !(isNaN(groundSpeed) || isNaN(legDistance) || groundSpeed <= 0 || legDistance <= 0)) {
             legTime = legDistance / groundSpeed * 60
+            ltFormula = 'Distance / GroudSpeed. '
         }
     } else if( descent) {
         const altFrom = editEntry.value ? Number(editEntry.value?.alt) : undefined
@@ -124,9 +134,11 @@ function calculation() {
         // altitude difference / descent rate
         if( !(isNaN(altFrom) || isNaN(altTo) || isNaN(descentRateValue) || descentRateValue <= 0)) {
             legTime = (altFrom - altTo) / descentRateValue
+            ltFormula = 'DescentAltitudeDelta / DescentRate. '
         }
     }
     calculatedTime.value = Formatter.legTime( legTime)
+    calculatedTimeHint.value = 'Calculated Leg Time. ' + ltFormula + 'Click to use';
 
     // Fuel
     const fuelFlowValue = cruise ? Number(cruiseFuelFlow.value) : (descent ? Number(descentFuelFlow.value) : undefined)
@@ -286,7 +298,7 @@ function updateMH() {
                         <div class="label">Time</div>
                         <InputText id="lt" v-model="editEntry.lt" />
                         <div class="hint clickable" id="ltHint"
-                            title="Calculated Leg Time. Click to use." 
+                            :title="calculatedTimeHint"
                             @click="editEntry.lt=calculatedTime">{{ calculatedTime }}</div>
                     </div>
                     <div class="legField" title="Leg Fuel (Gal)">
