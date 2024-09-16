@@ -270,12 +270,15 @@ function onApply() {
     /* justify-content: center; */
 }
 .attClimb {
+    color: #400;
     background-color: rgba(255, 0, 0, 0.1);
 }
 .attCruise {
+    color: #004;
     background-color: rgba(0, 0, 255, 0.1);
 }
 .attDescent {
+    color: #040;
     background-color: rgba(0, 255, 0, 0.1);
 }
 .attIcon {
