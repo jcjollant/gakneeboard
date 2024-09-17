@@ -17,6 +17,8 @@ Run the test suite:
 ## TODO
 
 # Done
+## 9/16/2024
+* Added calculator to Leg Editor
 ## 9/15/2024
 * Fixed header behavior for checklist
 ## 9/14/2024
