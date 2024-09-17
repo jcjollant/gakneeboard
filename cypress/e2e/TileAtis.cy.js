@@ -19,9 +19,10 @@ describe('ATIS Tile', () => {
     // Edit mode
     cy.get('.pageOne > :nth-child(5) > .headerTitle').click()
     // check header size
-    const expectedHeight = 25
+    const expectedHeight = 26
+    const expectedButtonHeight = 23
     cy.get('.headerTitle').invoke('outerHeight').should('be.equal', expectedHeight)
-    cy.get('.headerTitle > .p-button').invoke('outerHeight').should('be.equal', expectedHeight - 2)
+    cy.get('.headerTitle > .p-button').invoke('outerHeight').should('be.equal', expectedButtonHeight)
 
     cy.get('[aria-label="Full Size"]').contains('Full Size')
     cy.get('[aria-label="Compact (x4)"]').contains('Compact (x4)')

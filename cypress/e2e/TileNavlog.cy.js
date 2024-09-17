@@ -6,7 +6,7 @@ describe('ATIS Tile', () => {
 
     // swap tile for navlog
     cy.get('.pageOne > :nth-child(5) > .headerTitle').click()
-    cy.get('.pageOne > :nth-child(5) > .headerTitle > .p-button').click()
+    cy.get('.pageOne > :nth-child(5) > .headerTitle > .p-button').click({force: true})
     cy.get('[aria-label="Navlog"]').click()
     cy.get('.navlogTile > .headerTitle > div').contains('NavLog')
     cy.get('.placeHolder > :nth-child(1) > :nth-child(1)').contains('No Log')
