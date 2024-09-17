@@ -21,6 +21,7 @@ function testRecap(page, depFuel, depFuelTime, usedFuel, destFuel, destFuelTime,
 }
 
 describe('navlog Page', () => {
+
   it('Basic flow', () => {
     visitAndCloseBanner()
     newPage()
@@ -130,11 +131,34 @@ describe('navlog Page', () => {
     cy.get('#alt').type('{selectAll}').type('32')
     cy.get('.actionDialog > [aria-label="Apply"]').click()
 
+    // Test calculator
+    cy.get(':nth-child(2) > .magneticHeading').click()
+    cy.get('#calcMV').type('{selectAll}').type('-15')
+    cy.get('#calcMD').type('{selectAll}').type('2')
+    const expectedResult = [
+      {tc: 246, wd: 45, ws: 21, tas: 106, gs: 125, wca: 4, th: 250, mh: 237},
+      {tc: 45, wd: 45, ws: 20, tas: 106, gs: 86, wca: 0, th: 45, mh: 32},
+      {tc: 45, wd: 225, ws: 20, tas: 106, gs: 126, wca: 0, th: 45, mh: 32},
+    ]
+    for(const result of expectedResult) {
+      cy.get('#calcTC').type('{selectAll}').type(result.tc)
+      cy.get('#calcWD').type('{selectAll}').type(result.wd)
+      cy.get('#calcWS').type('{selectAll}').type(result.ws)
+      cy.get('#calcTAS').type('{selectAll}').type(result.tas)
+      cy.get('#calcGS').contains(result.gs)
+      cy.get('#calcWCA').contains(result.wca)
+      cy.get('#calcTH').contains(result.th)
+      cy.get('#calcMH').contains(result.mh)
+    }
+    // Do not apply
+    cy.get('.actionDialog > [aria-label="Do Not Apply"]').click()
+
     // Update legs
     cy.get(':nth-child(2) > .magneticHeading').click()
     cy.get('.between').contains('KRNT @ 32')
     cy.get('.between').contains('TOC 25 @ 2500')
     cy.get('.between').should('have.class','attClimb')
+
     cy.get('#mh').type('90')
     cy.get('#ld').type('1')
     cy.get('#gs').type('2')
@@ -234,7 +258,7 @@ describe('navlog Page', () => {
     testRecap('.pageOne', '53.0', '5:53:20', '31.9', '21.1', '2:20:40', '30.0', '3:20:00')
   })
 
-  it( 'Continued', () => {
+  it( 'Continued Log', () => {
     visitAndCloseBanner()
     newPage()
     // set both pages to Navlog
