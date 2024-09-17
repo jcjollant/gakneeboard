@@ -21,23 +21,21 @@ const attitudeCruise = 'Cruise'
 const attitudeName = ref(null)
 const attitudeClass = ref(null)
 const calculatedDistance = ref(null)
+const calculatedDistanceHint = ref('Calculated Distance. Click to use.')
 const calculatedFuel = ref(null)
 const calculatedTime = ref(null)
-const calculatedTimeHint = ref('Calculated Time. Click to user')
+const calculatedTimeHint = ref('Calculated Time. Click to use.')
 const cruiseFuelFlow = ref(null)
 const cruiseTrueAirspeed = ref(null)
 const descentFuelFlow = ref(null)
 const descentRate = ref(null)
 const editEntry = ref(null)
+const groundSpeed = ref(null)
 const magVar = ref(0)
 const magDev = ref(0)
-const magneticDeviation = ref(null)
 const magneticHeading = ref(null)
-const magneticVariation = ref(null)
 const nextEntry = ref(null)
 const prevHeading = ref(null)
-const trueAirspeed = ref(null)
-const trueCourse = ref(null)
 const trueHeading = ref(null)
 const windCorrectionAngle = ref(null)
 const windDirection = ref(null)
@@ -61,11 +59,9 @@ function loadProps(newProps) {
         const entry = NavlogEntry.copy(newProps.entry)
         editEntry.value = entry
         // Calculator fields
-        trueCourse.value = entry.tc
-        [windDirection.value,windSpeed.value] = entry.getWind()
-        trueAirspeed.value = entry.tas
-        magneticVariation.value = entry.mv
-        magneticDeviation.value = entry.md
+        const [ws, wd] = entry.getWind()
+        windDirection.value = ws
+        windSpeed.value = wd
         magneticHeading.value = entry.mv
         // transform leg time
         editEntry.value.lt = editEntry.value.lt ? Formatter.legTime(editEntry.value.lt) : ''
@@ -85,6 +81,8 @@ function loadProps(newProps) {
             descentFuelFlow.value = newProps.navlog.dff
             descentRate.value = newProps.navlog.dr
         }
+        // trigger computation with these values
+        updateMH()
     }
     if(newProps.nextEntry) nextEntry.value = newProps.nextEntry
     if(newProps.prevEntry) prevHeading.value = newProps.prevEntry.mh
@@ -124,7 +122,7 @@ function calculation() {
         const legDistance = Number(editEntry.value.ld)
         if( !(isNaN(groundSpeed) || isNaN(legDistance) || groundSpeed <= 0 || legDistance <= 0)) {
             legTime = legDistance / groundSpeed * 60
-            ltFormula = 'Distance / GroudSpeed. '
+            ltFormula = 'Distance / GroundSpeed. '
         }
     } else if( descent) {
         const altFrom = editEntry.value ? Number(editEntry.value?.alt) : undefined
@@ -151,14 +149,23 @@ function calculation() {
 
     // Distance
     let legDistance = undefined
+    let ldFormula = ''
     if(descent) {
         if( !(isNaN(groundSpeed) || isNaN(legTime) || groundSpeed <= 0 || legTime <= 0)) {
             legDistance = legTime * groundSpeed / 60
+            ldFormula = 'Time / GroundSpeed. '
         }
     } else if(cruise) {
         legDistance = eval(editEntry.value.ld)
+        ldFormula = editEntry.value.ld + ' '
     }
     calculatedDistance.value = Formatter.distance(legDistance)
+    calculatedDistanceHint.value = 'Calculated Distance. ' + ldFormula + 'Click to use';
+}
+
+function getUsableValue(reference) {
+    const value = Number(reference)
+    return isNaN(value) ? 0 : value
 }
 
 function onApply() {
@@ -170,7 +177,7 @@ function onApply() {
     // console.log('[NavlogEntryEditor.onSave]', entry.lt)
 
     // convert all fields to number
-    const fields = ['alt','th','ld','gs','lf']
+    const fields = ['alt','th','ld','gs','lf','tc','tas','mv','md']
     for(let f of fields) {
         if( entry[f]) entry[f] = Number(entry[f])
     }
@@ -180,32 +187,41 @@ function onApply() {
         // compute course heading from other headings
         entry.ch = entry.th + magVar.value + magDev.value
     }
+    // save wind
+    entry.wind = windDirection.value + '@' + windSpeed.value
 
     emits('save', entry)
 }
 
 function updateMH() {
-    // =asin(B4*SIN((B3-A3)/180*PI())/G3)*180/PI()
+    // WCA=asin(B4*SIN((B3-A3)/180*PI())/G3)*180/PI()
+    // GS=sqrt(G3*G3+B4*B4-(2*G3*B4*cos((H4-B3)/180*PI())))
     // B4 = Wind Speed
     // B3 = Wind Direction
     // A3 = True Course
     // G3 = TAS
+    // H4 = TH
     // DegToRadian = 0.0174532925
+    const entry = editEntry.value
     const d2r = 0.0174532925
     const ws = Number(windSpeed.value)
     const wd = Number(windDirection.value)
-    const tc = Number(trueCourse.value)
-    const tas = Number(trueAirspeed.value)
+    const tc = Number(entry.tc)
+    const tas = Number(entry.tas)
+
 
     const wca = Math.asin(ws*Math.sin((wd-tc)*d2r)/tas)/d2r
-    const usableWca = isNaN(wca) ? 0 : wca
+    const usableWca = getUsableValue(wca)
     windCorrectionAngle.value = usableWca
     const th = tc + usableWca
     trueHeading.value = th
-    const mvd = Number(magneticVariation.value) + Number(magneticDeviation.value)
-    const usableMvd = isNaN(mvd) ? 0 : mvd
-    magneticHeading.value = Math.round(th + usableMvd);
+    const mv = getUsableValue(entry.mv)
+    const md = getUsableValue(entry.md)
+    magneticHeading.value = Math.round(th + mv + md);
+
+    const gs = Math.sqrt(tas*tas + ws*ws - (2*tas*ws*Math.cos((th-wd)*d2r)))
     // console.log('[NavlogLegEditor.updateMH]', wca)
+    groundSpeed.value = getUsableValue(Math.round(gs))
 }
 
 </script>
@@ -246,7 +262,8 @@ function updateMH() {
                     <!-- <div class="headingWind">Wind</div> -->
                     <div>Wind Direction</div>
                     <div>Wind Speed</div>
-                    <div>TAS</div>
+                    <div>True Airspeed</div>
+                    <div>Ground Speed</div>
                     <div>WCA</div>
                     <div>True Heading</div>
                     <div title="Magnetic Variation (sectional)">Mag. Variation</div>
@@ -254,21 +271,33 @@ function updateMH() {
                     <div>Mag. Heading</div>
                 </div>
                 <div class="headingGrid">
-                    <InputText v-model="trueCourse" class="headingInput" title="True Course"
+                    <InputText v-model="editEntry.tc" id="calcTC" 
+                        class="headingInput" title="True Course"
                         @input="updateMH"></InputText>
-                    <InputText v-model="windDirection" class="headingInput" title="Wind Direction (True)"
+                    <InputText v-model="windDirection" id="calcWD" 
+                        class="headingInput" title="Wind Direction (True)"
                         @input="updateMH"></InputText>
-                    <InputText v-model="windSpeed" class="headingInput" title="Wind Speed (Kts)"
+                    <InputText v-model="windSpeed" id="calcWS"
+                        class="headingInput" title="Wind Speed (Kts)"
                         @input="updateMH"></InputText>
-                    <InputText v-model="trueAirspeed" class="headingInput" title="True Airspeed (Kts)"
+                    <InputText v-model="editEntry.tas" id="calcTAS"
+                        class="headingInput" title="True Airspeed (Kts)"
                         @input="updateMH"></InputText>
-                    <div class="headingCalculated" title="Wind Correction Angle">{{ Formatter.heading(windCorrectionAngle,true) }}</div>
-                    <div class="headingCalculated" title="True Heading">{{ Formatter.heading(trueHeading) }}</div>
-                    <InputText v-model="magneticVariation" class="headingInput" title="Magnetic Variation (sectional)"
+                    <div class="headingResult" id="calcGS"
+                        title="Calculated Ground Speed (Kts). Click to copy to Log Entry."
+                        @click="editEntry.gs=groundSpeed" >{{ Formatter.speed(groundSpeed) }}</div>
+                    <div class="headingCalculated" id="calcWCA"
+                        title="Wind Correction Angle">{{ Formatter.heading(windCorrectionAngle,true) }}</div>
+                    <div class="headingCalculated" id="calcTH"
+                        title="True Heading">{{ Formatter.heading(trueHeading) }}</div>
+                    <InputText v-model="editEntry.mv" id="calcMV"
+                        class="headingInput" title="Magnetic Variation (sectional)"
                         @input="updateMH"></InputText>
-                    <InputText v-model="magneticDeviation" class="headingInput" title="Magnetic Deviation (Compass card)"
+                    <InputText v-model="editEntry.md" id="calcMD"
+                        class="headingInput" title="Magnetic Deviation (Compass card)"
                         @input="updateMH"></InputText>
-                    <div class="headingResult" title="Calculated Magnetic Heading. Click to copy value in Log Entry."
+                    <div class="headingResult" id="calcMH"
+                        title="Calculated Magnetic Heading. Click to copy to Log Entry."
                         @click="editEntry.mh=magneticHeading" >{{ Formatter.heading(magneticHeading) }}</div>
                 </div>
                 <!-- <div class="headingTitle">TC ± WCA = TH ± MV ± MD = MH</div> -->
@@ -277,7 +306,7 @@ function updateMH() {
                 <div class="headingTitle">Log Entry</div>
                 <div class="legFieldGroup">
                     <div title="Magnetic Heading" class="legField">
-                        <div class="label">Mag Hdg</div>
+                        <div class="label">Mag. Heading</div>
                         <InputText id="mh" v-model="editEntry.mh" />
                         <div class="hint clickable" id="mhHint"
                             title="Previous leg heading. Click to use." 
@@ -287,11 +316,11 @@ function updateMH() {
                         <div class="label">Distance</div>
                         <InputText id="ld" v-model="editEntry.ld" @input="calculation" />
                         <div class="hint clickable" id="ldHint"
-                            title="Calculated Distance (Descent : LegTime * GroundSpeed). Click to use." 
+                            :title="calculatedDistanceHint" 
                             @click="editEntry.ld=calculatedDistance">{{ calculatedDistance }}</div>
                     </div>
                     <div class="legField" title="Ground Speed (Kts)">
-                        <div class="label">Gnd Speed</div>
+                        <div class="label">Ground Speed</div>
                         <InputText id="gs" v-model="editEntry.gs" @input="calculation" />
                     </div>
                     <div class="legField" title="Leg Time (Min). Supports decimal and time format (3:30 = 3.5)">
@@ -378,7 +407,7 @@ function updateMH() {
 }
 .headingGrid {
     display: grid;
-    grid-template-columns: repeat(9, 50px);
+    grid-template-columns: repeat(10, 50px);
     text-align: center;
     gap: 0 5px;
     font-size: 0.7rem;
@@ -438,7 +467,7 @@ function updateMH() {
 }
 
 :deep(.p-inputtext) {
-    width: 5rem;
+    width: 90px;
     text-align: right;
 }
 
