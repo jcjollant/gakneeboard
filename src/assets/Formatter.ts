@@ -39,7 +39,7 @@ export class Formatter {
     }
 
     static heading(raw:any,allowNegative:boolean=false) {
-        if(raw == null || raw == undefined) return Formatter.noHeading
+        if(raw == null || raw == undefined || isNaN(raw)) return Formatter.noHeading
         let value:number
         if(typeof raw != 'number') {
             value = Number(raw)
