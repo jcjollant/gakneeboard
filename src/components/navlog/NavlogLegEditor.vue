@@ -3,7 +3,6 @@ import { onMounted, ref, watch } from 'vue'
 
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
-import FieldSet from 'primevue/fieldset'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
@@ -25,17 +24,18 @@ const calculatedDistanceHint = ref('Calculated Distance. Click to use.')
 const calculatedFuel = ref(null)
 const calculatedTime = ref(null)
 const calculatedTimeHint = ref('Calculated Time. Click to use.')
+const courseIsTrue = ref(true)
 const cruiseFuelFlow = ref(null)
 const cruiseTrueAirspeed = ref(null)
 const descentFuelFlow = ref(null)
 const descentRate = ref(null)
 const editEntry = ref(null)
 const groundSpeed = ref(null)
-const magVar = ref(0)
-const magDev = ref(0)
+const calculatedGroundSpeed = ref(null)
+const calculatedHeading = ref(null)
+const lastLeg = ref(false)
 const magneticHeading = ref(null)
 const nextEntry = ref(null)
-const prevHeading = ref(null)
 const trueHeading = ref(null)
 const windCorrectionAngle = ref(null)
 const windDirection = ref(null)
@@ -44,25 +44,44 @@ const windSpeed = ref(null)
 //---------------------
 // Props management
 const props = defineProps({
-  entry: { type: Object, default: null},
   navlog : {type: Object, default: null},
-  nextEntry: { type: Object, default: null},
-  prevEntry: { type: Object, default: null},
-  magDev: { type: Number, default: 0},
-  magVar: { type: Number, default: 0},
-  time: { type: Number, default: 0}
+  index: { type:Number, default: -1},
+  time: { type: Number, default: 0},
 })
 
 function loadProps(newProps) {
-    // console.log('[NavlogItemEditor.loadProps]', JSON.stringify(newProps))
-    if(newProps.entry) {
-        const entry = NavlogEntry.copy(newProps.entry)
-        editEntry.value = entry
+    // console.log('[NavlogLegEditor.loadProps]', newProps)
+    // console.log('[NavlogLegEditor.loadProps]', JSON.stringify(newProps))
+    if(newProps.navlog
+        && newProps.navlog.entries 
+        && newProps.navlog.entries.length > 0 
+        && newProps.index >= 0) {
+        const entry = NavlogEntry.copy(newProps.navlog.entries[newProps.index])
+        // console.log('[NavlogLegEditor.loadProps] entry', JSON.stringify(entry), Object.hasOwn(entry, 'tc'))
+        const entriesCount = newProps.navlog.entries.length
+        const prevEntryIndex = newProps.index - 1
+        const nextEntryIndex = newProps.index < entriesCount - 2 ? newProps.index + 1 : -1
+        const prevEntry = prevEntryIndex >= 0 ? newProps.navlog.entries[prevEntryIndex] : null
+        // console.log('[NavlogLegEditor.loadProps] prevEntry', JSON.stringify(prevEntry))
+        const nxtEntry = nextEntryIndex >= 0 ? newProps.navlog.entries[nextEntryIndex] : null
+        // console.log('[NavlogLegEditor.loadProps] nextEntry', nxtEntry)
+
         // Calculator fields
+        // Copy data data from previous entry if useful
+        if(prevEntry) {
+            const fields = ['tc','wind','ws','tas','mv','md']
+            for(const f of fields) {
+                if(entry[f] === undefined && prevEntry[f] !== undefined) entry[f] = prevEntry[f]
+            }
+        }
+
+        editEntry.value = entry
+
         const [ws, wd] = entry.getWind()
         windDirection.value = ws
         windSpeed.value = wd
         magneticHeading.value = entry.mv
+
         // transform leg time
         editEntry.value.lt = editEntry.value.lt ? Formatter.legTime(editEntry.value.lt) : ''
         if( editEntry.value.att == '+') {
@@ -75,27 +94,32 @@ function loadProps(newProps) {
             attitudeName.value = attitudeCruise
             attitudeClass.value = 'attCruise'
         }
-        if(newProps.navlog) {
-            cruiseFuelFlow.value = newProps.navlog.cff
-            cruiseTrueAirspeed.value = newProps.navlog.cta
-            descentFuelFlow.value = newProps.navlog.dff
-            descentRate.value = newProps.navlog.dr
-        }
+
+        // variables
+        cruiseFuelFlow.value = newProps.navlog.cff
+        cruiseTrueAirspeed.value = newProps.navlog.cta
+        descentFuelFlow.value = newProps.navlog.dff
+        descentRate.value = newProps.navlog.dr
+
+        // 
+        lastLeg.value = newProps.index >= entriesCount - 2
+        nextEntry.value = nxtEntry
+        calculatedHeading.value = prevEntry ? prevEntry.mh : 0
+
         // trigger computation with these values
         updateMH()
+    } else { // no navlog?
+        lastLeg.value = true
+        nextEntry.value = null
     }
-    if(newProps.nextEntry) nextEntry.value = newProps.nextEntry
-    if(newProps.prevEntry) prevHeading.value = newProps.prevEntry.mh
-    magVar.value = newProps.magVar;
-    magDev.value = newProps.magDev;
 }
 
 onMounted(() => {
-    loadProps(props)
+    // loadProps(props)
 })
 
 watch(props, () => {
-    // console.log('[NavlogItemEditor.watch]')
+    // console.log('[NavlogLegEditor.watch]')
     loadProps(props)
 })
 
@@ -120,9 +144,10 @@ function calculation() {
     let ltFormula = ''
     if( cruise) {
         const legDistance = Number(editEntry.value.ld)
+        // console.log('[NavlogLegEditor.calculation]', groundSpeed, legDistance)
         if( !(isNaN(groundSpeed) || isNaN(legDistance) || groundSpeed <= 0 || legDistance <= 0)) {
             legTime = legDistance / groundSpeed * 60
-            ltFormula = 'Distance / GroundSpeed. '
+            ltFormula = 'Cruise Leg Time = Distance / GroundSpeed. Click to use'
         }
     } else if( descent) {
         const altFrom = editEntry.value ? Number(editEntry.value?.alt) : undefined
@@ -132,11 +157,13 @@ function calculation() {
         // altitude difference / descent rate
         if( !(isNaN(altFrom) || isNaN(altTo) || isNaN(descentRateValue) || descentRateValue <= 0)) {
             legTime = (altFrom - altTo) / descentRateValue
-            ltFormula = 'DescentAltitudeDelta / DescentRate. '
+            ltFormula = 'Descent Leg Time = DescentAltitudeDelta / DescentRate. Click to use'
         }
+    } else {
+        ltFormula = 'Climb Leg Time should come from POH'
     }
     calculatedTime.value = Formatter.legTime( legTime)
-    calculatedTimeHint.value = 'Calculated Leg Time. ' + ltFormula + 'Click to use';
+    calculatedTimeHint.value = ltFormula;
 
     // Fuel
     const fuelFlowValue = cruise ? Number(cruiseFuelFlow.value) : (descent ? Number(descentFuelFlow.value) : undefined)
@@ -156,11 +183,26 @@ function calculation() {
             ldFormula = 'Time / GroundSpeed. '
         }
     } else if(cruise) {
-        legDistance = eval(editEntry.value.ld)
-        ldFormula = editEntry.value.ld + ' '
+        try {
+            legDistance = eval(editEntry.value.ld)
+            ldFormula = editEntry.value.ld + ' '
+        } catch( e) {
+            legDistance = 0
+        }
     }
+    // console.log('[NavlogLegEditor.calculation]', legDistance)
     calculatedDistance.value = Formatter.distance(legDistance)
     calculatedDistanceHint.value = 'Calculated Distance. ' + ldFormula + 'Click to use';
+}
+
+function copyLegDistance() {
+    editEntry.value.ld=calculatedDistance.value
+    calculation()
+}
+
+function copyGroundSpeed() {
+    editEntry.value.gs = calculatedGroundSpeed.value
+    calculation()
 }
 
 function getUsableValue(reference) {
@@ -168,7 +210,7 @@ function getUsableValue(reference) {
     return isNaN(value) ? 0 : value
 }
 
-function onApply() {
+function onApply(andNext) {
     // console.log('[NavlogEditor.onSave]', JSON.stringify(editEntry.value))
     const entry = editEntry.value
 
@@ -177,7 +219,7 @@ function onApply() {
     // console.log('[NavlogEntryEditor.onSave]', entry.lt)
 
     // convert all fields to number
-    const fields = ['alt','th','ld','gs','lf','tc','tas','mv','md']
+    const fields = ['alt','th','ld','gs','lf','tc','tas','mv','md', 'mc']
     for(let f of fields) {
         if( entry[f]) entry[f] = Number(entry[f])
     }
@@ -185,12 +227,13 @@ function onApply() {
     if( entry.th) {
         entry.th = entry.th % 360
         // compute course heading from other headings
-        entry.ch = entry.th + magVar.value + magDev.value
+        entry.ch = entry.th + entry.mv + entry.md
     }
     // save wind
     entry.wind = windDirection.value + '@' + windSpeed.value
+    console.log('[navlogLegEditor.onApply]', JSON.stringify(entry))
 
-    emits('save', entry)
+    emits( 'save', {entry:entry, next:andNext})
 }
 
 function updateMH() {
@@ -206,22 +249,35 @@ function updateMH() {
     const d2r = 0.0174532925
     const ws = Number(windSpeed.value)
     const wd = Number(windDirection.value)
-    const tc = Number(entry.tc)
+    let mc = getUsableValue(entry.mc)
+    let tc = getUsableValue(entry.tc)
     const tas = Number(entry.tas)
+    const mv = getUsableValue(entry.mv)
+    const md = getUsableValue(entry.md)
 
+    // compute secondary course from selected primary
+    if(courseIsTrue.value) {
+        mc = tc + mv;
+        entry.mc = mc
+    } else {
+        tc = mc - mv;
+        entry.tc = tc
+    }
 
     const wca = Math.asin(ws*Math.sin((wd-tc)*d2r)/tas)/d2r
     const usableWca = getUsableValue(wca)
     windCorrectionAngle.value = usableWca
     const th = tc + usableWca
     trueHeading.value = th
-    const mv = getUsableValue(entry.mv)
-    const md = getUsableValue(entry.md)
-    magneticHeading.value = Math.round(th + mv + md);
+    const mh = Math.round(th + mv + md)
+    magneticHeading.value = mh
+    calculatedHeading.value = mh
 
     const gs = Math.sqrt(tas*tas + ws*ws - (2*tas*ws*Math.cos((th-wd)*d2r)))
     // console.log('[NavlogLegEditor.updateMH]', wca)
-    groundSpeed.value = getUsableValue(Math.round(gs))
+    const usableGs = getUsableValue(Math.round(gs))
+    groundSpeed.value = usableGs
+    calculatedGroundSpeed.value = usableGs
 }
 
 </script>
@@ -258,7 +314,7 @@ function updateMH() {
             <div class="headingCalculator">
                 <!-- <div class="headingTitle mb-2">Magnetic Heading Calculator</div> -->
                 <div class="headingGrid headingHeader">
-                    <div>True Course</div>
+                    <div @click="courseIsTrue=!courseIsTrue" title="Toggle between True and Magnetic Course" class="headingCourse">{{ courseIsTrue ? 'True Course':'Magnetic Course' }}</div>
                     <!-- <div class="headingWind">Wind</div> -->
                     <div>Wind Direction</div>
                     <div>Wind Speed</div>
@@ -271,8 +327,11 @@ function updateMH() {
                     <div>Mag. Heading</div>
                 </div>
                 <div class="headingGrid">
-                    <InputText v-model="editEntry.tc" id="calcTC" 
+                    <InputText v-if="courseIsTrue" v-model="editEntry.tc" id="calcTC" 
                         class="headingInput" title="True Course"
+                        @input="updateMH"></InputText>
+                    <InputText v-else v-model="editEntry.mc" id="calcMC" 
+                        class="headingInput" title="Magnetic Course"
                         @input="updateMH"></InputText>
                     <InputText v-model="windDirection" id="calcWD" 
                         class="headingInput" title="Wind Direction (True)"
@@ -283,9 +342,9 @@ function updateMH() {
                     <InputText v-model="editEntry.tas" id="calcTAS"
                         class="headingInput" title="True Airspeed (Kts)"
                         @input="updateMH"></InputText>
-                    <div class="headingResult" id="calcGS"
-                        title="Calculated Ground Speed (Kts). Click to copy to Log Entry."
-                        @click="editEntry.gs=groundSpeed" >{{ Formatter.speed(groundSpeed) }}</div>
+                    <div class="headingCalculated" id="calcGS"
+                        title="Calculated Ground Speed (Kts)."
+                        >{{ Formatter.speed(groundSpeed) }}</div>
                     <div class="headingCalculated" id="calcWCA"
                         title="Wind Correction Angle">{{ Formatter.heading(windCorrectionAngle,true) }}</div>
                     <div class="headingCalculated" id="calcTH"
@@ -296,9 +355,9 @@ function updateMH() {
                     <InputText v-model="editEntry.md" id="calcMD"
                         class="headingInput" title="Magnetic Deviation (Compass card)"
                         @input="updateMH"></InputText>
-                    <div class="headingResult" id="calcMH"
-                        title="Calculated Magnetic Heading. Click to copy to Log Entry."
-                        @click="editEntry.mh=magneticHeading" >{{ Formatter.heading(magneticHeading) }}</div>
+                    <div class="headingCalculated" id="calcMH"
+                        title="Calculated Magnetic Heading."
+                        >{{ Formatter.heading(magneticHeading) }}</div>
                 </div>
                 <!-- <div class="headingTitle">TC ± WCA = TH ± MV ± MD = MH</div> -->
             </div>
@@ -309,19 +368,22 @@ function updateMH() {
                         <div class="label">Mag. Heading</div>
                         <InputText id="mh" v-model="editEntry.mh" />
                         <div class="hint clickable" id="mhHint"
-                            title="Previous leg heading. Click to use." 
-                            @click="editEntry.mh=prevHeading">{{ prevHeading }}</div>
+                            title="Click to use." 
+                            @click="editEntry.mh=calculatedHeading">{{ calculatedHeading }}</div>
                     </div>
                     <div title="Leg Distance (NM). Supports calculation for cruise legs (ex: 24-15.4)" class="legField">
                         <div class="label">Distance</div>
                         <InputText id="ld" v-model="editEntry.ld" @input="calculation" />
                         <div class="hint clickable" id="ldHint"
                             :title="calculatedDistanceHint" 
-                            @click="editEntry.ld=calculatedDistance">{{ calculatedDistance }}</div>
+                            @click="copyLegDistance">{{ calculatedDistance }}</div>
                     </div>
                     <div class="legField" title="Ground Speed (Kts)">
                         <div class="label">Ground Speed</div>
                         <InputText id="gs" v-model="editEntry.gs" @input="calculation" />
+                        <div class="hint clickable" id="gsHint"
+                            title="Calculated Ground Speed. Click to Use." 
+                            @click="copyGroundSpeed">{{ calculatedGroundSpeed }}</div>
                     </div>
                     <div class="legField" title="Leg Time (Min). Supports decimal and time format (3:30 = 3.5)">
                         <div class="label">Time</div>
@@ -341,7 +403,8 @@ function updateMH() {
             </div>
             <div class="actionDialog gap-2">
                 <Button label="Do Not Apply" @click="emits('close')" link></Button>
-                <Button label="Apply" @click="onApply"></Button>
+                <Button label="Apply" @click="onApply(false)"></Button>
+                <Button v-if="!lastLeg" label="Apply & Next Leg" @click="onApply(true)"></Button>
             </div>
          </div>
         <PlaceHolder v-else title="Nothing to edit" />
@@ -360,18 +423,6 @@ function updateMH() {
     align-items: center;
     width: 3rem;
 }
-.attClimb {
-    color: #400;
-    background-color: rgba(255, 0, 0, 0.1);
-}
-.attCruise {
-    color: #004;
-    background-color: rgba(0, 0, 255, 0.1);
-}
-.attDescent {
-    color: #040;
-    background-color: rgba(0, 255, 0, 0.1);
-}
 .attIcon {
     padding-top: 0.3rem;
 }
@@ -384,8 +435,11 @@ function updateMH() {
     padding: 0.5rem 0;
 }
 .headingCalculated {
+    display: flex;
     font-size: 0.9rem;
-    line-height: 1.5rem;
+    /* line-height: 1.5rem; */
+    justify-content: center;
+    align-items: center;
 }
 .headingCalculator {
     display: flex;
@@ -394,6 +448,10 @@ function updateMH() {
     border-radius: 10px;
     /* background: #ddd; */
     padding: 10px;
+}
+.headingCourse {
+    cursor: pointer;
+    text-decoration: underline;
 }
 .headingTitle {
     font-weight: bold;
@@ -428,6 +486,7 @@ function updateMH() {
     font-size: 0.8rem;
     text-align: right;
     padding-right: 0.4rem;
+    text-decoration: underline;
 }
 .label {
     text-align: right;
