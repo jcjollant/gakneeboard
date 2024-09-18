@@ -22,13 +22,13 @@ function applyData(newNavlog) {
         let entryClass, attitudeClass
         if(e.att=='+') {
             entryClass = 'entryClimb'
-            attitudeClass = 'pi-arrow-up-right attClimb'
+            attitudeClass = 'pi-arrow-up-right arrowClimb'
         } else if(e.att=='-') {
             entryClass = 'entryDesc'
-            attitudeClass = 'pi-arrow-down-right attDesc'
+            attitudeClass = 'pi-arrow-down-right arrowDescent'
         } else {
             entryClass = ''
-            attitudeClass = 'pi-arrow-right attCruise'
+            attitudeClass = 'pi-arrow-right arrowCruise'
         }
         const last = (index == lastItem)
         const targetAltitude = (last ? e.alt : newNavlog.entries[index+1].alt)
@@ -65,6 +65,16 @@ onMounted(() => {
 
 </template>
 <style scoped>
+.arrowClimb {
+    color: #800;
+}
+.arrowCruise {
+    color: #008;
+}
+.arrowDescent {
+    color: #080;
+}
+
 .attitude {
     opacity: 0.5;
 }
