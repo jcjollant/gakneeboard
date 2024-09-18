@@ -54,11 +54,11 @@ watch( props, async() => {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.1rem;
-    /* padding: 0 5px; */
+    font-size: 15px;
     border-bottom: 1px dashed darkgrey;
     position: relative;
-    /* line-height: 25px; */
+    height: 23px;
+    line-height: 23px;
 }
 .clickable:hover .replaceButton {
     display: inline-flex;
