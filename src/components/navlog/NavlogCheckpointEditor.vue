@@ -21,7 +21,7 @@ const props = defineProps({
 })
 
 function loadProps(newProps) {
-    console.log('[NavlogCheckpointEditor.loadProps]', JSON.stringify(newProps))
+    // console.log('[NavlogCheckpointEditor.loadProps]', JSON.stringify(newProps))
     if(newProps.entry) {
         const entry = NavlogEntry.copy(newProps.entry)
         editEntry.value = entry
