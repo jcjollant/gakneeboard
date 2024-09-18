@@ -15,6 +15,7 @@ export class NavlogEntry {
     lf: number|undefined; // leg fuel
     mv: number|undefined; // magnetic variation
     md: number|undefined; // magnetic deviation
+    mc: number|undefined; // magnetic course
 
     constructor(name:string, atltitude:number|undefined=undefined) {
         this.name = name;
@@ -32,11 +33,12 @@ export class NavlogEntry {
         this.tas = undefined;
         this.mh = undefined;
         this.md = undefined;
+        this.mc = undefined;
     }
     static copy(source:any):NavlogEntry {
         if(!source) return new NavlogEntry('');
         const output:NavlogEntry = new NavlogEntry(source.name, source.alt);
-        const fields = ['tc','wind','th','mh','ch','ld','gs','lt','fr','lf','att','tas','md','mv']
+        const fields = ['tc','wind','th','mh','ch','ld','gs','lt','fr','lf','att','tas','md','mv', 'mc']
         for(const field of fields) {
             if(source[field]) output[field] = source[field];
         }
