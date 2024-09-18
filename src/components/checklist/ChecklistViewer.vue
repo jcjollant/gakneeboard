@@ -57,12 +57,6 @@ watch(props, () => {
     border-bottom: 1px solid lightgrey;
 }
 
-/* .placeHolder {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-} */
 .response {
     font-weight: bold;
     border-left: 1px solid lightgrey;
