@@ -6,8 +6,6 @@ export class Navlog {
     ff:number // Initial fuel (Fuel From)
     ft:number // Fuel at destination (Fuel To)
     fr:number // Fuel Reserve
-    mv:number|undefined // magnetic variation
-    md:number|undefined // magnetic deviation
     tt:number // Total Time
     td:number // Total Distance
     cta:number|undefined // cruise true airspeed
@@ -24,8 +22,6 @@ export class Navlog {
         this.ff = 0;
         this.ft = 0;
         this.fr = 0;
-        this.md = undefined;
-        this.mv = undefined;
         this.tt = 0;
         this.td = 0;
         this.cta = undefined
@@ -45,8 +41,6 @@ export class Navlog {
         output.ff = Number(source.ff)
         output.ft = Number(source.ft)
         output.fr = Number(source.fr)
-        output.mv = Number(source.mv)
-        output.md = Number(source.md)
         output.tt = Number(source.tt)
         output.td = Number(source.td)
         output.cta = Number(source.cta)
@@ -77,8 +71,8 @@ export class Navlog {
 
     // computed a compass heading based off navlog settings and leg true heading
     getEntryCompassHeading(entry:NavlogEntry):number|undefined {
-        const variation = Number(this.mv ? this.mv : 0);
-        const deviation = Number(this.md ? this.md : 0);
+        const variation = entry.mv ? entry.mv : 0;
+        const deviation = entry.md ? entry.md : 0;
         return (entry.th) ? (entry.th + variation + deviation) : undefined
     }
 
@@ -88,14 +82,6 @@ export class Navlog {
 
     getFuelReserve():number {
         return this.fr ? this.fr : 0;
-    }
-
-    getMagneticDeviation():number|undefined {
-        return this.md;
-    }
-
-    getMagneticVariation():number|undefined {
-        return this.mv;
     }
 
     setCruiseTrueAirspeed(value:any) {
@@ -130,22 +116,6 @@ export class Navlog {
 
     setFuelTo(value:any) {
         this.ft = Number(value)
-    }
-
-    setMagneticDeviation(value:any) {
-        if( value == '') {
-            this.md = undefined
-        } else {
-            this.md = Number(value)
-        }
-    }
-
-    setMagneticVariation(value:any) {
-        if( value == '') {
-            this.mv = undefined
-        } else {
-            this.mv = Number(value)
-        }
     }
 
     // assigned undefined if the input is an empty string
