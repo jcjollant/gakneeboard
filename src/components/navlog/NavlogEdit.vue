@@ -30,6 +30,7 @@ const modeEntries = 'entries'
 
 const activeEntry = ref(null)
 const activeTime = ref(0)
+const activeNavlog = ref(null)
 const altitudes = ref('')
 const codeFrom = ref(null)
 const codeTo = ref(null)
@@ -40,12 +41,8 @@ const descentFuelFlow = ref(null)
 const descentRate = ref(null)
 const initialFuel = ref(null)
 const items = ref([])
-const magneticVariation = ref(null)
-const magneticDeviation = ref(0)
 const mode = ref(modeBlank) // can be '', 'entries' or 'continue'
 const navlogMode = ref(navlogModeCreate)
-const nextEntry = ref(null)
-const prevEntry = ref(null)
 const reserveFuel = ref(null)
 const showEditorCheckpoint = ref(false)
 const showEditorLeg = ref(false)
@@ -62,7 +59,7 @@ const props = defineProps({
 })
 
 function loadProps(newProps) {
-    // console.log('[NavlogEdit.loadProps]', JSON.stringify(newProps))
+    console.log('[NavlogEdit.loadProps]', JSON.stringify(newProps))
     if(!newProps || !newProps.navlog) return;
     if(newProps.navlog.continued) {
         navlogMode.value = navlogModeContinue;
@@ -78,6 +75,7 @@ function loadProps(newProps) {
     }
     const navlog = Navlog.copy(newProps.navlog);
     const entries = navlog.entries;
+    activeNavlog.value = navlog
 
     codeFrom.value = navlog.from;
     codeTo.value = navlog.to;
@@ -87,8 +85,6 @@ function loadProps(newProps) {
     cruiseTas.value = getValueOrEmpty(navlog.getCruiseTrueAirspeed());
     descentFuelFlow.value = getValueOrEmpty(navlog.getDescentFuelFlow());
     descentRate.value = getValueOrEmpty(navlog.getDescentRate());
-    magneticVariation.value = navlog.getMagneticVariation()
-    magneticDeviation.value = 0
 
     // build a list of items from entries
     items.value = entries.map( (e,index) => {
@@ -98,7 +94,7 @@ function loadProps(newProps) {
         const canDelete = !(first || last)
         // can add after anything but last element
         const canAdd = !last;
-        return new EditorItem( e, canDelete, canAdd)
+        return new EditorItem( e, canDelete, canAdd, getAttitudeClass(e))
     })
     totalFuel.value = navlog.ff - navlog.ft
     totalDistance.value = navlog.td;
@@ -117,15 +113,15 @@ watch(props, () => {
 // End of props management
 //-------------------------
 
-function compass(raw) {
-    const value = Number(raw)
-    return isNaN(value) ? 0 : value;
-}
-
 function formatName(name) {
     if(!name) return '?'
     if(name.length > 15) return name.substring(0,15) + '...'
     return name;
+}
+
+function getAttitudeClass(entry) {
+    if(!entry) return '';
+    return entry.att == '+' ? 'attClimb' : entry.att=='-' ? 'attDescent' : ''    
 }
 
 function getValueOrEmpty(value) {
@@ -167,8 +163,6 @@ function onApply() {
     newNavLog.setDescentRate(descentRate.value)
     newNavLog.setDescentFuelFlow(descentFuelFlow.value)
 
-    newNavLog.setMagneticVariation(magneticVariation.value)
-    newNavLog.setMagneticDeviation(magneticDeviation.value)
     newNavLog.setTotalDistance(totalDistance.value)
     newNavLog.setTotalTime(totalTime.value)
     newNavLog.setFuelTo(initialFuel.value - totalFuel.value)
@@ -205,7 +199,7 @@ function onCreate() {
     const newList = []
 
     // from airport is first in the list
-    newList.push( EditorItem.vanilla( codeFrom.value, elevFrom, false, true))
+    newList.push( EditorItem.first( codeFrom.value, elevFrom, 'attClimb'))
 
     if(altitudes.value) {
         const cleanAltitudes = altitudes.value.replace(/ +/g, " ").trim()
@@ -224,29 +218,28 @@ function onCreate() {
             const lastLeg = (index == altList.length - 1)
             const nextAlt = lastLeg ? elevTo : altList[index+1]
 
-            if(lastLeg) return EditorItem.vanilla('TOD ' + codeTo.value, alt)
+            if(lastLeg) return EditorItem.last('TOD ' + codeTo.value, alt)
 
             if( alt > previousAlt) {
-                return EditorItem.vanilla('TOC ' + level, alt)
-                // newList.push( EditorItem.vanilla('@' + level, alt))
+                return EditorItem.leg('TOC ' + level, alt, 'attClimb')
             } else if(alt == previousAlt) {
                 if( alt > nextAlt) {
-                    return EditorItem.vanilla('TOD ' + Math.trunc(nextAlt / 100), alt)
+                    return EditorItem.leg('TOD ' + Math.trunc(nextAlt / 100), alt)
                 }
-                return  EditorItem.vanilla('ChkPt ' + index, alt)
+                return  EditorItem.leg('ChkPt ' + index, alt)
             } else { // desent
-                return EditorItem.vanilla('TOD ' + level, alt)
+                return EditorItem.leg('TOD ' + level, alt, 'attDescent')
             }
         })
         newList.push.apply(newList, altItems)
-    } else {
+    } else { // we don't have altitudes
         // add TOC / TOD with unkown altitudes
-        newList.push( EditorItem.naked('TOC'))
-        newList.push( EditorItem.naked('TOD'))
+        newList.push( EditorItem.naked('TOC', 'attClimb'))
+        newList.push( EditorItem.naked('TOD', 'attDescent'))
     }
 
     // To airport is last in the list
-    newList.push( EditorItem.vanilla( codeTo.value, elevTo, false, false))
+    newList.push( EditorItem.last( codeTo.value, elevTo))
 
     // console.log('[NavlogEdit.onCreate]', JSON.stringify(newNL))
     items.value = newList;
@@ -279,27 +272,36 @@ function onAction(action) {
     }
 }
 
-function onEditCheckpoint(index) {
-    activeIndex = index;
-    activeEntry.value = items.value[index].entry
-    activeTime.value = Date.now()
-    nextEntry.value = items.value[index+1]?.entry
-    showEditorCheckpoint.value = true
+// Open the checkpoint or leg editor
+function onEdit(index,checkpoint) {
+    if(index < 0 || index > items.value.length - 1) {
+        console.log('[NavlogEdit.onEdit] invalid index', index)
+        return
+    }
+    if(checkpoint) {
+        activeEntry.value = items.value[index].entry
+        showEditorCheckpoint.value = true
+    } else {
+        activeIndex = index;
+        showEditorLeg.value = true
+
+    }
+
 }
 
-function onEditLeg(index) {
-    activeIndex = index;
-    activeEntry.value = items.value[index].entry
-    nextEntry.value = (index < items.value.length - 1) ? items.value[index+1].entry : null
-    prevEntry.value = index > 0 ? items.value[index-1].entry : null
-    activeTime.value = Date.now()
-    // console.log('[NavlogEdit.onItemEdit]', JSON.stringify(activeEntry.value))
-    showEditorLeg.value = true
-}
-
-function onEntryEditorSave(entry) {
+function onEntryEditorSave(data) {
+    // console.log('[NavlogEdit.onEntryEditorSave]', JSON.stringify(data))
+    let next = false
+    let entry = null
+    if('next' in data) {
+        entry = data.entry
+        next = data.next
+    } else {
+        entry = data
+    }
     // refresh this entry
     items.value[activeIndex].entry = entry
+    activeNavlog.value.entries[activeIndex] = entry
     // close editor
     showEditorCheckpoint.value = false;
     showEditorLeg.value = false;
@@ -311,6 +313,11 @@ function onEntryEditorSave(entry) {
 
     // update attitudes
     updateAttitudes()
+
+    // next leg?
+    if(next) {
+        onEdit(activeIndex+1, false)
+    }
 }
 
 function onItemAdd(index) {
@@ -319,7 +326,7 @@ function onItemAdd(index) {
         emitToastError( emits, 'Log Full', `We cannot display more than ${Navlog.maxItems} checkpoints in the navlog`)
         return
     }
-    const newItem = EditorItem.vanilla('?')
+    const newItem = EditorItem.naked('?')
     // insert new item at position
     const newList =  items.value
     newList.splice(index,0,newItem)
@@ -334,21 +341,28 @@ function onItemDelete(index) {
 }
 
 function updateAttitudes() {
+    // console.log('[NavlogEdit.updateAttitudes]')
     // get a list of NavlogEntries
     const entries = items.value.map( ei => ei.entry)
     Navlog.updateAllAttitudes(entries)
+    // const newItems = items.value.map( ei => {
+    //     ei.attitudeClass = getAttitudeClass(ei.entry)
+    // })
+    for( let index = 0; index < entries.length; index++) {
+        const ei = items.value[index]
+        ei.attitudeClass = getAttitudeClass(entries[index])
+    }
 }
 
 </script>
 
 <template>
 <div>
-    <NavlogCheckpointEditor v-model:visible="showEditorCheckpoint" :entry="activeEntry" :time="activeTime"
+    <NavlogCheckpointEditor v-model:visible="showEditorCheckpoint" 
+        :entry="activeEntry" :time="activeTime"
         @close="showEditorCheckpoint=false" @save="onEntryEditorSave" />
     <NavlogLegEditor v-model:visible="showEditorLeg" 
-        :entry="activeEntry" :nextEntry="nextEntry" :prevEntry="prevEntry" :time="activeTime" 
-        :navlog="navlog"
-        :magVar="compass(magneticVariation)" :magDev="compass(magneticDeviation)"
+        :navlog="activeNavlog" :index="activeIndex" :time="activeTime" 
         @close="showEditorLeg=false" @save="onEntryEditorSave" />
     <div v-if="mode==modeBlank" class="blankMode">
         <SelectButton v-model="navlogMode" :options="navlogModes" optionLabel="label"/>
@@ -396,15 +410,6 @@ function updateAttitudes() {
                 <InputGroupAddon>GPH</InputGroupAddon>
                 <InputText v-model="descentFuelFlow"/>
             </InputGroup>
-            <!-- <InputGroup title="Magnetic Variation for the flight">
-                <InputGroupAddon>MagVar</InputGroupAddon>
-                <InputText v-model="magneticVariation" @input="onMagneticChange"/>
-            </InputGroup>
-            <InputGroup title="We are hardcoding deviation to 0 for the moment">
-                <InputGroupAddon>MagDev</InputGroupAddon>
-                <InputText v-model="magneticDeviation" @input="onMagneticChange" :disabled="true"/>
-            </InputGroup> -->
-            <!-- <Button label="..." class="varCheatBtn" @click="onCheat" ></Button> -->
         </div>
         <div class="grids" v-if="items.length">
             <div class="checkpoints"><!-- checkpoints -->
@@ -415,15 +420,13 @@ function updateAttitudes() {
                 </div>
                 <div v-for="(i,index) in items" class="checkpointGrid bb">
                     <div class="actions">
-                        <!-- <i class="pi pi-pencil clickable actionEdit" title="Edit"
-                            @click="onItemEdit(index)"></i> -->
                         <i v-if="i.canDelete" class="pi pi-times actionDelete clickable" title="Delete checkpoint"
                             @click="onItemDelete(index)"></i>
                         <i v-if="i.canAdd" class="pi pi-plus actionAdd clickable" title="Add new checkpoint after"
                             @click="onItemAdd(index+1)"></i>
                     </div>
-                    <div class="bl checkpointName editable" @click="onEditCheckpoint(index)">{{ formatName(i.entry.name) }}</div>
-                    <div class="bl br checkpointAlt editable" @click="onEditCheckpoint(index)">{{ Formatter.altitude(i.entry.alt) }}</div>
+                    <div class="bl checkpointName editable" @click="onEdit(index,true)">{{ formatName(i.entry.name) }}</div>
+                    <div class="bl br checkpointAlt editable" @click="onEdit(index,true)">{{ Formatter.altitude(i.entry.alt) }}</div>
                 </div>
             </div>
             <div class="legs"><!-- legs -->
@@ -436,7 +439,9 @@ function updateAttitudes() {
                     <div title="Leg Time">Time</div>
                     <div title="Leg Fuel">Fuel</div>
                 </div>
-                <div v-for="(i,index) in items.slice(0, items.length - 1)" class="legGrid bb" @click="onEditLeg(index)">
+                <div v-for="(i,index) in items.slice(0, items.length - 1)" 
+                    class="legGrid bb" :class="i.attitudeClass"
+                    @click="onEdit(index,false)">
                     <!-- <div class="editable trueHeading" @click="onItemEdit(index)">{{ Formatter.heading(i.entry.th) }}</div> -->
                     <div class="magneticHeading editable">{{ Formatter.heading(i.entry.mh) }}</div>
                     <!-- <div class="bl compassHeading">{{ Formatter.heading(i.entry.ch) }}</div> -->
@@ -472,7 +477,6 @@ function updateAttitudes() {
 .actionDelete {
     color: red;
 }
-
 .blankMode {
     display: flex;
     flex-flow: column;
