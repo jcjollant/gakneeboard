@@ -21,6 +21,8 @@ ts-node .\willie.ts
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
+## 9/18/2024
+* Metrics : Added navlog tile count
 ## 9/15/2024
 * Metrics : Added valid and current airports, added adip.
 * Metrics : reordered output
