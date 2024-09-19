@@ -36,7 +36,6 @@ const codeFrom = ref(null)
 const codeTo = ref(null)
 const confirm = useConfirm()
 const cruiseFuelFlow = ref(null)
-const cruiseTas = ref(null)
 const descentFuelFlow = ref(null)
 const descentRate = ref(null)
 const initialFuel = ref(null)
@@ -59,7 +58,7 @@ const props = defineProps({
 })
 
 function loadProps(newProps) {
-    console.log('[NavlogEdit.loadProps]', JSON.stringify(newProps))
+    // console.log('[NavlogEdit.loadProps]', JSON.stringify(newProps))
     if(!newProps || !newProps.navlog) return;
     if(newProps.navlog.continued) {
         navlogMode.value = navlogModeContinue;
@@ -82,7 +81,6 @@ function loadProps(newProps) {
     initialFuel.value = navlog.getFuelFrom();
     reserveFuel.value = getValueOrEmpty(navlog.getFuelReserve());
     cruiseFuelFlow.value = getValueOrEmpty(navlog.getCruiseFuelFlow());
-    cruiseTas.value = getValueOrEmpty(navlog.getCruiseTrueAirspeed());
     descentFuelFlow.value = getValueOrEmpty(navlog.getDescentFuelFlow());
     descentRate.value = getValueOrEmpty(navlog.getDescentRate());
 
@@ -158,7 +156,6 @@ function onApply() {
     const newNavLog = new Navlog(codeFrom.value, codeTo.value)
     newNavLog.setFuelFrom(initialFuel.value)
     newNavLog.setFuelReserve(reserveFuel.value)
-    newNavLog.setCruiseTrueAirspeed(cruiseTas.value)
     newNavLog.setCruiseFuelFlow(cruiseFuelFlow.value)
     newNavLog.setDescentRate(descentRate.value)
     newNavLog.setDescentFuelFlow(descentFuelFlow.value)
@@ -278,11 +275,11 @@ function onEdit(index,checkpoint) {
         console.log('[NavlogEdit.onEdit] invalid index', index)
         return
     }
+    activeIndex = index;
     if(checkpoint) {
         activeEntry.value = items.value[index].entry
         showEditorCheckpoint.value = true
     } else {
-        activeIndex = index;
         showEditorLeg.value = true
 
     }
@@ -301,7 +298,6 @@ function onEntryEditorSave(data) {
     }
     // refresh this entry
     items.value[activeIndex].entry = entry
-    activeNavlog.value.entries[activeIndex] = entry
     // close editor
     showEditorCheckpoint.value = false;
     showEditorLeg.value = false;
@@ -362,7 +358,10 @@ function updateAttitudes() {
         :entry="activeEntry" :time="activeTime"
         @close="showEditorCheckpoint=false" @save="onEntryEditorSave" />
     <NavlogLegEditor v-model:visible="showEditorLeg" 
-        :navlog="activeNavlog" :index="activeIndex" :time="activeTime" 
+        :navlog="activeNavlog" :items="items"
+        :index="activeIndex" :time="activeTime" 
+        :cruiseFF="Number(cruiseFuelFlow)"
+        :descentFF="Number(descentFuelFlow)" :descentRate="Number(descentRate)"
         @close="showEditorLeg=false" @save="onEntryEditorSave" />
     <div v-if="mode==modeBlank" class="blankMode">
         <SelectButton v-model="navlogMode" :options="navlogModes" optionLabel="label"/>
@@ -387,27 +386,27 @@ function updateAttitudes() {
             <div class="varGroupCruise varGroup">Cruise</div>
             <div class="varGroupDescent varGroup">Descent</div>
             <InputGroup class="varInitialFuel" title="Initial Fuel. Bake your taxi/runup into this number OR the first leg">
-                <InputGroupAddon>Init.</InputGroupAddon>
+                <InputGroupAddon>Initial</InputGroupAddon>
                 <InputText v-model="initialFuel" placeholder="Gal"/>
             </InputGroup>
             <InputGroup class="varReserveFuel" title="Minium fuel onboard (consider day/night)">
-                <InputGroupAddon>Res.</InputGroupAddon>
+                <InputGroupAddon>Reserve</InputGroupAddon>
                 <InputText v-model="reserveFuel" placeholder="Gal"/>
             </InputGroup>
-            <InputGroup class="varCruiseTas" title="Cruise True Airspeed (Knots)">
+            <!-- <InputGroup class="varCruiseTas" title="Cruise True Airspeed (Knots)">
                 <InputGroupAddon>TAS</InputGroupAddon>
                 <InputText v-model="cruiseTas"/>
-            </InputGroup>
+            </InputGroup> -->
             <InputGroup class="varCruiseGph" title="Cruise Fuel Flow (Gallons per hour)">
-                <InputGroupAddon>GPH</InputGroupAddon>
+                <InputGroupAddon>F.Flow</InputGroupAddon>
                 <InputText v-model="cruiseFuelFlow"/>
             </InputGroup>
             <InputGroup class="varDescentFpm" title="Descent Rate (Feet per minute)">
-                <InputGroupAddon>FPM</InputGroupAddon>
+                <InputGroupAddon>Rate</InputGroupAddon>
                 <InputText v-model="descentRate"/>
             </InputGroup>
             <InputGroup class="varDescentGph" title="Descent Fuel Flow (Gallons per hour)">
-                <InputGroupAddon>GPH</InputGroupAddon>
+                <InputGroupAddon>F.Flow</InputGroupAddon>
                 <InputText v-model="descentFuelFlow"/>
             </InputGroup>
         </div>
@@ -565,12 +564,12 @@ function updateAttitudes() {
 }
 .variables {
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));;
+    grid-template-columns: repeat(5, minmax(0, 1fr));;
     gap: 5px;
     padding: 5px;
 }
 .varDescentFpm {
-    grid-column: 5;
+    grid-column: 4;
 }
 .varGroup {
     font-size: 0.7rem;
@@ -583,11 +582,11 @@ function updateAttitudes() {
     grid-column: 4 ;
 }
 .varGroupCruise {
-    grid-column: 3 / span 2 ;
+    grid-column: 3;
     background-color: lightblue;
 }
 .varGroupDescent {
-    grid-column: 5 / span 2 ;
+    grid-column: 4 / span 2 ;
     background-color: #DFD;
 }
 .varInitialFuel {
@@ -597,7 +596,10 @@ function updateAttitudes() {
     font-size: 0.8rem;
     height: 1.5rem;
 }
+:deep(.p-inputgroup-addon) {
+    width: 60px;
 
+}
 :deep(.variables .p-inputtext) {
     width: 2rem;
     padding: 2px;
