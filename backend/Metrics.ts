@@ -128,7 +128,7 @@ export class Metrics {
         // build a list of all metrics
         const allMetrics = [
             totalPageCount, tilePageCount, checklistPageCount, coverPageCount, selectionPageCount, navlogPageCount,
-            totalTileCount, airportTileCount, atisTileCount, checklistTileCount, clearanceTileCount, fuelTileCount, notesTileCount, radiosTileCount, sunlightTileCount, 
+            totalTileCount, airportTileCount, atisTileCount, checklistTileCount, clearanceTileCount, fuelTileCount, notesTileCount, navlogTileCount, radiosTileCount, sunlightTileCount, 
             staleTemplateCount]
         return allMetrics
     }
