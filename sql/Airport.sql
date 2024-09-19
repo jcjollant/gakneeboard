@@ -6,7 +6,20 @@
 SELECT * FROM airports
 
 # How many airports are there
+SELECT COUNT(*) FROM airports WHERE version > -1
+
+# How many airports are there
 SELECT COUNT(*) FROM airports
+
+#--------------------------------------------------------
+# Airports with no data
+SELECT * FROM airports WHERE data ISNULL
+
+# How many airports with no data
+SELECT COUNT(*) FROM airports WHERE data ISNULL
+
+#--------------------------------------------------------
+# Airports with no data
 
 # Show version distribution
 SELECT version, COUNT(*) FROM airports GROUP BY version ORDER BY version DESC
