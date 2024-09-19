@@ -20,10 +20,11 @@ const attitudeCruise = 'Cruise'
 const attitudeName = ref(null)
 const attitudeClass = ref(null)
 const calculatedDistance = ref(null)
-const calculatedDistanceHint = ref('Calculated Distance. Click to use.')
+const calculatedDistanceHint = ref('Calculated Distance. Click to use')
 const calculatedFuel = ref(null)
+const calculatedFuelHint = ref('Calculate Fuel (Gal). Click to use')
 const calculatedTime = ref(null)
-const calculatedTimeHint = ref('Calculated Time. Click to use.')
+const calculatedTimeHint = ref('Calculated Time. Click to use')
 const courseIsTrue = ref(true)
 const cruiseFuelFlow = ref(null)
 const cruiseTrueAirspeed = ref(null)
@@ -44,37 +45,40 @@ const windSpeed = ref(null)
 //---------------------
 // Props management
 const props = defineProps({
-  navlog : {type: Object, default: null},
-  index: { type:Number, default: -1},
-  time: { type: Number, default: 0},
+    cruiseFF: { type: Number, default: 0},
+    descentFF: { type: Number, default: 0},
+    descentRate: { type: Number, default: 0},
+    navlog : {type: Object, default: null}, 
+    items : {type: Object, default: null},
+    index: { type:Number, default: -1},
+    time: { type: Number, default: 0},
 })
 
 function loadProps(newProps) {
     // console.log('[NavlogLegEditor.loadProps]', newProps)
     // console.log('[NavlogLegEditor.loadProps]', JSON.stringify(newProps))
-    if(newProps.navlog
-        && newProps.navlog.entries 
-        && newProps.navlog.entries.length > 0 
+    if(newProps.items
+        && newProps.items.length > 0 
         && newProps.index >= 0) {
-        const entry = NavlogEntry.copy(newProps.navlog.entries[newProps.index])
+        const entry = NavlogEntry.copy(newProps.items[newProps.index].entry)
         // console.log('[NavlogLegEditor.loadProps] entry', JSON.stringify(entry), Object.hasOwn(entry, 'tc'))
-        const entriesCount = newProps.navlog.entries.length
+        const entriesCount = newProps.items.length
         const prevEntryIndex = newProps.index - 1
-        const nextEntryIndex = newProps.index < entriesCount - 2 ? newProps.index + 1 : -1
-        const prevEntry = prevEntryIndex >= 0 ? newProps.navlog.entries[prevEntryIndex] : null
+        const nextEntryIndex = newProps.index < entriesCount - 1 ? newProps.index + 1 : -1
+        const prevEntry = prevEntryIndex >= 0 ? newProps.items[prevEntryIndex].entry : null
         // console.log('[NavlogLegEditor.loadProps] prevEntry', JSON.stringify(prevEntry))
-        const nxtEntry = nextEntryIndex >= 0 ? newProps.navlog.entries[nextEntryIndex] : null
+        const nxtEntry = nextEntryIndex >= 0 ? newProps.items[nextEntryIndex].entry : null
         // console.log('[NavlogLegEditor.loadProps] nextEntry', nxtEntry)
 
         // Calculator fields
         // Copy data data from previous entry if useful
         if(prevEntry) {
-            const fields = ['tc','wind','ws','tas','mv','md']
+            const fields = ['tc','mc','wind','tas','mv','md']
             for(const f of fields) {
                 if(entry[f] === undefined && prevEntry[f] !== undefined) entry[f] = prevEntry[f]
             }
         }
-
+        // console.log('[NavlogLegEditor.loadProps] entry', entry)
         editEntry.value = entry
 
         const [ws, wd] = entry.getWind()
@@ -96,10 +100,9 @@ function loadProps(newProps) {
         }
 
         // variables
-        cruiseFuelFlow.value = newProps.navlog.cff
-        cruiseTrueAirspeed.value = newProps.navlog.cta
-        descentFuelFlow.value = newProps.navlog.dff
-        descentRate.value = newProps.navlog.dr
+        cruiseFuelFlow.value = newProps.cruiseFF
+        descentFuelFlow.value = newProps.descentFF
+        descentRate.value = newProps.descentRate
 
         // 
         lastLeg.value = newProps.index >= entriesCount - 2
@@ -108,7 +111,7 @@ function loadProps(newProps) {
 
         // trigger computation with these values
         updateMH()
-    } else { // no navlog?
+    } else { // no items?
         lastLeg.value = true
         nextEntry.value = null
     }
@@ -123,76 +126,84 @@ watch(props, () => {
     loadProps(props)
 })
 
-watch(editEntry, () => {
-    // console.log('[NavlogEntryEditor.watch.editEntry]')
-    calculation()
-})
+// watch(editEntry, () => {
+//     console.log('[NavlogEntryEditor.watch.editEntry]')
+//     calculation()
+// })
 
 // End of props management
 //------------------------
 
 function calculation() {
-    // console.log('[navlogLegEditor.calculation]')
+    // console.log('[NavlogLegEditor.calculation]')
     if(!editEntry || !editEntry.value) return;
     const groundSpeed = Number(editEntry.value.gs)
+    const legTime = Formatter.getDecimalMinutes( editEntry.value.lt)
+
     const climb = (editEntry.value.att=='+')
     const descent = (editEntry.value.att=='-')
     const cruise = !climb && !descent;
 
     // leg time
-    let legTime = undefined;
+    let ltCalc = 0
     let ltFormula = ''
     if( cruise) {
         const legDistance = Number(editEntry.value.ld)
         // console.log('[NavlogLegEditor.calculation]', groundSpeed, legDistance)
         if( !(isNaN(groundSpeed) || isNaN(legDistance) || groundSpeed <= 0 || legDistance <= 0)) {
-            legTime = legDistance / groundSpeed * 60
+            ltCalc = legDistance / groundSpeed * 60
             ltFormula = 'Cruise Leg Time = Distance / GroundSpeed. Click to use'
         }
     } else if( descent) {
         const altFrom = editEntry.value ? Number(editEntry.value?.alt) : undefined
-        // const altTo = nextEntry.value ? Number(nextEntry.value?.alt) : undefined
         const altTo = Number(nextEntry.value?.alt)
         const descentRateValue = Number(descentRate.value)
         // altitude difference / descent rate
         if( !(isNaN(altFrom) || isNaN(altTo) || isNaN(descentRateValue) || descentRateValue <= 0)) {
-            legTime = (altFrom - altTo) / descentRateValue
+            ltCalc = (altFrom - altTo) / descentRateValue
             ltFormula = 'Descent Leg Time = DescentAltitudeDelta / DescentRate. Click to use'
         }
     } else {
         ltFormula = 'Climb Leg Time should come from POH'
     }
-    calculatedTime.value = Formatter.legTime( legTime)
+    calculatedTime.value = Formatter.legTime( ltCalc)
     calculatedTimeHint.value = ltFormula;
 
     // Fuel
-    const fuelFlowValue = cruise ? Number(cruiseFuelFlow.value) : (descent ? Number(descentFuelFlow.value) : undefined)
     let legFuel = undefined
+    let legFuelHint = ''
     // console.log('[NavlogLegEditor.calculation]', fuelFlowValue, legTime)
-    if(legTime && !(isNaN(fuelFlowValue) || fuelFlowValue <= 0)) {
-        legFuel = fuelFlowValue * legTime / 60;
+    if(cruise || descent) {
+        const fuelFlowValue = cruise ? Number(cruiseFuelFlow.value) : (descent ? Number(descentFuelFlow.value) : undefined)
+        if(legTime && !isNaN(fuelFlowValue) && fuelFlowValue > 0) {
+            legFuel = fuelFlowValue * legTime / 60;
+            legFuelHint = (cruise ? 'Cruise' : 'Descent') + ' Leg Fuel = FuelFlow * LegTime. Click to use'
+        }
+        
     }
     calculatedFuel.value = Formatter.fuel( legFuel)
+    calculatedFuelHint.value = legFuelHint
 
     // Distance
     let legDistance = undefined
-    let ldFormula = ''
-    if(descent) {
+    let ldHint = ''
+    if(descent || climb) {
         if( !(isNaN(groundSpeed) || isNaN(legTime) || groundSpeed <= 0 || legTime <= 0)) {
             legDistance = legTime * groundSpeed / 60
-            ldFormula = 'Time / GroundSpeed. '
+            ldHint = (descent ? 'Descent' : 'Climb') + ' leg distance = Time * GroundSpeed. Click to Use'
         }
     } else if(cruise) {
         try {
             legDistance = eval(editEntry.value.ld)
-            ldFormula = editEntry.value.ld + ' '
+            ldHint = 'Calculation ' + editEntry.value.ld + ' '
         } catch( e) {
             legDistance = 0
         }
     }
     // console.log('[NavlogLegEditor.calculation]', legDistance)
     calculatedDistance.value = Formatter.distance(legDistance)
-    calculatedDistanceHint.value = 'Calculated Distance. ' + ldFormula + 'Click to use';
+    calculatedDistanceHint.value = ldHint;
+    // console.log('[NavlogLegEditor.calculation]', legDistance, ldHint)
 }
 
 function copyLegDistance() {
@@ -203,6 +214,12 @@ function copyLegDistance() {
 function copyGroundSpeed() {
     editEntry.value.gs = calculatedGroundSpeed.value
     calculation()
+}
+
+function copyTime() {
+    editEntry.value.lt=calculatedTime.value
+    calculation()
+
 }
 
 function getUsableValue(reference) {
@@ -231,7 +248,7 @@ function onApply(andNext) {
     }
     // save wind
     entry.wind = windDirection.value + '@' + windSpeed.value
-    console.log('[navlogLegEditor.onApply]', JSON.stringify(entry))
+    // console.log('[NavlogLegEditor.onApply]', JSON.stringify(entry))
 
     emits( 'save', {entry:entry, next:andNext})
 }
@@ -295,12 +312,8 @@ function updateMH() {
             </div>
             <div class="legParamGroup mb-2">
                 <InputGroup v-if="attitudeName==attitudeCruise" class="legParameter" title="POH Cruise Fuel Flow (GPH)">
-                    <InputGroupAddon>Fuel Flow</InputGroupAddon>
+                    <InputGroupAddon>Cruise Fuel Flow @ {{ Formatter.altitude(editEntry.alt) }}</InputGroupAddon>
                     <InputText id="cruiseGPH" v-model="cruiseFuelFlow" @input="calculation" />
-                </InputGroup>
-                <InputGroup v-if="attitudeName==attitudeCruise" class="legParameter" title="POH Cruise True Airspeed (Kts)">
-                    <InputGroupAddon>True Airspeed</InputGroupAddon>
-                    <InputText id="cruiseGPH" v-model="cruiseTrueAirspeed" @input="calculation" />
                 </InputGroup>
                 <InputGroup v-if="attitudeName==attitudeDescent" class="legParameter" title="POH Descent Fuel Flow (GPH)">
                     <InputGroupAddon>Descent Fuel Flow</InputGroupAddon>
@@ -387,16 +400,16 @@ function updateMH() {
                     </div>
                     <div class="legField" title="Leg Time (Min). Supports decimal and time format (3:30 = 3.5)">
                         <div class="label">Time</div>
-                        <InputText id="lt" v-model="editEntry.lt" />
+                        <InputText id="lt" v-model="editEntry.lt" @input="calculation" />
                         <div class="hint clickable" id="ltHint"
                             :title="calculatedTimeHint"
-                            @click="editEntry.lt=calculatedTime">{{ calculatedTime }}</div>
+                            @click="copyTime">{{ calculatedTime }}</div>
                     </div>
                     <div class="legField" title="Leg Fuel (Gal)">
                         <div class="label">Leg Fuel</div>
                         <InputText id="lf" v-model="editEntry.lf" />
                         <div class="hint clickable" id="lfHint"
-                            title="Calculated Leg Fuel. Click to use." 
+                            :title="calculatedFuelHint" 
                             @click="editEntry.lf=calculatedFuel">{{ calculatedFuel }}</div>
                     </div>
                 </div>
@@ -507,7 +520,7 @@ function updateMH() {
 }
 .legParamGroup {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     gap: 5px;
 }
 .others {
