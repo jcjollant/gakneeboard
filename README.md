@@ -17,6 +17,11 @@ Run the test suite:
 ## TODO
 
 # Done
+## 9/18/2024
+* Toggle true course and magnetic
+* Apply and Next leg
+* calculation value in hints
+* Fixed Navlog tile overflow
 ## 9/16/2024
 * Added calculator to Leg Editor
 ## 9/15/2024
