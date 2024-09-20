@@ -10,7 +10,7 @@ import NavlogEdit from './NavlogEdit.vue'
 import PlaceHolder from '../shared/PlaceHolder.vue'
 
 
-const emits = defineEmits(['toast','update'])
+const emits = defineEmits(['replace','toast','update'])
 const modeEdit = 'edit'
 const modeDisplay = ''
 const continued = ref(false)
@@ -130,12 +130,14 @@ function onToast(data) {
 <template>
     <div class="contentPage navlogPage">
         <div v-if="mode == modeEdit">
-            <Header title="NavLog Editor" :clickable="false"></Header>
+            <Header title="NavLog Editor" :hideReplace="false" 
+                @replace="emits('replace')"></Header>
             <NavlogEdit :navlog="navlog"
                 @toast="onToast" @cancel="onEditCancel" @apply="onEditApply" />
         </div>
         <div v-else-if="checkpoints==null">
-            <Header :title="title" :page="true" @click="onHeaderClick"></Header>
+            <Header :title="title" :page="true" 
+                @click="onHeaderClick" @replace="emits('replace')"></Header>
             <PlaceHolder title="No Entries"></PlaceHolder>
         </div>
         <div v-else class="main">
