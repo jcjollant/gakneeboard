@@ -1,17 +1,18 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
+import OneChoice from '../shared/OneChoice.vue';
+
 import Button from "primevue/button";
 import Dialog from 'primevue/dialog'
 import FieldSet from 'primevue/fieldset'
-import SelectButton from 'primevue/selectbutton'
 
 const emits = defineEmits(["close","print","options"]);
 
-const onePage = {name:'One', value:1}
-const twoPages = {name:'Two', value:2}
-const normalOrientation = {name:'Normal', value:false}
-const flippedOrientation = {name:'Flipped', value:true}
+const onePage = {label:'One', value:1}
+const twoPages = {label:'Two', value:2}
+const normalOrientation = {label:'Normal', value:false}
+const flippedOrientation = {label:'Flipped', value:true}
 
 const pagePerSheet = ref(twoPages)
 const flipBackPage = ref(normalOrientation)
@@ -65,9 +66,11 @@ function onNewOptions() {
     <!-- <FieldSet legend="Layout"> -->
       <div class="pageOptions">
         <div class="pageOptionLabel">Pages per sheet</div>
-        <SelectButton v-model="pagePerSheet" :options="[onePage,twoPages]" optionLabel="name" aria-labelledby="basic" @change="onNewOptions" />
+        <OneChoice v-model="pagePerSheet" :choices="[onePage,twoPages]" 
+          @change="onNewOptions"/>
         <div class="pageOptionLabel">Back Page Orientation</div>
-        <SelectButton v-model="flipBackPage" :options="[normalOrientation, flippedOrientation]" optionLabel="name" aria-labelledby="basic" @change="onNewOptions" />
+        <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]"
+          @change="onNewOptions" />
       </div>
     <!-- </FieldSet> -->
     <FieldSet legend="Tips">
