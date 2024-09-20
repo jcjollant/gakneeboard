@@ -25,6 +25,7 @@ describe('navlog Page', () => {
   it('Basic flow', () => {
     visitAndCloseBanner()
     newPage()
+
     // set left page to Navlog
     cy.get('.pageOne > .list > [aria-label="NavLog"]').click()
 
@@ -35,15 +36,13 @@ describe('navlog Page', () => {
     cy.get(':nth-child(1) > .headerTitle').click()
 
     // should have two modes
-    cy.get('.p-highlight').contains('Create New Log')
-    cy.get('.p-selectbutton').contains('Continue Existing Log')
+    cy.get('.choiceActive').contains('Create New Log')
+    cy.get('.choiceInactive').contains('Continue Existing Log')
 
     const expectedFields = ['From', 'To', 'Altitudes' ]
     for(const field of expectedFields) {
       cy.get('.createMode').contains(field)
     }
-
-// 'Create',
 
     // create a navlog w/o altitudes
     cy.get('.createAirportFrom > .p-inputgroup > .p-inputtext').type('KRNT')
@@ -51,7 +50,7 @@ describe('navlog Page', () => {
     cy.get('.createButton > .p-button').click()
 
     // All variable fields should show
-    const expectedVariables = ['Fuel Tank', 'Descent',  'Init.', 'Res.', 'TAS', 'FPM', 'GPH' ]
+    const expectedVariables = ['Fuel Tank', 'Cruise', 'Descent',  'Initial', 'Reserve', 'F.Flow', 'Rate']
     for(const variable of expectedVariables) {
       cy.get('.variables').contains(variable)
     }
@@ -73,9 +72,23 @@ describe('navlog Page', () => {
     cy.get('[aria-label="Reset Log"]').click()
     cy.get('.p-confirm-dialog-accept').click()
 
+    // should be back into edit mode
+    cy.get('.createAirportFrom > .p-inputgroup > .p-inputtext').should('have.value','')
+    cy.get('.createAirportTo > .p-inputgroup > .p-inputtext').should('have.value','')
+  })
 
-    // replace KBLI with KSFF
-    cy.get('.createAirportTo > .p-inputgroup > .p-inputtext').type('{selectAll}').type('KSFF')
+  it('7 altitudes', () => {
+    visitAndCloseBanner()
+    newPage()
+
+    // set left page to Navlog
+    cy.get('.pageOne > .list > [aria-label="NavLog"]').click()
+    // edit mode
+    cy.get(':nth-child(1) > .headerTitle').click()
+
+    // Create navlog with altitudes
+    cy.get('.createAirportFrom > .p-inputgroup > .p-inputtext').type('KRNT')
+    cy.get('.createAirportTo > .p-inputgroup > .p-inputtext').type('KSFF')
     cy.get('.createAltitudes > .p-inputtext').type("2500 2500 4500 4500 7500 7500 5500")
     cy.wait(500) // give it time to pull data
     // Click create
@@ -149,6 +162,9 @@ describe('navlog Page', () => {
       cy.get('#calcWCA').contains(result.wca)
       cy.get('#calcTH').contains(result.th)
       cy.get('#calcMH').contains(result.mh)
+      // hints should be updated too
+      cy.get('#mhHint').contains(result.mh)
+      cy.get('#gsHint').contains(result.gs)
     }
     // Do not apply
     cy.get('.actionDialog > [aria-label="Do Not Apply"]').click()
@@ -164,22 +180,40 @@ describe('navlog Page', () => {
     cy.get('#gs').type('2')
     cy.get('#lt').type('3:15')
     cy.get('#lf').type('4')
+
+    // check calculated values
+    // MH updates for TC / MV / MD
+    cy.get('.headingCourse').contains('True Course')
+    cy.get('#calcTC').type('{selectAll}').type('135')
+    cy.get('#mhHint').contains('135')
+    cy.get('#calcMV').type('{selectAll}').type('10')
+    cy.get('#mhHint').contains('145')
+    cy.get('#calcMD').type('{selectAll}').type('5')
+    cy.get('#mhHint').contains('150')
+    // Toggle Magnectic Course
+    cy.get('.headingCourse').click()
+    cy.get('.headingCourse').contains('Magnetic Course')
+    cy.get('#calcMC').should('have.value','145')
+    cy.get('#calcMC').type('{selectAll}').type('200')
+    cy.get('#mhHint').contains('205')
+
     cy.get('.actionDialog > [aria-label="Apply"]').click()
+
     // first line should be updated
     cy.get(':nth-child(2) > .magneticHeading').contains('90')
     cy.get(':nth-child(2) > .legDistance').contains('1.0')
     cy.get(':nth-child(2) > .groundSpeed').contains('2')
     cy.get(':nth-child(2) > .legTime').contains('3:15')
-    cy.get(':nth-child(2) > .legFuel').contains('4')
+    cy.get(':nth-child(2) > .legFuel').contains('4')  
 
     // second leg is cruise, let's see if we have proper hints
     cy.get(':nth-child(3) > .magneticHeading').click()
     cy.get('.between').should('have.class','attCruise')
     cy.get('#cruiseGPH').type(9)
     // Magnetic heading hint and copy
-    cy.get('#mhHint').contains('90')
+    cy.get('#mhHint').contains('205')
     cy.get('#mhHint').click()
-    cy.get('#mh').should('have.value', '90')
+    cy.get('#mh').should('have.value', '205')
     // Add distance and ground speed
     cy.get('#ld').type('10')
     cy.get('#gs').type('105')
@@ -238,7 +272,6 @@ describe('navlog Page', () => {
     // enter initial fuel, reserve and cruise values
     cy.get('.varInitialFuel > .p-inputtext').type(53)
     cy.get('.varReserveFuel > .p-inputtext').type(30)
-    cy.get('.varCruiseTas > .p-inputtext').type(105)
     cy.get('.varCruiseGph > .p-inputtext').type(9)
     // and apply again
     cy.get('[aria-label="Apply"]').click()
@@ -267,7 +300,7 @@ describe('navlog Page', () => {
 
     // configure page two as a continuer
     cy.get('.pageTwo > :nth-child(1) > .headerTitle > div').click()
-    cy.get('[tabindex="-1"]').click()
+    cy.get('.choiceInactive').click()
     cy.get('.continueHeader').contains('This page will show the overflow')
     cy.get('[aria-label="Apply"]').click()
 
@@ -283,7 +316,6 @@ describe('navlog Page', () => {
     // Enter variables
     cy.get('.varInitialFuel > .p-inputtext').type(51.6)
     cy.get('.varReserveFuel > .p-inputtext').type(13.5)
-    cy.get('.varCruiseTas > .p-inputtext').type(105)
     cy.get('.varCruiseGph > .p-inputtext').type(9)
     // Every leg will consume 2 gallons
     for(let index = 2; index < altitudes.length + 3; index++) {

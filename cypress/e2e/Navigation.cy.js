@@ -5,9 +5,9 @@ describe('Navigation', () => {
     cy.visit(environment)
 
     function checkHdiw() {
-      cy.get('.hdiw').contains('1. Edit')
-      cy.get('.hdiw').contains('2. Print')
-      cy.get('.hdiw').contains('3. Clip')
+      cy.get('.hdiw').contains('Airports')
+      cy.get('.hdiw').contains('Checklist')
+      cy.get('.hdiw').contains('Navlog')
     }
     checkHdiw();
 

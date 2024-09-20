@@ -24,7 +24,7 @@ describe('Checklist Page', () => {
     cy.get('.actionBar > .p-button-icon-only')
 
     // swicth to two columns
-    cy.get('[tabindex="-1"]').click()
+    cy.get('.choiceInactive').click()
     cy.get('.oneOrTwoLists').children().should('have.length', 2)
 
     cy.get('.oneOrTwoLists > :nth-child(1)').type('##Section1\nChallenge1.1##Response1.1\n##\n\nChallenge1.2\nChallenge1.3##\n##!Emergency\n##*Strong')
