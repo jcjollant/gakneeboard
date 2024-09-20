@@ -13,7 +13,7 @@ function onChoice(choice) {
 </script>
 <template>
     <div class="oneChoice">
-        <div v-for="c in choices" 
+        <div v-for="c in choices" :aria-label="c.label" 
             @click="onChoice(c)" 
             class="choice" :class="{'choiceActive':(model.label==c.label),'choiceInactive':(model.label!=c.label)}"
             >{{c.label}}</div>
