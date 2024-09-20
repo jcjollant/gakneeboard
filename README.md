@@ -21,6 +21,7 @@ Run the test suite:
 * Fixed unselect on Print, Checklist, About, Template Sharing, Navlog creation
 * Added page eject for Navlog, Checklist and Cover pages
 * Fixed From/To width in Navlog Editor
+* Fixed checklist edit rendering on Mac
 # 9/19/2024
 * New HDIW
 * Airport codes are blanked on reset

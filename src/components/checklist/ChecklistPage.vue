@@ -113,7 +113,7 @@ function onThemeChange(newTheme) {
             </InputGroup>
             <OneChoice v-model="columns" :choices="[colSingle, colDouble]" class="centered"/>
             <div class="oneOrTwoLists">
-                <Textarea rows="32" cols="48" v-model="textData" class="editList"
+                <Textarea v-model="textData" class="editList"
                     :class="{ 'smallTextarea': columns.value == 2 }" placeholder="Up to 32 items will fit vertically.
 
 Separate Challenge and Response with '##':
@@ -122,7 +122,7 @@ Avionics##OFF
 
 Create sections using '##Section Name':
 ##Left Wing"></Textarea>
-                <Textarea v-if="columns.value == 2" rows="32" cols="48" v-model="textData2" class="editList smallText"></Textarea>
+                <Textarea v-if="columns.value == 2" v-model="textData2" class="editList smallText"></Textarea>
             </div>
             <ThemeSelector @change="onThemeChange" :theme="theme" />
             <ActionBar @cancel="onCancel" @apply="onApply" :help="urlGuideChecklist" />
@@ -153,6 +153,7 @@ Create sections using '##Section Name':
 .editList {
     resize: none;
     font-family: 'Courier New', Courier, monospace;
+    width: 100%;
 }
 .heading {
     font-weight: bolder;
