@@ -9,7 +9,12 @@ import NavlogPage from './navlog/NavlogPage.vue'
 import SelectionPage from './SelectionPage.vue'
 import TilePage from './tiles/TilePage.vue'
 
+import { useConfirm } from 'primevue/useconfirm'
+
+const confirm = useConfirm()
 const emits = defineEmits(['toast','update'])
+const pageData = ref(null)
+const type = ref(PageType.tiles)
 
 const props = defineProps({
     data: { type: Object, default: null},
@@ -32,22 +37,33 @@ watch( props, async(newP, oldP) => {
     loadProps(props)
 })
 
-const type = ref('tiles')
-const pageData = ref(null)
 
 // Page must be replaced with new type
-function onReplace(type) {
-    let newData = {}
-    if(type == 'tiles') {
-        // create 6 empty tiles
-        newData = []
-        for(let index = 0; index<6; index++) {
-            newData.push({id:index,name:'',data:{}})
+function onReplace(newType=undefined) {
+    if(newType) {
+        let newData = {}
+        if(newType == PageType.tiles) {
+            // create 6 empty tiles
+            newData = []
+            for(let index = 0; index<6; index++) {
+                newData.push({id:index,name:'',data:{}})
+            }
         }
+        const newPageData = {type:newType,data:newData}
+        // console.log('[Page.onReplace]', JSON.stringify(newPageData))
+        emits('update', newPageData)
+    } else {
+        // confirm and show page selection
+        confirm.require({
+            message: 'Do you want to replace the current page and its settings?',
+            header: 'Replace Page',
+            rejectLabel: 'No',
+            acceptLabel: 'Yes, Replace',
+            accept: () => {
+                type.value = PageType.selection
+            }
+        })
     }
-    const newPageData = {type:type,data:newData}
-    // console.log('[Page.onReplace]', JSON.stringify(newPageData))
-    emits('update', newPageData)
 }
 
 function onToast(data) {
@@ -64,11 +80,11 @@ function onUpdate( newData) {
 
 <template>
     <ChecklistPage v-if="type==PageType.checklist" :data="pageData" 
-        @update="onUpdate" />
+        @replace="onReplace" @update="onUpdate" />
     <CoverPage v-else-if="type==PageType.cover" :data="pageData" 
-        @update="onUpdate" />
+        @replace="onReplace" @update="onUpdate" />
     <NavlogPage v-else-if="type==PageType.navLog" :data="pageData"
-        @update="onUpdate" @toast="onToast" />
+        @replace="onReplace" @update="onUpdate" @toast="onToast" />
     <TilePage v-else-if="type==PageType.tiles" :data="pageData" 
         @update="onUpdate" @toast="onToast" />
     <SelectionPage v-else @replace="onReplace" />
