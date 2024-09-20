@@ -17,6 +17,13 @@ Run the test suite:
 ## TODO
 
 # Done
+# 9/20/2024
+* Fixed unselect on Print, Checklist, About, Template Sharing, Navlog creation
+* Added page eject for Navlog, Checklist and Cover pages
+* Fixed From/To width in Navlog Editor
+# 9/19/2024
+* New HDIW
+* Airport codes are blanked on reset
 ## 9/18/2024
 * Toggle true course and magnetic
 * Apply and Next leg
