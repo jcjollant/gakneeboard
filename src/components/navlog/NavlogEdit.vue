@@ -17,9 +17,10 @@ import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
 import { useConfirm } from 'primevue/useconfirm'
-import SelectButton from 'primevue/selectbutton'
+import OneChoice from '../shared/OneChoice.vue'
 
 const emits = defineEmits(['apply','cancel','toast'])
+
 const navlogModeCreate = {label:'Create New Log',value:'new'}
 const navlogModeContinue = {label:'Continue Existing Log',value:'continue'}
 const navlogModes = [navlogModeCreate,navlogModeContinue]
@@ -266,6 +267,8 @@ function onAction(action) {
                 codeFrom.value = null
                 codeTo.value = null
                 items.value = []
+                activeNavlog.value
+                activeIndex =  -1
                 mode.value = modeBlank
             }
         })
@@ -279,6 +282,7 @@ function onEdit(index,checkpoint) {
         return
     }
     activeIndex = index;
+    activeTime.value = Date.now()
     if(checkpoint) {
         activeEntry.value = items.value[index].entry
         showEditorCheckpoint.value = true
@@ -361,13 +365,12 @@ function updateAttitudes() {
         :entry="activeEntry" :time="activeTime"
         @close="showEditorCheckpoint=false" @save="onEntryEditorSave" />
     <NavlogLegEditor v-model:visible="showEditorLeg" 
-        :navlog="activeNavlog" :items="items"
-        :index="activeIndex" :time="activeTime" 
+        :items="items" :index="activeIndex" :time="activeTime" 
         :cruiseFF="Number(cruiseFuelFlow)"
         :descentFF="Number(descentFuelFlow)" :descentRate="Number(descentRate)"
         @close="showEditorLeg=false" @save="onEntryEditorSave" />
     <div v-if="mode==modeBlank" class="blankMode">
-        <SelectButton v-model="navlogMode" :options="navlogModes" optionLabel="label"/>
+        <OneChoice v-model="navlogMode" :choices="navlogModes" class="centered"/>
         <div v-if="navlogMode.value==navlogModeCreate.value" class="createMode">
             <AirportInput :code="codeFrom" :auto="true" label="From" class="createAirportFrom" @valid="onAirportFromValid" @invalid="onAirportFromInvalid" />
             <AirportInput :code="codeTo" :auto="true" label="To" class="createAirportTo" @valid="onAirportToValid" @invalid="onAirportToInvalid"/>
@@ -484,8 +487,11 @@ function updateAttitudes() {
     flex-flow: column;
     gap: 1rem;
     padding-top: 1rem;
+    font-size: 0.8rem;
 }
-
+.centered {
+    margin: auto;
+}
 .continueHeader {
     font-weight: bolder;
     font-size: larger;
