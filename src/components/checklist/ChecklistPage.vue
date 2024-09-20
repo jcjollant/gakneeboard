@@ -169,10 +169,11 @@ Create sections using '##Section Name':
 }
 
 .settings {
-    display: flex;
-    flex-flow: column;
-    gap: 10px;
+    height:100%;
+    display: grid;
+    gap: 5px;
     padding: 5px;
+    grid-template-rows: 2.5rem 2.5rem auto 2rem 50px;
 }
 
 
