@@ -12,10 +12,10 @@ import ThemeSelector from './ThemeSelector.vue'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
-import SelectButton from 'primevue/selectbutton'
 import Textarea from 'primevue/textarea'
+import OneChoice from '../shared/OneChoice.vue'
 
-const emits = defineEmits(['update'])
+const emits = defineEmits(['replace','update'])
 
 const props = defineProps({
     data: { type: Object, default: null },
@@ -51,8 +51,8 @@ watch(props, () => {
 
 // End of props management
 
-const colSingle = 'One Column'
-const colDouble = 'Two Columns'
+const colSingle = {label:'One Column', value:1}
+const colDouble = {label:'Two Columns', value:2}
 const data = ref(null)
 const mode = ref('')
 const title = ref('Checklist')
@@ -68,7 +68,7 @@ function onApply() {
     const items = itemsFromList(textData.value)
     // console.log('[CheclistPage.onApply]', JSON.stringify(items))
     const newData = { name: title.value, items: items }
-    if (columns.value == colDouble) {
+    if (columns.value.value == 2) {
         const items2 = itemsFromList(textData2.value)
         newData['items2'] = items2;
     }
@@ -104,16 +104,17 @@ function onThemeChange(newTheme) {
 
 <template>
     <div class="contentPage pageChecklist">
-        <Header :title="title" :page="data!=null" @click="onHeaderClick"></Header>
+        <Header :title="title" :hideReplace="mode!='edit'"
+            @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div v-if="mode == 'edit'" class="settings">
             <InputGroup>
                 <InputGroupAddon class="checklistNameAddon">Name</InputGroupAddon>
                 <InputText v-model="title" />
             </InputGroup>
-            <SelectButton v-model="columns" :options="[colSingle, colDouble]" aria-labelledby="basic" />
+            <OneChoice v-model="columns" :choices="[colSingle, colDouble]" class="centered"/>
             <div class="oneOrTwoLists">
                 <Textarea rows="32" cols="48" v-model="textData" class="editList"
-                    :class="{ 'smallTextarea': columns == colDouble }" placeholder="Up to 32 items will fit vertically.
+                    :class="{ 'smallTextarea': columns.value == 2 }" placeholder="Up to 32 items will fit vertically.
 
 Separate Challenge and Response with '##':
 Master Switch##ON
@@ -121,14 +122,13 @@ Avionics##OFF
 
 Create sections using '##Section Name':
 ##Left Wing"></Textarea>
-                <Textarea v-if="columns == colDouble" rows="32" cols="48" v-model="textData2" class="editList"
-                    :class="{ 'smallTextarea': columns == colDouble }"></Textarea>
+                <Textarea v-if="columns.value == 2" rows="32" cols="48" v-model="textData2" class="editList smallText"></Textarea>
             </div>
             <ThemeSelector @change="onThemeChange" :theme="theme" />
             <ActionBar @cancel="onCancel" @apply="onApply" :help="urlGuideChecklist" />
         </div>
         <div v-else class="viewMode">
-            <div v-if="columns == colSingle">
+            <div v-if="columns.value == 1">
                 <ChecklistViewer :items="data ? data.items : []" :theme="theme" />
             </div>
             <div v-else class="twoLists">
@@ -147,7 +147,9 @@ Create sections using '##Section Name':
 .checklistNameAddon {
     width: 3rem;
 }
-
+.centered {
+    margin: auto;
+}
 .editList {
     resize: none;
     font-family: 'Courier New', Courier, monospace;
