@@ -7,8 +7,9 @@ import Image from 'primevue/image'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
+import Header from '../shared/Header.vue'
 
-const emits = defineEmits(['update'])
+const emits = defineEmits(['replace','update'])
 
 const props = defineProps({
     data: { type: Object, default: null },
@@ -67,6 +68,8 @@ function onCancel() {
 
 <template>
     <div class="contentPage pageCover">
+        <Header v-if="mode=='edit'" title="Cover Page" :hideReplace="false"
+            @replace="emits('replace')"></Header>
         <div v-if="mode=='edit'" class="settings">
             <InputGroup>
                 <InputGroupAddon class="coverAddon">Title</InputGroupAddon>
@@ -82,7 +85,7 @@ function onCancel() {
             </InputGroup>
             <ActionBar @cancel="onCancel" @apply="onApply"/>
         </div>
-        <div v-else @click="onEdit" class="clickable">
+        <div v-else @click="onEdit" class="main clickable">
             <div class="titleContainer">
                 <div class="title">{{ title ? title : 'No Title' }}</div>
             </div>
@@ -103,7 +106,9 @@ function onCancel() {
     font-size:7rem;
     opacity: 0.3;
 }
-
+.main{
+    height: 100%;
+}
 .settings {
     display: flex;
     flex-flow: column;
