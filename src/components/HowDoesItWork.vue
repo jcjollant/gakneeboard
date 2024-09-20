@@ -7,26 +7,28 @@ const emits = defineEmits(["close"]);
 
 </script>
 <template>
-    <Dialog modal header="Customizable Kneeboard Templates">
+    <Dialog modal header="Create Your Kneeboard">
         <div class="hdiw">
             <div class="item">
-                <i class="pi pi-file-edit"></i>
-                <span>1. Edit</span>
+                <font-awesome-icon class="icon" :icon="['fas','plane-departure']" />
+                <span>Airports</span>
             </div>
             <div class="item">
-                <i class="pi pi-print"></i>
-                <span>2. Print</span>
+                <font-awesome-icon class="icon" :icon="['fas','list-check']" />
+                <span>Checklist</span>
             </div>
             <div class="item">
-                <i class="pi pi-clipboard"></i>
-                <span>3. Clip</span>
+                <font-awesome-icon class="icon" :icon="['fas','route']" />
+                <span>Navlog</span>
             </div>
         </div>
-        <div class="intro mb-5">When I’m flying, my IQ decreases by 30 points. To mitigate, I prioritize having essential information easily accessible on the kneeboard. Originally intended as a supplement to my EFB, the kneeboard printout has now become my primary source of information due to its sheer convenience.</div>
-        <div class="detailed-content mb-5">
-            <div>1. Click on tiles to match your preferences</div>
-            <div>2. Print on Letter size paper</div>
-            <div>3. Slap on your kneeboard and go flying!</div>
+        <div class="intro">Your own perfect Kneeboard in minutes:</div>
+        <div class="detailed-content">
+        <ol>
+            <li>Click on tiles to match your preferences</li>
+            <li>Print on Letter size paper</li>
+            <li>Slap on your kneeboard and go flying!</li>
+        </ol>
         </div>
         <div class="actionDialog"><Button label="Got it" @click="emits('close')"></Button></div>
     </Dialog>
@@ -43,8 +45,9 @@ const emits = defineEmits(["close"]);
     text-align: center;
 }
 
-i {
-    font-size: 5rem;
+.icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
 }
 
 .intro {
