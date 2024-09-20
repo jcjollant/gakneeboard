@@ -13,7 +13,7 @@ function onMenuClick() {
 </script>
 <template>
     <div class="tile">
-        <Header :title="'Clearance @'" :replace="true" :left="true"
+        <Header :title="'Clearance @'" :left="true" :hideReplace="mode!='edit'"
             @click="onMenuClick" @replace="emits('replace')"></Header>
         <div v-if="mode==''" class="content clearance">
             <div class="cleared box">

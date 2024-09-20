@@ -6,9 +6,11 @@ import { navlogQueue } from '../../assets/data';
 import Header from '../shared/Header.vue'
 import PlaceHolder from '../shared/PlaceHolder.vue';
 import { Formatter } from '../../assets/Formatter';
+import NoSettings from '../shared/NoSettings.vue';
 
 const items = ref(null)
 const emits = defineEmits(['replace'])
+const mode=ref('')
 
 function applyData(newNavlog) {
     // console.log('[NavlogTile.applyData] new navlog', JSON.stringify(newNavlog))
@@ -37,6 +39,10 @@ function applyData(newNavlog) {
     })
 }
 
+function onHeaderClick() {
+    mode.value = (mode.value == '' ? 'edit' : '')
+}
+
 onMounted(() => {
     // register listener for navlog updates
     const existingNavlog = navlogQueue.addListener(applyData)
@@ -46,8 +52,9 @@ onMounted(() => {
 </script>
 <template>
     <div class="navlogTile tile">
-        <Header title="NavLog" :replace="true" @replace="emits('replace')"></Header>
-        <div class="tileContent">
+        <Header title="NavLog" :hideReplace="mode!='edit'"
+            @click="onHeaderClick" @replace="emits('replace')"></Header>
+        <div v-if="mode==''" class="tileContent">
             <div v-if="items">
                 <div v-for="i in items" class="navlogEntry" :class="i.entryClass">
                     <div v-if="i.last" class="nameArrival"> {{ i.name + ' (Arrival)' }}</div>
@@ -61,6 +68,8 @@ onMounted(() => {
             </div>
             <PlaceHolder v-else title="No Log" subtitle="Create a log in the navlog page to show it's summary here" />
         </div>
+        <NoSettings v-else></NoSettings> 
+
     </div>
 
 </template>

@@ -97,7 +97,7 @@ function onThemeChange(newTheme) {
 
 <template>
     <div class="tile">
-        <Header :title="title" :replace="true"
+        <Header :title="title"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div v-if="mode=='edit'" class="settings">
             <div class="oneLine">

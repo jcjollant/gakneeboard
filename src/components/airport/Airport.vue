@@ -310,7 +310,7 @@ function updateWidget() {
 
 <template>
     <div class="tile">
-        <Header :title="title" :replace="true"
+        <Header :title="title" :hideReplace="mode!='edit'"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <AirportEdit v-if="mode=='edit'" :airport="airportData" :rwyName="runwayName" :rwyOrientation="rwyOrientation"
             @close="onHeaderClick" @selection="onSettingsUpdate" />

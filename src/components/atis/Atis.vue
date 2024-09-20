@@ -56,7 +56,7 @@ watch( props, async() => {
 </script>
 <template>
     <div class="tile">
-        <Header :title="mode==''?'ATIS @':'ATIS'" :replace="true" :left="mode==''" 
+        <Header :title="mode==''?'ATIS @':'ATIS'" :left="mode==''" :hideReplace="mode!='edit'"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div v-if="mode=='edit'" class="content list" >
             <Button label="Full Size" @click="changeMode('')"></Button>

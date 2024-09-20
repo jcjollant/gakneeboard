@@ -79,7 +79,7 @@ function onToast(data) {
 
 <template>
     <div v-if="!tile || tile.name==''" class="tile">
-        <Header :title="'Tile Selection'" :clickable="false"></Header>
+        <Header :title="'Tile Selection'" :replace="false" :clickable="false"></Header>
         <!-- <div class="widgetTitle">Tile Selection</div> -->
         <div class="tileContent list">
             <FAButton v-for="tile in knownTiles"

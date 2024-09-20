@@ -178,11 +178,11 @@ function onHeaderClick() {
 
 <template>
     <div class="tile">
-        <Header title="Sun Light" :replace="true"
+        <Header title="Sun Light" :hideReplace="mode!='edit'"
             @click="onHeaderClick" 
             @replace="emits('replace')">
         </Header>
-        <div class="content" v-if="mode==''">
+        <div class="tileContent" v-if="mode==''">
             <div v-if="airportFromCode">
                 <Circle :time="circleKey" :night="nightFlight" />
                 <div v-if="loading" class="loading">Fetching...</div>
@@ -303,7 +303,6 @@ function onHeaderClick() {
 }
 :deep(.p-component), :deep(.p-inputgroup-addon) {
     font-size: 0.8rem;
-    height: 1.5rem;
 }
 .date {
     font-size: 10px;
