@@ -262,6 +262,9 @@ function onAction(action) {
             rejectLabel: 'No',
             acceptLabel: 'Yes, Reset',
             accept: () => {
+                // reset airports and items
+                codeFrom.value = null
+                codeTo.value = null
                 items.value = []
                 mode.value = modeBlank
             }
