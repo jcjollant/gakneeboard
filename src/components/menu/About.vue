@@ -5,7 +5,7 @@ import { urlBlog, urlFacebookGroup, urlGuideAirport, urlGuideAtis, urlGuideCheck
 
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
-import SelectButton from 'primevue/selectbutton'
+import OneChoice from "../shared/OneChoice.vue";
 
 const emits = defineEmits(["close","hdiw"]);
 
@@ -18,9 +18,9 @@ const guides = [
   {name:"Sun Light Tile", url:urlGuideSunlight},
 ]
 
-const topicAbout = {name:'About',value:'about'}
-const topicWarning = {name:'Warnings',value:'warning'}
-const topicGuide = {name:'Help',value:'guide'}
+const topicAbout = {label:'About',value:'about'}
+const topicWarning = {label:'Warnings',value:'warning'}
+const topicGuide = {label:'Help',value:'guide'}
 const topics = ref([topicAbout,topicGuide,topicWarning])
 const activeTopic = ref(topicAbout)
 
@@ -34,7 +34,7 @@ function openUrl(url) {
   <Dialog modal header="About GA Kneeboard">
     <div class="aboutPopup">
       <div class="pageOptions mb-5">
-        <SelectButton v-model="activeTopic" :options="topics" optionLabel="name" aria-labelledby="basic" class="mb-2" />
+        <OneChoice v-model="activeTopic" :choices="topics" class="mb-2" />
       </div>
       <div v-if="activeTopic.value==topicAbout.value">
         <div class="mb-5 justify"><strong>GA Kneeboard</strong> started as a personal project but users feedback made it the useful utility it is today. It is meant to mitigate high information loads, associated to flying, with easily accessible essential information. Originally intended as a supplement to pilot's EFB, the kneeboard printout has become a primary source of information due to its sheer convenience.<br>GA Kneeboard is free to use. If you find it useful, please consider spreading the word and sending your suggestions.</div>
