@@ -7,8 +7,8 @@ const emits = defineEmits(['replace'])
 const props = defineProps({
     clickable: { type: Boolean, default:true},
     left: { type: Boolean, default:false},
-    page: { type: Boolean, default:false},
-    replace: { type:Boolean, default:false},
+    replace: { type:Boolean, default:true},
+    hideReplace: { type:Boolean, default:true},
     stealth: { type: Boolean, default:false},
     title: { type: String, required:true},
 })
@@ -16,8 +16,8 @@ const props = defineProps({
 const title=ref('');
 const clickable=ref(false)
 const replace=ref(false)
+const hideReplace=ref(true)
 const left = ref(false)
-const page = ref(false)
 const stealth = ref(false)
 
 onMounted( () => {
@@ -28,8 +28,8 @@ function updateProps(props) {
     // console.log('Heeader update props ' + JSON.stringify(props))
     title.value = props.title
     replace.value = props.replace
+    hideReplace.value = props.hideReplace
     left.value = props.left
-    page.value = props.page
     clickable.value = props.clickable
     stealth.value = props.stealth
 }
@@ -42,10 +42,11 @@ watch( props, async() => {
 
 
 <template>
-    <div class="headerTitle" :class="{ clickable: clickable, left: left, page: page }">
+    <div class="headerTitle" :class="{ clickable: clickable, left: left}">
         <div class="titleText" :class="{ stealth: stealth}">{{ title }}</div>
-        <Button v-if="replace" class="replaceButton hidden" icon="pi pi-eject" title="Replace Tile" link
-            @click="emits('replace')"></Button>
+        <Button v-if="replace" class="replaceButton" :class="{'hidden':hideReplace}" icon="pi pi-eject" 
+            title="Replace" link
+            @click.stop="emits('replace')"></Button>
     </div>
 </template>
 
@@ -66,18 +67,15 @@ watch( props, async() => {
 .clickable:hover {
     color: darkblue;
     font-weight: bolder;
-}
-.page {
-    /* font-size: 1.2rem; */
-    font-weight: bolder;
+    opacity: 1;
 }
 .replaceButton {
     position:absolute;
-    font-size: 15px;
+    font-size: 13px;
     right: 1px;
     top:1px;
-    width: 23px;
-    height: 23px;
+    width: 21px;
+    height: 21px;
     /* padding: 5px; */
     margin: 0;
     /* background-color: darkred; */
@@ -94,6 +92,9 @@ watch( props, async() => {
 }
 .stealth {
     opacity: 0.3;
+}
+.stealth:hover {
+    opacity: 1;
 }
 
 .titleText {
