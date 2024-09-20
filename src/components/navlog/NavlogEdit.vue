@@ -399,10 +399,6 @@ function updateAttitudes() {
                 <InputGroupAddon>Reserve</InputGroupAddon>
                 <InputText v-model="reserveFuel" placeholder="Gal"/>
             </InputGroup>
-            <!-- <InputGroup class="varCruiseTas" title="Cruise True Airspeed (Knots)">
-                <InputGroupAddon>TAS</InputGroupAddon>
-                <InputText v-model="cruiseTas"/>
-            </InputGroup> -->
             <InputGroup class="varCruiseGph" title="Cruise Fuel Flow (Gallons per hour)">
                 <InputGroupAddon>F.Flow</InputGroupAddon>
                 <InputText v-model="cruiseFuelFlow"/>
@@ -605,7 +601,7 @@ function updateAttitudes() {
     font-size: 0.8rem;
     height: 1.5rem;
 }
-:deep(.p-inputgroup-addon) {
+:deep(.p-inputgroup-addon .createAltitudes) {
     width: 60px;
 
 }
