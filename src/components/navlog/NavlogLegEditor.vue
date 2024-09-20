@@ -16,24 +16,24 @@ const emits = defineEmits(['close','save'])
 const attitudeClimb = 'Climb'
 const attitudeDescent = 'Descent'
 const attitudeCruise = 'Cruise'
-
+const defaultSuggestedTitle = 'Click to use'
 const attitudeName = ref(null)
 const attitudeClass = ref(null)
-const calculatedDistance = ref(null)
-const calculatedDistanceHint = ref('Calculated Distance. Click to use')
-const calculatedFuel = ref(null)
-const calculatedFuelHint = ref('Calculate Fuel (Gal). Click to use')
-const calculatedTime = ref(null)
-const calculatedTimeHint = ref('Calculated Time. Click to use')
+const suggestedHeading = ref(null)
+const suggestedHeadingTitle = ref(defaultSuggestedTitle)
+const suggestedDistance = ref(null)
+const suggestedDistanceTitle = ref(defaultSuggestedTitle)
+const suggestedFuel = ref(null)
+const suggestedFuelTitle = ref(defaultSuggestedTitle)
+const suggestedTime = ref(null)
+const suggestedTimeTitle = ref(defaultSuggestedTitle)
 const courseIsTrue = ref(true)
 const cruiseFuelFlow = ref(null)
-const cruiseTrueAirspeed = ref(null)
 const descentFuelFlow = ref(null)
 const descentRate = ref(null)
 const editEntry = ref(null)
 const groundSpeed = ref(null)
 const calculatedGroundSpeed = ref(null)
-const calculatedHeading = ref(null)
 const lastLeg = ref(false)
 const magneticHeading = ref(null)
 const nextEntry = ref(null)
@@ -42,13 +42,14 @@ const windCorrectionAngle = ref(null)
 const windDirection = ref(null)
 const windSpeed = ref(null)
 
+let previousMagneticHeading = undefined
+
 //---------------------
 // Props management
 const props = defineProps({
     cruiseFF: { type: Number, default: 0},
     descentFF: { type: Number, default: 0},
     descentRate: { type: Number, default: 0},
-    navlog : {type: Object, default: null}, 
     items : {type: Object, default: null},
     index: { type:Number, default: -1},
     time: { type: Number, default: 0},
@@ -107,10 +108,10 @@ function loadProps(newProps) {
         // 
         lastLeg.value = newProps.index >= entriesCount - 2
         nextEntry.value = nxtEntry
-        calculatedHeading.value = prevEntry ? prevEntry.mh : 0
+        previousMagneticHeading = prevEntry ? prevEntry.mh : undefined
 
         // trigger computation with these values
-        updateMH()
+        updateCalculator()
     } else { // no items?
         lastLeg.value = true
         nextEntry.value = null
@@ -134,7 +135,101 @@ watch(props, () => {
 // End of props management
 //------------------------
 
-function calculation() {
+function copyLegDistance() {
+    editEntry.value.ld=suggestedDistance.value
+    updateSuggested()
+}
+
+function copyGroundSpeed() {
+    editEntry.value.gs = calculatedGroundSpeed.value
+    updateSuggested()
+}
+
+function copyTime() {
+    editEntry.value.lt=suggestedTime.value
+    updateSuggested()
+
+}
+
+function getUsableValue(reference) {
+    const value = Number(reference)
+    return isNaN(value) ? 0 : value
+}
+
+function onApply(andNext) {
+    // console.log('[NavlogEditor.onSave]', JSON.stringify(editEntry.value))
+    const entry = editEntry.value
+
+    // leg time 
+    entry['lt'] = Formatter.getDecimalMinutes( entry.lt)
+    // console.log('[NavlogEntryEditor.onSave]', entry.lt)
+
+    // convert all fields to number
+    const fields = ['alt','th','ld','gs','lf','tc','tas','mv','md', 'mc', 'mh']
+    for(let f of fields) {
+        if( entry[f]) entry[f] = Number(entry[f])
+    }
+    // keep heading within 0-360
+    if( entry.th) {
+        entry.th = entry.th % 360
+        // compute course heading from other headings
+        entry.ch = entry.th + entry.mv + entry.md
+    }
+    // save wind
+    entry.wind = windDirection.value + '@' + windSpeed.value
+    // console.log('[NavlogLegEditor.onApply]', JSON.stringify(entry))
+
+    emits( 'save', {entry:entry, next:andNext})
+}
+
+// Update values in the calculator (GroundSpeed, WCA, TrueHeading and MagneticHeading)
+function updateCalculator() {
+    // WCA=asin(B4*SIN((B3-A3)/180*PI())/G3)*180/PI()
+    // GS=sqrt(G3*G3+B4*B4-(2*G3*B4*cos((H4-B3)/180*PI())))
+    // B4 = Wind Speed
+    // B3 = Wind Direction
+    // A3 = True Course
+    // G3 = TAS
+    // H4 = TH
+    // DegToRadian = 0.0174532925
+    const entry = editEntry.value
+    const d2r = 0.0174532925
+    // console.log('[NavlogLegEditor.onUdateMH]', entry)
+    if(entry.tc === undefined) return;
+    let mc = getUsableValue(entry.mc)
+    let tc = getUsableValue(entry.tc)
+    const ws = Number(windSpeed.value)
+    const wd = Number(windDirection.value)
+    const tas = Number(entry.tas)
+    const mv = getUsableValue(entry.mv)
+    const md = getUsableValue(entry.md)
+
+    // compute secondary course from selected primary
+    if(courseIsTrue.value) {
+        mc = tc + mv;
+        entry.mc = mc
+    } else {
+        tc = mc - mv;
+        entry.tc = tc
+    }
+
+    const wca = Math.asin(ws*Math.sin((wd-tc)*d2r)/tas)/d2r
+    const usableWca = getUsableValue(wca)
+    windCorrectionAngle.value = usableWca
+    const th = tc + usableWca
+    trueHeading.value = th
+    const mh = Math.round(th + mv + md)
+    magneticHeading.value = mh
+
+    const gs = Math.sqrt(tas*tas + ws*ws - (2*tas*ws*Math.cos((th-wd)*d2r)))
+    // console.log('[NavlogLegEditor.updateMH]', wca)
+    const usableGs = getUsableValue(Math.round(gs))
+    groundSpeed.value = usableGs
+    calculatedGroundSpeed.value = usableGs
+    updateSuggested()
+}
+
+function updateSuggested() {
     // console.log('[NavlogLegEditor.calculation]')
     if(!editEntry || !editEntry.value) return;
     const groundSpeed = Number(editEntry.value.gs)
@@ -143,6 +238,17 @@ function calculation() {
     const climb = (editEntry.value.att=='+')
     const descent = (editEntry.value.att=='-')
     const cruise = !climb && !descent;
+
+    // Magnetic Heading
+    if(magneticHeading.value != null) {
+        suggestedHeading.value = magneticHeading.value
+        suggestedHeadingTitle.value = 'Calculated Magnetic Heading'
+    } else if(previousMagneticHeading !== undefined){
+        suggestedHeading.value = previousMagneticHeading
+        suggestedHeadingTitle.value = 'Previous Leg Magnetic Heading'
+    } else {
+        suggestedHeading.value = null
+    }
 
     // leg time
     let ltCalc = 0
@@ -166,8 +272,8 @@ function calculation() {
     } else {
         ltFormula = 'Climb Leg Time should come from POH'
     }
-    calculatedTime.value = Formatter.legTime( ltCalc)
-    calculatedTimeHint.value = ltFormula;
+    suggestedTime.value = Formatter.legTime( ltCalc)
+    suggestedTimeTitle.value = ltFormula;
 
     // Fuel
     let legFuel = undefined
@@ -180,121 +286,35 @@ function calculation() {
             legFuelHint = (cruise ? 'Cruise' : 'Descent') + ' Leg Fuel = FuelFlow * LegTime. Click to use'
         }
         
+    } else {
+        legFuel = undefined
+        legFuelHint = 'Should come from POH'
     }
-    calculatedFuel.value = Formatter.fuel( legFuel)
-    calculatedFuelHint.value = legFuelHint
+    suggestedFuel.value = Formatter.fuel( legFuel)
+    suggestedFuelTitle.value = legFuelHint
 
     // Distance
     let legDistance = undefined
     let ldHint = ''
     if(descent || climb) {
+        // for descent and climb, distance is speed * time
         if( !(isNaN(groundSpeed) || isNaN(legTime) || groundSpeed <= 0 || legTime <= 0)) {
             legDistance = legTime * groundSpeed / 60
             ldHint = (descent ? 'Descent' : 'Climb') + ' leg distance = Time * GroundSpeed. Click to Use'
         }
     } else if(cruise) {
         try {
+            // try to help with calculation
             legDistance = eval(editEntry.value.ld)
             ldHint = 'Calculation ' + editEntry.value.ld + ' '
         } catch( e) {
-            legDistance = 0
+            legDistance = undefined
         }
     }
     // console.log('[NavlogLegEditor.calculation]', legDistance)
-    calculatedDistance.value = Formatter.distance(legDistance)
-    calculatedDistanceHint.value = ldHint;
+    suggestedDistance.value = legDistance ? Formatter.distance(legDistance) : null
+    suggestedDistanceTitle.value = ldHint;
     // console.log('[NavlogLegEditor.calculation]', legDistance, ldHint)
-}
-
-function copyLegDistance() {
-    editEntry.value.ld=calculatedDistance.value
-    calculation()
-}
-
-function copyGroundSpeed() {
-    editEntry.value.gs = calculatedGroundSpeed.value
-    calculation()
-}
-
-function copyTime() {
-    editEntry.value.lt=calculatedTime.value
-    calculation()
-
-}
-
-function getUsableValue(reference) {
-    const value = Number(reference)
-    return isNaN(value) ? 0 : value
-}
-
-function onApply(andNext) {
-    // console.log('[NavlogEditor.onSave]', JSON.stringify(editEntry.value))
-    const entry = editEntry.value
-
-    // leg time 
-    entry['lt'] = Formatter.getDecimalMinutes( entry.lt)
-    // console.log('[NavlogEntryEditor.onSave]', entry.lt)
-
-    // convert all fields to number
-    const fields = ['alt','th','ld','gs','lf','tc','tas','mv','md', 'mc']
-    for(let f of fields) {
-        if( entry[f]) entry[f] = Number(entry[f])
-    }
-    // keep heading within 0-360
-    if( entry.th) {
-        entry.th = entry.th % 360
-        // compute course heading from other headings
-        entry.ch = entry.th + entry.mv + entry.md
-    }
-    // save wind
-    entry.wind = windDirection.value + '@' + windSpeed.value
-    // console.log('[NavlogLegEditor.onApply]', JSON.stringify(entry))
-
-    emits( 'save', {entry:entry, next:andNext})
-}
-
-function updateMH() {
-    // WCA=asin(B4*SIN((B3-A3)/180*PI())/G3)*180/PI()
-    // GS=sqrt(G3*G3+B4*B4-(2*G3*B4*cos((H4-B3)/180*PI())))
-    // B4 = Wind Speed
-    // B3 = Wind Direction
-    // A3 = True Course
-    // G3 = TAS
-    // H4 = TH
-    // DegToRadian = 0.0174532925
-    const entry = editEntry.value
-    const d2r = 0.0174532925
-    const ws = Number(windSpeed.value)
-    const wd = Number(windDirection.value)
-    let mc = getUsableValue(entry.mc)
-    let tc = getUsableValue(entry.tc)
-    const tas = Number(entry.tas)
-    const mv = getUsableValue(entry.mv)
-    const md = getUsableValue(entry.md)
-
-    // compute secondary course from selected primary
-    if(courseIsTrue.value) {
-        mc = tc + mv;
-        entry.mc = mc
-    } else {
-        tc = mc - mv;
-        entry.tc = tc
-    }
-
-    const wca = Math.asin(ws*Math.sin((wd-tc)*d2r)/tas)/d2r
-    const usableWca = getUsableValue(wca)
-    windCorrectionAngle.value = usableWca
-    const th = tc + usableWca
-    trueHeading.value = th
-    const mh = Math.round(th + mv + md)
-    magneticHeading.value = mh
-    calculatedHeading.value = mh
-
-    const gs = Math.sqrt(tas*tas + ws*ws - (2*tas*ws*Math.cos((th-wd)*d2r)))
-    // console.log('[NavlogLegEditor.updateMH]', wca)
-    const usableGs = getUsableValue(Math.round(gs))
-    groundSpeed.value = usableGs
-    calculatedGroundSpeed.value = usableGs
 }
 
 </script>
@@ -313,15 +333,15 @@ function updateMH() {
             <div class="legParamGroup mb-2">
                 <InputGroup v-if="attitudeName==attitudeCruise" class="legParameter" title="POH Cruise Fuel Flow (GPH)">
                     <InputGroupAddon>Cruise Fuel Flow @ {{ Formatter.altitude(editEntry.alt) }}</InputGroupAddon>
-                    <InputText id="cruiseGPH" v-model="cruiseFuelFlow" @input="calculation" />
+                    <InputText id="cruiseGPH" v-model="cruiseFuelFlow" @input="updateSuggested" />
                 </InputGroup>
                 <InputGroup v-if="attitudeName==attitudeDescent" class="legParameter" title="POH Descent Fuel Flow (GPH)">
                     <InputGroupAddon>Descent Fuel Flow</InputGroupAddon>
-                    <InputText id="descentGPH" v-model="descentFuelFlow" @input="calculation" />
+                    <InputText id="descentGPH" v-model="descentFuelFlow" @input="updateSuggested" />
                 </InputGroup>
                 <InputGroup v-if="attitudeName==attitudeDescent" class="legParameter" title="Descent Rate (FPM)">
                     <InputGroupAddon>Descent Rate</InputGroupAddon>
-                    <InputText id="descentFPM" v-model="descentRate" @input="calculation" />
+                    <InputText id="descentFPM" v-model="descentRate" @input="updateSuggested" />
                 </InputGroup>
             </div>
             <div class="headingCalculator">
@@ -342,19 +362,19 @@ function updateMH() {
                 <div class="headingGrid">
                     <InputText v-if="courseIsTrue" v-model="editEntry.tc" id="calcTC" 
                         class="headingInput" title="True Course"
-                        @input="updateMH"></InputText>
+                        @input="updateCalculator"></InputText>
                     <InputText v-else v-model="editEntry.mc" id="calcMC" 
                         class="headingInput" title="Magnetic Course"
-                        @input="updateMH"></InputText>
+                        @input="updateCalculator"></InputText>
                     <InputText v-model="windDirection" id="calcWD" 
                         class="headingInput" title="Wind Direction (True)"
-                        @input="updateMH"></InputText>
+                        @input="updateCalculator"></InputText>
                     <InputText v-model="windSpeed" id="calcWS"
                         class="headingInput" title="Wind Speed (Kts)"
-                        @input="updateMH"></InputText>
+                        @input="updateCalculator"></InputText>
                     <InputText v-model="editEntry.tas" id="calcTAS"
                         class="headingInput" title="True Airspeed (Kts)"
-                        @input="updateMH"></InputText>
+                        @input="updateCalculator"></InputText>
                     <div class="headingCalculated" id="calcGS"
                         title="Calculated Ground Speed (Kts)."
                         >{{ Formatter.speed(groundSpeed) }}</div>
@@ -364,10 +384,10 @@ function updateMH() {
                         title="True Heading">{{ Formatter.heading(trueHeading) }}</div>
                     <InputText v-model="editEntry.mv" id="calcMV"
                         class="headingInput" title="Magnetic Variation (sectional)"
-                        @input="updateMH"></InputText>
+                        @input="updateCalculator"></InputText>
                     <InputText v-model="editEntry.md" id="calcMD"
                         class="headingInput" title="Magnetic Deviation (Compass card)"
-                        @input="updateMH"></InputText>
+                        @input="updateCalculator"></InputText>
                     <div class="headingCalculated" id="calcMH"
                         title="Calculated Magnetic Heading."
                         >{{ Formatter.heading(magneticHeading) }}</div>
@@ -381,36 +401,36 @@ function updateMH() {
                         <div class="label">Mag. Heading</div>
                         <InputText id="mh" v-model="editEntry.mh" />
                         <div class="hint clickable" id="mhHint"
-                            title="Click to use." 
-                            @click="editEntry.mh=calculatedHeading">{{ calculatedHeading }}</div>
+                            :title="suggestedHeadingTitle" 
+                            @click="editEntry.mh=suggestedHeading">{{ suggestedHeading }}</div>
                     </div>
                     <div title="Leg Distance (NM). Supports calculation for cruise legs (ex: 24-15.4)" class="legField">
                         <div class="label">Distance</div>
-                        <InputText id="ld" v-model="editEntry.ld" @input="calculation" />
+                        <InputText id="ld" v-model="editEntry.ld" @input="updateSuggested" />
                         <div class="hint clickable" id="ldHint"
-                            :title="calculatedDistanceHint" 
-                            @click="copyLegDistance">{{ calculatedDistance }}</div>
+                            :title="suggestedDistanceTitle" 
+                            @click="copyLegDistance">{{ suggestedDistance }}</div>
                     </div>
                     <div class="legField" title="Ground Speed (Kts)">
                         <div class="label">Ground Speed</div>
-                        <InputText id="gs" v-model="editEntry.gs" @input="calculation" />
+                        <InputText id="gs" v-model="editEntry.gs" @input="updateSuggested" />
                         <div class="hint clickable" id="gsHint"
                             title="Calculated Ground Speed. Click to Use." 
                             @click="copyGroundSpeed">{{ calculatedGroundSpeed }}</div>
                     </div>
                     <div class="legField" title="Leg Time (Min). Supports decimal and time format (3:30 = 3.5)">
                         <div class="label">Time</div>
-                        <InputText id="lt" v-model="editEntry.lt" @input="calculation" />
+                        <InputText id="lt" v-model="editEntry.lt" @input="updateSuggested" />
                         <div class="hint clickable" id="ltHint"
-                            :title="calculatedTimeHint"
-                            @click="copyTime">{{ calculatedTime }}</div>
+                            :title="suggestedTimeTitle"
+                            @click="copyTime">{{ suggestedTime }}</div>
                     </div>
                     <div class="legField" title="Leg Fuel (Gal)">
                         <div class="label">Leg Fuel</div>
                         <InputText id="lf" v-model="editEntry.lf" />
                         <div class="hint clickable" id="lfHint"
-                            :title="calculatedFuelHint" 
-                            @click="editEntry.lf=calculatedFuel">{{ calculatedFuel }}</div>
+                            :title="suggestedFuelTitle" 
+                            @click="editEntry.lf=suggestedFuel">{{ suggestedFuel }}</div>
                     </div>
                 </div>
             </div>
