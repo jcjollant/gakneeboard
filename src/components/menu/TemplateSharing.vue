@@ -5,13 +5,13 @@ import { urlKneeboard } from '../../assets/data'
 import { emitToast, emitToastError } from '../../assets/toast'
 
 import Button from 'primevue/button'
-import SelectButton from 'primevue/selectbutton'
+import OneChoice from '../shared/OneChoice.vue';
 
 const emits = defineEmits(["toast"]);
 
 const directLink = ref('')
-const pubPublic = 'Public'
-const pubPrivate = 'Private'
+const pubPublic = {label:'Public'}
+const pubPrivate = {label:'Private'}
 const publish = ref(pubPrivate)
 const template = ref(null)
 
@@ -45,7 +45,7 @@ watch( props, async() => {
 // keep template publish in sync with publish option
 watch(publish, () => {
     if(template.value){
-        template.value.publish = (publish.value == pubPublic)
+        template.value.publish = (publish.value.label == pubPublic.label)
         // console.log('[TemplateSharing.watch]', template.value.publish)
     } 
 })
@@ -75,7 +75,7 @@ async function onCopyURL() {
 <template>
     <div class="sharing">
         <div class="sharingText">Sharing</div>
-        <SelectButton v-model="publish" :options="[pubPrivate,pubPublic]" aria-labelledby="basic" />
+        <OneChoice v-model="publish" :choices="[pubPrivate,pubPublic]" />
         <div v-if="directLink" class="directlink">
             <div>with code</div>
             <div class="bold"><a :href="directLink" target="_blank" title="Open link in new tab">{{ template?.code ? template.code:'(none)' }}</a></div>
