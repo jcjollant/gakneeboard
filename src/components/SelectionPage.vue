@@ -25,7 +25,7 @@ function replacePage(type) {
 
 <template>
     <div class="contentPage">
-        <Header :title="'Page Selection'" :clickable="false"></Header>
+        <Header :title="'Page Selection'" :replace="false" :clickable="false"></Header>
         <!-- <div class="widgetTitle">Tile Selection</div> -->
         <div class="list">
             <FAButton v-for="page in knownPages" :label="page.name" :title="page.tooltip" :icon="page.icon"
