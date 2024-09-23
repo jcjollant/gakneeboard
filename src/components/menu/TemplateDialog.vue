@@ -13,7 +13,7 @@ import { newCurrentUser } from "../../assets/data"
 import { getTemplateDataFromName } from '../../assets/sheetData'
 import { sheetNameDemo, sheetNameDemoChecklist, sheetNameDemoNavlog, sheetNameDemoTiles } from '../../assets/sheetData'
 import { emitToast, emitToastError, emitToastInfo, getToastData, toastError, toastSuccess } from '../../assets/toast'
-import { TemplateData, TemplateDialogMode } from '../../assets/Templates'
+import { Template, TemplateData, TemplateDialogMode } from '../../assets/Templates'
 import TemplateDescription from './TemplateDescription.vue'
 import TemplateSharing from "./TemplateSharing.vue";
 
@@ -23,6 +23,7 @@ const deleteMode = ref(false)
 const loadTemplate = ref(null)
 const mode = ref(null)
 const templateNameText = ref('')
+const templateDescText = ref('')
 const templateCode = ref('')
 const targetTemplate = ref(null)
 const fetching = ref(false)
@@ -45,7 +46,10 @@ function loadProps(props) {
   // Active template
   // console.log('[TemplateDialog.loadProps]', JSON.stringify(props.template))
   targetTemplate.value = props.template;
-  if(props.template) templateNameText.value = props.template.name
+  if(props.template) {
+    templateNameText.value = props.template.name
+    templateDescText.value = props.template.desc
+  } 
 
   // Current user
   user.value = newCurrentUser
@@ -137,14 +141,15 @@ function onButtonLoad() {
 }
 
 function onButtonOverwrite () {
-  // refresh the name
+  // refresh name and description
   targetTemplate.value.name = templateNameText.value
+  targetTemplate.value.desc = templateDescText.value
   emits('save',targetTemplate.value)
 }
 
 function onButtonSaveNew() {
   // create a new template with form data
-  const template = {name:templateNameText.value,publish:false}
+  const template = new Template(templateNameText.value, templateDescText.value)
   emits('save',template)
   changeTemplateTarget()
 }
@@ -209,11 +214,15 @@ function onToggleDeleteMode() {
     <div v-if="mode==TemplateDialogMode.save">
       <div class="properties">
         <InputGroup class="pageName">
-          <InputGroupAddon>Rename</InputGroupAddon>
+          <InputGroupAddon>Rename To</InputGroupAddon>
           <InputText v-model="templateNameText"/>
         </InputGroup>
+        <InputGroup class="pageDescription">
+          <InputGroupAddon>Description</InputGroupAddon>
+          <InputText v-model="templateDescText"/>
+        </InputGroup>
         <TemplateSharing :template="targetTemplate" @toast="onToast" />
-        <TemplateDescription :template="targetTemplate" />
+        <TemplateDescription :template="targetTemplate" :hideDescription="true" />
         <div>
         </div>
       </div>
@@ -231,7 +240,11 @@ function onToggleDeleteMode() {
           <InputGroupAddon>Name</InputGroupAddon>
           <InputText v-model="templateNameText"/>
         </InputGroup>
-        <TemplateDescription :template="targetTemplate" />
+        <InputGroup class="pageDescription">
+          <InputGroupAddon>Description</InputGroupAddon>
+          <InputText v-model="templateDescText"/>
+        </InputGroup>
+        <TemplateDescription :template="targetTemplate" :hideDescription="true" />
       </div>
       <label v-if="user.templates.length >= user.maxTemplateCount || (user.templates.length==user.maxTemplateCount && !(targetTemplate?.id))" class="experiment">We are currently experimenting with a limit of {{ user.maxTemplateCount }} templates</label>
       <div v-else class="actionDialog gap-2">

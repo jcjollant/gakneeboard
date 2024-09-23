@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import { describePage } from '../../assets/sheetData'
+import { Template }  from '../../assets/Templates'
 
 const template = ref(null)
 
@@ -8,6 +9,7 @@ const template = ref(null)
 // Props management
 const props = defineProps({ 
   template: { type: Object, default: null},
+  hideDescription : { type: Boolean, default: false}
 })
 
 
@@ -32,10 +34,16 @@ watch( props, async() => {
 </script>
 
 <template>
+  <div>
     <div class="templateDescription">
-        <div class="label">Page 1</div><div class="pageDescription">{{ describePage(template, 0) }}</div>
-        <div class="label">Page 2</div><div class="pageDescription">{{ describePage(template, 1) }}</div>
+      <div v-if="!hideDescription" class="label">Desc.</div>
+      <div v-if="!hideDescription" class="pageDescription">{{ Template.describe(template) }}</div>
+      <div class="label">Page 1</div>
+      <div class="pageDescription">{{ describePage(template, 0) }}</div>
+      <div class="label">Page 2</div>
+      <div class="pageDescription">{{ describePage(template, 1) }}</div>
     </div>
+  </div>
 </template>
 
 <style scoped>
