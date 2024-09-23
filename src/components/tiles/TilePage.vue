@@ -44,7 +44,7 @@ function onUpdate(newTileData) {
 </script>
 
 <template>
-    <div class="tiles">
+    <div class="tiles pageTiles">
         <Tile v-for="tile in tiles" :tile="tile" @update="onUpdate" @toast="onToast" />
     </div>
 </template>
