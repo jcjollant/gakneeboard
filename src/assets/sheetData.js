@@ -1,4 +1,4 @@
-import { PageType } from './Templates'
+import { PageType, Template } from './Templates'
 
 
 const demoRadioData = [
@@ -36,16 +36,10 @@ const pageDataBlankTiles = {type:PageType.tiles,data:[
 ]}
 const pageDataBlankChecklist = {type:PageType.checklist, data:{}}
 export const pageDataBlank = {type:PageType.selection,data:{}}
+// Template Blank has two blank pages
+const templateBlank = new Template('Blank','Two selection pages', false, [pageDataBlank,pageDataBlank])
 
-// Sheets
-const sheetBlank = {
-  name:'Blank',
-  data:[pageDataBlank,pageDataBlank]
-}
-
-const sheetDemo = {
-  name: 'Default Demo',
-  data: [{
+const page0DemoDefault = {
     type:PageType.tiles,
     data:[
       {"id":0,"name":"airport","data":{"code":"KBFI","rwy":"14L-32R","rwyOrientation":"magnetic","corners":["weather","twr","field","tpa"]}},
@@ -54,24 +48,24 @@ const sheetDemo = {
       {"id":3,"name":"notes","data":{}},
       {"id":4,"name":"atis","data":{}},
       {"id":5,"name":"clearance","data":{}}
-    ]},{
-      type:PageType.checklist,
-      data:{
-        "name":"Flight",
-        "items":[
-          {"s":"Climb","t":"strong"},{"c":"Power","r":"FULL"},{"c":"Mixture","r":"RICH"},{"c":"Flaps","r":"UP"},{"c":"Engine","r":"GREEN"},{"s":"Approach","t":"strong"},{"c":"Direct","r":"SET"},{"c":"ATIS","r":"GET"},{"c":"Altimeter","r":"SET"},{"c":"RWY HDG","r":"SET"},{"c":"Calls","r":"MADE"},{"c":"Briefing","r":"DONE"},{"s":"Engine FAILURE","t":"emer"},{"c":"Airspeed","r":"68"},{"c":"Fuel Pump","r":"ON"},{"c":"Mixture","r":"RICH"},{"c":"Fuel Shutoff","r":"ON"},{"c":"Fuel Selector","r":"BOTH"},{"s":"Engine FIRE","t":"emer"},{"c":"Mixture","r":"CUTOFF"},{"c":"Fuel Shutoff","r":"OFF"},{"c":"Fuel Pump","r":"OFF"},{"c":"Masters","r":"OFF"},{"c":"Vents, Heat, Air","r":"CLOSED"},{"c":"Emergency Descent","r":"120@30"},{"c":""}
-        ],
-        "items2":[
-          {"s":"Cruise","t":"strong"},{"c":"Power","r":"SET"},{"c":"Flaps","r":"UP"},{"c":"Trim","r":"SET"},{"c":"Heading","r":"BUGGED"},{"s":"Before Landing","t":"strong"},{"c":"Fuel Selector","r":"BOTH"},{"c":"Mixture","r":"RICH"},{"c":"Landing Lights","r":"ON"},{"c":"Safety Belts","r":"ON"},{"c":"Auto Pilot","r":"OFF"},{"c":"Cabin Power","r":"OFF"},{"s":"After Landing"},{"c":"Flaps","r":"UP"},{"c":"Light","r":"TAXI"},{"c":"Mixture","r":"Lean"},{"c":"Trim","r":"T/O"},{"c":"Pitot","r":"OFF"},{"c":"Comms","r":"GND"},{"s":"Shutdown"},{"c":"Avionics","r":"OFF"},{"c":"Mixture","r":"IDLE"},{"c":"Magnetos","r":"OFF"},{"c":"Electrical Equipment","r":"OFF"},{"c":"Hobbs & Tach","r":"RECORD"},{"c":"Master & Stby","r":"OFF"}
-        ],
-        "theme":"blue"
-      }
-    }]
+    ]}
+const page1DemoDefault = {
+    type:PageType.checklist,
+    data:{
+      "name":"Flight",
+      "items":[
+        {"s":"Climb","t":"strong"},{"c":"Power","r":"FULL"},{"c":"Mixture","r":"RICH"},{"c":"Flaps","r":"UP"},{"c":"Engine","r":"GREEN"},{"s":"Approach","t":"strong"},{"c":"Direct","r":"SET"},{"c":"ATIS","r":"GET"},{"c":"Altimeter","r":"SET"},{"c":"RWY HDG","r":"SET"},{"c":"Calls","r":"MADE"},{"c":"Briefing","r":"DONE"},{"s":"Engine FAILURE","t":"emer"},{"c":"Airspeed","r":"68"},{"c":"Fuel Pump","r":"ON"},{"c":"Mixture","r":"RICH"},{"c":"Fuel Shutoff","r":"ON"},{"c":"Fuel Selector","r":"BOTH"},{"s":"Engine FIRE","t":"emer"},{"c":"Mixture","r":"CUTOFF"},{"c":"Fuel Shutoff","r":"OFF"},{"c":"Fuel Pump","r":"OFF"},{"c":"Masters","r":"OFF"},{"c":"Vents, Heat, Air","r":"CLOSED"},{"c":"Emergency Descent","r":"120@30"},{"c":""}
+      ],
+      "items2":[
+        {"s":"Cruise","t":"strong"},{"c":"Power","r":"SET"},{"c":"Flaps","r":"UP"},{"c":"Trim","r":"SET"},{"c":"Heading","r":"BUGGED"},{"s":"Before Landing","t":"strong"},{"c":"Fuel Selector","r":"BOTH"},{"c":"Mixture","r":"RICH"},{"c":"Landing Lights","r":"ON"},{"c":"Safety Belts","r":"ON"},{"c":"Auto Pilot","r":"OFF"},{"c":"Cabin Power","r":"OFF"},{"s":"After Landing"},{"c":"Flaps","r":"UP"},{"c":"Light","r":"TAXI"},{"c":"Mixture","r":"Lean"},{"c":"Trim","r":"T/O"},{"c":"Pitot","r":"OFF"},{"c":"Comms","r":"GND"},{"s":"Shutdown"},{"c":"Avionics","r":"OFF"},{"c":"Mixture","r":"IDLE"},{"c":"Magnetos","r":"OFF"},{"c":"Electrical Equipment","r":"OFF"},{"c":"Hobbs & Tach","r":"RECORD"},{"c":"Master & Stby","r":"OFF"}
+      ],
+      "theme":"blue"
+    }
   }
 
-const sheetDemoTiles = {
-  name: 'Tiles Demo',
-  data: [{
+const templateDemoDefault = new Template('Default Demo', 'Six Tiles and a Flight Checklist', false, [page0DemoDefault, page1DemoDefault])
+
+const page0DemoTiles = {
     type:PageType.tiles,
     name:"Tiles Demo",
     data:[
@@ -81,7 +75,9 @@ const sheetDemoTiles = {
       {'id':3,'name':'airport','data':{'code':'O26','rwy':'13-31'}},
       {'id':4,'name':'atis','data':{}},
       {'id':5,'name':'clearance','data':{}},
-   ]},{
+   ]}
+
+const page1DemoTiles = {
     type:PageType.tiles,
     data:[
       {'id':0,'name':'checklist','data':{name:'Power OFF stalls', items:[{"c":"Clearing Turns+Calls","r":"Made"},{"c":"Visual Reference","r":"Bugged"},{"c":"Altitude","r":"3,000"},{"c":"Power=1,600 Flaps > Full"},{"c":"Hold 65 3s, Level off until stall"},{"c":"Full Power + Right Rudder"},{"c":"Flaps 20 > 10 > 0"},{"c":"ACS HDG/Bank","r":"±10°/20°"}],theme:"blue"}},
@@ -92,10 +88,10 @@ const sheetDemoTiles = {
       {'id':5,'name':'radios','data':demoRadioData},
     ]
    }
-  ]
-}
 
-const pageDemoChecklist1 = {
+const templateDemoTiles = new Template('Tiles Demo', 'Every Tile Available on GA Kneeboard', false, [page0DemoTiles,page1DemoTiles])
+
+const page0DemoChecklist = {
   type:PageType.checklist,
   data:{
     name:'Preflight',
@@ -128,7 +124,7 @@ const pageDemoChecklist1 = {
         {c:'Master Switches',r:'OFF'},
     ]
   }}
-const pageDemoChecklist2 = {
+const page1DemoChecklist = {
   type:PageType.checklist,
   data : {
     name:'Preflight (Cont\'d)',
@@ -163,12 +159,9 @@ const pageDemoChecklist2 = {
   }
 }
 
-export const sheetDemoChecklist = {
-  name:'Checklist Demo',
-  data:[pageDemoChecklist1,pageDemoChecklist2]
-}
+const templateDemoChecklist = new Template('Checklist Demo', 'A C172 preflight Checklist', false, [page0DemoChecklist,page1DemoChecklist])
 
-const pageDemoNavlog0 = {
+const page0DemoNavlog = {
   type: PageType.navLog,
   data: {
     "from":"KRNT",
@@ -200,7 +193,7 @@ const pageDemoNavlog0 = {
   }    
 }
 
-const pageDemoNavlog1 = {
+const page1DemoNavlog = {
   type: PageType.tiles,
   data:[
     {"id":0,"name":"airport","data":{"code":"krnt","rwy":"16-34"}},
@@ -212,10 +205,7 @@ const pageDemoNavlog1 = {
   ]
 }
 
-export const sheetDemoNavlog = {
-  name: 'Navlog Demo',
-  data: [pageDemoNavlog0,pageDemoNavlog1]
-}
+export const templateDemoNavlog = new Template('Navlog Demo', 'Navlog page along with six tiles', false, [page0DemoNavlog,page1DemoNavlog])
 
 export function describePage(sheet, pageNumber, maxLength=undefined) {
   if(!sheet) return "empty";
@@ -297,47 +287,47 @@ export function getPageBlank(type) {
 /**
  * @returns a copy of blank sheet data
  */
-export function getSheetBlank() {
-  return duplicate(sheetBlank)
+export function getTemplateBlank() {
+  return duplicate(templateBlank)
 }  
 
 /**
  * @returns a copy of demo sheet data 
  */
-export function getSheetDemo() {
-  return duplicate(sheetDemo)
+export function getTemplateDemo() {
+  return duplicate(templateDemoDefault)
 }  
 
-export function getSheetDemoNavlog() {
-  return duplicate(sheetDemoNavlog)
+export function getTemplateDemoNavlog() {
+  return duplicate(templateDemoNavlog)
 }
 
 /**
  * @returns a copy of demo sheet data 
  */
-export function getSheetDemoTiles() {
-  return duplicate(sheetDemoTiles)
+export function getTemplateDemoTiles() {
+  return duplicate(templateDemoTiles)
 }  
 
 /**
  * @returns a copy of checklist demo sheet data 
  */
-export function getSheetDemoChecklist() {
-  return duplicate(sheetDemoChecklist)
+export function getTemplateDemoChecklist() {
+  return duplicate(templateDemoChecklist)
 }  
 
 // turn a default name into its data or null if the name is unkown
 export function getTemplateDataFromName(name) {
   if( name == sheetNameDemo) {
-    return getSheetDemo()
+    return getTemplateDemo()
   } else if( name == sheetNameDemoTiles) {
-    return getSheetDemoTiles()
+    return getTemplateDemoTiles()
   } else if( name == sheetNameDemoChecklist) {
-    return getSheetDemoChecklist()
+    return getTemplateDemoChecklist()
   } else if( name == sheetNameDemoNavlog) {
-    return getSheetDemoNavlog()
+    return getTemplateDemoNavlog()
   } else if( name == sheetNameNew) { 
-    return getSheetBlank()
+    return getTemplateBlank()
   } else {
     return null;
   }
