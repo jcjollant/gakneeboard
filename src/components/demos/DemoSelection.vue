@@ -13,11 +13,11 @@ const emits = defineEmits(['load'])
     <div class="demoGrid">
         <DemoButton :template="getTemplateDemo()" icon="pen-to-square" class="defaultDemo"
           @click="emits('load', getTemplateDemo())"></DemoButton>
-        <DemoButton :template="getTemplateDemoChecklist()" icon="list-check"
+        <DemoButton :template="getTemplateDemoChecklist()" icon="list-check" class="checklistDemo"
           @click="emits('load', getTemplateDemoChecklist())"></DemoButton>
-        <DemoButton :template="getTemplateDemoTiles()" icon="border-all"
+        <DemoButton :template="getTemplateDemoTiles()" icon="border-all" class="tilesDemo"
           @click="emits('load', getTemplateDemoTiles())"></DemoButton>
-        <DemoButton :template="getTemplateDemoNavlog()" icon="route"
+        <DemoButton :template="getTemplateDemoNavlog()" icon="route" class="navlogDemo"
           @click="emits('load', getTemplateDemoNavlog())"></DemoButton>
     </div>
   </Dialog>
