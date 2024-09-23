@@ -11,6 +11,21 @@ export class PageType {
   static navLog = 'navlog'
 }
 
+export class Template {
+    name:string
+    desc:string
+    publish:boolean
+    constructor(name:string, description:string, publish:boolean=false) {
+        this.name = name
+        this.desc = description
+        this.publish = publish
+    }
+
+    static describe(template:any):string {
+        return (template && template.desc) ? template.desc : '(none)'
+    }
+}
+
 export class TemplateDialogMode {
     static save = 'save'
     static saveAs = 'saveAs'
