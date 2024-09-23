@@ -6,7 +6,7 @@ import { inject } from "@vercel/analytics"
 import { duplicate, getBackend, newCurrentUser, reportError } from './assets/data.js'
 import { backend, version } from './assets/data.js'
 import { EditorAction } from './assets/Editor.ts'
-import { getSheetDemoTiles, pageDataBlank, readPageFromClipboard } from './assets/sheetData'
+import { getSheetDemo, pageDataBlank, readPageFromClipboard } from './assets/sheetData'
 import { getToastData, toastError, toastWarning } from './assets/toast'
 import { LocalStore } from './assets/LocalStore'
 import { TemplateData } from './assets/Templates'
@@ -62,7 +62,7 @@ function loadTemplate(template=null) {
 
   // if we don't know what to show, we load a copy of the demo page
   if( !template) {
-    template = getSheetDemoTiles();
+    template = getSheetDemo();
   }
 
   // make sure data is at the latest format
@@ -258,7 +258,7 @@ onMounted(async () => {
   } catch(e) {
     console.log('[App.onMounted] local data is corrupted' + e)
     // revert to demo tiles
-    loadTemplate(getSheetDemoTiles())
+    loadTemplate(getSheetDemo())
     saveActiveTemplate()
   }
   // Analytics
