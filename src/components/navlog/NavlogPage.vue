@@ -128,7 +128,7 @@ function onToast(data) {
 </script>
 
 <template>
-    <div class="contentPage navlogPage">
+    <div class="contentPage pageNavlog">
         <div v-if="mode == modeEdit">
             <Header title="NavLog Editor" :hideReplace="false" 
                 @replace="emits('replace')"></Header>
@@ -379,7 +379,7 @@ function onToast(data) {
     line-height: normal;
     overflow: hidden;
 }
-.navlogPage {
+.pageNavlog {
     overflow: hidden;
     position: relative;
 }
