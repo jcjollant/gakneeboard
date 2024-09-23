@@ -122,7 +122,8 @@ Avionics##OFF
 
 Create sections using '##Section Name':
 ##Left Wing"></Textarea>
-                <Textarea v-if="columns.value == 2" v-model="textData2" class="editList smallText"></Textarea>
+                <Textarea v-if="columns.value == 2" v-model="textData2" 
+                    class="editList" :class="{ 'smallTextarea': columns.value == 2 }"></Textarea>
             </div>
             <ThemeSelector @change="onThemeChange" :theme="theme" />
             <ActionBar @cancel="onCancel" @apply="onApply" :help="urlGuideChecklist" />
@@ -163,7 +164,6 @@ Create sections using '##Section Name':
 
 .leftList {
     border-right: 1px solid lightgrey;
-
 }
 .pageChecklist {
     overflow: hidden;
