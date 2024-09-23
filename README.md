@@ -17,6 +17,11 @@ Run the test suite:
 ## TODO
 
 # Done
+## 9/22/2024
+* Fixed small text bug on two colums checklist
+* Added description to Templates
+* Changed Load Template dialog to split own and community
+* All demos are not available under Menu>"Demo" 
 # 9/20/2024
 * Fixed unselect on Print, Checklist, About, Template Sharing, Navlog creation
 * Added page eject for Navlog, Checklist and Cover pages
