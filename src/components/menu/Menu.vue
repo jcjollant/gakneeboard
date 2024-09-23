@@ -3,20 +3,22 @@ import { watch } from 'vue';
 import { ref, onMounted } from 'vue';
 
 import { newCurrentUser } from '../../assets/data'
-import { getSheetBlank, getSheetDemo } from '../../assets/sheetData'
+import { getTemplateBlank } from '../../assets/sheetData'
 import { emitToast, emitToastError, emitToastInfo, emitToastWarning } from '../../assets/toast'
-import { TemplateData, TemplateDialogMode } from '../../assets/Templates'
+import { TemplateData, TemplateSaveDialogMode } from '../../assets/Templates'
 
 import Button from 'primevue/button'
 import { useConfirm } from 'primevue/useconfirm'
 import ConfirmDialog from 'primevue/confirmdialog';
 
-import Feedback from './Feedback.vue';
-import Print from './Print.vue'
-import TemplateDialog from './TemplateDialog.vue'
-import SignIn from './SignIn.vue';
 import About from './About.vue'
+import DemoSelection from '../demos/DemoSelection.vue';
+import Feedback from './Feedback.vue';
 import Maintenance from './Maintenance.vue'
+import Print from './Print.vue'
+import SignIn from './SignIn.vue';
+import TemplateLoad from '../templates/TemplateLoad.vue'
+import TemplateSave from '../templates/TemplateSave.vue'
 
 
 const emits = defineEmits(['authentication','howDoesItWork','load','print','printOptions', 'printPreview','save','toast','toggle'])
@@ -25,12 +27,14 @@ const activeTemplate = ref(null)
 const confirm = useConfirm()
 const refreshPrint = ref(0)
 const showAbout = ref(false)
+const showDemoSelection = ref(false)
 const showFeedback = ref(false)
 const showMaintenance = ref(false)
 const showMenu = ref(false)
 const showPrint = ref(false)
 const showSignIn = ref(false)
-const showTemplates = ref(false)
+const showTemplateSave = ref(false)
+const showTemplateLoad = ref(false)
 const user = ref(newCurrentUser)
 const templateDialogMode = ref('load')
 const templateTime = ref(0)
@@ -152,27 +156,35 @@ function onSignOut() {
     })
 }
 
-function onTemplateDialog(save=false) {
+function onTemplateDialogLoad() {
+  if( user && user.value) {
+    showTemplateLoad.value = true;
+  } else {
+    warnNoUser()
+  }
+}
+
+function onTemplateDialogSave() {
   // console.log('[Menu.onTemplateDialog]', save, JSON.stringify(activeTemplate.value))
   if( user.value) {
-    showTemplates.value = true;
+    showTemplateSave.value = true;
     templateTime.value = Date.now()
     // console.log('[Menu.onTemplateDialog]', JSON.stringify(activeTemplate.value))
-    if(save) {
-      templateDialogMode.value = (activeTemplate.value && activeTemplate.value.id) ? TemplateDialogMode.save : 'saveAs'
-    } else {
-      templateDialogMode.value = TemplateDialogMode.load
-    }
+    templateDialogMode.value = (activeTemplate.value && activeTemplate.value.id) ? TemplateSaveDialogMode.save : 'saveAs'
   } else {
-    emitToastWarning(emits, 'Squawk and Ident','Please sign in to use custom sheets')
+    warnNoUser()
   }
 }
 
 /**
  * Hide the sheet dialog
  */
-function onTemplateClose() {
-  showTemplates.value = false;
+function onTemplateCloseSave() {
+  showTemplateSave.value = false;
+}
+
+function onTemplateCloseLoad() {
+  showTemplateLoad.value = false;
 }
 
 // a sheet has been deleted, it should be removed from the user
@@ -187,7 +199,9 @@ function onTemplateDelete(template) {
  */
  function onTemplateLoad(template) {
   // console.log('[menu.onPageLoad]',pageName)
-  showTemplates.value = false
+  showTemplateSave.value = false
+  showTemplateLoad.value = false
+  showDemoSelection.value = false
   const title = 'Load Template "' + template.name + '"'
   confirmAndLoad( title, template)
 }
@@ -220,7 +234,7 @@ function onTemplateOverwrite(from,to) {
  */
  async function onTemplateSave(template) {
   // console.log('[Menu.onTemplateSave]',JSON.stringify(template))
-  showTemplates.value = false;
+  showTemplateSave.value = false;
   try {
       // retreive data from active template
       template.data = activeTemplate.value.data;
@@ -257,6 +271,10 @@ function toggleMenu() {
     emits('toggle', showMenu.value)
 }
 
+function warnNoUser() {
+  emitToastWarning(emits, 'Squawk and Ident','Please sign in to use custom templates')
+}
+
 </script>
 
 <template>
@@ -273,17 +291,21 @@ function toggleMenu() {
       @print="onPrintPrint"
        />
     <About v-model:visible="showAbout" @close="showAbout=false" @hdiw="onHdiw"/>
+    <DemoSelection v-model:visible="showDemoSelection" @load="onTemplateLoad" />
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
       @authentication="onAuthentication" />
-    <TemplateDialog v-model:visible="showTemplates" :mode="templateDialogMode" :time="templateTime" :template="activeTemplate"
-      @close="onTemplateClose"
+    <TemplateSave v-model:visible="showTemplateSave" :mode="templateDialogMode" :time="templateTime" :template="activeTemplate"
+      @close="onTemplateCloseSave"
       @delete="onTemplateDelete"
-      @load="onTemplateLoad" 
       @save="onTemplateSave"
       @mode="onTemplateMode"
       @overwrite="onTemplateOverwrite"
       @toast="onToast" />
-    <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu">
+    <TemplateLoad v-model:visible="showTemplateLoad" :time="templateTime" 
+      @close="onTemplateCloseLoad"
+      @load="onTemplateLoad" 
+      @toast="onToast" />
+    <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu" title="Toggle Menu">
       <div class="bar1"></div>
       <div class="bar2"></div>
       <div class="bar3"></div>
@@ -297,10 +319,10 @@ function toggleMenu() {
         <Button icon="pi pi-print" label="Print" title="Print Active Template"
           @click="onPrint"></Button>
         <div class="separator"></div>
-        <Button label="New" icon="pi pi-file" title="Reset Template" @click="onTemplateLoad(getSheetBlank())"></Button>
-        <Button label="Load" icon="pi pi-folder-open" title="Open Existing Template" @click="onTemplateDialog(false)"></Button>
-        <Button label="Save" icon="pi pi-save" title="Save this Template" @click="onTemplateDialog(true)"></Button>
-        <Button label="Demo" icon="pi pi-clipboard" title="Load demo Template" @click="onTemplateLoad(getSheetDemo())"></Button>
+        <Button label="New" icon="pi pi-file" title="Reset Template" @click="onTemplateLoad(getTemplateBlank())"></Button>
+        <Button label="Load" icon="pi pi-folder-open" title="Open Existing Template" @click="onTemplateDialogLoad"></Button>
+        <Button label="Save" icon="pi pi-save" title="Save this Template" @click="onTemplateDialogSave"></Button>
+        <Button label="Demo" icon="pi pi-clipboard" title="Load demo Template" @click="showDemoSelection=true"></Button>
         <div class="separator" @click="showMaintenance=true"></div>
         <Button label="Feedback" icon="pi pi-megaphone" title="Send Feedback"
           @click="showFeedback=true" ></Button>
