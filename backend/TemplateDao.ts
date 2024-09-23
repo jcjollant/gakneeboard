@@ -32,7 +32,7 @@ export class TemplateDao {
         if( template.id) {
             // console.log( "[SheetDao.createOrUpdate] updating", pageId);
             await sql`
-                UPDATE sheets SET data=${data},name=${template.name} WHERE id=${template.id}
+                UPDATE sheets SET data=${data},name=${template.name},description=${template.desc} WHERE id=${template.id}
             `
         } else {
             // console.log( "[TemplateDao.createOrUpdate] net new");
@@ -41,8 +41,8 @@ export class TemplateDao {
             // const count = r1.rows[0]['count'] as number;
             // if( count >= TemplateDao.maxSheets && userId != 1) throw new Error("Maximum number of sheets reached");
             const result = await sql`
-                INSERT INTO sheets (name, data, version, user_id)
-                VALUES (${template.name}, ${data}, ${this.modelVersion}, ${userId})
+                INSERT INTO sheets (name, data, description, version, user_id)
+                VALUES (${template.name}, ${data}, ${template.desc}, ${this.modelVersion}, ${userId})
                 RETURNING id;
             `
             template.id = result.rows[0]['id']
@@ -79,9 +79,9 @@ export class TemplateDao {
 
     public static async getAllTemplateData():Promise<Template[]> {
         const result = await sql`
-            SELECT id,data,name FROM sheets;
+            SELECT id,data,name, description FROM sheets;
         `
-        return result.rows.map((row) => new Template(row['id'], row['name'], row['data']));
+        return result.rows.map((row) => new Template(row['id'], row['name'], row['data'], row['description']));
     }
 
     /**
@@ -93,11 +93,11 @@ export class TemplateDao {
     public static async getOverviewListForUser(userId:number):Promise<Template[]> {
         // console.log('[SheetDao.getListForUser] user', userId)
         return await sql`
-            SELECT sheets.id as id,name,publications.code as code FROM sheets LEFT JOIN publications ON sheets.id=publications.sheetid WHERE user_id=${userId}
+            SELECT sheets.id as id,name,description,publications.code as code FROM sheets LEFT JOIN publications ON sheets.id=publications.sheetid WHERE user_id=${userId}
         `.then( (result) => {
             // console.log('[SheetDao.getListForUser]', result.rowCount)
             if(result.rowCount) {
-                return result.rows.map( (row) => new Template(row['id'], row['name'], [], row['code'] != null, row['code']))
+                return result.rows.map( (row) => new Template(row['id'], row['name'], [], row['description'], row['code'] != null, row['code']))
             } else {
                 return []
             }
@@ -114,16 +114,16 @@ export class TemplateDao {
         let result:any;
         if(userId) {
             result = await sql`
-                SELECT data,name FROM sheets WHERE id=${templateId} AND user_id=${userId};
+                SELECT data,name,description FROM sheets WHERE id=${templateId} AND user_id=${userId};
             `
         } else {
             result = await sql`
-                SELECT data,name FROM sheets WHERE id=${templateId};
+                SELECT data,name,description FROM sheets WHERE id=${templateId};
             `
         }
         if( result.rowCount == 0) return undefined
 
         const row = result.rows[0];
-        return new Template( templateId, row['name'], row['data']);
+        return new Template( templateId, row['name'], row['data'], row['description']);
     }
 }
