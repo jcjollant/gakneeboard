@@ -87,5 +87,50 @@ describe('Navigation', () => {
     cy.get('.actionDialog > .p-button-link').click()
   })
 
+  it('Demos', () => {
+    visitAndCloseBanner()
 
+    cy.get('.menuIcon').click()
+    cy.get('[aria-label="Demo"]').click()
+    cy.get('.p-dialog-header').contains('GA Kneeboard Demos')
+
+    // Check demo pages description work
+    const demoPages = [ 
+      {i:1, l:'Default', t:'Default Demo'}, 
+      {i:2, l:'Checklist',t:'A C172 preflight Checklist'}, 
+      {i:3, l:'Tiles', t:'Every Tile Available on GA Kneeboard'}, 
+      {i:4, l:'Navlog', t:'Navlog page along with six tiles'}, 
+      ]
+    for(const p of demoPages) {
+      cy.get(`.demoGrid > :nth-child(${p.i})`).contains(p.l);
+      cy.get(`.demoGrid > :nth-child(${p.i})`).title(p.t);
+    }
+
+    // load default demo
+    cy.get(`.demoGrid > :nth-child(1)`).click()
+    cy.get('.p-confirm-dialog-accept').click()
+    cy.get('.pageOne').should('have.class','pageTiles')
+    cy.get('.pageTwo').should('have.class','pageChecklist')
+
+    // load Checklist demo
+    cy.get('[aria-label="Demo"]').click()
+    cy.get(`.demoGrid > :nth-child(2)`).click()
+    cy.get('.p-confirm-dialog-accept').click()
+    cy.get('.pageOne').should('have.class','pageChecklist')
+    cy.get('.pageTwo').should('have.class','pageChecklist')
+
+    // load Tiels demo
+    cy.get('[aria-label="Demo"]').click()
+    cy.get(`.demoGrid > :nth-child(3)`).click()
+    cy.get('.p-confirm-dialog-accept').click()
+    cy.get('.pageOne').should('have.class','pageTiles')
+    cy.get('.pageTwo').should('have.class','pageTiles')
+
+    // load Navlog demo
+    cy.get('[aria-label="Demo"]').click()
+    cy.get(`.demoGrid > :nth-child(4)`).click()
+    cy.get('.p-confirm-dialog-accept').click()
+    cy.get('.pageOne').should('have.class','pageNavlog')
+    cy.get('.pageTwo').should('have.class','pageTiles')
+  })
 })

@@ -30,10 +30,10 @@ describe('Tiles', () => {
     // load tiles demo page
     maintenanceMode()
     cy.get('.menuIcon').click()
-    cy.get('[aria-label="Load"]').click()
-    cy.get('[aria-label="Tiles"]').click()
-    cy.get('[aria-label="Load Template"]').click()
+    cy.get('[aria-label="Demo"]').click()
+    cy.get('.tilesDemo').click()
     cy.get('.p-confirm-dialog-accept').click()
+    // Close menu
     cy.get('.menuIcon').click()
 
     // test All expected tiles are loading

@@ -1,7 +1,7 @@
 import { visitAndCloseBanner, titleAtis, maintenanceMode } from './shared'
 
-describe('ATIS Tile', () => {
-  it('ATIS Tile', () => {
+describe('Navlog Tile', () => {
+  it('Navlog Tile', () => {
     visitAndCloseBanner()
 
     // swap tile for navlog
@@ -17,14 +17,11 @@ describe('ATIS Tile', () => {
 
     // load navlog demo
     cy.get('.menuIcon').click()
-    cy.get('[aria-label="Load"]').click()
-    cy.get('[aria-label="Navlog"]').click()
-    cy.wait(300)
-    cy.get('[aria-label="Load Template"]').click()
-    // confirm
+    cy.get('[aria-label="Demo"]').click()
+    cy.get('.navlogDemo').click()
     cy.get('.p-confirm-dialog-accept').click()
 
-
+    // Check tile is there
     cy.get('.pageTwo > :nth-child(6) > .headerTitle').contains('NavLog')
     // tile should be populated
     cy.get(':nth-child(1)').should('have.class','entryClimb')

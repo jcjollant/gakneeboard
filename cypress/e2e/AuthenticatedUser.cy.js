@@ -17,25 +17,16 @@ describe('Authenticated User', () => {
     // Should have at least the 'Anchor' page
     cy.get('[aria-label="Anchor"]').should('exist')
 
-    // Check demo pages description work
-    const demoPages = [ 
-      {l:'Default', d:'Default Demo'}, 
-      {l:'Tiles',d:'Tiles Demo'}, 
-      {l:'Checklist',d:'Checklist Demo'}, 
-      {l:'Navlog',d:'Navlog Demo'}, 
-      ]
-    for(const p of demoPages) {
-      cy.get('[aria-label="' + p.l + '"]').click()
-      cy.get(':nth-child(3) > .p-fieldset-legend').contains(p.d)
-    }
-
     // Do Not Load
     cy.get('.actionDialog > .p-button-link').click()
 
     // Save the page into something disposable
+    const tempName = 'Temp'
+    const tempDescription = 'Temporary Description'
     cy.get('[aria-label="Save"]').click()
     cy.get('.p-dialog-header').contains('Save New Template')
-    cy.get('.p-inputtext').type('{selectAll}').type('Temp')
+    cy.get('.pageName > .p-inputtext').type('{selectAll}').type(tempName)
+    cy.get('.pageDescription > .p-inputtext').type('{selectAll}').type(tempDescription)
 
     cy.intercept({
       method: 'POST',
@@ -46,7 +37,10 @@ describe('Authenticated User', () => {
 
     // second time we save we should have the short save
     cy.get('[aria-label="Save"]').click()
-    cy.get('.p-dialog-header').contains('Save "Temp"')
+    cy.get('.p-dialog-header').contains('Save "' + tempName + '"')
+    cy.get('.pageName > .p-inputtext').should( 'have.value', tempName)
+    cy.get('.pageDescription > .p-inputtext').should( 'have.value', tempDescription)
+
     // navigate save options
     cy.get('[aria-label="Replace..."]').click()
     cy.get('.p-dialog-header').contains('Overwrite Existing Template')

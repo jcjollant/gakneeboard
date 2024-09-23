@@ -22,12 +22,16 @@ describe('Checklist Page', () => {
     cy.get('.themeSelector > :nth-child(1)')
     // check it has hint
     cy.get('.actionBar > .p-button-icon-only')
+    // Does not use small font
+    cy.get('.oneOrTwoLists > :nth-child(1)').should('not.have.class', 'smallTextarea')
 
     // swicth to two columns
     cy.get('.choiceInactive').click()
     cy.get('.oneOrTwoLists').children().should('have.length', 2)
 
+    cy.get('.oneOrTwoLists > :nth-child(1)').should('have.class', 'smallTextarea')
     cy.get('.oneOrTwoLists > :nth-child(1)').type('##Section1\nChallenge1.1##Response1.1\n##\n\nChallenge1.2\nChallenge1.3##\n##!Emergency\n##*Strong')
+    cy.get('.oneOrTwoLists > :nth-child(2)').should('have.class', 'smallTextarea')
     cy.get('.oneOrTwoLists > :nth-child(2)').type('##Section2\nChallenge2.1##Response2.1\n##\n\nChallenge2.2\nChallenge2.3##')
     cy.get('.theme-green').click()
     cy.get('[aria-label="Apply"]').click()
