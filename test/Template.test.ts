@@ -4,7 +4,7 @@ import { Template } from '../backend/models/Template.ts'
 import { jcTestTemplateData } from './constants.ts';
 
 describe('Sheet class', () => {
-    test('set Publication', async () => {
+    test('Constructor', () => {
         const id = 1
         const name = "name"
         const data = jcTestTemplateData
@@ -14,6 +14,29 @@ describe('Sheet class', () => {
         expect(t.data).toBe(data)
         expect(t.publish).toBeFalsy()
         expect(t.code).toBeUndefined()
+        expect(t.desc).toBeUndefined()
+
+        const id2 = 2
+        const name2 = ''
+        const data2 = [{value:'nothing'}]
+        const description2 = 'description deux'
+        const publicationCode:string = "AB"
+        const t2 = new Template(id2, name2, data2, description2, true, publicationCode)
+        expect(t2.id).toBe(id2)
+        expect(t2.name).toBe(name2)
+        expect(t2.data).toBe(data2)
+        expect(t2.desc).toBe(description2)
+        expect(t2.publish).toBeTruthy()
+        expect(t2.code).toBe(publicationCode)
+    })
+
+    test('set Publication', async () => {
+        const id = 1
+        const name = "name"
+        const data = jcTestTemplateData
+        // default values
+        const t = new Template(id, name, data)
+
         const publicationCode = "AB"
         const pub:Publication = new Publication(0, publicationCode, id)
         t.setPublication(pub)

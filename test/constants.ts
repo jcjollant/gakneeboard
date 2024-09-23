@@ -7,6 +7,7 @@ const jcTestPageFront = {type:'tiles',data:[{"id":0,"name":"airport","data":{"co
 const jcTestPageBack = {type:'tiles',data:[{"id":0,"name":"airport","data":{"code":"ktta","rwy":"03-21","pattern":2}},{"id":1,"name":"airport","data":{"code":"kawo","rwy":"all"}},{"id":2,"name":"airport","data":{"code":"s43","rwy":"15R-33L","rwyOrientation":"magnetic"}},{"id":3,"name":"fuel"},{"id":4,"name":"notes","data":{}},{"id":5,"name":"radios","data":[{"target":"NAV1","freq":"116.8","name":"SEA VOR"},{"target":"NAV2","freq":"124.7","name":"OLM VOR"},{"target":"COM1","freq":"124.7","name":"RNT TWR"},{"target":"COM2","freq":"126.95","name":"RNT ATIS"},{"target":"COM1","freq":"123.0","name":"S43 CTAF"},{"target":"COM2","freq":"128.65","name":"PAE ATIS"},{"target":"COM1","freq":"120.2","name":"PAE TWR 34R"},{"target":"COM1","freq":"132.95","name":"PAE TWR 34L"}]}]}
 export const jcTestTemplateData = [jcTestPageFront,jcTestPageBack]
 export const jcTestTemplateName = 'TestJC'
+export const jcTestTemplateDescription = 'Two pages of tiles with airport data'
 export const jcTestTemplateId = 55
 export const jcMaxTemplates = 15
 export const jcTestTemplate = {id:jcTestTemplateId, name:jcTestTemplateName, publish:false, data:jcTestTemplateData}

@@ -1,9 +1,10 @@
 import { describe, expect, test} from '@jest/globals';
 import { GApi, GApiError } from '../backend/GApi'
-import { jcHash, jcUserId, jcTestTemplateData, jcToken, jcName, jcTestTemplateName, jcTestTemplateId } from './constants'
+import { jcHash, jcUserId, jcTestTemplateData, jcToken, jcName, jcTestTemplateName, jcTestTemplateId, jcTestTemplateDescription } from './constants'
 import { currentAsOf, postgresUrl } from './constants';
 import { Template } from '../backend/models/Template'
 import { UserMiniView } from '../backend/models/UserMiniView';
+import { template } from '@babel/core';
 
 process.env.POSTGRES_URL=postgresUrl
 
@@ -151,20 +152,28 @@ describe( 'GApi Tests', () => {
 
     })
 
-    test('Template Publication', async() => {
-        const templateIn = new Template( jcTestTemplateId, jcTestTemplateName, jcTestTemplateData)
+    test('Template update', async() => {
+        const tempName = 'Temporary Name'
+        const tempDesc = 'Temporary Description'
+        const templateIn = new Template( jcTestTemplateId, tempName, jcTestTemplateData, tempDesc)
         expect(templateIn.publish).toBeFalsy()
         expect(templateIn.code).toBeUndefined()
         let templateOut = await GApi.templateSave(jcHash, templateIn)
         expect(templateOut.publish).toBeFalsy()
         expect(templateOut.code).toBeUndefined()
         expect(templateOut.id).toBe(jcTestTemplateId)
-        // Now publish that template
+        expect(templateOut.name).toBe(tempName)
+        expect(templateOut.desc).toBe(tempDesc)
+        // Update that template publication, name and description
         templateIn.publish = true
+        templateIn.name = jcTestTemplateName
+        templateIn.desc = jcTestTemplateDescription
         templateOut = await GApi.templateSave(jcHash, templateIn)
         expect(templateOut.publish).toBeTruthy()
         expect(templateOut.code).toBeDefined()
         expect(templateOut.code).toHaveLength(2)
+        expect(templateOut.name).toBe(jcTestTemplateName)
+        expect(templateOut.desc).toBe(jcTestTemplateDescription)
 
         // get that publication by code
         expect(templateOut.code).toBeTruthy()
