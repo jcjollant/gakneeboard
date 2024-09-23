@@ -15,21 +15,29 @@ export class Template {
     name:string
     desc:string
     publish:boolean
-    constructor(name:string, description:string, publish:boolean=false) {
+    data:any
+    constructor(name:string, description:string, publish:boolean=false, data:any=[]) {
         this.name = name
         this.desc = description
         this.publish = publish
+        this.data = data
     }
 
     static describe(template:any):string {
         return (template && template.desc) ? template.desc : '(none)'
     }
+
+    static getName(template:any):string {
+        if(!template || !template.name) return '?'
+        let name = template.name;
+        if(template.publish) name  = name +' (' + template.code + ')'
+        return name;
+    }
 }
 
-export class TemplateDialogMode {
+export class TemplateSaveDialogMode {
     static save = 'save'
     static saveAs = 'saveAs'
-    static load = 'load'
     static overwrite = 'overwrite'
 }
 
