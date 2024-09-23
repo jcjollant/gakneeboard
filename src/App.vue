@@ -6,7 +6,7 @@ import { inject } from "@vercel/analytics"
 import { duplicate, getBackend, newCurrentUser, reportError } from './assets/data.js'
 import { backend, version } from './assets/data.js'
 import { EditorAction } from './assets/Editor.ts'
-import { getSheetDemo, pageDataBlank, readPageFromClipboard } from './assets/sheetData'
+import { getTemplateDemoTiles, pageDataBlank, readPageFromClipboard } from './assets/sheetData'
 import { getToastData, toastError, toastWarning } from './assets/toast'
 import { LocalStore } from './assets/LocalStore'
 import { TemplateData } from './assets/Templates'
@@ -44,12 +44,13 @@ function doPrint() {
   })
 }
 
-function getSheetName() {
+function getTemplateName() {
   let name = ''
   if( !activeTemplate.value || !activeTemplate.value.name) return name
   return activeTemplate.value.name
 }
 
+// finds the sheet number within the template from the offset value
 function getSheetNumber() {
   if(offsetLast.value == 0) return ''
   // add the sheet number
@@ -62,7 +63,7 @@ function loadTemplate(template=null) {
 
   // if we don't know what to show, we load a copy of the demo page
   if( !template) {
-    template = getSheetDemo();
+    template = getTemplateDemoTiles();
   }
 
   // make sure data is at the latest format
@@ -258,7 +259,7 @@ onMounted(async () => {
   } catch(e) {
     console.log('[App.onMounted] local data is corrupted' + e)
     // revert to demo tiles
-    loadTemplate(getSheetDemo())
+    loadTemplate(getTemplateDemoTiles())
     saveActiveTemplate()
   }
   // Analytics
@@ -348,7 +349,7 @@ function showToast(data) {
     <Toast />
     <div class="sheetName"
       :class="{'sheetNameOffset':menuOpen, 'sheetNameModified': sheetModified}">
-      <div>{{ getSheetName() }}</div>
+      <div>{{ getTemplateName() }}</div>
       <div class="sheetNumber">{{ getSheetNumber() }}</div>
     </div>
     <div class="pageGroup">
@@ -381,8 +382,7 @@ function showToast(data) {
       <!-- <div style="break-after: page;"></div> -->
     </div>
   </div>
-  <Menu class="menu" :activeTemplate="activeTemplate" v-show="!printPreview" v-if="!showEditor" title="Toggle Menu"
-    @howDoesItWork="showHowDoesItWork=true"
+  <Menu class="menu" :activeTemplate="activeTemplate" v-show="!printPreview" v-if="!showEditor"    @howDoesItWork="showHowDoesItWork=true"
     @load="onMenuLoad" 
     @print="onPrint" @printOptions="onPrintOptions" @printPreview="onPrintPreview"
     @save="onMenuSave"
