@@ -17,6 +17,8 @@ Run the test suite:
 ## TODO
 
 # Done
+## 9/23/2024
+* Added video link to NavLog editor
 ## 9/22/2024
 * Fixed small text bug on two colums checklist
 * Added description to Templates
