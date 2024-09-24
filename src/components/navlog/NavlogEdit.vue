@@ -461,7 +461,6 @@ function updateAttitudes() {
     </div>
     <ActionBar :actions="(mode != modeBlank) ? [{label:'Reset Log',action:actionReset}] : null"
         video="https://youtu.be/gywuPnlgtkI"
-        help="helpme"
         @cancel="emits('cancel')" @apply="onApply" @action="onAction"></ActionBar>
 </div>
 </template>
