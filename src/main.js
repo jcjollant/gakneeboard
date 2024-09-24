@@ -11,11 +11,12 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faPlaneDeparture, faCloudSunRain, faListCheck, faPlaneCircleCheck, faGasPump,
     faRoute, faPenToSquare, faHeadset, faSun, faBorderAll,
-    faImage} from '@fortawesome/free-solid-svg-icons'
+    faImage, faVideo, faQuestion} from '@fortawesome/free-solid-svg-icons'
 import { faGoogle, faFacebookF } from '@fortawesome/free-brands-svg-icons'
 
 library.add(faPlaneDeparture, faCloudSunRain, faListCheck, faPlaneCircleCheck, faGasPump,
-    faRoute, faPenToSquare, faHeadset, faSun, faBorderAll, faImage, faGoogle, faFacebookF)
+    faRoute, faPenToSquare, faHeadset, faSun, faBorderAll, faImage, faGoogle, faFacebookF,
+    faVideo, faQuestion)
 
 createApp(App)
     .use(PrimeView)
