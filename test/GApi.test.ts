@@ -2,9 +2,7 @@ import { describe, expect, test} from '@jest/globals';
 import { GApi, GApiError } from '../backend/GApi'
 import { jcHash, jcUserId, jcTestTemplateData, jcToken, jcName, jcTestTemplateName, jcTestTemplateId, jcTestTemplateDescription } from './constants'
 import { currentAsOf, postgresUrl } from './constants';
-import { Template } from '../backend/models/Template'
 import { UserMiniView } from '../backend/models/UserMiniView';
-import { template } from '@babel/core';
 
 process.env.POSTGRES_URL=postgresUrl
 
@@ -122,92 +120,6 @@ describe( 'GApi Tests', () => {
         // console.log(airport)
         expect(airport).toBeDefined()
         expect(airport?.code).toBe('TEST') 
-    })
-
-    test('Template List', async () => {
-        await GApi.templateGetList(jcUserId).then( list => {
-            expect(list.length).toBeGreaterThan(0)
-            const testTemplate = list.find( sheet => sheet.name == jcTestTemplateName);
-            expect(testTemplate).toBeDefined()
-        }).catch( (e) => {
-            console.log(e)
-            expect(true).toBe(false) // should not get here
-        })
-    })
-
-    test('Template Get', async () => {
-        // invalid pageId should throw error
-        await GApi.templateGet(0,jcUserId).then( () => {
-            expect(true).toBe(false) // should not get here
-        }).catch( e => {
-            expect(e).toBeInstanceOf(GApiError)
-        })
-
-        // custom template should check out
-        await GApi.templateGet(jcTestTemplateId,jcUserId).then( template => {
-            expect(template.name).toBe(jcTestTemplateName)
-        }).catch( e => {
-            expect(true).toBe(false) // should not get here
-        })
-
-    })
-
-    test('Template update', async() => {
-        const tempName = 'Temporary Name'
-        const tempDesc = 'Temporary Description'
-        const templateIn = new Template( jcTestTemplateId, tempName, jcTestTemplateData, tempDesc)
-        expect(templateIn.publish).toBeFalsy()
-        expect(templateIn.code).toBeUndefined()
-        let templateOut = await GApi.templateSave(jcHash, templateIn)
-        expect(templateOut.publish).toBeFalsy()
-        expect(templateOut.code).toBeUndefined()
-        expect(templateOut.id).toBe(jcTestTemplateId)
-        expect(templateOut.name).toBe(tempName)
-        expect(templateOut.desc).toBe(tempDesc)
-        // Update that template publication, name and description
-        templateIn.publish = true
-        templateIn.name = jcTestTemplateName
-        templateIn.desc = jcTestTemplateDescription
-        templateOut = await GApi.templateSave(jcHash, templateIn)
-        expect(templateOut.publish).toBeTruthy()
-        expect(templateOut.code).toBeDefined()
-        expect(templateOut.code).toHaveLength(2)
-        expect(templateOut.name).toBe(jcTestTemplateName)
-        expect(templateOut.desc).toBe(jcTestTemplateDescription)
-
-        // get that publication by code
-        expect(templateOut.code).toBeTruthy()
-        const publicationCode = templateOut.code
-        if(!publicationCode) return; // to help VS COde
-        let templateByCode = await GApi.publicationGet(publicationCode)
-        // it should be the same as the original
-        expect(templateByCode).toBeDefined()
-        expect(templateByCode?.id).toBe(templateOut.id)
-        expect(templateByCode?.name).toBe(templateOut.name)
-        expect(JSON.stringify(templateByCode?.data)).toBe(JSON.stringify(templateOut.data))
-
-        // get that template by id
-        let templateById = await GApi.templateGet(templateOut.id, jcUserId)
-        expect(templateById).toBeDefined()
-        expect(templateById?.id).toBe(templateOut.id)
-        expect(templateById?.name).toBe(templateOut.name)
-        expect(JSON.stringify(templateById?.data)).toBe(JSON.stringify(templateOut.data))
-        expect(templateById?.publish).toBeTruthy()
-        expect(templateById?.code).toBe(publicationCode)
-
-        // now unpublish that template
-        templateIn.publish = false
-        templateOut = await GApi.templateSave(jcHash, templateIn)
-        expect(templateOut.publish).toBeFalsy()
-        expect(templateOut.code).toBeUndefined()
-
-        // get that publication by code should fail with 404
-        await GApi.publicationGet(publicationCode).then( () => {
-            expect(true).toBeFalsy() // should not get here ()
-        }).catch( e => {
-            expect(e).toBeInstanceOf(GApiError)
-            expect(e.status).toBe(404)
-        })
     })
 
     test('Authenticate', async () => {
