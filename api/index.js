@@ -145,7 +145,7 @@ app.get(['/sheet/:id','/template/:id'], async (req, res) => {
     }
 })
 
-app.get(['/sheetbycode/:code','/publication/:code'], async (req, res) => {
+app.get('/publication/:code', async (req, res) => {
     try {
         let sheet = await GApi.publicationGet(req.params.code);
         res.send(sheet)
@@ -154,10 +154,25 @@ app.get(['/sheetbycode/:code','/publication/:code'], async (req, res) => {
     }
 })
 
+// Get a list of publications
+app.get('/publications', async (req, res) => {
+    // Require authenticated user
+    const userId = await UserTools.userIdFromRequest(req)
+    try {
+        if(!userId) {
+            throw new GApiError(401, 'Please Sign In to access this resource')
+        }
+        let pubs = await GApi.publicationGetList();
+        res.send(pubs)
+    } catch( e) {
+        catchError(res, e, 'GET /publications')
+    }
+})
+
 /**
  * Builds a template list for the current user
  */
-app.get(['/sheets','/templates'], async (req, res) => {
+app.get('/templates', async (req, res) => {
     const userId = await UserTools.userIdFromRequest(req)
     try {
         const sheets = await GApi.templateGetList(userId);
@@ -180,7 +195,7 @@ app.post(['/sheet','/template'], async (req, res) => {
     })
 })
 
-app.delete(['/sheet/:id','/template/:id'], async (req, res) => {
+app.delete('/template/:id', async (req, res) => {
     const templateId = req.params.id
     const userId = await UserTools.userIdFromRequest(req)
     try {
