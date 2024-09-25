@@ -8,6 +8,7 @@ import { UserDao } from './UserDao'
 import { UserTools } from './UserTools'
 import { Publication } from './models/Publication'
 import { PublicationDao } from './PublicationDao'
+import { PublishedTemplate } from './models/PublishedTemplate'
 import { Template } from './models/Template'
 import { TemplateDao } from './TemplateDao'
 import { Sunlight } from './models/Sunlight'
@@ -239,6 +240,12 @@ export class GApi {
         const pub:Publication|undefined = await PublicationDao.findByCode(code)
         if(!pub || !pub.templateId) throw new GApiError(404, 'Publication not found');
         return TemplateDao.readById(pub.templateId)
+    }
+
+    // Get a list of published templates
+    public static async publicationGetList():Promise<PublishedTemplate[]> {
+        const pubs:PublishedTemplate[] = await PublicationDao.list()
+        return pubs
     }
 
     /**
