@@ -68,11 +68,18 @@ SELECT COUNT(*) as count, user_id FROM sheets WHERE user_id IS NOT NULL GROUP BY
 # Who are Sheet creators
 SELECT COUNT(*) as count, user_id FROM sheets WHERE user_id IS NOT NULL AND user_id != 1 GROUP
 
+# All sheets for JC with publication status
+SELECT s.id,s.name,s.description,p.active,p.code as code FROM sheets AS s LEFT JOIN publications AS p ON s.id = p.sheetid WHERE user_id=1
+
 #########################################
 # Publications
 # Publications with user IDs
 SELECT p.*, s.user_id FROM publications AS p LEFT JOIN sheets AS s ON p.sheetid = s.id where s.user_id IS NOT NULL
 
+# Active Published templates
+SELECT p.code, s.name, s.description FROM publications AS p LEFT JOIN sheets AS s on p.sheetid = s.id WHERE p.active AND s.user_id IS NOT NULL
+
 # Publication count by user
 SELECT COUNT(p.*), s.user_id FROM publications as p LEFT JOIN sheets as s ON p.sheetid = s.id  GROUP BY s.user_id ORDER BY count DESC
 
+UPDATE publications SET active = FALSE WHERE sheetid = 55
