@@ -21,6 +21,10 @@ ts-node .\willie.ts
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
+## 9/24/2024
+* Added active column to publication
+* Added GET /publications API
+* Added sticky publication code (that survive deactivation)
 ## 9/22/2024
 * Templates now have a description
 ## 9/18/2024
