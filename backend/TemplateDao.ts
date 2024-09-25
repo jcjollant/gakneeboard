@@ -93,11 +93,11 @@ export class TemplateDao {
     public static async getOverviewListForUser(userId:number):Promise<Template[]> {
         // console.log('[SheetDao.getListForUser] user', userId)
         return await sql`
-            SELECT sheets.id as id,name,description,publications.code as code FROM sheets LEFT JOIN publications ON sheets.id=publications.sheetid WHERE user_id=${userId}
+            SELECT s.id,s.name,s.description,p.active,p.code as code FROM sheets AS s LEFT JOIN publications AS p ON s.id = p.sheetid WHERE user_id=${userId}
         `.then( (result) => {
             // console.log('[SheetDao.getListForUser]', result.rowCount)
             if(result.rowCount) {
-                return result.rows.map( (row) => new Template(row['id'], row['name'], [], row['description'], row['code'] != null, row['code']))
+                return result.rows.map( (row) => new Template(row['id'], row['name'], [], row['description'], row['active'], row['code']))
             } else {
                 return []
             }
