@@ -84,7 +84,40 @@ export class TemplateData {
         return axios.get( url)
             .then( response => response.data)
             .catch( error => {
-                reportError( '[Templates.sheetGetByCode] error ' + JSON.stringify(error))
+                reportError( '[Templates.getPublication] error ' + JSON.stringify(error))
+                return null
+            })
+    }
+
+    /**
+     * Get a list of publications
+     * @returns 
+     */
+    static getPublications():any {
+        const url = apiRootUrl + 'publications'
+        return getUrlWithUser( url)
+            .then( response => response.data)
+            .catch( error => {
+                reportError( '[Templates.getPublications] error ' + JSON.stringify(error))
+                return null
+            })
+    }
+
+    /**
+    * Gets a template from its id
+    * @param {*} id
+    * @returns
+    */
+    static getById(id:number):any {
+        const url = apiRootUrl + 'template/' + id
+        return axios.get( url)
+            .then( response => {
+                const template = response.data;
+                template.data = TemplateData.normalize(template.data)
+                return template;
+            })
+            .catch( error => {
+                reportError( '[Templates.sheetGetById] error ' + JSON.stringify(error))
                 return null
             })
     }
@@ -119,7 +152,7 @@ export class TemplateData {
      * @returns 
      */
     static get(id:number):any {
-        const url = apiRootUrl + 'sheet/' + id
+        const url = apiRootUrl + 'template/' + id
         return getUrlWithUser(url).then( response => {
             // console.log('[data.sheetGetById]', JSON.stringify(response))
             const template = response.data;
