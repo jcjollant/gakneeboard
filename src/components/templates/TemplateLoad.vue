@@ -9,6 +9,8 @@ import TemplateDescription from './TemplateDescription.vue'
 
 import { useConfirm } from 'primevue/useconfirm'
 import Button from "primevue/button";
+import Column from 'primevue/column'
+import DataTable from 'primevue/datatable'
 import Dialog from 'primevue/dialog'
 import FieldSet from 'primevue/fieldset'
 import InputGroup from "primevue/inputgroup";
@@ -29,6 +31,7 @@ const loadTemplate = ref(null)
 const activeLoad = ref(loadYours)
 const templateCode = ref('')
 const user = ref(null)
+const publicTemplates = ref([])
 
 //-----------------
 // Props management
@@ -46,6 +49,7 @@ function loadProps(props) {
 }
 
 onMounted( () => {
+  TemplateData.getPublications().then(list => publicTemplates.value = list)
   loadProps(props)
 })
 
@@ -102,14 +106,21 @@ function onButtonLoad() {
     changeTemplateLoad()
 }
 
+function onRowClick(e) {
+  // console.log('[TemplateLoad.onRowClick]', JSON.stringify(e))
+  if( !e || !e.data || !e.data.code) return;
+  templateCode.value = e.data.code
+  onSheetFetchCode()
+}
+
 async function onSheetFetchCode() {
-    fetching.value = true;
-    await TemplateData.getPublication(templateCode.value).then( template => {
-        // console.log('[Templates.onSheetFetch] sheet', JSON.stringify(sheet))
-        changeTemplateLoad(template)
-        if(!template) {
-            emitToastError(emits, 'Fetch','Code not found ' + templateCode.value)
-        }
+  fetching.value = true;
+  await TemplateData.getPublication(templateCode.value).then( template => {
+      // console.log('[Templates.onSheetFetch] sheet', JSON.stringify(sheet))
+      changeTemplateLoad(template)
+      if(!template) {
+          emitToastError(emits, 'Fetch','Code not found ' + templateCode.value)
+      }
   }) 
 }
 
@@ -158,18 +169,25 @@ function onToggleDeleteMode() {
     </div>
     <div v-else>
         <div class="alignedRow mb-2 mt-5">
-            <div class="mb-2">Enter here the code you were given</div>
-            <InputGroup class="sharedCode">
-                <InputGroupAddon>Public Code</InputGroupAddon>
-                <InputText v-model="templateCode" />
-                <Button icon="pi pi-search" @click="onSheetFetchCode" :disabled="!templateCode.length" severity="secondary"></Button>
-            </InputGroup>
-            <div class="mt-2">Shared codes are unique values created when one makes a template public</div>
+            <DataTable :value="publicTemplates" stripedRows paginator :rows="5" @row-click="onRowClick">
+              <Column field="name" header="Name"></Column>
+              <Column field="desc" header="Description"></Column>
+              <Column field="code" header="Code" style="cursor:pointer"></Column>
+            </DataTable>
+            <div class="mb-2 codeInput">
+              <div>Select Template above or Enter code =></div>
+              <InputGroup class="sharedCode">
+                  <InputGroupAddon>Shared Code</InputGroupAddon>
+                  <InputText v-model="templateCode" />
+                  <Button icon="pi pi-search" @click="onSheetFetchCode" :disabled="!templateCode.length" severity="secondary"></Button>
+              </InputGroup>
+            </div>
+            <!-- <div class="mt-2">Shared codes are unique values created when one makes a template public</div> -->
         </div>
     </div>
     <FieldSet :legend="getDescriptionTitle()" v-if="activeLoad.value == 1 || user.templates.length">
       <TemplateDescription v-if="loadTemplate" :template="loadTemplate" />
-      <div v-else class="contentPlaceholder">Select a template above to view its content</div>
+      <div v-else class="contentPlaceholder">Select a template to view its content</div>
     </FieldSet>
     <div class="actionDialog gap-2">
       <Button label="Do Not Load" @click="onButtonClose" link></Button>
@@ -178,6 +196,14 @@ function onToggleDeleteMode() {
   </Dialog>
 </template>
 <style scoped>
+.codeInput {
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-end;
+  /* grid-template-columns: auto auto; */
+}
 .loadChoice {
     margin:auto;
 }
@@ -191,6 +217,9 @@ function onToggleDeleteMode() {
     opacity: 0.5;
     text-align: center;
 }
+.sharedCode {
+  width: 20rem;
+}
 .sheetAndToggle {
   display: flex;
   justify-content: space-between;
@@ -202,5 +231,11 @@ function onToggleDeleteMode() {
 }
 :deep(.p-fieldset-content) {
       padding: 0;
+}
+:deep(.p-datatable .p-datatable-thead > tr > th ) {
+  padding: 0.5rem;
+}
+:deep(.p-datatable .p-datatable-tbody > tr > td ) {
+  padding: 0.5rem;
 }
 </style>
