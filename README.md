@@ -17,6 +17,8 @@ Run the test suite:
 ## TODO
 
 # Done
+## 9/25/2024
+* Showing the list of public templates
 ## 9/23/2024
 * Added video link to NavLog editor
 ## 9/22/2024
