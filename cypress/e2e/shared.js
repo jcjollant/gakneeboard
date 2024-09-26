@@ -1,7 +1,7 @@
-export const currentVersionNumber = '922/922'
+export const currentVersionNumber = '925/924'
 const devEnv = 'http://localhost:5173/'
 const prodEnv = 'https://kneeboard.ga'
-export const environment = devEnv
+export const environment = prodEnv
 // const devBackend = 'http://localhost:3000/'
 // export const backend = devBackend
 export const titleAtis = "ATIS @"
