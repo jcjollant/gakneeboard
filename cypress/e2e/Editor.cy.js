@@ -72,16 +72,18 @@ describe('Editor', () => {
     // reload demo
     reloadDemo()
 
-    // Copy left to right
+    // Copy left to right and confirm
     cy.get('#editorCopyToRight').click()
+    cy.get('.p-confirm-dialog-accept').click()
     cy.get('.pageOne > :nth-child(6) > .headerTitle').contains('Clearance @')
     cy.get('.pageTwo > :nth-child(6) > .headerTitle').contains('Clearance @')
 
     // reload demo
     reloadDemo()
 
-    // Copy left to right
+    // Copy left to right and confirm
     cy.get('#editorCopyToLeft').click()
+    cy.get('.p-confirm-dialog-accept').click()
     demoChecklistOn('.pageOne')
     demoChecklistOn('.pageTwo')
 
