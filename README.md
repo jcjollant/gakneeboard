@@ -17,6 +17,10 @@ Run the test suite:
 ## TODO
 
 # Done
+## 9/28/2024
+* Fixed publication request without user error
+* Fixed Load and Save without user
+* Added publication tests
 ## 9/27/2024
 * Confirmation before editor copy to page
 * Checklist page does not cancel edits on header click
