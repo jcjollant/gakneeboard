@@ -133,4 +133,16 @@ describe('Navigation', () => {
     cy.get('.pageOne').should('have.class','pageNavlog')
     cy.get('.pageTwo').should('have.class','pageTiles')
   })
+
+  it('Requires Sign in', () => {
+    visitAndCloseBanner()
+
+    cy.get('.menuIcon').click()
+    cy.get('[aria-label="Load"]').click()
+    cy.get('.p-toast-summary').contains('Squawk and Ident')
+    cy.wait(3100)
+    cy.get('[aria-label="Save"]').click()
+    cy.get('.p-toast-summary').contains('Squawk and Ident')
+  
+  })
 })
