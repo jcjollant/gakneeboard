@@ -118,6 +118,28 @@ function onMaintenance() {
   showMaintenance.value = false;
 }
 
+function onMenuLoad() {
+  if( newCurrentUser.loggedIn) {
+    templateTime.value = Date.now()
+    showTemplateLoad.value = true;
+  } else {
+    warnNoUser()
+  }
+}
+
+function onMenuSave() {
+  // console.log('[Menu.onTemplateDialog]', save, JSON.stringify(activeTemplate.value))
+  if( newCurrentUser.loggedIn) {
+    showTemplateSave.value = true;
+    templateTime.value = Date.now()
+    // console.log('[Menu.onTemplateDialog]', JSON.stringify(activeTemplate.value))
+    templateDialogMode.value = (activeTemplate.value && activeTemplate.value.id) ? TemplateSaveDialogMode.save : 'saveAs'
+  } else {
+    warnNoUser()
+  }
+}
+
+
 function onPrint() {
   showPrint.value = true;
   refreshPrint.value++;
@@ -154,26 +176,6 @@ function onSignOut() {
         location.reload()
       }
     })
-}
-
-function onTemplateDialogLoad() {
-  if( user && user.value) {
-    showTemplateLoad.value = true;
-  } else {
-    warnNoUser()
-  }
-}
-
-function onTemplateDialogSave() {
-  // console.log('[Menu.onTemplateDialog]', save, JSON.stringify(activeTemplate.value))
-  if( user.value) {
-    showTemplateSave.value = true;
-    templateTime.value = Date.now()
-    // console.log('[Menu.onTemplateDialog]', JSON.stringify(activeTemplate.value))
-    templateDialogMode.value = (activeTemplate.value && activeTemplate.value.id) ? TemplateSaveDialogMode.save : 'saveAs'
-  } else {
-    warnNoUser()
-  }
 }
 
 /**
@@ -320,8 +322,8 @@ function warnNoUser() {
           @click="onPrint"></Button>
         <div class="separator"></div>
         <Button label="New" icon="pi pi-file" title="Reset Template" @click="onTemplateLoad(getTemplateBlank())"></Button>
-        <Button label="Load" icon="pi pi-folder-open" title="Open Existing Template" @click="onTemplateDialogLoad"></Button>
-        <Button label="Save" icon="pi pi-save" title="Save this Template" @click="onTemplateDialogSave"></Button>
+        <Button label="Load" icon="pi pi-folder-open" title="Open Existing Template" @click="onMenuLoad"></Button>
+        <Button label="Save" icon="pi pi-save" title="Save this Template" @click="onMenuSave"></Button>
         <Button label="Demo" icon="pi pi-clipboard" title="Load demo Template" @click="showDemoSelection=true"></Button>
         <div class="separator" @click="showMaintenance=true"></div>
         <Button label="Feedback" icon="pi pi-megaphone" title="Send Feedback"

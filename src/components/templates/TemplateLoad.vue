@@ -40,6 +40,9 @@ const props = defineProps({
 })
 
 function loadProps(props) {
+  if(newCurrentUser.loggedIn) {
+    TemplateData.getPublications().then(list => publicTemplates.value = list)
+  }
 
   // Current user
   user.value = newCurrentUser
@@ -49,7 +52,6 @@ function loadProps(props) {
 }
 
 onMounted( () => {
-  TemplateData.getPublications().then(list => publicTemplates.value = list)
   loadProps(props)
 })
 
