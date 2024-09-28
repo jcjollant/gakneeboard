@@ -92,8 +92,8 @@ function onHeaderClick() {
         textData2.value = listFromItems(data.value.items2)
         nameBeforeEdit = title.value
         themeBeforeEdit = theme.value
+        mode.value = 'edit'
     }
-    mode.value = mode.value == 'edit' ? '' : 'edit'
 }
 
 function onThemeChange(newTheme) {
