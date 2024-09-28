@@ -17,6 +17,10 @@ Run the test suite:
 ## TODO
 
 # Done
+## 9/27/2024
+* Confirmation before editor copy to page
+* Checklist page does not cancel edits on header click
+* Refreshed About with Patreon link
 ## 9/25/2024
 * Showing the list of public templates
 ## 9/23/2024
