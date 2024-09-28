@@ -81,4 +81,17 @@ describe('Authenticated User', () => {
     cy.get('[aria-label="Sign In"]')
 
   })
+
+  it('Shows Publications', () => {
+    visitAndCloseBanner()
+    maintenanceMode()
+
+    // open menu
+    cy.get('.menuIcon').click()
+    // Load Template
+    cy.get('[aria-label="Load"]').click()
+    cy.get('.choiceInactive').contains('Community').click()
+    cy.get('[aria-label="Page 2"]')
+    cy.get('.p-datatable-tbody').should('have.length', 6)
+  })
 })
