@@ -57,9 +57,9 @@ function onVideo() {
 <template>
     <div class="actionBar">
         <div v-if="help||video" class="floatLeft">
-            <font-awesome-icon v-if="help" :icon="['fas', 'question']"
+            <font-awesome-icon v-if="help" :icon="['fas', 'question']" class="actionBarHelp"
                 @click="onHelp" title="Get help on this feature"></font-awesome-icon>
-            <font-awesome-icon v-if="video" :icon="['fas', 'video']"
+            <font-awesome-icon v-if="video" :icon="['fas', 'video']" class="actionBarVideo"
                 @click="onVideo" title="Watch a video on this feature"></font-awesome-icon>
         </div>
         <Button v-if="actions" v-for="action in actions" @click="onAction(action.action)" :label="action.label" link></Button>
