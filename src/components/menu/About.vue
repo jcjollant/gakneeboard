@@ -37,7 +37,16 @@ function openUrl(url) {
         <OneChoice v-model="activeTopic" :choices="topics" class="mb-2" />
       </div>
       <div v-if="activeTopic.value==topicAbout.value">
-        <div class="mb-5 justify"><strong>GA Kneeboard</strong> started as a personal project but users feedback made it the useful utility it is today. It is meant to mitigate high information loads, associated to flying, with easily accessible essential information. Originally intended as a supplement to pilot's EFB, the kneeboard printout has become a primary source of information due to its sheer convenience.<br>GA Kneeboard is free to use. If you find it useful, please consider spreading the word and sending your suggestions.</div>
+        <div class="mb-2 justify"><strong>GA Kneeboard</strong> is a humble project aiming to ease pilots' information overload. Initially created as an EFB supplement, its sheer convenience made it a primary source of flight information.</div>
+        <div class="mb-2 justify"><strong>You can help</strong> in many ways : 
+          <ol>
+            <li>Suggest features you value as a pilot,</li>
+            <li>Show off your kneeboards to fellow pilots,</li>
+            <li>Make your templates public for community's benefit,</li>
+            <li>Test the app and report issues,</li>
+            <li>Support us via <a href="https://patreon.com/GAKneeboard" target="_blank">Patreon</a>.</li>
+          </ol>
+        </div>
         <div class="justify"><strong>Special Thanks</strong> to Ash, Jason, Steve and Stewart whom have contributed invaluable feedback and suggestions since Day 1</div>
       </div>
       <div v-else-if="activeTopic.value==topicGuide.value" class="mb-5">
@@ -89,7 +98,9 @@ function openUrl(url) {
   grid-template-columns: auto auto auto auto auto;
   gap: 0.5rem;
 }
-
+ol {
+  margin-block-start:0.25rem; 
+}
 .pageOptions {
   display: flex;
   justify-content: center;
