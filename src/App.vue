@@ -5,7 +5,7 @@ import { inject } from "@vercel/analytics"
 
 import { duplicate, getBackend, newCurrentUser, reportError } from './assets/data.js'
 import { backend, version } from './assets/data.js'
-import { EditorAction } from './assets/Editor.ts'
+import { EditorAction } from './assets/EditorAction.ts'
 import { getTemplateDemoTiles, pageDataBlank, readPageFromClipboard } from './assets/sheetData'
 import { getToastData, toastError, toastWarning } from './assets/toast'
 import { LocalStore } from './assets/LocalStore'

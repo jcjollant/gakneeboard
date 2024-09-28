@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { EditorAction } from '../assets/Editor'
+import { EditorAction } from '../assets/EditorAction'
 
 import Button from 'primevue/button'
 import ConfirmDialog from 'primevue/confirmdialog'
@@ -68,7 +68,20 @@ function onActionName(actionName) {
 }
 
 function onAction(action) {
-  emits('action', action)
+  if(action.action == EditorAction._copyToPage) {
+    confirm.require({
+        message: 'Are you positive you will not regret overwritting page ' + (action.offsetTo + 1),
+        header: "Overwrite Page",
+        rejectLabel: 'No',
+        acceptLabel: 'Yes, Overwrite',
+        accept: () => {
+          emits('action', action)
+        }
+      })
+
+  } else {
+    emits('action', action)
+  }
 }
 
 function onSheetSelection(newOffset) {
