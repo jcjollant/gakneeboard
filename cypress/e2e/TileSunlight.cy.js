@@ -27,7 +27,7 @@ describe('Tiles', () => {
     // switch to overnight mode
     cy.get('.pageTwo > :nth-child(3) > .headerTitle > div').click()
     // check it has hint
-    cy.get('.actionBar > .p-button-icon-only')
+    cy.get('.actionBarHelp')
 
     cy.get('.nightFlight').click()
     cy.get('[aria-label="Apply"]').click()

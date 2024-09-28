@@ -12,7 +12,7 @@ describe('Authenticated User', () => {
 
     // load page should open
     cy.get('[aria-label="Load"]').click()
-    cy.get('.contentPlaceholder').contains('Select a template above')
+    cy.get('.contentPlaceholder').contains('Select a template')
 
     // Should have at least the 'Anchor' page
     cy.get('[aria-label="Anchor"]').should('exist')
@@ -92,6 +92,6 @@ describe('Authenticated User', () => {
     cy.get('[aria-label="Load"]').click()
     cy.get('.choiceInactive').contains('Community').click()
     cy.get('[aria-label="Page 2"]')
-    cy.get('.p-datatable-tbody').should('have.length', 6)
+    cy.get('.p-datatable-tbody').children().should('have.length', 5)
   })
 })

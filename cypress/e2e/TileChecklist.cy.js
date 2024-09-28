@@ -19,7 +19,7 @@ describe('Checklist Tile', () => {
     cy.get('.p-inputgroup > .p-inputtext').should('have.value', title)
     cy.get('.p-dropdown-label').contains('Blue')
     // Information icon
-    cy.get('.actionBar > .p-button-icon-only')
+    cy.get('.actionBarHelp')
     // Change title but cancel
     cy.get('.p-inputgroup > .p-inputtext').type('{selectall}').type('Name1')
     // Title should be updated for now

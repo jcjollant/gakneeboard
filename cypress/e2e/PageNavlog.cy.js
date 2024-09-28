@@ -77,7 +77,7 @@ describe('navlog Page', () => {
     cy.get('.createAirportTo > .p-inputgroup > .p-inputtext').should('have.value','')
 
     //
-    cy.get('check youtobe video link')
+    cy.get('.actionBarVideo')
   })
 
   it('7 altitudes', () => {

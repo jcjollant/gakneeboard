@@ -20,7 +20,7 @@ describe('Radio Flow Tile', () => {
     // Switch to edit mode
     cy.get('.pageTwo > :nth-child(6) > .headerTitle > div').click()
     // check it has hint
-    cy.get('.actionBar > .p-button-icon-only')
+    cy.get('.actionBarHelp')
 
     // remove previous content
     cy.get('.p-inputtextarea').type('{selectall}{backspace}')

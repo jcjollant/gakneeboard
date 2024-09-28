@@ -21,7 +21,7 @@ describe('Checklist Page', () => {
     // Check is has theme
     cy.get('.themeSelector > :nth-child(1)')
     // check it has hint
-    cy.get('.actionBar > .p-button-icon-only')
+    cy.get('.actionBarHelp')
     // Does not use small font
     cy.get('.oneOrTwoLists > :nth-child(1)').should('not.have.class', 'smallTextarea')
 
