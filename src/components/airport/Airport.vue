@@ -1,6 +1,7 @@
 <script setup>
 import {ref, onMounted, watch} from 'vue';
 import { getAirport, getFreqCtaf, getFreqWeather} from '../../assets/data.js'
+import { Formatter } from '../../assets/Formatter.ts'
 
 import AirportEdit from './AirportEdit.vue';
 import Corner from './Corner.vue';
@@ -335,7 +336,7 @@ function updateWidget() {
             <div class="footer">
                 <CornerStatic label="Elev" :value="elevation" position="bottom"/>
                 <CornerStatic label="TPA" :value="tpa" position="bottom"/>
-                <CornerStatic :label="weatherType" :value="weatherFreq" position="bottom"/>
+                <CornerStatic :label="weatherType" :value="Formatter.frequency(weatherFreq)" position="bottom"/>
             </div>
         </div>
         <div class="content" v-else=""> <!-- Normal mode -->
