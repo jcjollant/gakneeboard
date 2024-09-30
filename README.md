@@ -21,6 +21,8 @@ ts-node .\willie.ts
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
+## 9/29/2024
+* Flight plan upload
 ## 9/24/2024
 * Added active column to publication
 * Added GET /publications API
