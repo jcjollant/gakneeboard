@@ -1,3 +1,114 @@
+<template>
+<div>
+    <NavlogCheckpointEditor v-model:visible="showEditorCheckpoint" 
+        :entry="activeEntry" :time="activeTime"
+        @close="showEditorCheckpoint=false" @save="onItemSave" />
+    <NavlogLegEditor v-model:visible="showEditorLeg" 
+        :items="items" :index="activeIndex" :time="activeTime" 
+        :cruiseFF="Number(cruiseFuelFlow)"
+        :descentFF="Number(descentFuelFlow)" :descentRate="Number(descentRate)"
+        @close="showEditorLeg=false" @save="onItemSave" />
+    <div v-if="mode==modeBlank" class="blankMode">
+        <OneChoice v-model="navlogMode" :choices="navlogModes" class="centered"/>
+        <div v-if="navlogMode.value==navlogModeCreate.value">
+            <div class="createMode">
+                <AirportInput :code="codeFrom" :auto="true" label="From" class="createAirportFrom" @valid="onAirportFromValid" @invalid="onAirportFromInvalid" />
+                <AirportInput :code="codeTo" :auto="true" label="To" class="createAirportTo" @valid="onAirportToValid" @invalid="onAirportToInvalid"/>
+                <InputGroup class="createAltitudes" title="List of Enroute Altitudes (Space separated)">
+                    <InputGroupAddon>Altitudes</InputGroupAddon>
+                    <InputText v-model="altitudes" placeholder="Ex: 2500 4500 7500 ..."/>
+                </InputGroup>
+                <div class="createButton">
+                    <Button label="Create" @click="onCreate" :disabled="(!codeFrom||!codeTo)"></Button>
+                </div>
+            </div>
+            <div class="hsep mb-2">Or</div>
+            <div v-if="uploading">Uploading...</div>
+            <FilePick v-else prompt="Upload a File Plan" @upload="onFilePlanUpload"/>
+        </div>
+        <div v-else>
+            <div class="continueHeader">This page will show the overflow from another NavLog page</div>
+        </div>
+    </div>
+    <div v-else><!-- edit mode -->
+        <div class="variables">
+            <div class="varGroupFuel varGroup">Fuel Tank</div>
+            <div class="varGroupCruise varGroup">Cruise</div>
+            <div class="varGroupDescent varGroup">Descent</div>
+            <InputGroup class="varInitialFuel" title="Initial Fuel. Bake your taxi/runup into this number OR the first leg">
+                <InputGroupAddon>Initial</InputGroupAddon>
+                <InputText v-model="initialFuel" placeholder="Gal"/>
+            </InputGroup>
+            <InputGroup class="varReserveFuel" title="Minium fuel onboard (consider day/night)">
+                <InputGroupAddon>Reserve</InputGroupAddon>
+                <InputText v-model="reserveFuel" placeholder="Gal"/>
+            </InputGroup>
+            <InputGroup class="varCruiseGph" title="Cruise Fuel Flow (Gallons per hour)">
+                <InputGroupAddon>F.Flow</InputGroupAddon>
+                <InputText v-model="cruiseFuelFlow"/>
+            </InputGroup>
+            <InputGroup class="varDescentFpm" title="Descent Rate (Feet per minute)">
+                <InputGroupAddon>Rate</InputGroupAddon>
+                <InputText v-model="descentRate"/>
+            </InputGroup>
+            <InputGroup class="varDescentGph" title="Descent Fuel Flow (Gallons per hour)">
+                <InputGroupAddon>F.Flow</InputGroupAddon>
+                <InputText v-model="descentFuelFlow"/>
+            </InputGroup>
+        </div>
+        <div class="grids" v-if="items.length">
+            <div class="checkpoints"><!-- checkpoints -->
+                <div class="headers checkpointGrid bb">
+                    <div>&nbsp</div>
+                    <div title="Checkpoint Name">CheckPt</div>
+                    <div title="Checkpoint Altitude">Alt</div>
+                </div>
+                <div v-for="(i,index) in items" class="checkpointGrid bb">
+                    <div class="actions">
+                        <i v-if="i.canDelete" class="pi pi-times actionDelete clickable" title="Delete checkpoint"
+                            @click="onItemDelete(index)"></i>
+                        <i v-if="i.canAdd" class="pi pi-plus actionAdd clickable" title="Add new checkpoint after"
+                            @click="onItemAdd(index+1)"></i>
+                    </div>
+                    <div class="bl checkpointName editable" @click="onEdit(index,true)">{{ formatName(i.entry.name) }}</div>
+                    <div class="bl br checkpointAlt editable" @click="onEdit(index,true)">{{ Formatter.altitude(i.entry.alt) }}</div>
+                </div>
+            </div>
+            <div class="legs"><!-- legs -->
+                <div class="headers legGrid bb">
+                    <!-- <div title="True Heading">TH</div> -->
+                    <div title="Magnetic Heading">MH</div>
+                    <!-- <div title="Compass Heading (Magnetic Heading + Magnetic Deviation)">CH</div> -->
+                    <div title="Leg Distance">Dist.</div>
+                    <div title="Ground Speed">GS</div>
+                    <div title="Leg Time">Time</div>
+                    <div title="Leg Fuel">Fuel</div>
+                </div>
+                <div v-for="(i,index) in items.slice(0, items.length - 1)" 
+                    class="legGrid bb" :class="i.attitudeClass"
+                    @click="onEdit(index,false)">
+                    <!-- <div class="editable trueHeading" @click="onItemEdit(index)">{{ Formatter.heading(i.entry.th) }}</div> -->
+                    <div class="magneticHeading editable">{{ Formatter.heading(i.entry.mh) }}</div>
+                    <!-- <div class="bl compassHeading">{{ Formatter.heading(i.entry.ch) }}</div> -->
+                    <div class="legDistance bl editable">{{ Formatter.distance( i.entry.ld) }}</div>
+                    <div class="groundSpeed bl editable">{{ Formatter.speed(i.entry.gs) }}</div>
+                    <div class="legTime bl editable">{{ Formatter.legTime(i.entry.lt) }}</div>
+                    <div class="legFuel bl editable">{{ Formatter.fuel(i.entry.lf) }}</div>
+                </div>
+                <div class="legGrid">
+                    <div class="total totalDistance">{{ Formatter.distance(totalDistance) }}</div>
+                    <div class="total totalTime">{{ Formatter.legTime(totalTime) }}</div>
+                    <div class="total totalFuel">{{ Formatter.fuel(totalFuel) }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ActionBar :actions="(mode != modeBlank) ? [{label:'Reset Log',action:actionReset}] : null"
+        video="https://youtu.be/gywuPnlgtkI"
+        @cancel="emits('cancel')" @apply="onApply" @action="onAction"></ActionBar>
+</div>
+</template>
+
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
@@ -13,11 +124,13 @@ import NavlogLegEditor from './NavlogLegEditor.vue'
 import NavlogCheckpointEditor from './NavlogCheckpointEditor.vue'
 
 import Button from 'primevue/button'
+import FilePick from '../shared/FilePick.vue'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
 import { useConfirm } from 'primevue/useconfirm'
 import OneChoice from '../shared/OneChoice.vue'
+import { NavlogData } from '../../lib/NavlogData'
 
 const emits = defineEmits(['apply','cancel','toast'])
 
@@ -49,6 +162,7 @@ const showEditorLeg = ref(false)
 const totalDistance = ref(0)
 const totalTime = ref(0)
 const totalFuel = ref(0)
+const uploading = ref(false)
 
 let elevFrom = 0;
 let elevTo = 0;
@@ -86,15 +200,7 @@ function loadProps(newProps) {
     descentRate.value = getValueOrEmpty(navlog.getDescentRate());
 
     // build a list of items from entries
-    items.value = entries.map( (e,index) => {
-        const first = (index == 0);
-        const last = (index == (entries.length - 1))
-        // can delete everything except first and last element
-        const canDelete = !(first || last)
-        // can add after anything but last element
-        const canAdd = !last;
-        return new EditorItem( e, canDelete, canAdd, getAttitudeClass(e))
-    })
+    items.value = navLogToEditItems(entries)
     totalFuel.value = navlog.ff - navlog.ft
     totalDistance.value = navlog.td;
     totalTime.value = navlog.tt;
@@ -125,6 +231,20 @@ function getAttitudeClass(entry) {
 
 function getValueOrEmpty(value) {
     return value ? value : ''
+}
+
+function navLogToEditItems(entries) {
+    if(!entries || !entries.map) return [];
+    return entries.map( (e,index) => {
+        const first = (index == 0);
+        const last = (index == (entries.length - 1))
+        // can delete everything except first and last element
+        const canDelete = !(first || last)
+        // can add after anything but last element
+        const canAdd = !last;
+        return new EditorItem( e, canDelete, canAdd, getAttitudeClass(e))
+    })
+
 }
 
 function onAirportFromValid(airport) {
@@ -293,7 +413,7 @@ function onEdit(index,checkpoint) {
 
 }
 
-function onEntryEditorSave(data) {
+function onItemSave(data) {
     // console.log('[NavlogEdit.onEntryEditorSave]', JSON.stringify(data))
     let next = false
     let entry = null
@@ -309,11 +429,6 @@ function onEntryEditorSave(data) {
     showEditorCheckpoint.value = false;
     showEditorLeg.value = false;
 
-    // recompute totals
-    totalDistance.value = items.value.reduce( (total,i) => i.entry.ld ? total + i.entry.ld : total,0)
-    totalTime.value = items.value.reduce( (total,i) => i.entry.lt ? total + i.entry.lt : total,0)
-    totalFuel.value = items.value.reduce( (total,i) => i.entry.lf ? total + i.entry.lf : total,0)
-
     // update attitudes
     updateAttitudes()
 
@@ -321,6 +436,22 @@ function onEntryEditorSave(data) {
     if(next) {
         onEdit(activeIndex+1, false)
     }
+}
+
+function onFilePlanUpload(file) {
+    uploading.value = true
+    NavlogData.uploadFilePlan(file).then(entries => {
+        // console.log('[NavlogEdit.onFilePlanUpload] navlog entries count ' + entries.length)
+        // console.log('[NavlogEdit.onFilePlanUpload]', JSON.stringify(entries))
+        items.value = navLogToEditItems(entries)
+        updateAttitudes()
+        mode.value = modeEntries
+    }).catch( (e) => {
+        console.log('[NavlogEdit.onFilePlanUpload] failed ' + e)
+        emitToastError(emits, 'INOP', 'File plan upload failed')
+    }).finally( () => {
+        uploading.value = false;
+    })
 }
 
 function onItemAdd(index) {
@@ -343,6 +474,7 @@ function onItemDelete(index) {
     updateAttitudes()
 }
 
+// Scan all EditItems and update attitudes
 function updateAttitudes() {
     // console.log('[NavlogEdit.updateAttitudes]')
     // get a list of NavlogEntries
@@ -355,115 +487,14 @@ function updateAttitudes() {
         const ei = items.value[index]
         ei.attitudeClass = getAttitudeClass(entries[index])
     }
+
+    // recompute totals
+    totalDistance.value = items.value.reduce( (total,i) => i.entry.ld ? total + i.entry.ld : total,0)
+    totalTime.value = items.value.reduce( (total,i) => i.entry.lt ? total + i.entry.lt : total,0)
+    totalFuel.value = items.value.reduce( (total,i) => i.entry.lf ? total + i.entry.lf : total,0)
 }
 
 </script>
-
-<template>
-<div>
-    <NavlogCheckpointEditor v-model:visible="showEditorCheckpoint" 
-        :entry="activeEntry" :time="activeTime"
-        @close="showEditorCheckpoint=false" @save="onEntryEditorSave" />
-    <NavlogLegEditor v-model:visible="showEditorLeg" 
-        :items="items" :index="activeIndex" :time="activeTime" 
-        :cruiseFF="Number(cruiseFuelFlow)"
-        :descentFF="Number(descentFuelFlow)" :descentRate="Number(descentRate)"
-        @close="showEditorLeg=false" @save="onEntryEditorSave" />
-    <div v-if="mode==modeBlank" class="blankMode">
-        <OneChoice v-model="navlogMode" :choices="navlogModes" class="centered"/>
-        <div v-if="navlogMode.value==navlogModeCreate.value" class="createMode">
-            <AirportInput :code="codeFrom" :auto="true" label="From" class="createAirportFrom" @valid="onAirportFromValid" @invalid="onAirportFromInvalid" />
-            <AirportInput :code="codeTo" :auto="true" label="To" class="createAirportTo" @valid="onAirportToValid" @invalid="onAirportToInvalid"/>
-            <InputGroup class="createAltitudes" title="List of Enroute Altitudes (Space separated)">
-                <InputGroupAddon>Altitudes</InputGroupAddon>
-                <InputText v-model="altitudes" placeholder="Ex: 2500 4500 7500 ..."/>
-            </InputGroup>
-            <div class="createButton">
-                <Button label="Create" @click="onCreate" :disabled="(!codeFrom||!codeTo)"></Button>
-            </div>
-        </div>
-        <div v-else>
-            <div class="continueHeader">This page will show the overflow from another NavLog page</div>
-        </div>
-    </div>
-    <div v-else><!-- edit mode -->
-        <div class="variables">
-            <div class="varGroupFuel varGroup">Fuel Tank</div>
-            <div class="varGroupCruise varGroup">Cruise</div>
-            <div class="varGroupDescent varGroup">Descent</div>
-            <InputGroup class="varInitialFuel" title="Initial Fuel. Bake your taxi/runup into this number OR the first leg">
-                <InputGroupAddon>Initial</InputGroupAddon>
-                <InputText v-model="initialFuel" placeholder="Gal"/>
-            </InputGroup>
-            <InputGroup class="varReserveFuel" title="Minium fuel onboard (consider day/night)">
-                <InputGroupAddon>Reserve</InputGroupAddon>
-                <InputText v-model="reserveFuel" placeholder="Gal"/>
-            </InputGroup>
-            <InputGroup class="varCruiseGph" title="Cruise Fuel Flow (Gallons per hour)">
-                <InputGroupAddon>F.Flow</InputGroupAddon>
-                <InputText v-model="cruiseFuelFlow"/>
-            </InputGroup>
-            <InputGroup class="varDescentFpm" title="Descent Rate (Feet per minute)">
-                <InputGroupAddon>Rate</InputGroupAddon>
-                <InputText v-model="descentRate"/>
-            </InputGroup>
-            <InputGroup class="varDescentGph" title="Descent Fuel Flow (Gallons per hour)">
-                <InputGroupAddon>F.Flow</InputGroupAddon>
-                <InputText v-model="descentFuelFlow"/>
-            </InputGroup>
-        </div>
-        <div class="grids" v-if="items.length">
-            <div class="checkpoints"><!-- checkpoints -->
-                <div class="headers checkpointGrid bb">
-                    <div>&nbsp</div>
-                    <div title="Checkpoint Name">CheckPt</div>
-                    <div title="Checkpoint Altitude">Alt</div>
-                </div>
-                <div v-for="(i,index) in items" class="checkpointGrid bb">
-                    <div class="actions">
-                        <i v-if="i.canDelete" class="pi pi-times actionDelete clickable" title="Delete checkpoint"
-                            @click="onItemDelete(index)"></i>
-                        <i v-if="i.canAdd" class="pi pi-plus actionAdd clickable" title="Add new checkpoint after"
-                            @click="onItemAdd(index+1)"></i>
-                    </div>
-                    <div class="bl checkpointName editable" @click="onEdit(index,true)">{{ formatName(i.entry.name) }}</div>
-                    <div class="bl br checkpointAlt editable" @click="onEdit(index,true)">{{ Formatter.altitude(i.entry.alt) }}</div>
-                </div>
-            </div>
-            <div class="legs"><!-- legs -->
-                <div class="headers legGrid bb">
-                    <!-- <div title="True Heading">TH</div> -->
-                    <div title="Magnetic Heading">MH</div>
-                    <!-- <div title="Compass Heading (Magnetic Heading + Magnetic Deviation)">CH</div> -->
-                    <div title="Leg Distance">Dist.</div>
-                    <div title="Ground Speed">GS</div>
-                    <div title="Leg Time">Time</div>
-                    <div title="Leg Fuel">Fuel</div>
-                </div>
-                <div v-for="(i,index) in items.slice(0, items.length - 1)" 
-                    class="legGrid bb" :class="i.attitudeClass"
-                    @click="onEdit(index,false)">
-                    <!-- <div class="editable trueHeading" @click="onItemEdit(index)">{{ Formatter.heading(i.entry.th) }}</div> -->
-                    <div class="magneticHeading editable">{{ Formatter.heading(i.entry.mh) }}</div>
-                    <!-- <div class="bl compassHeading">{{ Formatter.heading(i.entry.ch) }}</div> -->
-                    <div class="legDistance bl editable">{{ Formatter.distance( i.entry.ld) }}</div>
-                    <div class="groundSpeed bl editable">{{ Formatter.speed(i.entry.gs) }}</div>
-                    <div class="legTime bl editable">{{ Formatter.legTime(i.entry.lt) }}</div>
-                    <div class="legFuel bl editable">{{ Formatter.fuel(i.entry.lf) }}</div>
-                </div>
-                <div class="legGrid">
-                    <div class="total totalDistance">{{ Formatter.distance(totalDistance) }}</div>
-                    <div class="total totalTime">{{ Formatter.legTime(totalTime) }}</div>
-                    <div class="total totalFuel">{{ Formatter.fuel(totalFuel) }}</div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <ActionBar :actions="(mode != modeBlank) ? [{label:'Reset Log',action:actionReset}] : null"
-        video="https://youtu.be/gywuPnlgtkI"
-        @cancel="emits('cancel')" @apply="onApply" @action="onAction"></ActionBar>
-</div>
-</template>
 
 <style scoped>
 .actions {
@@ -541,6 +572,9 @@ function updateAttitudes() {
 .headers {
     font-weight: bold;
     font-size: 0.8rem;
+}
+.hsep {
+    border-top: 1px solid grey;
 }
 .legGrid {
     display: grid;
