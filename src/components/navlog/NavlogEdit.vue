@@ -444,6 +444,10 @@ function onFlightPlanUpload(file) {
     NavlogData.uploadFilePlan(file).then(entries => {
         // console.log('[NavlogEdit.onFlightPlanUpload] navlog entries count ' + entries.length)
         // console.log('[NavlogEdit.onFlightPlanUpload]', JSON.stringify(entries))
+        if(entries.length > 0) {
+            codeFrom.value = entries[0].name
+            codeTo.value = entries[entries.length - 1].name
+        }
         items.value = navLogToEditItems(entries)
         updateAttitudes()
         mode.value = modeEntries
