@@ -44,6 +44,8 @@ function onApply() {
     // console.log('[NavlogEditor.onSave]', JSON.stringify(editEntry.value))
     const entry = editEntry.value
 
+    entry.alt = Number(entry.alt)
+
     emits('save', entry)
 }
 
