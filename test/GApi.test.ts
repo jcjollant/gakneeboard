@@ -1,6 +1,6 @@
 import { describe, expect, test} from '@jest/globals';
 import { GApi, GApiError } from '../backend/GApi'
-import { jcHash, jcUserId, jcTestTemplateData, jcToken, jcName, jcTestTemplateName, jcTestTemplateId, jcTestTemplateDescription } from './constants'
+import { jcHash, jcUserId, jcToken, jcName } from './constants'
 import { currentAsOf, postgresUrl } from './constants';
 import { UserMiniView } from '../backend/models/UserMiniView';
 
