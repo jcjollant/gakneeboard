@@ -172,11 +172,6 @@ function showAirport() {
     validAirport.value = true;
 }
                             
-// function showCustomAirportDialog() {
-//     currentUser.value = data.getCurrentUser()
-//     showCustomAirport.value = true
-// }
-
 </script>
 
 <template>

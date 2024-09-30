@@ -163,8 +163,6 @@ export class Navlog {
         }
     }
 
-
-
     updateRelationships() {
         // calculate total time and distance
         // based on leg times and distances
