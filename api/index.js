@@ -1,5 +1,6 @@
 const express =require( "express")
 import cors from "cors";
+import multer from "multer"
 // const cors = require('cors');
 import { version } from '../backend/constants.js'
 import { GApi, GApiError } from '../backend/GApi'
@@ -7,6 +8,7 @@ import { UserTools } from '../backend/UserTools'
 import { AirportView } from "../backend/models/AirportView";
 import { FeedbackDao } from "../backend/FeedbackDao";
 import { Maintenance } from '../backend/Maintenance'
+import { NavlogTools } from "../backend/NavlogTools.ts";
 const port = 3000
 const app = express();
 
@@ -107,14 +109,30 @@ app.post('/authenticate', async(req,res) => {
 
 // record user feedback
 app.post('/feedback', async(req,res) => {
-    console.log( "API feedback request " + req);
-    console.log( "[index] feedback body " + JSON.stringify(req.body));
-    console.log( "[index] feedback body type " + typeof req.body);
+    // console.log( "API feedback request " + req);
+    // console.log( "[index] feedback body " + JSON.stringify(req.body));
+    // console.log( "[index] feedback body type " + typeof req.body);
     // insert feedback in DB
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
     await FeedbackDao.save(payload)
     res.send("Thank you for your feedback")
 })
+
+
+var storage = multer.memoryStorage();
+var upload = multer({ storage: storage });
+
+app.post('/fp2nl', upload.single('file'), async (req,res) => {
+    if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+    }
+//   console.log('[index.POST fp2nl]', req.file.buffer.length)
+    try {
+        res.send(await NavlogTools.importFlightPlan(req.file.buffer))
+    } catch( e) {
+        catchError(res, e, 'POST /fp2nl')
+    }
+});
 
 app.get('/maintenance/:code', async (req, res) => {
     const maintenance = new Maintenance(req.params.code)
@@ -128,21 +146,6 @@ app.get('/maintenance/:code', async (req, res) => {
     }).catch(e => {
         catchError(res, e, 'GET /maintenance/:code')
     })
-})
-
-app.get(['/sheet/:id','/template/:id'], async (req, res) => {
-    const userId = await UserTools.userIdFromRequest(req)
-    try {
-        // console.log( "[index] GET template " + req.params.id + " userId " + userId);
-        if(!userId) {
-            throw new GApiError(401, 'Unauthorized')
-        }
-        // console.log( "[index] GET template " + req.params.id + " userId " + userId
-        let sheet = await GApi.templateGet(req.params.id, userId);
-        res.send(sheet)
-    } catch( e) {
-        catchError(res, e, 'GET /template/:id')
-    }
 })
 
 app.get('/publication/:code', async (req, res) => {
@@ -170,6 +173,24 @@ app.get('/publications', async (req, res) => {
 })
 
 /**
+ * Get a specific template
+ */
+app.get('/template/:id', async (req, res) => {
+    const userId = await UserTools.userIdFromRequest(req)
+    try {
+        // console.log( "[index] GET template " + req.params.id + " userId " + userId);
+        if(!userId) {
+            throw new GApiError(401, 'Unauthorized')
+        }
+        // console.log( "[index] GET template " + req.params.id + " userId " + userId
+        let sheet = await GApi.templateGet(req.params.id, userId);
+        res.send(sheet)
+    } catch( e) {
+        catchError(res, e, 'GET /template/:id')
+    }
+})
+
+/**
  * Builds a template list for the current user
  */
 app.get('/templates', async (req, res) => {
@@ -182,10 +203,8 @@ app.get('/templates', async (req, res) => {
     }
 })
 
-/**
- * The expected payload is a user and template data
- */
-app.post(['/sheet','/template'], async (req, res) => {
+// Template update
+app.post('/template', async (req, res) => {
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
     GApi.templateSave(payload.user, payload.sheet).then( (template) => {
         // console.log('[index.post/sheet]', JSON.stringify(sheet))
@@ -195,6 +214,7 @@ app.post(['/sheet','/template'], async (req, res) => {
     })
 })
 
+// Delete a specific template
 app.delete('/template/:id', async (req, res) => {
     const templateId = req.params.id
     const userId = await UserTools.userIdFromRequest(req)
