@@ -18,7 +18,7 @@ const props = defineProps({prompt: { type: String, default: "File Selection" },}
 
 function handleFileChange() {
     files.value = fileInput.value?.files
-    console.log('[FileDrop.handleFileChange]', files.value[0])
+    // console.log('[FileDrop.handleFileChange]', files.value[0])
     emits('upload', files.value[0])
 }
 
