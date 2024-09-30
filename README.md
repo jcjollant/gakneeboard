@@ -17,6 +17,10 @@ Run the test suite:
 ## TODO
 
 # Done
+## 9/29/2024
+* Added file upload button in NavlogEdit
+* Airport Tile List mode uses correct format for Weather Frequency
+* Fixed altitute bug when editing checkpoint
 ## 9/28/2024
 * Fixed publication request without user error
 * Fixed Load and Save without user
