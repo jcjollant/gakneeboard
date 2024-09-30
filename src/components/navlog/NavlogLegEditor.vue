@@ -343,7 +343,7 @@ function updateCalculator() {
     windCorrectionAngle.value = usableWca
     const th = tc + usableWca
     trueHeading.value = th
-    const mh = Math.round(th + mv + md)
+    const mh = (Math.round(th + mv + md) + 360) % 360
     magneticHeading.value = mh
 
     const gs = Math.sqrt(tas*tas + ws*ws - (2*tas*ws*Math.cos((th-wd)*d2r)))
