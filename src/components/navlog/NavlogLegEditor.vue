@@ -1,3 +1,129 @@
+<template>
+    <Dialog modal header="Navigation Leg" class="editorDialog">
+        <div v-if="editEntry">
+            <div class="between mb-2" :class="attitudeClass">
+                <div>{{ editEntry.name }} @ {{ Formatter.altitude(editEntry.alt) }}</div>
+                <div class="attitudeGroup">
+                    <i class="pi attIcon" :class="{'pi-arrow-up-right':editEntry.att=='+','pi-arrow-down-right':editEntry.att=='-','pi-arrow-right':(editEntry.att!='+'&&editEntry.att!='-')}"></i>
+                    <div class="attitude">{{attitudeName}}</div>
+                </div>
+                <div v-if="nextEntry">{{ nextEntry.name }} @ {{ Formatter.altitude(nextEntry.alt) }}</div>
+            </div>
+            <div class="legParamGroup mb-2">
+                <InputGroup v-if="attitudeName==attitudeCruise" class="legParameter" title="POH Cruise Fuel Flow (GPH)">
+                    <InputGroupAddon>Cruise Fuel Flow @ {{ Formatter.altitude(editEntry.alt) }}</InputGroupAddon>
+                    <InputText id="cruiseGPH" v-model="cruiseFuelFlow" @input="updateSuggested" />
+                </InputGroup>
+                <InputGroup v-if="attitudeName==attitudeDescent" class="legParameter" title="POH Descent Fuel Flow (GPH)">
+                    <InputGroupAddon>Descent Fuel Flow</InputGroupAddon>
+                    <InputText id="descentGPH" v-model="descentFuelFlow" @input="updateSuggested" />
+                </InputGroup>
+                <InputGroup v-if="attitudeName==attitudeDescent" class="legParameter" title="Descent Rate (FPM)">
+                    <InputGroupAddon>Descent Rate</InputGroupAddon>
+                    <InputText id="descentFPM" v-model="descentRate" @input="updateSuggested" />
+                </InputGroup>
+            </div>
+            <div class="headingCalculator">
+                <!-- <div class="headingTitle mb-2">Magnetic Heading Calculator</div> -->
+                <div class="headingGrid headingHeader">
+                    <div @click="courseIsTrue=!courseIsTrue" title="Toggle between True and Magnetic Course" class="headingCourse">{{ courseIsTrue ? 'True Course':'Magnetic Course' }}</div>
+                    <!-- <div class="headingWind">Wind</div> -->
+                    <div>Wind Direction</div>
+                    <div>Wind Speed</div>
+                    <div>True Airspeed</div>
+                    <div>Ground Speed</div>
+                    <div>WCA</div>
+                    <div>True Heading</div>
+                    <div title="Magnetic Variation (sectional)">Mag. Variation</div>
+                    <div title="Magnetic Deviation (compass card)">Mag. Deviation</div>
+                    <div>Mag. Heading</div>
+                </div>
+                <div class="headingGrid">
+                    <InputText v-if="courseIsTrue" v-model="editEntry.tc" id="calcTC" 
+                        class="headingInput" title="True Course"
+                        @input="updateCalculator"></InputText>
+                    <InputText v-else v-model="editEntry.mc" id="calcMC" 
+                        class="headingInput" title="Magnetic Course"
+                        @input="updateCalculator"></InputText>
+                    <InputText v-model="windDirection" id="calcWD" 
+                        class="headingInput" title="Wind Direction (True)"
+                        @input="updateCalculator"></InputText>
+                    <InputText v-model="windSpeed" id="calcWS"
+                        class="headingInput" title="Wind Speed (Kts)"
+                        @input="updateCalculator"></InputText>
+                    <InputText v-model="editEntry.tas" id="calcTAS"
+                        class="headingInput" title="True Airspeed (Kts)"
+                        @input="updateCalculator"></InputText>
+                    <div class="headingCalculated" id="calcGS"
+                        title="Calculated Ground Speed (Kts)."
+                        >{{ Formatter.speed(groundSpeed) }}</div>
+                    <div class="headingCalculated" id="calcWCA"
+                        title="Wind Correction Angle">{{ Formatter.heading(windCorrectionAngle,true) }}</div>
+                    <div class="headingCalculated" id="calcTH"
+                        title="True Heading">{{ Formatter.heading(trueHeading) }}</div>
+                    <InputText v-model="editEntry.mv" id="calcMV"
+                        class="headingInput" title="Magnetic Variation (sectional)"
+                        @input="updateCalculator"></InputText>
+                    <InputText v-model="editEntry.md" id="calcMD"
+                        class="headingInput" title="Magnetic Deviation (Compass card)"
+                        @input="updateCalculator"></InputText>
+                    <div class="headingCalculated" id="calcMH"
+                        title="Calculated Magnetic Heading."
+                        >{{ Formatter.heading(magneticHeading) }}</div>
+                </div>
+                <!-- <div class="headingTitle">TC ± WCA = TH ± MV ± MD = MH</div> -->
+            </div>
+            <div class="headingCalculator" :class="attitudeClass">
+                <div class="headingTitle">Log Entry</div>
+                <div class="legFieldGroup">
+                    <div title="Magnetic Heading" class="legField">
+                        <div class="label">Mag. Heading</div>
+                        <InputText id="mh" v-model="editEntry.mh" />
+                        <div class="hint clickable" id="mhHint"
+                            :title="suggestedHeadingTitle" 
+                            @click="editEntry.mh=suggestedHeading">{{ suggestedHeading }}</div>
+                    </div>
+                    <div title="Leg Distance (NM). Supports calculation for cruise legs (ex: 24-15.4)" class="legField">
+                        <div class="label">Distance</div>
+                        <InputText id="ld" v-model="editEntry.ld" @input="updateSuggested" />
+                        <div class="hint clickable" id="ldHint"
+                            :title="suggestedDistanceTitle" 
+                            @click="copyLegDistance">{{ suggestedDistance }}</div>
+                    </div>
+                    <div class="legField" title="Ground Speed (Kts)">
+                        <div class="label">Ground Speed</div>
+                        <InputText id="gs" v-model="editEntry.gs" @input="updateSuggested" />
+                        <div class="hint clickable" id="gsHint"
+                            title="Calculated Ground Speed. Click to Use." 
+                            @click="copyGroundSpeed">{{ calculatedGroundSpeed }}</div>
+                    </div>
+                    <div class="legField" title="Leg Time (Min). Supports decimal and time format (3:30 = 3.5)">
+                        <div class="label">Time</div>
+                        <InputText id="lt" v-model="editEntry.lt" @input="updateSuggested" />
+                        <div class="hint clickable" id="ltHint"
+                            :title="suggestedTimeTitle"
+                            @click="copyTime">{{ suggestedTime }}</div>
+                    </div>
+                    <div class="legField" title="Leg Fuel (Gal)">
+                        <div class="label">Leg Fuel</div>
+                        <InputText id="lf" v-model="editEntry.lf" />
+                        <div class="hint clickable" id="lfHint"
+                            :title="suggestedFuelTitle" 
+                            @click="editEntry.lf=suggestedFuel">{{ suggestedFuel }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="actionDialog gap-2">
+                <Button label="Do Not Apply" @click="emits('close')" link></Button>
+                <Button label="Apply" @click="onApply(false)"></Button>
+                <Button v-if="!lastLeg" label="Apply & Next Leg" @click="onApply(true)"></Button>
+            </div>
+         </div>
+        <PlaceHolder v-else title="Nothing to edit" />
+    </Dialog>
+
+</template>
+
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
@@ -56,7 +182,6 @@ const props = defineProps({
 })
 
 function loadProps(newProps) {
-    // console.log('[NavlogLegEditor.loadProps]', newProps)
     // console.log('[NavlogLegEditor.loadProps]', JSON.stringify(newProps))
     if(newProps.items
         && newProps.items.length > 0 
@@ -318,132 +443,6 @@ function updateSuggested() {
 }
 
 </script>
-
-<template>
-    <Dialog modal header="Navigation Leg" class="editorDialog">
-        <div v-if="editEntry">
-            <div class="between mb-2" :class="attitudeClass">
-                <div>{{ editEntry.name }} @ {{ Formatter.altitude(editEntry.alt) }}</div>
-                <div class="attitudeGroup">
-                    <i class="pi attIcon" :class="{'pi-arrow-up-right':editEntry.att=='+','pi-arrow-down-right':editEntry.att=='-','pi-arrow-right':(editEntry.att!='+'&&editEntry.att!='-')}"></i>
-                    <div class="attitude">{{attitudeName}}</div>
-                </div>
-                <div v-if="nextEntry">{{ nextEntry.name }} @ {{ Formatter.altitude(nextEntry.alt) }}</div>
-            </div>
-            <div class="legParamGroup mb-2">
-                <InputGroup v-if="attitudeName==attitudeCruise" class="legParameter" title="POH Cruise Fuel Flow (GPH)">
-                    <InputGroupAddon>Cruise Fuel Flow @ {{ Formatter.altitude(editEntry.alt) }}</InputGroupAddon>
-                    <InputText id="cruiseGPH" v-model="cruiseFuelFlow" @input="updateSuggested" />
-                </InputGroup>
-                <InputGroup v-if="attitudeName==attitudeDescent" class="legParameter" title="POH Descent Fuel Flow (GPH)">
-                    <InputGroupAddon>Descent Fuel Flow</InputGroupAddon>
-                    <InputText id="descentGPH" v-model="descentFuelFlow" @input="updateSuggested" />
-                </InputGroup>
-                <InputGroup v-if="attitudeName==attitudeDescent" class="legParameter" title="Descent Rate (FPM)">
-                    <InputGroupAddon>Descent Rate</InputGroupAddon>
-                    <InputText id="descentFPM" v-model="descentRate" @input="updateSuggested" />
-                </InputGroup>
-            </div>
-            <div class="headingCalculator">
-                <!-- <div class="headingTitle mb-2">Magnetic Heading Calculator</div> -->
-                <div class="headingGrid headingHeader">
-                    <div @click="courseIsTrue=!courseIsTrue" title="Toggle between True and Magnetic Course" class="headingCourse">{{ courseIsTrue ? 'True Course':'Magnetic Course' }}</div>
-                    <!-- <div class="headingWind">Wind</div> -->
-                    <div>Wind Direction</div>
-                    <div>Wind Speed</div>
-                    <div>True Airspeed</div>
-                    <div>Ground Speed</div>
-                    <div>WCA</div>
-                    <div>True Heading</div>
-                    <div title="Magnetic Variation (sectional)">Mag. Variation</div>
-                    <div title="Magnetic Deviation (compass card)">Mag. Deviation</div>
-                    <div>Mag. Heading</div>
-                </div>
-                <div class="headingGrid">
-                    <InputText v-if="courseIsTrue" v-model="editEntry.tc" id="calcTC" 
-                        class="headingInput" title="True Course"
-                        @input="updateCalculator"></InputText>
-                    <InputText v-else v-model="editEntry.mc" id="calcMC" 
-                        class="headingInput" title="Magnetic Course"
-                        @input="updateCalculator"></InputText>
-                    <InputText v-model="windDirection" id="calcWD" 
-                        class="headingInput" title="Wind Direction (True)"
-                        @input="updateCalculator"></InputText>
-                    <InputText v-model="windSpeed" id="calcWS"
-                        class="headingInput" title="Wind Speed (Kts)"
-                        @input="updateCalculator"></InputText>
-                    <InputText v-model="editEntry.tas" id="calcTAS"
-                        class="headingInput" title="True Airspeed (Kts)"
-                        @input="updateCalculator"></InputText>
-                    <div class="headingCalculated" id="calcGS"
-                        title="Calculated Ground Speed (Kts)."
-                        >{{ Formatter.speed(groundSpeed) }}</div>
-                    <div class="headingCalculated" id="calcWCA"
-                        title="Wind Correction Angle">{{ Formatter.heading(windCorrectionAngle,true) }}</div>
-                    <div class="headingCalculated" id="calcTH"
-                        title="True Heading">{{ Formatter.heading(trueHeading) }}</div>
-                    <InputText v-model="editEntry.mv" id="calcMV"
-                        class="headingInput" title="Magnetic Variation (sectional)"
-                        @input="updateCalculator"></InputText>
-                    <InputText v-model="editEntry.md" id="calcMD"
-                        class="headingInput" title="Magnetic Deviation (Compass card)"
-                        @input="updateCalculator"></InputText>
-                    <div class="headingCalculated" id="calcMH"
-                        title="Calculated Magnetic Heading."
-                        >{{ Formatter.heading(magneticHeading) }}</div>
-                </div>
-                <!-- <div class="headingTitle">TC ± WCA = TH ± MV ± MD = MH</div> -->
-            </div>
-            <div class="headingCalculator" :class="attitudeClass">
-                <div class="headingTitle">Log Entry</div>
-                <div class="legFieldGroup">
-                    <div title="Magnetic Heading" class="legField">
-                        <div class="label">Mag. Heading</div>
-                        <InputText id="mh" v-model="editEntry.mh" />
-                        <div class="hint clickable" id="mhHint"
-                            :title="suggestedHeadingTitle" 
-                            @click="editEntry.mh=suggestedHeading">{{ suggestedHeading }}</div>
-                    </div>
-                    <div title="Leg Distance (NM). Supports calculation for cruise legs (ex: 24-15.4)" class="legField">
-                        <div class="label">Distance</div>
-                        <InputText id="ld" v-model="editEntry.ld" @input="updateSuggested" />
-                        <div class="hint clickable" id="ldHint"
-                            :title="suggestedDistanceTitle" 
-                            @click="copyLegDistance">{{ suggestedDistance }}</div>
-                    </div>
-                    <div class="legField" title="Ground Speed (Kts)">
-                        <div class="label">Ground Speed</div>
-                        <InputText id="gs" v-model="editEntry.gs" @input="updateSuggested" />
-                        <div class="hint clickable" id="gsHint"
-                            title="Calculated Ground Speed. Click to Use." 
-                            @click="copyGroundSpeed">{{ calculatedGroundSpeed }}</div>
-                    </div>
-                    <div class="legField" title="Leg Time (Min). Supports decimal and time format (3:30 = 3.5)">
-                        <div class="label">Time</div>
-                        <InputText id="lt" v-model="editEntry.lt" @input="updateSuggested" />
-                        <div class="hint clickable" id="ltHint"
-                            :title="suggestedTimeTitle"
-                            @click="copyTime">{{ suggestedTime }}</div>
-                    </div>
-                    <div class="legField" title="Leg Fuel (Gal)">
-                        <div class="label">Leg Fuel</div>
-                        <InputText id="lf" v-model="editEntry.lf" />
-                        <div class="hint clickable" id="lfHint"
-                            :title="suggestedFuelTitle" 
-                            @click="editEntry.lf=suggestedFuel">{{ suggestedFuel }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="actionDialog gap-2">
-                <Button label="Do Not Apply" @click="emits('close')" link></Button>
-                <Button label="Apply" @click="onApply(false)"></Button>
-                <Button v-if="!lastLeg" label="Apply & Next Leg" @click="onApply(true)"></Button>
-            </div>
-         </div>
-        <PlaceHolder v-else title="Nothing to edit" />
-    </Dialog>
-
-</template>
 
 <style scoped>
 .attitude {
