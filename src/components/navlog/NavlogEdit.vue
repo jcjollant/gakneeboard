@@ -236,6 +236,7 @@ function getValueOrEmpty(value) {
 function navLogToEditItems(entries) {
     if(!entries || !entries.map) return [];
     return entries.map( (e,index) => {
+        // console.log('[NavlogEdit.navLogToEditItems]', JSON.stringify(e))
         const first = (index == 0);
         const last = (index == (entries.length - 1))
         // can delete everything except first and last element
