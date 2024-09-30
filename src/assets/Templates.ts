@@ -1,6 +1,7 @@
 import axios from 'axios'
-import { apiRootUrl, contentTypeJson, getUrlWithUser, newCurrentUser } from './data.js'
+import { contentTypeJson, getUrlWithUser, newCurrentUser } from './data.js'
 import { isDefaultName } from './sheetData.js'
+import { GApiUrl } from '../lib/GApiUrl.js'
 
 
 export class PageType {
@@ -57,7 +58,7 @@ export class TemplateData {
      * @param {*} template 
      */
     static async delete(template:any) {
-        const url = apiRootUrl + 'template/' + template.id
+        const url = GApiUrl.template(template.id)
         if( !newCurrentUser.loggedIn) {
             throw new Error('Cannot delete template without user')
         }
@@ -80,7 +81,7 @@ export class TemplateData {
     * @returns 
     */
     static getPublication(code:string):any {
-        const url = apiRootUrl + 'publication/' + code
+        const url = GApiUrl.publicationWithCode(code)
         return axios.get( url)
             .then( response => response.data)
             .catch( error => {
@@ -94,7 +95,7 @@ export class TemplateData {
      * @returns 
      */
     static getPublications():any {
-        const url = apiRootUrl + 'publications'
+        const url = GApiUrl.publications()
         return getUrlWithUser( url)
             .then( response => response.data)
             .catch( error => {
@@ -109,7 +110,7 @@ export class TemplateData {
     * @returns
     */
     static getById(id:number):any {
-        const url = apiRootUrl + 'template/' + id
+        const url = GApiUrl.template(id)
         return axios.get( url)
             .then( response => {
                 const template = response.data;
@@ -152,7 +153,7 @@ export class TemplateData {
      * @returns 
      */
     static get(id:number):any {
-        const url = apiRootUrl + 'template/' + id
+        const url = GApiUrl.template(id)
         return getUrlWithUser(url).then( response => {
             // console.log('[data.sheetGetById]', JSON.stringify(response))
             const template = response.data;
@@ -172,7 +173,7 @@ export class TemplateData {
     * @returns Created template on success or null on failure
     */
     static save(template:any):any {
-        const url = apiRootUrl + 'template'
+        const url = GApiUrl.template()
         if( !newCurrentUser.loggedIn) {
             throw new Error('Cannot save template without user')
         }

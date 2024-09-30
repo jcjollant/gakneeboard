@@ -1,7 +1,6 @@
 export const version = 928
 
-export const apiRootUrl = 'https://ga-api-seven.vercel.app/'
-// export const apiRootUrl = 'http://localhost:3000/'
+const apiRootUrl = GApiUrl.root
 
 export const urlBlog = 'https://gakneeboard.wordpress.com/'
 export const urlFacebookGroup = 'https://www.facebook.com/groups/1479675382917767'
@@ -13,16 +12,16 @@ export const urlGuideRadioFlow = 'https://gakneeboard.wordpress.com/2024/08/03/r
 export const urlGuideSunlight = 'https://gakneeboard.wordpress.com/2024/08/10/sunlight-tile-guide/'
 export const urlKneeboard = 'https://kneeboard.ga'
 
-import { Airport } from './Airport.ts'
 import axios from 'axios'
+import { Airport } from './Airport.ts'
 import { Backend } from './Backend.ts'
 import { CurrentUser } from './CurrentUser.ts'
 import { NavlogQueue } from './NavlogQueue.ts'
+import { GApiUrl } from '../lib/GApiUrl.ts'
 
 export const contentTypeJson = { headers: {'Content-Type':'application/json'} }
 // const contentTypeTextPlain = { headers: {'Content-Type':'text/plain'} }
 const contentType = contentTypeJson;
-// let currentUser = null
 let airports = {}
 let pendingCodes = []
 let sunlightCache = {}
