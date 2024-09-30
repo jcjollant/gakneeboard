@@ -8,7 +8,7 @@ import { UserTools } from '../backend/UserTools'
 import { AirportView } from "../backend/models/AirportView";
 import { FeedbackDao } from "../backend/FeedbackDao";
 import { Maintenance } from '../backend/Maintenance'
-import { NavlogTools } from "../backend/NavlogTools.ts";
+import { NavlogTools } from "../backend/NavlogTools";
 const port = 3000
 const app = express();
 
