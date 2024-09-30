@@ -24,7 +24,7 @@
             </div>
             <div class="hsep mb-2">Or</div>
             <div v-if="uploading">Uploading...</div>
-            <FilePick v-else prompt="Upload a File Plan" @upload="onFilePlanUpload"/>
+            <FilePick v-else prompt="Upload a Flight Plan" @upload="onFlightPlanUpload"/>
         </div>
         <div v-else>
             <div class="continueHeader">This page will show the overflow from another NavLog page</div>
@@ -439,17 +439,17 @@ function onItemSave(data) {
     }
 }
 
-function onFilePlanUpload(file) {
+function onFlightPlanUpload(file) {
     uploading.value = true
     NavlogData.uploadFilePlan(file).then(entries => {
-        // console.log('[NavlogEdit.onFilePlanUpload] navlog entries count ' + entries.length)
-        // console.log('[NavlogEdit.onFilePlanUpload]', JSON.stringify(entries))
+        // console.log('[NavlogEdit.onFlightPlanUpload] navlog entries count ' + entries.length)
+        // console.log('[NavlogEdit.onFlightPlanUpload]', JSON.stringify(entries))
         items.value = navLogToEditItems(entries)
         updateAttitudes()
         mode.value = modeEntries
     }).catch( (e) => {
-        console.log('[NavlogEdit.onFilePlanUpload] failed ' + e)
-        emitToastError(emits, 'INOP', 'File plan upload failed')
+        console.log('[NavlogEdit.onFlightPlanUpload] failed ' + e)
+        emitToastError(emits, 'INOP', 'Flight plan upload failed')
     }).finally( () => {
         uploading.value = false;
     })
