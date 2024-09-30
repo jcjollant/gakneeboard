@@ -35,12 +35,14 @@ export class NavlogEntry {
         this.md = undefined;
         this.mc = undefined;
     }
+    
+    // Copy all fields from a source to a new NavlogEntry
     static copy(source:any):NavlogEntry {
         if(!source) return new NavlogEntry('');
         const output:NavlogEntry = new NavlogEntry(source.name, source.alt);
         const fields = ['tc','wind','th','mh','ch','ld','gs','lt','fr','lf','att','tas','md','mv', 'mc']
         for(const field of fields) {
-            if(source[field]) output[field] = source[field];
+            if(source[field] !== undefined) output[field] = source[field];
         }
         return output;
     }
