@@ -17,6 +17,9 @@ Run the test suite:
 ## TODO
 
 # Done
+## 10/01/2024
+* Localstore cleanup
+* Replaced Navlog Video link with Plylist
 ## 9/29/2024
 * Added file upload button in NavlogEdit
 * Airport Tile List mode uses correct format for Weather Frequency

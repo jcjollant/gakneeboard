@@ -1,4 +1,4 @@
-export const version = 930
+export const version = 1001
 
 const apiRootUrl = GApiUrl.root
 
@@ -11,6 +11,7 @@ export const urlGuideFuelBug = 'https://gakneeboard.wordpress.com/2024/07/30/fue
 export const urlGuideRadioFlow = 'https://gakneeboard.wordpress.com/2024/08/03/radio-flow-tile-guide/'
 export const urlGuideSunlight = 'https://gakneeboard.wordpress.com/2024/08/10/sunlight-tile-guide/'
 export const urlKneeboard = 'https://kneeboard.ga'
+export const urlNavlogVideos = 'https://www.youtube.com/playlist?list=PLS4A2hmRgOclcjE4THa034Lgq0THbewUX'
 
 import axios from 'axios'
 import { Airport } from './Airport.ts'
