@@ -104,7 +104,7 @@
         </div>
     </div>
     <ActionBar :actions="(mode != modeBlank) ? [{label:'Reset Log',action:actionReset}] : null"
-        video="https://youtu.be/gywuPnlgtkI"
+        :video="urlNavlogVideos"
         @cancel="emits('cancel')" @apply="onApply" @action="onAction"></ActionBar>
 </div>
 </template>
@@ -131,6 +131,7 @@ import InputText from 'primevue/inputtext'
 import { useConfirm } from 'primevue/useconfirm'
 import OneChoice from '../shared/OneChoice.vue'
 import { NavlogData } from '../../lib/NavlogData'
+import { urlNavlogVideos } from '../../assets/data'
 
 const emits = defineEmits(['apply','cancel','toast'])
 
