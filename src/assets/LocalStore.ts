@@ -8,11 +8,39 @@ export class LocalStore {
     static template = 'template'
     static templateOld = 'sheet'
     static templateOlder = 'page1'
-    static MAX_AIRPORTS = 10
+    static MAX_AIRPORTS = 15
+    static LEAN_AIRPORTS = 10
 
     static airportAdd(code:string, airport:any) {
         localStorage.setItem(LocalStore.airportPrefix + airport.code, JSON.stringify(airport))
         LocalStore.airportUpdateRecents(code)
+    }
+
+    static airportCleanUp() {
+        // clean up airports cache above threshold
+        const airportList = localStorage.getItem(LocalStore.recentAirports)
+        if( airportList) {
+            const airportCodes = airportList.split('-')
+            if(airportCodes.length > LocalStore.MAX_AIRPORTS) {
+                // reduce recent list to lean size
+                airportCodes.splice(0, airportCodes.length - LocalStore.LEAN_AIRPORTS)
+                for(var key in localStorage) {
+                    // console.log('[LocalStore.cleanup] key ' + key)
+                    if(key.startsWith(LocalStore.airportPrefix)) {
+                        const code = key.substring(LocalStore.airportPrefix.length)
+                        if(airportCodes.indexOf(code) < 0) {
+                            console.log('[LocalStore.cleanUp] removing', key)
+                            localStorage.removeItem(key)
+                        }
+                    }
+                }
+
+                // replace recent list with most recent
+                const newRecentAirport = airportCodes.join('-')
+                console.log('[LocalStore.cleanUp] new recent airports', newRecentAirport)
+                localStorage.setItem(LocalStore.recentAirports, newRecentAirport)
+            }
+        }
     }
 
     static airportGet(code:string) {
@@ -84,31 +112,7 @@ export class LocalStore {
                 localStorage.removeItem(LocalStore.userOld)
             }
 
-            // clean up airports cache above threshold
-            const airportList = localStorage.getItem(LocalStore.recentAirports)
-            if( airportList) {
-                const airportCodes = airportList.split('-')
-                if(airportCodes.length > LocalStore.MAX_AIRPORTS) {
-                    // reduce recent list to max size
-                    airportCodes.splice(0, airportCodes.length - LocalStore.MAX_AIRPORTS)
-                    for(var key in localStorage) {
-                        // console.log('[LocalStore.cleanup] key ' + key)
-                        if(key.startsWith(LocalStore.airportPrefix)) {
-                            const code = key.substring(LocalStore.airportPrefix.length)
-                            if(airportCodes.indexOf(code) < 0) {
-                                console.log('[LocalStore.cleanUp] removing', key)
-                                localStorage.removeItem(key)
-                            }
-                        }
-                    }
-
-                    // replace recent list with most recent
-                    const newRecentAirport = airportCodes.join('-')
-                    console.log('[LocalStore.cleanUp] new recent airports', newRecentAirport)
-                    localStorage.setItem(LocalStore.recentAirports, newRecentAirport)
-                }
-            }
-
+            LocalStore.airportCleanUp()
             resolve(true)
         })
     }
