@@ -1,11 +1,117 @@
+
 export class LocalStore {
+    static airportPrefix:string = 'airport-'
     static user:string = 'user'
     static userOld:string = 'kb-user'
     static howDoesItWork:string = 'howDoesItWork'
+    static recentAirports:string = 'airports'
     static template = 'template'
     static templateOld = 'sheet'
     static templateOlder = 'page1'
+    static MAX_AIRPORTS = 10
 
+    static airportAdd(code:string, airport:any) {
+        localStorage.setItem(LocalStore.airportPrefix + airport.code, JSON.stringify(airport))
+        LocalStore.airportUpdateRecents(code)
+    }
+
+    static airportGet(code:string) {
+        const airport = localStorage.getItem( LocalStore.airportPrefix + code)
+        if( airport) {
+            LocalStore.airportUpdateRecents(code)
+        }
+    }
+
+    static airportRemove(code:string) {
+        localStorage.removeItem(LocalStore.airportPrefix + code)
+    }
+
+    static airportUpdateRecents(code:string) {
+        let recentAirports = localStorage.getItem(LocalStore.recentAirports)
+        if(recentAirports) {
+            const recentList = recentAirports.split('-')
+            if(recentList.includes(code)) {
+                // move to end of list
+                recentList.splice(recentList.indexOf(code), 1)
+            }
+            recentList.push(code)
+            recentAirports = recentList.join('-')
+        } else {
+            recentAirports = code
+        }
+        // save the new list
+        localStorage.setItem(LocalStore.recentAirports, recentAirports)
+    }
+
+    static cleanUp():Promise<boolean> {
+        return new Promise(resolve => {
+            // try old template
+            let templateData = localStorage.getItem(LocalStore.templateOld)  
+            if( templateData) {
+                if( !localStorage.getItem(LocalStore.template)) { 
+                    // Save under new name and remove old entry
+                    const template = JSON.parse(templateData)
+                    LocalStore.saveTemplate(template)
+                    return template
+                }
+                // remove old stuff
+                console.log('[LocalStore.cleanUp] removing ' + LocalStore.templateOld)
+                localStorage.removeItem(LocalStore.templateOld)
+            }
+        
+            // Try older name
+            templateData = localStorage.getItem(LocalStore.templateOlder)
+            if( templateData) {
+                if( !localStorage.getItem(LocalStore.template)) { 
+                    // create a local sheet with no name
+                    const template = {data:JSON.parse(templateData)}
+                    // Save under new name and remove old entry
+                    LocalStore.saveTemplate(template)
+                }
+                // remove old stuff
+                console.log('[LocalStore.cleanUp] removing ' + LocalStore.templateOlder)
+                localStorage.removeItem(LocalStore.templateOlder)
+            }
+
+            // old user
+            const oldUser = localStorage.getItem(LocalStore.userOld)
+            if(oldUser) {
+                // migrate to new user if not already done
+                if(!localStorage.getItem(LocalStore.user)) {
+                    localStorage.setItem(LocalStore.user, oldUser)
+                }
+                console.log('[LocalStore.cleanUp] removing ' + LocalStore.userOld)
+                localStorage.removeItem(LocalStore.userOld)
+            }
+
+            // clean up airports cache above threshold
+            const airportList = localStorage.getItem(LocalStore.recentAirports)
+            if( airportList) {
+                const airportCodes = airportList.split('-')
+                if(airportCodes.length > LocalStore.MAX_AIRPORTS) {
+                    // reduce recent list to max size
+                    airportCodes.splice(0, airportCodes.length - LocalStore.MAX_AIRPORTS)
+                    for(var key in localStorage) {
+                        // console.log('[LocalStore.cleanup] key ' + key)
+                        if(key.startsWith(LocalStore.airportPrefix)) {
+                            const code = key.substring(LocalStore.airportPrefix.length)
+                            if(airportCodes.indexOf(code) < 0) {
+                                console.log('[LocalStore.cleanUp] removing', key)
+                                localStorage.removeItem(key)
+                            }
+                        }
+                    }
+
+                    // replace recent list with most recent
+                    const newRecentAirport = airportCodes.join('-')
+                    console.log('[LocalStore.cleanUp] new recent airports', newRecentAirport)
+                    localStorage.setItem(LocalStore.recentAirports, newRecentAirport)
+                }
+            }
+
+            resolve(true)
+        })
+    }
 
     // Load active sheet from localstorage
     static getTemplate() {
@@ -13,32 +119,14 @@ export class LocalStore {
         // Vanilla scenario
         if( stringData) return JSON.parse(stringData)
 
-        // try old name
-        stringData = localStorage.getItem(LocalStore.templateOld)  
-        if( stringData) {
-            console.log('[LocalStore.getTemplate] found under', LocalStore.templateOld)
-            // Save under new name and remove old entry
-            const template = JSON.parse(stringData)
-            LocalStore.saveTemplate(template)
-            localStorage.removeItem(LocalStore.templateOld)
-            return template
-        }
-        
-        // Try older name
-        stringData = localStorage.getItem(LocalStore.templateOlder)
-        if( stringData) {
-            // create a local sheet with no name
-            const template = {data:JSON.parse(stringData)}
-            // Save under new name and remove old entry
-            LocalStore.saveTemplate(template)
-            localStorage.removeItem(LocalStore.templateOlder)
-            return template;
-        }
-
         // Nothing worked
         return null;
     }
 
+    // return active user
+    static getUser() {
+      return localStorage.getItem(LocalStore.user);
+    }
 
     /**
      * Should we show how does it work

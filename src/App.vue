@@ -102,7 +102,7 @@ onBeforeMount(()=>{
   getBackend().then(() => {
     versionText.value = version + '/' + backend.version
   })
-
+  LocalStore.cleanUp()
   // How does it work popup check
   showHowDoesItWork.value = LocalStore.showHowDoesItWork()
 })
