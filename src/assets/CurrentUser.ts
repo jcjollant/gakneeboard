@@ -57,16 +57,7 @@ export class CurrentUser {
 
     restore() {
       // attempt to restore user from localstore
-      let lsUser:string|null = localStorage.getItem(LocalStore.user);
-      if(!lsUser) {
-        // second chance with old key
-        lsUser = localStorage.getItem(LocalStore.userOld);
-        if(lsUser) {
-          // refresh key
-          localStorage.removeItem(LocalStore.userOld)
-          localStorage.setItem(LocalStore.user, lsUser)
-        }
-      }
+      const lsUser = LocalStore.getUser()
 
       if( lsUser) {
         this.login(JSON.parse(lsUser))

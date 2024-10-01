@@ -18,6 +18,7 @@ import { Backend } from './Backend.ts'
 import { CurrentUser } from './CurrentUser.ts'
 import { NavlogQueue } from './NavlogQueue.ts'
 import { GApiUrl } from '../lib/GApiUrl.ts'
+import { LocalStore } from './LocalStore.ts'
 
 export const contentTypeJson = { headers: {'Content-Type':'application/json'} }
 // const contentTypeTextPlain = { headers: {'Content-Type':'text/plain'} }
@@ -108,8 +109,7 @@ export async function getAirport( codeParam, group = false) {
     }
 
     // do we already have this airport in localStorage?
-    const localStorageKey = 'airport-' + code;
-    const localCopy = localStorage.getItem(localStorageKey)
+    const localCopy = LocalStore.airportGet(code)
     if(localCopy && localCopy != "null") {
       // console.log('[data.getAirport] localCopy', JSON.stringify(localCopy))
       // we have local airport information
@@ -132,8 +132,8 @@ export async function getAirport( codeParam, group = false) {
             airports[code] = localAirport
             resolve({current:true,airport:localAirport})
           } else {
-            // turn out this data was stale, remove ir from localStorage
-            localStorage.removeItem(localStorageKey)
+            // turn out this data was stale, remove it from localStorage
+            LocalStore.airportRemove(code)
             getAirport(code, false).then(airport => {
               airports[code] = airport
               resolve({current:false,airport:airport})
@@ -183,7 +183,7 @@ export async function getAirport( codeParam, group = false) {
 
     // save this data in local storage
     // console.log('[data.getAirport] saving to localStorage', code)
-    localStorage.setItem(localStorageKey, JSON.stringify(airport))
+    LocalStore.airportAdd(code,airport)
 
     return airport
 }
