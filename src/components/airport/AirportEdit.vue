@@ -1,3 +1,37 @@
+<template>
+    <div class="content">
+        <CustomAirport v-model:visible="showCustomAirport" :airport="customAirport" :user="currentUser"
+                        @close="showCustomAirport=false" @updated="onCustomUpdated" />
+        <div class="settings">
+            <AirportInput :code="airportCode" :auto="true"
+                @valid="loadAirportData" @invalid="onInvalidAirport" />
+            <ProgressSpinner v-if="loading" class="spinner" ></ProgressSpinner>
+            <div v-else-if="validAirport" class="rwyChoices">
+                <div class="miniHeader">Runway</div>
+                <div class="rwySelector">
+                    <Button :label="rwy.name" class="sign" :severity="rwy.name == selectedRwy ? 'primary' : 'secondary'"
+                        v-for="rwy in rwyList" 
+                        @click="selectRunway(rwy.name)"></Button>
+                    <Button label="ALL" class="sign" v-if="rwyList.length > 0"  :severity="selectedRwy == 'all' ? 'primary' : 'secondary'"
+                            @click="selectRunway('all')"></Button>
+                </div>
+                <div class="rwyOrientation">
+                    <div class="miniHeader" >Orientation</div>
+                    <OneChoice v-if="validAirport" v-model="rwyOrientation" :choices="orientations" style="line-height: 9px;" />
+                </div>
+                <!-- <div class="rwyOrientation" v-if="validAirport">
+                    <Button label="Vertical" 
+                        @click="rwyOrientation='vertical'" :severity="rwyOrientation == 'vertical' ? 'primary' : 'secondary'"></Button>
+                    <Button label="Magnetic" 
+                        @click="rwyOrientation='magnetic'" :severity="rwyOrientation == 'magnetic' ? 'primary' : 'secondary'"></Button>
+                </div> -->
+            </div>
+        </div>
+        <ActionBar :help="data.urlGuideAirport" :canApply="canApply" :canCancel="canCancel"
+            @apply="onApply" @cancel="onCancel"  />
+    </div>
+</template>
+
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import * as data from '../../assets/data.js'
@@ -8,8 +42,10 @@ import ProgressSpinner from 'primevue/progressspinner';
 import ActionBar from '../shared/ActionBar.vue'
 import AirportInput from '../shared/AirportInput.vue'
 import CustomAirport from './CustomAirport.vue';
+import OneChoice from '../shared/OneChoice.vue'
 
 const emits = defineEmits(['close','selection'])
+const orientations = [{label:'Vertical',value:'v'},{label:'Magnetic',value:'m'}]
 
 /**
  * Props management (defineProps, loadProps, onMounted, watch)
@@ -17,7 +53,7 @@ const emits = defineEmits(['close','selection'])
  const props = defineProps({
     airport: { type: Object, default: null},
     rwyName: { type: String, default: null},
-    rwyOrientation: { type: String, default: null},
+    rwyOrientation: { type: String, default: 'vertical'},
 })
 
 function loadProps(props) {
@@ -39,7 +75,7 @@ function loadProps(props) {
             selectedRwy.value = airport.rwys[0].name
         }
 
-        rwyOrientation.value = (props.rwyOrientation ? props.rwyOrientation : 'vertical')
+        rwyOrientation.value = orientations[(props.rwyOrientation == 'magnetic' ? 1 : 0)]
         // console.log( 'AirportEdit loadProps ' + props.rwyOrientation)
 
         if('custom' in airport && airport.custom) {
@@ -71,7 +107,7 @@ const canApply = ref(false)
 const canCreate = ref(false)
 const canEdit = ref(false)
 const validAirport = ref(false)
-const rwyOrientation = ref('vertical')
+const rwyOrientation = ref(orientations[0])
 const selectedRwy = ref(null)
 const showCustomAirport = ref(false)
 const customAirport = ref(null)
@@ -119,7 +155,8 @@ function loadAirportData(newAirport) {
 // settings are applied
 function onApply() {
     // update settings with orientation
-    emits('selection', airport, selectedRwy.value, rwyOrientation.value.toLowerCase())
+    const orientation = rwyOrientation.value.value == 'v' ? 'vertical' : 'magnetic'
+    emits('selection', airport, selectedRwy.value, orientation)
 }
 
 function onCancel() {
@@ -174,41 +211,6 @@ function showAirport() {
                             
 </script>
 
-<template>
-    <div class="content">
-        <CustomAirport v-model:visible="showCustomAirport" :airport="customAirport" :user="currentUser"
-                        @close="showCustomAirport=false" @updated="onCustomUpdated" />
-        <div class="settings">
-            <AirportInput :code="airportCode" :auto="true"
-                @valid="loadAirportData" @invalid="onInvalidAirport" />
-            <ProgressSpinner v-if="loading" class="spinner" ></ProgressSpinner>
-            <div v-else-if="validAirport">
-                <div class="miniHeader">Runway</div>
-                <div class="rwySelector">
-                    <Button :label="rwy.name" class="sign" :severity="rwy.name == selectedRwy ? 'primary' : 'secondary'"
-                        v-for="rwy in rwyList" 
-                        @click="selectRunway(rwy.name)"></Button>
-                    <Button label="ALL" class="sign" v-if="rwyList.length > 0"  :severity="selectedRwy == 'all' ? 'primary' : 'secondary'"
-                            @click="selectRunway('all')"></Button>
-                </div>
-                <div class="miniHeader" v-if="validAirport">Orientation</div>
-                <div class="rwyOrientation" v-if="validAirport">
-                    <Button label="Vertical" 
-                        @click="rwyOrientation='vertical'" :severity="rwyOrientation == 'vertical' ? 'primary' : 'secondary'"></Button>
-                    <Button label="Magnetic" 
-                        @click="rwyOrientation='magnetic'" :severity="rwyOrientation == 'magnetic' ? 'primary' : 'secondary'"></Button>
-                </div>
-            </div>
-        </div>
-        <!-- <Button v-if="canEdit" label="Edit" severity="secondary"
-            @click="onCustomEdit"></Button>
-        <Button v-if="canCreate" label="Create" severity="secondary"
-            @click="onCustomCreate"></Button> -->
-        <ActionBar :help="data.urlGuideAirport" :canApply="canApply" :canCancel="canCancel"
-            @apply="onApply" @cancel="onCancel"  />
-    </div>
-</template>
-
 <style scoped>
 .settings{
     display: flex;
@@ -240,6 +242,11 @@ function showAirport() {
 .runway {
     background: red;
     color:white;
+}
+.rwyChoices {
+    display: flex;
+    flex-flow: column;
+    gap: 5px;
 }
 .rwyOrientation {
     display: flex;
