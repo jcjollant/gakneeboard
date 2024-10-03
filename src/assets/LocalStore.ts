@@ -12,6 +12,7 @@ export class LocalStore {
     static LEAN_AIRPORTS = 10
 
     static airportAdd(code:string, airport:any) {
+        if(!airport) return;
         localStorage.setItem(LocalStore.airportPrefix + airport.code, JSON.stringify(airport))
         LocalStore.airportUpdateRecents(code)
     }
