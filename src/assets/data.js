@@ -2,7 +2,6 @@ export const version = 1002
 
 const apiRootUrl = GApiUrl.root
 
-export const urlBlog = 'https://gakneeboard.wordpress.com/'
 export const urlFacebookGroup = 'https://www.facebook.com/groups/1479675382917767'
 export const urlGuideAirport = 'https://gakneeboard.wordpress.com/2024/07/28/airport-tile-guide/'
 export const urlGuideAtis = 'https://gakneeboard.wordpress.com/2024/07/29/atis-tile-guide/'
