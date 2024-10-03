@@ -1,35 +1,3 @@
-<script setup>
-import { ref } from "vue";
-
-import { urlBlog, urlFacebookGroup, urlGuideAirport, urlGuideAtis, urlGuideChecklist, urlGuideFuelBug, urlGuideRadioFlow, urlGuideSunlight } from '../../assets/data'
-
-import Button from 'primevue/button'
-import Dialog from 'primevue/dialog'
-import OneChoice from "../shared/OneChoice.vue";
-
-const emits = defineEmits(["close","hdiw"]);
-
-const guides = [
-  {name:'Airport Tile', url:urlGuideAirport},
-  {name:'ATIS Tile', url:urlGuideAtis},
-  {name:"Checklist Syntax",url:urlGuideChecklist},
-  {name:'Fuel Bug Tile', url:urlGuideFuelBug},
-  {name:"Radio Flow Tile", url:urlGuideRadioFlow},
-  {name:"Sun Light Tile", url:urlGuideSunlight},
-]
-
-const topicAbout = {label:'About',value:'about'}
-const topicWarning = {label:'Warnings',value:'warning'}
-const topicGuide = {label:'Help',value:'guide'}
-const topics = ref([topicAbout,topicGuide,topicWarning])
-const activeTopic = ref(topicAbout)
-
-function openUrl(url) {
-  window.open(url, '_blank')
-}
-
-</script>
-
 <template>
   <Dialog modal header="About GA Kneeboard">
     <div class="aboutPopup">
@@ -50,7 +18,7 @@ function openUrl(url) {
         <div class="justify"><strong>Special Thanks</strong> to Ash, Jason, Steve and Stewart whom have contributed invaluable feedback and suggestions since Day 1</div>
       </div>
       <div v-else-if="activeTopic.value==topicGuide.value" class="mb-5">
-        <div class="mb-5 justify"><a :href="urlBlog" target="_blank">GA Kneeboard Blog</a> is the best source for updates and user guides. For example:</div>
+        <div class="mb-5 justify"><a :href="UserUrl.blog" target="_blank">GA Kneeboard Blog</a> is the best source for updates and user guides. For example:</div>
         <div class="mb-5 guides">
           <Button v-for="guide in guides" :label="guide.name" @click="openUrl(guide.url)" severity="help"></Button>
         </div>
@@ -78,12 +46,47 @@ function openUrl(url) {
         <div>Are calculated with FAA variation data which can be quite old at some locations</div>
       </div>    
       <div class="actionDialog gap-2">
+        <Button label="Privacy" @click="openUrl(UserUrl.privacy)" link></Button>
+        <Button label="License" @click="openUrl(UserUrl.eula)" link></Button>
         <Button label="How Does It Work?" @click="emits('hdiw')" link></Button>
         <Button label="Got it" @click="emits('close')"></Button>
       </div>
     </div>
   </Dialog>
 </template>
+
+<script setup>
+import { ref } from "vue";
+
+import { urlFacebookGroup, urlGuideAirport, urlGuideAtis, urlGuideChecklist, urlGuideFuelBug, urlGuideRadioFlow, urlGuideSunlight } from '../../assets/data'
+
+import Button from 'primevue/button'
+import Dialog from 'primevue/dialog'
+import OneChoice from "../shared/OneChoice.vue";
+import { UserUrl } from '../../lib/UserUrl.ts'
+
+const emits = defineEmits(["close","hdiw"]);
+
+const guides = [
+  {name:'Airport Tile', url:urlGuideAirport},
+  {name:'ATIS Tile', url:urlGuideAtis},
+  {name:"Checklist Syntax",url:urlGuideChecklist},
+  {name:'Fuel Bug Tile', url:urlGuideFuelBug},
+  {name:"Radio Flow Tile", url:urlGuideRadioFlow},
+  {name:"Sun Light Tile", url:urlGuideSunlight},
+]
+
+const topicAbout = {label:'About',value:'about'}
+const topicWarning = {label:'Warnings',value:'warning'}
+const topicGuide = {label:'Help',value:'guide'}
+const topics = ref([topicAbout,topicGuide,topicWarning])
+const activeTopic = ref(topicAbout)
+
+function openUrl(url) {
+  window.open(url, '_blank')
+}
+
+</script>
 
 <style scoped>
 .aboutPopup {
