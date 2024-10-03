@@ -17,6 +17,9 @@ Run the test suite:
 ## TODO
 
 # Done
+## 10/03/2024
+* Created EULA
+* Added links to EULA and Privacy to About
 ## 10/02/2024
 * Checklist blank lines always have a white background
 * Airport Edit rwy orientation laves more space for runway list
