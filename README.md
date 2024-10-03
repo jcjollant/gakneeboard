@@ -17,6 +17,9 @@ Run the test suite:
 ## TODO
 
 # Done
+## 10/02/2024
+* Checklist blank lines always have a white background
+* Airport Edit rwy orientation laves more space for runway list
 ## 10/01/2024
 * Localstore cleanup
 * Replaced Navlog Video link with Plylist
