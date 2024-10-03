@@ -38,13 +38,18 @@ describe('Checklist Page', () => {
     // Section
     cy.get('.leftList > :nth-child(1) > .section').contains('Section1')
     // Normal line with two short boxes
-    cy.get('.leftList > .theme-green > .challenge').contains('Challenge1.1')
-    cy.get('.leftList > .theme-green > .response').contains('Response1.1')
+    cy.get('.leftList > :nth-child(2) > .challenge').should('have.class', 'theme-green')
+    cy.get('.leftList > :nth-child(2) > .challenge').contains('Challenge1.1')
+    cy.get('.leftList > :nth-child(2) > .response').should('have.class', 'theme-green')
+    cy.get('.leftList > :nth-child(2) > .response').contains('Response1.1')
     // short empty boxes
     cy.get('.leftList > :nth-child(3) > .challenge').should('be.empty')
+    cy.get('.leftList > :nth-child(3) > .challenge').should('not.have.class', 'theme-green')
     cy.get('.leftList > :nth-child(3) > .response').should('be.empty')
+    cy.get('.leftList > :nth-child(3) > .response').should('not.have.class', 'theme-green')
     // long empty box
-    cy.get('.leftList > :nth-child(4) > .spanned').should('be.empty')
+    cy.get('.leftList > :nth-child(4) > .section').should('be.empty')
+    cy.get('.leftList > :nth-child(4) > .section').should('not.have.class', 'theme-green')
     // long box with challenge
     cy.get('.leftList > :nth-child(5) > .spanned').contains('Challenge1.2')
     // short boxes with challenge and question
@@ -52,15 +57,20 @@ describe('Checklist Page', () => {
     cy.get('.leftList > :nth-child(6) > .response').should('be.empty')
     // Emergent Section
     cy.get('.leftList > :nth-child(7) > .section').should('have.class', 'emergent')
-    cy.get('.leftList > :nth-child(8) > .section').should('have.class', 'strong')
+    cy.get('.leftList > :nth-child(8) > .section').should('have.class', 'theme-green-strong')
 
-    cy.get('.rightList > .theme-green > .challenge').contains('Challenge2.1')
-    cy.get('.rightList > .theme-green > .response').contains('Response2.1')
+    cy.get('.rightList > :nth-child(2) > .challenge').contains('Challenge2.1')
+    cy.get('.rightList > :nth-child(2) > .challenge').should('have.class','theme-green')
+    cy.get('.rightList > :nth-child(2) > .response').contains('Response2.1')
+    cy.get('.rightList > :nth-child(2) > .response').should('have.class','theme-green')
     // short empty boxes
     cy.get('.rightList > :nth-child(3) > .challenge').should('be.empty')
+    cy.get('.rightList > :nth-child(3) > .challenge').should('not.have.class','theme-green')
     cy.get('.rightList > :nth-child(3) > .response').should('be.empty')
+    cy.get('.rightList > :nth-child(3) > .response').should('not.have.class','theme-green')
     // long empty box
-    cy.get('.rightList > :nth-child(4) > .spanned').should('be.empty')
+    cy.get('.rightList > :nth-child(4) > .section').should('be.empty')
+    cy.get('.rightList > :nth-child(4) > .section').should('not.have.class','theme-green')
     // long box with challenge
     cy.get('.rightList > :nth-child(5) > .spanned').contains('Challenge2.2')
     // short boxes with challenge and question
@@ -69,14 +79,28 @@ describe('Checklist Page', () => {
 
 
     // make sure we start with green
-    cy.get('.leftList > .theme-green > .challenge').contains('Challenge1.1')
+    cy.get('.leftList > :nth-child(2) > .challenge').should('have.class','theme-green')
     // Change color to blue and title to Title1
     cy.get('.pageOne > .headerTitle').click()
     cy.get('.theme-blue > label').click()
     cy.get('.p-inputgroup > .p-inputtext').type('Title1')
     cy.get('[aria-label="Apply"]').click()
     // check it's blue
-    cy.get('.leftList > .theme-blue > .challenge').contains('Challenge1.1')
+    cy.get('.leftList > :nth-child(2) > .challenge').should('have.class', 'theme-blue')
+    // Next three lines should not be blue
+    cy.get('.leftList > :nth-child(3) > .challenge').should('not.have.class', 'theme-blue')
+    // this one because it's blank
+    cy.get('.leftList > :nth-child(4) > .section').should('not.have.class', 'theme-blue')
+    cy.get('.leftList > :nth-child(5) > .challenge').should('not.have.class', 'theme-blue')
+    // odd lines should be blue
+    cy.get('.leftList > :nth-child(6) > .challenge').should('have.class', 'theme-blue')
+    // Emergent should not be affected
+    cy.get('.leftList > :nth-child(7) > .section').should('have.class', 'emergent')
+    cy.get('.leftList > :nth-child(7) > .section').should('not.have.class', 'theme-blue')
+    // strong should be affected
+    cy.get('.leftList > :nth-child(8) > .section').should('have.class', 'theme-blue-strong')
+    cy.get('.leftList > :nth-child(8) > .section').should('not.have.class', 'theme-blue')
+
     cy.get('.pageOne > .headerTitle').contains('Title1')
 
     // change color and title but don't save
@@ -84,7 +108,7 @@ describe('Checklist Page', () => {
     cy.get('.theme-green > label').click()
     cy.get('.p-inputgroup > .p-inputtext').type('Title2')
     cy.get('[aria-label="Cancel"]').click()
-    cy.get('.leftList > .theme-blue > .challenge').contains('Challenge1.1')
+    cy.get('.leftList > :nth-child(2) > .challenge').should('have.class','theme-blue')
     cy.get('.pageOne > .headerTitle').contains('Title1')
 
   })

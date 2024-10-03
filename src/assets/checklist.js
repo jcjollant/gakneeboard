@@ -5,7 +5,8 @@ export function itemsFromList(value) {
         let response;
         [challenge, response] = line.split('##')
         if( response == undefined) { // there is no separator
-            if( challenge == undefined) return {c:'?'}
+            // blank line
+            if( !challenge || !challenge.length) return {s:'',t:'blank'}
             // Full line with only challenge
             return { c:challenge}  
         }
@@ -31,17 +32,19 @@ export function itemsFromList(value) {
     return items;
 }
 
+// transform an array if items into text
 export function listFromItems(items) {
     if (!items) return ''
 
     // translate items into text
     const list = items.map(item => {
-        if ('s' in item) {
+        if('t' in item && item.t == 'blank') return ''
+        if('s' in item) {
             if( item.t == 'emer') return '##!' + item.s;
             if( item.t == 'strong') return '##*' + item.s;
             return '##' + item.s;
         }
-        if ('r' in item) return item.c + '##' + item.r
+        if('r' in item) return item.c + '##' + item.r
         return item.c
     })
     return list.join('\n')

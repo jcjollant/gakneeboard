@@ -1,3 +1,14 @@
+<template>
+    <div v-if="items.length > 0" v-for="(item, index) in items" 
+        class="checklist">
+        <div v-if="'s' in item" class="section"
+            :class="getClassSection(item)">{{ item.s }}</div>
+        <div v-else :class="getClassChallenge(item,index)">{{ item.c }}</div>
+        <div v-if="'r' in item" :class="getClassResponse(item,index)">{{ item.r }}</div>
+    </div>
+    <PlaceHolder v-else title="No Items" />
+</template>
+
 <script setup>
 
 import { onMounted, ref, watch } from 'vue'
@@ -13,6 +24,31 @@ const props = defineProps({
 const theme = ref('theme-yellow')
 const small = ref(false)
 const items = ref([])
+
+// Use theme only when item is strong or line is event and theme is not blank
+function getClassSection(item) {
+    if( item.t=='strong') return theme.value+'-strong'
+    else if( item.t=='emer') return 'emergent'
+    else if( item.t=='blank') return ''
+    return 'normal'
+}
+
+function getClassChallenge(item, index) {
+//class="challenge" :class="{'smallFont': small, 'spanned':!('r' in item)}
+    const output = ['challenge'];
+    if(small.value) output.push('smallFont')
+    if(!('r' in item)) output.push('spanned')
+    if(index%2) output.push(theme.value)
+    return output
+}
+
+function getClassResponse(item, index) {
+//class="response" :class="{'smallFont': small}"
+    const output = ['response']
+    if(small.value) output.push('smallFont')
+    if(index%2) output.push(theme.value)
+    return output
+}
 
 function loadProps(newProps) {
     // console.log('[ChecklistViewer.loadProps]', JSON.stringify(newProps))
@@ -32,22 +68,11 @@ watch(props, () => {
 
 </script>
 
-<template>
-    <div v-if="items.length > 0" v-for="(item, index) in items" class="checklist"
-        :class="(index % 2 || item.t=='strong') ? theme : ''">
-        <div v-if="'s' in item" class="section spanned" 
-            :class="{'emergent': item.t =='emer','strong': item.t=='strong'}" >{{ item.s }}</div>
-        <div v-else class="challenge" :class="{'smallFont': small, 'spanned':!('r' in item)}">{{ item.c }}</div>
-        <div v-if="'r' in item" class="response" :class="{'smallFont': small}">{{ item.r }}</div>
-    </div>
-    <PlaceHolder v-else title="No Items" />
-</template>
-
 <style scoped>
 .challenge {
     text-align: left;
     padding-left: 10px;
-    height: 1.6rem;
+    height: 23px;
 }
 
 .checklist {
@@ -57,6 +82,11 @@ watch(props, () => {
     border-bottom: 1px solid lightgrey;
 }
 
+.normal {
+    color: darkgrey;
+    background: white;
+}
+
 .response {
     font-weight: bold;
     border-left: 1px solid lightgrey;
@@ -64,10 +94,8 @@ watch(props, () => {
 
 .section {
     font-weight: bolder;
-    color: darkgrey;
-    background: white;
     grid-column: 1 / span 2;
-
+    height: 23px;
 }
 
 .emergent {
@@ -85,31 +113,32 @@ watch(props, () => {
     grid-column: 1 / span 2
 }
 
-.strong {
-    color:white;
-}
 .theme-yellow {
     background: lightyellow;
 }
-.theme-yellow .strong {
+.theme-yellow-strong {
+    color:white;
     background: darkorange;
 }
 .theme-blue {
     background: #b4c6e7;
 }
-.theme-blue .strong{
+.theme-blue-strong{
+    color:white;
     background: blue;
 }
 .theme-green {
     background: #c6e0b4;
 }
-.theme-green .strong{
+.theme-green-strong{
+    color:white;
     background: darkgreen;
 }
 .theme-grey {
     background: #e9e9e9;
 }
-.theme-grey .strong {
+.theme-grey-strong {
+    color:white;
     background: #666;
 }
 
