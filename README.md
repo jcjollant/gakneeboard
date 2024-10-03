@@ -21,6 +21,8 @@ ts-node .\willie.ts
 * Struggling airports : KATL, KDNN, KCHA, KGVL
 
 # Done
+## 10/02/2024
+* Changed data format to support larger airports
 ## 9/29/2024
 * Flight plan upload
 ## 9/24/2024

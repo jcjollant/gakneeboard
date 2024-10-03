@@ -8,7 +8,7 @@ const jcTestPageBack = {type:'tiles',data:[{"id":0,"name":"airport","data":{"cod
 export const jcTestTemplateData = [jcTestPageFront,jcTestPageBack]
 export const jcTestTemplateName = 'TestJC'
 export const jcTestTemplateDescription = 'Two pages of tiles with airport data'
-export const jcTestTemplateId = 55
+export const jcTestTemplateId = 275
 export const jcMaxTemplates = 15
 export const jcTestTemplate = {id:jcTestTemplateId, name:jcTestTemplateName, publish:false, data:jcTestTemplateData}
 export const postgresUrl = "postgres://default:94chrayEvOLG@ep-shrill-silence-a6ypne6y-pooler.us-west-2.aws.neon.tech/verceldb?sslmode=require"

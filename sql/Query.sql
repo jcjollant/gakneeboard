@@ -48,7 +48,10 @@ SELECT * FROM sheets
 # Sheets from actual users
 SELECT * FROM sheets WHERE user_id > 2
 
-SELECT * FROM sheets WHERE id = 45
+SELECT * FROM sheets WHERE id = 275
+
+
+SELECT data,name,description FROM sheets WHERE id=0 AND user_id=1
 
 # Count of JC sheets
 SELECT COUNT(*) FROM sheets WHERE user_Id=1
@@ -82,4 +85,6 @@ SELECT p.code, s.name, s.description FROM publications AS p LEFT JOIN sheets AS 
 # Publication count by user
 SELECT COUNT(p.*), s.user_id FROM publications as p LEFT JOIN sheets as s ON p.sheetid = s.id  GROUP BY s.user_id ORDER BY count DESC
 
-UPDATE publications SET active = FALSE WHERE sheetid = 55
+UPDATE publications SET active = TRUE WHERE sheetid = 275
+
+SELECT * FROM publications WHERE sheetid = 275
