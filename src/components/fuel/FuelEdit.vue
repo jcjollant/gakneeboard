@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { urlGuideFuelBug } from '../../assets/data'
+import { UserUrl } from '../../lib/UserUrl'
 
 import InputNumber from 'primevue/inputnumber'
 import Button from 'primevue/button'
@@ -66,7 +66,7 @@ function sanityCheck() {
         <div class="checks">
             <Button class="warning" v-for="warning in warnings" :label="warning" severity="warning"></Button>
         </div>
-        <ActionBar @apply="onApply" @cancel="emits('close')" :help="urlGuideFuelBug" />
+        <ActionBar @apply="onApply" @cancel="emits('close')" :help="UserUrl.fuelBugTileGuide" />
     </div>
 </template>
 

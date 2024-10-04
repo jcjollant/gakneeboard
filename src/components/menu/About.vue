@@ -22,7 +22,7 @@
         <div class="mb-5 guides">
           <Button v-for="guide in guides" :label="guide.name" @click="openUrl(guide.url)" severity="help"></Button>
         </div>
-        <div class="mb-5 justify">last, GA Kneeboard public <a :href="urlFacebookGroup" target="_blank">Facebook Group</a> is a good place to interract.</div>
+        <div class="mb-5 justify">last, GA Kneeboard public <a :href="UserUrl.facebookGroup" target="_blank">Facebook Group</a> is a good place to interract.</div>
       </div>
       <div v-else-if="activeTopic.value==topicWarning.value" class="warning-content mb-5">
         <div class="topWarning">
@@ -58,8 +58,6 @@
 <script setup>
 import { ref } from "vue";
 
-import { urlFacebookGroup, urlGuideAirport, urlGuideAtis, urlGuideChecklist, urlGuideFuelBug, urlGuideRadioFlow, urlGuideSunlight } from '../../assets/data'
-
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import OneChoice from "../shared/OneChoice.vue";
@@ -68,12 +66,12 @@ import { UserUrl } from '../../lib/UserUrl.ts'
 const emits = defineEmits(["close","hdiw"]);
 
 const guides = [
-  {name:'Airport Tile', url:urlGuideAirport},
-  {name:'ATIS Tile', url:urlGuideAtis},
-  {name:"Checklist Syntax",url:urlGuideChecklist},
-  {name:'Fuel Bug Tile', url:urlGuideFuelBug},
-  {name:"Radio Flow Tile", url:urlGuideRadioFlow},
-  {name:"Sun Light Tile", url:urlGuideSunlight},
+  {name:'Airport Tile', url:UserUrl.airportTileGuide},
+  {name:'ATIS Tile', url:UserUrl.atisTileGuide},
+  {name:"Checklist Syntax",url:UserUrl.checklistGuide},
+  {name:'Fuel Bug Tile', url:UserUrl.fuelBugTileGuide},
+  {name:"Radio Flow Tile", url:UserUrl.radioFlowTileGuide},
+  {name:"Sun Light Tile", url:UserUrl.sunlightTileGuide},
 ]
 
 const topicAbout = {label:'About',value:'about'}

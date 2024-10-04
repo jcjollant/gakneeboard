@@ -2,16 +2,6 @@ export const version = 1003
 
 const apiRootUrl = GApiUrl.root
 
-export const urlFacebookGroup = 'https://www.facebook.com/groups/1479675382917767'
-export const urlGuideAirport = 'https://gakneeboard.wordpress.com/2024/07/28/airport-tile-guide/'
-export const urlGuideAtis = 'https://gakneeboard.wordpress.com/2024/07/29/atis-tile-guide/'
-export const urlGuideChecklist = 'https://gakneeboard.wordpress.com/2024/08/06/checklist-syntax-guide/'
-export const urlGuideFuelBug = 'https://gakneeboard.wordpress.com/2024/07/30/fuel-bug-tile-guide/'
-export const urlGuideRadioFlow = 'https://gakneeboard.wordpress.com/2024/08/03/radio-flow-tile-guide/'
-export const urlGuideSunlight = 'https://gakneeboard.wordpress.com/2024/08/10/sunlight-tile-guide/'
-export const urlKneeboard = 'https://kneeboard.ga'
-export const urlNavlogVideos = 'https://www.youtube.com/playlist?list=PLS4A2hmRgOclcjE4THa034Lgq0THbewUX'
-
 import axios from 'axios'
 import { Airport } from './Airport.ts'
 import { Backend } from './Backend.ts'

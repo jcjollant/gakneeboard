@@ -1,8 +1,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-// import { demoPageChecklist } from '../assets/data'
-import { urlGuideChecklist } from '../../assets/data'
 import { itemsFromList, listFromItems } from '../../assets/checklist'
+import { UserUrl } from '../../lib/UserUrl'
 
 import ActionBar from '../shared/ActionBar.vue'
 import ChecklistViewer from './ChecklistViewer.vue'
@@ -126,7 +125,7 @@ Create sections using '##Section Name':
                     class="editList" :class="{ 'smallTextarea': columns.value == 2 }"></Textarea>
             </div>
             <ThemeSelector @change="onThemeChange" :theme="theme" />
-            <ActionBar @cancel="onCancel" @apply="onApply" :help="urlGuideChecklist" />
+            <ActionBar @cancel="onCancel" @apply="onApply" :help="UserUrl.checklistGuide" />
         </div>
         <div v-else class="viewMode">
             <div v-if="columns.value == 1">

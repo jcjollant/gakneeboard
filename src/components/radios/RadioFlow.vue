@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { urlGuideRadioFlow } from '../../assets/data'
 import { Formatter } from '../../assets/Formatter'
+import { UserUrl } from '../../lib/UserUrl';
 
 import ActionBar from '../shared/ActionBar.vue'
 import Header from '../shared/Header.vue';
@@ -140,7 +140,7 @@ function updateTextarea() {
                     @click="onLookup" class="lookupBtn"></Button>
                 <Textarea class='list' rows="11" cols="24" v-model="textData"
                     placeholder="Enter up to 15 freq."></Textarea>
-                <ActionBar @apply="onApply" @cancel="onCancel" :help="urlGuideRadioFlow" />
+                <ActionBar @apply="onApply" @cancel="onCancel" :help="UserUrl.radioFlowTileGuide" />
             </div>
         </div>
     </div>

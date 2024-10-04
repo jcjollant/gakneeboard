@@ -1,11 +1,11 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
-import { urlKneeboard } from '../../assets/data'
 import { emitToast, emitToastError } from '../../assets/toast'
 
 import Button from 'primevue/button'
 import OneChoice from '../shared/OneChoice.vue';
+import { UserUrl } from '../../lib/UserUrl';
 
 const emits = defineEmits(["toast"]);
 
@@ -28,7 +28,7 @@ function loadProps(props) {
   template.value = props.template;
   publish.value = template.value?.publish ? pubPublic : pubPrivate
   if( template.value && template.value.code) {
-    directLink.value = urlKneeboard + '?t=' + template.value.code
+    directLink.value = UserUrl.main + '?t=' + template.value.code
   } else {
     directLink.value = ''
   }

@@ -19,15 +19,10 @@
                     <div class="miniHeader" >Orientation</div>
                     <OneChoice v-if="validAirport" v-model="rwyOrientation" :choices="orientations" style="line-height: 9px;" />
                 </div>
-                <!-- <div class="rwyOrientation" v-if="validAirport">
-                    <Button label="Vertical" 
-                        @click="rwyOrientation='vertical'" :severity="rwyOrientation == 'vertical' ? 'primary' : 'secondary'"></Button>
-                    <Button label="Magnetic" 
-                        @click="rwyOrientation='magnetic'" :severity="rwyOrientation == 'magnetic' ? 'primary' : 'secondary'"></Button>
-                </div> -->
             </div>
         </div>
-        <ActionBar :help="data.urlGuideAirport" :canApply="canApply" :canCancel="canCancel"
+        <ActionBar :video="UserUrl.airportTileVideo"
+            :canApply="canApply" :canCancel="canCancel"
             @apply="onApply" @cancel="onCancel"  />
     </div>
 </template>
@@ -43,6 +38,7 @@ import ActionBar from '../shared/ActionBar.vue'
 import AirportInput from '../shared/AirportInput.vue'
 import CustomAirport from './CustomAirport.vue';
 import OneChoice from '../shared/OneChoice.vue'
+import { UserUrl } from '../../lib/UserUrl.ts';
 
 const emits = defineEmits(['close','selection'])
 const orientations = [{label:'Vertical',value:'v'},{label:'Magnetic',value:'m'}]

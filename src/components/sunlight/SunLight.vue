@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { getAirport, getSunlight, urlGuideSunlight } from '../../assets/data'
+import { getAirport, getSunlight } from '../../assets/data'
+import { UserUrl } from '../../lib/UserUrl'
 
 import ActionBar from '../shared/ActionBar.vue'
 import AirportInput from '../shared/AirportInput.vue'
@@ -228,7 +229,7 @@ function onHeaderClick() {
                     <label for="nightFlight" class="ml-2">Overnight Flight</label>
                 </div> 
             </div>
-            <ActionBar @cancel="onHeaderClick" @apply="onApply" :help="urlGuideSunlight" />
+            <ActionBar @cancel="onHeaderClick" @apply="onApply" :help="UserUrl.sunlightTileGuide" />
         </div>
     </div>    
 </template>

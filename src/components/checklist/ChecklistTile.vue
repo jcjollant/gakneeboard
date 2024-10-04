@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import { itemsFromList, listFromItems } from '../../assets/checklist'
-import { urlGuideChecklist } from '../../assets/data'
+import { UserUrl } from '../../lib/UserUrl'
 
 import ActionBar from '../shared/ActionBar.vue'
 import ChecklistViewer from './ChecklistViewer.vue'
@@ -110,7 +110,7 @@ function onThemeChange(newTheme) {
             <div class="oneOrTwoLists">
                 <Textarea rows="10" cols="24" v-model="textData" class="editList" placeholder="Up to 10 items will fit vertically."></Textarea>
             </div>
-            <ActionBar @apply="onApply" @cancel="onCancel" :help="urlGuideChecklist" />
+            <ActionBar @apply="onApply" @cancel="onCancel" :help="UserUrl.check" />
         </div>
         <div v-else class="checklistMain">
             <ChecklistViewer :items="items" :theme="theme" :small="true" />
