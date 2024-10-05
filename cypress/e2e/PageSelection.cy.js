@@ -1,0 +1,51 @@
+import { visitAndCloseBanner, newPage } from './shared'
+
+function ejectAndConfirm() {
+
+}
+
+describe('Selection Page', () => {
+
+  it('Try All Pages', () => {
+    visitAndCloseBanner()
+    newPage()
+    // Tiles on Page 1
+    cy.get('.pageOne > .list > [aria-label="Tiles"]').click()
+    cy.get('.pageOne > :nth-child(6) > .headerTitle').contains('Tile Selection')
+
+    // Checklist on page 2
+    cy.get('.pageTwo > .list > [aria-label="Checklist"]').click()
+    cy.get('.pageTwo > .headerTitle').contains('Checklist')
+
+    cy.get('.pageTwo > .headerTitle').click()
+    cy.get('.headerTitle > .p-button').click()
+    cy.get('.p-confirm-dialog-accept').click()
+    cy.get('.contentPage > .headerTitle').contains('Page Selection')
+
+    // Cover on page 2
+    cy.get('[aria-label="Cover"]').click()
+    cy.get('.titleContainer > .title').contains('Title')
+    // Eject
+    cy.get('.titleContainer > .title').click()
+    cy.get('.headerTitle > .p-button').click()
+    cy.get('.p-confirm-dialog-accept').click()
+    cy.get('.contentPage > .headerTitle').contains('Page Selection')
+
+    // navlog on page 2
+    cy.get('.pageTwo > .list > [aria-label="NavLog"]').click()
+    cy.get('.contentPage > :nth-child(1) > .headerTitle').contains('NavLog')
+    // Eject
+    cy.get('.contentPage > :nth-child(1) > .headerTitle').click()
+    cy.get('.headerTitle > .p-button').click()
+    cy.get('.p-confirm-dialog-accept').click()
+    cy.get('.contentPage > .headerTitle').contains('Page Selection')
+
+    // Notes on page 2
+    cy.get('.contentPage > .list > [aria-label="Notes"]').click()
+    cy.get('.contentPage > .headerTitle').contains('Notes')
+    // Eject should not require confirmation
+    cy.get('.headerTitle > .p-button').click({force:true})
+    cy.get('.contentPage > .headerTitle').contains('Page Selection')
+
+  })
+})

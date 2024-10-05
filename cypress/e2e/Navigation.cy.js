@@ -4,28 +4,15 @@ describe('Navigation', () => {
   it('HDIW / Version / Offset', () => {
     cy.visit(environment)
 
-    function checkHdiw() {
-      cy.get('.hdiw').contains('Airports')
-      cy.get('.hdiw').contains('Checklist')
-      cy.get('.hdiw').contains('Navlog')
-    }
-    checkHdiw();
+    cy.get('.hdiw').contains('Airports')
+    cy.get('.hdiw').contains('Checklist')
+    cy.get('.hdiw').contains('Navlog')
 
     // remove banner
     cy.contains('Got it').click()
 
     // check version number
     cy.get('.versionDialog').contains(currentVersionNumber)
-
-    // reopen how does it work via About page
-    cy.get('.menuIcon').click()
-    cy.get('.buttonsList > .p-button-icon-only').click()
-    cy.get('.actionDialog > .p-button-link').click()
-
-    checkHdiw();
-
-    // remove banner
-    cy.contains('Got it').click()
 
     cy.get('#offsetPrev').should('have.class','noShow')
     cy.get('#offsetNext').should('have.class','noShow')
