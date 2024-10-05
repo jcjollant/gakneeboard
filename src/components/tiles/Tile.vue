@@ -1,4 +1,36 @@
-<!-- This component allows the user to pick a widget -->
+<template>
+    <div v-if="!tile || tile.name==''" class="tile">
+        <Header :title="'Tile Selection'" :replace="false" :clickable="false"></Header>
+        <!-- <div class="widgetTitle">Tile Selection</div> -->
+        <div class="tileContent list">
+            <FAButton v-for="tile in knownTiles"
+                :icon="tile.icon" 
+                :label="tile.name" :class="tile.class" :title="tile.tooltip"
+                @click="onReplace(tile.tile)"/>
+
+            <!-- <Button v-for="tile in knownTiles" 
+                :icon="tile.icon"
+                :label="tile.name" :class="tile.class" :title="tile.tooltip"
+                @click="onReplace(tile.tile)"></Button> -->
+        </div>
+    </div>
+    <Airport v-else-if="tile.name==Tile.airport" :params="tile.data" 
+        @replace="onReplace" @update="onUpdate" />
+    <Atis v-else-if="tile.name==Tile.atis" :params="tile.data"
+        @replace="onReplace" @update="onUpdate"/>
+    <ChecklistTile v-else-if="tile.name==Tile.checklist" :params="tile.data" 
+        @replace="onReplace" @update="onUpdate"/>
+    <Clearance v-else-if="tile.name==Tile.clearance" @replace="onReplace"/>
+    <FuelBug v-else-if="tile.name==Tile.fuel" :params="tile.data"
+        @replace="onReplace" @update="onUpdate"/>  
+    <NavlogTile v-else-if="tile.name==Tile.navlog" @replace="onReplace" />
+    <NotesTile v-else-if="tile.name==Tile.notes" @replace="onReplace" />
+    <RadioFlow v-else-if="tile.name==Tile.radios" :params="tile.data" 
+        @replace="onReplace" @update="onUpdate" @toast="onToast" />
+    <SunLight v-else-if="tile.name==Tile.sunlight" :params="tile.data" 
+        @replace="onReplace" @update="onUpdate" />
+</template>
+
 <script setup>
 import {onMounted, ref, watch} from 'vue';
 
@@ -8,7 +40,7 @@ import { Tile } from '../../assets/Tile'
 import Header from '../shared/Header.vue';
 import Airport from '../airport/Airport.vue';
 import Atis from '../atis/Atis.vue'
-import Notes from '../notes/Notes.vue';
+import NotesTile from '../notes/NotesTile.vue';
 import ChecklistTile from '../checklist/ChecklistTile.vue';
 import Clearance from '../clearance/Clearance.vue';
 import RadioFlow from '../radios/RadioFlow.vue';
@@ -76,39 +108,6 @@ function onToast(data) {
 }
 
 </script>
-
-<template>
-    <div v-if="!tile || tile.name==''" class="tile">
-        <Header :title="'Tile Selection'" :replace="false" :clickable="false"></Header>
-        <!-- <div class="widgetTitle">Tile Selection</div> -->
-        <div class="tileContent list">
-            <FAButton v-for="tile in knownTiles"
-                :icon="tile.icon" 
-                :label="tile.name" :class="tile.class" :title="tile.tooltip"
-                @click="onReplace(tile.tile)"/>
-
-            <!-- <Button v-for="tile in knownTiles" 
-                :icon="tile.icon"
-                :label="tile.name" :class="tile.class" :title="tile.tooltip"
-                @click="onReplace(tile.tile)"></Button> -->
-        </div>
-    </div>
-    <Airport v-else-if="tile.name==Tile.airport" :params="tile.data" 
-        @replace="onReplace" @update="onUpdate" />
-    <Atis v-else-if="tile.name==Tile.atis" :params="tile.data"
-        @replace="onReplace" @update="onUpdate"/>
-    <ChecklistTile v-else-if="tile.name==Tile.checklist" :params="tile.data" 
-        @replace="onReplace" @update="onUpdate"/>
-    <Clearance v-else-if="tile.name==Tile.clearance" @replace="onReplace"/>
-    <FuelBug v-else-if="tile.name==Tile.fuel" :params="tile.data"
-        @replace="onReplace" @update="onUpdate"/>  
-    <NavlogTile v-else-if="tile.name==Tile.navlog" @replace="onReplace" />
-    <Notes v-else-if="tile.name==Tile.notes" @replace="onReplace" />
-    <RadioFlow v-else-if="tile.name==Tile.radios" :params="tile.data" 
-        @replace="onReplace" @update="onUpdate" @toast="onToast" />
-    <SunLight v-else-if="tile.name==Tile.sunlight" :params="tile.data" 
-        @replace="onReplace" @update="onUpdate" />
-</template>
 
 <style scoped>
 .list {
