@@ -12,7 +12,7 @@
             <li>Show off your kneeboards to fellow pilots,</li>
             <li>Make your templates public for community's benefit,</li>
             <li>Test the app and report issues,</li>
-            <li>Support us via <a href="https://patreon.com/GAKneeboard" target="_blank">Patreon</a>.</li>
+            <li>Support us via <a :href="UserUrl.patreon" target="_blank">Patreon</a>.</li>
           </ol>
         </div>
         <div class="justify"><strong>Special Thanks</strong> to Ash, Jason, Steve and Stewart whom have contributed invaluable feedback and suggestions since Day 1</div>
@@ -48,7 +48,7 @@
       <div class="actionDialog gap-2">
         <Button label="Privacy" @click="openUrl(UserUrl.privacy)" link></Button>
         <Button label="License" @click="openUrl(UserUrl.eula)" link></Button>
-        <Button label="How Does It Work?" @click="emits('hdiw')" link></Button>
+        <!-- <Button label="How Does It Work?" @click="emits('hdiw')" link></Button> -->
         <Button label="Got it" @click="emits('close')"></Button>
       </div>
     </div>
