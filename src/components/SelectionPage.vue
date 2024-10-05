@@ -8,12 +8,12 @@ import FAButton from './shared/FAButton.vue'
 
 const emits = defineEmits(['replace'])
 
-
 const knownPages = ref([
     {'name':'Tiles','type':PageType.tiles, icon:'border-all', tooltip:'A 2x3 grid of customizable tiles like Airport, ATIS, Radios, ...'},
-    {'name':'Checklist','type':PageType.checklist, icon:'list-check', tooltip:'A checklist you can customize'},
+    {'name':'Checklist','type':PageType.checklist, icon:'list-check', tooltip:'A customizable checklist'},
     {'name':'Cover','type':PageType.cover, icon:'image', tooltip:'A cover page for your stylish templates'},
     {'name':'NavLog','type':PageType.navLog, icon:'route', tooltip:'A Navigation Log with checkpoints and headings'},
+    {'name':'Notes','type':PageType.notes, icon:'pen-to-square', tooltip:'A blank page to write down instructions'},
 ])
 
 function replacePage(type) {

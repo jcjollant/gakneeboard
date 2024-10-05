@@ -10,6 +10,7 @@ export class PageType {
   static checklist = 'checklist'
   static cover = 'cover'
   static navLog = 'navlog'
+  static notes = 'notes'
 }
 
 export class Template {

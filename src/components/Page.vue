@@ -1,3 +1,16 @@
+<template>
+    <ChecklistPage v-if="type==PageType.checklist" :data="pageData" 
+        @replace="onReplace" @update="onUpdate" />
+    <CoverPage v-else-if="type==PageType.cover" :data="pageData" 
+        @replace="onReplace" @update="onUpdate" />
+    <NavlogPage v-else-if="type==PageType.navLog" :data="pageData"
+        @replace="onReplace" @update="onUpdate" @toast="onToast" />
+    <TilePage v-else-if="type==PageType.tiles" :data="pageData" 
+        @update="onUpdate" @toast="onToast" />
+    <NotesPage v-else-if="type==PageType.notes" @replace="onReplace(PageType.selection)" />
+    <SelectionPage v-else @replace="onReplace" />
+</template>
+
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
@@ -10,6 +23,7 @@ import SelectionPage from './SelectionPage.vue'
 import TilePage from './tiles/TilePage.vue'
 
 import { useConfirm } from 'primevue/useconfirm'
+import NotesPage from './notes/NotesPage.vue'
 
 const confirm = useConfirm()
 const emits = defineEmits(['toast','update'])
@@ -77,18 +91,3 @@ function onUpdate( newData) {
 }
 
 </script>
-
-<template>
-    <ChecklistPage v-if="type==PageType.checklist" :data="pageData" 
-        @replace="onReplace" @update="onUpdate" />
-    <CoverPage v-else-if="type==PageType.cover" :data="pageData" 
-        @replace="onReplace" @update="onUpdate" />
-    <NavlogPage v-else-if="type==PageType.navLog" :data="pageData"
-        @replace="onReplace" @update="onUpdate" @toast="onToast" />
-    <TilePage v-else-if="type==PageType.tiles" :data="pageData" 
-        @update="onUpdate" @toast="onToast" />
-    <SelectionPage v-else @replace="onReplace" />
-</template>
-
-<style scoped>
-</style>
