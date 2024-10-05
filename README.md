@@ -17,9 +17,14 @@ Run the test suite:
 ## TODO
 
 # Done
+## 10/04/2024
+* Notes Page (new)
+* Fixed missing checklist syntax link in Checklist Tile
+* Removed HDIW from About
 ## 10/03/2024
-* Created EULA
+1) Created EULA
 * Added links to EULA and Privacy to About
+2) Added link to Airport Tile Video
 ## 10/02/2024
 * Checklist blank lines always have a white background
 * Airport Edit rwy orientation laves more space for runway list
