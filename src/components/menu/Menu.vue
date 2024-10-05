@@ -16,7 +16,7 @@ import DemoSelection from '../demos/DemoSelection.vue';
 import Feedback from './Feedback.vue';
 import Maintenance from './Maintenance.vue'
 import Print from './Print.vue'
-import SignIn from './SignIn.vue';
+import SignIn from '../signin/SignIn.vue';
 import TemplateLoad from '../templates/TemplateLoad.vue'
 import TemplateSave from '../templates/TemplateSave.vue'
 
