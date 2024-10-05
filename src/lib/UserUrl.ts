@@ -12,6 +12,7 @@ export class UserUrl {
 
     static facebookGroup:string = 'https://www.facebook.com/groups/1479675382917767'
     static main:string = 'https://kneeboard.ga'
+    static patreon:string = 'https://patreon.com/GAKneeboard'
     static navlogVideo:string = 'https://www.youtube.com/playlist?list=PLS4A2hmRgOclcjE4THa034Lgq0THbewUX'
 
 }
