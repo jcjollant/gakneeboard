@@ -6,7 +6,7 @@
         <div class="templateList">
           <Button v-for="t in user.templates" :label="Template.getName(t)" 
             :icon="deleteMode?'pi pi-times':''" 
-            :severity="deleteMode?'danger':'primary'"
+            :severity="deleteMode?'danger':t.publish ? 'success':'primary'"
             :title="(deleteMode?'Delete':'Load')+' \''+t.name+'\''"
             @click="onTemplateSelected(t)"></Button>
           <Button title="Toggle delete mode"

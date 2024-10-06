@@ -26,14 +26,15 @@ export class Template {
     }
 
     static describe(template:any):string {
-        return (template && template.desc) ? template.desc : '(none)'
+        if(!template) return 'n/a'
+        let output = template.desc??'(none)'
+        if(template.publish) output += ' / Public [' + template.code + ']'
+        return output
     }
 
     static getName(template:any):string {
         if(!template || !template.name) return '?'
-        let name = template.name;
-        if(template.publish) name  = name +' (' + template.code + ')'
-        return name;
+        return template.name;
     }
 }
 
