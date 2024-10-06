@@ -102,7 +102,7 @@ function getTemplateName() {
   } else {
     name = activeTemplate.value.name
   } 
-  if( templateModified) name += '*'
+  if( templateModified.value) name += '*'
   return name;
 }
 
