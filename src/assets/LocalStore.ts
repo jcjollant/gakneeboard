@@ -56,20 +56,23 @@ export class LocalStore {
     }
 
     static airportUpdateRecents(code:string) {
-        let recentAirports = localStorage.getItem(LocalStore.recentAirports)
-        if(recentAirports) {
-            const recentList = recentAirports.split('-')
-            if(recentList.includes(code)) {
-                // move to end of list
-                recentList.splice(recentList.indexOf(code), 1)
+        const promise = new Promise((resolve) => {
+            let recentAirports = localStorage.getItem(LocalStore.recentAirports)
+            if(recentAirports) {
+                const recentList = recentAirports.split('-')
+                if(recentList.includes(code)) {
+                    // move to end of list
+                    recentList.splice(recentList.indexOf(code), 1)
+                }
+                recentList.push(code)
+                recentAirports = recentList.join('-')
+            } else {
+                recentAirports = code
             }
-            recentList.push(code)
-            recentAirports = recentList.join('-')
-        } else {
-            recentAirports = code
-        }
-        // save the new list
-        localStorage.setItem(LocalStore.recentAirports, recentAirports)
+            // save the new list
+            localStorage.setItem(LocalStore.recentAirports, recentAirports)
+            resolve(true)
+        })
     }
 
     static cleanUp():Promise<boolean> {
