@@ -59,7 +59,7 @@ import { backend, version } from './assets/data.js'
 import { EditorAction } from './assets/EditorAction.ts'
 import { getTemplateDemoTiles, pageDataBlank, readPageFromClipboard } from './assets/sheetData'
 import { getToastData, toastError, toastWarning } from './assets/toast'
-import { LocalStore } from './assets/LocalStore'
+import { LocalStore } from './lib/LocalStore.ts'
 import { TemplateData } from './assets/Templates'
 
 import { useToast } from 'primevue/usetoast'

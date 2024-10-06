@@ -1,5 +1,5 @@
 import { duplicate } from "./data";
-import { LocalStore } from "./LocalStore";
+import { LocalStore } from "../lib/LocalStore";
 
 export class CurrentUser {
     loggedIn:boolean

@@ -8,7 +8,7 @@ import { Backend } from './Backend.ts'
 import { CurrentUser } from './CurrentUser.ts'
 import { NavlogQueue } from './NavlogQueue.ts'
 import { GApiUrl } from '../lib/GApiUrl.ts'
-import { LocalStore } from './LocalStore.ts'
+import { LocalStore } from '../lib/LocalStore.ts'
 
 export const contentTypeJson = { headers: {'Content-Type':'application/json'} }
 // const contentTypeTextPlain = { headers: {'Content-Type':'text/plain'} }
