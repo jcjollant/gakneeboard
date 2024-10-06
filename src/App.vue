@@ -1,3 +1,54 @@
+<template>
+  <div v-if="!printPreview" class="main">
+    <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
+    <Editor v-if="showEditor" :template="activeTemplate" :offset="offset"
+      @action="onEditorAction" @offset="onOffset"/>
+    <Toast />
+    <div class="sheetName"
+      :class="{'sheetNameOffset':menuOpen, 'sheetNameModified': templateModified}"
+      :title="templateModified ? 'Template has been modified' : ''">
+      <div>{{ getTemplateName() }}</div>
+      <div class="sheetNumber">{{ getSheetNumber() }}</div>
+    </div>
+    <div class="pageGroup">
+      <i class="pi pi-chevron-circle-left offsetButton" :class="{'noShow':(offset == 0 || showEditor)}"
+        title="Previous Pages" id="offsetPrev"
+        @click="onOffset(offset - 2)"></i>
+      <div class="twoPages">
+        <Page :data="frontPageData" class="pageOne"
+          @update="onPageUpdateFront" 
+          @toast="toast.add" />
+        <Page :data="backPageData" class="pageTwo"
+          @update="onPageUpdateBack" 
+          @toast="toast.add" />
+      </div>
+      <i class="pi pi-chevron-circle-right offsetButton"  :class="{'noShow':(offset >= offsetLast || showEditor)}"
+        title="Next Pages" id="offsetNext"
+        @click="onOffset(offset + 2)"></i>
+    </div>
+    <i class="pi pi-file-edit editorButton clickable" id="btnEditor" :class="{'editorButtonActive':showEditor}"
+      @click="onEditor" title="Toggle Editor Mode"></i>
+    <div class="versionDialog" >{{ versionText }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span>
+    </div>
+  </div>
+  <div v-else>
+    <div v-if="activeTemplate" :class="{printDouble:!printSingles}">
+      <Page v-for="(page,index) in activeTemplate.data"  :data="page" class="pageOne" 
+        :class="{flipMode:(index % 2 == 1 && printFlipMode),printPageBreak:(printSingles || index % 2 == 1)}"
+        @update="onPageUpdateFront"
+        @toast="toast.add" />
+      <!-- <div style="break-after: page;"></div> -->
+    </div>
+  </div>
+  <Menu class="menu" :activeTemplate="activeTemplate" v-show="!printPreview" v-if="!showEditor"    @howDoesItWork="showHowDoesItWork=true"
+    @load="onMenuLoad" 
+    @print="onPrint" @printOptions="onPrintOptions" @printPreview="onPrintPreview"
+    @save="onMenuSave"
+    @toast="toast.add" @toggle="onMenuToggle"
+    >
+  </Menu>
+</template>
+
 <script setup>
 // import HelloWorld from './components/HelloWorld.vue'
 import { onBeforeMount, onMounted,ref} from 'vue'
@@ -25,7 +76,7 @@ const backPageData = ref(null)
 const activeTemplate = ref(null)
 const offset = ref(0)
 const offsetLast = ref(0)
-const sheetModified = ref(false)
+const templateModified = ref(false)
 
 const printFlipMode = ref(false)
 const printPreview = ref(false)
@@ -46,8 +97,13 @@ function doPrint() {
 
 function getTemplateName() {
   let name = ''
-  if( !activeTemplate.value || !activeTemplate.value.name) return name
-  return activeTemplate.value.name
+  if( !activeTemplate.value || !activeTemplate.value.name) {
+    name = 'New Template'
+  } else {
+    name = activeTemplate.value.name
+  } 
+  if( templateModified) name += '*'
+  return name;
 }
 
 // finds the sheet number within the template from the offset value
@@ -84,7 +140,7 @@ function loadTemplate(template=null) {
   }
   activeTemplate.value = template;
   // restore modified state
-  sheetModified.value = template.modified;
+  templateModified.value = template.modified;
   // console.log('[App.loadTemplate]', offset.value, offsetLast.value)
 }
 
@@ -203,7 +259,7 @@ async function onEditorAction(ea) {
  * Copy all left tiles from left to right
  */
 function onEditor() {
-  if(!showEditor.value && sheetModified.value) {
+  if(!showEditor.value && templateModified.value) {
     showToast( getToastData('Editing Modified Page','Save your page before editing to undo potential mistakes', toastWarning, 5000))
   }
   showEditor.value = !showEditor.value;
@@ -333,63 +389,13 @@ function restorePrintOptions() {
 function saveActiveTemplate(modified=false) {
   // console.log('[App.saveActiveSheet]', modified)
   LocalStore.saveTemplate(activeTemplate.value, modified)
-  sheetModified.value = modified
+  templateModified.value = modified
 }
 
 function showToast(data) {
   toast.add(data)
 }
 </script>
-
-<template>
-  <div v-if="!printPreview" class="main">
-    <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
-    <Editor v-if="showEditor" :template="activeTemplate" :offset="offset"
-      @action="onEditorAction" @offset="onOffset"/>
-    <Toast />
-    <div class="sheetName"
-      :class="{'sheetNameOffset':menuOpen, 'sheetNameModified': sheetModified}">
-      <div>{{ getTemplateName() }}</div>
-      <div class="sheetNumber">{{ getSheetNumber() }}</div>
-    </div>
-    <div class="pageGroup">
-      <i class="pi pi-chevron-circle-left offsetButton" :class="{'noShow':(offset == 0 || showEditor)}"
-        title="Previous Pages" id="offsetPrev"
-        @click="onOffset(offset - 2)"></i>
-      <div class="twoPages">
-        <Page :data="frontPageData" class="pageOne"
-          @update="onPageUpdateFront" 
-          @toast="toast.add" />
-        <Page :data="backPageData" class="pageTwo"
-          @update="onPageUpdateBack" 
-          @toast="toast.add" />
-      </div>
-      <i class="pi pi-chevron-circle-right offsetButton"  :class="{'noShow':(offset >= offsetLast || showEditor)}"
-        title="Next Pages" id="offsetNext"
-        @click="onOffset(offset + 2)"></i>
-    </div>
-    <i class="pi pi-file-edit editorButton clickable" id="btnEditor" :class="{'editorButtonActive':showEditor}"
-      @click="onEditor" title="Toggle Editor Mode"></i>
-    <div class="versionDialog" >{{ versionText }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span>
-    </div>
-  </div>
-  <div v-else>
-    <div v-if="activeTemplate" :class="{printDouble:!printSingles}">
-      <Page v-for="(page,index) in activeTemplate.data"  :data="page" class="pageOne" 
-        :class="{flipMode:(index % 2 == 1 && printFlipMode),printPageBreak:(printSingles || index % 2 == 1)}"
-        @update="onPageUpdateFront"
-        @toast="toast.add" />
-      <!-- <div style="break-after: page;"></div> -->
-    </div>
-  </div>
-  <Menu class="menu" :activeTemplate="activeTemplate" v-show="!printPreview" v-if="!showEditor"    @howDoesItWork="showHowDoesItWork=true"
-    @load="onMenuLoad" 
-    @print="onPrint" @printOptions="onPrintOptions" @printPreview="onPrintPreview"
-    @save="onMenuSave"
-    @toast="toast.add" @toggle="onMenuToggle"
-    >
-  </Menu>
-</template>
 
 <style scoped>
 .editorButton {
