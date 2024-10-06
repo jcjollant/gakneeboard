@@ -1,3 +1,53 @@
+<template>
+  <Dialog modal header="Load Template" :style="{width: '45rem'}">
+    <OneChoice v-model="activeLoad" :choices="loadChoices" class="loadChoice"/>
+    <div v-if="activeLoad.value==0" class="mt-5">
+      <div v-if="user.templates.length" class="sheetAndToggle">
+        <div class="templateList">
+          <Button v-for="t in user.templates" :label="Template.getName(t)" 
+            :icon="deleteMode?'pi pi-times':''" 
+            :severity="deleteMode?'danger':'primary'"
+            :title="(deleteMode?'Delete':'Load')+' \''+t.name+'\''"
+            @click="onTemplateSelected(t)"></Button>
+          <Button title="Toggle delete mode"
+            :severity="deleteMode?'primary':'danger'" 
+            :icon="deleteMode?'pi pi-copy':'pi pi-trash'"
+            @click="onToggleDeleteMode"></Button>
+        </div>
+      </div>
+      <div v-else class="templateBlankList">
+        <label>Your custom templates will show here once you save them.</label>
+      </div>
+    </div>
+    <div v-else>
+        <div class="alignedRow mb-2 mt-5">
+            <DataTable :value="publicTemplates" stripedRows paginator :rows="5" @row-click="onRowClick">
+              <Column field="name" header="Name"></Column>
+              <Column field="desc" header="Description"></Column>
+              <Column field="code" header="Code" style="cursor:pointer"></Column>
+            </DataTable>
+            <div class="mb-2 codeInput">
+              <div>Select Template above or Enter code =></div>
+              <InputGroup class="sharedCode">
+                  <InputGroupAddon>Shared Code</InputGroupAddon>
+                  <InputText v-model="templateCode" />
+                  <Button icon="pi pi-search" @click="onSheetFetchCode" :disabled="!templateCode.length" severity="secondary"></Button>
+              </InputGroup>
+            </div>
+            <!-- <div class="mt-2">Shared codes are unique values created when one makes a template public</div> -->
+        </div>
+    </div>
+    <FieldSet :legend="getDescriptionTitle()" v-if="activeLoad.value == 1 || user.templates.length">
+      <TemplateDescription v-if="loadTemplate" :template="loadTemplate" />
+      <div v-else class="contentPlaceholder">Select a template to view its content</div>
+    </FieldSet>
+    <div class="actionDialog gap-2">
+      <Button label="Do Not Load" @click="onButtonClose" link></Button>
+      <Button label="Load Template" @click="onButtonLoad" :disabled="!loadTemplate || fetching"></Button>
+    </div>
+  </Dialog>
+</template>
+
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
@@ -145,58 +195,8 @@ function onToggleDeleteMode() {
   deleteMode.value = !deleteMode.value
 }
 
-
 </script>
 
-<template>
-  <Dialog modal header="Load Template" :style="{width: '45rem'}">
-    <OneChoice v-model="activeLoad" :choices="loadChoices" class="loadChoice"/>
-    <div v-if="activeLoad.value==0" class="mt-5">
-      <div v-if="user.templates.length" class="sheetAndToggle">
-        <div class="templateList">
-          <Button v-for="t in user.templates" :label="Template.getName(t)" 
-            :icon="deleteMode?'pi pi-times':'pi pi-copy'" 
-            :severity="deleteMode?'danger':'primary'"
-            :title="(deleteMode?'Delete':'Load')+' \''+t.name+'\''"
-            @click="onTemplateSelected(t)"></Button>
-          <Button title="Toggle delete mode"
-            :severity="deleteMode?'primary':'danger'" 
-            :icon="deleteMode?'pi pi-copy':'pi pi-trash'"
-            @click="onToggleDeleteMode"></Button>
-        </div>
-      </div>
-      <div v-else class="templateBlankList">
-        <label>Your custom templates will show here once you save them.</label>
-      </div>
-    </div>
-    <div v-else>
-        <div class="alignedRow mb-2 mt-5">
-            <DataTable :value="publicTemplates" stripedRows paginator :rows="5" @row-click="onRowClick">
-              <Column field="name" header="Name"></Column>
-              <Column field="desc" header="Description"></Column>
-              <Column field="code" header="Code" style="cursor:pointer"></Column>
-            </DataTable>
-            <div class="mb-2 codeInput">
-              <div>Select Template above or Enter code =></div>
-              <InputGroup class="sharedCode">
-                  <InputGroupAddon>Shared Code</InputGroupAddon>
-                  <InputText v-model="templateCode" />
-                  <Button icon="pi pi-search" @click="onSheetFetchCode" :disabled="!templateCode.length" severity="secondary"></Button>
-              </InputGroup>
-            </div>
-            <!-- <div class="mt-2">Shared codes are unique values created when one makes a template public</div> -->
-        </div>
-    </div>
-    <FieldSet :legend="getDescriptionTitle()" v-if="activeLoad.value == 1 || user.templates.length">
-      <TemplateDescription v-if="loadTemplate" :template="loadTemplate" />
-      <div v-else class="contentPlaceholder">Select a template to view its content</div>
-    </FieldSet>
-    <div class="actionDialog gap-2">
-      <Button label="Do Not Load" @click="onButtonClose" link></Button>
-      <Button label="Load Template" @click="onButtonLoad" :disabled="!loadTemplate || fetching"></Button>
-    </div>
-  </Dialog>
-</template>
 <style scoped>
 .codeInput {
   margin-top: 15px;
