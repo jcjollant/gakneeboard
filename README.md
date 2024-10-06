@@ -17,6 +17,10 @@ Run the test suite:
 ## TODO
 
 # Done
+## 10/06/2024
+* Shared template now show as green in the load dialog
+* Description includes published status and publication code
+* Fixed template name with *
 ## 10/04/2024
 * Notes Page (new)
 * Fixed missing checklist syntax link in Checklist Tile
