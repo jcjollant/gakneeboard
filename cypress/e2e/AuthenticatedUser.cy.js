@@ -15,7 +15,8 @@ describe('Authenticated User', () => {
     cy.get('.contentPlaceholder').contains('Select a template')
 
     // Should have at least the 'Anchor' page
-    cy.get('[aria-label="Anchor"]').should('exist')
+    cy.get('[aria-label="Anchor"]').click()
+    cy.get('.templateDescription > :nth-child(2)').contains('(none)')
 
     // Do Not Load
     cy.get('.actionDialog > .p-button-link').click()
@@ -35,6 +36,9 @@ describe('Authenticated User', () => {
     cy.get('.actionDialog > [aria-label="Save"]').click()
     cy.wait('@postTemplate').its('response.statusCode').should('equal', 200)
 
+    // wait 3s for toast to close
+    cy.wait(3000)
+
     // second time we save we should have the short save
     cy.get('[aria-label="Save"]').click()
     cy.get('.p-dialog-header').contains('Save "' + tempName + '"')
@@ -47,7 +51,7 @@ describe('Authenticated User', () => {
     cy.get('.p-fieldset-legend').contains('Your 2 Templates')
     // select temp
     cy.get('[aria-label="Temp"]').click()
-    cy.get('#pv_id_2_header').contains('Overwrite Template')
+    cy.get('.p-confirm-dialog > .p-dialog-header').contains('Overwrite Template')
     // do not confirm
     cy.get('.p-confirm-dialog-reject').click()
     cy.get('.actionDialog > .p-button').click()
