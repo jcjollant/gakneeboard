@@ -1,0 +1,55 @@
+<template>
+    <div class="menuButton" :class="{'passive':!active,'active':active}">
+        <font-awesome-icon :icon="['fas', icon]"></font-awesome-icon>
+        <div v-if="label" class="label">{{ label }}</div>
+    </div>
+</template>
+
+<script setup>
+const props = defineProps({
+    active: { type: Boolean, default: false},
+    icon: { type: String, default: 'question' },
+    label: { type: String, default: null},
+})
+</script>
+
+<style scoped>
+.menuButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 9px;
+    gap: 10px;
+    font-size: 18px;
+    height: 40px;
+    width: 40px;
+    /* width: 36px; */
+    border-radius: 20px;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.active {
+    color: var(--bg);
+    background-color: white;
+}
+
+.passive, .active:hover {
+    color: white;
+    background-color: var(--bg-hover);
+}
+
+.menuButton:hover {
+    box-shadow: rgba(0, 0, 0, 0.8) 0px 3px 8px;
+    width: fit-content;
+}
+
+.label {
+    display: none;
+    font-size: 15px;
+}
+
+.menuButton:hover .label {
+    display: inline;
+}
+</style>
