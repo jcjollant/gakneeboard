@@ -36,9 +36,6 @@ describe('Authenticated User', () => {
     cy.get('.actionDialog > [aria-label="Save"]').click()
     cy.wait('@postTemplate').its('response.statusCode').should('equal', 200)
 
-    // wait 3s for toast to close
-    cy.wait(3000)
-
     // second time we save we should have the short save
     cy.get('[aria-label="Save"]').click()
     cy.get('.p-dialog-header').contains('Save "' + tempName + '"')
