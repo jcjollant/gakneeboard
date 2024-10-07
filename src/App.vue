@@ -409,20 +409,14 @@ function showToast(data) {
 <style scoped>
 .editorButton {
   position: absolute;
-  left: 10px;
-  bottom: 10px;
-  /* font-size: 1.5rem;
-  color: darkgrey; */
+  right: 10px;
+  top: 10px;
 }
-
-/* .editorButtonActive {
-  color:blue
-} */
 
 .feedbackButton {
   position: absolute;
-  right: 10px;
-  top: 10px;
+  left: 10px;
+  bottom: 10px;
 }
 
 .main {
