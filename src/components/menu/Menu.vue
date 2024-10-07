@@ -28,7 +28,6 @@ const confirm = useConfirm()
 const refreshPrint = ref(0)
 const showAbout = ref(false)
 const showDemoSelection = ref(false)
-const showFeedback = ref(false)
 const showMaintenance = ref(false)
 const showMenu = ref(false)
 const showPrint = ref(false)
@@ -99,12 +98,6 @@ function onAuthentication(newUser) {
   } else {
     emitToastWarning(emits, 'Engine Roughness', 'Authentication failed');  
   }
-}
-
-function onFeedbackSent() {
-  // console.log('[menu] onFeedbackSent')
-  showFeedback.value = false
-  emitToastInfo(emits, 'Readback Correct', 'Thanks for your feedback!')
 }
 
 // how does it work? close about and emit to parent
@@ -285,8 +278,6 @@ function warnNoUser() {
     <ConfirmDialog />
     <Maintenance v-model:visible="showMaintenance" 
       @maintenance="onMaintenance" @toast="onToast" />
-    <Feedback v-model:visible="showFeedback" :user="user" 
-      @sent="onFeedbackSent" @close="showFeedback=false" />
     <Print v-model:visible="showPrint" :refresh="refreshPrint"
       @close="onPrintClose" 
       @options="onPrintOptions"
@@ -326,8 +317,6 @@ function warnNoUser() {
         <Button label="Save" icon="pi pi-save" title="Save this Template" @click="onMenuSave"></Button>
         <Button label="Demo" icon="pi pi-clipboard" title="Load demo Template" @click="showDemoSelection=true"></Button>
         <div class="separator" @click="showMaintenance=true"></div>
-        <Button label="Feedback" icon="pi pi-megaphone" title="Send Feedback"
-          @click="showFeedback=true" ></Button>
         <Button icon="pi pi-info-circle" title="About / Guides / Warnings"
           @click="showAbout=true"></Button>
       </div>
