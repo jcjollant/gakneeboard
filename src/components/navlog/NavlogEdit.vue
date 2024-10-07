@@ -507,7 +507,6 @@ function updateAttitudes() {
     display: flex;
     gap: 5px;
     justify-content: center;
-    /* color: #2196F3; */
     color: blue;
     opacity: 0.5;
     font-size: 0.7rem;
