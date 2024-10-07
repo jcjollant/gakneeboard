@@ -10,13 +10,13 @@ import GoogleSignInPluggin from 'vue3-google-signin'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faPlaneDeparture, faCloudSunRain, faListCheck, faPlaneCircleCheck, faGasPump,
-    faRoute, faPenToSquare, faHeadset, faSun, faBorderAll,
-    faImage, faVideo, faQuestion} from '@fortawesome/free-solid-svg-icons'
+    faRoute, faPenToSquare, faHeadset, faSun, faBorderAll, faComments, faImage,
+    faVideo, faQuestion} from '@fortawesome/free-solid-svg-icons'
 import { faGoogle, faFacebookF } from '@fortawesome/free-brands-svg-icons'
 
 library.add(faPlaneDeparture, faCloudSunRain, faListCheck, faPlaneCircleCheck, faGasPump,
-    faRoute, faPenToSquare, faHeadset, faSun, faBorderAll, faImage, faGoogle, faFacebookF,
-    faVideo, faQuestion)
+    faRoute, faPenToSquare, faHeadset, faSun, faBorderAll, faComments, faImage, faGoogle, 
+    faFacebookF, faVideo, faQuestion)
 
 createApp(App)
     .use(PrimeView)
