@@ -78,7 +78,7 @@ function onVideo() {
     gap: 10px;
     cursor: pointer;
     align-items: center;
-    color: #2196F3;
+    color: var(--bg);
     font-size: 0.9rem;
 }
 </style>

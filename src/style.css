@@ -13,6 +13,10 @@ body {
   min-height: 100vh;
 }
 
+:root {
+  --bg: #2196F3;
+  --bg-hover: #0D89EC;
+}
 
 .clickable {
   cursor: pointer;
@@ -129,6 +133,9 @@ body {
   margin-top: 0.5rem;
 }
 
+.mt-4 {
+  margin-top: 1.5rem;
+}
 .mt-5 {
   margin-top: 2rem;
 }

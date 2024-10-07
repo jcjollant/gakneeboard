@@ -21,7 +21,7 @@ const props = defineProps({
     display: flex;
     cursor: pointer;
     color: white;
-    background-color: #2196F3;
+    background-color: var(--bg);
     border-radius: 3px;
     justify-content: center;
     align-items: center;
@@ -33,6 +33,6 @@ const props = defineProps({
     line-height: 2.5rem;
 }
 .fabutton:hover {
-    background: #0D89EC;
+    background: var(--bg-hover);
 }
 </style>
