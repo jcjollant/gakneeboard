@@ -1,6 +1,9 @@
 <template>
   <div v-if="!printPreview" class="main">
     <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
+    <Feedback v-model:visible="showFeedback"
+      @close="showFeedback=false" @toast="toast.add" />
+
     <Editor v-if="showEditor" :template="activeTemplate" :offset="offset"
       @action="onEditorAction" @offset="onOffset"/>
     <Toast />
@@ -26,21 +29,24 @@
         title="Next Pages" id="offsetNext"
         @click="onOffset(offset + 2)"></i>
     </div>
-    <i class="pi pi-file-edit editorButton clickable" id="btnEditor" :class="{'editorButtonActive':showEditor}"
-      @click="onEditor" title="Toggle Editor Mode"></i>
+    <MenuButton icon="comments" class="feedbackButton" label="Give Feedback"
+      @click="showFeedback=true" />
+    <MenuButton id="btnEditor" icon="pen-to-square" title="Toggle Editor Mode" label="Page Editor" :active="showEditor"
+     :class="{'editorButtonActive':showEditor}" class="editorButton" 
+      @click="onEditor"/>
     <div class="versionDialog" >{{ versionText }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span>
     </div>
   </div>
   <div v-else>
     <div v-if="activeTemplate" :class="{printDouble:!printSingles}">
-      <Page v-for="(page,index) in activeTemplate.data"  :data="page" class="pageOne" 
+      <Page v-for="(page,index) in activeTemplate.data" :data="page" class="pageOne" 
         :class="{flipMode:(index % 2 == 1 && printFlipMode),printPageBreak:(printSingles || index % 2 == 1)}"
         @update="onPageUpdateFront"
         @toast="toast.add" />
       <!-- <div style="break-after: page;"></div> -->
     </div>
   </div>
-  <Menu class="menu" :activeTemplate="activeTemplate" v-show="!printPreview" v-if="!showEditor"    @howDoesItWork="showHowDoesItWork=true"
+  <Menu class="menu" :activeTemplate="activeTemplate" v-show="!printPreview" v-if="!showEditor" @howDoesItWork="showHowDoesItWork=true"
     @load="onMenuLoad" 
     @print="onPrint" @printOptions="onPrintOptions" @printPreview="onPrintPreview"
     @save="onMenuSave"
@@ -66,9 +72,11 @@ import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
 
 import Editor from './components/Editor.vue'
+import Feedback from './components/menu/Feedback.vue'
 import HowDoesItWork from './components/HowDoesItWork.vue'
 import Menu from './components/menu/Menu.vue'
 import Page from './components/Page.vue'
+import MenuButton from './components/menu/MenuButton.vue'
 
 
 const frontPageData = ref(null)
@@ -82,6 +90,7 @@ const printFlipMode = ref(false)
 const printPreview = ref(false)
 const printSingles = ref(false)
 const showEditor = ref(false)
+const showFeedback = ref(false)
 const showHowDoesItWork = ref(true)
 const menuOpen = ref(false)
 const toast = useToast()
@@ -402,12 +411,18 @@ function showToast(data) {
   position: absolute;
   left: 10px;
   bottom: 10px;
-  font-size: 1.5rem;
-  color: darkgrey;
+  /* font-size: 1.5rem;
+  color: darkgrey; */
 }
 
-.editorButtonActive {
+/* .editorButtonActive {
   color:blue
+} */
+
+.feedbackButton {
+  position: absolute;
+  right: 10px;
+  top: 10px;
 }
 
 .main {
@@ -419,8 +434,6 @@ function showToast(data) {
   display: flex;
   gap: 2rem;
   align-items: center;
-  /* position: absolute; */
-  /* right: 5px; */
 }
 .pageOne, .pageTwo {
   background:white;
@@ -483,6 +496,5 @@ function showToast(data) {
   color: orange;
   opacity: 0.4;
 }
-
 
 </style>
