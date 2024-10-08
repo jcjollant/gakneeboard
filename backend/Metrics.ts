@@ -7,14 +7,15 @@ import { PublicationDao } from './PublicationDao'
 import { TemplateDao } from "./TemplateDao";
 import { Template } from "./models/Template";
 import { AdipDao } from "./AdipDao";
+import { PageType } from './TemplateTools'
 
 
 export class Metric {
     name:string;
     value:number;
 
-    constructor(checkName:string, value:number) {
-        this.name = checkName;
+    constructor(metricName:string, value:number) {
+        this.name = metricName;
         this.value = value;
     }
 
@@ -70,6 +71,7 @@ export class Metrics {
         const coverPageCount = new Metric('coverPageCount', 0)
         const selectionPageCount = new Metric('selectionPageCount', 0)
         const navlogPageCount = new Metric('navlogPageCount', 0)
+        const notesPageCount = new Metric('notesPageCount', 0)
 
         const totalTileCount = new Metric('totalTileCount', 0)
         const airportTileCount = new Metric('airportTileCount', 0)
@@ -83,7 +85,7 @@ export class Metrics {
         const sunlightTileCount = new Metric('sunlightTileCount', 0)
         for(let template of templates) {
             for(let page of template.data) {
-                if(page.type == 'tiles') {
+                if(page.type == PageType.tiles) {
                     tilePageCount.addOne()
                     for(let tile of page.data) {
                         totalTileCount.addOne()
@@ -107,14 +109,16 @@ export class Metrics {
                             sunlightTileCount.addOne()
                         }
                     }
-                } else if(page.type == 'checklist') {
+                } else if(page.type == PageType.checklist) {
                     checklistPageCount.addOne()
-                } else if(page.type == 'cover') {
+                } else if(page.type == PageType.cover) {
                     coverPageCount.addOne()
-                } else if(page.type == 'selection') {
+                } else if(page.type == PageType.selection) {
                     selectionPageCount.addOne()
-                } else if(page.type == 'navlog') {
+                } else if(page.type == PageType.navLog) {
                     navlogPageCount.addOne()
+                } else if(page.type == PageType.notes) {
+                    notesPageCount.addOne()
                 } else {
                     continue
                 }
