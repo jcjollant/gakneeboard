@@ -9,7 +9,7 @@ export const jcTestTemplateData = [jcTestPageFront,jcTestPageBack]
 export const jcTestTemplateName = 'TestJC'
 export const jcTestTemplateDescription = 'Two pages of tiles with airport data'
 export const jcTestTemplateId = 275
-export const jcMaxTemplates = 15
+export const jcMaxTemplates = 20
 export const jcTestTemplate = {id:jcTestTemplateId, name:jcTestTemplateName, publish:false, data:jcTestTemplateData}
 export const postgresUrl = "postgres://default:94chrayEvOLG@ep-shrill-silence-a6ypne6y-pooler.us-west-2.aws.neon.tech/verceldb?sslmode=require"
 export const jcTestAirport = {"code":"TEST","name":"Test Airport JC","elev":1000,"freq":[{"name":"CTAF","mhz":124.7},{"name":"TWR","mhz":null},{"name":"Weather","mhz":126.95},{"name":"GND","mhz":121.6}],"rwys":[{"name":"16-34","length":5400,"width":120,"ends":[null]}],"custom":false,"version":6,"effectiveDate":""}
@@ -18,7 +18,7 @@ export const jcEmail = 'jcjollant@gmail.com'
 export const jcSource = 'google'
 export const samplePublicationCode = '8Q'
 
-export const currentAsOf = 20240905;
+export const currentAsOf = 20241003;
 export const currentAirportModelVersion = 5
 export const krntAtcs =  [
     {mhz:119.2, useCount:6, name:'SEATTLE-TACOMA APPROACH CONTROL'},
