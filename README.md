@@ -3,24 +3,33 @@ run `vercel dev` to run the local service
 
 ## Unit testing
 To test everything use `npm test`
-
 Otherwise use `npm test script.test.ts`
 
 ## Debug tests
 Start debugger in terminal `npm run debug`
 Run the actual test `npm test XXX`
 
-## Houskeeper Willie
-Housekeeper willie is a script that checks system heath . It is invoked everyday via a cron entry in `vercel.json`. To run the script locally use
+## Houskeeping and Metrics
+Housekeeper willie is a script that checks system heath . It is invoked everyday via a cron entry in `vercel.json`. 
+Waylon (Smithers) is reporting metrics and is also invoked everyday via cron
+To run script manually use
 ```
 cd housekeeping
 ts-node .\willie.ts
+ts-node .\waylon.ts
 ```
+## Manual Data backup
+Open pgAdmin 4
+Select Table
+Menu Tools > Import/Export Data
+Save files in c:\src\kneeboard.ga\data
 
 ## TODO
-* Struggling airports : KATL, KDNN, KCHA, KGVL
+* 
 
 # Done
+## 10/07/2024
+* Metrics count notepage
 ## 10/03/2024
 * Data refresh
 ## 10/02/2024
