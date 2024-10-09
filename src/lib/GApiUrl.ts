@@ -20,4 +20,8 @@ export class GApiUrl {
         }
         return GApiUrl.root + 'template'
     }
+
+    static templateExport(id:any, format:string):string {
+        return GApiUrl.root + 'export/template/' + id + '/' + format.toLowerCase();
+    }
 }

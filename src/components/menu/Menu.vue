@@ -1,3 +1,55 @@
+<template>
+  <div class="container" :class="{grow: showMenu}">
+    <ConfirmDialog />
+    <Maintenance v-model:visible="showMaintenance" 
+      @maintenance="onMaintenance" @toast="onToast" />
+    <Print v-model:visible="showPrint" :refresh="refreshPrint"
+      @close="onPrintClose" 
+      @options="onPrintOptions"
+      @print="onPrintPrint"
+       />
+    <About v-model:visible="showAbout" @close="showAbout=false" @hdiw="onHdiw"/>
+    <DemoSelection v-model:visible="showDemoSelection" @load="onTemplateLoad" />
+    <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
+      @authentication="onAuthentication" />
+    <TemplateSave v-model:visible="showTemplateSave" :mode="templateDialogMode" :time="templateTime" :template="activeTemplate"
+      @close="onTemplateCloseSave"
+      @delete="onTemplateDelete"
+      @save="onTemplateSave"
+      @mode="onTemplateMode"
+      @overwrite="onTemplateOverwrite"
+      @toast="onToast" />
+    <TemplateLoad v-model:visible="showTemplateLoad" :time="templateTime" 
+      @close="onTemplateCloseLoad"
+      @load="onTemplateLoad" 
+      @toast="onToast" />
+    <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu" title="Toggle Menu">
+      <div class="bar1"></div>
+      <div class="bar2"></div>
+      <div class="bar3"></div>
+    </div>
+    <div v-show="showMenu" class="expandedMenu">
+      <div class="buttonsList">
+        <Button v-if="user.loggedIn" :label="user.name" icon="pi pi-user" title="Sign Out" class="active"
+          @click="onSignOut"></Button>
+        <Button v-else label="Sign In" icon="pi pi-user" title="Sign In to enable custom data"
+          @click="showSignIn=true"></Button>
+        <Button icon="pi pi-print" label="Print" title="Print Active Template"
+          @click="onPrint"></Button>
+        <div class="separator"></div>
+        <Button label="New" icon="pi pi-file" title="Reset Template" @click="onTemplateLoad(getTemplateBlank())"></Button>
+        <Button label="Load" icon="pi pi-folder-open" title="Open Existing Template" @click="onMenuLoad"></Button>
+        <Button label="Save" icon="pi pi-save" title="Save Active Template" @click="onMenuSave"></Button>
+        <!-- <Button label="Export" icon="pi pi-file-export" title="Export Active Template" @click="onMenuExport"></Button> -->
+        <Button label="Demos" icon="pi pi-clipboard" title="Load Demo Template" @click="showDemoSelection=true"></Button>
+        <div class="separator" @click="showMaintenance=true"></div>
+        <Button icon="pi pi-info-circle" title="About / Guides / Warnings"
+          @click="showAbout=true"></Button>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script setup>
 import { watch } from 'vue';
 import { ref, onMounted } from 'vue';
@@ -109,6 +161,10 @@ function onHdiw() {
 // maintenance user
 function onMaintenance() {
   showMaintenance.value = false;
+}
+
+async function onMenuExport() {
+  await TemplateData.export(activeTemplate.value, 'ace')
 }
 
 function onMenuLoad() {
@@ -272,57 +328,6 @@ function warnNoUser() {
 
 </script>
 
-<template>
-
-  <div class="container" :class="{grow: showMenu}">
-    <ConfirmDialog />
-    <Maintenance v-model:visible="showMaintenance" 
-      @maintenance="onMaintenance" @toast="onToast" />
-    <Print v-model:visible="showPrint" :refresh="refreshPrint"
-      @close="onPrintClose" 
-      @options="onPrintOptions"
-      @print="onPrintPrint"
-       />
-    <About v-model:visible="showAbout" @close="showAbout=false" @hdiw="onHdiw"/>
-    <DemoSelection v-model:visible="showDemoSelection" @load="onTemplateLoad" />
-    <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
-      @authentication="onAuthentication" />
-    <TemplateSave v-model:visible="showTemplateSave" :mode="templateDialogMode" :time="templateTime" :template="activeTemplate"
-      @close="onTemplateCloseSave"
-      @delete="onTemplateDelete"
-      @save="onTemplateSave"
-      @mode="onTemplateMode"
-      @overwrite="onTemplateOverwrite"
-      @toast="onToast" />
-    <TemplateLoad v-model:visible="showTemplateLoad" :time="templateTime" 
-      @close="onTemplateCloseLoad"
-      @load="onTemplateLoad" 
-      @toast="onToast" />
-    <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu" title="Toggle Menu">
-      <div class="bar1"></div>
-      <div class="bar2"></div>
-      <div class="bar3"></div>
-    </div>
-    <div v-show="showMenu" class="expandedMenu">
-      <div class="buttonsList">
-        <Button v-if="user.loggedIn" :label="user.name" icon="pi pi-user" title="Sign Out" class="active"
-          @click="onSignOut"></Button>
-        <Button v-else label="Sign In" icon="pi pi-user" title="Sign In to enable custom data"
-          @click="showSignIn=true"></Button>
-        <Button icon="pi pi-print" label="Print" title="Print Active Template"
-          @click="onPrint"></Button>
-        <div class="separator"></div>
-        <Button label="New" icon="pi pi-file" title="Reset Template" @click="onTemplateLoad(getTemplateBlank())"></Button>
-        <Button label="Load" icon="pi pi-folder-open" title="Open Existing Template" @click="onMenuLoad"></Button>
-        <Button label="Save" icon="pi pi-save" title="Save this Template" @click="onMenuSave"></Button>
-        <Button label="Demo" icon="pi pi-clipboard" title="Load demo Template" @click="showDemoSelection=true"></Button>
-        <div class="separator" @click="showMaintenance=true"></div>
-        <Button icon="pi pi-info-circle" title="About / Guides / Warnings"
-          @click="showAbout=true"></Button>
-      </div>
-    </div>
-  </div>
-</template>
 
 <style scoped>
 .container {

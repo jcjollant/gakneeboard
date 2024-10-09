@@ -23,7 +23,6 @@ const props = defineProps({
     font-size: 18px;
     height: 40px;
     width: 40px;
-    /* width: 36px; */
     border-radius: 20px;
     cursor: pointer;
     overflow: hidden;

@@ -76,7 +76,21 @@ export class TemplateData {
             })
     }
     
-  
+
+    // export a template
+    static export(template:any, format:string):any {
+        const url = GApiUrl.templateExport(template.id, format)
+        if(!format) {
+            format = 'json'
+        }
+        return getUrlWithUser(url)
+            .then( response => response.data)
+            .catch( error => {
+                reportError('[TemplateData.export] error ' + JSON.stringify(error))
+                return null
+            })
+    }
+
     /**
     * Gets a publication from its public code
     * @param {*} code 
