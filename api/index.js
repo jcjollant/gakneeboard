@@ -107,6 +107,13 @@ app.post('/authenticate', async(req,res) => {
     })
 })
 
+app.get('/export/template/:id/:format', async(req,res) => {
+    const blob = AceWritter.demo()
+    res.attachment('kneeboard.ace')
+    // const download = Buffer.from(fileData, 'base64')
+    res.end(blob)
+})
+
 // record user feedback
 app.post('/feedback', async(req,res) => {
     // console.log( "API feedback request " + req);
