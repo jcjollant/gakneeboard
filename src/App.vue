@@ -263,7 +263,9 @@ async function onEditorAction(ea) {
 
     const temp = duplicate(activeTemplate.value.data[ea.offset].data[tileFrom])
     activeTemplate.value.data[ea.offset].data[tileFrom] = activeTemplate.value.data[ea.offset].data[tileTo]
+    activeTemplate.value.data[ea.offset].data[tileFrom].id = tileFrom
     activeTemplate.value.data[ea.offset].data[tileTo] = temp
+    activeTemplate.value.data[ea.offset].data[tileTo].id = tileTo
     saveTemplate = true
   } else {
     reportError('[App.oneditorAction] unknown action ' + ea)
