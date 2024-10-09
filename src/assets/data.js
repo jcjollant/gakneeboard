@@ -1,4 +1,4 @@
-export const version = 1006
+export const version = 1008
 
 const apiRootUrl = GApiUrl.root
 
