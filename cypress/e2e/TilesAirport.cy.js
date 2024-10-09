@@ -30,7 +30,7 @@ describe('Tiles', () => {
     // load tiles demo page
     maintenanceMode()
     cy.get('.menuIcon').click()
-    cy.get('[aria-label="Demo"]').click()
+    cy.get('[aria-label="Demos"]').click()
     cy.get('.tilesDemo').click()
     cy.get('.p-confirm-dialog-accept').click()
     // Close menu

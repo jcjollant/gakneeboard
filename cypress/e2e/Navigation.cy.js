@@ -78,7 +78,7 @@ describe('Navigation', () => {
     visitAndCloseBanner()
 
     cy.get('.menuIcon').click()
-    cy.get('[aria-label="Demo"]').click()
+    cy.get('[aria-label="Demos"]').click()
     cy.get('.p-dialog-header').contains('GA Kneeboard Demos')
 
     // Check demo pages description work
@@ -100,21 +100,21 @@ describe('Navigation', () => {
     cy.get('.pageTwo').should('have.class','pageChecklist')
 
     // load Checklist demo
-    cy.get('[aria-label="Demo"]').click()
+    cy.get('[aria-label="Demos"]').click()
     cy.get(`.demoGrid > :nth-child(2)`).click()
     cy.get('.p-confirm-dialog-accept').click()
     cy.get('.pageOne').should('have.class','pageChecklist')
     cy.get('.pageTwo').should('have.class','pageChecklist')
 
     // load Tiels demo
-    cy.get('[aria-label="Demo"]').click()
+    cy.get('[aria-label="Demos"]').click()
     cy.get(`.demoGrid > :nth-child(3)`).click()
     cy.get('.p-confirm-dialog-accept').click()
     cy.get('.pageOne').should('have.class','pageTiles')
     cy.get('.pageTwo').should('have.class','pageTiles')
 
     // load Navlog demo
-    cy.get('[aria-label="Demo"]').click()
+    cy.get('[aria-label="Demos"]').click()
     cy.get(`.demoGrid > :nth-child(4)`).click()
     cy.get('.p-confirm-dialog-accept').click()
     cy.get('.pageOne').should('have.class','pageNavlog')

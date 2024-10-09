@@ -17,7 +17,7 @@ describe('Navlog Tile', () => {
 
     // load navlog demo
     cy.get('.menuIcon').click()
-    cy.get('[aria-label="Demo"]').click()
+    cy.get('[aria-label="Demos"]').click()
     cy.get('.navlogDemo').click()
     cy.get('.p-confirm-dialog-accept').click()
 
