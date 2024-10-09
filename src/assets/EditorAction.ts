@@ -1,21 +1,24 @@
 export class EditorAction {
-    static _add2Pages:string = 'add2Pages';
-    static _changeOffset:string = 'changeOffset';
-    static _copyToClipboard:string = 'copyToClip';
-    static _copyToPage:string = 'copyToPage';
-    static _delete2Pages:string = 'delete2Pages';
-    static _pastePage:string = 'paste';
-    static _resetPage:string = 'reset';
-    static _swapPages:string = 'swap';
+    static _add2Pages:string = 'ad2';
+    static _changeOffset:string = 'cho';
+    static _copyToClipboard:string = 'c2c';
+    static _copyToPage:string = 'c2p';
+    static _delete2Pages:string = 'd2p';
+    static _pastePage:string = 'pp';
+    static _resetPage:string = 'rp';
+    static _swapPages:string = 'sp';
+    static _swapTiles:string = 'st';
 
     action:string;
     offset:number;
     offsetTo:number;
+    params:any|undefined;
 
-    constructor(action:string, offset:number=0, offsetTo:number=0) {
+    constructor(action:string, offset:number=0, offsetTo:number=0, params:any=undefined) {
         this.action = action;
         this.offset = offset;
         this.offsetTo = offsetTo;
+        this.params = params;
     }
 
     static add2Pages():EditorAction {
@@ -44,6 +47,9 @@ export class EditorAction {
 
     static reset(offset:number):EditorAction {
         return new EditorAction(EditorAction._resetPage, offset);
+    }
+    static swapTiles(offset:number, params:any):EditorAction {
+        return new EditorAction(EditorAction._swapTiles, offset, offset, params);
     }
 
 }

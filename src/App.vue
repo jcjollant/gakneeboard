@@ -66,12 +66,12 @@ import { EditorAction } from './assets/EditorAction.ts'
 import { getTemplateDemoTiles, pageDataBlank, readPageFromClipboard } from './assets/sheetData'
 import { getToastData, toastError, toastWarning } from './assets/toast'
 import { LocalStore } from './lib/LocalStore.ts'
-import { TemplateData } from './assets/Templates'
+import { PageType, TemplateData } from './assets/Templates'
 
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast';
 
-import Editor from './components/Editor.vue'
+import Editor from './components/editor/Editor.vue'
 import Feedback from './components/menu/Feedback.vue'
 import HowDoesItWork from './components/HowDoesItWork.vue'
 import Menu from './components/menu/Menu.vue'
@@ -254,6 +254,17 @@ async function onEditorAction(ea) {
     }).catch( e => {
         showToast(getToastData('Cannot Paste', e, toastError))
     }) 
+  } else if(ea.action == EditorAction._swapTiles) {
+    // is this a tile page?
+    if(activeTemplate.value.data[ea.offset].type != PageType.tiles) return;
+    const tileFrom = ea.params?.from
+    const tileTo = ea.params?.to
+    if(tileFrom === undefined || tileTo === undefined) return;
+
+    const temp = duplicate(activeTemplate.value.data[ea.offset].data[tileFrom])
+    activeTemplate.value.data[ea.offset].data[tileFrom] = activeTemplate.value.data[ea.offset].data[tileTo]
+    activeTemplate.value.data[ea.offset].data[tileTo] = temp
+    saveTemplate = true
   } else {
     reportError('[App.oneditorAction] unknown action ' + ea)
   }
@@ -443,7 +454,7 @@ function showToast(data) {
 }
 .twoPages {
   display: flex;
-  gap: 80px;
+  gap: var(--pages-gap);
 }
 .onePage {
   display:flex

@@ -1,10 +1,64 @@
+<template>
+  <div class="editor">
+    <ConfirmDialog></ConfirmDialog>
+    <div class="editorTop">
+      <div class="editorSheets">Pages</div>
+      <Button v-for="(s,index) in sheets" 
+        @click="onSheetSelection(s.offset)"
+        :label="s.name" :class="{'active':s.offset == activeOffset}"></Button>
+      <Button icon="pi pi-plus" title="Add 2 Pages"  
+        @click="onActionName(EditorAction._add2Pages)"></Button>
+      <Button icon="pi pi-trash" title="Delete active sheet"  
+        @click="confirmAndDelete"></Button>
+    </div>
+    <div class="editorMask">
+      <TileOverlay :show="activeTemplate?.data[activeOffset].type==PageType.tiles"
+        class="leftTileOverlay"
+        @swap="swapTilesLeft" />
+      <div class="middle">
+          <Button id="editorCopyToRight" icon="pi pi-arrow-right" title="Copy Left to Right" 
+              @click="onAction(EditorAction.copyToPage(activeOffset, activeOffset+1))" ></Button>
+          <Button id="editorSwap" icon="pi pi-arrow-right-arrow-left" title="Swap Left and Right" 
+              @click="onActionName(EditorAction._swapPages)" ></Button>
+          <Button id="editorCopyToLeft" icon="pi pi-arrow-left" title="Copy Right to Left" 
+              @click="onAction(EditorAction.copyToPage(activeOffset+1, activeOffset))" ></Button>
+      </div>
+      <TileOverlay :show="activeTemplate?.data[activeOffset+1].type==PageType.tiles"
+        class="rightTileOverlay"
+        @swap="swapTilesRight" />
+    </div>
+    <div class="editorBottom">
+      <div class="editorPage">
+        <Button icon="pi pi-eject" label="Replace" title="Replace Left Page" 
+          @click="onAction(EditorAction.reset(activeOffset))"></Button>
+        <Button icon="pi pi-copy" label="Copy" title="Copy Left Page to Clipboard" 
+          @click="onAction(EditorAction.copyToClipboard(activeOffset))"></Button>
+        <Button icon="pi pi-clipboard" label="Paste" title="Paste Clipboard to Left Page" 
+          @click="onAction(EditorAction.paste(activeOffset))"></Button>
+      </div>
+      <div class="editorSpacer"></div>
+      <div class="editorPage">
+        <Button icon="pi pi-eject" label="Replace" title="Replace Back Page" 
+          @click="onAction(EditorAction.reset(activeOffset+1))"></Button>
+        <Button icon="pi pi-copy" label="Copy" title="Copy Back Page to Clipboard" 
+          @click="onAction(EditorAction.copyToClipboard(activeOffset+1))"></Button>
+        <Button icon="pi pi-clipboard" label="Paste" title="Paste Clipboard to Back Page" 
+          @click="onAction(EditorAction.paste(activeOffset+1))"></Button>
+      </div>
+    </div>
+  </div>
+
+</template>
+
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { EditorAction } from '../assets/EditorAction'
+import { EditorAction } from '../../assets/EditorAction'
 
 import Button from 'primevue/button'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { useConfirm } from 'primevue/useconfirm'
+import TileOverlay from './TileOverlay.vue'
+import { PageType } from '../../assets/Templates'
 
 
 const emits = defineEmits(['action','addSheet','offset'])
@@ -90,53 +144,14 @@ function onSheetSelection(newOffset) {
   onAction(EditorAction.changeOffset(newOffset))
 }
 
+function swapTilesLeft(params) {
+  onAction(EditorAction.swapTiles(activeOffset.value, params))  
+}
+function swapTilesRight(params) {
+  onAction(EditorAction.swapTiles(activeOffset.value+1, params))
+}
+
 </script>
-
-<template>
-  <div class="editor">
-    <ConfirmDialog></ConfirmDialog>
-    <div class="editorTop">
-      <div class="editorSheets">Pages</div>
-      <Button v-for="(s,index) in sheets" 
-        @click="onSheetSelection(s.offset)"
-        :label="s.name" :class="{'active':s.offset == activeOffset}"></Button>
-      <Button icon="pi pi-plus" title="Add 2 Pages"  
-        @click="onActionName(EditorAction._add2Pages)"></Button>
-      <Button icon="pi pi-trash" title="Delete active sheet"  
-        @click="confirmAndDelete"></Button>
-    </div>
-    <div class="editorMask">
-      <div class="middle">
-          <Button id="editorCopyToRight" icon="pi pi-arrow-right" title="Copy Left to Right" 
-              @click="onAction(EditorAction.copyToPage(activeOffset, activeOffset+1))" ></Button>
-          <Button id="editorSwap" icon="pi pi-arrow-right-arrow-left" title="Swap Left and Right" 
-              @click="onActionName(EditorAction._swapPages)" ></Button>
-          <Button id="editorCopyToLeft" icon="pi pi-arrow-left" title="Copy Right to Left" 
-              @click="onAction(EditorAction.copyToPage(activeOffset+1, activeOffset))" ></Button>
-      </div>
-    </div>
-    <div class="editorBottom">
-      <div class="editorPage">
-        <Button icon="pi pi-eject" label="Replace" title="Replace Left Page" 
-          @click="onAction(EditorAction.reset(activeOffset))"></Button>
-        <Button icon="pi pi-copy" label="Copy" title="Copy Left Page to Clipboard" 
-          @click="onAction(EditorAction.copyToClipboard(activeOffset))"></Button>
-        <Button icon="pi pi-clipboard" label="Paste" title="Paste Clipboard to Left Page" 
-          @click="onAction(EditorAction.paste(activeOffset))"></Button>
-      </div>
-      <div class="editorSpacer"></div>
-      <div class="editorPage">
-        <Button icon="pi pi-eject" label="Replace" title="Replace Back Page" 
-          @click="onAction(EditorAction.reset(activeOffset+1))"></Button>
-        <Button icon="pi pi-copy" label="Copy" title="Copy Back Page to Clipboard" 
-          @click="onAction(EditorAction.copyToClipboard(activeOffset+1))"></Button>
-        <Button icon="pi pi-clipboard" label="Paste" title="Paste Clipboard to Back Page" 
-          @click="onAction(EditorAction.paste(activeOffset+1))"></Button>
-      </div>
-    </div>
-  </div>
-
-</template>
 
 <style scoped>
 .active {
@@ -160,8 +175,9 @@ function onSheetSelection(newOffset) {
   justify-content: center;
 }
 .editorMask {
-  height: 800px;
-  /* border: 2px solid green; */
+  display: flex;
+  justify-content: center;
+  height: var(--page-height);
 }
 .editorPage {
   display: flex;
@@ -189,5 +205,6 @@ function onSheetSelection(newOffset) {
   justify-content: center;
   gap: 5px;
   height: 100%;
+  width: var(--pages-gap);
 }
 </style>

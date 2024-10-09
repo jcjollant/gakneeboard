@@ -16,6 +16,9 @@ body {
 :root {
   --bg: #2196F3;
   --bg-hover: #0D89EC;
+  --page-width: 490px;
+  --page-height: 800px;
+  --pages-gap: 80px;
 }
 
 .clickable {
@@ -54,10 +57,8 @@ body {
 }
 
 .contentPage {
-  width: 490px;
-  /* width: 485px; */
-  /* height: 730px; */
-  height: 800px;
+  width: var(--page-width);
+  height: var(--page-height);
   position: relative;
   border: 1px solid darkgray;
 }
