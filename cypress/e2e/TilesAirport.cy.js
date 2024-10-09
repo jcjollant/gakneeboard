@@ -1,4 +1,4 @@
-import { visitAndCloseBanner, newPage, maintenanceMode, placeHolderSubtitle } from './shared'
+import { visitAndCloseBanner, newPage, maintenanceMode, placeHolderSubtitle, boeingTitle } from './shared'
 
 describe('Tiles', () => {
   it('Airport Tile', () => {
@@ -38,7 +38,7 @@ describe('Tiles', () => {
 
     // test All expected tiles are loading
     const expectedTiles = [
-      ['Renton Muni', 'Boeing Fld/king County Intl', 'Roche Harbor', 'Lone Pine/death Valley', 'ATIS @', 'Clearance @'],
+      ['Renton Muni', boeingTitle, 'Roche Harbor', 'Lone Pine/death Valley', 'ATIS @', 'Clearance @'],
       ['Power OFF stalls', 'Arlington Muni', 'Sun Light', 'Fuel Bug', 'Notes', 'Radio Flow']]
     for( let page = 1; page < 3; page++) {
       for( let tile = 1; tile < 7; tile++) {
@@ -50,7 +50,7 @@ describe('Tiles', () => {
     // Renton and Boeing fields
     const expectedValues = []
     expectedValues.push({tile:'Renton Muni','label0':'ATIS','value0':'126.950','label1':'TWR','value1':'124.700','label2':'Elev','value2':'32','label3':'TPA',value3:'1250',watermark:'KRNT','dimensions':'5382x200'})
-    expectedValues.push({'tile':'Boeing Fld/king County Intl','label0':'ATIS','value0':'127.750','label1':'RWY 14L-32R','value1':'118.300','label2':'Elev','value2':'22','label3':'TPA','value3':'1022','watermark':'KBFI','dimensions':'3709x100'})
+    expectedValues.push({'tile':boeingTitle,'label0':'ATIS','value0':'127.750','label1':'RWY 14L-32R','value1':'118.300','label2':'Elev','value2':'22','label3':'TPA','value3':'1022','watermark':'KBFI','dimensions':'3709x100'})
     for(let index = 0; index < 2; index++) {
       const value = expectedValues[index]
       const child = index + 1
