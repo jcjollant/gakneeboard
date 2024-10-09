@@ -63,26 +63,47 @@ export class Metrics {
     static async templateDetails():Promise<Metric[]> {
         const templates:Template[] = await TemplateDao.getAllTemplateData()
 
+        // build a list of all metrics
+        const allMetrics:Metric[] = []
+
         const staleTemplateCount = new Metric('staleTemplateCount', 0)
 
         const totalPageCount = new Metric('totalPageCount', 0)
+        allMetrics.push(totalPageCount)
         const tilePageCount = new Metric('tilePageCount', 0)
+        allMetrics.push(tilePageCount)
         const checklistPageCount = new Metric('checklistPageCount', 0)
+        allMetrics.push(checklistPageCount)
         const coverPageCount = new Metric('coverPageCount', 0)
+        allMetrics.push(coverPageCount)
         const selectionPageCount = new Metric('selectionPageCount', 0)
+        allMetrics.push(selectionPageCount)
         const navlogPageCount = new Metric('navlogPageCount', 0)
+        allMetrics.push(navlogPageCount)
         const notesPageCount = new Metric('notesPageCount', 0)
+        allMetrics.push(notesPageCount)
 
         const totalTileCount = new Metric('totalTileCount', 0)
+        allMetrics.push(totalTileCount)
         const airportTileCount = new Metric('airportTileCount', 0)
+        allMetrics.push(airportTileCount)
         const atisTileCount = new Metric('atisTileCount', 0)
+        allMetrics.push(atisTileCount)
         const checklistTileCount = new Metric('checklistTileCount', 0)
+        allMetrics.push(checklistTileCount)
         const clearanceTileCount = new Metric('clearanceTileCount', 0)
+        allMetrics.push(clearanceTileCount)
         const fuelTileCount = new Metric('fuelTileCount', 0)
+        allMetrics.push(fuelTileCount)
         const navlogTileCount = new Metric('navlogTileCount', 0)
+        allMetrics.push(navlogTileCount)
         const notesTileCount = new Metric('notesTileCount', 0)
+        allMetrics.push(notesTileCount)
         const radiosTileCount = new Metric('radiosTileCount', 0)
+        allMetrics.push(radiosTileCount)
         const sunlightTileCount = new Metric('sunlightTileCount', 0)
+        allMetrics.push(sunlightTileCount)
+
         for(let template of templates) {
             for(let page of template.data) {
                 if(page.type == PageType.tiles) {
@@ -129,11 +150,6 @@ export class Metrics {
                 staleTemplateCount.addOne()
             }
         }
-        // build a list of all metrics
-        const allMetrics = [
-            totalPageCount, tilePageCount, checklistPageCount, coverPageCount, selectionPageCount, navlogPageCount,
-            totalTileCount, airportTileCount, atisTileCount, checklistTileCount, clearanceTileCount, fuelTileCount, notesTileCount, navlogTileCount, radiosTileCount, sunlightTileCount, 
-            staleTemplateCount]
         return allMetrics
     }
 
