@@ -1,3 +1,32 @@
+<template>
+  <Dialog modal header="Print">
+  <div class="printPopup">
+    <!-- <FieldSet legend="Layout"> -->
+      <div class="pageOptions">
+        <div class="pageOptionLabel">Pages per sheet</div>
+        <OneChoice v-model="pagePerSheet" :choices="[onePage,twoPages]" 
+          @change="onNewOptions"/>
+        <div class="pageOptionLabel">Back Page Orientation</div>
+        <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]"
+          @change="onNewOptions" />
+      </div>
+    <!-- </FieldSet> -->
+    <FieldSet legend="Printing Tips">
+      <p class="note">
+        <li>0.25" <b>margins</b> work well with two pages print on Letter paper</li>
+        <li>Enable <b>Background Graphics</b> print setting for best results with Checklists</li>
+        <li>One page per sheet in <b>Portrait</b> layout make great PDFs</li>
+        <li>Two pages per sheet in <b>Landscape</b> layout will fold to kneeboard size</li>
+      </p>
+      </FieldSet>
+    <div class="actionDialog gap-2">
+      <Button label="Do Not Print" @click="onClose" link></Button>
+      <Button label="Print" @click="onPrint"></Button>
+    </div>
+  </div>
+  </Dialog>
+</template>
+
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
@@ -12,7 +41,7 @@ const emits = defineEmits(["close","print","options"]);
 const onePage = {label:'One', value:1}
 const twoPages = {label:'Two', value:2}
 const normalOrientation = {label:'Normal', value:false}
-const flippedOrientation = {label:'Flipped', value:true}
+const flippedOrientation = {label:'Flipped', value:true, title:'So you can read back page when front page is clipped'}
 
 const pagePerSheet = ref(twoPages)
 const flipBackPage = ref(normalOrientation)
@@ -60,35 +89,6 @@ function onNewOptions() {
 
 </script>
 
-<template>
-  <Dialog modal header="Print">
-  <div class="printPopup">
-    <!-- <FieldSet legend="Layout"> -->
-      <div class="pageOptions">
-        <div class="pageOptionLabel">Pages per sheet</div>
-        <OneChoice v-model="pagePerSheet" :choices="[onePage,twoPages]" 
-          @change="onNewOptions"/>
-        <div class="pageOptionLabel">Back Page Orientation</div>
-        <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]"
-          @change="onNewOptions" />
-      </div>
-    <!-- </FieldSet> -->
-    <FieldSet legend="Tips">
-      <p class="note">
-        <li>Enable 'Background graphics' print setting for best results with Checklists</li>
-        <li>Use 'Flipped' back page to read both page when clipped on top</li>
-        <li>Two pages per sheet in 'Landscape' layout will fold to kneeboard size</li>
-        <li>One page per sheet in 'Portrait' layout make great PDFs</li>
-      </p>
-      </FieldSet>
-    <div class="actionDialog gap-2">
-      <Button label="Do Not Print" @click="onClose" link></Button>
-      <Button label="Print" @click="onPrint"></Button>
-    </div>
-  </div>
-  </Dialog>
-</template>
-
 <style scoped>
 .modesList {
   display: flex;
@@ -124,9 +124,14 @@ p.note {
   margin: 0
 }
 
+li {
+  line-height: 1.2rem;
+}
+
 :deep(.p-fieldset-legend) {
   border: none;
   background: none;
+  padding: 0.5rem;
 }
 :deep(.p-fieldset-content) {
   padding: 0;
