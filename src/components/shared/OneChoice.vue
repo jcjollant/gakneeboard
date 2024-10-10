@@ -1,3 +1,13 @@
+<template>
+    <div class="oneChoice">
+        <div v-for="c in choices" :aria-label="c.label" 
+            @click="onChoice(c)" 
+            class="choice" :class="{'choiceActive':(model.label==c.label),'choiceInactive':(model.label!=c.label)}"
+            :title="c.title?c.title:null"
+            >{{c.label}}</div>
+    </div>
+</template>
+
 <script setup>
 const props = defineProps({
   choices: { type: Object, default: [{label:'No Choice'}]},
@@ -11,14 +21,7 @@ function onChoice(choice) {
     emits('change')
 }
 </script>
-<template>
-    <div class="oneChoice">
-        <div v-for="c in choices" :aria-label="c.label" 
-            @click="onChoice(c)" 
-            class="choice" :class="{'choiceActive':(model.label==c.label),'choiceInactive':(model.label!=c.label)}"
-            >{{c.label}}</div>
-    </div>
-</template>
+
 <style scoped>
 .oneChoice {
     display:flex;
