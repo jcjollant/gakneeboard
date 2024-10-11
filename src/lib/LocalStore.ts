@@ -49,6 +49,7 @@ export class LocalStore {
         if( airport) {
             LocalStore.airportUpdateRecents(code)
         }
+        return airport
     }
 
     static airportRemove(code:string) {

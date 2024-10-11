@@ -18,7 +18,8 @@ Run the test suite:
 
 # Done
 ## 10/10/2024
-* Added Google Tag for tracking
+1) Added Google Tag for tracking
+2) Fixed airport localstore bug
 ## 10/08/2024
 * Editor mode now supports tiles swapping
 ## 10/06/2024

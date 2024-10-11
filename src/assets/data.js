@@ -1,4 +1,4 @@
-export const version = 1010
+export const version = 1010.2
 
 const apiRootUrl = GApiUrl.root
 
@@ -109,6 +109,7 @@ export async function getAirport( codeParam, group = false) {
           // Airport data is current
           // console.log('[data.getAirport] localAirport ', code, 'is current')
           airports[code] = localAirport
+          // console.log('[data.getAirport] localAirport ', code, 'is current')
           return localAirport;
         }
       }
@@ -120,6 +121,7 @@ export async function getAirport( codeParam, group = false) {
           // compare effective date and model version
           if( airportCurrent(localAirport)) {
             airports[code] = localAirport
+            // console.log('[data.getAirport] localAirport ', code, 'was current')
             resolve({current:true,airport:localAirport})
           } else {
             // turn out this data was stale, remove it from localStorage
@@ -194,6 +196,7 @@ export async function getBackend() {
           backend.airportEffectiveDate = Number(response.data.aced)
           backend.airportModelVersion = Number(response.data.camv)
           backend.ready = true;
+          // console.log('[data.getBackend] ready')
 
           // Do we have anything about the user?
           if( response.data.user) {
