@@ -67,6 +67,7 @@ export class Metrics {
         const allMetrics:Metric[] = []
 
         const staleTemplateCount = new Metric('staleTemplateCount', 0)
+        allMetrics.push(staleTemplateCount)
 
         const totalPageCount = new Metric('totalPageCount', 0)
         allMetrics.push(totalPageCount)
