@@ -28,6 +28,8 @@ Save files in c:\src\kneeboard.ga\data
 * 
 
 # Done
+## 10/10/2024
+* Fixed missing staleTemplateCount
 ## 10/07/2024
 * Metrics count notepage
 ## 10/03/2024
