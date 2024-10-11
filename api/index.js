@@ -3,6 +3,7 @@ import cors from "cors";
 import multer from "multer"
 // const cors = require('cors');
 import { version } from '../backend/constants.js'
+import { AceWritter } from "../backend/AceWritter";
 import { GApi, GApiError } from '../backend/GApi'
 import { UserTools } from '../backend/UserTools'
 import { AirportView } from "../backend/models/AirportView";
@@ -108,10 +109,11 @@ app.post('/authenticate', async(req,res) => {
 })
 
 app.get('/export/template/:id/:format', async(req,res) => {
-    const blob = AceWritter.demo()
+    const arrayBuffer = await AceWritter.demo()
     res.attachment('kneeboard.ace')
-    // const download = Buffer.from(fileData, 'base64')
-    res.end(blob)
+    res.header('Access-Control-Expose-Headers', 'Content-Disposition');
+    // console.log('[index] export template', arrayBuffer.byteLength)
+    res.send(Buffer.from(arrayBuffer))
 })
 
 // record user feedback

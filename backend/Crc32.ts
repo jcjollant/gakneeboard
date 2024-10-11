@@ -17,16 +17,20 @@ export class Crc32 {
             crc = crc >>> 8 ^ table[ crc & 255 ^ data[i] ];
         }
 
-        return (crc ^ -1) >>> 0; // Apply binary NOT
+        return ~crc >>> 0 
+        // return crc
     }
 
     static computeArray(data:Uint8Array):Uint8Array {
-        const crc = this.compute(data);
-        console.log(crc)
+        const crc1 = this.compute(data);
+        const crc = ~crc1 >>> 0;
+        // console.log(crc)
         const uint8Array = new Uint8Array(4); 
-        for (let i = 0; i < 4; i++) {
-            uint8Array[i] = (crc >> (i * 8)) & 0xff; 
-        }
+        // Little Endian
+        uint8Array[0] = crc & 0xff;
+        uint8Array[1] = (crc >> 8) & 0xff;
+        uint8Array[2] = (crc >> 16) & 0xff;
+        uint8Array[3] = (crc >> 24) & 0xff;
         return uint8Array;
     }
 }
