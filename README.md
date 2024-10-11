@@ -17,6 +17,8 @@ Run the test suite:
 ## TODO
 
 # Done
+## 10/10/2024
+* Added Google Tag for tracking
 ## 10/08/2024
 * Editor mode now supports tiles swapping
 ## 10/06/2024
