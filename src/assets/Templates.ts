@@ -83,9 +83,18 @@ export class TemplateData {
         if(!format) {
             format = 'json'
         }
-        return getUrlWithUser(url)
-            .then( response => response.data)
-            .catch( error => {
+
+        return axios({ 
+            url:url,
+            method:'get',
+            // params:{user:newCurrentUser.sha256}, 
+            // responseType:'blob',
+            })
+        // return getUrlWithUser(url)
+            .then( response => {
+                console.log('[TemplateData.export] template exported', response.data.length)
+                return response.data
+            }).catch( error => {
                 reportError('[TemplateData.export] error ' + JSON.stringify(error))
                 return null
             })

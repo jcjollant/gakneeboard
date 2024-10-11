@@ -164,7 +164,20 @@ function onMaintenance() {
 }
 
 async function onMenuExport() {
-  await TemplateData.export(activeTemplate.value, 'ace')
+  const data = await TemplateData.export(activeTemplate.value, 'ace')
+    // create file link in browser's memory
+    const href = URL.createObjectURL(data);
+
+    // create "a" HTML element with href to file & click
+    const link = document.createElement('a');
+    link.href = href;
+    link.setAttribute('download', 'file.ace'); //or any other extension
+    document.body.appendChild(link);
+    link.click();
+
+    // clean up "a" element & remove ObjectURL
+    document.body.removeChild(link);
+    URL.revokeObjectURL(href);  
 }
 
 function onMenuLoad() {
