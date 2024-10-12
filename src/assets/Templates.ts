@@ -54,6 +54,15 @@ export class TemplatePage {
     }
 }
 
+export class ExportOutput {
+    filename:string;
+    blob:Blob;
+    constructor(blob:Blob, filename:string) {
+        this.blob = blob
+        this.filename = filename
+    }
+}
+
 export class TemplateData {
     /**
      * Delete custom sheet
@@ -78,26 +87,36 @@ export class TemplateData {
     
 
     // export a template
-    static export(template:any, format:string):any {
-        const url = GApiUrl.templateExport(template.id, format)
+    static async export(template:any, format:string):Promise<ExportOutput> {
+        if(!template || !template.id) {
+            throw new Error('Cannot export invalid template')
+        }
         if(!format) {
             format = 'json'
         }
+        const url = GApiUrl.templateExport(template.id, format)
+        return new Promise((resolve, reject) => {
+            axios({
+                url:url,
+                method:'get',
+                params:{user:newCurrentUser.sha256}, 
+                responseType:'arraybuffer',
+                }).then( response => {
+                    // console.log('[TemplateData.export] template exported', JSON.stringify(response.headers))
+                    // extract file name from request headers 'attachment; filename="kneeboard.ace"'
+                    const contentDisposition = response.headers['content-disposition']
+                    const from = contentDisposition.indexOf('"') + 1
+                    const to = contentDisposition.lastIndexOf('"')
+                    const filename = contentDisposition.substring(from, to)
 
-        return axios({ 
-            url:url,
-            method:'get',
-            // params:{user:newCurrentUser.sha256}, 
-            // responseType:'blob',
-            })
-        // return getUrlWithUser(url)
-            .then( response => {
-                console.log('[TemplateData.export] template exported', response.data.length)
-                return response.data
-            }).catch( error => {
-                reportError('[TemplateData.export] error ' + JSON.stringify(error))
-                return null
-            })
+                    // console.log('[TemplateData.export] template exported', response.data)
+                    const eo = new ExportOutput( new Blob([response.data]), filename)
+                    resolve(eo)
+                }).catch( error => {
+                    reportError('[TemplateData.export] error ' + error)
+                    reject(error)
+                })
+        })
     }
 
     /**

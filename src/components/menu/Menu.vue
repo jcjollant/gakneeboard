@@ -1,6 +1,8 @@
 <template>
   <div class="container" :class="{grow: showMenu}">
+    <About v-model:visible="showAbout" @close="showAbout=false" @hdiw="onHdiw"/>
     <ConfirmDialog />
+    <DemoSelection v-model:visible="showDemoSelection" @load="onTemplateLoad" />
     <Maintenance v-model:visible="showMaintenance" 
       @maintenance="onMaintenance" @toast="onToast" />
     <Print v-model:visible="showPrint" :refresh="refreshPrint"
@@ -8,20 +10,21 @@
       @options="onPrintOptions"
       @print="onPrintPrint"
        />
-    <About v-model:visible="showAbout" @close="showAbout=false" @hdiw="onHdiw"/>
-    <DemoSelection v-model:visible="showDemoSelection" @load="onTemplateLoad" />
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
       @authentication="onAuthentication" />
+    <TemplateExport v-model:visible="showTemplateExport"
+      @close="showTemplateExport=false"
+      @export="onExportExport" />
+    <TemplateLoad v-model:visible="showTemplateLoad" :time="templateTime" 
+      @close="onTemplateCloseLoad"
+      @load="onTemplateLoad" 
+      @toast="onToast" />
     <TemplateSave v-model:visible="showTemplateSave" :mode="templateDialogMode" :time="templateTime" :template="activeTemplate"
       @close="onTemplateCloseSave"
       @delete="onTemplateDelete"
       @save="onTemplateSave"
       @mode="onTemplateMode"
       @overwrite="onTemplateOverwrite"
-      @toast="onToast" />
-    <TemplateLoad v-model:visible="showTemplateLoad" :time="templateTime" 
-      @close="onTemplateCloseLoad"
-      @load="onTemplateLoad" 
       @toast="onToast" />
     <div class="menuIcon" :class="{change: showMenu}" @click="toggleMenu" title="Toggle Menu">
       <div class="bar1"></div>
@@ -40,7 +43,7 @@
         <Button label="New" icon="pi pi-file" title="Reset Template" @click="onTemplateLoad(getTemplateBlank())"></Button>
         <Button label="Load" icon="pi pi-folder-open" title="Open Existing Template" @click="onMenuLoad"></Button>
         <Button label="Save" icon="pi pi-save" title="Save Active Template" @click="onMenuSave"></Button>
-        <!-- <Button label="Export" icon="pi pi-file-export" title="Export Active Template" @click="onMenuExport"></Button> -->
+        <Button label="Export" icon="pi pi-file-export" title="Export Active Template" @click="onMenuExport"></Button>
         <Button label="Demos" icon="pi pi-clipboard" title="Load Demo Template" @click="showDemoSelection=true"></Button>
         <div class="separator" @click="showMaintenance=true"></div>
         <Button icon="pi pi-info-circle" title="About / Guides / Warnings"
@@ -65,12 +68,12 @@ import ConfirmDialog from 'primevue/confirmdialog';
 
 import About from './About.vue'
 import DemoSelection from '../demos/DemoSelection.vue';
-import Feedback from './Feedback.vue';
 import Maintenance from './Maintenance.vue'
 import Print from './Print.vue'
 import SignIn from '../signin/SignIn.vue';
 import TemplateLoad from '../templates/TemplateLoad.vue'
 import TemplateSave from '../templates/TemplateSave.vue'
+import TemplateExport from '../templates/TemplateExport.vue';
 
 
 const emits = defineEmits(['authentication','howDoesItWork','load','print','printOptions', 'printPreview','save','toast','toggle'])
@@ -84,6 +87,7 @@ const showMaintenance = ref(false)
 const showMenu = ref(false)
 const showPrint = ref(false)
 const showSignIn = ref(false)
+const showTemplateExport = ref(false)
 const showTemplateSave = ref(false)
 const showTemplateLoad = ref(false)
 const user = ref(newCurrentUser)
@@ -152,6 +156,19 @@ function onAuthentication(newUser) {
   }
 }
 
+function onExportExport(format) {
+  showTemplateExport.value = false;
+  TemplateData.export(activeTemplate.value, format).then( eo => {
+    // create file link in browser's memory
+    // console.log('[Menu.onMenuExport] blob', eo.blob.size)
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(eo.blob)
+    link.download = eo.filename
+    link.click()
+    URL.revokeObjectURL(link.href)
+  })
+}
+
 // how does it work? close about and emit to parent
 function onHdiw() {
   showAbout.value = false;
@@ -164,20 +181,12 @@ function onMaintenance() {
 }
 
 async function onMenuExport() {
-  const data = await TemplateData.export(activeTemplate.value, 'ace')
-    // create file link in browser's memory
-    const href = URL.createObjectURL(data);
-
-    // create "a" HTML element with href to file & click
-    const link = document.createElement('a');
-    link.href = href;
-    link.setAttribute('download', 'file.ace'); //or any other extension
-    document.body.appendChild(link);
-    link.click();
-
-    // clean up "a" element & remove ObjectURL
-    document.body.removeChild(link);
-    URL.revokeObjectURL(href);  
+  // make sure we have a usable template
+  if( !activeTemplate.value.id) {
+    emitToastWarning(emits, 'Please save your template or load an existing template before exporting')
+    return;
+  }
+  showTemplateExport.value = true;
 }
 
 function onMenuLoad() {

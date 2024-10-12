@@ -1,3 +1,16 @@
+<template>
+  <div>
+    <div class="templateDescription">
+      <div v-if="!hideDescription" class="label">Desc.</div>
+      <div v-if="!hideDescription" class="pageDescription">{{ Template.describe(template) }}</div>
+      <div class="label">Page 1</div>
+      <div class="pageDescription">{{ describePage(template, 0) }}</div>
+      <div class="label">Page 2</div>
+      <div class="pageDescription">{{ describePage(template, 1) }}</div>
+    </div>
+  </div>
+</template>
+
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import { describePage } from '../../assets/sheetData'
@@ -32,19 +45,6 @@ watch( props, async() => {
 
 
 </script>
-
-<template>
-  <div>
-    <div class="templateDescription">
-      <div v-if="!hideDescription" class="label">Desc.</div>
-      <div v-if="!hideDescription" class="pageDescription">{{ Template.describe(template) }}</div>
-      <div class="label">Page 1</div>
-      <div class="pageDescription">{{ describePage(template, 0) }}</div>
-      <div class="label">Page 2</div>
-      <div class="pageDescription">{{ describePage(template, 1) }}</div>
-    </div>
-  </div>
-</template>
 
 <style scoped>
 .label {
