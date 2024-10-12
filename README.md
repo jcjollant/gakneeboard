@@ -17,6 +17,8 @@ Run the test suite:
 ## TODO
 
 # Done
+## 10/11/2024
+* Template Export to ACE format
 ## 10/10/2024
 1) Added Google Tag for tracking
 2) Fixed airport localstore bug
