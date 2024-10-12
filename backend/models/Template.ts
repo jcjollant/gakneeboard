@@ -1,5 +1,26 @@
 import { Publication } from "./Publication";
 
+export class PageType {
+  static selection = 'selection'
+  static tiles = 'tiles'
+  static checklist = 'checklist'
+  static cover = 'cover'
+  static navLog = 'navlog'
+  static notes = 'notes'
+}
+
+export class Tile {
+    static airport:string = 'airport';
+    static atis:string = 'atis';
+    static checklist:string = 'checklist';
+    static clearance:string = 'clearance';
+    static fuel:string = 'fuel';
+    static navlog:string = 'navlog';
+    static notes:string = 'notes';
+    static radios:string = 'radios';
+    static sunlight:string = 'sunlight';
+}
+
 export class Template {
     id:number;
     name:string;

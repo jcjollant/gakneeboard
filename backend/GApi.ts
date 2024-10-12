@@ -13,6 +13,7 @@ import { Template } from './models/Template'
 import { TemplateDao } from './TemplateDao'
 import { Sunlight } from './models/Sunlight'
 import { UserMiniView } from './models/UserMiniView'
+import { Exporter } from './Exporter'
 
 // Google API key
 
@@ -50,6 +51,18 @@ export class GApi {
         if( !userId) throw new GApiError(400,"Invalid User"); 
 
         return await AirportDao.createOrUpdateCustom(airport, userId)
+    }
+
+    public static async exportTemplate(templateId:number, userSha256:string, format:string):Promise<Exporter> {
+        // console.log('[gapi.exportTemplate]', templateId, userSha256, format)
+        // Fetch user
+        const userId:number|undefined = await UserDao.getIdFromHash(userSha256)
+        if( !userId) throw new GApiError(400, "Invalid User");
+        // Fetch template for user
+        const template:Template|undefined = await TemplateDao.readById(templateId, userId)
+        if( !template) throw new GApiError(400, "Invalid Template");
+        // retrieve this template for this user
+        return await Exporter.export(template, format)
     }
 
     public static getAirportCurrentEffectiveDate() {

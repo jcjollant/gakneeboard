@@ -109,11 +109,15 @@ app.post('/authenticate', async(req,res) => {
 })
 
 app.get('/export/template/:id/:format', async(req,res) => {
-    const arrayBuffer = await AceWritter.demo()
-    res.attachment('kneeboard.ace')
-    res.header('Access-Control-Expose-Headers', 'Content-Disposition');
-    // console.log('[index] export template', arrayBuffer.byteLength)
-    res.send(Buffer.from(arrayBuffer))
+    await GApi.exportTemplate(req.params.id, req.query?.user, req.params.format).then( (e) => {
+        res.attachment(e.fileName)
+        const arrayBuffer = e.arrayBuffer
+        res.header('Access-Control-Expose-Headers', 'Content-Disposition');
+        // console.log('[index] export template', arrayBuffer.byteLength)
+        res.send(Buffer.from(arrayBuffer))
+    }).catch( (e) => {
+        catchError(res, e, 'GET /export/template')
+    })
 })
 
 // record user feedback
