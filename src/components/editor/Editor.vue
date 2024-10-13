@@ -2,14 +2,8 @@
   <div class="editor">
     <ConfirmDialog></ConfirmDialog>
     <div class="editorTop">
-      <div class="editorSheets">Pages</div>
-      <Button v-for="(s,index) in sheets" 
-        @click="onSheetSelection(s.offset)"
-        :label="s.name" :class="{'active':s.offset == activeOffset}"></Button>
-      <Button icon="pi pi-plus" title="Add 2 Pages"  
-        @click="onActionName(EditorAction._add2Pages)"></Button>
-      <Button icon="pi pi-trash" title="Delete active sheet"  
-        @click="confirmAndDelete"></Button>
+      <div>Page {{ activeOffset+1 }}</div>
+      <div>Page {{ activeOffset+2 }}</div>
     </div>
     <div class="editorMask">
       <TileOverlay :show="activeTemplate?.data[activeOffset].type==PageType.tiles"
@@ -19,9 +13,11 @@
           <Button id="editorCopyToRight" icon="pi pi-arrow-right" title="Copy Left to Right" 
               @click="onAction(EditorAction.copyToPage(activeOffset, activeOffset+1))" ></Button>
           <Button id="editorSwap" icon="pi pi-arrow-right-arrow-left" title="Swap Left and Right" 
-              @click="onActionName(EditorAction._swapPages)" ></Button>
+              @click="onActionName(EditorAction.SWAP_PAGE)" ></Button>
           <Button id="editorCopyToLeft" icon="pi pi-arrow-left" title="Copy Right to Left" 
               @click="onAction(EditorAction.copyToPage(activeOffset+1, activeOffset))" ></Button>
+          <Button id="editorInsert" icon="pi pi-plus" title="Insert New Page" 
+              @click="onAction(EditorAction.insertPage(activeOffset+1))" ></Button>
       </div>
       <TileOverlay :show="activeTemplate?.data[activeOffset+1].type==PageType.tiles"
         class="rightTileOverlay"
@@ -29,21 +25,25 @@
     </div>
     <div class="editorBottom">
       <div class="editorPage">
-        <Button icon="pi pi-eject" label="Replace" title="Replace Left Page" 
-          @click="onAction(EditorAction.reset(activeOffset))"></Button>
         <Button icon="pi pi-copy" label="Copy" title="Copy Left Page to Clipboard" 
           @click="onAction(EditorAction.copyToClipboard(activeOffset))"></Button>
         <Button icon="pi pi-clipboard" label="Paste" title="Paste Clipboard to Left Page" 
           @click="onAction(EditorAction.paste(activeOffset))"></Button>
+        <Button icon="pi pi-eject" label="Replace" title="Replace Left Page" 
+          @click="onAction(EditorAction.reset(activeOffset))"></Button>
+        <Button icon="pi pi-trash" label="Delete" title="Delete Page" severity="warning" 
+          @click="onAction(EditorAction.deletePage(activeOffset))"></Button>
       </div>
       <div class="editorSpacer"></div>
       <div class="editorPage">
-        <Button icon="pi pi-eject" label="Replace" title="Replace Back Page" 
-          @click="onAction(EditorAction.reset(activeOffset+1))"></Button>
         <Button icon="pi pi-copy" label="Copy" title="Copy Back Page to Clipboard" 
           @click="onAction(EditorAction.copyToClipboard(activeOffset+1))"></Button>
         <Button icon="pi pi-clipboard" label="Paste" title="Paste Clipboard to Back Page" 
           @click="onAction(EditorAction.paste(activeOffset+1))"></Button>
+        <Button icon="pi pi-eject" label="Replace" title="Replace Back Page" 
+          @click="onAction(EditorAction.reset(activeOffset+1))"></Button>
+        <Button icon="pi pi-trash" label="Delete" title="Delete Page" severity="warning" 
+          @click="onAction(EditorAction.deletePage(activeOffset+1))"></Button>
       </div>
     </div>
   </div>
@@ -79,13 +79,6 @@ function loadProps( props) {
   activeTemplate.value = props.template;
   // console.log('[Editor.loadProps] offset', props.offset)
   activeOffset.value = props.offset;
-  // list offsets
-  sheets.value = props.template.data.filter((d,index)=>index % 2 == 0).map((d,index) => {
-    const offset = index * 2
-    const output = {name: (offset+1) + ' | ' + (offset+2), offset:index*2}
-    return output
-  })
-  // console.log('[Editor.loadProps]', JSON.stringify(sheets.value))
 }
 
 onMounted( () => {
@@ -99,20 +92,6 @@ watch( props, async() => {
 // End props management
 //---------------------
 
-function confirmAndDelete() {
-  // console.log('[Editor.confirmAndDelete]', activeOffset.value, (typeof confirm))
-
-  confirm.require({
-      message: 'Are you positive you will not regret deleting pages ' + (activeOffset.value + 1) + ' and ' + (activeOffset.value + 2),
-      header: "Delete Pages",
-      rejectLabel: 'No',
-      acceptLabel: 'Yes, Delete',
-      accept: () => {
-        onAction(EditorAction.delete2Pages(activeOffset.value))
-      }
-    })
-}
-
 /**
  * Send action to parent (App is processing Editor events)
  * @param {*} actionName 
@@ -122,26 +101,23 @@ function onActionName(actionName) {
 }
 
 function onAction(action) {
-  if(action.action == EditorAction._copyToPage) {
+  let confirmation = undefined
+  if(action.action == EditorAction.COPY_TO_PAGE) confirmation = {message:'Please confirm you want to overwrite page ' + (action.offsetTo + 1), header:'Overwrite Page', acceptLabel:'Yes, Overwrite'}
+  if(action.action == EditorAction.DELETE_PAGE) confirmation = {message:'Please confirm you want to delete page ' + (action.offset + 1), header:'Delete Page', acceptLabel:'Yes, Delete'}
+
+  if(confirmation) {
     confirm.require({
-        message: 'Are you positive you will not regret overwritting page ' + (action.offsetTo + 1),
-        header: "Overwrite Page",
+        message: confirmation.message,
+        header: confirmation.header,
         rejectLabel: 'No',
-        acceptLabel: 'Yes, Overwrite',
+        acceptLabel: confirmation.acceptLabel,
         accept: () => {
           emits('action', action)
         }
       })
-
   } else {
     emits('action', action)
   }
-}
-
-function onSheetSelection(newOffset) {
-  // console.log('[Editor.onSheetSelection]', index)
-  activeOffset.value = newOffset
-  onAction(EditorAction.changeOffset(newOffset))
 }
 
 function swapTilesLeft(params) {
@@ -169,6 +145,7 @@ function swapTilesRight(params) {
   justify-content: center;
   gap: 1rem;
   background-color: lightgrey;
+  min-width: var(--min-width-editor)
 }
 .editorBottom {
   display: flex;
@@ -182,7 +159,7 @@ function swapTilesRight(params) {
 .editorPage {
   display: flex;
   gap:10px;
-  width: 485px;
+  width: var(--page-width);
   justify-content: center;
 }
 .editorSheets {
@@ -191,11 +168,15 @@ function swapTilesRight(params) {
   line-height: 2.5rem;
 }
 .editorSpacer {
-  width: 80px;
+  width: var(--pages-gap);
 }
 .editorTop {
-  display: flex;
-  gap: 0.5rem;
+  display: grid;
+  grid-template-columns: var(--page-width) var(--page-width);
+  gap: var(--pages-gap);
+  font-weight: bolder;
+  font-size: 2rem;
+  opacity: 0.4;
   justify-content: center;
 }
 .middle {

@@ -1,13 +1,15 @@
 export class EditorAction {
     static _add2Pages:string = 'ad2';
     static _changeOffset:string = 'cho';
-    static _copyToClipboard:string = 'c2c';
-    static _copyToPage:string = 'c2p';
+    static COPY_TO_CLIPBOARD:string = 'c2c';
+    static COPY_TO_PAGE:string = 'c2p';
+    static DELETE_PAGE:string = 'd1p';
     static _delete2Pages:string = 'd2p';
-    static _pastePage:string = 'pp';
-    static _resetPage:string = 'rp';
-    static _swapPages:string = 'sp';
-    static _swapTiles:string = 'st';
+    static INSERT_PAGE:string = 'i1p';
+    static PASTE_PAGE:string = 'pp';
+    static RESET_PAGE:string = 'rp';
+    static SWAP_PAGE:string = 'sp';
+    static SWAP_TILES:string = 'st';
 
     action:string;
     offset:number;
@@ -30,26 +32,34 @@ export class EditorAction {
     }
 
     static copyToClipboard(offset:number):EditorAction {
-        return new EditorAction(EditorAction._copyToClipboard, offset);
+        return new EditorAction(EditorAction.COPY_TO_CLIPBOARD, offset);
     }
 
     static copyToPage(offsetFrom:number,offsetTo:number):EditorAction {
-        return new EditorAction(EditorAction._copyToPage, offsetFrom, offsetTo);
+        return new EditorAction(EditorAction.COPY_TO_PAGE, offsetFrom, offsetTo);
+    }
+
+    static deletePage(offset:number):EditorAction {
+        return new EditorAction(EditorAction.DELETE_PAGE, offset);
     }
 
     static delete2Pages(offset:number):EditorAction {
         return new EditorAction(EditorAction._delete2Pages, offset);
     }
 
+    static insertPage(offset:number):EditorAction {
+        return new EditorAction(EditorAction.INSERT_PAGE, offset);
+    }
+
     static paste(offset:number):EditorAction {
-        return new EditorAction(EditorAction._pastePage, offset);
+        return new EditorAction(EditorAction.PASTE_PAGE, offset);
     }
 
     static reset(offset:number):EditorAction {
-        return new EditorAction(EditorAction._resetPage, offset);
+        return new EditorAction(EditorAction.RESET_PAGE, offset);
     }
     static swapTiles(offset:number, params:any):EditorAction {
-        return new EditorAction(EditorAction._swapTiles, offset, offset, params);
+        return new EditorAction(EditorAction.SWAP_TILES, offset, offset, params);
     }
 
 }

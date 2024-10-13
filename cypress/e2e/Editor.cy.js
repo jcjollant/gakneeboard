@@ -26,10 +26,13 @@ describe('Editor', () => {
 
     // Copy Front to Back via clip board
     cy.get(':nth-child(1) > [aria-label="Copy"]').click()
+    // Toast Should say Page 1 
+    // <div class="p-toast-message-text" data-pc-section="text"><span class="p-toast-summary" data-pc-section="summary">Page 1 copied to clipboard</span><div class="p-toast-detail" data-pc-section="detail"></div></div>
+    cy.get('.p-toast-message-text').contains('Page 1 copied to clipboard')
     cy.get(':nth-child(3) > [aria-label="Paste"]').click()
 
-    cy.get('.pageOne > :nth-child(6) > .headerTitle').contains('Clearance @')
-    cy.get('.pageTwo > :nth-child(6) > .headerTitle').contains('Clearance @')
+    cy.get('.page0 > :nth-child(6) > .headerTitle').contains('Clearance @')
+    cy.get('.page1 > :nth-child(6) > .headerTitle').contains('Clearance @')
 
     // reload demo
     reloadDemo()
@@ -37,8 +40,8 @@ describe('Editor', () => {
     // Copy Back to Front
     cy.get(':nth-child(3) > [aria-label="Copy"]').click()
     cy.get(':nth-child(1) > [aria-label="Paste"]').click()
-    cy.get('.pageOne > :nth-child(2) > .twoLists > .leftList > :nth-child(19)').contains('FIRE')
-    cy.get('.pageTwo > :nth-child(2) > .twoLists > .leftList > :nth-child(19)').contains('FIRE')
+    cy.get('.page0 > :nth-child(2) > .twoLists > .leftList > :nth-child(19)').contains('FIRE')
+    cy.get('.page1 > :nth-child(2) > .twoLists > .leftList > :nth-child(19)').contains('FIRE')
 
 
   })
@@ -69,15 +72,15 @@ describe('Editor', () => {
 
     // reset left
     cy.get(':nth-child(1) > [aria-label="Replace"]').click()
-    cy.get('.pageOne').contains('Page Selection')
-    cy.get('.pageTwo').contains('Page Selection').should('not.exist')
+    cy.get('.page0').contains('Page Selection')
+    cy.get('.page1').contains('Page Selection').should('not.exist')
 
     reloadDemo();
 
     // reset right
     cy.get(':nth-child(3) > [aria-label="Replace"]').click()
-    cy.get('.pageOne').contains('Page Selection').should('not.exist')
-    cy.get('.pageTwo').contains('Page Selection')
+    cy.get('.page0').contains('Page Selection').should('not.exist')
+    cy.get('.page1').contains('Page Selection')
 
     // reload demo
     reloadDemo()
@@ -85,8 +88,8 @@ describe('Editor', () => {
     // Copy left to right and confirm
     cy.get('#editorCopyToRight').click()
     cy.get('.p-confirm-dialog-accept').click()
-    cy.get('.pageOne > :nth-child(6) > .headerTitle').contains('Clearance @')
-    cy.get('.pageTwo > :nth-child(6) > .headerTitle').contains('Clearance @')
+    cy.get('.page0 > :nth-child(6) > .headerTitle').contains('Clearance @')
+    cy.get('.page1 > :nth-child(6) > .headerTitle').contains('Clearance @')
 
     // reload demo
     reloadDemo()
@@ -94,30 +97,30 @@ describe('Editor', () => {
     // Copy left to right and confirm
     cy.get('#editorCopyToLeft').click()
     cy.get('.p-confirm-dialog-accept').click()
-    demoChecklistOn('.pageOne')
-    demoChecklistOn('.pageTwo')
+    demoChecklistOn('.page0')
+    demoChecklistOn('.page1')
 
     // Add a page
-    cy.get('[title="Add 2 Pages"]').click()
-
-    // select new page
-    cy.get('[aria-label="3 | 4"]').click()
-    cy.get('[aria-label="1 | 2"]').should('not.have.class', 'active')
-    cy.get('[aria-label="3 | 4"]').should('have.class', 'active')
-    // Check page content
-    cy.get('.pageOne').contains('Page Selection')
-    cy.get('.pageTwo').contains('Page Selection')
+    cy.get('#editorInsert').click()
+    // New page should have be blanks
+    cy.get('.page1').contains('Page Selection')
 
     // delete new page
-    cy.get('[title="Delete active sheet"]').click()
-    cy.get('.p-confirm-dialog-message').contains('3 and 4')
+    cy.get('.editorBottom > :nth-child(3) > .p-button-warning').click()
+    cy.get('.p-confirm-dialog-message').contains('delete page 2')
     cy.get('.p-confirm-dialog-accept').click()
-    cy.get('[aria-label="1 | 2"]').should('have.class', 'active')
+    // Flight page should be back at that position
+    cy.get('.page1').contains('Flight')
 
-    // delete last page should not be possible
-    cy.get('[title="Delete active sheet"]').click()
+    // delete last two pages should not be possible
+    cy.get('.editorBottom > :nth-child(3) > .p-button-warning').click()
+    cy.get('.p-confirm-dialog-message').contains('delete page 2')
     cy.get('.p-confirm-dialog-accept').click()
-    cy.get('[aria-label="1 | 2"]')
+    // toast should say no more pages
+    cy.get('.p-toast-message-text').contains('Last two pages cannot be deleted')
+
+    // Page should still be there
+    cy.get('.page1').contains('Flight')
 
   })
   
@@ -130,11 +133,11 @@ describe('Editor', () => {
     reloadDemo(false)
 
     // swap left and right
-    cy.get('.pageOne > :nth-child(6) > .headerTitle').contains('Clearance @')
-    demoChecklistOn('.pageTwo')
+    cy.get('.page0 > :nth-child(6) > .headerTitle').contains('Clearance @')
+    demoChecklistOn('.page1')
     cy.get('#editorSwap').click()
-    demoChecklistOn('.pageOne')
-    cy.get('.pageTwo > :nth-child(6) > .headerTitle').contains('Clearance @')
+    demoChecklistOn('.page0')
+    cy.get('.page1 > :nth-child(6) > .headerTitle').contains('Clearance @')
 
     // Test tiles swapping
     reloadDemo()
@@ -192,8 +195,8 @@ describe('Editor', () => {
     cy.get('.p-confirm-dialog-accept').click()
 
     const expectedList = ['Tiles', 'Checklist', 'Cover', 'NavLog']
-    const pages = ['pageOne', 'pageTwo']
-    cy.get('.pageOne > .headerTitle').contains('Page Selection')
+    const pages = ['page0', 'page1']
+    cy.get('.page0 > .headerTitle').contains('Page Selection')
     for(const page of pages) {
       for( const label of expectedList) {
         cy.get('.' + page + ' > .list > [aria-label="' + label + '"]')
