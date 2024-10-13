@@ -28,17 +28,20 @@ import NotesPage from './notes/NotesPage.vue'
 const confirm = useConfirm()
 const emits = defineEmits(['toast','update'])
 const pageData = ref(null)
+const pageIndex = ref(null)
 const type = ref(PageType.tiles)
 
 const props = defineProps({
     data: { type: Object, default: null},
+    index: { type: Number},
 })
 
 function loadProps(props) {
 //   console.log('[Page.loadProps]', JSON.stringify(props.data))
     if(!props.data) return
-  pageData.value = props.data.data ? props.data.data : null
-  type.value = props.data.type ? props.data.type : null
+    pageData.value = props.data.data ? props.data.data : null
+    type.value = props.data.type ? props.data.type : null
+    pageIndex.value = props.index;
 }
 
 onMounted(() => {
@@ -54,6 +57,7 @@ watch( props, async(newP, oldP) => {
 
 // Page must be replaced with new type
 function onReplace(newType=undefined) {
+    // console.log('[Page.onReplace]', newType)
     if(newType) {
         let newData = {}
         if(newType == PageType.tiles) {
@@ -63,8 +67,8 @@ function onReplace(newType=undefined) {
                 newData.push({id:index,name:'',data:{}})
             }
         }
-        const newPageData = {type:newType,data:newData}
-        // console.log('[Page.onReplace]', JSON.stringify(newPageData))
+        const newPageData = {type:newType,data:newData, index:pageIndex.value}
+        console.log('[Page.onReplace]', JSON.stringify(newPageData))
         emits('update', newPageData)
     } else {
         // confirm and show page selection

@@ -1,6 +1,8 @@
 
 #app {
-  max-width: 1280px;
+  /* max-width: 1280px; */
+  min-width: var(--min-width);
+  width:100%;
   margin: 0 auto;
   text-align: center;
 }
@@ -16,7 +18,10 @@ body {
 :root {
   --bg: #2196F3;
   --bg-hover: #0D89EC;
+  --min-width: 650px;
+  --min-width-editor: 1240px;
   --page-width: 490px;
+  --page-width-two: 1060px;
   --page-height: 800px;
   --pages-gap: 80px;
 }
@@ -61,6 +66,7 @@ body {
   height: var(--page-height);
   position: relative;
   border: 1px solid darkgray;
+  background:white;
 }
 
 .editItem {

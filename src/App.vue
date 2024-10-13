@@ -1,5 +1,15 @@
 <template>
-  <div v-if="!printPreview" class="main">
+  <div v-if="printPreview">
+    <div v-if="activeTemplate" class="printPreview">
+      <div></div>
+      <div class="printPages"  :class="{'twoPages':!printSingles}" >
+        <Page v-for="(page,index) in activeTemplate.data" :data="page"
+          :class="{flipMode:(index % 2 == 1 && printFlipMode),printPageBreak:(printSingles || index % 2 == 1)}" />
+      </div>
+      <div></div>
+    </div>
+  </div>
+  <div v-else class="main">
     <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
     <Feedback v-model:visible="showFeedback"
       @close="showFeedback=false" @toast="toast.add" />
@@ -11,23 +21,19 @@
       :class="{'sheetNameOffset':menuOpen, 'sheetNameModified': templateModified}"
       :title="templateModified ? 'Template has been modified' : ''">
       <div>{{ getTemplateName() }}</div>
-      <div class="sheetNumber">{{ getSheetNumber() }}</div>
     </div>
-    <div class="pageGroup">
-      <i class="pi pi-chevron-circle-left offsetButton" :class="{'noShow':(offset == 0 || showEditor)}"
-        title="Previous Pages" id="offsetPrev"
-        @click="onOffset(offset - 2)"></i>
-      <div class="twoPages">
-        <Page :data="frontPageData" class="pageOne"
-          @update="onPageUpdateFront" 
-          @toast="toast.add" />
-        <Page :data="backPageData" class="pageTwo"
-          @update="onPageUpdateBack" 
-          @toast="toast.add" />
+    <div class="pageGroup" :class="{'editor':showEditor}" >
+      <i class="pi pi-chevron-circle-left offsetButton" :class="{'noShow':(offset == 0)}"
+        title="Previous Page" id="offsetPrev"
+        @click="onOffset(offset - 1)"></i>
+      <div v-if="activeTemplate" class="pageAll" :class="{'editor':showEditor}">
+        <Page v-for="(data,index) in activeTemplate.data" :data="data" :index="index" v-show="index >= offset && (!showEditor || index < offset + 2)"
+          :class="'page'+index"
+          @update="onPageUpdate" @toast="toast.add" />
       </div>
-      <i class="pi pi-chevron-circle-right offsetButton"  :class="{'noShow':(offset >= offsetLast || showEditor)}"
-        title="Next Pages" id="offsetNext"
-        @click="onOffset(offset + 2)"></i>
+      <i class="pi pi-chevron-circle-right offsetButton"  :class="{'noShow':(offset >= offsetLast)}"
+        title="Next Page" id="offsetNext"
+        @click="onOffset(offset + 1)"></i>
     </div>
     <MenuButton icon="comments" class="feedbackButton" label="Give Feedback"
       @click="showFeedback=true" />
@@ -35,15 +41,6 @@
      :class="{'editorButtonActive':showEditor}" class="editorButton" 
       @click="onEditor"/>
     <div class="versionDialog" >{{ versionText }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span>
-    </div>
-  </div>
-  <div v-else>
-    <div v-if="activeTemplate" :class="{printDouble:!printSingles}">
-      <Page v-for="(page,index) in activeTemplate.data" :data="page" class="pageOne" 
-        :class="{flipMode:(index % 2 == 1 && printFlipMode),printPageBreak:(printSingles || index % 2 == 1)}"
-        @update="onPageUpdateFront"
-        @toast="toast.add" />
-      <!-- <div style="break-after: page;"></div> -->
     </div>
   </div>
   <Menu class="menu" :activeTemplate="activeTemplate" v-show="!printPreview" v-if="!showEditor" @howDoesItWork="showHowDoesItWork=true"
@@ -57,7 +54,7 @@
 
 <script setup>
 // import HelloWorld from './components/HelloWorld.vue'
-import { onBeforeMount, onMounted,ref} from 'vue'
+import { onBeforeMount, onMounted, onUnmounted,ref} from 'vue'
 import { inject } from "@vercel/analytics"
 
 import { duplicate, getBackend, newCurrentUser, reportError } from './assets/data.js'
@@ -79,9 +76,11 @@ import Page from './components/Page.vue'
 import MenuButton from './components/menu/MenuButton.vue'
 
 
-const frontPageData = ref(null)
-const backPageData = ref(null)
+// const frontPageData = ref(null)
+// const backPageData = ref(null)
 const activeTemplate = ref(null)
+const cssPageGap = 80
+const cssPageWidth = 490
 const offset = ref(0)
 const offsetLast = ref(0)
 const templateModified = ref(false)
@@ -115,13 +114,6 @@ function getTemplateName() {
   return name;
 }
 
-// finds the sheet number within the template from the offset value
-function getSheetNumber() {
-  if(offsetLast.value == 0) return ''
-  // add the sheet number
-  return '[' + (offset.value / 2 + 1) + '/' + (offsetLast.value / 2 + 1) + ']'
-}
-
 // update all widgets with provided data
 function loadTemplate(template=null) {
   // console.log( '[App.loadTemplate]', typeof data, JSON.stringify(sheet))
@@ -133,21 +125,15 @@ function loadTemplate(template=null) {
 
   // make sure data is at the latest format
   const data = TemplateData.normalize(template.data)
-  const numPages = data.length
-  if( numPages >= 2 && (numPages % 2 == 0)){
-    // we are on the first page and last page is calculated based on number of pages
-    offset.value = 0
-    offsetLast.value = numPages - 2; // 2 => 0, 4 => 2, ...
-    frontPageData.value = data[0]
-    backPageData.value = data[1]
-    template.data = data
-  } else {
-    console.log('[App.loadTemplate] unexpected data length', data.length)
-    frontPageData.value = null
-    backPageData.value = null
-    template.data = []
-  }
+
+  // we are on the first page and last page is calculated based on number of pages
+  offset.value = 0
+  // frontPageData.value = data[0]
+  // backPageData.value = data[1]
+  template.data = data
+
   activeTemplate.value = template;
+  updateOffsets() // compute offsetLast
   // restore modified state
   templateModified.value = template.modified;
   // console.log('[App.loadTemplate]', offset.value, offsetLast.value)
@@ -176,85 +162,51 @@ onBeforeMount(()=>{
 // Pages are manipulated via editor buttons
 async function onEditorAction(ea) {
   // console.log('[App.onEditorAction]', JSON.stringify(ea))
-  let updateFront = false;
-  let updateBack = false;
-  let saveTemplate = false;
+  let saveTemplate = true;
 
-  if(ea.action == EditorAction._add2Pages) {
-    // add two blank pages to the end
-    activeTemplate.value.data.push(pageDataBlank)
-    activeTemplate.value.data.push(pageDataBlank)
-    offsetLast.value += 2
-    saveTemplate = true;
-  } else if(ea.action == EditorAction._changeOffset) {
-    onOffset(ea.offset)
-  } else if(ea.action == EditorAction._copyToClipboard) {
+  if(ea.action == EditorAction.COPY_TO_CLIPBOARD) {
     const pageData = activeTemplate.value.data[ea.offset]
     // grab data and show toast
     navigator.clipboard.writeText(JSON.stringify(pageData));
-    showToast( getToastData('Page ' + ea.offset + ' copied to clipboard'))
-  } else if(ea.action == EditorAction._copyToPage) {
-    if(ea.offset == offset.value && ea.offsetTo == offset.value + 1) {
-      backPageData.value = duplicate(frontPageData.value)
-      updateBack = true;
-    } else if(ea.offset == offset.value + 1 && ea.offsetTo == offset.value) {
-      frontPageData.value = duplicate(backPageData.value)
-      updateFront = true;
-    }
-  } else if(ea.action == EditorAction._delete2Pages) {
-    // protection against invalid offset
-    if(ea.offset < 0 || ea.offset > offsetLast.value) return;
+    showToast( getToastData('Page ' + (ea.offset+1) + ' copied to clipboard'))
+    saveTemplate = false;
 
+  } else if(ea.action == EditorAction.COPY_TO_PAGE) {
+    activeTemplate.value.data[ea.offsetTo] = activeTemplate.value.data[ea.offset]
+
+  } else if(ea.action == EditorAction.DELETE_PAGE) {
     // protection against last page removal
-    if( offset.value == 0 && offsetLast.value == 0) {
-      showToast( getToastData( 'Delete Pages', 'Last two pages cannot be deleted. Delete the template instead.', toastError))
+    if( activeTemplate.value.data.length == 2) {
+      showToast( getToastData( 'Cannot Delete Page', 'Last two pages cannot be deleted. Delete the template instead.', toastError))
       return;
     }
-    // 1. Remove pages from template
-    // 2. Refresh offsets
-    // 3. Refresh displayed pages
+    // remove page from active template
+    activeTemplate.value.data.splice(ea.offset, 1)
+    // adjust offsetLast
+    offsetLast.value = Math.max(0, offsetLast.value - 1);
 
-    // remove pages from template
-    activeTemplate.value.data.splice(ea.offset, 2)
-    saveTemplate = true; // that enough because we are not changing page content
-    // reduce the whole size
-    offsetLast.value -= 2;
-    // shift offset left if we are removing the last page
-    if(offset.value > offsetLast.value) {
-      offset.value = offsetLast.value;
-    } 
-    // refresh active pages
-    frontPageData.value = activeTemplate.value.data[offset.value]
-    backPageData.value = activeTemplate.value.data[offset.value+1]
+  } else if(ea.action == EditorAction.INSERT_PAGE) {
+    // validate offset
+    if( isNaN(ea.offset) || ea.offset < 0 || ea.offset >= activeTemplate.value.data.length) return;
+    activeTemplate.value.data.splice(ea.offset, 0, pageDataBlank)
 
-  } else if(ea.action == EditorAction._swapPages) {
-    const swap = duplicate(frontPageData.value)
-    frontPageData.value = duplicate(backPageData.value)
-    backPageData.value = swap;
-    updateFront = true;
-    updateBack = true;
-  } else if(ea.action == EditorAction._resetPage) {
-    if( ea.offset % 2 == 0) {
-      frontPageData.value = duplicate(pageDataBlank)
-      updateFront = true;
-    } else {
-      backPageData.value = duplicate(pageDataBlank)
-      updateBack = true;
-    }
-  } else if(ea.action == EditorAction._pastePage) {
+  } else if(ea.action == EditorAction.PASTE_PAGE) {
     readPageFromClipboard().then( page => {
-        if( ea.offset % 2 == 0) {
-          frontPageData.value = page;
-          activeTemplate.value.data[offset.value] = page
-        } else {
-          backPageData.value = page;
-          activeTemplate.value.data[offset.value + 1] = page
-        }
-        saveActiveTemplate(true)
+        activeTemplate.value.data[ea.offset] = page;
     }).catch( e => {
         showToast(getToastData('Cannot Paste', e, toastError))
+        saveTemplate = false;
     }) 
-  } else if(ea.action == EditorAction._swapTiles) {
+
+  } else if(ea.action == EditorAction.RESET_PAGE) {
+    activeTemplate.value.data[ea.offset] = duplicate(pageDataBlank)
+
+  } else if(ea.action == EditorAction.SWAP_PAGE) {
+    const swap = duplicate(activeTemplate.value.data[offset.value])
+    activeTemplate.value.data[offset.value] = activeTemplate.value.data[offset.value + 1]
+    activeTemplate.value.data[offset.value + 1] = swap;
+
+  } else if(ea.action == EditorAction.SWAP_TILES) {
     // is this a tile page?
     if(activeTemplate.value.data[ea.offset].type != PageType.tiles) return;
     const tileFrom = ea.params?.from
@@ -266,15 +218,15 @@ async function onEditorAction(ea) {
     activeTemplate.value.data[ea.offset].data[tileFrom].id = tileFrom
     activeTemplate.value.data[ea.offset].data[tileTo] = temp
     activeTemplate.value.data[ea.offset].data[tileTo].id = tileTo
-    saveTemplate = true
   } else {
-    reportError('[App.oneditorAction] unknown action ' + ea)
+    reportError('[App.onEditorAction] unknown action ' + ea)
+    saveTemplate = false
   }
-  // update active template with new values
-  if(updateFront) activeTemplate.value.data[offset.value] = frontPageData.value
-  if(updateBack) activeTemplate.value.data[offset.value + 1] = backPageData.value
   // Save new template if we had any changes
-  if(updateFront||updateBack||saveTemplate) saveActiveTemplate(true)
+  if(saveTemplate) {
+    saveActiveTemplate(true)
+    updateOffsets()
+  } 
 }
 
 /**
@@ -340,36 +292,27 @@ onMounted(async () => {
     loadTemplate(getTemplateDemoTiles())
     saveActiveTemplate()
   }
+  window.addEventListener('resize', updateOffsets)
+  updateOffsets()
   // Analytics
   inject();
 })
 
+// Validate and assign new offset value
 function onOffset(newOffset) {
   // console.log('[App.onOffset]', newOffset, offsetLast.value)
-  if(!activeTemplate.value || newOffset < 0 || newOffset > offsetLast.value){
-    console.log('[App.onOffset] invalid offset')
+  if(newOffset < 0 || newOffset > offsetLast.value){
+    console.log('[App.onOffset] invalid offset', newOffset)
     return;
   } 
   offset.value = newOffset;
-  frontPageData.value = activeTemplate.value.data[newOffset]
-  backPageData.value = activeTemplate.value.data[newOffset+1]
-  // console.log('[App.onOffset]', JSON.stringify(frontPageData.value))
 }
 
-function onPageUpdateBack(pageData) {
-  // console.log('[App.onPageUpdateBack]', JSON.stringify(pageData))
-  backPageData.value = pageData;
-  activeTemplate.value.data[offset.value + 1] = pageData
+function onPageUpdate(pageData) {
+  // save template data without index
+  activeTemplate.value.data[pageData.index] = {data:pageData.data,type:pageData.type}
   saveActiveTemplate(true)
 }
-
-function onPageUpdateFront(pageData) {
-  // console.log('[App.onPageUpdateFront]')
-  frontPageData.value = pageData
-  activeTemplate.value.data[offset.value] = pageData
-  saveActiveTemplate(true)
-}
-
 
 function onPrint(options) {
   // console.log('[App.onPrint]')
@@ -400,6 +343,10 @@ function onPrintPreview(show) {
   printPreview.value = show
 }
 
+onUnmounted(() => {
+  window.removeEventListener('resize', updateOffsets)
+})
+
 function restorePrintOptions() {
     // Bring everything back to normal
     printPreview.value = false;
@@ -417,6 +364,18 @@ function saveActiveTemplate(modified=false) {
 function showToast(data) {
   toast.add(data)
 }
+
+function updateOffsets() {
+  // console.log('[App.onResize]', window.innerWidth)
+  if(!activeTemplate.value) return;
+  // how many pages can fit in the new width?
+  const fittingPages = Math.floor((window.innerWidth - cssPageGap) / (cssPageWidth + cssPageGap))
+  // cssPageGap * (1 + numPages) +  cssPageWidth * numPages
+  offsetLast.value = Math.max(activeTemplate.value.data.length - fittingPages, 0)
+  // console.log('[App.onResize] fitting', fittingPages, 'offsetLast', offsetLast.value)
+  if(offset.value > offsetLast.value) offset.value = offsetLast.value
+}
+
 </script>
 
 <style scoped>
@@ -437,26 +396,46 @@ function showToast(data) {
   flex-flow: column;
   gap: 1rem;
 }
+
 .pageGroup {
-  display: flex;
-  gap: 2rem;
+  display: grid;
+  grid-template-columns: var(--pages-gap) 1fr var(--pages-gap);
   align-items: center;
-}
-.pageOne, .pageTwo {
-  background:white;
+  width: 100%;
 }
 
-.printDouble {
+.pageGroup .editor {
+  min-width: var(--min-width-editor);
+}
+
+.pageAll {
+  display: flex;
+  gap: var(--pages-gap);
+  flex-wrap: wrap;
+  height: var(--page-height);
+  justify-content: center;
+  overflow: hidden;
+}
+
+.pageAll.editor {
+  min-width: 1080px;
+}
+
+.printPreview {
+  display:grid;
+  grid-template-columns: auto auto auto;
+}
+.printPages {
   display: grid;
+  grid-template-columns: auto;
+  gap: 0 var(--pages-gap);
+  justify-content: center;
+}
+.printPages.twoPages {
   grid-template-columns: auto auto;
-  gap:0 80px;
 }
 .printPageBreak {
   break-after: page;
-}
-.twoPages {
-  display: flex;
-  gap: var(--pages-gap);
 }
 .onePage {
   display:flex
@@ -466,6 +445,7 @@ function showToast(data) {
   color: #333;
   font-weight: bold;
   cursor: pointer;
+  z-index: 1;
 }
 .menu {
   position: absolute;
