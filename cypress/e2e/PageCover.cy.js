@@ -11,7 +11,7 @@ describe('Cover Page', () => {
     visitAndCloseBanner()
     newPage()
     // set left page to cover
-    cy.get('.pageOne > .list > [aria-label="Cover"]').click()
+    cy.get('.page0 > .list > [aria-label="Cover"]').click()
 
     // should see the blank state
     checkBlankState()

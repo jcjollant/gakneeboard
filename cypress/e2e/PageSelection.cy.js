@@ -10,14 +10,14 @@ describe('Selection Page', () => {
     visitAndCloseBanner()
     newPage()
     // Tiles on Page 1
-    cy.get('.pageOne > .list > [aria-label="Tiles"]').click()
-    cy.get('.pageOne > :nth-child(6) > .headerTitle').contains('Tile Selection')
+    cy.get('.page0 > .list > [aria-label="Tiles"]').click()
+    cy.get('.page0 > :nth-child(6) > .headerTitle').contains('Tile Selection')
 
     // Checklist on page 2
-    cy.get('.pageTwo > .list > [aria-label="Checklist"]').click()
-    cy.get('.pageTwo > .headerTitle').contains('Checklist')
+    cy.get('.page1 > .list > [aria-label="Checklist"]').click()
+    cy.get('.page1 > .headerTitle').contains('Checklist')
 
-    cy.get('.pageTwo > .headerTitle').click()
+    cy.get('.page1 > .headerTitle').click()
     cy.get('.headerTitle > .p-button').click()
     cy.get('.p-confirm-dialog-accept').click()
     cy.get('.contentPage > .headerTitle').contains('Page Selection')
@@ -32,7 +32,7 @@ describe('Selection Page', () => {
     cy.get('.contentPage > .headerTitle').contains('Page Selection')
 
     // navlog on page 2
-    cy.get('.pageTwo > .list > [aria-label="NavLog"]').click()
+    cy.get('.page1 > .list > [aria-label="NavLog"]').click()
     cy.get('.contentPage > :nth-child(1) > .headerTitle').contains('NavLog')
     // Eject
     cy.get('.contentPage > :nth-child(1) > .headerTitle').click()

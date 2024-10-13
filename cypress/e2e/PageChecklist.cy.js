@@ -5,14 +5,14 @@ describe('Checklist Page', () => {
     visitAndCloseBanner()
     newPage()
     // set both pages to checlist
-    cy.get('.pageOne > .list > [aria-label="Checklist"]').click()
-    cy.get('.pageTwo > .list > [aria-label="Checklist"]').click()
-    cy.get('.pageOne > .headerTitle').contains("Checklist")
-    cy.get('.pageTwo > .headerTitle').contains("Checklist")
+    cy.get('.page0 > .list > [aria-label="Checklist"]').click()
+    cy.get('.page1 > .list > [aria-label="Checklist"]').click()
+    cy.get('.page0 > .headerTitle').contains("Checklist")
+    cy.get('.page1 > .headerTitle').contains("Checklist")
 
     //  swicth to edit mode
-    cy.get('.pageOne > .headerTitle').click()
-    cy.get('.pageOne > .headerTitle').contains("Checklist")
+    cy.get('.page0 > .headerTitle').click()
+    cy.get('.page0 > .headerTitle').contains("Checklist")
 
     // cy.get('.p-inputgroup > .p-inputtext').contains('Checklist')
     // one list for now
@@ -81,7 +81,7 @@ describe('Checklist Page', () => {
     // make sure we start with green
     cy.get('.leftList > :nth-child(2) > .challenge').should('have.class','theme-green')
     // Change color to blue and title to Title1
-    cy.get('.pageOne > .headerTitle').click()
+    cy.get('.page0 > .headerTitle').click()
     cy.get('.theme-blue > label').click()
     cy.get('.p-inputgroup > .p-inputtext').type('Title1')
     cy.get('[aria-label="Apply"]').click()
@@ -101,15 +101,15 @@ describe('Checklist Page', () => {
     cy.get('.leftList > :nth-child(8) > .section').should('have.class', 'theme-blue-strong')
     cy.get('.leftList > :nth-child(8) > .section').should('not.have.class', 'theme-blue')
 
-    cy.get('.pageOne > .headerTitle').contains('Title1')
+    cy.get('.page0 > .headerTitle').contains('Title1')
 
     // change color and title but don't save
-    cy.get('.pageOne > .headerTitle').click()
+    cy.get('.page0 > .headerTitle').click()
     cy.get('.theme-green > label').click()
     cy.get('.p-inputgroup > .p-inputtext').type('Title2')
     cy.get('[aria-label="Cancel"]').click()
     cy.get('.leftList > :nth-child(2) > .challenge').should('have.class','theme-blue')
-    cy.get('.pageOne > .headerTitle').contains('Title1')
+    cy.get('.page0 > .headerTitle').contains('Title1')
 
   })
 })

@@ -5,7 +5,7 @@ describe('ATIS Tile', () => {
     visitAndCloseBanner()
 
     // check header
-    cy.get('.pageOne > :nth-child(5) > .headerTitle > div').contains(titleAtis)
+    cy.get('.page0 > :nth-child(5) > .headerTitle > div').contains(titleAtis)
 
     // Check ATIS has all fields in full mode
     cy.get('.info').contains('Info')
@@ -17,7 +17,7 @@ describe('ATIS Tile', () => {
     cy.get('.altimeter').contains('Alt')
 
     // Edit mode
-    cy.get('.pageOne > :nth-child(5) > .headerTitle').click()
+    cy.get('.page0 > :nth-child(5) > .headerTitle').click()
     // check header size
     const expectedHeight = 23
     const expectedButtonHeight = 21

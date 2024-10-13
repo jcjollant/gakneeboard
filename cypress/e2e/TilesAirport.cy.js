@@ -16,8 +16,8 @@ describe('Tiles', () => {
     newPage()
 
     // sets one page in Tiles, other in Checlisk
-    cy.get('.pageOne > .list > [aria-label="Tiles"]').click()
-    cy.get('.pageTwo > .list > [aria-label="Checklist"]').click()
+    cy.get('.page0 > .list > [aria-label="Tiles"]').click()
+    cy.get('.page1 > .list > [aria-label="Checklist"]').click()
 
     // check all tiles are in reset mode on page 1
     for( const tile of [1, 2, 3, 4, 5, 6]) {
@@ -25,7 +25,7 @@ describe('Tiles', () => {
     }
 
     // Check page 2 is in checlist mode
-    cy.get('.pageTwo > .headerTitle').contains("Checklist")
+    cy.get('.page1 > .headerTitle').contains("Checklist")
 
     // load tiles demo page
     maintenanceMode()
@@ -97,8 +97,8 @@ describe('Tiles', () => {
     cy.get('[aria-label="Done"]').click()
 
     // Enter a new airport code and check it's data is loading
-    cy.get('.pageOne > :nth-child(3) > .headerTitle > div').click()
-    cy.get('.pageOne > :nth-child(3) > .content > .settings > .airportCode > .p-inputgroup > .p-inputtext').clear().type('KBLI')
+    cy.get('.page0 > :nth-child(3) > .headerTitle > div').click()
+    cy.get('.page0 > :nth-child(3) > .content > .settings > .airportCode > .p-inputgroup > .p-inputtext').clear().type('KBLI')
     // wait for the reply
     cy.intercept({
       method: 'GET',
@@ -106,11 +106,11 @@ describe('Tiles', () => {
     }).as('getOneAirport');
     cy.wait('@getOneAirport').its('response.statusCode').should('equal', 200)
     // Name should be shown in AirportInput
-    cy.get('.pageOne > :nth-child(3) > .content > .settings > .airportCode > .airportName').contains('Bellingham Intl')
-    cy.get('.pageOne > :nth-child(3) > .content > .actionBar > [aria-label="Apply"]').click()
+    cy.get('.page0 > :nth-child(3) > .content > .settings > .airportCode > .airportName').contains('Bellingham Intl')
+    cy.get('.page0 > :nth-child(3) > .content > .actionBar > [aria-label="Apply"]').click()
     // Check for bellingham fields
     const kbliValues = {tile:'Bellingham Intl',label0:'ATIS',value0:'134.450',label1:'TWR',value1:'124.900',label2:'Elev',value2:'171',label3:'TPA',value3:'1201',watermark:'KBLI',dimensions:'6700x150'}
-    cy.get('.pageOne > :nth-child(3) > .headerTitle > div').contains(kbliValues.tile)
+    cy.get('.page0 > :nth-child(3) > .headerTitle > div').contains(kbliValues.tile)
     cy.get(':nth-child(3) > .content > :nth-child(1) > .top.left > .clickable > :nth-child(1) > .label').contains(kbliValues.label0)
     cy.get(':nth-child(3) > .content > :nth-child(1) > .top.left > .clickable > :nth-child(1) > :nth-child(1)').contains(kbliValues.value0)
     cy.get(':nth-child(3) > .content > :nth-child(1) > .top.right > .clickable > :nth-child(1) > .label').contains(kbliValues.label1)
@@ -137,20 +137,20 @@ describe('Tiles', () => {
     cy.get('.footer > :nth-child(3) > :nth-child(1) > :nth-child(1) > :nth-child(2)').contains('135.625')
 
     // Replace tile with Notes
-    cy.get('.pageOne > :nth-child(3) > .headerTitle > div').click()
-    cy.get('.pageOne > :nth-child(3) > .headerTitle > .p-button').click({force: true})
+    cy.get('.page0 > :nth-child(3) > .headerTitle > div').click()
+    cy.get('.page0 > :nth-child(3) > .headerTitle > .p-button').click({force: true})
     cy.get('[aria-label="Notes"]').click()
-    cy.get('.pageOne > :nth-child(3) > .headerTitle > div').contains('Notes')
+    cy.get('.page0 > :nth-child(3) > .headerTitle > div').contains('Notes')
     // Change tile back to Airport
-    cy.get('.pageOne > :nth-child(3) > .headerTitle > div').click()
-    cy.get('.pageOne > :nth-child(3) > .headerTitle > .p-button').click({force: true})
+    cy.get('.page0 > :nth-child(3) > .headerTitle > div').click()
+    cy.get('.page0 > :nth-child(3) > .headerTitle > .p-button').click({force: true})
     cy.get('[aria-label="Airport"]').click()
     // we should be in edit mode
     cy.get('.p-inputtext')
 
     // We should see the placeholder
-    // cy.get('.pageOne > :nth-child(3) > :nth-child(2) > .placeHolder').contains('No Airport')
-    // cy.get('.pageOne > :nth-child(3) > :nth-child(2) > .placeHolder').contains(placeHolderSubtitle)
+    // cy.get('.page0 > :nth-child(3) > :nth-child(2) > .placeHolder').contains('No Airport')
+    // cy.get('.page0 > :nth-child(3) > :nth-child(2) > .placeHolder').contains(placeHolderSubtitle)
 
 
   })

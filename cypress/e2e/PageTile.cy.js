@@ -5,7 +5,7 @@ describe('Cover Page', () => {
     visitAndCloseBanner()
     newPage()
     // set left page to cover
-    cy.get('.pageOne > .list > [aria-label="Tiles"]').click()
+    cy.get('.page0 > .list > [aria-label="Tiles"]').click()
 
     const expectedTiles = ['Airport', 'ATIS', 'Checklist', 'Clearance', 'Fuel', 'Navlog', 'Notes', 'Radios', 'Sunlight']
     for(let tileIndex = 1; tileIndex <= 6; tileIndex++) {

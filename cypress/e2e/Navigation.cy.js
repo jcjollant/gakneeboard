@@ -34,24 +34,24 @@ describe('Navigation', () => {
     cy.get('#app').contains('C172 G1000')
     cy.get('#offsetPrev').should('have.class','noShow')
     cy.get('#offsetNext').should('not.have.class','noShow')
-    cy.get('.pageOne').should('have.class','pageCover')
-    cy.get('.pageTwo').should('have.class','pageChecklist')
+    cy.get('.page0').should('have.class','pageCover')
+    cy.get('.page1').should('have.class','pageChecklist')
     cy.get('.sheetNumber').contains('1/3')
     // click next
     cy.get('#offsetNext').click()
     // Now both should be visible
     cy.get('#offsetPrev').should('not.have.class','noShow')
     cy.get('#offsetNext').should('not.have.class','noShow')
-    cy.get('.pageOne').should('have.class','pageChecklist')
-    cy.get('.pageTwo').should('have.class','pageChecklist')
+    cy.get('.page0').should('have.class','pageChecklist')
+    cy.get('.page1').should('have.class','pageChecklist')
     cy.get('.sheetNumber').contains('2/3')
     // click next
     cy.get('#offsetNext').click()
     // Next should be hidden, prev should be visible
     cy.get('#offsetPrev').should('not.have.class','noShow')
     cy.get('#offsetNext').should('have.class','noShow')
-    cy.get('.pageOne').should('have.class','pageChecklist')
-    cy.get('.pageTwo').should('have.class','pageChecklist')
+    cy.get('.page0').should('have.class','pageChecklist')
+    cy.get('.page1').should('have.class','pageChecklist')
     cy.get('.sheetNumber').contains('3/3')
   })
 
@@ -96,29 +96,29 @@ describe('Navigation', () => {
     // load default demo
     cy.get(`.demoGrid > :nth-child(1)`).click()
     cy.get('.p-confirm-dialog-accept').click()
-    cy.get('.pageOne').should('have.class','pageTiles')
-    cy.get('.pageTwo').should('have.class','pageChecklist')
+    cy.get('.page0').should('have.class','pageTiles')
+    cy.get('.page1').should('have.class','pageChecklist')
 
     // load Checklist demo
     cy.get('[aria-label="Demos"]').click()
     cy.get(`.demoGrid > :nth-child(2)`).click()
     cy.get('.p-confirm-dialog-accept').click()
-    cy.get('.pageOne').should('have.class','pageChecklist')
-    cy.get('.pageTwo').should('have.class','pageChecklist')
+    cy.get('.page0').should('have.class','pageChecklist')
+    cy.get('.page1').should('have.class','pageChecklist')
 
     // load Tiels demo
     cy.get('[aria-label="Demos"]').click()
     cy.get(`.demoGrid > :nth-child(3)`).click()
     cy.get('.p-confirm-dialog-accept').click()
-    cy.get('.pageOne').should('have.class','pageTiles')
-    cy.get('.pageTwo').should('have.class','pageTiles')
+    cy.get('.page0').should('have.class','pageTiles')
+    cy.get('.page1').should('have.class','pageTiles')
 
     // load Navlog demo
     cy.get('[aria-label="Demos"]').click()
     cy.get(`.demoGrid > :nth-child(4)`).click()
     cy.get('.p-confirm-dialog-accept').click()
-    cy.get('.pageOne').should('have.class','pageNavlog')
-    cy.get('.pageTwo').should('have.class','pageTiles')
+    cy.get('.page0').should('have.class','pageNavlog')
+    cy.get('.page1').should('have.class','pageTiles')
   })
 
   it('Requires Sign in', () => {

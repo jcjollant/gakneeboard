@@ -5,7 +5,7 @@ describe('Clearance Tile', () => {
     visitAndCloseBanner()
 
     // Header
-    cy.get('.pageOne > :nth-child(6) > .headerTitle > div').contains('Clearance @')
+    cy.get('.page0 > :nth-child(6) > .headerTitle > div').contains('Clearance @')
     // Fields
     cy.get('.cleared').contains('To')
     cy.get('.cleared > .watermrk').contains('C')

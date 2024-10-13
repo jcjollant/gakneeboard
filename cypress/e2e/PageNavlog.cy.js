@@ -27,7 +27,7 @@ describe('navlog Page', () => {
     newPage()
 
     // set left page to Navlog
-    cy.get('.pageOne > .list > [aria-label="NavLog"]').click()
+    cy.get('.page0 > .list > [aria-label="NavLog"]').click()
 
     // should see the blank state
     checkBlankState()
@@ -85,7 +85,7 @@ describe('navlog Page', () => {
     newPage()
 
     // set left page to Navlog
-    cy.get('.pageOne > .list > [aria-label="NavLog"]').click()
+    cy.get('.page0 > .list > [aria-label="NavLog"]').click()
     // edit mode
     cy.get(':nth-child(1) > .headerTitle').click()
 
@@ -291,24 +291,24 @@ describe('navlog Page', () => {
     // cy.get('.totalFuel').should('have.class', 'fuelBingo')
 
     // Test Footer
-    testRecap('.pageOne', '53.0', '5:53:20', '31.9', '21.1', '2:20:40', '30.0', '3:20:00')
+    testRecap('.page0', '53.0', '5:53:20', '31.9', '21.1', '2:20:40', '30.0', '3:20:00')
   })
 
   it( 'Continued Log', () => {
     visitAndCloseBanner()
     newPage()
     // set both pages to Navlog
-    cy.get('.pageOne > .list > [aria-label="NavLog"]').click()
-    cy.get('.pageTwo > .list > [aria-label="NavLog"]').click()
+    cy.get('.page0 > .list > [aria-label="NavLog"]').click()
+    cy.get('.page1 > .list > [aria-label="NavLog"]').click()
 
     // configure page two as a continuer
-    cy.get('.pageTwo > :nth-child(1) > .headerTitle > div').click()
+    cy.get('.page1 > :nth-child(1) > .headerTitle > div').click()
     cy.get('.choiceInactive').click()
     cy.get('.continueHeader').contains('This page will show the overflow')
     cy.get('[aria-label="Apply"]').click()
 
     // Add entries to the first page
-    cy.get('.pageOne > :nth-child(1) > .headerTitle').click()
+    cy.get('.page0 > :nth-child(1) > .headerTitle').click()
     cy.get('.createAirportFrom > .p-inputgroup > .p-inputtext').type('KRNT')
     cy.get('.createAirportTo > .p-inputgroup > .p-inputtext').type('KSFF')
     const altitudes = [...Array(4).fill(2500), ...Array(8).fill(4500), ...Array(7).fill(4500) , ...Array(4).fill(4500)]
@@ -340,8 +340,8 @@ describe('navlog Page', () => {
     cy.get('.totalFuel').contains('48.0')
 
     // check recaps
-    testRecap( '.pageOne', '51.6', '5:44:00', '48', '3.6', '24:00', '13.5', '1:30:00')
-    testRecap( '.pageTwo', '51.6', '5:44:00', '48', '3.6', '24:00', '13.5', '1:30:00')
+    testRecap( '.page0', '51.6', '5:44:00', '48', '3.6', '24:00', '13.5', '1:30:00')
+    testRecap( '.page1', '51.6', '5:44:00', '48', '3.6', '24:00', '13.5', '1:30:00')
 
   })
 })
