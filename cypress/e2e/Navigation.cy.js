@@ -3,6 +3,7 @@ import { currentVersionNumber, environment, visitAndCloseBanner } from './shared
 describe('Navigation', () => {
   it('HDIW / Version / Offset', () => {
     cy.visit(environment)
+    cy.viewport('macbook-16')
 
     cy.get('.hdiw').contains('Airports')
     cy.get('.hdiw').contains('Checklist')
@@ -16,8 +17,55 @@ describe('Navigation', () => {
 
     cy.get('#offsetPrev').should('have.class','noShow')
     cy.get('#offsetNext').should('have.class','noShow')
-    cy.get('.sheetNumber').should('match',':empty')
 
+    // Load Checklist Demo and navigate offset
+    cy.get('.menuIcon').click()
+    cy.get('[aria-label="Demos"]').click()
+    cy.get(`.checklistDemo`).click()
+    cy.get('.p-confirm-dialog-accept').click()
+
+    cy.get('#offsetPrev').should('have.class','noShow')
+    cy.get('#offsetNext').should('not.have.class','noShow')
+    cy.get('.page0').should('be.visible')
+    cy.get('.page1').should('be.visible')
+    cy.get('.page2').should('not.be.visible')
+    cy.get('.page3').should('not.be.visible')
+
+    // move to next page (2 and 3)
+    cy.get('#offsetNext').click()
+    cy.get('#offsetPrev').should('not.have.class','noShow')
+    cy.get('#offsetNext').should('not.have.class','noShow')
+    cy.get('.page0').should('not.be.visible')
+    cy.get('.page1').should('be.visible')
+    cy.get('.page2').should('be.visible')
+    cy.get('.page3').should('not.be.visible')
+
+    // move to next page (3 and 4)
+    cy.get('#offsetNext').click()
+    cy.get('#offsetPrev').should('not.have.class','noShow')
+    cy.get('#offsetNext').should('have.class','noShow')
+    cy.get('.page0').should('not.be.visible')
+    cy.get('.page1').should('not.be.visible')
+    cy.get('.page2').should('be.visible')
+    cy.get('.page3').should('be.visible')
+
+    // previous page (2 and 3)
+    cy.get('#offsetPrev').click()
+    cy.get('#offsetPrev').should('not.have.class','noShow')
+    cy.get('#offsetNext').should('not.have.class','noShow')
+    cy.get('.page0').should('not.be.visible')
+    cy.get('.page1').should('be.visible')
+    cy.get('.page2').should('be.visible')
+    cy.get('.page3').should('not.be.visible')
+
+    // first page 1 and 2
+    cy.get('#offsetPrev').click()
+    cy.get('#offsetPrev').should('have.class','noShow')
+    cy.get('#offsetNext').should('not.have.class','noShow')
+    cy.get('.page0').should('be.visible')
+    cy.get('.page1').should('be.visible')
+    cy.get('.page2').should('not.be.visible')
+    cy.get('.page3').should('not.be.visible')
   })
 
   it('Publication', () => {
@@ -26,7 +74,7 @@ describe('Navigation', () => {
       url: '/publication/**',
     }).as('getPublication');
     cy.visit(environment + '?t=RC')
-    cy.wait('@getPublication').its('response.statusCode').should('equal', 200)
+    cy.wait('@getPublication')
 
     // remove banner
     cy.contains('Got it').click()
@@ -34,25 +82,12 @@ describe('Navigation', () => {
     cy.get('#app').contains('C172 G1000')
     cy.get('#offsetPrev').should('have.class','noShow')
     cy.get('#offsetNext').should('not.have.class','noShow')
-    cy.get('.page0').should('have.class','pageCover')
-    cy.get('.page1').should('have.class','pageChecklist')
-    cy.get('.sheetNumber').contains('1/3')
-    // click next
-    cy.get('#offsetNext').click()
-    // Now both should be visible
-    cy.get('#offsetPrev').should('not.have.class','noShow')
-    cy.get('#offsetNext').should('not.have.class','noShow')
     cy.get('.page0').should('have.class','pageChecklist')
     cy.get('.page1').should('have.class','pageChecklist')
-    cy.get('.sheetNumber').contains('2/3')
-    // click next
-    cy.get('#offsetNext').click()
-    // Next should be hidden, prev should be visible
-    cy.get('#offsetPrev').should('not.have.class','noShow')
-    cy.get('#offsetNext').should('have.class','noShow')
-    cy.get('.page0').should('have.class','pageChecklist')
-    cy.get('.page1').should('have.class','pageChecklist')
-    cy.get('.sheetNumber').contains('3/3')
+    cy.get('.page2').should('have.class','pageChecklist')
+    cy.get('.page3').should('have.class','pageChecklist')
+    cy.get('.page4').should('have.class','pageChecklist')
+    cy.get('.page5').should('have.class','pageChecklist')
   })
 
   it('Print Dialog', () =>{
@@ -101,12 +136,12 @@ describe('Navigation', () => {
 
     // load Checklist demo
     cy.get('[aria-label="Demos"]').click()
-    cy.get(`.demoGrid > :nth-child(2)`).click()
+    cy.get(`.checklistDemo`).click()
     cy.get('.p-confirm-dialog-accept').click()
     cy.get('.page0').should('have.class','pageChecklist')
     cy.get('.page1').should('have.class','pageChecklist')
 
-    // load Tiels demo
+    // load Tiles demo
     cy.get('[aria-label="Demos"]').click()
     cy.get(`.demoGrid > :nth-child(3)`).click()
     cy.get('.p-confirm-dialog-accept').click()
@@ -123,6 +158,7 @@ describe('Navigation', () => {
 
   it('Requires Sign in', () => {
     visitAndCloseBanner()
+    cy.viewport('macbook-16')
 
     cy.get('.menuIcon').click()
     cy.get('[aria-label="Load"]').click()

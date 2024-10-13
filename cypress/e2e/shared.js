@@ -1,4 +1,4 @@
-export const currentVersionNumber = '1008/1007'
+export const currentVersionNumber = '1013/1011'
 const devEnv = 'http://localhost:5173/'
 const prodEnv = 'https://kneeboard.ga'
 export const environment = devEnv
@@ -28,7 +28,7 @@ export function visitAndCloseBanner() {
 export function maintenanceMode() {
     // Open menu
     cy.get('.menuIcon').click()
-    cy.get('.buttonsList > :nth-child(8)').click()
+    cy.get('.buttonsList > :nth-child(9)').click()
     // type code in maintenance window
     cy.get('.p-inputtext').type(maintenanceLogin)
     // submit
@@ -46,7 +46,7 @@ export function newPage() {
     cy.get('.menuIcon').click()
 
     // both pages should be in selection mode
-    cy.get('.pageOne > .headerTitle').contains('Page Selection')
-    cy.get('.pageTwo > .headerTitle').contains('Page Selection')
+    cy.get('.page0 > .headerTitle').contains('Page Selection')
+    cy.get('.page1 > .headerTitle').contains('Page Selection')
 }
 
