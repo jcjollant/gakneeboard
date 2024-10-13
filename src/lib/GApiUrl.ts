@@ -1,6 +1,6 @@
 export class GApiUrl {
-    // static root:string = 'https://ga-api-seven.vercel.app/'
-    static root:string = 'http://localhost:3000/'
+    static root:string = 'https://ga-api-seven.vercel.app/'
+    // static root:string = 'http://localhost:3000/'
 
     static flightPlanToNavlog() {
         return GApiUrl.root + 'fp2nl'
