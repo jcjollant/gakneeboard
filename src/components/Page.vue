@@ -90,7 +90,7 @@ function onToast(data) {
 
 function onUpdate( newData) {
     // enrich with page type
-    const newPageData = {type:type.value,data:newData}
+    const newPageData = {type:type.value,data:newData, index:pageIndex.value}
     emits('update', newPageData)
 }
 

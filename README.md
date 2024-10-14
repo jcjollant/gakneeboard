@@ -18,11 +18,13 @@ Run the test suite:
 
 # Done
 ## 10/13/2024
+1) Below
 * Fixed erronous page number on Editor page copy to clipboard
 * Reactive display
 * Removed page index next to Template name
 * New Insert page replaces add 2 pages
 * Delete individual page
+2) Fixed save bug
 ## 10/11/2024
 * Template Export to ACE format
 ## 10/10/2024

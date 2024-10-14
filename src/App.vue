@@ -309,6 +309,7 @@ function onOffset(newOffset) {
 }
 
 function onPageUpdate(pageData) {
+  // console.log('[App.onPageUpdate] index', pageData.index)
   // save template data without index
   activeTemplate.value.data[pageData.index] = {data:pageData.data,type:pageData.type}
   saveActiveTemplate(true)
