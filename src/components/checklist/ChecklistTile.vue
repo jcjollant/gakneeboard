@@ -1,3 +1,26 @@
+<template>
+    <div class="tile">
+        <Header :title="title"
+            @click="onHeaderClick" @replace="emits('replace')"></Header>
+        <div v-if="mode=='edit'" class="settings">
+            <div class="oneLine">
+                <InputGroup>
+                    <InputGroupAddon class="checklistNameAddon">Name</InputGroupAddon>
+                    <InputText v-model="title" />
+                </InputGroup>
+                <ThemeSelector v-show="true" :short="true" :theme="theme" @change="onThemeChange"/>
+            </div>
+            <div class="oneOrTwoLists">
+                <Textarea rows="10" cols="24" v-model="textData" class="editList" placeholder="Up to 10 items will fit vertically."></Textarea>
+            </div>
+            <ActionBar @apply="onApply" @cancel="onCancel" :help="UserUrl.checklistGuide" />
+        </div>
+        <div v-else class="checklistMain">
+            <ChecklistViewer :items="items" :theme="theme" :small="true" />
+        </div>
+    </div>
+</template>
+
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import { itemsFromList, listFromItems } from '../../assets/checklist'
@@ -13,7 +36,7 @@ import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
 
-const emits = defineEmits(['update'])
+const emits = defineEmits(['replace','update'])
 
 //-----------------------
 // Props management
@@ -94,29 +117,6 @@ function onThemeChange(newTheme) {
 }
 
 </script>
-
-<template>
-    <div class="tile">
-        <Header :title="title"
-            @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <div v-if="mode=='edit'" class="settings">
-            <div class="oneLine">
-                <InputGroup>
-                    <InputGroupAddon class="checklistNameAddon">Name</InputGroupAddon>
-                    <InputText v-model="title" />
-                </InputGroup>
-                <ThemeSelector v-show="true" :short="true" :theme="theme" @change="onThemeChange"/>
-            </div>
-            <div class="oneOrTwoLists">
-                <Textarea rows="10" cols="24" v-model="textData" class="editList" placeholder="Up to 10 items will fit vertically."></Textarea>
-            </div>
-            <ActionBar @apply="onApply" @cancel="onCancel" :help="UserUrl.checklistGuide" />
-        </div>
-        <div v-else class="checklistMain">
-            <ChecklistViewer :items="items" :theme="theme" :small="true" />
-        </div>
-    </div>
-</template>
 
 <style scoped>
 .editList {
