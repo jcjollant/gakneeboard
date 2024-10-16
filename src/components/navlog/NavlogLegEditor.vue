@@ -430,7 +430,7 @@ function updateSuggested() {
     } else if(cruise) {
         try {
             // try to help with calculation
-            legDistance = eval(editEntry.value.ld)
+            legDistance = Function("return " + editEntry.value.ld)()
             ldHint = 'Calculation ' + editEntry.value.ld + ' '
         } catch( e) {
             legDistance = undefined
