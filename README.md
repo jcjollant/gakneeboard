@@ -28,6 +28,8 @@ Save files in c:\src\kneeboard.ga\data
 * 
 
 # Done
+## 10/15/2024
+* Template version is increasing upon update
 ## 10/11/2024
 * New Export API to generate ACE files from checklists
 ## 10/10/2024

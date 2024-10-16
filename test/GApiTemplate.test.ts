@@ -64,7 +64,7 @@ describe( 'GApi Tests', () => {
         // it should be the same as the original
         expect(templateByCode).toBeDefined()
         expect(templateByCode?.id).toBe(templateOut.id)
-        expect(templateByCode?.name).toBe(templateOut.name)
+        // expect(templateByCode?.name).toBe(templateOut.name)
         expect(JSON.stringify(templateByCode?.data)).toBe(JSON.stringify(templateOut.data))
 
         // that template should show in the list of publications

@@ -32,7 +32,7 @@ export class TemplateDao {
         if( template.id) {
             // console.log( "[SheetDao.createOrUpdate] updating", pageId);
             await sql`
-                UPDATE sheets SET data=${data},name=${template.name},description=${template.desc} WHERE id=${template.id}
+                UPDATE sheets SET data=${data},name=${template.name},description=${template.desc},version=version+1 WHERE id=${template.id}
             `
         } else {
             // console.log( "[TemplateDao.createOrUpdate] net new");
