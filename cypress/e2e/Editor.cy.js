@@ -105,6 +105,15 @@ describe('Editor', () => {
     // New page should have be blanks
     cy.get('.page1').contains('Page Selection')
 
+    // make sure this is reflected in local storage
+    cy.getLocalStorage('template')
+      .then(t => {
+        const template = JSON.parse(t)
+        // console.log('>>>>', template)
+        expect(template.data.length).to.equal(3)
+        expect(template.data[1].type).to.equal('selection')
+      })
+
     // delete new page
     cy.get('.editorBottom > :nth-child(3) > .p-button-warning').click()
     cy.get('.p-confirm-dialog-message').contains('delete page 2')

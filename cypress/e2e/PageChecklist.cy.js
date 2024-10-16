@@ -30,11 +30,27 @@ describe('Checklist Page', () => {
     cy.get('.oneOrTwoLists').children().should('have.length', 2)
 
     cy.get('.oneOrTwoLists > :nth-child(1)').should('have.class', 'smallTextarea')
-    cy.get('.oneOrTwoLists > :nth-child(1)').type('##Section1\nChallenge1.1##Response1.1\n##\n\nChallenge1.2\nChallenge1.3##\n##!Emergency\n##*Strong')
+    const list1= ['##Section1','Challenge1.1##Response1.1','##','','Challenge1.2','Challenge1.3##','##!Emergency','##*Strong']
+    cy.get('.oneOrTwoLists > :nth-child(1)').type(list1.join('\n'))
     cy.get('.oneOrTwoLists > :nth-child(2)').should('have.class', 'smallTextarea')
-    cy.get('.oneOrTwoLists > :nth-child(2)').type('##Section2\nChallenge2.1##Response2.1\n##\n\nChallenge2.2\nChallenge2.3##')
+    const list2 = ['##Section2','Challenge2.1##Response2.1','##','','Challenge2.2','Challenge2.3##']
+    cy.get('.oneOrTwoLists > :nth-child(2)').type(list2.join('\n'))
     cy.get('.theme-green').click()
     cy.get('[aria-label="Apply"]').click()
+
+    // test locastorage is reflecting that list
+    cy.getLocalStorage('template')
+      .then(t => {
+        const template = JSON.parse(t)
+        // console.log('>>>>', template)
+        expect(template.data.length).to.equal(2)
+        // page 0 should be a checklist
+        expect(template.data[0].type).to.equal('checklist')
+        // checklist should have all items
+        expect(template.data[0].data.items.length).to.equal(list1.length)
+        expect(template.data[0].data.items2.length).to.equal(list2.length)
+      })
+
     // Section
     cy.get('.leftList > :nth-child(1) > .section').contains('Section1')
     // Normal line with two short boxes

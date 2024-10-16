@@ -68,15 +68,39 @@ describe('navlog Page', () => {
       index++
     }
 
+    cy.get('.varInitialFuel > .p-inputtext').type(53)
+    cy.get('.varReserveFuel > .p-inputtext').type(30)
+    cy.get('.varCruiseGph > .p-inputtext').type(9)
+    cy.get('[aria-label="Apply"]').click()
+
+    // test locastorage is reflecting that list
+    cy.getLocalStorage('template')
+      .then(t => {
+        const template = JSON.parse(t)
+        // console.log('>>>>', template)
+        expect(template.data.length).to.equal(2)
+        // page 0 should be a checklist
+        expect(template.data[0].type).to.equal('navlog')
+        // checklist should have all items
+        expect(template.data[0].data.entries.length).to.equal(expectedCheckpoints.length)
+        expect(template.data[0].data.from).to.equal(expectedCheckpoints[0])
+        expect(template.data[0].data.to).to.equal(expectedCheckpoints[expectedCheckpoints.length-1])
+      })
+
+    // Go back to edit mode
+    cy.get('.title').click()
+
     // reset with altitudes
     cy.get('[aria-label="Reset Log"]').click()
     cy.get('.p-confirm-dialog-accept').click()
+
+
 
     // should be back into edit mode
     cy.get('.createAirportFrom > .p-inputgroup > .p-inputtext').should('have.value','')
     cy.get('.createAirportTo > .p-inputgroup > .p-inputtext').should('have.value','')
 
-    //
+    // check there is a link to the video
     cy.get('.actionBarVideo')
   })
 
