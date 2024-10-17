@@ -18,6 +18,8 @@
               @click="onAction(EditorAction.copyToPage(activeOffset+1, activeOffset))" ></Button>
           <Button id="editorInsert" icon="pi pi-plus" title="Insert New Page" 
               @click="onAction(EditorAction.insertPage(activeOffset+1))" ></Button>
+          <FAButton icon="video" title="Editor Demo Video" :link="true"
+              @click="UserUrl.open(UserUrl.editorVideo)"/>
       </div>
       <TileOverlay :show="activeTemplate?.data[activeOffset+1].type==PageType.tiles"
         class="rightTileOverlay"
@@ -59,6 +61,8 @@ import ConfirmDialog from 'primevue/confirmdialog'
 import { useConfirm } from 'primevue/useconfirm'
 import TileOverlay from './TileOverlay.vue'
 import { PageType } from '../../assets/Templates'
+import { UserUrl } from '../../lib/UserUrl'
+import FAButton from '../shared/FAButton.vue'
 
 
 const emits = defineEmits(['action','addSheet','offset'])

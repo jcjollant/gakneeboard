@@ -15,5 +15,9 @@ export class UserUrl {
     static patreon:string = 'https://patreon.com/GAKneeboard'
     static navlogVideo:string = 'https://www.youtube.com/playlist?list=PLS4A2hmRgOclcjE4THa034Lgq0THbewUX'
     static garminAce:string = 'https://www8.garmin.com/support/download_details.jsp?id=5075'
+    static editorVideo:string = 'https://youtu.be/ftQ8nRyvXCs'
 
+    static open(url:string) {
+        window.open( url, '_blank');
+    }
 }
