@@ -17,6 +17,10 @@ Run the test suite:
 ## TODO
 
 # Done
+##
+* Removed eval
+* Added localstore tests
+* fixed missing emits
 ## 10/13/2024
 1) Below
 * Fixed erronous page number on Editor page copy to clipboard
