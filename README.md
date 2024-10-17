@@ -18,6 +18,7 @@ Run the test suite:
 
 # Done
 ##
+* Menu shrinks to fit Tablet display / Narrow pages 
 * Removed eval
 * Added localstore tests
 * fixed missing emits

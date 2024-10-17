@@ -43,7 +43,8 @@
     <div class="versionDialog" >{{ versionText }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span>
     </div>
   </div>
-  <Menu class="menu" :activeTemplate="activeTemplate" v-show="!printPreview" v-if="!showEditor" @howDoesItWork="showHowDoesItWork=true"
+  <Menu class="menu" :activeTemplate="activeTemplate" v-show="!printPreview" v-if="!showEditor" :singlePage="singlePage"
+    @howDoesItWork="showHowDoesItWork=true"
     @load="onMenuLoad" 
     @print="onPrint" @printOptions="onPrintOptions" @printPreview="onPrintPreview"
     @save="onMenuSave"
@@ -92,6 +93,7 @@ const showEditor = ref(false)
 const showFeedback = ref(false)
 const showHowDoesItWork = ref(true)
 const menuOpen = ref(false)
+const singlePage = ref(false)
 const toast = useToast()
 const versionText = ref('')
 
@@ -375,6 +377,7 @@ function updateOffsets() {
   offsetLast.value = Math.max(activeTemplate.value.data.length - fittingPages, 0)
   // console.log('[App.onResize] fitting', fittingPages, 'offsetLast', offsetLast.value)
   if(offset.value > offsetLast.value) offset.value = offsetLast.value
+  singlePage.value = fittingPages == 1;
 }
 
 </script>

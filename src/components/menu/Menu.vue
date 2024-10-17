@@ -37,14 +37,14 @@
           @click="onSignOut"></Button>
         <Button v-else label="Sign In" icon="pi pi-user" title="Sign In to enable custom data"
           @click="showSignIn=true"></Button>
-        <Button icon="pi pi-print" label="Print" title="Print Active Template"
+        <Button icon="pi pi-print" :label="singlePage?'':'Print'" title="Print Active Template"
           @click="onPrint"></Button>
         <div class="separator"></div>
-        <Button label="New" icon="pi pi-file" title="Reset Template" @click="onTemplateLoad(getTemplateBlank())"></Button>
-        <Button label="Load" icon="pi pi-folder-open" title="Open Existing Template" @click="onMenuLoad"></Button>
-        <Button label="Save" icon="pi pi-save" title="Save Active Template" @click="onMenuSave"></Button>
-        <Button label="Export" icon="pi pi-file-export" title="Export Active Template" @click="onMenuExport"></Button>
-        <Button label="Demos" icon="pi pi-clipboard" title="Load Demo Template" @click="showDemoSelection=true"></Button>
+        <Button :label="singlePage?'':'New'" icon="pi pi-file" title="Reset Template" @click="onTemplateLoad(getTemplateBlank())"></Button>
+        <Button :label="singlePage?'':'Load'" icon="pi pi-folder-open" title="Open Existing Template" @click="onMenuLoad"></Button>
+        <Button :label="singlePage?'':'Save'" icon="pi pi-save" title="Save Active Template" @click="onMenuSave"></Button>
+        <Button :label="singlePage?'':'Export'" icon="pi pi-file-export" title="Export Active Template" @click="onMenuExport"></Button>
+        <Button :label="singlePage?'':'Demos'" icon="pi pi-clipboard" title="Load Demo Template" @click="showDemoSelection=true"></Button>
         <div class="separator" @click="showMaintenance=true"></div>
         <Button icon="pi pi-info-circle" title="About / Guides / Warnings"
           @click="showAbout=true"></Button>
@@ -90,6 +90,7 @@ const showSignIn = ref(false)
 const showTemplateExport = ref(false)
 const showTemplateSave = ref(false)
 const showTemplateLoad = ref(false)
+const singlePage = ref(false)
 const user = ref(newCurrentUser)
 const templateDialogMode = ref('load')
 const templateTime = ref(0)
@@ -99,11 +100,13 @@ let readyToPrint = false;
 // Props management
 const props = defineProps({
   activeTemplate: { type: Object, default: null},
+  singlePage: {type:Boolean, default: false}
 })
 
 function loadProps( props) {
   // console.log('Menu loadProps', JSON.stringify(props))
   activeTemplate.value = props.activeTemplate;
+  singlePage.value = props.singlePage;
 }
 
 onMounted( () => {
