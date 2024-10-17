@@ -68,7 +68,7 @@ onMounted(() => {
             </div>
             <PlaceHolder v-else title="No Log" subtitle="Create a log in the navlog page to show it's summary here" />
         </div>
-        <NoSettings v-else></NoSettings> 
+        <PlaceHolder v-else title="No Settings" subtitle="Data is automatically synced with NavLog page" />
 
     </div>
 

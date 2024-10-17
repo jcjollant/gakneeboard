@@ -18,6 +18,7 @@ Run the test suite:
 
 # Done
 ##
+* NavLog tile added hint to no settings
 * Menu shrinks to fit Tablet display / Narrow pages 
 * Removed eval
 * Added localstore tests
