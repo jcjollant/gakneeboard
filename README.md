@@ -17,7 +17,7 @@ Run the test suite:
 ## TODO
 
 # Done
-##
+## 10/17/2024
 * NavLog tile added hint to no settings
 * Menu shrinks to fit Tablet display / Narrow pages 
 * Removed eval
