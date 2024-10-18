@@ -1,4 +1,4 @@
-export const currentVersionNumber = '1015/1011'
+export const currentVersionNumber = '1017/1015'
 const devEnv = 'http://localhost:5173/'
 const prodEnv = 'https://kneeboard.ga'
 export const environment = devEnv
@@ -38,10 +38,18 @@ export function maintenanceMode() {
     cy.get('.menuIcon').click()
 }
 
+export function loadDemo(name, openMenu=true) {
+    const classes = {'tiles':'.tilesDemo','navlog':'.navlogDemo', 'checklist':'.checklistDemo', 'default':'.defaultDemo'}
+    if(openMenu) cy.get('.menuIcon').click()
+    cy.get('#menuDemos').click()
+    cy.get(classes[name]).click()
+    cy.get('.p-confirm-dialog-accept').click()
+}
+
 export function newPage() {
     // Reset tiles and check all are reset
     cy.get('.menuIcon').click()
-    cy.get('[aria-label="New"]').click()
+    cy.get('#menuNew').click()
     cy.get('.p-confirm-dialog-accept').click()
     cy.get('.menuIcon').click()
 

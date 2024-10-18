@@ -1,4 +1,4 @@
-import { currentVersionNumber, environment, visitAndCloseBanner } from './shared'
+import { currentVersionNumber, environment, loadDemo, visitAndCloseBanner } from './shared'
 
 describe('Navigation', () => {
   it('HDIW / Version / Offset', () => {
@@ -19,10 +19,7 @@ describe('Navigation', () => {
     cy.get('#offsetNext').should('have.class','noShow')
 
     // Load Checklist Demo and navigate offset
-    cy.get('.menuIcon').click()
-    cy.get('[aria-label="Demos"]').click()
-    cy.get(`.checklistDemo`).click()
-    cy.get('.p-confirm-dialog-accept').click()
+    loadDemo('checklist')
 
     cy.get('#offsetPrev').should('have.class','noShow')
     cy.get('#offsetNext').should('not.have.class','noShow')
@@ -66,6 +63,17 @@ describe('Navigation', () => {
     cy.get('.page1').should('be.visible')
     cy.get('.page2').should('not.be.visible')
     cy.get('.page3').should('not.be.visible')
+
+  })
+
+  it('iPad', () => {
+    cy.viewport('ipad-mini')
+    cy.visit(environment)
+    cy.contains('Got it').click()
+    cy.get('.menuIcon').click()
+    cy.get('[aria-label="Print"]').should('not.exist')
+    cy.get('[title="Print Active Template"]').should('not.have.a.property','label')
+
   })
 
   it('Publication', () => {
@@ -92,6 +100,7 @@ describe('Navigation', () => {
 
   it('Print Dialog', () =>{
     visitAndCloseBanner()
+    cy.viewport('macbook-16')
 
     // Test print dialog show up
     cy.get('.menuIcon').click()
@@ -111,9 +120,10 @@ describe('Navigation', () => {
 
   it('Demos', () => {
     visitAndCloseBanner()
+    cy.viewport('macbook-16')
 
     cy.get('.menuIcon').click()
-    cy.get('[aria-label="Demos"]').click()
+    cy.get('#menuDemos').click()
     cy.get('.p-dialog-header').contains('GA Kneeboard Demos')
 
     // Check demo pages description work
@@ -135,23 +145,17 @@ describe('Navigation', () => {
     cy.get('.page1').should('have.class','pageChecklist')
 
     // load Checklist demo
-    cy.get('[aria-label="Demos"]').click()
-    cy.get(`.checklistDemo`).click()
-    cy.get('.p-confirm-dialog-accept').click()
+    loadDemo('checklist', false)
     cy.get('.page0').should('have.class','pageChecklist')
     cy.get('.page1').should('have.class','pageChecklist')
 
     // load Tiles demo
-    cy.get('[aria-label="Demos"]').click()
-    cy.get(`.demoGrid > :nth-child(3)`).click()
-    cy.get('.p-confirm-dialog-accept').click()
+    loadDemo('tiles', false)
     cy.get('.page0').should('have.class','pageTiles')
     cy.get('.page1').should('have.class','pageTiles')
 
     // load Navlog demo
-    cy.get('[aria-label="Demos"]').click()
-    cy.get(`.demoGrid > :nth-child(4)`).click()
-    cy.get('.p-confirm-dialog-accept').click()
+    loadDemo('navlog', false)
     cy.get('.page0').should('have.class','pageNavlog')
     cy.get('.page1').should('have.class','pageTiles')
   })
@@ -161,7 +165,7 @@ describe('Navigation', () => {
     cy.viewport('macbook-16')
 
     cy.get('.menuIcon').click()
-    cy.get('[aria-label="Load"]').click()
+    cy.get('#menuLoad').click()
     cy.get('.p-toast-summary').contains('Squawk and Ident')
     cy.wait(3100)
     cy.get('[aria-label="Save"]').click()

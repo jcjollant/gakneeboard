@@ -1,4 +1,4 @@
-import { visitAndCloseBanner, titleAtis, maintenanceMode } from './shared'
+import { visitAndCloseBanner, titleAtis, maintenanceMode, loadDemo } from './shared'
 
 describe('Navlog Tile', () => {
   it('Navlog Tile', () => {
@@ -16,10 +16,7 @@ describe('Navlog Tile', () => {
     maintenanceMode()
 
     // load navlog demo
-    cy.get('.menuIcon').click()
-    cy.get('[aria-label="Demos"]').click()
-    cy.get('.navlogDemo').click()
-    cy.get('.p-confirm-dialog-accept').click()
+    loadDemo('navlog')
 
     // Check tile is there
     cy.get('.page1 > :nth-child(6) > .headerTitle').contains('NavLog')

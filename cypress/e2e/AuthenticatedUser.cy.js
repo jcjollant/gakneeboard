@@ -11,7 +11,7 @@ describe('Authenticated User', () => {
     cy.get('.active').contains('Jc')
 
     // load page should open
-    cy.get('[aria-label="Load"]').click()
+    cy.get('#menuLoad').click()
     cy.get('.contentPlaceholder').contains('Select a template')
 
     // Should have at least the 'Anchor' page
@@ -24,7 +24,7 @@ describe('Authenticated User', () => {
     // Save the page into something disposable
     const tempName = 'Temp'
     const tempDescription = 'Temporary Description'
-    cy.get('[aria-label="Save"]').click()
+    cy.get('#menuSave').click()
     cy.get('.p-dialog-header').contains('Save New Template')
     cy.get('.pageName > .p-inputtext').type('{selectAll}').type(tempName)
     cy.get('.pageDescription > .p-inputtext').type('{selectAll}').type(tempDescription)
@@ -37,7 +37,7 @@ describe('Authenticated User', () => {
     cy.wait('@postTemplate').its('response.statusCode').should('equal', 200)
 
     // second time we save we should have the short save
-    cy.get('[aria-label="Save"]').click()
+    cy.get('#menuSave').click()
     cy.get('.p-dialog-header').contains('Save "' + tempName + '"')
     cy.get('.pageName > .p-inputtext').should( 'have.value', tempName)
     cy.get('.pageDescription > .p-inputtext').should( 'have.value', tempDescription)
@@ -54,7 +54,7 @@ describe('Authenticated User', () => {
     cy.get('.actionDialog > .p-button').click()
 
     // Now delete it
-    cy.get('[aria-label="Load"]').click()
+    cy.get('#menuLoad').click()
     // Delete mode
     cy.get('.templateList > .p-button-icon-only').click()
     cy.intercept({
@@ -84,13 +84,14 @@ describe('Authenticated User', () => {
   })
 
   it('Shows Publications', () => {
+    cy.viewport('macbook-16')
     visitAndCloseBanner()
     maintenanceMode()
 
     // open menu
     cy.get('.menuIcon').click()
     // Load Template
-    cy.get('[aria-label="Load"]').click()
+    cy.get('#menuLoad').click()
     cy.get('.choiceInactive').contains('Community').click()
     cy.get('[aria-label="Page 2"]')
     cy.get('.p-datatable-tbody').children().should('have.length', 5)

@@ -1,4 +1,4 @@
-import { visitAndCloseBanner, feltsTitle, boeingTitle, radioFlowTitle, notesTitle, atisTitle, clearanceTitle } from './shared'
+import { visitAndCloseBanner, feltsTitle, boeingTitle, radioFlowTitle, notesTitle, atisTitle, clearanceTitle, loadDemo } from './shared'
 
 function demoChecklistOn(page) {
     cy.get(`${page} > :nth-child(2) > .twoLists > .leftList > :nth-child(19)`).contains('FIRE')
@@ -7,10 +7,8 @@ function demoChecklistOn(page) {
 function reloadDemo(closeEditor=true) {
     // close editor
     if (closeEditor) cy.get('#btnEditor').click()
-    cy.get('.menuIcon').click()
-    cy.get('[aria-label="Demos"]').click()
-    cy.get('.defaultDemo').click()
-    cy.get('.p-confirm-dialog-accept').click()
+    loadDemo('default')
+
     cy.get('.menuIcon').click()
     cy.get('#btnEditor').click()
 }
@@ -199,7 +197,7 @@ describe('Editor', () => {
     cy.wait(500)
 
     cy.get('.menuIcon').click()
-    cy.get('[aria-label="New"]').click()
+    cy.get('#menuNew').click()
     // Accept new page
     cy.get('.p-confirm-dialog-accept').click()
 

@@ -1,4 +1,4 @@
-import { visitAndCloseBanner, newPage, maintenanceMode, placeHolderSubtitle, boeingTitle } from './shared'
+import { visitAndCloseBanner, newPage, maintenanceMode, placeHolderSubtitle, boeingTitle, loadDemo } from './shared'
 
 describe('Tiles', () => {
   it('Airport Tile', () => {
@@ -29,10 +29,7 @@ describe('Tiles', () => {
 
     // load tiles demo page
     maintenanceMode()
-    cy.get('.menuIcon').click()
-    cy.get('[aria-label="Demos"]').click()
-    cy.get('.tilesDemo').click()
-    cy.get('.p-confirm-dialog-accept').click()
+    loadDemo('tiles')
     // Close menu
     cy.get('.menuIcon').click()
 
