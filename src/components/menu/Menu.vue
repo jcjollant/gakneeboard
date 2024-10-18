@@ -40,13 +40,13 @@
         <Button icon="pi pi-print" :label="singlePage?'':'Print'" title="Print Active Template"
           @click="onPrint"></Button>
         <div class="separator"></div>
-        <Button :label="singlePage?'':'New'" icon="pi pi-file" title="Reset Template" @click="onTemplateLoad(getTemplateBlank())"></Button>
-        <Button :label="singlePage?'':'Load'" icon="pi pi-folder-open" title="Open Existing Template" @click="onMenuLoad"></Button>
-        <Button :label="singlePage?'':'Save'" icon="pi pi-save" title="Save Active Template" @click="onMenuSave"></Button>
-        <Button :label="singlePage?'':'Export'" icon="pi pi-file-export" title="Export Active Template" @click="onMenuExport"></Button>
-        <Button :label="singlePage?'':'Demos'" icon="pi pi-clipboard" title="Load Demo Template" @click="showDemoSelection=true"></Button>
+        <Button :label="singlePage?'':'New'" icon="pi pi-file" id="menuNew" title="Reset Template" @click="onTemplateLoad(getTemplateBlank())"></Button>
+        <Button :label="singlePage?'':'Load'" icon="pi pi-folder-open" id="menuLoad" title="Open Existing Template" @click="onMenuLoad"></Button>
+        <Button :label="singlePage?'':'Save'" icon="pi pi-save" id="menuSave" title="Save Active Template" @click="onMenuSave"></Button>
+        <Button :label="singlePage?'':'Export'" icon="pi pi-file-export" id="menuExport" title="Export Active Template" @click="onMenuExport"></Button>
+        <Button :label="singlePage?'':'Demos'" icon="pi pi-clipboard" id="menuDemos" title="Load Demo Template" @click="showDemoSelection=true"></Button>
         <div class="separator" @click="showMaintenance=true"></div>
-        <Button icon="pi pi-info-circle" title="About / Guides / Warnings"
+        <Button icon="pi pi-info-circle" id="menuAbout" title="About / Guides / Warnings"
           @click="showAbout=true"></Button>
       </div>
     </div>
