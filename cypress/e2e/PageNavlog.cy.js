@@ -142,7 +142,7 @@ describe('navlog Page', () => {
     cy.get('.totalTime').contains('0:00')
     cy.get('.totalFuel').contains('0.0')
 
-    // Opne checkpoint editor
+    // Open checkpoint editor for first line
     cy.get(':nth-child(2) > .checkpointName').click()
     cy.get('.p-dialog-header').contains('Checkpoint Editor')
     cy.get('#name').should('have.value', 'KRNT')
@@ -163,16 +163,16 @@ describe('navlog Page', () => {
     cy.get('#alt').type('00') // just add 00
     cy.get('.actionDialog > [aria-label="Apply"]').click()
     // Values should be updated
-    cy.get(':nth-child(2) > .checkpointName').contains('0S9')
-    cy.get(':nth-child(2) > .checkpointAlt').contains('3200')
+    cy.get('.checkpoint0 > .checkpointName').contains('0S9')
+    cy.get('.checkpoint0 > .checkpointAlt').contains('3200')
     // change back to KRNT
-    cy.get(':nth-child(2) > .checkpointName').click()
+    cy.get('.checkpoint0 > .checkpointName').click()
     cy.get('#name').type('{selectAll}').type('KRNT')
     cy.get('#alt').type('{selectAll}').type('32')
     cy.get('.actionDialog > [aria-label="Apply"]').click()
 
-    // Test calculator
-    cy.get(':nth-child(2) > .magneticHeading').click()
+    // Test calculator on first line
+    cy.get('.leg0 > .magneticHeading').click()
     cy.get('#calcMV').type('{selectAll}').type('-15')
     cy.get('#calcMD').type('{selectAll}').type('2')
     const expectedResult = [
@@ -193,11 +193,17 @@ describe('navlog Page', () => {
       cy.get('#mhHint').contains(result.mh)
       cy.get('#gsHint').contains(result.gs)
     }
+    // this line is a climb, we should have calculations for fuel and time
+    cy.get('#lf').type('2.4-1.5')
+    cy.get('#lfHint').contains('0.9')
+    cy.get('#lt').type('7-3.25')
+    cy.get('#ltHint').contains('3:45')
+
     // Do not apply
     cy.get('.actionDialog > [aria-label="Do Not Apply"]').click()
 
     // Update legs
-    cy.get(':nth-child(2) > .magneticHeading').click()
+    cy.get('.leg0 > .magneticHeading').click()
     cy.get('.between').contains('KRNT @ 32')
     cy.get('.between').contains('TOC 25 @ 2500')
     cy.get('.between').should('have.class','attClimb')
@@ -227,14 +233,14 @@ describe('navlog Page', () => {
     cy.get('.actionDialog > [aria-label="Apply"]').click()
 
     // first line should be updated
-    cy.get(':nth-child(2) > .magneticHeading').contains('90')
-    cy.get(':nth-child(2) > .legDistance').contains('1.0')
-    cy.get(':nth-child(2) > .groundSpeed').contains('2')
-    cy.get(':nth-child(2) > .legTime').contains('3:15')
-    cy.get(':nth-child(2) > .legFuel').contains('4')  
+    cy.get('.leg0 > .magneticHeading').contains('90')
+    cy.get('.leg0 > .legDistance').contains('1.0')
+    cy.get('.leg0 > .groundSpeed').contains('2')
+    cy.get('.leg0 > .legTime').contains('3:15')
+    cy.get('.leg0 > .legFuel').contains('4')  
 
     // second leg is cruise, let's see if we have proper hints
-    cy.get(':nth-child(3) > .magneticHeading').click()
+    cy.get('.leg1 > .magneticHeading').click()
     cy.get('.between').should('have.class','attCruise')
     cy.get('#cruiseGPH').type(9)
     // Magnetic heading hint and copy
@@ -255,7 +261,7 @@ describe('navlog Page', () => {
     cy.get('.actionDialog > [aria-label="Apply"]').click()
 
     // test descent hints
-    cy.get(':nth-child(8) > .magneticHeading').click()
+    cy.get('.leg6 > .magneticHeading').click()
     cy.get('.between').should('have.class','attDescent')
     cy.get('#descentGPH').type('6')
     cy.get('#descentFPM').type('500')
@@ -272,13 +278,13 @@ describe('navlog Page', () => {
     // enter values for the other legs
     const legData = [
       // {index: 3, ld: '10', gs: '105', lt: '5:43', lf: '0.9'},
-      {index: 4, ld: '9', gs: '10', lt: '11.75', lf: '12'},
+      {index: 2, ld: '9', gs: '10', lt: '11.75', lf: '12'},
+      {index: 3, ld: '9', gs: '10', lt: '11.75', lf: '5'},
+      {index: 4, ld: '9', gs: '10', lt: '11.75', lf: '5'},
       {index: 5, ld: '9', gs: '10', lt: '11.75', lf: '5'},
-      {index: 6, ld: '9', gs: '10', lt: '11.75', lf: '5'},
-      {index: 7, ld: '9', gs: '10', lt: '11.75', lf: '5'},
     ]
     for(const data of legData) {
-      cy.get(`:nth-child(${data.index}) > .magneticHeading`).click()
+      cy.get(`.leg${data.index} > .magneticHeading`).click()
       cy.get('#ld').type(data.ld)
       cy.get('#gs').type(data.gs)
       cy.get('#lt').type(data.lt)
@@ -304,14 +310,15 @@ describe('navlog Page', () => {
     cy.get('[aria-label="Apply"]').click()
 
     // Fuel reserve should pop
-    cy.get(':nth-child(7) > .fuel').should('not.have.class','fuelBingo')
-    const expectedBingoLegs = [8,9,10]
-    for(const leg of expectedBingoLegs) {
-      cy.get(`:nth-child(${leg}) > .fuel > .fuelRemaining`).should('have.class', 'fuelRemainingBingo')
+    const expectedLegs = 8;
+    const expectedBingo = 5
+    for(let leg=0; leg < expectedLegs; leg++) {
+      const should = ( leg < expectedBingo ? 'not.have.class' : 'have.class')
+      cy.get(`.leg${leg} > .fuel`).should(should, 'fuelBingo')
     }
     // Destination leg should be bingo
-    cy.get(':nth-child(3) > .fuelRecapAvailable').should('have.class','fuelRecapAvailableReserve')
-    cy.get(':nth-child(3) > .fuelRecapTime').should('have.class','fuelRecapAvailableReserve')
+    cy.get('.destinationFuel > .fuelRecapAvailable').should('have.class','fuelRecapAvailableReserve')
+    cy.get('.destinationFuel > .fuelRecapTime').should('have.class','fuelRecapAvailableReserve')
     // cy.get('.totalFuel').should('have.class', 'fuelBingo')
 
     // Test Footer
