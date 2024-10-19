@@ -83,13 +83,6 @@
                             :title="suggestedHeadingTitle" 
                             @click="editEntry.mh=suggestedHeading">{{ suggestedHeading }}</div>
                     </div>
-                    <div title="Leg Distance (NM). Supports calculation for cruise legs (ex: 24-15.4)" class="legField">
-                        <div class="label">Distance</div>
-                        <InputText id="ld" v-model="editEntry.ld" @input="updateSuggested" />
-                        <div class="hint clickable" id="ldHint"
-                            :title="suggestedDistanceTitle" 
-                            @click="copyLegDistance">{{ suggestedDistance }}</div>
-                    </div>
                     <div class="legField" title="Ground Speed (Kts)">
                         <div class="label">Ground Speed</div>
                         <InputText id="gs" v-model="editEntry.gs" @input="updateSuggested" />
@@ -104,9 +97,16 @@
                             :title="suggestedTimeTitle"
                             @click="copyTime">{{ suggestedTime }}</div>
                     </div>
+                    <div title="Leg Distance (NM). Supports calculation for cruise legs (ex: 24-15.4)" class="legField">
+                        <div class="label">Distance</div>
+                        <InputText id="ld" v-model="editEntry.ld" @input="updateSuggested" />
+                        <div class="hint clickable" id="ldHint"
+                            :title="suggestedDistanceTitle" 
+                            @click="copyLegDistance">{{ suggestedDistance }}</div>
+                    </div>
                     <div class="legField" title="Leg Fuel (Gal)">
                         <div class="label">Leg Fuel</div>
-                        <InputText id="lf" v-model="editEntry.lf" />
+                        <InputText id="lf" v-model="editEntry.lf" @input="updateSuggested" />
                         <div class="hint clickable" id="lfHint"
                             :title="suggestedFuelTitle" 
                             @click="editEntry.lf=suggestedFuel">{{ suggestedFuel }}</div>
@@ -252,11 +252,6 @@ watch(props, () => {
     loadProps(props)
 })
 
-// watch(editEntry, () => {
-//     console.log('[NavlogEntryEditor.watch.editEntry]')
-//     calculation()
-// })
-
 // End of props management
 //------------------------
 
@@ -274,6 +269,14 @@ function copyTime() {
     editEntry.value.lt=suggestedTime.value
     updateSuggested()
 
+}
+
+function evaluate(text) {
+    try {
+        return Function("return " + text)()
+    } catch(e) {
+        return undefined
+    }
 }
 
 function getUsableValue(reference) {
@@ -320,7 +323,7 @@ function updateCalculator() {
     const entry = editEntry.value
     const d2r = 0.0174532925
     // console.log('[NavlogLegEditor.onUdateMH]', entry)
-    if(entry.tc === undefined) return;
+    // if(entry.tc === undefined) return;
     let mc = getUsableValue(entry.mc)
     let tc = getUsableValue(entry.tc)
     const ws = Number(windSpeed.value)
@@ -395,6 +398,7 @@ function updateSuggested() {
             ltFormula = 'Descent Leg Time = DescentAltitudeDelta / DescentRate. Click to use'
         }
     } else {
+        ltCalc = evaluate(editEntry.value.lt)
         ltFormula = 'Climb Leg Time should come from POH'
     }
     suggestedTime.value = Formatter.legTime( ltCalc)
@@ -412,7 +416,7 @@ function updateSuggested() {
         }
         
     } else {
-        legFuel = undefined
+        legFuel = evaluate( editEntry.value.lf)
         legFuelHint = 'Should come from POH'
     }
     suggestedFuel.value = Formatter.fuel( legFuel)
@@ -428,13 +432,9 @@ function updateSuggested() {
             ldHint = (descent ? 'Descent' : 'Climb') + ' leg distance = Time * GroundSpeed. Click to Use'
         }
     } else if(cruise) {
-        try {
-            // try to help with calculation
-            legDistance = Function("return " + editEntry.value.ld)()
-            ldHint = 'Calculation ' + editEntry.value.ld + ' '
-        } catch( e) {
-            legDistance = undefined
-        }
+        // try to help with calculation
+        legDistance = evaluate( editEntry.value.ld)
+        ldHint = 'Calculation ' + editEntry.value.ld + ' '
     }
     // console.log('[NavlogLegEditor.calculation]', legDistance)
     suggestedDistance.value = legDistance ? Formatter.distance(legDistance) : null
