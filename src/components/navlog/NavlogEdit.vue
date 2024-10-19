@@ -79,9 +79,9 @@
                     <!-- <div title="True Heading">TH</div> -->
                     <div title="Magnetic Heading">MH</div>
                     <!-- <div title="Compass Heading (Magnetic Heading + Magnetic Deviation)">CH</div> -->
-                    <div title="Leg Distance">Dist.</div>
                     <div title="Ground Speed">GS</div>
                     <div title="Leg Time">Time</div>
+                    <div title="Leg Distance">Dist.</div>
                     <div title="Leg Fuel">Fuel</div>
                 </div>
                 <div v-for="(i,index) in items.slice(0, items.length - 1)" 
@@ -90,14 +90,14 @@
                     <!-- <div class="editable trueHeading" @click="onItemEdit(index)">{{ Formatter.heading(i.entry.th) }}</div> -->
                     <div class="magneticHeading editable">{{ Formatter.heading(i.entry.mh) }}</div>
                     <!-- <div class="bl compassHeading">{{ Formatter.heading(i.entry.ch) }}</div> -->
-                    <div class="legDistance bl editable">{{ Formatter.distance( i.entry.ld) }}</div>
                     <div class="groundSpeed bl editable">{{ Formatter.speed(i.entry.gs) }}</div>
                     <div class="legTime bl editable">{{ Formatter.legTime(i.entry.lt) }}</div>
+                    <div class="legDistance bl editable">{{ Formatter.distance( i.entry.ld) }}</div>
                     <div class="legFuel bl editable">{{ Formatter.fuel(i.entry.lf) }}</div>
                 </div>
                 <div class="legGrid">
-                    <div class="total totalDistance">{{ Formatter.distance(totalDistance) }}</div>
                     <div class="total totalTime">{{ Formatter.legTime(totalTime) }}</div>
+                    <div class="total totalDistance">{{ Formatter.distance(totalDistance) }}</div>
                     <div class="total totalFuel">{{ Formatter.fuel(totalFuel) }}</div>
                 </div>
             </div>
@@ -602,10 +602,10 @@ function updateAttitudes() {
     font-weight: bold;
 }
 .totalDistance {
-    grid-column: 2;
+    grid-column: 4;
 }
 .totalTime {
-    grid-column: 4;
+    grid-column: 3;
 }
 .variables {
     display: grid;
