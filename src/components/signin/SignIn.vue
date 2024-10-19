@@ -36,6 +36,10 @@ function onLoginError() {
   console.log("Login failed")
 }
 
+function onAppleSuccess() {
+  console.log('[SingIn.onAppleSuccess]')
+}
+
 async function onGoogleSuccess( response) {
   const { credential } = response;
   // console.log( "[SignIn.handleLoginSuccess] Access Token", credential)
@@ -47,13 +51,13 @@ async function onGoogleSuccess( response) {
     })
 }
 
-function onFacebookSuccess( response) {
-  // console.log('[SignIn.onFacebookSuccess]', typeof response, response)
-  authenticate( 'facebook', response)
-    .then( user => {
-      emits('authentication', user)
-    })
-}
+// function onFacebookSuccess( response) {
+//   // console.log('[SignIn.onFacebookSuccess]', typeof response, response)
+//   authenticate( 'facebook', response)
+//     .then( user => {
+//       emits('authentication', user)
+//     })
+// }
 
 </script>
 
