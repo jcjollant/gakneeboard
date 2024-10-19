@@ -28,6 +28,8 @@ Save files in c:\src\kneeboard.ga\data
 * 
 
 # Done
+## 10/19/2024
+* New Sessions table
 ## 10/15/2024
 * Template version is increasing upon update
 ## 10/11/2024

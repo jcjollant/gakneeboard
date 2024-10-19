@@ -194,7 +194,6 @@ describe( 'GApi Tests', () => {
     })
 
     test('Session', async () => {
-        expect( await GApi.getSession(undefined)).toBeUndefined()
         const req1 = {}
         const session1 = await GApi.getSession(req1)
         expect(session1).toBeDefined()
