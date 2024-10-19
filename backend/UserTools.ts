@@ -90,11 +90,8 @@ export class UserTools {
      * @param req Inbound request to parse
      * @returns Matching user or undefined if not found
      */
-    public static async userMiniFromRequest(req:any):Promise<UserMiniView|undefined> {
-        if( req == undefined || req.query == undefined || req.query.user == undefined) return undefined
-        const user:User|undefined = await UserDao.getUserFromHash(req.query.user)
-        // console.log('[userTools.userMiniFromRequest] user ' + JSON.stringify(user))
-        if( !user) return undefined
+    public static async userMini(user:User):Promise<UserMiniView|undefined> {
+        if(!user) return undefined
         const templates:Template[] = await TemplateDao.getOverviewListForUser(user.id)
         const userMini:UserMiniView = new UserMiniView(user, templates)
         // console.log('[userTools.userMiniFromRequest] userMini ' + JSON.stringify(userMini))

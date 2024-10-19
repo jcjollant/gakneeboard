@@ -109,16 +109,10 @@ describe('UserTool', () => {
         expect( await UserTools.userIdFromRequest(req4)).toBe( jcUserId)
     })
 
-    test('userMiniFromRequest', async () => {
-        expect( await UserTools.userMiniFromRequest(undefined)).toBeUndefined()
-        const req1 = {}
-        expect( await UserTools.userMiniFromRequest(req1)).toBeUndefined()
-        const req2 = { query: {}}
-        expect( await UserTools.userMiniFromRequest(req2)).toBeUndefined()
-        const req3 = { query: { user: {}}}
-        expect( await UserTools.userMiniFromRequest(req3)).toBeUndefined()
-        const req4 = { query: { user: jcHash}}
-        const miniUser:UserMiniView|undefined = await UserTools.userMiniFromRequest(req4)
+    test('userMini', async () => {
+        const userJc:User|undefined = await UserDao.getUserFromHash(jcHash)
+        if(userJc === undefined) throw new Error('User not found')
+        const miniUser:UserMiniView|undefined = await UserTools.userMini(userJc)
         testJcUmv( miniUser)
 
     })

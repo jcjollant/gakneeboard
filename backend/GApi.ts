@@ -11,9 +11,11 @@ import { PublicationDao } from './PublicationDao'
 import { PublishedTemplate } from './models/PublishedTemplate'
 import { Template } from './models/Template'
 import { TemplateDao } from './TemplateDao'
+import { version } from '../backend/constants.js'
 import { Sunlight } from './models/Sunlight'
 import { UserMiniView } from './models/UserMiniView'
 import { Exporter } from './Exporter'
+import { SessionDao } from './SessioDao'
 
 // Google API key
 
@@ -173,6 +175,57 @@ export class GApi {
     }
 
     /**
+     * Turn code into an ICAO code
+     * @param {*} code anything to be turned into an ICAO code
+     * @returns a four letter icao code or null if not valid
+    */
+    public static getIcao(code:string):string|null {
+        const output = null
+        if( Airport.isValidCode(code)) {
+            if( code.length == 3) {
+                return ('K' + code.toUpperCase())
+            } else if( code.length == 4) {
+                return code.toUpperCase()
+            }
+        }
+        return null
+    }
+
+    static getLocId(code:string) {
+        const output = null
+
+        if( Airport.isValidCode(code)) {
+            if( code.length == 3) {
+                return code.toUpperCase()
+            } else if( code.length == 4) {
+                return code.substring(1, 4).toUpperCase()
+            }
+        }
+        return null
+    }
+
+    public static async getSession(req:any):Promise<any> {
+        const output = {
+            version: version,
+            aced: GApi.getAirportCurrentEffectiveDate(),
+            camv: AirportView.currentVersion,
+        }
+        // Enrich with user data if possible
+        if( req && req.query && req.query.user) {
+            const user:User|undefined = await UserDao.getUserFromHash(req.query.user)
+            // console.log('[userTools.userMiniFromRequest] user ' + JSON.stringify(user))
+            if( user) {
+                const userMini = await UserTools.userMini(user)
+                output['user'] = userMini
+                SessionDao.create(user.id)
+            }
+        }
+        // console.log('[GApi.getSession]', JSON.stringify(output))    
+        return output
+    }
+
+
+    /**
      * 
      * @param from 
      * @param to 
@@ -211,36 +264,6 @@ export class GApi {
             console.log(error)
         })
         return data
-    }
-
-    /**
-     * Turn code into an ICAO code
-     * @param {*} code anything to be turned into an ICAO code
-     * @returns a four letter icao code or null if not valid
-    */
-    public static getIcao(code:string):string|null {
-        const output = null
-        if( Airport.isValidCode(code)) {
-            if( code.length == 3) {
-                return ('K' + code.toUpperCase())
-            } else if( code.length == 4) {
-                return code.toUpperCase()
-            }
-        }
-        return null
-    }
-
-    static getLocId(code:string) {
-        const output = null
-
-        if( Airport.isValidCode(code)) {
-            if( code.length == 3) {
-                return code.toUpperCase()
-            } else if( code.length == 4) {
-                return code.substring(1, 4).toUpperCase()
-            }
-        }
-        return null
     }
 
     public static isMilitary(freq:string) {

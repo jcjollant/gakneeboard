@@ -192,4 +192,23 @@ describe( 'GApi Tests', () => {
     test('Current Effective Date', () => {
         expect(GApi.getAirportCurrentEffectiveDate()).toBe(currentAsOf)
     })
+
+    test('Session', async () => {
+        expect( await GApi.getSession(undefined)).toBeUndefined()
+        const req1 = {}
+        const session1 = await GApi.getSession(req1)
+        expect(session1).toBeDefined()
+        expect(session1.version).toBeDefined()
+        expect(session1.aced).toBeDefined()
+        expect(session1.camv).toBeDefined()
+        expect(session1.user).toBeUndefined()
+        const req2 = { query: { user: jcHash}}
+        const session2 = await GApi.getSession(req2)
+        expect(session2).toBeDefined()
+        expect(session2.version).toBeDefined()
+        expect(session2.aced).toBeDefined()
+        expect(session2.camv).toBeDefined()
+        expect(session2.user).toBeDefined()
+
+    })
 })

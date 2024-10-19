@@ -2,11 +2,8 @@ const express =require( "express")
 import cors from "cors";
 import multer from "multer"
 // const cors = require('cors');
-import { version } from '../backend/constants.js'
-import { AceWritter } from "../backend/AceWritter";
 import { GApi, GApiError } from '../backend/GApi'
 import { UserTools } from '../backend/UserTools'
-import { AirportView } from "../backend/models/AirportView";
 import { FeedbackDao } from "../backend/FeedbackDao";
 import { Maintenance } from '../backend/Maintenance'
 import { NavlogTools } from "../backend/NavlogTools";
@@ -39,16 +36,7 @@ app.use(express.json()) // for parsing application/json
 // });
 
 app.get("/", async (req, res) => {
-    const user = await UserTools.userMiniFromRequest(req)
-    const output = {
-        version: version,
-        aced: GApi.getAirportCurrentEffectiveDate(),
-        camv: AirportView.currentVersion,
-    }
-    // console.log('[index.get.root]', user, output)
-    if(user) {
-        output.user = user
-    }
+    const output = await GApi.getSession(req)
     res.send(output)
 });
 
