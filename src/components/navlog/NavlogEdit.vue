@@ -63,7 +63,7 @@
                     <div title="Checkpoint Name">CheckPt</div>
                     <div title="Checkpoint Altitude">Alt</div>
                 </div>
-                <div v-for="(i,index) in items" class="checkpointGrid bb">
+                <div v-for="(i,index) in items" class="checkpointGrid bb" :class="'checkpoint'+index">
                     <div class="actions">
                         <i v-if="i.canDelete" class="pi pi-times actionDelete clickable" title="Delete checkpoint"
                             @click="onItemDelete(index)"></i>
@@ -85,7 +85,7 @@
                     <div title="Leg Fuel">Fuel</div>
                 </div>
                 <div v-for="(i,index) in items.slice(0, items.length - 1)" 
-                    class="legGrid bb" :class="i.attitudeClass"
+                    class="legGrid bb" :class="i.attitudeClass + ' leg' + index"
                     @click="onEdit(index,false)">
                     <!-- <div class="editable trueHeading" @click="onItemEdit(index)">{{ Formatter.heading(i.entry.th) }}</div> -->
                     <div class="magneticHeading editable">{{ Formatter.heading(i.entry.mh) }}</div>

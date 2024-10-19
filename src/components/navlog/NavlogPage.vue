@@ -1,3 +1,92 @@
+<template>
+    <div class="contentPage pageNavlog">
+        <div v-if="mode == modeEdit">
+            <Header title="NavLog Editor" :hideReplace="false" 
+                @replace="emits('replace')"></Header>
+            <NavlogEdit :navlog="navlog"
+                @toast="onToast" @cancel="onEditCancel" @apply="onEditApply" />
+        </div>
+        <div v-else-if="checkpoints==null">
+            <Header :title="title" :page="true" 
+                @click="onHeaderClick" @replace="emits('replace')"></Header>
+            <PlaceHolder title="No Entries"></PlaceHolder>
+        </div>
+        <div v-else class="main">
+            <div class="checkpoints br">
+                <div class="checkpointGrid checkpointHeader navlogHeader">
+                    <div title="Checkpoint">CheckPt</div>
+                    <div title="Altitude">Alt.</div>
+                </div>
+                <div v-for="v in checkpoints" class="checkpointGrid bb">
+                    <div class="name br" :class="{'checkpointStrong':(v.name.length < 7)}">{{ v.name }}</div>
+                    <div class="altitudeGroup">
+                        <span class="altitude checkpointStrong">{{ Formatter.altitude( v.alt) }}</span>
+                        <i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(v.att=='+'),'pi-arrow-down-right attDesc':(v.att=='-')}"></i>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="legs" v-if="legs">
+                <div class="title clickable" @click="onHeaderClick">{{title}}</div>
+                <div class="legsHeader legsGrid navlogHeader bb">
+                    <div title="Magnetic Heading">MH</div>
+                    <!-- <div title="Compass Heading">CH</div> -->
+                    <div title="Distance">Dist.</div>
+                    <div title="Ground Speed">GS</div>
+                    <div>Notes</div>
+                    <div>Time</div>
+                    <div>Fuel</div>
+                </div>
+                <div v-if="legs" v-for="(l,index) in legs" 
+                    class="legsGrid bb"  :class="getLegClass(l,index)">
+                    <div class="headingGroup">
+                        <div class="heading">{{ Formatter.heading(l.mh) }}</div>
+                        <!-- <div class="heading">{{ e.ch }}</div> -->
+                    </div>
+                    <div class="bl br">{{ l.ld }}</div>
+                    <div class="">{{ l.gs }}</div>
+                    <div class="bl legNote">
+                        <i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(l.att=='+'),'pi-arrow-down-right attDesc':(l.att=='-'),'pi-arrow-right attCruise':(l.att!='+'&&l.att!='-')}"></i>
+                    </div>
+                    <div class="bl">{{ Formatter.legTime(l.lt) }}</div>
+                    <div class="bl fuel" :class="{'fuelBingo': l.fr < navlog.fr}">{{ l.lf }}<span class="fuelRemaining"  :class="{'fuelRemainingBingo': l.fr < navlog.fr}">{{ Formatter.fuel(l.fr) }}</span></div>
+                </div>
+                <div v-if="truncated" class="legsFooterTruncated">
+                    <div>{{ navlog.entries.length - legs.length - 1 }} more legs</div>
+                    <i class="pi pi-arrow-right"></i>
+                </div>
+                <div v-else class="legsGrid legsFooter">
+                    <div class="totalDistance bl br bb">{{ Formatter.distance(navlog.td) }}</div>
+                    <div class="totalTime bl bb">{{ Formatter.legTime(navlog.tt) }}</div>
+                    <div class="totalFuel bl bb">{{ Formatter.fuel(navlog.ff - navlog.ft) }}</div>
+                </div>
+            </div>
+            <!-- <div class="notes">Notes</div> -->
+            <div class="fuelRecap" v-if="navlog && mode!=modeEdit">
+                <div class="fuelRecapGroup departureFuel">
+                    <div class="fuelRecapGroupLabel">Departure Fuel</div>
+                    <div class="fuelRecapAvailable fuelRecapFuel">{{ Formatter.fuel(navlog.ff) }}</div>
+                    <div class="fuelRecapTime">{{ formatFuelRecapTime(navlog.ff)}}</div>
+                </div>
+                <div class="fuelRecapGroup">
+                    <div class="fuelRecapGroupLabel">Used</div>
+                    <div class="fuelRecapUsed fuelRecapFuel">{{ Formatter.fuel(navlog.ff - navlog.ft) }}</div>
+                </div>
+                <div class="fuelRecapGroup destinationFuel">
+                    <div class="fuelRecapGroupLabel">Destination Fuel</div>
+                    <div class="fuelRecapAvailable fuelRecapFuel" :class="{'fuelRecapAvailableReserve':navlog.ft < navlog.fr}">{{ Formatter.fuel(navlog.ft) }}</div>
+                    <div class="fuelRecapTime"  :class="{'fuelRecapAvailableReserve':navlog.ft < navlog.fr}">{{ formatFuelRecapTime(navlog.ft) }}</div>
+                </div>
+                <div class="fuelRecapGroup">
+                    <div class="fuelRecapGroupLabel">Fuel Reserve</div>
+                    <div class="fuelRecapReserve fuelRecapFuel">{{ Formatter.fuel(navlog.fr) }}</div>
+                    <div class="fuelRecapTime">{{ formatFuelRecapTime(navlog.fr) }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
@@ -85,6 +174,13 @@ function formatFuelRecapTime(value) {
     return '';
 }
 
+function getLegClass(leg, index) {
+    let output = 'leg'+index;
+    if(leg.att == '+') output += ' legClimb';
+    else if(leg.att == '-') output += ' legDesc'
+    return output;
+}
+
 // New NavLog configuration is available
 // If newNavLog is 'continue' we continue the previous page
 function onEditApply(newNavlog) {
@@ -126,95 +222,6 @@ function onToast(data) {
 }
 
 </script>
-
-<template>
-    <div class="contentPage pageNavlog">
-        <div v-if="mode == modeEdit">
-            <Header title="NavLog Editor" :hideReplace="false" 
-                @replace="emits('replace')"></Header>
-            <NavlogEdit :navlog="navlog"
-                @toast="onToast" @cancel="onEditCancel" @apply="onEditApply" />
-        </div>
-        <div v-else-if="checkpoints==null">
-            <Header :title="title" :page="true" 
-                @click="onHeaderClick" @replace="emits('replace')"></Header>
-            <PlaceHolder title="No Entries"></PlaceHolder>
-        </div>
-        <div v-else class="main">
-            <div class="checkpoints br">
-                <div class="checkpointGrid checkpointHeader navlogHeader">
-                    <div title="Checkpoint">CheckPt</div>
-                    <div title="Altitude">Alt.</div>
-                </div>
-                <div v-for="v in checkpoints" class="checkpointGrid bb">
-                    <div class="name br" :class="{'checkpointStrong':(v.name.length < 7)}">{{ v.name }}</div>
-                    <div class="altitudeGroup">
-                        <span class="altitude checkpointStrong">{{ Formatter.altitude( v.alt) }}</span>
-                        <i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(v.att=='+'),'pi-arrow-down-right attDesc':(v.att=='-')}"></i>
-                    </div>
-                    
-                </div>
-            </div>
-            <div class="legs" v-if="legs">
-                <div class="title clickable" @click="onHeaderClick">{{title}}</div>
-                <div class="legsHeader legsGrid navlogHeader bb">
-                    <div title="Magnetic Heading">MH</div>
-                    <!-- <div title="Compass Heading">CH</div> -->
-                    <div title="Distance">Dist.</div>
-                    <div title="Ground Speed">GS</div>
-                    <div>Notes</div>
-                    <div>Time</div>
-                    <div>Fuel</div>
-                </div>
-                <div v-if="legs" v-for="e in legs" 
-                    class="legsGrid bb"  :class="{'legClimb':(e.att=='+'),'legDesc':(e.att=='-')}">
-                    <div class="headingGroup">
-                        <div class="heading">{{ Formatter.heading(e.mh) }}</div>
-                        <!-- <div class="heading">{{ e.ch }}</div> -->
-                    </div>
-                    <div class="bl br">{{ e.ld }}</div>
-                    <div class="">{{ e.gs }}</div>
-                    <div class="bl legNote">
-                        <i class='pi attitude' :class="{'pi-arrow-up-right attClimb':(e.att=='+'),'pi-arrow-down-right attDesc':(e.att=='-'),'pi-arrow-right attCruise':(e.att!='+'&&e.att!='-')}"></i>
-                    </div>
-                    <div class="bl">{{ Formatter.legTime(e.lt) }}</div>
-                    <div class="bl fuel" :class="{'fuelBingo': e.fr < navlog.fr}">{{ e.lf }}<span class="fuelRemaining"  :class="{'fuelRemainingBingo': e.fr < navlog.fr}">{{ Formatter.fuel(e.fr) }}</span></div>
-                </div>
-                <div v-if="truncated" class="legsFooterTruncated">
-                    <div>{{ navlog.entries.length - legs.length - 1 }} more legs</div>
-                    <i class="pi pi-arrow-right"></i>
-                </div>
-                <div v-else class="legsGrid legsFooter">
-                    <div class="totalDistance bl br bb">{{ Formatter.distance(navlog.td) }}</div>
-                    <div class="totalTime bl bb">{{ Formatter.legTime(navlog.tt) }}</div>
-                    <div class="totalFuel bl bb">{{ Formatter.fuel(navlog.ff - navlog.ft) }}</div>
-                </div>
-            </div>
-            <!-- <div class="notes">Notes</div> -->
-            <div class="fuelRecap" v-if="navlog && mode!=modeEdit">
-                <div class="fuelRecapGroup">
-                    <div class="fuelRecapGroupLabel">Departure Fuel</div>
-                    <div class="fuelRecapAvailable fuelRecapFuel">{{ Formatter.fuel(navlog.ff) }}</div>
-                    <div class="fuelRecapTime">{{ formatFuelRecapTime(navlog.ff)}}</div>
-                </div>
-                <div class="fuelRecapGroup">
-                    <div class="fuelRecapGroupLabel">Used</div>
-                    <div class="fuelRecapUsed fuelRecapFuel">{{ Formatter.fuel(navlog.ff - navlog.ft) }}</div>
-                </div>
-                <div class="fuelRecapGroup">
-                    <div class="fuelRecapGroupLabel">Destination Fuel</div>
-                    <div class="fuelRecapAvailable fuelRecapFuel" :class="{'fuelRecapAvailableReserve':navlog.ft < navlog.fr}">{{ Formatter.fuel(navlog.ft) }}</div>
-                    <div class="fuelRecapTime"  :class="{'fuelRecapAvailableReserve':navlog.ft < navlog.fr}">{{ formatFuelRecapTime(navlog.ft) }}</div>
-                </div>
-                <div class="fuelRecapGroup">
-                    <div class="fuelRecapGroupLabel">Fuel Reserve</div>
-                    <div class="fuelRecapReserve fuelRecapFuel">{{ Formatter.fuel(navlog.fr) }}</div>
-                    <div class="fuelRecapTime">{{ formatFuelRecapTime(navlog.fr) }}</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</template>
 
 <style scoped>
 .altitude {
