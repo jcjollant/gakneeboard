@@ -17,6 +17,12 @@ Run the test suite:
 ## TODO
 
 # Done
+## 10/20/2024
+* removed duplicate publications request
+## 10/19/2024
+* Reorders navlog column GS > Dist > Time
+* Added calculations for leg time and leg fuel
+* Changed home page meta description
 ## 10/17/2024
 * NavLog tile added hint to no settings
 * Menu shrinks to fit Tablet display / Narrow pages 
