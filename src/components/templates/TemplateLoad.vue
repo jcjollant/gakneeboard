@@ -90,9 +90,6 @@ const props = defineProps({
 })
 
 function loadProps(props) {
-  if(newCurrentUser.loggedIn) {
-    TemplateData.getPublications().then(list => publicTemplates.value = list)
-  }
 
   // Current user
   user.value = newCurrentUser
@@ -107,6 +104,9 @@ onMounted( () => {
 
 watch( props, async() => {
   loadProps( props)
+  if(newCurrentUser.loggedIn) {
+    TemplateData.getPublications().then(list => publicTemplates.value = list)
+  }
 })
 
 // End of props management
