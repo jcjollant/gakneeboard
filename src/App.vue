@@ -89,6 +89,7 @@ const templateModified = ref(false)
 const printFlipMode = ref(false)
 const printPreview = ref(false)
 const printSingles = ref(false)
+let printTime = 0;
 const showEditor = ref(false)
 const showFeedback = ref(false)
 const showHowDoesItWork = ref(true)
@@ -99,7 +100,10 @@ const versionText = ref('')
 
 function afterPrint() {
   // console.log('[App.afterPrint]')
-  restorePrintOptions();
+  const now = new Date().getTime()
+  if( now - printTime > 500) {
+    restorePrintOptions();
+  }
 }
 
 function getTemplateName() {
@@ -330,10 +334,8 @@ function onPrint(options) {
 
   // print window content after a short timeout to let flipmode kickin
   setTimeout( async () => {
-    return new Promise( resolve => {
-      window.print();
-      resolve(true)
-    })
+    printTime = new Date().getTime();
+    window.print();
   }, 500);
 }
 
@@ -391,13 +393,13 @@ function updateOffsets() {
 
 <style scoped>
 .editorButton {
-  position: absolute;
+  position: fixed;
   right: 10px;
   top: 10px;
 }
 
 .feedbackButton {
-  position: absolute;
+  position: fixed;
   left: 10px;
   bottom: 10px;
 }
@@ -459,7 +461,7 @@ function updateOffsets() {
   z-index: 1;
 }
 .menu {
-  position: absolute;
+  position: fixed;
   left:5px;
   top:5px;
 }
