@@ -17,8 +17,11 @@ Run the test suite:
 ## TODO
 
 # Done
+##
+* Afterprint event for ipad
 ## 10/20/2024
 * removed duplicate publications request
+* Version title on mouse over version
 ## 10/19/2024
 * Reorders navlog column GS > Dist > Time
 * Added calculations for leg time and leg fuel
