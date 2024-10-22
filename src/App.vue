@@ -97,12 +97,9 @@ const singlePage = ref(false)
 const toast = useToast()
 const versionText = ref('')
 
-function doPrint() {
-  return new Promise( resolve => {
-    window.print();
-    restorePrintOptions();
-    resolve(true)
-  })
+function afterPrint() {
+  // console.log('[App.afterPrint]')
+  restorePrintOptions();
 }
 
 function getTemplateName() {
@@ -294,8 +291,12 @@ onMounted(async () => {
     loadTemplate(getTemplateDemoTiles())
     saveActiveTemplate()
   }
+  // position the resize listener and invoke once
   window.addEventListener('resize', updateOffsets)
   updateOffsets()
+  // 
+  window.addEventListener('afterprint', afterPrint)
+
   // Analytics
   inject();
 })
@@ -328,7 +329,12 @@ function onPrint(options) {
   showHowDoesItWork.value = false;
 
   // print window content after a short timeout to let flipmode kickin
-  setTimeout(doPrint, 500);
+  setTimeout( async () => {
+    return new Promise( resolve => {
+      window.print();
+      resolve(true)
+    })
+  }, 500);
 }
 
 function onPrintOptions(options) {
@@ -348,6 +354,7 @@ function onPrintPreview(show) {
 
 onUnmounted(() => {
   window.removeEventListener('resize', updateOffsets)
+  window.removeEventListener('afterprint', afterPrint)
 })
 
 function restorePrintOptions() {
