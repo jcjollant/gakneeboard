@@ -10,6 +10,8 @@ export class UserUrl {
     static radioFlowTileGuide:string = 'https://gakneeboard.wordpress.com/2024/08/03/radio-flow-tile-guide/'
     static sunlightTileGuide:string = 'https://gakneeboard.wordpress.com/2024/08/10/sunlight-tile-guide/'
 
+    static printGuide:string = 'https://gakneeboard.wordpress.com/print-guide/'
+
     static facebookGroup:string = 'https://www.facebook.com/groups/1479675382917767'
     static main:string = 'https://kneeboard.ga'
     static patreon:string = 'https://patreon.com/GAKneeboard'
