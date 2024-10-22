@@ -13,13 +13,17 @@
     <!-- </FieldSet> -->
     <FieldSet legend="Printing Tips">
       <p class="note">
-        <li>0.25" <b>margins</b> work well with two pages print on Letter paper</li>
         <li>Enable <b>Background Graphics</b> print setting for best results with Checklists</li>
         <li>One page per sheet in <b>Portrait</b> layout make great PDFs</li>
         <li>Two pages per sheet in <b>Landscape</b> layout will fold to kneeboard size</li>
+        <li>Printing from <b>iPads / iPhones</b> requires a page reload to exit print mode</li>
       </p>
       </FieldSet>
     <div class="actionDialog gap-2">
+      <div class="floatLeft">
+          <font-awesome-icon :icon="['fas', 'question']"
+              @click="onHelp" title="Perfect Prints help"></font-awesome-icon>
+      </div>
       <Button label="Do Not Print" @click="onClose" link></Button>
       <Button label="Print" @click="onPrint"></Button>
     </div>
@@ -35,6 +39,7 @@ import OneChoice from '../shared/OneChoice.vue';
 import Button from "primevue/button";
 import Dialog from 'primevue/dialog'
 import FieldSet from 'primevue/fieldset'
+import { UserUrl } from '../../lib/UserUrl';
 
 const emits = defineEmits(["close","print","options"]);
 
@@ -78,6 +83,10 @@ function onClose() {
   emits('close')
 }
 
+function onHelp() {
+  UserUrl.open( UserUrl.printGuide)
+}
+
 function onPrint() {
   // console.log('[Print.onPrint] options', JSON.stringify(options.value),'pageOptions', JSON.stringify(pageOption.value))
   emits('print', getOptions())
@@ -90,6 +99,17 @@ function onNewOptions() {
 </script>
 
 <style scoped>
+.floatLeft {
+    position:absolute;
+    left: 2rem;
+    line-height: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    color: var(--bg);
+    font-size: 0.9rem;
+}
 .modesList {
   display: flex;
   flex-flow: wrap;
@@ -102,9 +122,6 @@ function onNewOptions() {
   align-items: center;
   gap: 0.5rem 1rem;
   line-height: 1rem;
-  /* line-height: 2rem; */
-  /* vertical-align: middle; */
-  /* line-height: 1.5rem;; */
 }
 .pageOptionLabel {
   text-align: right;
