@@ -1,12 +1,16 @@
 <template>
-  <div v-if="printPreview">
-    <div v-if="activeTemplate" class="printPreview">
-      <div></div>
-      <div class="printPages"  :class="{'twoPages':!printSingles}" >
-        <Page v-for="(page,index) in activeTemplate.data" :data="page"
-          :class="{flipMode:(index % 2 == 1 && printFlipMode),printPageBreak:(printSingles || index % 2 == 1)}" />
+  <div v-if="printPreview" @click="restorePrintOptions">
+    <div v-if="activeTemplate">
+      <div v-if="printSingles" v-for="(page,index) in activeTemplate.data" class="printOnePage printPageBreak">
+        <div class="onePage">
+          <Page :data="page"
+            :class="{flipMode:(index % 2 == 1 && printFlipMode)}"/>
+        </div>
       </div>
-      <div></div>
+      <div v-else class="printTwoPages printPageBreak" v-for="(page) in activePages">
+        <Page :data="page.front" />
+        <Page :data="page.back" :class="{flipMode:printFlipMode}" />
+      </div>
     </div>
   </div>
   <div v-else class="main">
@@ -40,8 +44,7 @@
     <MenuButton id="btnEditor" icon="pen-to-square" title="Toggle Editor Mode" label="Page Editor" :active="showEditor"
      :class="{'editorButtonActive':showEditor}" class="editorButton" 
       @click="onEditor"/>
-    <div class="versionDialog" :title="'Frontend/Backend versions ' + versionText" >{{ versionText }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span>
-    </div>
+    <div class="versionDialog" :title="'Frontend/Backend versions ' + versionText" >{{ versionText }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span></div>
   </div>
   <Menu class="menu" :activeTemplate="activeTemplate" v-show="!printPreview" v-if="!showEditor" :singlePage="singlePage"
     @howDoesItWork="showHowDoesItWork=true"
@@ -80,8 +83,9 @@ import MenuButton from './components/menu/MenuButton.vue'
 // const frontPageData = ref(null)
 // const backPageData = ref(null)
 const activeTemplate = ref(null)
-const cssPageGap = 80
-const cssPageWidth = 490
+const activePages = ref(null)
+let cssPageGap = -1
+let cssPageWidth = -1
 const offset = ref(0)
 const offsetLast = ref(0)
 const templateModified = ref(false)
@@ -89,7 +93,6 @@ const templateModified = ref(false)
 const printFlipMode = ref(false)
 const printPreview = ref(false)
 const printSingles = ref(false)
-let printTime = 0;
 const showEditor = ref(false)
 const showFeedback = ref(false)
 const showHowDoesItWork = ref(true)
@@ -99,11 +102,8 @@ const toast = useToast()
 const versionText = ref('')
 
 function afterPrint() {
-  // console.log('[App.afterPrint]')
-  const now = new Date().getTime()
-  if( now - printTime > 500) {
-    restorePrintOptions();
-  }
+  restorePrintOptions();
+  window.removeEventListener('focus', afterPrint)
 }
 
 function getTemplateName() {
@@ -136,7 +136,15 @@ function loadTemplate(template=null) {
   template.data = data
 
   activeTemplate.value = template;
-  updateOffsets() // compute offsetLast
+  // build a list of neighbor pages, used for printing
+  const pageList = []
+  for( let index = 0; index < template.data.length; index+=2) {
+    const pages = {front:template.data[index], back:template.data[index+1]??null}
+    pageList.push(pages)
+  }
+  activePages.value = pageList
+  updateOffsets()
+
   // restore modified state
   templateModified.value = template.modified;
   // console.log('[App.loadTemplate]', offset.value, offsetLast.value)
@@ -274,7 +282,6 @@ onMounted(async () => {
       // Get that publication data
       TemplateData.getPublication(code).then( template => {
         // console.log('[App.onMounted] sheet', JSON.stringify(sheet))
-        // showToast('Fetch', 'Sheet found')
         if(template) {
           loadTemplate(template)
         } else {
@@ -295,11 +302,12 @@ onMounted(async () => {
     loadTemplate(getTemplateDemoTiles())
     saveActiveTemplate()
   }
+
+
   // position the resize listener and invoke once
   window.addEventListener('resize', updateOffsets)
   updateOffsets()
-  // 
-  window.addEventListener('afterprint', afterPrint)
+  // window.addEventListener('afterprint', afterPrint)
 
   // Analytics
   inject();
@@ -334,8 +342,16 @@ function onPrint(options) {
 
   // print window content after a short timeout to let flipmode kickin
   setTimeout( async () => {
-    printTime = new Date().getTime();
-    window.print();
+    return new Promise( (res) => {
+      const preTime = new Date().getTime();
+      window.print();
+      const postTime = new Date().getTime();
+      // on iOS, window.print returns immediately
+      if(postTime - preTime > 500) { 
+        restorePrintOptions();
+      }
+      res(true)
+    })
   }, 500);
 }
 
@@ -355,8 +371,8 @@ function onPrintPreview(show) {
 }
 
 onUnmounted(() => {
+  // remove event listeners
   window.removeEventListener('resize', updateOffsets)
-  window.removeEventListener('afterprint', afterPrint)
 })
 
 function restorePrintOptions() {
@@ -380,13 +396,28 @@ function showToast(data) {
 function updateOffsets() {
   // console.log('[App.onResize]', window.innerWidth)
   if(!activeTemplate.value) return;
+
+  if( cssPageGap == -1) {
+    const elt = getComputedStyle(document.body)
+    // transform
+
+    cssPageGap = parseInt(elt.getPropertyValue('--pages-gap'));
+    cssPageWidth = parseInt(elt.getPropertyValue('--page-width'));
+    // console.log('[App.updateOffset] cssPageGap', cssPageGap)
+  }
+
   // how many pages can fit in the new width?
-  const fittingPages = Math.floor((window.innerWidth - cssPageGap) / (cssPageWidth + cssPageGap))
+  const pageFit = Math.floor((window.innerWidth - cssPageGap) / (cssPageWidth + cssPageGap))
+  const pageCount = activeTemplate.value.data.length;
   // cssPageGap * (1 + numPages) +  cssPageWidth * numPages
-  offsetLast.value = Math.max(activeTemplate.value.data.length - fittingPages, 0)
+  const maxOffset = Math.max(pageCount - pageFit, 0)
   // console.log('[App.onResize] fitting', fittingPages, 'offsetLast', offsetLast.value)
-  if(offset.value > offsetLast.value) offset.value = offsetLast.value
-  singlePage.value = fittingPages == 1;
+
+  // adjust offset if we have blankspace
+  if(offset.value > maxOffset) offset.value = maxOffset
+  singlePage.value = pageFit == 1;
+  offsetLast.value = maxOffset;
+  // console.log('[App.updateOffset] offsetLast', maxOffset)
 }
 
 </script>
@@ -407,7 +438,12 @@ function updateOffsets() {
 .main {
   display: flex;
   flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  /* place-items: center; */
   gap: 1rem;
+  min-height: 100vh;
+  /* height: 100%; */
 }
 
 .pageGroup {
@@ -418,7 +454,7 @@ function updateOffsets() {
 }
 
 .pageGroup .editor {
-  min-width: var(--min-width-editor);
+  min-width: var(--editor-min-width);
 }
 
 .pageAll {
@@ -434,24 +470,25 @@ function updateOffsets() {
   min-width: 1080px;
 }
 
-.printPreview {
-  display:grid;
-  grid-template-columns: auto auto auto;
-}
-.printPages {
-  display: grid;
-  grid-template-columns: auto;
-  gap: 0 var(--pages-gap);
+.printOnePage {
+  display: flex;
+  width: 100%;
   justify-content: center;
 }
-.printPages.twoPages {
+.printTwoPages {
+  display: grid;
   grid-template-columns: auto auto;
+  gap: 0 var(--pages-gap);
+  width: fit-content;
 }
-.printPageBreak {
-  break-after: page;
+.twoPages {
+    display: flex;
+    gap: var(--pages-gap);
 }
+
 .onePage {
-  display:flex
+  display:flex;
+  justify-content: center;
 }
 .offsetButton {
   font-size: 2rem;
@@ -495,6 +532,15 @@ function updateOffsets() {
   font-style: italic;
   color: orange;
   opacity: 0.4;
+}
+
+.versionDialog {
+  position: fixed;
+  right: 5px;
+  bottom: 5px;
+  font-size: 8px;
+  margin:auto;
+  color: darkslategrey;
 }
 
 </style>
