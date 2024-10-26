@@ -14,7 +14,6 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import Button from 'primevue/button'
-import { faDice } from '@fortawesome/free-solid-svg-icons';
 const emits = defineEmits(['swap'])
 const show = ref(true)
 //---------------------
@@ -23,7 +22,7 @@ const props = defineProps({
   show: { type: Boolean, default: true},
 })
 
-function loadProps( props) {
+function loadProps( props:any) {
   show.value = props.show;
 }
 
@@ -46,14 +45,14 @@ function swap(from:number, to:number) {
 
 <style scoped>
 * {
-    --left-offset1: 226px;
-    --top-offset1: 122px;
-    --left-offset2: 113px;
-    --top-offset2: 244px;
-    --left-offset3: 348px;
-    --top-offset3: 390px;
-    --top-offset4: 512px;
-    --top-offset5: 655px;
+    --left-offset1: calc( var(--tile-width) - var(--editor-btn-half) + 2px);
+    --left-offset2: calc(var(--tile-width) / 2);
+    --left-offset3: calc(var(--tile-width) * 1.5 - var(--editor-btn-half));
+    --top-offset1:  calc(var(--tile-height) / 2 - var(--editor-btn-half));
+    --top-offset2:  calc(var(--tile-height) - var(--editor-btn-half));
+    --top-offset3:  calc(var(--tile-height) * 1.5 - var(--editor-btn-half));
+    --top-offset4:  calc(var(--tile-height) * 2 - var(--editor-btn-half));
+    --top-offset5:  calc(var(--tile-height) * 2.5 - var(--editor-btn-half));
 }
 .tileOverlay {
     position: relative;

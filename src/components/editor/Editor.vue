@@ -149,7 +149,7 @@ function swapTilesRight(params) {
   justify-content: center;
   gap: 1rem;
   background-color: lightgrey;
-  min-width: var(--min-width-editor)
+  min-width: var(--editor-min-width)
 }
 .editorBottom {
   display: flex;
