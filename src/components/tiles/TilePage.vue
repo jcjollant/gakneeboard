@@ -1,3 +1,9 @@
+<template>
+    <div class="tiles pageTiles">
+        <Tile v-for="tile in tiles" :tile="tile" @update="onUpdate" @toast="onToast" />
+    </div>
+</template>
+
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
@@ -43,16 +49,10 @@ function onUpdate(newTileData) {
 
 </script>
 
-<template>
-    <div class="tiles pageTiles">
-        <Tile v-for="tile in tiles" :tile="tile" @update="onUpdate" @toast="onToast" />
-    </div>
-</template>
-
 <style scoped>
 .tiles {
   display: grid;
   grid-template-columns: auto auto;
-  gap: 1px;
+  gap: 1px 2px;
 }
 </style>
