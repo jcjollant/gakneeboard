@@ -44,9 +44,9 @@
         <Button :label="singlePage?'':'Load'" icon="pi pi-folder-open" id="menuLoad" title="Open Existing Template" @click="onMenuLoad"></Button>
         <Button :label="singlePage?'':'Save'" icon="pi pi-save" id="menuSave" title="Save Active Template" @click="onMenuSave"></Button>
         <Button :label="singlePage?'':'Export'" icon="pi pi-file-export" id="menuExport" title="Export Active Template" @click="onMenuExport"></Button>
-        <Button :label="singlePage?'':'Demos'" icon="pi pi-clipboard" id="menuDemos" title="Load Demo Template" @click="showDemoSelection=true"></Button>
+        <Button :label="singlePage?'':'Demos'" icon="pi pi-clipboard" id="menuDemos" title="Load Demo Template" @click="showDemoSelection=true" severity="secondary"></Button>
         <div class="separator" @click="showMaintenance=true"></div>
-        <Button icon="pi pi-info-circle" id="menuAbout" title="About / Guides / Warnings"
+        <Button icon="pi pi-info-circle" id="menuAbout" title="About / Guides / Warnings" severity="secondary"
           @click="showAbout=true"></Button>
       </div>
     </div>
@@ -270,7 +270,7 @@ function onTemplateDelete(template) {
 }
 
 /**
- * Page dialog wants us to save the page
+ * We are about to change template
  * @param {*} template 
  */
  function onTemplateLoad(template) {
@@ -278,6 +278,7 @@ function onTemplateDelete(template) {
   showTemplateSave.value = false
   showTemplateLoad.value = false
   showDemoSelection.value = false
+  
   const title = 'Load Template "' + template.name + '"'
   confirmAndLoad( title, template)
 }
