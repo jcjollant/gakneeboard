@@ -28,10 +28,10 @@ function airportCurrent( airport) {
   return dateMatch && modelMatch;
 }
 
-export async function authenticate( source, token) {
+// Payload should look like {source:'google',token:'some.token'}
+export async function authenticationRequest( payload) {
   return new Promise( (resolve, reject) => {
     const url = apiRootUrl + 'authenticate'
-    const payload = {source:source, token:token}
     axios.post(url, payload, contentTypeJson)
       .then( response => {
         // remove unknown airports because some may be due to unauhtenticated user
