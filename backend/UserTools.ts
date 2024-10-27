@@ -5,6 +5,7 @@ import { TemplateDao } from './TemplateDao';
 import { UserDao } from './UserDao'
 
 export class UserTools {
+    static apple:string = 'apple'
     static facebook:string = 'facebook'
     static google:string = 'google'
 
@@ -17,9 +18,8 @@ export class UserTools {
         if( body.source == UserTools.google) {
             // decode user email
             user = UserTools.decodeGoogle( body.token);
-        } else if( body.source == UserTools.facebook) {
-            // decode user email
-            user = UserTools.decodeFacebook( body.token);
+        } else if( body.source == UserTools.apple) {
+            user = UserTools.decodeApple( body.token, body.user);
         } else {
             throw new Error('Invalid source');            
         }
@@ -40,28 +40,46 @@ export class UserTools {
         return User.createSha256(user)
     }
 
-    static decodeFacebook(credential:any):User {
-        // const credential = JSON.parse(credentialString)
-        if(!('authInfo' in credential)) throw new Error('authInfo is required')
-        const authInfo = credential.authInfo;
-        if(!('id' in authInfo)) throw new Error('id is required')
-        const userId = authInfo.id;
-        const sha256:string = UserTools.createUserSha(UserTools.facebook, userId)
-        const user:User = new User( 0, sha256)
-        user.setSource(UserTools.facebook)
-        user.setEmail(authInfo.email)
-        user.setName(authInfo.first_name)
+    static decodeApple(token:string, userAny:any):User {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        const tokenData = JSON.parse(jsonPayload);
+        console.log('[UserTools.decodeApple]', tokenData)
+        const email = tokenData.email;
+        const sha256:string = UserTools.createUserSha(UserTools.apple, email)
+        const user:User = new User(0, sha256)
+        user.setSource(UserTools.apple)
+        user.setEmail(email)
+        user.setName(userAny?.name?.firstName??'')
 
         return user;
     }
 
+    // static decodeFacebook(credential:any):User {
+    //     // const credential = JSON.parse(credentialString)
+    //     if(!('authInfo' in credential)) throw new Error('authInfo is required')
+    //     const authInfo = credential.authInfo;
+    //     if(!('id' in authInfo)) throw new Error('id is required')
+    //     const userId = authInfo.id;
+    //     const sha256:string = UserTools.createUserSha(UserTools.facebook, userId)
+    //     const user:User = new User( 0, sha256)
+    //     user.setSource(UserTools.facebook)
+    //     user.setEmail(authInfo.email)
+    //     user.setName(authInfo.first_name)
+
+    //     return user;
+    // }
+
     /**
      * Decode a google credential into a user
-     * @param {*} credential 
+     * @param {*} token 
      * @returns A well formed user object on success, null on failure
      */
-    static decodeGoogle(credential:string):User {
-        const base64Url = credential.split(".")[1];
+    static decodeGoogle(token:string):User {
+        const base64Url = token.split(".")[1];
         const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
         const jsonPayload = atob(base64)
         const decodedToken = JSON.parse(jsonPayload);
