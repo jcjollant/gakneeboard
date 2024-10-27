@@ -239,9 +239,9 @@ function onPrintPrint(options) {
 function onSignOut() {
   confirm.require({
       message: 'You will loose access to your custom content.',
-      header: 'Sign Out',
+      header: 'Close Session',
       rejectLabel: 'Stay in',
-      acceptLabel: 'Ok',
+      acceptLabel: 'Sign Out',
       accept: () => {
         // logout and remo
         newCurrentUser.logout()
