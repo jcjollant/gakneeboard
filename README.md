@@ -24,10 +24,21 @@ Select Table
 Menu Tools > Import/Export Data
 Save files in c:\src\kneeboard.ga\data
 
+## Authentication
+### Apple
+* https://developer.apple.com/account/resources/identifiers/list/serviceId
+Service identifier : ga.kneeboard
+Sign In with Apple > Configure > Website URLs.
+### Google
+* https://console.cloud.google.com/apis/credentials?pli=1&project=kneeboard
+Client ID : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent.com
+
 ## TODO
 * 
 
 # Done
+## 10/26/2024
+* Apple Authentication
 ## 10/19/2024
 * New Sessions table
 ## 10/15/2024
