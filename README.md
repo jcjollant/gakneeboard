@@ -10,6 +10,8 @@ And access via the browser, typically on port 5173
 ## TODO
 
 # Done
+## 10/26/2024
+* Apple ID authentication support
 ## 10/25/2024
 * Exist print mode by clicking
 * iPad print tow pages works
