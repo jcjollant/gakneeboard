@@ -62,7 +62,7 @@ import { onBeforeMount, onMounted, onUnmounted,ref} from 'vue'
 import { inject } from "@vercel/analytics"
 
 import { duplicate, getBackend, newCurrentUser, reportError } from './assets/data.js'
-import { backend, version } from './assets/data.js'
+import { backend, version, postPrint } from './assets/data.js'
 import { EditorAction } from './assets/EditorAction.ts'
 import { getTemplateDemoTiles, pageDataBlank, readPageFromClipboard } from './assets/sheetData'
 import { getToastData, toastError, toastWarning } from './assets/toast'
@@ -343,6 +343,7 @@ function onPrint(options) {
   // print window content after a short timeout to let flipmode kickin
   setTimeout( async () => {
     return new Promise( (res) => {
+      postPrint(options)
       const preTime = new Date().getTime();
       window.print();
       const postTime = new Date().getTime();

@@ -1,4 +1,4 @@
-export const version = 1026
+export const version = 1027
 
 const apiRootUrl = GApiUrl.root
 
@@ -317,6 +317,18 @@ export async function getSunlight( from, to=null, date=null, night=false) {
 
 function getSunlightDate(date) {
   return date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate()
+}
+
+export async function postPrint(options) {
+  const url = apiRootUrl + 'print'
+  return axios.post(url, options, contentTypeJson)
+    .then( response => {
+      return response.data
+    })
+    .catch( error => {
+      reportError( '[data.postPrint] error ' + JSON.stringify(error))
+      return null
+    })
 }
 
 /**

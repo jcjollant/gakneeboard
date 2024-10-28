@@ -10,6 +10,9 @@ And access via the browser, typically on port 5173
 ## TODO
 
 # Done
+## 10/17/2024
+* Print tracking
+* Clearance tile opacity
 ## 10/26/2024
 * Apple ID authentication support
 ## 10/25/2024
