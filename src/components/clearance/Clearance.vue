@@ -68,7 +68,7 @@ function onMenuClick() {
     position:absolute;
     left: 2px;
     bottom: 2px;
-    opacity: 0.07;
+    opacity: 0.2;
 }
 .cleared {
     grid-column: 1;
