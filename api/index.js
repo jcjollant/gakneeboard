@@ -158,6 +158,18 @@ app.get('/publication/:code', async (req, res) => {
     }
 })
 
+app.post('/print', async (req, res) => {
+    const payload = (typeof req.body !== 'string' ? JSON.stringify(req.body) : req.body);
+    const userId = await UserTools.userIdFromRequest(req)
+    await GApi.printSave(userId,payload).then( () => {
+        // console.log('[index.post/sheet]', JSON.stringify(sheet))
+        res.send()
+    }).catch( (e) => {
+        catchError(res, e, 'POST /print')
+    })
+})
+
+
 // Get a list of publications
 app.get('/publications', async (req, res) => {
     // Require authenticated user
@@ -200,7 +212,7 @@ app.get('/templates', async (req, res) => {
         const sheets = await GApi.templateGetList(userId);
         res.send(sheets)
     } catch( e) {
-        catchError(res, e, 'GET /sheets')
+        catchError(res, e, 'GET /templates')
     }
 })
 
@@ -211,7 +223,7 @@ app.post('/template', async (req, res) => {
         // console.log('[index.post/sheet]', JSON.stringify(sheet))
         res.send(template)
     }).catch( (e) => {
-        catchError(res, e, 'POST /sheet')
+        catchError(res, e, 'POST /template')
     })
 })
 

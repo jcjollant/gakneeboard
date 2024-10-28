@@ -8,6 +8,7 @@ import { TemplateDao } from "./TemplateDao";
 import { Template } from "./models/Template";
 import { AdipDao } from "./AdipDao";
 import { PageType } from './TemplateTools'
+import { SessionDao } from "./dao/SessionDao";
 
 
 export class Metric {
@@ -30,6 +31,7 @@ export class Metrics {
     static airportsValidKey:string = 'airports-valid'
     static airportsCurrentKey:string = 'airports-current'
     static usersKey:string = 'users'
+    static sessionsKey:string = 'sessions'
 
     static async adip():Promise<Metric> {
         const adipCount = await AdipDao.count()
@@ -43,6 +45,11 @@ export class Metrics {
         output.push( new Metric(this.airportsValidKey, await AirportDao.countValid()))
         output.push( new Metric(this.airportsCurrentKey, await AirportDao.countCurrent()))
         return output
+    }
+
+    static async sessions():Promise<Metric> {
+        const count = await (new SessionDao()).count()
+        return new Metric(this.sessionsKey, count)
     }
 
     static async users():Promise<Metric> {
@@ -65,9 +72,6 @@ export class Metrics {
 
         // build a list of all metrics
         const allMetrics:Metric[] = []
-
-        const staleTemplateCount = new Metric('staleTemplateCount', 0)
-        allMetrics.push(staleTemplateCount)
 
         const totalPageCount = new Metric('totalPageCount', 0)
         allMetrics.push(totalPageCount)
@@ -104,6 +108,9 @@ export class Metrics {
         allMetrics.push(radiosTileCount)
         const sunlightTileCount = new Metric('sunlightTileCount', 0)
         allMetrics.push(sunlightTileCount)
+
+        const staleTemplateCount = new Metric('staleTemplateCount', 0)
+        allMetrics.push(staleTemplateCount)
 
         for(let template of templates) {
             for(let page of template.data) {
@@ -203,6 +210,7 @@ export class Metrics {
                 Metrics.users(),
                 Metrics.feedbacks(),
                 Metrics.templateDetails(),
+                Metrics.sessions(),
                 Metrics.publicationsCheck(),
                 Metrics.templates(),
                 Metrics.airports(), 

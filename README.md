@@ -37,6 +37,9 @@ Client ID : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent
 * 
 
 # Done
+## 10/27/2024
+* Prints table
+* Added Sessions to metrics
 ## 10/26/2024
 * Apple Authentication
 ## 10/19/2024

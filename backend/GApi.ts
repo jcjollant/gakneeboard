@@ -11,11 +11,12 @@ import { PublicationDao } from './PublicationDao'
 import { PublishedTemplate } from './models/PublishedTemplate'
 import { Template } from './models/Template'
 import { TemplateDao } from './TemplateDao'
-import { version } from '../backend/constants.js'
+import { version } from './constants.js'
 import { Sunlight } from './models/Sunlight'
 import { UserMiniView } from './models/UserMiniView'
 import { Exporter } from './Exporter'
-import { SessionDao } from './SessioDao'
+import { SessionDao } from './dao/SessionDao'
+import { PrintDao } from './dao/PrintDao'
 
 // Google API key
 
@@ -205,7 +206,7 @@ export class GApi {
     }
 
     public static async getSession(req:any):Promise<any> {
-        const output = {
+        const output:any = {
             version: version,
             aced: GApi.getAirportCurrentEffectiveDate(),
             camv: AirportView.currentVersion,
@@ -217,7 +218,7 @@ export class GApi {
             if( user) {
                 const userMini = await UserTools.userMini(user)
                 output['user'] = userMini
-                SessionDao.create(user.id)
+                await SessionDao.create(user.id)
             }
         }
         // console.log('[GApi.getSession]', JSON.stringify(output))    
@@ -270,6 +271,10 @@ export class GApi {
         if( freq == null) return false;
         if( freq =='-.-') return false;
         return Adip.isMilitary(Number(freq))
+    }
+
+    public static printSave(userId:number|undefined,payload:string) {
+        return PrintDao.create(userId, payload)
     }
 
     public static async publicationGet(code:string):Promise<Template|undefined> {
