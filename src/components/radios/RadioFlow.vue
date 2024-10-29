@@ -129,9 +129,9 @@ function updateTextarea() {
         <Header :title="'Radio Flow'" :hideReplace="mode!='edit'"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div class="tileContent">
-            <div v-if="mode==''">
+            <div v-if="mode==''" class="tileContent">
                 <PlaceHolder v-if="frequencies.length==0" title="No Radios" />
-                <div class="freqList" v-else>
+                <div class="freqList" :class="{small:frequencies.length > 8}" v-else>
                     <FrequencyBox v-for="freq in frequencies" :freq="freq" :small="frequencies.length > 8" />
                 </div>
             </div>
@@ -148,11 +148,16 @@ function updateTextarea() {
 
 <style scoped>
 .freqList {
-    padding-top: 5px;
-    display: flex;
+    padding: 5px;
+    display: grid;
+    grid-template-columns: auto auto;
     gap: 5px;
-    flex-flow: wrap;
-    justify-content: center;
+    /* justify-content: center; */
+    overflow: hidden;
+}
+.freqList.small {
+    grid-template-columns: auto auto auto;
+
 }
 .radioList {
     position: relative;
