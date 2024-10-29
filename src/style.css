@@ -23,7 +23,7 @@
   --page-width-two: 1050px;
   --page-height: 800px;
   --pages-gap: 50px;
-  --tile-content-height: 245px;
+  --tile-content-height: 240px;
   --tile-height: 265px;
   --tile-width: 249px;
 }
@@ -48,7 +48,7 @@
 
 
 .content, .tileContent {
-  width: var(--tile-width); 
+  width: calc(var(--tile-width) - 2px); 
   height: var(--tile-content-height);
   position: relative; /* Needed for absolute positioning fo children */
 }
