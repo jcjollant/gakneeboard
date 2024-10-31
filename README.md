@@ -37,6 +37,8 @@ Client ID : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent
 * 
 
 # Done
+## 10/31/2024
+* New Effective date
 ## 10/27/2024
 * Prints table
 * Added Sessions to metrics
