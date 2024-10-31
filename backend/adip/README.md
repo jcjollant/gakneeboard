@@ -11,6 +11,7 @@ charts[n].pdfName: "05396R34.PDF"
 ### Actual PDF URI
 https://aeronav.faa.gov/d-tpp/2409/05396RZ16.PDF
 https://aeronav.faa.gov/d-tpp/{cycle}/
+https://aeronav.faa.gov/d-tpp/2411/05396R34.PDF
 
 ### Sample response
 {
@@ -112,3 +113,6 @@ https://aeronav.faa.gov/d-tpp/{cycle}/
         }
     ]
 }
+
+## Getting Airport Details from ADIP
+API at https://adip.faa.gov/agisServices/public-api/getAirportDetails

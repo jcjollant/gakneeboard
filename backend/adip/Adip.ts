@@ -1,5 +1,6 @@
 import { AdipDao } from './AdipDao'
 import { Airport } from '../models/Airport'
+import { Approach } from '../models/Approach'
 import { Atc } from '../models/Atc'
 import { Frequency } from '../models/Frequency'
 import { Navaid } from '../models/Navaid'
@@ -10,8 +11,6 @@ const maxNavaids:number = 10
 
 export class Adip {
     static basicAuth:string = 'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP'
-    // static currentEffectiveDate: string = "2024-08-08T00:00:00"
-    // static currentEffectiveDate: string = "2024-09-05T00:00:00"
     static currentEffectiveDate: string = "2024-10-31T00:00:00"
 
     /**
@@ -48,45 +47,26 @@ export class Adip {
             })
         }
 
-        let airport:Airport|undefined = undefined
+        // let airport:Airport|undefined = undefined
         const fetchCode = locId ? locId : code;
-        await axios.post(
-            'https://adip.faa.gov/agisServices/public-api/getAirportDetails',
-            '{ "locId": "' + fetchCode + '" }',
-            { 
+        const payload:string = '{ "locId": "' + fetchCode + '" }'
+        const config:any = { 
                 headers:{ 
-                'Authorization': Adip.basicAuth,
-                "Content-Type": "text/plain"      
-            },
-        })
-        .then( response => {
-            // console.log( '[Adip.fetchAirport]', JSON.stringify(response.data))
-            try {
-                airport = Adip.airportFromData( response.data)
-                airport.fetchTime = Date.now();
-            } catch(e) {
-                console.log('[Adip.fetchAirport] failed to parse data', e)
-                airport = undefined
+                    'Authorization': Adip.basicAuth,
+                    "Content-Type": "text/plain"      
+                },
             }
 
-            if( saveRawData) {
-                // save returned adip data
-                try {
-                    AdipDao.save(fetchCode, response.data)
-                } catch(e) {
-                    console.log( '[Adip.fetchAirport] cannot save Adip data')
-                }
-            }
+        const [airport, approaches] = await Promise.all( [
+            Adip.getAirportDetails(fetchCode, payload, config, saveRawData), 
+            Adip.getAirportChartData(payload, config)
+        ])
 
-            // console.log( JSON.stringify(airport))
-        })
-        .catch( error => {
-            if (error.response) {
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
-            }
-        })
+        // enrich airport with approaches if both are defined
+        if(airport && approaches) airport.iap = approaches;
+
+        // console.log('[Adip.fetchAirport]', JSON.stringify(airport))
+
         return airport;
     }
 
@@ -95,7 +75,7 @@ export class Adip {
      * @param adip 
      * @returns 
      */
-    static airportFromData( adip:any):Airport {
+    static airportFromDetails( adip:any):Airport {
         if(!adip || adip.error == 'noAirportData') throw new Error('No adip data')
         const code:string = ('icaoId' in adip ? adip.icaoId : 'locId' in adip ? adip.locId : '?')
         const name:string = Adip.getName(adip)
@@ -132,7 +112,7 @@ export class Adip {
                 // Augment the name with Rwy Name
                 return new Frequency(name, Adip.parseFrequency(f.frequency))
             })
-            // console.log('[Adip.airportFromData]',JSON.stringify(frequencies))
+            // console.log('[Adip.airportFromDetails]',JSON.stringify(frequencies))
             // add frequencies if they are not military
             airport.addFrequencies( frequencies.filter(f => !Adip.isMilitary(f.mhz)))
         }
@@ -200,7 +180,63 @@ export class Adip {
         return airport
     }
 
-    
+    // invokes ADIP Airport chart data API
+    static getAirportChartData(payload:string,config:any):Promise<Approach[]> {
+        return new Promise<Approach[]>((resolve, reject) => {
+            axios.post( 'https://adip.faa.gov/agisServices/public-api/getAirportChartData', payload, config)
+                .then((response) => {
+                    const apch = Adip.iapFromChartData(response.data)
+                    resolve(apch)
+                })
+                .catch( error => {
+                    if (error.response) {
+                        console.log(error.response.data);
+                        console.log(error.response.status);
+                        console.log(error.response.headers);
+                    }
+                    reject(error)
+                })
+        })
+    }
+
+    // invokes Adip Airport details API
+    static getAirportDetails(fetchCode:string, payload:string, config:any, saveRawData:boolean):Promise<Airport|undefined> {
+        return new Promise<Airport|undefined>((resolve,reject) => {
+            let airport:Airport|undefined = undefined
+            axios.post( 'https://adip.faa.gov/agisServices/public-api/getAirportDetails', payload, config)
+                .then( response => {
+                    // console.log( '[Adip.getAirportDetails]', JSON.stringify(response.data))
+                    try {
+                        airport = Adip.airportFromDetails( response.data)
+                        airport.fetchTime = Date.now();
+                    } catch(e) {
+                        console.log('[Adip.getAirportDetails] failed to parse data', e)
+                        airport = undefined
+                    }
+
+                    if( saveRawData) {
+                        // save returned adip data
+                        try {
+                            AdipDao.save(fetchCode, response.data)
+                        } catch(e) {
+                            console.log( '[Adip.getAirportDetails] cannot save Adip data')
+                        }
+                    }
+
+                    // console.log( JSON.stringify(airport))
+                    resolve(airport)
+                })
+                .catch( error => {
+                    if (error.response) {
+                        console.log(error.response.data);
+                        console.log(error.response.status);
+                        console.log(error.response.headers);
+                    }
+                    reject(error)
+                })
+
+            })
+    }
 
     // capitalize first letter of each word for airport name
     public static getName( adip:any):string {
@@ -283,6 +319,16 @@ export class Adip {
         } else {
             return 0
         }
+    }
+
+    // turn the response from getAirportChartData into a list of instrument approaches
+    static iapFromChartData(data:any):Approach[] {
+        if(!data || !data.charts) return []
+        return data.charts
+            // only take Instrument Approaches
+            .filter( (c:any) => c.chartCode == 'IAP') 
+            // build a pdf relative URI from cycle and file name
+            .map((c:any) => new Approach(c.chartName, data.cycle + '/' + c.pdfName))
     }
 
     // checks whether a frequency is military

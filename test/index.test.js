@@ -98,22 +98,6 @@ describe('index', () => {
             })
     })
 
-    // test('Custom Airport Creation', async() => {
-    //     const payload = {user: jcHash, airport: jcTestAirport  }
-    //     await axios.post(
-    //             apiRootUrl + 'airport', 
-    //             payload, 
-    //             { headers: {'Content-Type':'application/json'} })
-    //         .then( res => {
-    //             expect(res.status).toBe(201)
-    //             expect(res.data).toBeDefined();
-    //             expect(res.data).toBe('TEST created')
-    //         })
-    //         .catch( () => {
-    //             expect(true).toBe(false)
-    //         })
-    // })
-
     test('Templates and publications', async () => {
         await axios.get( apiRootUrl + 'template/' + jcTestTemplateId + '?user=' + jcHash)
             .then( (res) => {
@@ -139,8 +123,5 @@ describe('index', () => {
             expect(true).toBe(false)
         })
     })
-
-    // test('Create custom page', async () => {
-    // })
 })
 

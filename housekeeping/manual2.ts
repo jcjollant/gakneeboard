@@ -1,4 +1,5 @@
-import { Dao } from "../backend/dao/Dao";
+import { Adip } from "../backend/adip/Adip";
+// import { Dao } from "../backend/dao/Dao";
 // import { Metrics } from "../backend/Metrics";
 import { postgresUrl } from "../test/constants"
 
@@ -9,4 +10,5 @@ process.env.POSTGRES_URL=postgresUrl
 //     console.log(metric.name, metric.value)
 // })
 
-new Dao('prints').count().then( r => console.log(r))
+// new Dao('prints').count().then( r => console.log(r))
+Adip.fetchAirport('OG14').then(airport => console.log(JSON.stringify(airport)));

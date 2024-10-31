@@ -1,11 +1,12 @@
 import { Airport } from './Airport'
+import { Approach } from './Approach'
 import { Atc } from './Atc'
 import { Frequency } from './Frequency'
 import { Navaid } from './Navaid'
 import { Runway } from './Runway'
 
 export class AirportView {
-    public static currentVersion:number = 5;
+    public static currentVersion:number = 6;
     public static invalidVersion:number = -1;
     code: string;
     name: string;
@@ -18,6 +19,7 @@ export class AirportView {
     custom: boolean;
     asof: number;
     version:number = AirportView.currentVersion;
+    iap: Approach[];
 
     constructor(airport:Airport|undefined) {
         if(airport) {
@@ -41,6 +43,7 @@ export class AirportView {
         this.rwys = (airport && airport.rwys) ? airport.rwys : []
         this.navaids = (airport && airport.navaids) ? airport.navaids : []
         this.atc = (airport && airport.atc) ? airport.atc : []
+        this.iap = (airport && airport.iap) ? airport.iap : []
     }
 
     public static formatAsOf(date:string):number {

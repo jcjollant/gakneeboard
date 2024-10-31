@@ -4,8 +4,9 @@ import { Airport } from '../backend/models/Airport';
 import { AirportView } from '../backend/models/AirportView';
 import { PatternDirection } from '../backend/models/Runway'
 
-import { k1w1Data, kbfiData, krntData } from './adipData'
-import { krntAtcs } from './constants';
+import { k1w1Data, kbfiData, krntChartData, krntData } from './adipData'
+import { krntAtcs, krntIap } from './constants';
+import { airportFromData } from './Adip.test' 
 
 function checkAtc(airport:AirportView,expectedAtcs:any) {
     expect(airport.atc).toHaveLength(expectedAtcs.length)
@@ -56,10 +57,11 @@ describe( 'Airport View', () => {
         expect(view.custom).toBeFalsy()
         expect(view.navaids).toHaveLength(0)
         expect(view.atc).toHaveLength(0)
+        expect(view.iap).toHaveLength(0)
     })
 
     test('Boeing View', () => {
-        const view = new AirportView(Adip.airportFromData(kbfiData))
+        const view = new AirportView(Adip.airportFromDetails(kbfiData))
         // console.log(v6)
         expect(view).toBeInstanceOf(AirportView)
         if( view) {
@@ -75,7 +77,7 @@ describe( 'Airport View', () => {
     })
 
     test('Renton view', () => {
-        const view = new AirportView(Adip.airportFromData(krntData));
+        const view = new AirportView(airportFromData(krntData, krntChartData));
         expect(view).toBeDefined()
         expect(view).toBeInstanceOf(AirportView)
         expect(view?.asof).toBe(20240613)
@@ -118,10 +120,12 @@ describe( 'Airport View', () => {
         }
         // check ATCs
         checkAtc(view, krntAtcs)
+        // Instrument approaches
+        expect(view.iap).toEqual(krntIap)
     })
 
     test('1W1 view', () => {
-        const view = new AirportView(Adip.airportFromData(k1w1Data));
+        const view = new AirportView(Adip.airportFromDetails(k1w1Data));
         expect(view).toBeDefined()
         expect(view.tpa).toBe(1229)
     })
