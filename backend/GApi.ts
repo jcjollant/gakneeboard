@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Adip } from '../backend/Adip'
+import { Adip } from '../backend/adip/Adip'
 import { Airport, versionInvalid } from './models/Airport'
 import { AirportDao } from './AirportDao'
 import { AirportView } from './models/AirportView'

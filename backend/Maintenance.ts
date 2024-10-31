@@ -1,7 +1,5 @@
 import { HealthCheck } from './HealthChecks'
 import { Metrics } from '../backend/Metrics'
-import { UserDao } from './UserDao';
-import { User } from './models/User';
 import { UserMiniView } from './models/UserMiniView';
 
 export class Maintenance {

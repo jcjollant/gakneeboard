@@ -1,5 +1,5 @@
 import {describe, expect, test} from '@jest/globals';
-import { Adip } from '../backend/Adip'
+import { Adip } from '../backend/adip/Adip'
 import { Airport } from '../backend/models/Airport';
 import { PatternDirection, Runway, RunwaySurface } from '../backend/models/Runway'
 import { kbffData, kbfiData, kcdwData, kdzjData, krntData, s43Data } from './adipData'

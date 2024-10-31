@@ -6,7 +6,7 @@ import { createTransport } from 'nodemailer'
 import { PublicationDao } from './PublicationDao'
 import { TemplateDao } from "./TemplateDao";
 import { Template } from "./models/Template";
-import { AdipDao } from "./AdipDao";
+import { AdipDao } from "./adip/AdipDao";
 import { PageType } from './TemplateTools'
 import { SessionDao } from "./dao/SessionDao";
 

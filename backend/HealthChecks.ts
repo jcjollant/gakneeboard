@@ -1,12 +1,9 @@
 import { sql } from  "@vercel/postgres";
 import { Airport } from "./models/Airport";
-import { Adip } from './Adip'
-import { UserDao } from "./UserDao"
-import { FeedbackDao } from "./FeedbackDao"
+import { Adip } from './adip/Adip'
 import { AirportDao } from "./AirportDao";
 import { createTransport } from 'nodemailer'
 import { PublicationDao } from './PublicationDao'
-import { TemplateDao } from "./TemplateDao";
 
 
 export class Check {
