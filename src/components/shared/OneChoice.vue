@@ -14,8 +14,8 @@ const props = defineProps({
 })
 
 const emits = defineEmits(["change"]);
-
 const model = defineModel()
+
 function onChoice(choice) {
     model.value = choice
     emits('change')
