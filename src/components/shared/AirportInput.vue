@@ -1,4 +1,14 @@
-<script setup>
+<template>
+    <div class="airportCode" :class="{page:page}">
+        <InputGroup>
+            <InputGroupAddon :class="{page:page}">{{label}}</InputGroupAddon>
+            <InputText v-model="code" @input="onCodeUpdate"/>
+        </InputGroup>
+        <span class="airportName" :class="{valid: valid, page:page}">{{ name }}</span>
+    </div>
+</template>
+
+<script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { getAirport } from '../../assets/data'
 
@@ -11,17 +21,26 @@ const emits = defineEmits(['valid', 'invalid'])
 const props = defineProps({
     code: { type: String, default: ''},
     label: { type: String, default: 'Code'},
+    page: {type: Boolean, default: false},
 })
 
 const code = ref()
+const model = defineModel()
 const name = ref('')
 const valid = ref(false)
-let pendingCode = null // used during the short delay between code update and actual request
+let pendingCode:string|undefined = undefined // used during the short delay between code update and actual request
 
-function loadProps(props) {
+function loadProps(props:any) {
     // console.log('[AirportInput.loadProps]')
-    code.value = props.code
-    valid.value = false
+    if(model.value) {
+        const airport = model.value;
+        code.value = airport['code']
+        name.value = airport['name']
+        valid.value = true
+    } else {
+        code.value = props.code
+        valid.value = false
+    }
 }
 
 onMounted(() => {
@@ -44,10 +63,12 @@ function fetchAirport() {
                 name.value = airport.name
                 code.value = airport.code
                 valid.value = true
+                model.value = airport
                 emits('valid', airport)
             } else { // airport is unknown
                 valid.value = false
                 name.value = "Unknown"
+                model.value = null
                 emits('invalid', code.value)
             }
         })
@@ -62,11 +83,11 @@ function onCodeUpdate() {
     name.value = '...'
     valid.value = false
     // only load the new code after a short delay to avoid sending useless query
-    if( pendingCode.length > 2) {
+    if( pendingCode && pendingCode.length > 2) {
         setTimeout( () => {
             // check if code has not changed
             if( pendingCode == code.value) {
-                pendingCode = null
+                pendingCode = undefined
                 fetchAirport()
             }
         }, 500)
@@ -75,16 +96,6 @@ function onCodeUpdate() {
 
 
 </script>
-
-<template>
-    <div class="airportCode">
-        <InputGroup>
-            <InputGroupAddon>{{label}}</InputGroupAddon>
-            <InputText v-model="code" @input="onCodeUpdate"/>
-        </InputGroup>
-        <span class="airportName" :class="{'valid': valid}">{{ name }}</span>
-    </div>
-</template>
 
 <style scoped>
 .airportCode {
@@ -95,13 +106,18 @@ function onCodeUpdate() {
     text-align: left;
     gap:5px;
 }
+.airportCode.page {
+    grid-template-columns: 150px auto;
+}
 .airportName {
     overflow: hidden;
     line-height: 1.5rem;
     height: 1.5rem;
     font-size: 0.7rem;
 }
-
+.airportName.page {
+    font-size: 0.9rem;
+}
 .valid {
     font-weight: bold;
     /* color:darkgreen */
@@ -114,6 +130,9 @@ function onCodeUpdate() {
 }
 :deep(.p-inputgroup-addon) {
     width: 3rem;
+}
+:deep(.p-inputgroup-addon).page {
+    width: 6rem;
 }
 :deep(.p-inputtext) {
     padding: 5px;

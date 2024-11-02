@@ -11,6 +11,7 @@ export class PageType {
   static cover = 'cover'
   static navLog = 'navlog'
   static notes = 'notes'
+  static approach = 'approach'
 }
 
 export class Template {

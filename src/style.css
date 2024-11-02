@@ -19,9 +19,11 @@
   --min-width: 650px;
   --editor-min-width: 1200px;
   --editor-btn-half: 19px;
+  --header-height: 23px;
   --page-width: 500px;
   --page-width-two: 1050px;
   --page-height: 800px;
+  --page-content: calc(var(--page-height) - var(--header-height));
   --pages-gap: 50px;
   --tile-content-height: 240px;
   --tile-height: 265px;

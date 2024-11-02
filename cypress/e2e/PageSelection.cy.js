@@ -31,6 +31,14 @@ describe('Selection Page', () => {
     cy.get('.p-confirm-dialog-accept').click()
     cy.get('.contentPage > .headerTitle').contains('Page Selection')
 
+    // Instrument Approaches on Page 2
+    cy.get('.page1 > .list > [aria-label="Instrument Approach"]').click()
+    cy.get('.contentPage > .headerTitle').contains('Instrument Approach')
+    // Eject
+    cy.get('.headerTitle > .p-button').click({force:true})
+    cy.get('.p-confirm-dialog-accept').click()
+    cy.get('.contentPage > .headerTitle').contains('Page Selection')
+
     // navlog on page 2
     cy.get('.page1 > .list > [aria-label="NavLog"]').click()
     cy.get('.contentPage > :nth-child(1) > .headerTitle').contains('NavLog')
