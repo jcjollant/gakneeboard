@@ -68,7 +68,7 @@ function onCancel() {
 
 <template>
     <div class="contentPage pageCover">
-        <Header v-if="mode=='edit'" title="Cover Page" :hideReplace="false"
+        <Header v-if="mode=='edit'" title="Cover Page" :hideReplace="false" :page="true"
             @replace="emits('replace')"></Header>
         <div v-if="mode=='edit'" class="settings">
             <InputGroup>

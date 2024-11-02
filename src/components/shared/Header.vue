@@ -1,3 +1,12 @@
+<template>
+    <div class="headerTitle" :class="{ clickable: clickable, left: left}">
+        <div class="titleText" :class="{ stealth: stealth}">{{ title }}</div>
+        <Button v-if="replace" class="replaceButton" :class="{'hidden':hideReplace}" icon="pi pi-eject" 
+            :title="'Replace ' + (page ? 'Page' : 'Tile')" link
+            @click.stop="emits('replace')"></Button>
+    </div>
+</template>
+
 <script setup>
 import { onMounted,ref, watch } from 'vue';
 import Button from 'primevue/button'
@@ -11,6 +20,7 @@ const props = defineProps({
     hideReplace: { type:Boolean, default:true},
     stealth: { type: Boolean, default:false},
     title: { type: String, required:true},
+    page: { type: Boolean, default:false},
 })
 
 const title=ref('');
@@ -39,16 +49,6 @@ watch( props, async() => {
 })
 
 </script>
-
-
-<template>
-    <div class="headerTitle" :class="{ clickable: clickable, left: left}">
-        <div class="titleText" :class="{ stealth: stealth}">{{ title }}</div>
-        <Button v-if="replace" class="replaceButton" :class="{'hidden':hideReplace}" icon="pi pi-eject" 
-            title="Replace" link
-            @click.stop="emits('replace')"></Button>
-    </div>
-</template>
 
 <style scoped>
 .headerTitle {

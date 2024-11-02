@@ -103,7 +103,7 @@ function onThemeChange(newTheme) {
 
 <template>
     <div class="contentPage pageChecklist">
-        <Header :title="title" :hideReplace="mode!='edit'"
+        <Header :title="title" :hideReplace="mode!='edit'" :page="true"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div v-if="mode == 'edit'" class="settings">
             <InputGroup>

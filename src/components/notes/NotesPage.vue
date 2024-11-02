@@ -1,6 +1,6 @@
 <template>
     <div class="contentPage notesPage">
-        <Header title="Notes" :stealth="true"
+        <Header title="Notes" :stealth="true" :page="true"
             @replace="emits('replace')"></Header>
     </div>
 </template>

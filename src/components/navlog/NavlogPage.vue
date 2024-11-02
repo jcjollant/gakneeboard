@@ -1,7 +1,7 @@
 <template>
     <div class="contentPage pageNavlog">
         <div v-if="mode == modeEdit">
-            <Header title="NavLog Editor" :hideReplace="false" 
+            <Header title="NavLog Editor" :hideReplace="false" :page="true"
                 @replace="emits('replace')"></Header>
             <NavlogEdit :navlog="navlog"
                 @toast="onToast" @cancel="onEditCancel" @apply="onEditApply" />
