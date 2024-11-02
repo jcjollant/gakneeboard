@@ -10,6 +10,8 @@ And access via the browser, typically on port 5173
 ## TODO
 
 # Done
+## 11/01/2024
+* Approach Page
 ## 10/28/2024
 * Fixed Radio flow bug on iPad prints
 ## 10/27/2024
