@@ -76,7 +76,7 @@ import Editor from './components/editor/Editor.vue'
 import Feedback from './components/menu/Feedback.vue'
 import HowDoesItWork from './components/HowDoesItWork.vue'
 import Menu from './components/menu/Menu.vue'
-import Page from './components/Page.vue'
+import Page from './components/page/Page.vue'
 import MenuButton from './components/menu/MenuButton.vue'
 
 
@@ -136,13 +136,6 @@ function loadTemplate(template=null) {
   template.data = data
 
   activeTemplate.value = template;
-  // build a list of neighbor pages, used for printing
-  const pageList = []
-  for( let index = 0; index < template.data.length; index+=2) {
-    const pages = {front:template.data[index], back:template.data[index+1]??null}
-    pageList.push(pages)
-  }
-  activePages.value = pageList
   updateOffsets()
 
   // restore modified state
@@ -332,7 +325,7 @@ function onPageUpdate(pageData) {
 
 function onPrint(options) {
   // console.log('[App.onPrint]')
-  printPreview.value = true;
+  onPrintPreview(true)
   printFlipMode.value = options.flipBackPage;
   printSingles.value = (options.pagePerSheet == 1)
 
@@ -369,6 +362,16 @@ function onPrintOptions(options) {
 function onPrintPreview(show) {
   // console.log('[App.onPrintPreview]', show)
   printPreview.value = show
+  if(show) {
+    // build a list of neighbor pages, used for printing
+    const pageList = []
+    const templateData = activeTemplate.value.data
+    for( let index = 0; index < templateData.length; index+=2) {
+      const pages = {front:templateData[index], back:templateData[index+1]??null}
+      pageList.push(pages)
+    }
+    activePages.value = pageList
+  }
 }
 
 onUnmounted(() => {
