@@ -8,22 +8,25 @@
     <TilePage v-else-if="type==PageType.tiles" :data="pageData" 
         @update="onUpdate" @toast="onToast" />
     <NotesPage v-else-if="type==PageType.notes" @replace="onReplace(PageType.selection)" />
+    <ApproachPage v-else-if="type==PageType.approach" :data="pageData"
+        @update="onUpdate" @replace="onReplace" />
     <SelectionPage v-else @replace="onReplace" />
 </template>
 
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
-import { PageType } from '../assets/Templates'
+import { PageType } from '../../assets/Templates'
 
-import ChecklistPage from './checklist/ChecklistPage.vue'
-import CoverPage from './cover/CoverPage.vue'
-import NavlogPage from './navlog/NavlogPage.vue'
+import ApproachPage from '../approach/ApproachPage.vue'
+import ChecklistPage from '../checklist/ChecklistPage.vue'
+import CoverPage from '../cover/CoverPage.vue'
+import NavlogPage from '../navlog/NavlogPage.vue'
+import NotesPage from '../notes/NotesPage.vue'
 import SelectionPage from './SelectionPage.vue'
-import TilePage from './tiles/TilePage.vue'
+import TilePage from '../tiles/TilePage.vue'
 
 import { useConfirm } from 'primevue/useconfirm'
-import NotesPage from './notes/NotesPage.vue'
 
 const confirm = useConfirm()
 const emits = defineEmits(['toast','update'])
@@ -68,7 +71,7 @@ function onReplace(newType=undefined) {
             }
         }
         const newPageData = {type:newType,data:newData, index:pageIndex.value}
-        console.log('[Page.onReplace]', JSON.stringify(newPageData))
+        // console.log('[Page.onReplace]', JSON.stringify(newPageData))
         emits('update', newPageData)
     } else {
         // confirm and show page selection
@@ -89,8 +92,9 @@ function onToast(data) {
 }
 
 function onUpdate( newData) {
-    // enrich with page type
-    const newPageData = {type:type.value,data:newData, index:pageIndex.value}
+    // console.log('[Page.onUpdate]', JSON.stringify(newData))
+    // enrich page data with type and index
+    const newPageData = {type:type.value,data:newData,index:pageIndex.value}
     emits('update', newPageData)
 }
 
