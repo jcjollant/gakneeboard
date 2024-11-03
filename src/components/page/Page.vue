@@ -9,7 +9,7 @@
         @update="onUpdate" @toast="onToast" />
     <NotesPage v-else-if="type==PageType.notes" @replace="onReplace(PageType.selection)" />
     <ApproachPage v-else-if="type==PageType.approach" :data="pageData"
-        @update="onUpdate" @replace="onReplace" />
+        @update="onUpdate" @replace="onReplace" @toast="onToast" />
     <SelectionPage v-else @replace="onReplace" />
 </template>
 

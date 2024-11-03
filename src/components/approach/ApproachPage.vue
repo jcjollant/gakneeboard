@@ -26,8 +26,9 @@ import AirportInput from '../shared/AirportInput.vue';
 import { UserUrl } from '../../lib/UserUrl';
 import FAButton from '../shared/FAButton.vue';
 import { getAirport } from '../../assets/data';
+import { emitToastWarning } from '../../assets/toast';
 
-const emits = defineEmits(['replace','update'])
+const emits = defineEmits(['replace','toast','update'])
 const editMode = ref(true)
 const airport = ref(null)
 const pdfUrl = ref('')
@@ -54,6 +55,7 @@ function loadProps(newProps:any) {
 }
 
 onMounted(() => {
+    testZoomSettings()
     loadProps(props)
 })
 
@@ -68,6 +70,7 @@ function onSelection(index:number) {
     if( showApproach(index) && airport.value) {
         // we are memorizing the index so the selection remains relevant across data cycles
         emits('update', {airport:airport.value['code'],pdf:index})
+        testZoomSettings()
     }
 }
 
@@ -85,6 +88,11 @@ function showApproach(index:number):Boolean {
         console.log('[ApproachPage.showApproach]' + e)
         return false;        
     }
+}
+
+function testZoomSettings() {
+    const zoom = (( window.outerWidth ) / window.innerWidth);
+    if( zoom < 0.95 || zoom > 1.05) emitToastWarning( emits, 'Browser Zoom', 'Use 100% Zoom level for optimal PDF rendering')
 }
 
 function toggleEditMode() {
