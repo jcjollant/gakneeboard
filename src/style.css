@@ -16,10 +16,11 @@
 :root {
   --bg: #2196F3;
   --bg-hover: #0D89EC;
-  --min-width: 650px;
-  --editor-min-width: 1200px;
+  --min-width: 750px;
+  --editor-min-width: 750px;
   --editor-btn-half: 19px;
   --header-height: 23px;
+  --menu-border-offset: 10px;
   --page-width: 500px;
   --page-width-two: 1050px;
   --page-height: 800px;

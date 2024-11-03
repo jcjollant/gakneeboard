@@ -12,7 +12,7 @@
       </div>
       <div v-if="user && user.loggedIn" class="flex align-items-center">
           <Checkbox v-model="contactMeValue" inputId="contact" name="pizza" value="yes" />
-          <label for="contact" class="ml-2">It's ok to contact me with follow ups pursuant to this feedback</label>
+          <label for="contact" class="ml-2">Let me know when my feedback is addressed</label>
       </div>
     </div>
     <div class="actionDialog gap-2">

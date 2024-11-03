@@ -1,88 +1,73 @@
 <template>
   <div class="editor">
-    <ConfirmDialog></ConfirmDialog>
-    <div class="editorTop">
-      <div>Page {{ activeOffset+1 }}</div>
-      <div>Page {{ activeOffset+2 }}</div>
+    <ConfirmDialog />
+    <div class="editorTitle">
+      <div>Page Editor</div>
     </div>
-    <div class="editorMask">
-      <TileOverlay :show="activeTemplate?.data[activeOffset].type==PageType.tiles"
-        class="leftTileOverlay"
-        @swap="swapTilesLeft" />
-      <div class="middle">
-          <Button id="editorCopyToRight" icon="pi pi-arrow-right" title="Copy Left to Right" 
-              @click="onAction(EditorAction.copyToPage(activeOffset, activeOffset+1))" ></Button>
-          <Button id="editorSwap" icon="pi pi-arrow-right-arrow-left" title="Swap Left and Right" 
-              @click="onActionName(EditorAction.SWAP_PAGE)" ></Button>
-          <Button id="editorCopyToLeft" icon="pi pi-arrow-left" title="Copy Right to Left" 
-              @click="onAction(EditorAction.copyToPage(activeOffset+1, activeOffset))" ></Button>
-          <Button id="editorInsert" icon="pi pi-plus" title="Insert New Page" 
-              @click="onAction(EditorAction.insertPage(activeOffset+1))" ></Button>
-          <FAButton icon="video" title="Editor Demo Video" :link="true"
-              @click="UserUrl.open(UserUrl.editorVideo)"/>
-      </div>
-      <TileOverlay :show="activeTemplate?.data[activeOffset+1].type==PageType.tiles"
-        class="rightTileOverlay"
-        @swap="swapTilesRight" />
+    <div class="editorMenu">
+      <MenuButton id="editorBtnSave" icon="check" label="Save Edits and Close" 
+        @click="emits('save')" />
+      <MenuButton id="editorBtnDiscard" icon="xmark" label="Discard Edits and Close" :active="true"
+        @click="onDiscard" />
     </div>
-    <div class="editorBottom">
-      <div class="editorPage">
-        <Button icon="pi pi-copy" label="Copy" title="Copy Left Page to Clipboard" 
-          @click="onAction(EditorAction.copyToClipboard(activeOffset))"></Button>
-        <Button icon="pi pi-clipboard" label="Paste" title="Paste Clipboard to Left Page" 
-          @click="onAction(EditorAction.paste(activeOffset))"></Button>
-        <Button icon="pi pi-eject" label="Replace" title="Replace Left Page" 
-          @click="onAction(EditorAction.reset(activeOffset))"></Button>
-        <Button icon="pi pi-trash" label="Delete" title="Delete Page" severity="warning" 
-          @click="onAction(EditorAction.deletePage(activeOffset))"></Button>
-      </div>
-      <div class="editorSpacer"></div>
-      <div class="editorPage">
-        <Button icon="pi pi-copy" label="Copy" title="Copy Back Page to Clipboard" 
-          @click="onAction(EditorAction.copyToClipboard(activeOffset+1))"></Button>
-        <Button icon="pi pi-clipboard" label="Paste" title="Paste Clipboard to Back Page" 
-          @click="onAction(EditorAction.paste(activeOffset+1))"></Button>
-        <Button icon="pi pi-eject" label="Replace" title="Replace Back Page" 
-          @click="onAction(EditorAction.reset(activeOffset+1))"></Button>
-        <Button icon="pi pi-trash" label="Delete" title="Delete Page" severity="warning" 
-          @click="onAction(EditorAction.deletePage(activeOffset+1))"></Button>
+    <div class="editorPageAll" v-if="model">
+      <VerticalActionBar :offset="-1" @action="onAction"/>
+      <div v-for="(page,index) in model['data']" v-show="index >= offset"
+        class="editorPage" :class="'editorPage' + index">
+        <div class="editorPageName">Page {{ index+1 }}</div>
+        <VerticalActionBar class="middle" :offset="index" :last="index==model['data']['length'] - 1" 
+          @action="onAction" />
+        <Overlay :show="page['type'] == PageType.tiles" :offset="index"
+          class="overlay"
+          @swap="swapTiles" />
+        <div class="editorBottom">
+          <Button icon="pi pi-copy" label="Copy" title="Copy Page to Clipboard" 
+            @click="onAction(EditorAction.copyToClipboard(index))"></Button>
+          <Button icon="pi pi-clipboard" label="Paste" title="Paste Clipboard to Page" 
+            @click="onAction(EditorAction.paste(index))"></Button>
+          <Button icon="pi pi-eject" label="Replace" title="Replace Page" 
+            @click="onAction(EditorAction.reset(index))"></Button>
+          <Button icon="pi pi-trash" label="Delete" title="Delete Page" severity="warning" 
+            @click="onAction(EditorAction.deletePage(index))"></Button>
+        </div>
       </div>
     </div>
   </div>
 
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { EditorAction } from '../../assets/EditorAction'
 
 import Button from 'primevue/button'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { useConfirm } from 'primevue/useconfirm'
-import TileOverlay from './TileOverlay.vue'
-import { PageType } from '../../assets/Templates'
-import { UserUrl } from '../../lib/UserUrl'
-import FAButton from '../shared/FAButton.vue'
+import Overlay from './Overlay.vue'
+import { PageType, Template } from '../../assets/Templates'
+import VerticalActionBar from './VerticalActionBar.vue'
+import { getToastData, toastError } from '../../assets/toast'
+import { pageDataBlank, readPageFromClipboard } from '../../assets/sheetData'
+import { duplicate } from '../../assets/data'
+import MenuButton from '../menu/MenuButton.vue'
 
 
-const emits = defineEmits(['action','addSheet','offset'])
-const activeOffset = ref(0)
-const activeTemplate = ref(null)
+const emits = defineEmits(['discard','save','toast','offset'])
 const confirm = useConfirm()
+const model = defineModel({type:Object})
+const offset = ref(0)
 const sheets = ref([])
 
 //---------------------
 // Props management
 const props = defineProps({
-  template: { type: Object, default: null},
   offset: {type: Number, default: 0},
 })
 
-function loadProps( props) {
+function loadProps( props:any) {
   // console.log('Menu loadProps', JSON.stringify(props))
-  activeTemplate.value = props.template;
   // console.log('[Editor.loadProps] offset', props.offset)
-  activeOffset.value = props.offset;
+  offset.value = props.offset;
 }
 
 onMounted( () => {
@@ -96,16 +81,8 @@ watch( props, async() => {
 // End props management
 //---------------------
 
-/**
- * Send action to parent (App is processing Editor events)
- * @param {*} actionName 
- */
-function onActionName(actionName) {
-  onAction(new EditorAction(actionName))
-}
-
-function onAction(action) {
-  let confirmation = undefined
+function onAction(action:EditorAction) {
+  let confirmation:any|undefined = undefined
   if(action.action == EditorAction.COPY_TO_PAGE) confirmation = {message:'Please confirm you want to overwrite page ' + (action.offsetTo + 1), header:'Overwrite Page', acceptLabel:'Yes, Overwrite'}
   if(action.action == EditorAction.DELETE_PAGE) confirmation = {message:'Please confirm you want to delete page ' + (action.offset + 1), header:'Delete Page', acceptLabel:'Yes, Delete'}
 
@@ -116,19 +93,107 @@ function onAction(action) {
         rejectLabel: 'No',
         acceptLabel: confirmation.acceptLabel,
         accept: () => {
-          emits('action', action)
+          onEditorAction(action)
         }
       })
   } else {
-    emits('action', action)
+    onEditorAction(action)
   }
 }
 
-function swapTilesLeft(params) {
-  onAction(EditorAction.swapTiles(activeOffset.value, params))  
+// User selected Discard and close
+function onDiscard() {
+  // confirm and get out
+    confirm.require({
+        message: 'Would you like to close the editor without saving?',
+        header: 'Discard Edits',
+        rejectLabel: 'No',
+        acceptLabel: 'Yes, Discard',
+        accept: () => {
+          emits('discard')
+        }
+      })
 }
-function swapTilesRight(params) {
-  onAction(EditorAction.swapTiles(activeOffset.value+1, params))
+
+// Pages are manipulated via editor buttons
+async function onEditorAction(ea:EditorAction) {
+  // console.log('[App.onEditorAction]', JSON.stringify(ea))
+  let updateOffset = false;
+
+  if(!model.value) return;
+
+  if(ea.action == EditorAction.COPY_TO_CLIPBOARD) {
+    const pageData = model.value.data[ea.offset]
+    // grab data and show toast
+    navigator.clipboard.writeText(JSON.stringify(pageData));
+    emits('toast',getToastData('Page ' + (ea.offset+1) + ' copied to clipboard'))
+
+  } else if(ea.action == EditorAction.COPY_TO_PAGE) {
+    model.value.data[ea.offsetTo] = model.value.data[ea.offset]
+
+  } else if(ea.action == EditorAction.DELETE_PAGE) {
+    // protection against last page removal
+    if( model.value.data.length == 2) {
+      emits('toast',getToastData( 'Cannot Delete Page', 'Last two pages cannot be deleted. Delete the template instead.', toastError))
+      return;
+    }
+    // remove page from active template
+    model.value.data.splice(ea.offset, 1)
+    updateOffset = true
+
+  } else if(ea.action == EditorAction.INSERT_PAGE) {
+    // validate offset
+    if( isNaN(ea.offset) || ea.offset < 0) return;
+    if( ea.offset >= model.value.data.length) {
+      // append blank page to last position
+      model.value.data.push( pageDataBlank)
+    } else {
+      // insert blank page at position
+      model.value.data.splice(ea.offset, 0, pageDataBlank)
+    }
+    updateOffset = true;
+
+  } else if(ea.action == EditorAction.PASTE_PAGE) {
+    readPageFromClipboard().then( page => {
+      if(model.value)
+        model.value.data[ea.offset] = page;
+    }).catch( e => {
+        emits('toast',getToastData('Cannot Paste', e, toastError))
+    }) 
+
+  } else if(ea.action == EditorAction.RESET_PAGE) {
+    model.value.data[ea.offset] = duplicate(pageDataBlank)
+
+  } else if(ea.action == EditorAction.SWAP_PAGE) {
+    const swap = duplicate(model.value.data[ea.offset])
+    model.value.data[ea.offset] = model.value.data[ea.offset + 1]
+    model.value.data[ea.offset + 1] = swap;
+
+  } else if(ea.action == EditorAction.SWAP_TILES) {
+    // is this a tile page?
+    if(model.value.data[ea.offset].type != PageType.tiles) return;
+    const tileFrom = ea.params?.from
+    const tileTo = ea.params?.to
+    if(tileFrom === undefined || tileTo === undefined) return;
+
+    const temp = duplicate(model.value.data[ea.offset].data[tileFrom])
+    model.value.data[ea.offset].data[tileFrom] = model.value.data[ea.offset].data[tileTo]
+    model.value.data[ea.offset].data[tileFrom].id = tileFrom
+    model.value.data[ea.offset].data[tileTo] = temp
+    model.value.data[ea.offset].data[tileTo].id = tileTo
+
+  } else {
+    reportError('[App.onEditorAction] unknown action ' + ea)
+  }
+
+  if(updateOffset) {
+    // trigger offset event so parent is up to speed
+    emits('offset', offset.value)
+  }
+}
+
+function swapTiles(params:any) {
+  onAction(EditorAction.swapTiles(params.offset, params))  
 }
 
 </script>
@@ -154,17 +219,33 @@ function swapTilesRight(params) {
 .editorBottom {
   display: flex;
   justify-content: center;
+  gap: 10px;
+  padding: 5px;
+  height: 50px;
+  width: 100%;
 }
 .editorMask {
   display: flex;
   justify-content: center;
   height: var(--page-height);
 }
-.editorPage {
+.editorMenu {
+  position:fixed;
+  top: var(--menu-border-offset);
+  right: var(--menu-border-offset);
   display: flex;
-  gap:10px;
-  width: var(--page-width);
-  justify-content: center;
+  flex-flow: column;
+  align-items: end;
+  /* justify-content: flex-end; */
+  gap: 10px;
+  z-index: 2;
+}
+
+.editorPage {
+  display: grid;
+  gap:0;
+  grid-template-columns: var(--page-width) var(--pages-gap);
+  grid-template-rows: 50px var(--page-height) 50px;
 }
 .editorSheets {
   font-weight: bolder;
@@ -174,22 +255,37 @@ function swapTilesRight(params) {
 .editorSpacer {
   width: var(--pages-gap);
 }
-.editorTop {
-  display: grid;
-  grid-template-columns: var(--page-width) var(--page-width);
-  gap: var(--pages-gap);
+.editorPageName {
   font-weight: bolder;
   font-size: 2rem;
+  width: var(--page-width);
+  height: 50px;
   opacity: 0.4;
-  justify-content: center;
 }
-.middle {
+.editorPageAll {
   display: flex;
-  flex-flow: column;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
   justify-content: center;
-  gap: 5px;
-  height: 100%;
-  width: var(--pages-gap);
+  overflow: hidden;
+  height: calc( var(--page-height) + 100px);
+  z-index: 1;
 }
+
+.editorTitle {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  font-size: 3rem;
+  font-weight: 700;
+  opacity: 0.6;
+  top: 10px;
+}
+
+.middle {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+}
+
 </style>

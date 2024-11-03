@@ -58,6 +58,9 @@ export class EditorAction {
     static reset(offset:number):EditorAction {
         return new EditorAction(EditorAction.RESET_PAGE, offset);
     }
+    static swapPage(offsetFrom:number,offsetTo:number):EditorAction {
+        return new EditorAction(EditorAction.SWAP_PAGE, offsetFrom, offsetTo);
+    }
     static swapTiles(offset:number, params:any):EditorAction {
         return new EditorAction(EditorAction.SWAP_TILES, offset, offset, params);
     }

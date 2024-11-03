@@ -1,5 +1,5 @@
 <template>
-    <div v-if="show" class="tileOverlay">
+    <div v-if="show" class="overlay">
         <Button class="btn1" icon="pi  pi-arrows-h" @click="swap(1,2)"></Button>
         <Button class="btn2" icon="pi  pi-arrows-v" @click="swap(1,3)"></Button>
         <Button class="btn3" icon="pi  pi-arrows-v" @click="swap(2,4)"></Button>
@@ -8,7 +8,7 @@
         <Button class="btn6" icon="pi  pi-arrows-v" @click="swap(4,6)"></Button>
         <Button class="btn7" icon="pi  pi-arrows-h" @click="swap(5,6)"></Button>
     </div>
-    <div v-else class="tileOverlay"></div>
+    <div v-else class="overlay"></div>
 </template>
 
 <script setup lang="ts">
@@ -16,14 +16,17 @@ import { onMounted, ref, watch } from 'vue';
 import Button from 'primevue/button'
 const emits = defineEmits(['swap'])
 const show = ref(true)
+const offset = ref(0)
 //---------------------
 // Props management
 const props = defineProps({
   show: { type: Boolean, default: true},
+  offset: { type: Number, default: 0},
 })
 
 function loadProps( props:any) {
   show.value = props.show;
+  offset.value = props.offset;
 }
 
 onMounted( () => {
@@ -39,7 +42,7 @@ watch( props, async() => {
 
 function swap(from:number, to:number) {
     // emits the message and adjust tile index
-    emits('swap', {from:(from-1), to:(to-1)})
+    emits('swap', {offset:offset.value,from:(from-1), to:(to-1)})
 }
 </script>
 
@@ -54,12 +57,13 @@ function swap(from:number, to:number) {
     --top-offset4:  calc(var(--tile-height) * 2 - var(--editor-btn-half));
     --top-offset5:  calc(var(--tile-height) * 2.5 - var(--editor-btn-half));
 }
-.tileOverlay {
+.overlay {
     position: relative;
     width: var(--page-width);
     height: var(--page-height);
+    background-color: rgba(33, 150, 243, 0.3);
 }
-.tileOverlay .p-button {
+.overlay .p-button {
     position: absolute;
     z-index: 2;
     box-shadow: rgba(0, 0, 0, 0.8) 0px 8px 8px;
