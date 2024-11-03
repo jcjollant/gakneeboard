@@ -3,7 +3,6 @@ import { GApi, GApiError } from '../backend/GApi'
 import { jcHash, jcUserId, jcTestTemplateData, jcToken, jcName, jcTestTemplateName, jcTestTemplateId, jcTestTemplateDescription } from './constants'
 import { currentAsOf, postgresUrl } from './constants';
 import { Template } from '../backend/models/Template'
-import { UserMiniView } from '../backend/models/UserMiniView';
 import { template } from '@babel/core';
 import { PublishedTemplate } from '../backend/models/PublishedTemplate';
 

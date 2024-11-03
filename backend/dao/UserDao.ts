@@ -1,8 +1,25 @@
 import { sql } from '@vercel/postgres';
-import { User } from './models/User'
+import { User } from '../models/User'
+import { Dao } from './Dao';
 
-export class UserDao {
+export class UserDao extends Dao {
     static modelVersion:number = 1;
+
+    constructor() {
+        super('users')
+    }
+
+    public getAll():Promise<User[]> {
+        return new Promise( async (resolve, reject) => {
+            const result = await sql`SELECT id,sha256,data FROM users`;
+            const users:User[] = []
+            for(const row of result.rows) {
+                users.push(User.fromJson(row.id, row.sha256, row.data))
+            }
+            resolve(users)
+        })
+    }
+
     /**
      * Fetches a user by sha256 and return its Id
      * @param sha256 User sha256
@@ -53,10 +70,5 @@ export class UserDao {
             }
             resolve( user)
         })
-    }
-
-    public static async count():Promise<number> {
-        const result = await sql`SELECT count(*) FROM Users`;
-        return Number(result.rows[0].count)
     }
 }

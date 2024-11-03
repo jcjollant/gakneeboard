@@ -2,7 +2,7 @@ import { Template } from './models/Template';
 import { User } from './models/User'
 import { UserMiniView } from './models/UserMiniView';
 import { TemplateDao } from './TemplateDao';
-import { UserDao } from './UserDao'
+import { UserDao } from './dao/UserDao'
 
 export class UserTools {
     static apple:string = 'apple'

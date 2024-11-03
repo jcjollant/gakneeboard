@@ -1,5 +1,5 @@
 import { TemplateDao } from '../TemplateDao';
-import { UserDao } from '../UserDao';
+import { UserDao } from '../dao/UserDao';
 import { Template as Template } from './Template';
 import { User } from './User'
 

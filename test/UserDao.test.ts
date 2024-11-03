@@ -1,14 +1,14 @@
 
 import { describe, expect, test} from '@jest/globals';
-import { UserDao } from '../backend/UserDao.ts'
+import { UserDao } from '../backend/dao/UserDao.ts'
 import { postgresUrl, jcUserId, jcHash, jcEmail, jcName, jcSource, jcMaxTemplates } from './constants.ts';
-import { User } from '../backend/models/User.ts';
 
 process.env.POSTGRES_URL=postgresUrl
 
 describe('UserDao', () => {
     test('Count', async () => {
-        expect(await UserDao.count()).toBeGreaterThan(15)
+        const userDao = new UserDao();
+        expect(await userDao.count()).toBeGreaterThan(15);
     })
 
     test('getIdFromHash', async () => {

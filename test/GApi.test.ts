@@ -3,6 +3,7 @@ import { GApi, GApiError } from '../backend/GApi'
 import { jcHash, jcUserId, jcToken, jcName } from './constants'
 import { currentAsOf, postgresUrl } from './constants';
 import { UserMiniView } from '../backend/models/UserMiniView';
+import { UserTools } from '../backend/UserTools';
 
 process.env.POSTGRES_URL=postgresUrl
 
@@ -123,7 +124,7 @@ describe( 'GApi Tests', () => {
     })
 
     test('Authenticate', async () => {
-        const body = { 'source':'google', 'token':jcToken}
+        const body = { 'source':UserTools.google, 'token':jcToken}
         await GApi.authenticate(body).then( (user:UserMiniView) => {
             // console.log(JSON.stringify(user))
             expect(user.name).toBe(jcName)

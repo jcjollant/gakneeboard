@@ -4,7 +4,7 @@ export class User {
     id:number;
     sha256:string;
     name:string;
-    source:string; // 'google'
+    source:string;
     email:string;
     maxTemplates:number;
 

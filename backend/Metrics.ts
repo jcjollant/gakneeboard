@@ -1,5 +1,5 @@
 import { sql } from  "@vercel/postgres";
-import { UserDao } from "./UserDao"
+import { UserDao } from "./dao/UserDao"
 import { FeedbackDao } from "./FeedbackDao"
 import { AirportDao } from "./AirportDao";
 import { createTransport } from 'nodemailer'
@@ -9,13 +9,14 @@ import { Template } from "./models/Template";
 import { AdipDao } from "./adip/AdipDao";
 import { PageType } from './TemplateTools'
 import { SessionDao } from "./dao/SessionDao";
-
+import { PrintDao } from "./dao/PrintDao";
+import { UserTools } from './UserTools' 
 
 export class Metric {
     name:string;
     value:number;
 
-    constructor(metricName:string, value:number) {
+    constructor(metricName:string, value:number=0) {
         this.name = metricName;
         this.value = value;
     }
@@ -31,7 +32,11 @@ export class Metrics {
     static airportsValidKey:string = 'airports-valid'
     static airportsCurrentKey:string = 'airports-current'
     static usersKey:string = 'users'
+    static usersGoogleKey:string = 'usersGoogle'
+    static usersAppleKey:string = 'usersApple'
+    static usersFacebookKey:string = 'usersFacebook'
     static sessionsKey:string = 'sessions'
+    static printsKey:string = 'prints'
 
     static async adip():Promise<Metric> {
         const adipCount = await AdipDao.count()
@@ -52,9 +57,39 @@ export class Metrics {
         return new Metric(this.sessionsKey, count)
     }
 
-    static async users():Promise<Metric> {
-        const usersCount = await UserDao.count()
-        return new Metric(this.usersKey, usersCount)
+    static async prints():Promise<Metric> {
+        const count = await (new PrintDao()).count()
+        return new Metric(this.printsKey, count)
+    }
+
+    static async users():Promise<Metric[]> {
+        const userDao = new UserDao();
+
+        const allMetrics:Metric[] = []
+
+        const allUsers = await userDao.getAll()
+        allMetrics.push(new Metric(this.usersKey, allUsers.length))
+        // split by source
+        const googleUsers = new Metric(this.usersGoogleKey)
+        allMetrics.push(googleUsers)
+        const appleUsers = new Metric(this.usersAppleKey)
+        allMetrics.push(appleUsers)
+        const facebookUsers = new Metric(this.usersFacebookKey)
+        allMetrics.push(facebookUsers)
+
+        for(const user of allUsers) {
+            if(user.source == UserTools.google) {
+                googleUsers.addOne()
+            } else if( user.source == UserTools.apple) {
+                appleUsers.addOne()
+            } else if( user.source == UserTools.facebook) {
+                facebookUsers.addOne()
+            } else {
+                console.log('Unknown source for user ', user.id)
+            }
+        }
+
+        return allMetrics
     }
 
     static async feedbacks():Promise<Metric> {
@@ -73,20 +108,22 @@ export class Metrics {
         // build a list of all metrics
         const allMetrics:Metric[] = []
 
-        const totalPageCount = new Metric('totalPageCount', 0)
-        allMetrics.push(totalPageCount)
-        const tilePageCount = new Metric('tilePageCount', 0)
-        allMetrics.push(tilePageCount)
-        const checklistPageCount = new Metric('checklistPageCount', 0)
-        allMetrics.push(checklistPageCount)
-        const coverPageCount = new Metric('coverPageCount', 0)
-        allMetrics.push(coverPageCount)
-        const selectionPageCount = new Metric('selectionPageCount', 0)
-        allMetrics.push(selectionPageCount)
-        const navlogPageCount = new Metric('navlogPageCount', 0)
-        allMetrics.push(navlogPageCount)
-        const notesPageCount = new Metric('notesPageCount', 0)
-        allMetrics.push(notesPageCount)
+        const totalPages = new Metric('totalPages', 0)
+        allMetrics.push(totalPages)
+        const tilePages = new Metric('tilePages', 0)
+        allMetrics.push(tilePages)
+        const checklistPages = new Metric('checklistPages', 0)
+        allMetrics.push(checklistPages)
+        const coverPages = new Metric('coverPages', 0)
+        allMetrics.push(coverPages)
+        const selectionPages = new Metric('selectionPages', 0)
+        allMetrics.push(selectionPages)
+        const navlogPages = new Metric('navlogPages', 0)
+        allMetrics.push(navlogPages)
+        const notesPages = new Metric('notesPages', 0)
+        allMetrics.push(notesPages)
+        const approachPages = new Metric('approachPages', 0)
+        allMetrics.push(approachPages)
 
         const totalTileCount = new Metric('totalTileCount', 0)
         allMetrics.push(totalTileCount)
@@ -115,7 +152,7 @@ export class Metrics {
         for(let template of templates) {
             for(let page of template.data) {
                 if(page.type == PageType.tiles) {
-                    tilePageCount.addOne()
+                    tilePages.addOne()
                     for(let tile of page.data) {
                         totalTileCount.addOne()
                         if(tile.name == 'airport') {
@@ -139,19 +176,21 @@ export class Metrics {
                         }
                     }
                 } else if(page.type == PageType.checklist) {
-                    checklistPageCount.addOne()
+                    checklistPages.addOne()
                 } else if(page.type == PageType.cover) {
-                    coverPageCount.addOne()
+                    coverPages.addOne()
                 } else if(page.type == PageType.selection) {
-                    selectionPageCount.addOne()
+                    selectionPages.addOne()
                 } else if(page.type == PageType.navLog) {
-                    navlogPageCount.addOne()
+                    navlogPages.addOne()
                 } else if(page.type == PageType.notes) {
-                    notesPageCount.addOne()
+                    notesPages.addOne()
+                } else if(page.type == PageType.approach) {
+                    approachPages.addOne()
                 } else {
                     continue
                 }
-                totalPageCount.addOne()
+                totalPages.addOne()
             }
             // we assume that 12 data means stale
             if(template.data.length == 12) {
@@ -211,6 +250,7 @@ export class Metrics {
                 Metrics.feedbacks(),
                 Metrics.templateDetails(),
                 Metrics.sessions(),
+                Metrics.prints(),
                 Metrics.publicationsCheck(),
                 Metrics.templates(),
                 Metrics.airports(), 

@@ -3,13 +3,13 @@ import { User } from '../backend/models/User'
 import { UserTools } from '../backend/UserTools'
 import { jcMaxTemplates, jcSource, postgresUrl } from './constants'
 import { jcHash, jcUserId, jcToken, jcName, jcEmail } from './constants'
-import { UserDao } from '../backend/UserDao';
+import { UserDao } from '../backend/dao/UserDao';
 import { UserMiniView } from '../backend/models/UserMiniView';
 import { exitCode } from 'process';
 
 process.env.POSTGRES_URL=postgresUrl
 
-const jc = { 'source':'google','email':jcEmail}
+const jc = { 'source':UserTools.google,'email':jcEmail}
 
 function testJcUmv(umv:UserMiniView|undefined) {
     expect(umv).toBeDefined()
@@ -68,10 +68,10 @@ describe( 'User', () => {
 
 describe('UserTool', () => {
     test('Authenticate and UserMiniView', async () => {
-        const body = { 'source':'google', 'token': jcToken }
+        const body = { 'source':UserTools.google, 'token': jcToken }
         const user = await UserTools.authenticate(body)
         // console.log('user '+JSON.stringify(user))
-        expect(user.source).toBe('google')
+        expect(user.source).toBe(UserTools.google)
         expect(user.email).toBe(jcEmail)
         expect(user.sha256).toBe(jcHash)
 

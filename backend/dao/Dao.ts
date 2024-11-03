@@ -13,7 +13,7 @@ export class Dao {
             // console.log('[Dao.count]', query)
             sql.query(query)
                 .then( res => {
-                    resolve(res.rows[0].count)
+                    resolve(Number(res.rows[0].count))
                 })
                 .catch( err => reject(err))
         })

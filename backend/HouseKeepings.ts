@@ -1,4 +1,4 @@
-import { AdipDao } from "./AdipDao"
+import { AdipDao } from "./adip/AdipDao"
 import { Metric } from "./Metrics"
 
 export class HouseKeeping {

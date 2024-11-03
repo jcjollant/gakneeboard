@@ -1,11 +1,9 @@
 import { sql } from '@vercel/postgres'
 import { GApi } from "../backend/GApi"
-import { Adip } from "../backend/Adip"
+import { Adip } from "../backend/adip/Adip"
 import { postgresUrl } from "../test/constants"
 import { Airport } from "../backend/models/Airport"
 import { AirportDao } from '../backend/AirportDao'
-import { Metrics } from '../backend/Metrics'
-// import { HouseKeeping } from '../backend/HouseKeepings'
 
 process.env.POSTGRES_URL=postgresUrl
 
@@ -148,6 +146,8 @@ async function createPublicationCodes() {
 // })
 
 
-Metrics.sessions().then(metric => {
-    console.log(metric.name, metric.value)
-})
+// test metrics sessions
+// Metrics.sessions().then(metric => {
+//     console.log(metric.name, metric.value)
+// })
+

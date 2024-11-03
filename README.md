@@ -37,6 +37,8 @@ Client ID : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent
 * 
 
 # Done
+## 11/03/2024
+* New Metrics for Approach page, Users and Prints
 ## 11/01/2024
 * Instrument Approaches in airport
 ## 10/31/2024
