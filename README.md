@@ -10,6 +10,8 @@ And access via the browser, typically on port 5173
 ## TODO
 
 # Done
+## 11/02/2024
+* New Editor Mode
 ## 11/01/2024
 * Approach Page
 ## 10/28/2024
