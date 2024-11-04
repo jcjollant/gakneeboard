@@ -193,6 +193,8 @@ export function describePage(sheet, pageNumber, maxLength=undefined) {
         output += 'continued'
       }
       
+    } else if(page.type == PageType.approach) {
+        output = '[Approach] ' + page.data.airport
     }
   } catch(e) {
     console.log('[sheetData.describePage] error', e)
