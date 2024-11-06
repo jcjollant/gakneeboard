@@ -20,7 +20,8 @@
         @replace="onReplace" @update="onUpdate"/>
     <ChecklistTile v-else-if="tile.name==Tile.checklist" :params="tile.data" 
         @replace="onReplace" @update="onUpdate"/>
-    <Clearance v-else-if="tile.name==Tile.clearance" @replace="onReplace"/>
+    <Clearance v-else-if="tile.name==Tile.clearance" :params="tile.data"
+        @replace="onReplace" @update="onUpdate"/>
     <FuelBug v-else-if="tile.name==Tile.fuel" :params="tile.data"
         @replace="onReplace" @update="onUpdate"/>  
     <NavlogTile v-else-if="tile.name==Tile.navlog" @replace="onReplace" />
@@ -34,7 +35,6 @@
 <script setup>
 import {onMounted, ref, watch} from 'vue';
 
-import { emitToastInfo } from '../../assets/toast'
 import { Tile } from '../../assets/Tile'
 
 import Header from '../shared/Header.vue';
