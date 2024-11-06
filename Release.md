@@ -1,3 +1,6 @@
+## 11/06/2024
+* New Cleearance Tile layouts
+* Atis tile cycling through click
 ## 11/05/2024
 * Emergent Section with text shadow
 ## 11/03/2024
