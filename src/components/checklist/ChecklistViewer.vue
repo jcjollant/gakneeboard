@@ -101,6 +101,7 @@ watch(props, () => {
 .emergent {
     color: white;
     background: red;
+    text-shadow: 2px 2px black;
 }
 
 .smallFont {

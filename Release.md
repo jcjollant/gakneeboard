@@ -1,3 +1,5 @@
+## 11/05/2024
+* Emergent Section with text shadow
 ## 11/03/2024
 1) Zoom level warning for PDF rendering
 2) Updated Editor video link, Fixed approach description
