@@ -9,7 +9,8 @@ const emits = defineEmits(['replace','update'])
 let previousMode = ''
 
 const defaultMode = ''
-const mode = ref(defaultMode)
+const displayMode = ref(defaultMode)
+const settingsMode = ref(false)
 
 const props = defineProps({
     params: { type: Object, default: null}, // expects {'mode':'compact'}
@@ -17,9 +18,18 @@ const props = defineProps({
 
 
 function changeMode(newMode) {
-    mode.value = newMode
+    displayMode.value = newMode
+    settingsMode.value = false;
     const params = {mode:newMode}
     emits('update', params)
+}
+
+function cycleMode() {
+    if(displayMode.value == '') {
+        changeMode('compact')
+    } else {
+        changeMode(defaultMode)
+    }
 }
 
 function loadProps(props) {
@@ -27,19 +37,14 @@ function loadProps(props) {
     const newMode = props.params.mode
     // load mode from params but defaults to full
     if( newMode) {
-        mode.value = newMode
+        displayMode.value = newMode
     } else {
-        mode.value = defaultMode
+        displayMode.value = defaultMode
     }
 }
 
 function onHeaderClick() {
-    if(mode.value == 'edit') {
-        mode.value = previousMode;
-    } else {
-        previousMode = mode.value;
-        mode.value = 'edit'
-    }
+    settingsMode.value = ! settingsMode.value
 }
 
 onMounted(() => {   
@@ -56,13 +61,13 @@ watch( props, async() => {
 </script>
 <template>
     <div class="tile">
-        <Header :title="mode==''?'ATIS @':'ATIS'" :left="mode==''" :hideReplace="mode!='edit'"
+        <Header :title="displayMode==''?'ATIS @':'ATIS'" :left="displayMode==''" :hideReplace="displayMode!='edit'"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <div v-if="mode=='edit'" class="content list" >
+        <div v-if="settingsMode" class="list" >
             <Button label="Full Size" @click="changeMode('')"></Button>
             <Button label="Compact (x4)" @click="changeMode('compact')"></Button>
         </div>
-        <div v-else-if="mode==''" class="content full">
+        <div v-else-if="displayMode==''" class="tileContent full" @click="cycleMode">
             <div class="info br">
                 <div class="label">Info</div>
             </div>
@@ -85,7 +90,7 @@ watch( props, async() => {
                 <div class="label">Alt</div>
             </div>
         </div>
-        <div v-else-if="mode=='compact'" class="content">
+        <div v-else-if="displayMode=='compact'" class="tileContent" @click="cycleMode">
             <div v-for="n in 4" class="compact">
                 <div class="info br" :class="{bb: n < 4 }">
                     <div class="label">Info</div>
@@ -113,9 +118,10 @@ watch( props, async() => {
   top: 0;
   font-size: 10px;
 }
-.content {
+.tileContent {
     display: grid;
-    grid-template-rows: 60px 60px 60px 59px;
+    grid-template-rows: repeat( 4, calc(var(--tile-height / 4)));
+    cursor: pointer;
 }
 .list {
     display: grid;
@@ -175,9 +181,10 @@ watch( props, async() => {
     grid-column:3;
 }
 .at {
-    line-height: 3rem;
+    position: absolute;
+    left: 50px;
+    top: 20px;
     font-size: 0.8rem;
-    padding-left: 1rem;
     color: darkgrey;
 }
 </style>
