@@ -1,4 +1,4 @@
-import { AceWritter } from "./AceWritter";
+import { AceWriter } from "./exporters/AceWriter";
 import { GApiError } from "./GApi";
 import { Template } from "./models/Template";
 
@@ -15,7 +15,7 @@ export class Exporter {
 
     static async export(template: Template, format: string): Promise<Exporter> {
         if(format === Exporter.FORMAT_ACE) {
-            const arrayBuffer = await AceWritter.fromTemplate(template)
+            const arrayBuffer = await AceWriter.encodeTemplate(template)
             return new Exporter('kneeboard.ace', arrayBuffer)
         }
 
