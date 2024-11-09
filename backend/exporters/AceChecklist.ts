@@ -1,4 +1,4 @@
-import { PageType, Template, Tile } from "./Template"
+import { PageType, Template, Tile } from "../models/Template"
 
 export enum AceType {
     WARNING = 0x77, // w
