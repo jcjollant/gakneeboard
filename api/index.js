@@ -84,6 +84,31 @@ app.get('/airports/:list', async (req, res) => {
 })
 
 /**
+ * get and approach plate image from the PDF name
+ */
+app.get('/approach/plate/:cycle/:fileName', async (req, res) => {
+    // console.log('[index] /test')
+    try {
+        const cycle = req.params.cycle
+        const fileName = req.params.fileName
+        GApi.getApproachPlate(cycle,fileName).then(image => {
+            console.log('[index] approach length', image.length)
+            res.set({
+                'Content-Type': 'application/pdf',
+                'Content-Disposition': 'inline',
+                'Cache-Control': 'no-cache'
+            })
+            res.send(image)
+        });
+    } catch( e) {
+        console.log('[index] /test error' + e)
+        catchError(res, e, 'GET /templates')
+    }
+})
+
+
+
+/**
  * User is autenticating
  */
 app.post('/authenticate', async(req,res) => {
@@ -246,10 +271,6 @@ app.delete('/template/:id', async (req, res) => {
 
 app.get('/sunlight/:from/:to/:dateFrom/:dateTo?', async (req, res) => {
     try {
-        // const sunlight = await GApi.getSunlight(req.params.from, req.params.to, req.params.date);
-        // console.log( "[index] Returning sunlight " + JSON.stringify(sunlight));
-        // res.send(sunlight)
-
         GApi.getSunlight(req.params.from, req.params.to, req.params.dateFrom, req.params.dateTo)
         .then( sunlight => {
             res.send(sunlight)

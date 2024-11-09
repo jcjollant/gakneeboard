@@ -176,6 +176,25 @@ export class GApi {
     }
 
     /**
+     * Download PDF approach plate and turn it into PNG image
+     * @param cycle a 6 characters string such as '202411'
+     * @param fileName PDF file name
+     * @returns PNG data base64 encoded
+     */
+    public static async getApproachPlate(cycle:string, fileName:string):Promise<string|undefined> {
+        const url = `https://aeronav.faa.gov/d-tpp/${cycle}/${fileName}`
+        const pdfResponse = await fetch(url)
+        if(!pdfResponse.ok) {
+            console.log('[GApi.getApproachPlate] fetch failed', url, pdfResponse.status)
+            return undefined
+        }
+        // console.log('[GApi.getApproachPlate] url', url, 'status', pdfResponse.status)
+        const pdfBuffer = Buffer.from(await pdfResponse.arrayBuffer())
+        // console.log('[GApi.getApproachPlate] pdfBuffer', pdfBuffer.byteLength)
+        return pdfBuffer.toString('base64')
+    }
+
+    /**
      * Turn code into an ICAO code
      * @param {*} code anything to be turned into an ICAO code
      * @returns a four letter icao code or null if not valid
