@@ -5,7 +5,7 @@
         <div v-if="editMode">
             <div class="editMode">
                 <AirportInput label="Airport Code" :page="true" v-model="airport"/>
-                <div v-if="selectedPdf" class="currentSelection">
+                <div v-if="selectedPdf && airport" class="currentSelection">
                     <div>Selected Approach</div>
                     <a :href="UserUrl.dtpp + selectedPdf" target="_blank">{{ airport['iap'][selectedIndex]['name'] }}</a>
                 </div>
