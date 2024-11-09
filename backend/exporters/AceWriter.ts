@@ -1,8 +1,8 @@
-import { Crc32 } from "./Crc32";
-import { AceChecklist, AceType } from "./models/AceChecklist";
-import { Template } from "./models/Template";
+import { Crc32 } from "../Crc32";
+import { AceChecklist, AceType } from "./AceChecklist";
+import { Template } from "../models/Template";
 
-export class AceWritter {
+export class AceWriter {
     static FILE_START = Uint8Array.from([0xf0, 0xf0, 0xf0, 0xf0, 0x0, 0x1]);
     static FILE_STOP = Uint8Array.from([0x45, 0x4e, 0x44, 0x0d, 0x0a]) // 'END\r\n'
     // Default group index, default checklist index
@@ -15,48 +15,48 @@ export class AceWritter {
 
     static addString(parts:BlobPart[], text:string) {
         parts.push(text)
-        parts.push(AceWritter.NEWLINE)
+        parts.push(AceWriter.NEWLINE)
     }
 
     public static async demo():Promise<ArrayBuffer> {
         const checklist:AceChecklist = AceChecklist.getDemo()
-        return AceWritter.write(checklist)
+        return AceWriter.encode(checklist)
     }
 
-    public static async fromTemplate(template:Template):Promise<ArrayBuffer> {
+    public static async encodeTemplate(template:Template):Promise<ArrayBuffer> {
         const checklist:AceChecklist = AceChecklist.fromTemplate(template)
-        return AceWritter.write(checklist)
+        return AceWriter.encode(checklist)
     }
 
-    public static async write(checklist:AceChecklist):Promise<ArrayBuffer> {
+    public static async encode(checklist:AceChecklist):Promise<ArrayBuffer> {
         const parts:BlobPart[] = []
-        parts.push( AceWritter.FILE_START)
-        parts.push( AceWritter.DEFAULT)
+        parts.push( AceWriter.FILE_START)
+        parts.push( AceWriter.DEFAULT)
         // Name
         parts.push( checklist.filename)
-        parts.push( AceWritter.NEWLINE)
+        parts.push( AceWriter.NEWLINE)
         // Make and Model
         parts.push( checklist.makeAndModel)
-        parts.push( AceWritter.NEWLINE)
+        parts.push( AceWriter.NEWLINE)
         // Aircraft Info
         parts.push( checklist.aircraft)
-        parts.push( AceWritter.NEWLINE)
+        parts.push( AceWriter.NEWLINE)
         // Manufacturer Info
         parts.push( checklist.manufacturer)
-        parts.push( AceWritter.NEWLINE)
+        parts.push( AceWriter.NEWLINE)
         // Copyright Info
         parts.push( checklist.copyright)
-        parts.push( AceWritter.NEWLINE)
+        parts.push( AceWriter.NEWLINE)
 
         // 3 nested loops Groups / Lists / Items
         for(const group of checklist.groups) {
-            parts.push( AceWritter.GROUP_START)
+            parts.push( AceWriter.GROUP_START)
             parts.push( group.name)
-            parts.push( AceWritter.NEWLINE)
+            parts.push( AceWriter.NEWLINE)
             for( const list of group.lists) {
-                parts.push( AceWritter.LIST_START)
+                parts.push( AceWriter.LIST_START)
                 parts.push( list.name)
-                parts.push( AceWritter.NEWLINE)
+                parts.push( AceWriter.NEWLINE)
                 for( const item of list.items) {
                     // Type an Position
                     parts.push( Uint8Array.from([item.type, item.ident]))
@@ -67,12 +67,12 @@ export class AceWritter {
                     }
                     parts.push( this.NEWLINE)
                 }
-                parts.push( AceWritter.LIST_STOP)
+                parts.push( AceWriter.LIST_STOP)
             }
-            parts.push( AceWritter.GROUP_STOP)
+            parts.push( AceWriter.GROUP_STOP)
         }
 
-        parts.push( AceWritter.FILE_STOP)
+        parts.push( AceWriter.FILE_STOP)
 
         // add crc 32
         const crcBlob = new Blob(parts)
