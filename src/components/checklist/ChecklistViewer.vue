@@ -83,7 +83,7 @@ watch(props, () => {
 }
 
 .normal {
-    color: darkgrey;
+    color: black;
     background: white;
 }
 
