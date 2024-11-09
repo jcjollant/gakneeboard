@@ -1,14 +1,18 @@
+import { Approach } from "./Approach"
 
 export class LocalStore {
     static airportPrefix:string = 'airport-'
+    static approachPrefix:string = 'apch-'
     static user:string = 'user'
     static userOld:string = 'kb-user'
     static howDoesItWork:string = 'howDoesItWork'
     static recentAirports:string = 'airports'
+    static recentApproaches:string = 'approaches'
     static template = 'template'
     static templateOld = 'sheet'
     static templateOlder = 'page1'
     static MAX_AIRPORTS = 15
+    static MAX_APPROACHES = 5
     static LEAN_AIRPORTS = 10
 
     static airportAdd(code:string, airport:any) {
@@ -76,6 +80,24 @@ export class LocalStore {
         })
     }
 
+    static approachCleanUp() {
+        const item = localStorage.getItem(this.recentApproaches)
+        if(!item) return;
+        const approaches = item.split('-')
+        let cleanUp = 0
+        while( approaches.length > this.MAX_APPROACHES) {
+            // remove first element
+            const apch = approaches.shift()
+            localStorage.removeItem(this.approachPrefix + apch)
+            console.log('[LocalStore.approachCleanUp] removing ' + apch)
+            cleanUp++;
+        }
+        if(cleanUp) {
+            // console.log('[LocalStore.approachCleanUp] removed ' + cleanUp)
+            localStorage.setItem(this.recentApproaches, approaches.join('-'))
+        }
+    }
+
     static cleanUp():Promise<boolean> {
         return new Promise(resolve => {
             // try old template
@@ -118,8 +140,14 @@ export class LocalStore {
             }
 
             LocalStore.airportCleanUp()
+            LocalStore.approachCleanUp()
             resolve(true)
         })
+    }
+
+    static getApproachPlate(pdfFile:string):string|null {
+        const key = this.approachPrefix + pdfFile
+        return localStorage.getItem(key)
     }
 
     // Load active sheet from localstorage
@@ -137,18 +165,28 @@ export class LocalStore {
       return localStorage.getItem(LocalStore.user);
     }
 
-    /**
-     * Should we show how does it work
-     * @returns true if we should show or false otherwise
-     */
-    static showHowDoesItWork():boolean {
-        return localStorage.getItem( LocalStore.howDoesItWork) != 'false'    
+    static saveApproachPlate(pdfFile:string, plate:string) {
+        const key = this.approachPrefix + pdfFile
+        localStorage.setItem(key, plate)
+        const approaches = localStorage.getItem(this.recentApproaches)
+        // add this file to the end
+        const newApproaches = approaches ? (approaches + '-' + pdfFile) : pdfFile
+        localStorage.setItem(this.recentApproaches, newApproaches)
+        this.approachCleanUp()
     }
 
     // Save sheet data to browser
     static saveTemplate( data:any,modified=false) {
         if(data) data.modified = modified;
         localStorage.setItem(LocalStore.template, JSON.stringify( data))
+    }
+
+    /**
+     * Should we show how does it work
+     * @returns true if we should show or false otherwise
+     */
+    static showHowDoesItWork():boolean {
+        return localStorage.getItem( LocalStore.howDoesItWork) != 'false'    
     }
 
     /**

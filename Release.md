@@ -1,3 +1,6 @@
+## 11/08/2024
+* New Approach page implementation with local PDF rendering
+* Checklist Default Section is black on white
 ## 11/06/2024
 * New Cleearance Tile layouts
 * Atis tile cycling through click

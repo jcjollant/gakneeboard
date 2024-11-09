@@ -17,6 +17,7 @@
     "@vitejs/plugin-basic-ssl": "^1.1.0",
     "axios": "^1.6.8",
     "nodejs": "^0.0.0",
+    "pdfjs-dist": "^4.8.69",
     "pnpm": "^9.0.4",
     "primeicons": "^7.0.0",
     "primevue": "^3.52.0",
