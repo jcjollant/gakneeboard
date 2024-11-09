@@ -26,8 +26,9 @@ function loadProps(newProps) {
 }
 
 onMounted(async () => {
-    await initPDF()
-    loadProps(props)
+    initPDF().then( () => {
+        loadProps(props);
+    })
 })
 // End of props management
 
