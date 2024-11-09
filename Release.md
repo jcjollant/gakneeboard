@@ -1,5 +1,6 @@
 ## 11/09/2024
-* Showing Selected Approach with link to source PDF
+1) Showing Selected Approach with link to source PDF
+2) Fixed Approach Page crah on invalid airport
 ## 11/08/2024
 * New Approach page implementation with local PDF rendering
 * Checklist Default Section is black on white
