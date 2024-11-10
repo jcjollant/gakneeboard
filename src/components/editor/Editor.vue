@@ -17,8 +17,7 @@
         <div class="editorPageName">Page {{ index+1 }}</div>
         <VerticalActionBar class="middle" :offset="index" :last="index==model['data']['length'] - 1" 
           @action="onAction" />
-        <Overlay :show="page['type'] == PageType.tiles" :offset="index"
-          class="overlay"
+        <Overlay :type="page['type']" :offset="index" class="overlay"
           @swap="swapTiles" />
         <div class="editorBottom">
           <Button icon="pi pi-copy" label="Copy" title="Copy Page to Clipboard" 
@@ -269,7 +268,6 @@ function swapTiles(params:any) {
   justify-content: center;
   overflow: hidden;
   height: calc( var(--page-height) + 100px);
-  z-index: 1;
 }
 
 .editorTitle {

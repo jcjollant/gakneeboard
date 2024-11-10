@@ -1,5 +1,5 @@
 <template>
-    <div v-if="show" class="overlay">
+    <div v-if="tiles" class="overlay" :class="{blue: blue}">
         <Button class="btn1" icon="pi  pi-arrows-h" @click="swap(1,2)"></Button>
         <Button class="btn2" icon="pi  pi-arrows-v" @click="swap(1,3)"></Button>
         <Button class="btn3" icon="pi  pi-arrows-v" @click="swap(2,4)"></Button>
@@ -8,25 +8,29 @@
         <Button class="btn6" icon="pi  pi-arrows-v" @click="swap(4,6)"></Button>
         <Button class="btn7" icon="pi  pi-arrows-h" @click="swap(5,6)"></Button>
     </div>
-    <div v-else class="overlay"></div>
+    <div v-else class="overlay" :class="{blue: blue}"></div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import Button from 'primevue/button'
+import { PageType } from '../../assets/Templates';
+
+const blue = ref(false)
 const emits = defineEmits(['swap'])
-const show = ref(true)
+const tiles = ref(false)
 const offset = ref(0)
 //---------------------
 // Props management
 const props = defineProps({
-  show: { type: Boolean, default: true},
+  type: { type: String, default: null},
   offset: { type: Number, default: 0},
 })
 
 function loadProps( props:any) {
-  show.value = props.show;
-  offset.value = props.offset;
+    blue.value = (props.type != PageType.selection);
+    tiles.value = props.type == PageType.tiles;
+    offset.value = props.offset;
 }
 
 onMounted( () => {
@@ -61,7 +65,10 @@ function swap(from:number, to:number) {
     position: relative;
     width: var(--page-width);
     height: var(--page-height);
+}
+.overlay.blue {
     background-color: rgba(33, 150, 243, 0.3);
+    z-index: 1;
 }
 .overlay .p-button {
     position: absolute;
