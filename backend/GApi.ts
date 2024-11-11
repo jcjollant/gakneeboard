@@ -56,6 +56,13 @@ export class GApi {
         return await AirportDao.createOrUpdateCustom(airport, userId)
     }
 
+    /**
+     * Export a template into one of the supported formats
+     * @param templateId Source template id
+     * @param userSha256 User identifier
+     * @param format Target format as defined in @class Exporter
+     * @returns on Exporter object on success. May also throw a GApiError
+     */
     public static async exportTemplate(templateId:number, userSha256:string, format:string):Promise<Exporter> {
         // console.log('[gapi.exportTemplate]', templateId, userSha256, format)
         // Fetch user
