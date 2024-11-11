@@ -92,7 +92,7 @@ app.get('/approach/plate/:cycle/:fileName', async (req, res) => {
         const cycle = req.params.cycle
         const fileName = req.params.fileName
         GApi.getApproachPlate(cycle,fileName).then(image => {
-            console.log('[index] approach length', image.length)
+            // console.log('[index] approach length', image.length)
             res.set({
                 'Content-Type': 'application/pdf',
                 'Content-Disposition': 'inline',
