@@ -21,7 +21,6 @@
       @toast="onToast" />
     <TemplateSave v-model:visible="showTemplateSave" :mode="templateDialogMode" :time="templateTime" :template="activeTemplate"
       @close="onTemplateCloseSave"
-      @delete="onTemplateDelete"
       @save="onTemplateSave"
       @mode="onTemplateMode"
       @overwrite="onTemplateOverwrite"

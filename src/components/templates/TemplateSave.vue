@@ -14,7 +14,7 @@ import TemplateDescription from './TemplateDescription.vue'
 import TemplateLoad from './TemplateLoad.vue'
 import TemplateSharing from "./TemplateSharing.vue";
 
-const emits = defineEmits(["close","delete","save","mode", "overwrite","toast"]);
+const emits = defineEmits(["close","save","mode", "overwrite","toast"]);
 const mode = ref(null)
 const templateNameText = ref('')
 const templateDescText = ref('')
