@@ -170,15 +170,22 @@ function onEditorDiscard() {
 }
 
 function onEditorSave() {
-  saveActiveTemplate(true);
   showEditor.value = false;
+  TemplateData.save(activeTemplate.value).then(t => {
+      let message = 'Template "' + t.name + '" saved';
+      showToast( getToastData( 'Clear', message))
+      saveTemplateLocally(false);
+    }).catch( e => {
+      console.log('[App.onEditorSave] error', e)
+      saveTemplateLocally(true);
+    })
 }
 
 function onMenuLoad(sheet) {
   // console.log('[App.onMenuLoad]', JSON.stringify(sheet))
   if(sheet && sheet.data) {
     loadTemplate(sheet)
-    saveActiveTemplate(false)
+    saveTemplateLocally(false)
   } else {
     console.log('[App.onMenuLoad] could not load', JSON.stringify(sheet))
   }
@@ -187,7 +194,7 @@ function onMenuLoad(sheet) {
 function onMenuSave(template) {
   // console.log('[App.onMenuSave]', JSON.stringify(template))
   activeTemplate.value = template;
-  saveActiveTemplate(false)
+  saveTemplateLocally(false)
 }
 
 function onMenuToggle(value) {
@@ -224,7 +231,7 @@ onMounted(async () => {
     console.log('[App.onMounted] local data is corrupted' + e)
     // revert to demo tiles
     loadTemplate(getTemplateDemoTiles())
-    saveActiveTemplate()
+    saveTemplateLocally()
   }
 
 
@@ -253,7 +260,7 @@ function onPageUpdate(pageData) {
   // console.log('[App.onPageUpdate] index', pageData.index)
   // save template data without index
   activeTemplate.value.data[pageData.index] = {data:pageData.data,type:pageData.type}
-  saveActiveTemplate(true)
+  saveTemplateLocally(true)
 }
 
 function onPrint(options) {
@@ -320,7 +327,7 @@ function restorePrintOptions() {
     showHowDoesItWork.value = false;
 }
 
-function saveActiveTemplate(modified=false) {
+function saveTemplateLocally(modified=false) {
   // console.log('[App.saveActiveSheet]', modified)
   LocalStore.saveTemplate(activeTemplate.value, modified)
   templateModified.value = modified
