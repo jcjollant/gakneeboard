@@ -106,8 +106,6 @@ app.get('/approach/plate/:cycle/:fileName', async (req, res) => {
     }
 })
 
-
-
 /**
  * User is autenticating
  */
@@ -122,15 +120,19 @@ app.post('/authenticate', async(req,res) => {
 })
 
 app.get('/export/template/:id/:format', async(req,res) => {
-    await GApi.exportTemplate(req.params.id, req.query?.user, req.params.format).then( (e) => {
-        res.attachment(e.fileName)
-        const arrayBuffer = e.arrayBuffer
-        res.header('Access-Control-Expose-Headers', 'Content-Disposition');
-        // console.log('[index] export template', arrayBuffer.byteLength)
-        res.send(Buffer.from(arrayBuffer))
-    }).catch( (e) => {
+    // console.log('[index.get/export/template/', req.params.id, req.params.format, req.query.user)
+    try {
+        await GApi.exportTemplate(req.params.id, req.query?.user, req.params.format).then( (e) => {
+            res.attachment(e.fileName)
+            const arrayBuffer = e.arrayBuffer
+            res.header('Access-Control-Expose-Headers', 'Content-Disposition');
+            console.log('[index] export template', arrayBuffer.byteLength)
+            res.send(Buffer.from(arrayBuffer))
+        })
+    } catch(e) {
+        console.log('[index] /export error' + e)
         catchError(res, e, 'GET /export/template')
-    })
+    }
 })
 
 // record user feedback
