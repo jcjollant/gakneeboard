@@ -94,8 +94,8 @@ export class AceChecklist {
 
         // checklist is named after the template
         const checklist = new AceChecklist(template.name)
-        // Group > List > Item
-        // Group is also named after template
+        // Target structure is Group > List > Item
+        // Group is named after template
         const group = new AceGroup(template.name)
         // Checklists can come from pages or tiles which are treated as equal
         // Checklist Name is page or title
@@ -107,8 +107,7 @@ export class AceChecklist {
                 } else {
                     group.lists.push(AceList.fromTemplate(page.data.name, page.data.items))
                 }   
-            }
-            if(page.type == PageType.tiles) {
+            } else if(page.type == PageType.tiles) {
                 for(const tile of page.data) {
                     if(tile.name == Tile.checklist) {
                         group.lists.push(AceList.fromTemplate(tile.data.name, tile.data.items))
