@@ -122,6 +122,12 @@ export class FmdChecklist {
         return output
     }
 
+    static reduceItem(output:FmdItem[], item:TemplateChecklistItem):FmdItem[] {
+        if(item.c == '') return output
+        output.push(FmdChecklist.mapItem(item))
+        return output
+    }
+
     /**
      * Create a subgroup from a template checklist section
      * @param section 
@@ -135,7 +141,7 @@ export class FmdChecklist {
 
     static mapItemList(section:TemplateChecklistSection):FmdItemList {
         const output = new FmdItemList(section.name)
-        output.items = section.items.map(FmdChecklist.mapItem)
+        output.items = section.items.reduce(FmdChecklist.reduceItem, [])
         return output
     }
 
