@@ -37,6 +37,8 @@ Client ID : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent
 * 
 
 # Done
+## 11/12/2024
+* Foreflight checklist exports
 ## 11/08/2024
 * Apporach plate API
 ## 11/03/2024

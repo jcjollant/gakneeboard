@@ -126,7 +126,7 @@ app.get('/export/template/:id/:format', async(req,res) => {
             res.attachment(e.fileName)
             const arrayBuffer = e.arrayBuffer
             res.header('Access-Control-Expose-Headers', 'Content-Disposition');
-            console.log('[index] export template', arrayBuffer.byteLength)
+            // console.log('[index] export template', arrayBuffer.byteLength)
             res.send(Buffer.from(arrayBuffer))
         })
     } catch(e) {
