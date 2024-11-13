@@ -4,6 +4,8 @@ Start the UI
 And access via the browser, typically on port 5173
 `http://localhost:5173`
 
+Start on local network (to allow access from other devices)
+`npm run dev -- --host`
 
 # BUGS
 
