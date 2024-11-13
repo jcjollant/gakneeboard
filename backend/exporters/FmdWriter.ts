@@ -31,7 +31,7 @@ export class FmdWriter {
         payload: checklist
       }
       const strData:string = JSON.stringify(data)
-      console.log('[FmdWriter.encode]', strData)
+      // console.log('[FmdWriter.encode]', strData)
 
       // generate 16 random bytes
       const rb = new Uint8Array(FmdWriter.CIPHER_BLOCK_SIZE);
