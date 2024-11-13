@@ -171,14 +171,18 @@ function onEditorDiscard() {
 
 function onEditorSave() {
   showEditor.value = false;
-  TemplateData.save(activeTemplate.value).then(t => {
-      let message = 'Template "' + t.name + '" saved';
-      showToast( getToastData( 'Clear', message))
-      saveTemplateLocally(false);
-    }).catch( e => {
-      console.log('[App.onEditorSave] error', e)
-      saveTemplateLocally(true);
-    })
+  if(newCurrentUser.loggedIn) {
+    TemplateData.save(activeTemplate.value).then(t => {
+        let message = 'Template "' + t.name + '" saved';
+        showToast( getToastData( 'Clear', message))
+        saveTemplateLocally(false);
+      }).catch( e => {
+        console.log('[App.onEditorSave] error', e)
+        saveTemplateLocally(true);
+      })
+  } else {
+    saveTemplateLocally(true);
+  }
 }
 
 function onMenuLoad(sheet) {
@@ -443,7 +447,7 @@ function updateOffsets() {
   position : absolute;
   font-size: 3rem;
   font-weight: 700;
-  opacity: 0.1;
+  opacity: 0.3;
   width: 100%;
   top: 0;
   left: 0;
