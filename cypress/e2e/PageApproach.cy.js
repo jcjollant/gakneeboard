@@ -6,7 +6,7 @@ function checkBlankState() {
     cy.get('.subtitle').contains('Click anywhere to customize')
 }
 
-describe('Aprroach Page', () => {
+describe('Approach Page', () => {
   it('Basic flow', () => {
     visitAndCloseBanner()
     newPage()
@@ -36,13 +36,12 @@ describe('Aprroach Page', () => {
     // Valid airport should show all approaches
     cy.get('.page0 > :nth-child(2) > .editMode > .airportCode > .p-inputgroup > .p-inputtext').type('{selectall}').type('KRNT')
     cy.wait(250)
-    cy.get('[aria-label="RNAV (GPS) Y RWY 16"]').click()
-
-    // wait for airports query
     cy.intercept({
       method: 'GET',
       url: '**/05396RY16.PDF',
     }).as('getPDF');
+
+    cy.get('[aria-label="RNAV (GPS) Y RWY 16"]').click()
 
     cy.wait('@getPDF').its('response.statusCode').should('equal', 200)
 
