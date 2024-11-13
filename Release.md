@@ -1,6 +1,9 @@
+## 11/12/2024
+* Foreflight checklist export
 ## 11/10/2024
 * replace Insert page icon
 * User can select a page type from the editor
+* Autosave on editor save and exit
 ## 11/09/2024
 1) Showing Selected Approach with link to source PDF
 2) Fixed Approach Page crah on invalid airport
