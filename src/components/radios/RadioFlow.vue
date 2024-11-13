@@ -54,7 +54,7 @@
                 </div>
             </div>
             <div v-else class="main" @click="onMainClick">
-                <PlaceHolder v-if="frequencies.length==0" title="No Radios" />
+                <PlaceHolder v-if="frequencies.length==0" title="No Radios" subtitle="Click Header to configure or Here to toggle Lost Comms" />
                 <div class="freqList" :class="{small:frequencies.length > 8}" v-else>
                     <FrequencyBox v-for="freq in frequencies" :freq="freq" :small="frequencies.length > 8" />
                 </div>

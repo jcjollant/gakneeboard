@@ -10,7 +10,7 @@ Start on local network (to allow access from other devices)
 # BUGS
 
 ## TODO
-
+Save Nordo mode in Radio tile data
 
 ##
 Google API CliendId : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent.com
