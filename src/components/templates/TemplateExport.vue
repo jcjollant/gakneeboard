@@ -5,8 +5,9 @@
         <OneChoice v-model="activeFormat" :choices="formats"></OneChoice>
     </div>
     <Fieldset legend="Description">
-        <div>{{ description }}</div>
-        <div v-if="source"><a :href='source' target="_blank">source</a></div>
+        <div>{{ activeFormat.description }}</div>
+        <div>All checklist information will be extracted from the current template across checklist pages and checklist tiles. The resulting file will be downloaded by your browser.</div>
+        <div v-if="activeFormat.source"><a :href='activeFormat.source' target="_blank">source</a></div>
         <div class="mt-5 experimental"><strong>This feature is EXPERIMENTAL</strong></div>
     </Fieldset>
     <div class="actionDialog gap-2">
@@ -27,13 +28,22 @@ import Fieldset from 'primevue/fieldset';
 
 const emits = defineEmits(['close','export'])
 
-const formatAce = {label:'ACE',value:'ace'}
+const formatAce = {
+  label:'Garmin ACE',
+  value:'ace', 
+  description:'ACE file format allows you to import custom checklist in some Garmin(c) devices.',
+  source: UserUrl.garminAce
+}
+const formatFmd = {
+  label:'Foreflight FMD',
+  value:'fmd',
+  description:'FMD file format allows you to import custom checklist into Foreflight EFB.'
+}
 const activeFormat = ref(formatAce)
-const formats = ref([formatAce])
+const formats = ref([formatFmd,formatAce])
 
 
-const description = ref('ACE file format is used to import checklists in some Garmin(c) devices. This feature will extract all checklist information from the current template, including pages and tiles, and create a .ACE file which will be downloaded by your browser.')
-const source = ref(UserUrl.garminAce)
+const description = ref('')
 </script>
 <style scoped>
 .experimental {
