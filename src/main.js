@@ -9,14 +9,14 @@ import ToastService from 'primevue/toastservice'
 import GoogleSignInPluggin from 'vue3-google-signin'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faPlaneArrival, faPlaneDeparture, faCloudSunRain, faCheck, faListCheck, faPlaneCircleCheck, faGasPump,
-    faRoute, faPenToSquare, faHeadset, faSun, faBorderAll, faComments, faImage,
-    faVideo, faQuestion, faXmark} from '@fortawesome/free-solid-svg-icons'
+import { faBan, faBorderAll, faComments, faPlaneArrival, faPlaneDeparture, faCloudSunRain, faCheck, faHeadset, faJetFighter, faListCheck, faPlaneCircleCheck, faGasPump,
+    faRoute, faStarOfLife, faPenToSquare, faQuestion, faRotateLeft, faSun, faImage,
+    faVideo, faWalkieTalkie, faXmark} from '@fortawesome/free-solid-svg-icons'
 import { faGoogle, faFacebookF } from '@fortawesome/free-brands-svg-icons'
 
-library.add( faPlaneArrival, faPlaneDeparture, faCheck, faXmark, faCloudSunRain, faListCheck, faPlaneCircleCheck, faGasPump,
-    faRoute, faPenToSquare, faHeadset, faSun, faBorderAll, faComments, faImage, faGoogle, 
-    faFacebookF, faVideo, faQuestion)
+library.add( faBan, faPlaneArrival, faPlaneDeparture, faCheck, faCloudSunRain, faListCheck, faPlaneCircleCheck, faGasPump,
+    faPenToSquare, faHeadset, faJetFighter, faRoute, faStarOfLife, faSun, faBorderAll, faComments, faImage, faGoogle, 
+    faFacebookF, faQuestion, faRotateLeft, faVideo, faWalkieTalkie, faXmark)
 
 createApp(App)
     .use(PrimeView)
