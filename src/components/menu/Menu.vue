@@ -160,6 +160,7 @@ function onAuthentication(newUser) {
 
 function onExportExport(format) {
   showTemplateExport.value = false;
+  emitToastInfo(emits, 'Exporting', activeTemplate.value.name)
   TemplateData.export(activeTemplate.value, format).then( eo => {
     // create file link in browser's memory
     // console.log('[Menu.onMenuExport] blob', eo.blob.size)
@@ -168,6 +169,9 @@ function onExportExport(format) {
     link.download = eo.filename
     link.click()
     URL.revokeObjectURL(link.href)
+  }).catch( e => {
+    console.log('[Menu.onExportExport] ' + e)
+    emitToastError(emits, 'Export Error', e.message)
   })
 }
 
