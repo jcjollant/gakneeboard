@@ -1,3 +1,68 @@
+<template>
+    <div class="tile">
+        <LookupDialog v-model:visible="showLookup" :time="lookupTime" @add="addFrequency" />
+        <Header :title="(editMode || mode =='') ? 'Radio Flow' : 'Lost Comms'" :hideReplace="mode!='edit'"
+            @click="onHeaderClick" @replace="emits('replace')"></Header>
+        <div class="tileContent">
+            <div v-if="editMode" class="edit">
+                <Button icon="pi pi-search" label="Lookup" link
+                    @click="onLookup" class="lookupBtn"></Button>
+                <Textarea class='list' rows="11" cols="24" v-model="textData"
+                    placeholder="Enter up to 15 freq."></Textarea>
+                <ActionBar @apply="onApply" @cancel="onCancel" :help="UserUrl.radioFlowTileGuide" />
+            </div>
+            <div v-else-if="mode=='nordo'" @click="onMainClick" class="nordo">
+                <div class="nordoLights">
+                    <div>Signal</div>
+                    <div class="nordoHeader">Ground</div>
+                    <div class="nordoHeader">Air</div>
+                    <div class="nordoLine"></div>
+                    <div class="lightSteady green">&nbsp;</div>
+                    <div><font-awesome-icon :icon="['fas','check']" class="iconClear" />T/O</div>
+                    <div><font-awesome-icon :icon="['fas','check']" class="iconClear" />Land</div>
+                    <div class="nordoLine"></div>
+                    <div class="lightFlashing green"><font-awesome-icon v-for="i in [0,1,2]" :icon="['fas','sun']" /></div>
+                    <div><font-awesome-icon :icon="['fas','check']" class="iconClear" />Taxi</div>
+                    <div><font-awesome-icon :icon="['fas','rotate-left']" class="iconReturn" />Land</div>
+                    <div class="nordoLine"></div>
+                    <div class="lightSteady red">&nbsp;</div>
+                    <div>STOP</div>
+                    <div>Give Way</div>
+                    <div class="nordoLine"></div>
+                    <div class="lightFlashing red"><font-awesome-icon v-for="i in [0,1,2]" :icon="['fas','sun']" /></div>
+                    <div>Taxi Off Rwy</div>
+                    <div><font-awesome-icon :icon="['fas','times']" class="iconDonot"/> Land</div>
+                    <div class="nordoLine"></div>
+                    <div class="lightFlashing"><font-awesome-icon v-for="i in [0,1,2]" :icon="['fas','sun']" :class="{'red': (i % 2), 'green': !(i % 2)}" /></div>
+                    <div class="nordoCaution">Use Extreme Caution</div>
+                    <div class="nordoLine"></div>
+                    <div class="lightFlashing white"><font-awesome-icon v-for="i in [0,1,2]" :icon="['fas','sun']" /></div>
+                    <div><font-awesome-icon :icon="['fas','rotate-left']" class="iconReturn" />Start</div>
+                    <div>-</div>
+                    <div class="nordoLine"></div>
+                </div>
+                <div class="nordoXpdr">
+                    <div><font-awesome-icon :icon="['fas','jet-fighter']" /></div>
+                    <div>
+                        <font-awesome-icon :icon="['fas','ban']" class="red"/>
+                        <font-awesome-icon :icon="['fas','walkie-talkie']"  />
+                    </div>
+                    <div><font-awesome-icon :icon="['fas','star-of-life']" class="red" /></div>
+                    <div>7500</div>
+                    <div>7600</div>
+                    <div>7700</div>
+                </div>
+            </div>
+            <div v-else class="main" @click="onMainClick">
+                <PlaceHolder v-if="frequencies.length==0" title="No Radios" />
+                <div class="freqList" :class="{small:frequencies.length > 8}" v-else>
+                    <FrequencyBox v-for="freq in frequencies" :freq="freq" :small="frequencies.length > 8" />
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import { Formatter } from '../../assets/Formatter'
@@ -13,6 +78,7 @@ import Button from 'primevue/button'
 import Textarea from 'primevue/textarea';
 
 const emits = defineEmits(['replace','update','toast'])
+const editMode=ref(false)
 const maxFreqCount = 18
 const mode=ref('')
 const textData = ref('')
@@ -88,20 +154,18 @@ function onApply() {
     const data = loadDataFromText();
     emits('update',data);
     // go back to normal mode
-    mode.value = ''
+    editMode.value = false;
 }
 
 function onCancel() {
-    mode.value = ''
+    editMode.value = false;
     loadData( listBeforeEdit, false)
 }
 
 function onHeaderClick() {
     // console.log('onHeaderClick ' + mode.value)
-    if( mode.value == 'edit') {
-        mode.value = ''
-    } else {
-        mode.value = 'edit'
+    editMode.value = !editMode.value;
+    if( editMode.value) {
         listBeforeEdit = frequencies.value
     }
 }
@@ -114,6 +178,14 @@ function onLookup() {
     // mode.value = 'lookup'
 }
 
+function onMainClick() {
+    if(mode.value == '') {
+        mode.value = 'nordo'
+    } else {
+        mode.value = ''
+    }
+}
+
 function toast(message, severity='success') {
     emits( 'toast', { severity: severity, summary: 'Radio Flow', detail: message, life: 2000})
 }
@@ -122,29 +194,6 @@ function updateTextarea() {
     textData.value = frequencies.value.map( f => Formatter.frequency(f.mhz) + ',' + f.name).join('\n')
 }
 </script>
-
-<template>
-    <div class="tile">
-        <LookupDialog v-model:visible="showLookup" :time="lookupTime" @add="addFrequency" />
-        <Header :title="'Radio Flow'" :hideReplace="mode!='edit'"
-            @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <div class="tileContent">
-            <div v-if="mode==''" class="tileContent">
-                <PlaceHolder v-if="frequencies.length==0" title="No Radios" />
-                <div class="freqList" :class="{small:frequencies.length > 8}" v-else>
-                    <FrequencyBox v-for="freq in frequencies" :freq="freq" :small="frequencies.length > 8" />
-                </div>
-            </div>
-            <div v-else-if="mode=='edit'" class="edit">
-                <Button icon="pi pi-search" label="Lookup" link
-                    @click="onLookup" class="lookupBtn"></Button>
-                <Textarea class='list' rows="11" cols="24" v-model="textData"
-                    placeholder="Enter up to 15 freq."></Textarea>
-                <ActionBar @apply="onApply" @cancel="onCancel" :help="UserUrl.radioFlowTileGuide" />
-            </div>
-        </div>
-    </div>
-</template>
 
 <style scoped>
 .freqList {
@@ -159,23 +208,64 @@ function updateTextarea() {
     grid-template-columns: auto auto auto;
 
 }
-.radioList {
-    position: relative;
-    display: grid;
-    grid-template-columns: auto auto;
-    grid-template-rows: auto auto auto auto;
-    height: 203px;
-    /* border: 1px solid red; */
-}
 .br {
     border-right: 1px dashed darkgrey;
 }
 .bb {
     border-bottom: 1px dashed darkgrey;
 }
+.iconClear {
+    color: #090;
+    padding-right: 3px;
+    font-weight: 600;
+}
+.iconDonot {
+    color: #900;
+    padding-right: 3px;
+    font-weight: 600;
+}
+.iconReturn {
+    padding-right: 3px;
+    font-weight: 600;
+}
+.knownFrequencies {
+    display: flex;
+    gap:5px;
+    flex-flow: wrap;
+    align-content: flex-start;
+    height: 125px;
+    overflow: auto;
+}
+
 .label {
     font-size: 0.8rem;
     text-align: center;
+}
+.lightFlashing {
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+    padding: 2px;
+}
+.lightFlashing.green, .lightFlashing > .green {
+    color: green;
+}
+.lightFlashing.red, .lightFlashing > .red {
+    color: red;
+}
+.lightFlashing.white {
+    color: white;
+    background-color: darkgrey;
+}
+.lightSteady {
+    border-radius: 8px;
+    margin: 0 8px;
+}
+.lightSteady.green {
+    background-color: green;
+}
+.lightSteady.red {
+    background-color: red;
 }
 .list {
     resize: none;
@@ -184,15 +274,58 @@ function updateTextarea() {
     font-family: 'Courier New', Courier, monospace;
     font-weight: 600;
 }
-
+.lookup {
+    display: flex;
+    flex-flow: column;
+    gap: 10px;
+    padding: 5px;
+    font-size: 0.8rem
+}
 .lookupBtn {
     margin: 0 auto;
     margin-top: 5px;
 }
-
+.main {
+    cursor: pointer;
+}
+.nordo {
+    position: relative;
+    cursor: pointer;
+    height: 100%;
+    font-size: 0.8rem;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+}
+.nordoCaution {
+    grid-column: 2 / span 2
+}
+.nordoHeader {
+    font-weight: 600;
+    text-align: center;
+}
+.nordoLights {
+    display: grid;
+    grid-template-columns: 60px 1fr 1fr;
+    justify-content: center;
+    align-items: center;
+}
+.nordoLine {
+    height: 1px;
+    grid-column: 1 / span 3;
+    border-bottom: 1px dashed darkgrey;
+    padding-top: 5px;
+    margin-bottom: 5px;;
+}
+.nordoXpdr {
+    display: grid;
+    gap: 5px;
+    grid-template-columns: repeat(3, 1fr);
+    font-size: 1rem;
+}
 .edit {
     position: relative;
-    width:240px;
+    width: var(--tile-width);
     height: 100%;
     font-size: 0.8rem;
     display: flex;
@@ -205,35 +338,32 @@ function updateTextarea() {
     padding: 4px 8px;
     height: 1.5rem;
 }
+.red {
+    color: red;
+}
 
-.helpers {
+/* .helpers {
     display: flex;
     justify-content: center;
     gap: 5px;
     margin: 5px 0 2px 0;
-}
+} */
 .shortcut {
     padding: 2px;
     font-size: 0.8rem;
     font-family: 'Courier New', Courier, monospace;
     font-weight: 400;
 }
-.lookup {
-    display: flex;
-    flex-flow: column;
-    gap: 10px;
-    padding: 5px;
-    font-size: 0.8rem
-}
-.knownFrequencies {
-    display: flex;
-    gap:5px;
-    flex-flow: wrap;
-    align-content: flex-start;
-    height: 125px;
-    overflow: auto;
-}
-.counter {
+/* .counter {
     font-size: 0.9rem;
+} */
+.radioList {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto auto auto;
+    height: 203px;
+    /* border: 1px solid red; */
 }
+
 </style>
