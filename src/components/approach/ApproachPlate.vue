@@ -48,9 +48,7 @@ function loadPdf() {
     Approach.getPdf(pdfFile.value).then( pdfDataBase64 => {
         loading.value = false;
         // console.log('[ApproachPage.showApproach] image size', pdfData.length)
-        const loadingTask = getDocument({data:atob(pdfDataBase64)})
-        // console.log('[ApproachPage.showApproach] PDF loaded')
-        loadingTask.promise.then( pdf => {
+        getDocument({data:atob(pdfDataBase64)}).promise.then( pdf => {
             // Get first page
             pdf.getPage(1).then( page => {
                 // console.log('[ApproachPage.showApproach] Page loaded');
