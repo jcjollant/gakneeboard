@@ -26,7 +26,7 @@
         @replace="onReplace" @update="onUpdate"/>  
     <NavlogTile v-else-if="tile.name==Tile.navlog" @replace="onReplace" />
     <NotesTile v-else-if="tile.name==Tile.notes" @replace="onReplace" />
-    <RadioFlow v-else-if="tile.name==Tile.radios" :params="tile.data" 
+    <RadioTile v-else-if="tile.name==Tile.radios" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" @toast="onToast" />
     <SunLight v-else-if="tile.name==Tile.sunlight" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" />
@@ -43,7 +43,7 @@ import Atis from '../atis/Atis.vue'
 import NotesTile from '../notes/NotesTile.vue';
 import ChecklistTile from '../checklist/ChecklistTile.vue';
 import Clearance from '../clearance/Clearance.vue';
-import RadioFlow from '../radios/RadioFlow.vue';
+import RadioTile from '../radios/RadioTile.vue';
 import SunLight from '../sunlight/SunLight.vue';
 import FuelBug from '../fuel/FuelBug.vue';
 import FAButton from '../shared/FAButton.vue'
