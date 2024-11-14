@@ -5,7 +5,7 @@
         <OneChoice v-model="activeTopic" :choices="topics" class="mb-2" />
       </div>
       <div v-if="activeTopic.value==topicAbout.value">
-        <div class="mb-2 justify"><strong>GA Kneeboard</strong> is a humble project aiming to ease pilots' information overload. Initially created as an EFB supplement, its sheer convenience made it a primary source of flight information.</div>
+        <div class="mb-2 justify"><strong>GA Kneeboard</strong> was created to save our bacon when the iPad fails. Its sheer convenience made it a primary source of flight information.</div>
         <div class="mb-2 justify"><strong>You can help</strong> in many ways : 
           <ol>
             <li>Suggest features you value as a pilot,</li>
