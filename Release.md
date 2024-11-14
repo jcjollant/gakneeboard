@@ -1,3 +1,5 @@
+## 11/13/2024
+* Added Nordo mode to Radio tile
 ## 11/12/2024
 * Foreflight checklist export
 ## 11/10/2024
