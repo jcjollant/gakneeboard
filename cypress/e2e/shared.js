@@ -12,7 +12,7 @@ export const maintenanceTest ='4d51414ceb16fe67ec67ef5194a76036fc54b59846c9e8da5
 
 export const feltsTitle = 'Felts Fld'
 export const boeingTitle = 'Boeing Fld/king County Intl'
-export const radioFlowTitle = 'Radio Flow'
+export const radioFlowTitle = 'Radios'
 export const notesTitle = 'Notes'
 export const atisTitle = 'ATIS @'
 export const clearanceTitle = 'Clearance @'

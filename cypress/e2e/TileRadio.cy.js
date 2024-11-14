@@ -1,10 +1,11 @@
 import { visitAndCloseBanner, newPage, placeHolderSubtitle } from './shared'
+import { radioFlowTitle } from './shared'
 
-describe('Radio Flow Tile', () => {
-  it('Radio Flow Tile', () => {
+describe('Radios Tile', () => {
+  it('Radio Tile', () => {
     visitAndCloseBanner()
 
-    cy.wait(2000)
+    // cy.wait(2000)
     
     // Check all fields are present in Radio flow
     cy.fixture('radioFlow').then((radioFlow) => {
@@ -15,7 +16,7 @@ describe('Radio Flow Tile', () => {
     })
 
     // check header is present
-    cy.get('.page1 > :nth-child(6) > .headerTitle > div').contains('Radio Flow')
+    cy.get('.page1 > :nth-child(6) > .headerTitle > div').contains(radioFlowTitle)
 
     // Switch to edit mode
     cy.get('.page1 > :nth-child(6) > .headerTitle > div').click()
@@ -26,7 +27,7 @@ describe('Radio Flow Tile', () => {
     cy.get('.p-inputtextarea').type('{selectall}{backspace}')
 
     // Open Lookup
-    cy.get('[aria-label="Lookup"]').click()
+    cy.get('.lookupBtn').click()
     // test Airport box is populated
     cy.get('.p-inputgroup-addon').contains('Code')
     const expectedAirportCodes = ['KRNT', 'KBFI', 'W39', 'O26', 'KAWO']
@@ -72,16 +73,41 @@ describe('Radio Flow Tile', () => {
     cy.get('.page1 > :nth-child(6) > .headerTitle > .p-button').click({force: true})
     cy.get('[aria-label="Notes"]').click()
     cy.get('.page1 > :nth-child(6) > .headerTitle > div').contains('Notes')
-    // Change tile back to Radio Flow
+    // Change tile back to Radio 
     cy.get('.page1 > :nth-child(6) > .headerTitle').click()
     cy.get('.page1 > :nth-child(6) > .headerTitle > .p-button').click({force: true})
     cy.get('[aria-label="Radios"]').click()
 
-    // Header should be back to RadioFlow
-    cy.get('.page1 > :nth-child(6) > .headerTitle > div').contains('Radio Flow')
+    // Header should be back to Radio
+    cy.get('.page1 > :nth-child(6) > .headerTitle > div').contains(radioFlowTitle)
     // check we have the placeholder
     cy.get('.placeHolder').contains('No Radios')
     cy.get('.placeHolder').contains(placeHolderSubtitle)
 
+    // Switch to Nordo mode
+    cy.get('.page1 > :nth-child(6) > .headerTitle > div').click()
+    cy.get('.choiceInactive').click()
+    cy.get('[aria-label="Apply"]').click()
+
+    // check Nordo Fields
+    cy.get('[title="Unlawful Interference (aka Hijack)"]')
+    cy.get('[title="Lost Communications"]')
+    cy.get('[title="Declare Emergency"]')
+
+    // test localstore has the correct data
+    cy.getLocalStorage('template')
+      .then(t => {
+        const template = JSON.parse(t)
+        // console.log('>>>>', template)
+        expect(template.data[1].data[5].data['mode']).to.equal('nordo')
+      })
+
+
+    // switch back to list mode
+    cy.get('.page1 > :nth-child(6) > .headerTitle > div').click()
+    cy.get('.choiceInactive').click()
+    cy.get('[aria-label="Apply"]').click()
+    // Nordo controls should be gone
+    cy.get('[title="Declare Emergency"]').should('not.exist')
   })
 })

@@ -36,7 +36,7 @@ describe('Tiles', () => {
     // test All expected tiles are loading
     const expectedTiles = [
       ['Renton Muni', boeingTitle, 'Roche Harbor', 'Lone Pine/death Valley', 'ATIS @', 'Clearance @'],
-      ['Power OFF stalls', 'Arlington Muni', 'Sun Light', 'Fuel Bug', 'Notes', 'Radio Flow']]
+      ['Power OFF stalls', 'Arlington Muni', 'Sun Light', 'Fuel Bug', 'Notes', 'Radios']]
     for( let page = 1; page < 3; page++) {
       for( let tile = 1; tile < 7; tile++) {
         const value = expectedTiles[page-1][tile-1]
