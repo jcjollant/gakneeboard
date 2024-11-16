@@ -6,19 +6,20 @@ import axios from 'axios'
 import { Airport } from './Airport.ts'
 import { Backend } from './Backend.ts'
 import { CurrentUser } from './CurrentUser.ts'
-import { NavlogQueue } from './NavlogQueue.ts'
 import { GApiUrl } from '../lib/GApiUrl.ts'
+import { SessionAirports } from './SessionAirports.ts'
 import { LocalStore } from '../lib/LocalStore.ts'
+import { NavlogQueue } from './NavlogQueue.ts'
 
 export const contentTypeJson = { headers: {'Content-Type':'application/json'} }
 // const contentTypeTextPlain = { headers: {'Content-Type':'text/plain'} }
 const contentType = contentTypeJson;
-let airports = {}
 let pendingCodes = []
 let sunlightCache = {}
 export const backend = new Backend()
 export const newCurrentUser = new CurrentUser()
 export const navlogQueue = new NavlogQueue()
+export const sessionAirports = new SessionAirports()
 
 function airportCurrent( airport) {
   if( !backend.ready && !airport) return false;
@@ -35,7 +36,7 @@ export async function authenticationRequest( payload) {
     axios.post(url, payload, contentTypeJson)
       .then( response => {
         // remove unknown airports because some may be due to unauhtenticated user
-        removeUnknowAirports()
+        sessionAirports.cleanUp()
 
         newCurrentUser.login( response.data)
         resolve(newCurrentUser)
@@ -86,10 +87,9 @@ export async function getAirport( codeParam, group = false) {
     }
 
     // do we already have this airport in memory?
-    if( code in airports) {
-        airport = airports[code]
-        // console.log( '[data.getAirport] found in cache ' + code)
-        return airport
+    if(code in sessionAirports.data) {
+      // return value may by null if the code was not found
+      return sessionAirports.get(code)
     }
 
     // if this code is already in the queue we'll just wait for the data
@@ -106,9 +106,9 @@ export async function getAirport( codeParam, group = false) {
       const localAirport = JSON.parse( localCopy)
       if( backend.ready) {
         if( airportCurrent( localAirport)) {
-          // Airport data is current
           // console.log('[data.getAirport] localAirport ', code, 'is current')
-          airports[code] = localAirport
+          // Airport data is current add to session airports and return it
+          sessionAirports.set(code, localAirport)
           // console.log('[data.getAirport] localAirport ', code, 'is current')
           return localAirport;
         }
@@ -120,14 +120,14 @@ export async function getAirport( codeParam, group = false) {
         await backend.promise.then( () => {
           // compare effective date and model version
           if( airportCurrent(localAirport)) {
-            airports[code] = localAirport
+            sessionAirports.set(code, localAirport)
             // console.log('[data.getAirport] localAirport ', code, 'was current')
             resolve({current:true,airport:localAirport})
           } else {
             // turn out this data was stale, remove it from localStorage
             LocalStore.airportRemove(code)
             getAirport(code, false).then(airport => {
-              airports[code] = airport
+              sessionAirports.set(code, airport)
               resolve({current:false,airport:airport})
             }).catch( (e) => {
               reportError('[data.getAirport] error getting new airport data' + JSON.stringify(e))
@@ -216,10 +216,6 @@ export async function getBackend() {
 
   // Actually get the data
   return backend.promise
-}
-
-export function getAirports() {
-  return airports;
 }
 
 /**
@@ -331,23 +327,6 @@ export async function postPrint(options) {
     })
 }
 
-/**
- * We have better data for a given airport code. For example when we are done editing
- * @param {*} code 
- * @param {*} data 
- */
-export function refreshAirport(code, data) {
-  airports[code] = data
-}
-
-function removeUnknowAirports() {
-  for( const code in airports) {
-    if( airports[code] == null) {
-      delete airports[code]
-    }
-  }
-}
-
 export function reportError(message) {
   // we are just printing in the console for now but eventually we want to report
   console.log(message);
@@ -367,7 +346,7 @@ async function requestAllAirports( codes) {
         const airportList = response.data
         airportList.forEach( airport => {
             // memorize this airport
-            airports[airport.code] = airport
+            sessionAirports.set(airport.code, airport)
             // remove this code from pending codes
             pendingCodes.splice( pendingCodes.indexOf(airport.code), 1)
             // console.log('[data.requestAllAirports]', airport.code,'removed',JSON.stringify(pendingCodes))
@@ -376,7 +355,7 @@ async function requestAllAirports( codes) {
     .catch( error => {
       // this request failed, cache all airports as invalid
       codes.forEach( code => {
-        airports[code] = null
+        sessionAirports.setInvalid( code)
       })
       reportError( '[data.requestAllAirports] error ' + JSON.stringify(error))
     })
@@ -397,12 +376,12 @@ async function requestOneAirport( code) {
         // console.log( '[data.requestOneAirport] received', JSON.stringify(response.data))
         airport = response.data
         // add this data to cache
-        airports[code] = airport
+        sessionAirports.set(code, airport)
         // console.log( 'added to cache ' + code)
     })
     .catch( error => {
       // cache this airport as invalid
-      airports[code] = null
+      sessionAirports.setInvalid( code)
       pendingCodes = []
     })
 
@@ -439,11 +418,11 @@ export async function sendFeedback(text,contactMe) {
  */
 async function waitForAirportData( code) {
   // console.log( 'waiting for ' + code) 
-  while( !(code in airports)) {
+  while( !(code in sessionAirports.data)) {
     await new Promise(r => setTimeout(r, 250));
   }
   // console.log( 'done waiting for ' + code)
-  return airports[code]
+  return sessionAirports.get(code)
 }
 
 export async function saveCustomAirport(airport) {
