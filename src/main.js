@@ -1,22 +1,37 @@
-import { createApp } from 'vue'
-import './style.css'
-import App from './App.vue'
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faFacebookF, faGoogle } from '@fortawesome/free-brands-svg-icons';
+import {
+    faBan, faBorderAll,
+    faCheck, faCloudSunRain, faComments,
+    faGasPump, faHeadset, faImage, faJetFighter,
+    faListCheck,
+    faPenToSquare, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture,
+    faQuestion, 
+    faRoadCircleCheck, faRoute, faRotateLeft,
+    faStarOfLife, faSun,
+    faVideo, faWalkieTalkie, faXmark
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import 'primeicons/primeicons.css';
 import PrimeView from 'primevue/config';
-import 'primeicons/primeicons.css'
-import 'primevue/resources/themes/saga-blue/theme.css'
-import ConfirmationService from 'primevue/confirmationservice'
-import ToastService from 'primevue/toastservice'
-import GoogleSignInPluggin from 'vue3-google-signin'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faBan, faBorderAll, faComments, faPlaneArrival, faPlaneDeparture, faCloudSunRain, faCheck, faHeadset, faJetFighter, faListCheck, faPlaneCircleCheck, faGasPump,
-    faRoute, faStarOfLife, faPenToSquare, faQuestion, faRotateLeft, faSun, faImage,
-    faVideo, faWalkieTalkie, faXmark} from '@fortawesome/free-solid-svg-icons'
-import { faGoogle, faFacebookF } from '@fortawesome/free-brands-svg-icons'
+import ConfirmationService from 'primevue/confirmationservice';
+import 'primevue/resources/themes/saga-blue/theme.css';
+import ToastService from 'primevue/toastservice';
+import { createApp } from 'vue';
+import GoogleSignInPluggin from 'vue3-google-signin';
+import App from './App.vue';
+import './style.css';
 
-library.add( faBan, faPlaneArrival, faPlaneDeparture, faCheck, faCloudSunRain, faListCheck, faPlaneCircleCheck, faGasPump,
-    faPenToSquare, faHeadset, faJetFighter, faRoute, faStarOfLife, faSun, faBorderAll, faComments, faImage, faGoogle, 
-    faFacebookF, faQuestion, faRotateLeft, faVideo, faWalkieTalkie, faXmark)
+library.add( faBan, faBorderAll, 
+    faCheck, faCloudSunRain, faComments, 
+    faFacebookF, faGoogle, 
+    faGasPump, faHeadset, faImage, faJetFighter, 
+    faListCheck, 
+    faPenToSquare, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, 
+    faQuestion, 
+    faRoadCircleCheck, faRotateLeft, faRoute, 
+    faStarOfLife, faSun, 
+    faVideo, faWalkieTalkie, faXmark)
 
 createApp(App)
     .use(PrimeView)
