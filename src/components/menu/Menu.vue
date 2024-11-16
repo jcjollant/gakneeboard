@@ -134,20 +134,6 @@ watch(showPrint, async( newValue, oldValue) => {
 // End props management
 //---------------------
 
-function confirmAndLoad(title, template) {
-  confirm.require({
-      message: 'Do you want to replace all pages in the current template?',
-      header: title,
-      rejectLabel: 'No',
-      acceptLabel: 'Yes, Replace',
-      accept: () => {
-        activeTemplate.value = template
-        emits('load', template)
-      }
-    })
-}
-
-
 function onAuthentication(newUser) {
   // console.log('[Menu.onAuthentication] ' + JSON.stringify(userParam))
   showSignIn.value = false
@@ -282,8 +268,7 @@ function onTemplateDelete(template) {
   showTemplateLoad.value = false
   showDemoSelection.value = false
   
-  const title = 'Load Template "' + template.name + '"'
-  confirmAndLoad( title, template)
+  emits('load', template)
 }
 
 function onTemplateMode(mode) {

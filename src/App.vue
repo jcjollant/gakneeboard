@@ -19,7 +19,10 @@
       @close="showFeedback=false" @toast="toast.add" />
 
     <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
-      @discard="onEditorDiscard" @offset="onOffset" @save="onEditorSave" @toast="toast.add"/>
+      @discard="onEditorDiscard" 
+      @offset="onOffset" 
+      @save="onEditorSave" 
+      @toast="toast.add"/>
     <Toast />
     <div class="sheetName"
       :class="{'sheetNameOffset':menuOpen, 'sheetNameModified': templateModified}"
@@ -60,25 +63,25 @@
 
 <script setup>
 // import HelloWorld from './components/HelloWorld.vue'
-import { onBeforeMount, onMounted, onUnmounted,ref} from 'vue'
 import { inject } from "@vercel/analytics"
+import { onBeforeMount, onMounted, onUnmounted, ref } from 'vue'
 
-import { duplicate, getBackend, newCurrentUser, reportError } from './assets/data.js'
-import { backend, version, postPrint } from './assets/data.js'
-import { getTemplateDemoTiles, pageDataBlank, readPageFromClipboard } from './assets/sheetData'
-import { getToastData, toastError, toastWarning } from './assets/toast'
+import { backend, duplicate, getBackend, newCurrentUser, postPrint, version } from './assets/data.js'
+import { getTemplateDemoTiles } from './assets/sheetData'
+import { TemplateData } from './assets/Templates'
+import { getToastData, toastError } from './assets/toast'
 import { LocalStore } from './lib/LocalStore.ts'
-import { PageType, TemplateData } from './assets/Templates'
 
+import Toast from 'primevue/toast'
+import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
-import Toast from 'primevue/toast';
 
 import Editor from './components/editor/Editor.vue'
-import Feedback from './components/menu/Feedback.vue'
 import HowDoesItWork from './components/HowDoesItWork.vue'
+import Feedback from './components/menu/Feedback.vue'
 import Menu from './components/menu/Menu.vue'
-import Page from './components/page/Page.vue'
 import MenuButton from './components/menu/MenuButton.vue'
+import Page from './components/page/Page.vue'
 
 
 // const frontPageData = ref(null)
@@ -87,6 +90,7 @@ const activeTemplate = ref(null)
 const activePages = ref(null)
 let cssPageGap = -1
 let cssPageWidth = -1
+const confirm = useConfirm()
 const offset = ref(0)
 const offsetLast = ref(0)
 const templateModified = ref(false)
@@ -115,7 +119,7 @@ function getTemplateName() {
 }
 
 // update all widgets with provided data
-function loadTemplate(template=null) {
+function loadTemplate(template=null,save=false) {
   // console.log( '[App.loadTemplate]', typeof data, JSON.stringify(sheet))
 
   // if we don't know what to show, we load a copy of the demo page
@@ -138,6 +142,11 @@ function loadTemplate(template=null) {
   // restore modified state
   templateModified.value = template.modified;
   // console.log('[App.loadTemplate]', offset.value, offsetLast.value)
+
+  // save the template to local storage
+  if(save) {
+    saveTemplateLocally(false)
+  }
 }
 
 function onCloseHowDoesItWork() {
@@ -185,13 +194,27 @@ function onEditorSave() {
   }
 }
 
-function onMenuLoad(sheet) {
+function onMenuLoad(template) {
   // console.log('[App.onMenuLoad]', JSON.stringify(sheet))
-  if(sheet && sheet.data) {
-    loadTemplate(sheet)
-    saveTemplateLocally(false)
+
+  if(!template || !template.data) {
+    console.log('[App.onMenuLoad] could not load', JSON.stringify(template))
+    return
+  }
+
+  const title = 'Load Template "' + template.name + '"'
+  if( templateModified.value) {
+    confirm.require({
+        message: 'Do you want to replace all pages in the current template?',
+        header: title,
+        rejectLabel: 'No',
+        acceptLabel: 'Yes, Replace',
+        accept: () => {
+          loadTemplate(template, true)
+        }
+      })
   } else {
-    console.log('[App.onMenuLoad] could not load', JSON.stringify(sheet))
+    loadTemplate(template, true)
   }
 }
 
@@ -209,6 +232,7 @@ onMounted(async () => {
   // console.log('[App.onMounted]')
   try {
     // console.log( '[App.onMounted]', JSON.stringify(window.location.search))
+    // Do we have anything to load from URL?
     let urlParams = new URLSearchParams(window.location.search);
     if( urlParams.has('sheet') || urlParams.has('t')) {
       const code = urlParams.has('t') ? urlParams.get('t') : urlParams.get('sheet')
@@ -234,8 +258,7 @@ onMounted(async () => {
   } catch(e) {
     console.log('[App.onMounted] local data is corrupted' + e)
     // revert to demo tiles
-    loadTemplate(getTemplateDemoTiles())
-    saveTemplateLocally()
+    loadTemplate(getTemplateDemoTiles(), true)
   }
 
 
