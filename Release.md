@@ -1,3 +1,7 @@
+## 11/15/2024
+* Fixed copy page mirror bug
+* Removed confirmation when discarding editor without changes
+* Removed confirmation when the existing template was not modified
 ## 11/13/2024
 * Added Nordo mode to Radio tile
 ## 11/12/2024
