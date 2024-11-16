@@ -6,7 +6,7 @@
     </div>
     <div class="editorMenu">
       <MenuButton id="editorBtnSave" icon="check" label="Save Edits and Close" 
-        @click="emits('save')" />
+        @click="onExitAndSave" />
       <MenuButton id="editorBtnDiscard" icon="xmark" label="Discard Edits and Close" :active="true"
         @click="onDiscard" />
     </div>
@@ -54,6 +54,7 @@ import MenuButton from '../menu/MenuButton.vue'
 const emits = defineEmits(['discard','save','toast','offset'])
 const confirm = useConfirm()
 const model = defineModel({type:Object})
+const modified = ref(false)
 const offset = ref(0)
 const sheets = ref([])
 
@@ -62,6 +63,12 @@ const sheets = ref([])
 const props = defineProps({
   offset: {type: Number, default: 0},
 })
+
+// We are getting out (post confirmation or without change)
+function discard() {
+  modified.value = false
+  emits('discard')
+}
 
 function loadProps( props:any) {
   // console.log('Menu loadProps', JSON.stringify(props))
@@ -103,15 +110,25 @@ function onAction(action:EditorAction) {
 // User selected Discard and close
 function onDiscard() {
   // confirm and get out
+  if(modified.value) {
     confirm.require({
-        message: 'Would you like to close the editor without saving?',
-        header: 'Discard Edits',
+        message: 'Would you like to close the editor without saving modifications?',
+        header: 'Discard Changes',
         rejectLabel: 'No',
         acceptLabel: 'Yes, Discard',
         accept: () => {
-          emits('discard')
+          discard()
         }
       })
+  } else {
+    discard()
+  }
+}
+
+// Leave the editor
+function onExitAndSave() {
+  modified.value = false
+  emits('save')  
 }
 
 // Pages are manipulated via editor buttons
@@ -128,7 +145,7 @@ async function onEditorAction(ea:EditorAction) {
     emits('toast',getToastData('Page ' + (ea.offset+1) + ' copied to clipboard'))
 
   } else if(ea.action == EditorAction.COPY_TO_PAGE) {
-    model.value.data[ea.offsetTo] = model.value.data[ea.offset]
+    model.value.data[ea.offsetTo] = duplicate(model.value.data[ea.offset])
 
   } else if(ea.action == EditorAction.DELETE_PAGE) {
     // protection against last page removal
@@ -189,6 +206,7 @@ async function onEditorAction(ea:EditorAction) {
     // trigger offset event so parent is up to speed
     emits('offset', offset.value)
   }
+  modified.value = true
 }
 
 function swapTiles(params:any) {
