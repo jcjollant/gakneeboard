@@ -164,7 +164,8 @@ function onCustomUpdated(code, airportData) {
     showCustomAirport.value=false
     airportCode.value = code
     
-    data.refreshAirport(code, airportData)
+    // save in memory
+    data.sessionAirports.set(code, airportData)
     loadAirport(code)
 }
 

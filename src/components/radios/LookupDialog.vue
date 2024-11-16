@@ -1,6 +1,33 @@
+<template>
+    <Dialog modal header="Frequency Lookup" style="width:45rem" class="lookupDialog">
+        <FieldSet legend="Airport">
+            <AirportInput :auto="true" @valid="onAirportInput" class="mb-2"></AirportInput>
+            <div class="listAirports">
+                <Button v-for="airport in airports" @click="onAirport(airport)">{{airport.code}}</Button>
+            </div>
+        </FieldSet>
+        <div class="mt-2 tip">{{selectedAirport ? 'Click on any frequency below to add them to your Radio Flow':'Pick an airport above to see associated frequencies'}}</div>
+        <div v-if="selectedAirport" class="airportSpecific">
+            <FieldSet :legend="selectedAirport['code'] + ' Local Frequencies'">
+                <div class="listLocal">
+                    <Button v-for="f in localFrequencies" :label="f['label']" @click="addFrequency(f.mhz, f.name)" class="freqButton" link></Button>
+                </div>
+            </FieldSet>
+            <FieldSet :legend="selectedAirport['code'] + ' Navaids'" class="listNavaids">
+                <Button v-for="f in navaidFrequencies" :label="f['label']" @click="addFrequency(f.mhz, f.name)" class="freqButton" link></Button>
+            </FieldSet>
+            <FieldSet v-for="group in atcGroups" :legend="group['name']" >
+                <div class="listAtc">
+                    <Button v-for="f in group['atcs']" :label="f['label']" @click="addFrequency(f.mhz, group.name)" class="freqButton left" link :title="f.use"></Button>
+                </div>
+            </FieldSet>
+        </div>
+    </Dialog>
+</template>
+
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { getAirports } from '../../assets/data'
+import { sessionAirports } from '../../assets/data'
 import { formatAtcGroups, formatFrequency } from '../../assets/format'
 
 import Button from 'primevue/button'
@@ -23,11 +50,11 @@ const props = defineProps({
 })
 
 onMounted( () => {
-    refreshAirportList()
+    sessionAirports.addListener(refreshAirportList)
 }) 
 
 watch(props, () => {
-    refreshAirportList()
+    // refreshAirportList()
 })
 //--------------------------------
 
@@ -53,43 +80,15 @@ function onAirport(airport) {
 }
 
 function onAirportInput() {
-    refreshAirportList()
+    // refreshAirportList()
 }
 
-function refreshAirportList() {
+function refreshAirportList(newAirports) {
     // keep airports that have frequencies
-    const raw = getAirports()
-    airports.value =  Object.keys(raw).map( k => raw[k]).filter(a => a.freq.length > 0);
-    // console.log('[LookupDialog.loadProps]', JSON.stringify(airports.value))
+    airports.value =  newAirports.filter(a => a.freq.length > 0);
+    // console.log('[LookupDialog.refreshAirportList]', JSON.stringify(airports.value))
 }
 </script>
-
-<template>
-    <Dialog modal header="Frequency Lookup" style="width:45rem" class="lookupDialog">
-        <FieldSet legend="Airport">
-            <AirportInput :auto="true" @valid="onAirportInput" class="mb-2"></AirportInput>
-            <div class="listAirports">
-                <Button v-for="airport in airports" @click="onAirport(airport)">{{airport.code}}</Button>
-            </div>
-        </FieldSet>
-        <div class="mt-2 tip">{{selectedAirport ? 'Click on any frequency below to add them to your Radio Flow':'Pick an airport above to see associated frequencies'}}</div>
-        <div v-if="selectedAirport" class="airportSpecific">
-            <FieldSet :legend="selectedAirport.code + ' Local Frequencies'">
-                <div class="listLocal">
-                    <Button v-for="f in localFrequencies" :label="f.label" @click="addFrequency(f.mhz, f.name)" class="freqButton" link></Button>
-                </div>
-            </FieldSet>
-            <FieldSet :legend="selectedAirport.code + ' Navaids'" class="listNavaids">
-                <Button v-for="f in navaidFrequencies" :label="f.label" @click="addFrequency(f.mhz, f.name)" class="freqButton" link></Button>
-            </FieldSet>
-            <FieldSet v-for="group in atcGroups" :legend="group.name" >
-                <div class="listAtc">
-                    <Button v-for="f in group.atcs" :label="f.label" @click="addFrequency(f.mhz, group.name)" class="freqButton left" link :title="f.use"></Button>
-                </div>
-            </FieldSet>
-        </div>
-    </Dialog>
-</template>
 
 <style scoped>
 
