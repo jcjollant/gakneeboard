@@ -117,6 +117,12 @@ describe('Editor', () => {
     cy.get('.p-confirm-dialog-accept').click()
     cy.get('.page0 > :nth-child(6) > .headerTitle').contains('Clearance @')
     cy.get('.page1 > :nth-child(6) > .headerTitle').contains('Clearance @')
+    // swap something on the left should not affect right
+    cy.get('.editorPage0 > .overlay > .btn1').click()
+    cy.get('.page0 > :nth-child(1) > .headerTitle').contains(feltsTitle)
+    cy.get('.page0 > :nth-child(2) > .headerTitle').contains(boeingTitle)
+    cy.get('.page1 > :nth-child(1) > .headerTitle').contains(boeingTitle)
+    cy.get('.page1 > :nth-child(2) > .headerTitle').contains(feltsTitle)
 
     // reload demo
     reloadDemo()
