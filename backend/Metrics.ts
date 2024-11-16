@@ -8,8 +8,7 @@ import { TemplateDao } from "./TemplateDao";
 import { Template } from "./models/Template";
 import { AdipDao } from "./adip/AdipDao";
 import { PageType } from './TemplateTools'
-import { SessionDao } from "./dao/SessionDao";
-import { UsageDao } from "./dao/UsageDao";
+import { UsageDao, UsageType } from "./dao/UsageDao";
 import { UserTools } from './UserTools' 
 
 export class Metric {
@@ -37,6 +36,7 @@ export class Metrics {
     static usersFacebookKey:string = 'usersFacebook'
     static sessionsKey:string = 'sessions'
     static printsKey:string = 'prints'
+    static exportsKey:string = 'exports'
 
     static async adip():Promise<Metric> {
         const adipCount = await AdipDao.count()
@@ -52,14 +52,18 @@ export class Metrics {
         return output
     }
 
-    static async sessions():Promise<Metric> {
-        const count = await (new SessionDao()).count()
-        return new Metric(this.sessionsKey, count)
+    static async usage():Promise<Metric[]> {
+        const counts = await UsageDao.countByType()
+        return counts.map( (count) => new Metric(Metrics.usageTypeToKey(count.type), count.count))
     }
 
-    static async prints():Promise<Metric> {
-        const count = await (new UsageDao()).count()
-        return new Metric(this.printsKey, count)
+    static usageTypeToKey(type:UsageType):string {
+        switch(type) {
+            case UsageType.Export: return this.exportsKey
+            case UsageType.Print: return this.printsKey
+            case UsageType.Session: return this.sessionsKey
+        }
+        // return '?'
     }
 
     static async users():Promise<Metric[]> {
@@ -249,8 +253,7 @@ export class Metrics {
                 Metrics.users(),
                 Metrics.feedbacks(),
                 Metrics.templateDetails(),
-                Metrics.sessions(),
-                Metrics.prints(),
+                Metrics.usage(),
                 Metrics.publicationsCheck(),
                 Metrics.templates(),
                 Metrics.airports(), 
