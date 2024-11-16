@@ -10,6 +10,8 @@
     <NotesPage v-else-if="type==PageType.notes" @replace="onReplace(PageType.selection)" />
     <ApproachPage v-else-if="type==PageType.approach" :data="pageData"
         @update="onUpdate" @replace="onReplace" @toast="onToast" />
+    <DiagramPage v-else-if="type==PageType.diagram" :data="pageData"
+        @update="onUpdate" @replace="onReplace" @toast="onToast" />
     <SelectionPage v-else @replace="onReplace" />
 </template>
 
@@ -18,9 +20,10 @@ import { onMounted, ref, watch } from 'vue'
 
 import { PageType } from '../../assets/Templates'
 
-import ApproachPage from '../approach/ApproachPage.vue'
+import ApproachPage from '../charts/ApproachPage.vue'
 import ChecklistPage from '../checklist/ChecklistPage.vue'
 import CoverPage from '../cover/CoverPage.vue'
+import DiagramPage from '../charts/DiagramPage.vue'
 import NavlogPage from '../navlog/NavlogPage.vue'
 import NotesPage from '../notes/NotesPage.vue'
 import SelectionPage from './SelectionPage.vue'

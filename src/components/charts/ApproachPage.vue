@@ -24,7 +24,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import AirportInput from '../shared/AirportInput.vue';
-import ApproachPlate from './ApproachPlate.vue';
+import ApproachPlate from './Diagram.vue';
 import Header from '../shared/Header.vue';
 import FAButton from '../shared/FAButton.vue';
 import { getAirport } from '../../assets/data';

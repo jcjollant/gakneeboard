@@ -2,7 +2,7 @@ import axios from "axios"
 import { GApiUrl } from "./GApiUrl"
 import { LocalStore } from "./LocalStore"
 
-export class Approach {
+export class DiagramData {
     static async getPdf(pdfFile:string):Promise<string> {
         // do we already have that image in localstore?
         const image = LocalStore.getApproachPlate(pdfFile)
@@ -11,7 +11,7 @@ export class Approach {
         }
 
         return new Promise<string>(res => {
-            axios.get(GApiUrl.root + 'approach/plate/' + pdfFile).then(response => {
+            axios.get(GApiUrl.root + 'diagram/' + pdfFile).then(response => {
                 // console.log('[Approach.getImage] response length', response.data.length)
                 // const apchImage = 'data:image/jpeg;base64,' + response.data;
                 const apchImage = response.data;

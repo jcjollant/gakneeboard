@@ -1,16 +1,16 @@
 <template>
     <div>
-        <div v-if='loading' class="loading">Loading Approach...</div>
+        <div v-if='placeHolderText.length' class="loading">{{ placeHolderText }}</div>
         <canvas v-else ref="pdfCanvas" class="pdfOutput"></canvas>
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { Approach } from '../../lib/Approach';
+import { DiagramData } from '../../lib/DiagramData';
 import { getDocument } from 'pdfjs-dist'
 
-const loading = ref(false)
+const placeHolderText = ref('')
 const pdfCanvas = ref(null)
 const pdfFile = ref(null)
 
@@ -34,19 +34,21 @@ onMounted(async () => {
 
 const initPDF = async () => {
     const pdfjs = await import('pdfjs-dist/build/pdf')
-
-    // const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker')
     pdfjs.GlobalWorkerOptions.workerSrc = './pdf.worker.min.mjs';
-    // pdfjs.GlobalWorkerOptions.workerSrc = PDFJSWorker;
-    // pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.0.279/pdf.worker.min.js'
 }
 
-
-
 function loadPdf() {
-    loading.value = true;
-    Approach.getPdf(pdfFile.value).then( pdfDataBase64 => {
-        loading.value = false;
+    if(pdfFile.value == null) {
+        placeHolderText.value = 'No Selection';
+        return;
+    } else if ( pdfFile.value.length == 0) {
+        placeHolderText.value = 'No Diagram';
+        return
+    }
+    placeHolderText.value = 'Loading ...'
+
+    DiagramData.getPdf(pdfFile.value).then( pdfDataBase64 => {
+        placeHolderText.value = '';
         // console.log('[ApproachPage.showApproach] image size', pdfData.length)
         getDocument({data:atob(pdfDataBase64)}).promise.then( pdf => {
             // Get first page

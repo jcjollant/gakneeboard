@@ -7,6 +7,7 @@ import { GApiUrl } from '../lib/GApiUrl.js'
 export class PageType {
   static selection = 'selection'
   static tiles = 'tiles'
+  static diagram = 'diagram'
   static checklist = 'checklist'
   static cover = 'cover'
   static navLog = 'navlog'

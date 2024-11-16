@@ -1,4 +1,4 @@
-import { Approach } from "./Approach"
+import { DiagramData } from "./DiagramData"
 
 export class LocalStore {
     static airportPrefix:string = 'airport-'
