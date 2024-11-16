@@ -19,7 +19,7 @@ describe('Navigation', () => {
     cy.get('#offsetNext').should('have.class','noShow')
 
     // Load Checklist Demo and navigate offset
-    loadDemo('checklist')
+    loadDemo('checklist',true,false)
 
     cy.get('#offsetPrev').should('have.class','noShow')
     cy.get('#offsetNext').should('not.have.class','noShow')
@@ -140,22 +140,22 @@ describe('Navigation', () => {
 
     // load default demo
     cy.get(`.demoGrid > :nth-child(1)`).click()
-    cy.get('.p-confirm-dialog-accept').click()
+    // cy.get('.p-confirm-dialog-accept').click()
     cy.get('.page0').should('have.class','pageTiles')
     cy.get('.page1').should('have.class','pageChecklist')
 
     // load Checklist demo
-    loadDemo('checklist', false)
+    loadDemo('checklist', false, false)
     cy.get('.page0').should('have.class','pageChecklist')
     cy.get('.page1').should('have.class','pageChecklist')
 
     // load Tiles demo
-    loadDemo('tiles', false)
+    loadDemo('tiles', false, false)
     cy.get('.page0').should('have.class','pageTiles')
     cy.get('.page1').should('have.class','pageTiles')
 
     // load Navlog demo
-    loadDemo('navlog', false)
+    loadDemo('navlog', false, false)
     cy.get('.page0').should('have.class','pageNavlog')
     cy.get('.page1').should('have.class','pageTiles')
   })

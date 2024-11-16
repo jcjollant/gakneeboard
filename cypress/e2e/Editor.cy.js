@@ -11,12 +11,12 @@ function demoChecklistOn(page) {
     cy.get(`${page} > :nth-child(2) > .twoLists > .leftList > :nth-child(19)`).contains('FIRE')
 }
 
-function reloadDemo(closeEditor=true) {
+function reloadDemo(closeEditor=true,modified=true) {
     // close editor
     if (closeEditor) { 
       cy.get('#editorBtnSave').click()
     }
-    loadDemo('default')
+    loadDemo('default',true,modified)
 
     cy.get('.menuIcon').click()
     // reopen editor
@@ -30,7 +30,7 @@ describe('Editor', () => {
     cy.viewport('macbook-16')
 
     // reload demo
-    reloadDemo(false)
+    reloadDemo(false,false)
 
     // Copy Front to Back via clip board
     cy.get('.editorPage0 > .editorBottom > [aria-label="Copy"]').click()
@@ -200,7 +200,7 @@ describe('Editor', () => {
     cy.viewport('macbook-16')
 
     // reload demo
-    reloadDemo(false)
+    reloadDemo(false,false)
 
     // swap left and right
     cy.get('.page0 > :nth-child(6) > .headerTitle').contains('Clearance @')
