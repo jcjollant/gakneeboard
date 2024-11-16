@@ -79,12 +79,14 @@ watch(props, () => {
     display: grid;
     grid-template-columns: 70% auto;
     line-height: 23px;
-    border-bottom: 1px solid lightgrey;
+    /* border-bottom: 1px solid lightgrey; */
 }
 
 .normal {
     color: black;
-    background: white;
+    /* background: lightgray; */
+    border-top: 1px solid lightgrey;
+    border-bottom: 1px solid lightgrey;
 }
 
 .response {
@@ -96,6 +98,7 @@ watch(props, () => {
     font-weight: bolder;
     grid-column: 1 / span 2;
     height: 23px;
+    line-height: 21px;
 }
 
 .emergent {
@@ -107,7 +110,7 @@ watch(props, () => {
 .smallFont {
     font-size: 0.8rem;
     line-height: 23px;
-    height: 23px;
+    height: 22px;
 }
 
 .spanned {
