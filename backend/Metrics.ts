@@ -9,7 +9,7 @@ import { Template } from "./models/Template";
 import { AdipDao } from "./adip/AdipDao";
 import { PageType } from './TemplateTools'
 import { SessionDao } from "./dao/SessionDao";
-import { PrintDao } from "./dao/PrintDao";
+import { UsageDao } from "./dao/UsageDao";
 import { UserTools } from './UserTools' 
 
 export class Metric {
@@ -58,7 +58,7 @@ export class Metrics {
     }
 
     static async prints():Promise<Metric> {
-        const count = await (new PrintDao()).count()
+        const count = await (new UsageDao()).count()
         return new Metric(this.printsKey, count)
     }
 

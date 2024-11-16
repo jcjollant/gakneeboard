@@ -1,22 +1,21 @@
 import axios from 'axios'
 import { Adip } from '../backend/adip/Adip'
-import { Airport, versionInvalid } from './models/Airport'
 import { AirportDao } from './AirportDao'
-import { AirportView } from './models/AirportView'
-import { User } from './models/User'
-import { UserDao } from './dao/UserDao'
-import { UserTools } from './UserTools'
-import { Publication } from './models/Publication'
-import { PublicationDao } from './PublicationDao'
-import { PublishedTemplate } from './models/PublishedTemplate'
-import { Template } from './models/Template'
-import { TemplateDao } from './TemplateDao'
-import { version } from './constants.js'
-import { Sunlight } from './models/Sunlight'
-import { UserMiniView } from './models/UserMiniView'
 import { Exporter } from './Exporter'
-import { SessionDao } from './dao/SessionDao'
-import { PrintDao } from './dao/PrintDao'
+import { PublicationDao } from './PublicationDao'
+import { TemplateDao } from './TemplateDao'
+import { UserTools } from './UserTools'
+import { version } from './constants.js'
+import { UsageDao, UsageType } from './dao/UsageDao'
+import { UserDao } from './dao/UserDao'
+import { Airport, versionInvalid } from './models/Airport'
+import { AirportView } from './models/AirportView'
+import { Publication } from './models/Publication'
+import { PublishedTemplate } from './models/PublishedTemplate'
+import { Sunlight } from './models/Sunlight'
+import { Template } from './models/Template'
+import { User } from './models/User'
+import { UserMiniView } from './models/UserMiniView'
 
 // Google API key
 
@@ -71,8 +70,16 @@ export class GApi {
         // Fetch template for user
         const template:Template|undefined = await TemplateDao.readById(templateId, userId)
         if( !template) throw new GApiError(400, "Invalid Template");
-        // retrieve this template for this user
-        return await Exporter.export(template, format)
+
+        const exportData = {format:format}
+        // perform export and save usage
+        const [exporter, isSaved] = await Promise.all([
+            // retrieve this template for this user
+            Exporter.export(template, format), 
+            // Save usage
+            UsageDao.create(UsageType.Export, userId, JSON.stringify(exportData))
+        ])
+        return exporter
     }
 
     public static getAirportCurrentEffectiveDate() {
@@ -244,7 +251,7 @@ export class GApi {
             if( user) {
                 const userMini = await UserTools.userMini(user)
                 output['user'] = userMini
-                await SessionDao.create(user.id)
+                await UsageDao.create(UsageType.Session,user.id)
             }
         }
         // console.log('[GApi.getSession]', JSON.stringify(output))    
@@ -300,7 +307,7 @@ export class GApi {
     }
 
     public static printSave(userId:number|undefined,payload:string) {
-        return PrintDao.create(userId, payload)
+        return UsageDao.create(UsageType.Print, userId, payload)
     }
 
     public static async publicationGet(code:string):Promise<Template|undefined> {

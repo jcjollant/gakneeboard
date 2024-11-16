@@ -1,15 +1,21 @@
 import { sql } from "@vercel/postgres";
 import { Dao } from "./Dao";
 
-export class PrintDao extends Dao {
+export enum UsageType {
+    Export = 'export',
+    Print = 'print',
+    Session = 'session'
+}
+
+export class UsageDao extends Dao {
     constructor() {
-        super('prints')
+        super('usage')
     }
 
-    public static async create(userId:number|undefined, data:string):Promise<Boolean> {
-        const dao = new PrintDao()
+    public static async create(type:UsageType, userId:number|undefined=undefined, data:string|undefined=undefined):Promise<Boolean> {
+        const dao = new UsageDao()
         return new Promise<Boolean>(async (resolve, reject) => {
-            sql`INSERT INTO prints (user_id, data) VALUES (${userId}, ${data})`
+            sql`INSERT INTO usage (user_id, data, usage_type) VALUES (${userId}, ${data},${type})`
                 .then( () => {
                     // console.log('[PrintDao.create] success')
                     resolve(true)
