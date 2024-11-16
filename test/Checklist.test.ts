@@ -1,4 +1,5 @@
 import {describe, expect, test} from '@jest/globals';
+import { AceChecklist } from '../backend/exporters/AceChecklist'
 import { Template } from '../backend/models/Template';
 import { TemplateChecklist } from '../backend/exporters/TemplateChecklist';
 import { FmdChecklist } from '../backend/exporters/FmdChecklist';
@@ -15,7 +16,7 @@ describe( 'Checklist', () => {
         {length:8,name:'Emergencies',sectionLength:[6,7,5,8,6,7,5,6],fmdLength:[5,6,4,7,5,7,2,6]}
     ]
 
-    test( 'Template to Checklist to Fmd', () => {
+    test( 'Template to Checklist', () => {
         // This template has four checklist pages. Two pages have the same name
         const tcList = TemplateChecklist.fromTemplate(template)
         expect(tcList).toBeDefined()
@@ -33,7 +34,7 @@ describe( 'Checklist', () => {
         }
 
     })
-    test( 'Template to Fmd Checklist', () => {
+    test( 'Template to Fmd', () => {
         const fmdChecklist = FmdChecklist.fromTemplate(template);
         expect(fmdChecklist.objectId).toHaveLength(32);
         expect(fmdChecklist.schemaVersion).toEqual("1.0");
@@ -58,7 +59,6 @@ describe( 'Checklist', () => {
             }
         }
 
-
         // group 2 and 3 are abnormal and emergency
         expect(fmdChecklist.groups[1].objectId).toHaveLength(32);
         expect(fmdChecklist.groups[1].groupType).toEqual('abnormal');
@@ -66,5 +66,11 @@ describe( 'Checklist', () => {
         expect(fmdChecklist.groups[2].objectId).toHaveLength(32);
         expect(fmdChecklist.groups[2].groupType).toEqual('emergency');
         expect(fmdChecklist.groups[2].items).toHaveLength(0);
+    })
+
+    test('Template to Ace', () => {
+        const aceChecklist = AceChecklist.fromTemplate(template);
+        expect(aceChecklist.groups).toHaveLength(1)
+        expect(aceChecklist.groups[0].lists).toHaveLength(6)
     })
 })
