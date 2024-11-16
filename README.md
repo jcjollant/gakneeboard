@@ -37,6 +37,8 @@ Client ID : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent
 * 
 
 # Done
+## 11/15/2024
+* Usage table and metrics
 ## 11/12/2024
 * Foreflight checklist exports
 ## 11/08/2024
