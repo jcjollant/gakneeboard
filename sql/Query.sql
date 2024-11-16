@@ -56,7 +56,7 @@ SELECT data,name,description FROM sheets WHERE id=0 AND user_id=1
 # Count of JC sheets
 SELECT COUNT(*) FROM sheets WHERE user_Id=1
 
-# Sheets per user
+# Templates per user
 SELECT COUNT(*) as count, user_id FROM sheets GROUP BY user_id ORDER BY count DESC
 
 # Sheets per user

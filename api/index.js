@@ -84,14 +84,14 @@ app.get('/airports/:list', async (req, res) => {
 })
 
 /**
- * get and approach plate image from the PDF name
+ * Get approach plate PDF
  */
 app.get('/approach/plate/:cycle/:fileName', async (req, res) => {
     // console.log('[index] /test')
     try {
         const cycle = req.params.cycle
         const fileName = req.params.fileName
-        GApi.getApproachPlate(cycle,fileName).then(image => {
+        GApi.getAeronavPdf(cycle,fileName).then(image => {
             // console.log('[index] approach length', image.length)
             res.set({
                 'Content-Type': 'application/pdf',
@@ -101,8 +101,8 @@ app.get('/approach/plate/:cycle/:fileName', async (req, res) => {
             res.send(image)
         });
     } catch( e) {
-        console.log('[index] /test error' + e)
-        catchError(res, e, 'GET /templates')
+        console.log('[index] /approach error' + e)
+        catchError(res, e, 'GET /approach')
     }
 })
 
@@ -119,6 +119,32 @@ app.post('/authenticate', async(req,res) => {
     })
 })
 
+/**
+ * Get airport diagram PDF
+ */
+app.get('/diagram/:cycle/:fileName', async (req, res) => {
+    // console.log('[index] /test')
+    try {
+        const cycle = req.params.cycle
+        const fileName = req.params.fileName
+        GApi.getAeronavPdf(cycle,fileName).then(image => {
+            // console.log('[index] approach length', image.length)
+            res.set({
+                'Content-Type': 'application/pdf',
+                'Content-Disposition': 'inline',
+                'Cache-Control': 'no-cache'
+            })
+            res.send(image)
+        });
+    } catch( e) {
+        console.log('[index] GET /diagram error' + e)
+        catchError(res, e, 'GET /diagram')
+    }
+})
+
+
+
+// Trigger download of a template export in various formats
 app.get('/export/template/:id/:format', async(req,res) => {
     // console.log('[index.get/export/template/', req.params.id, req.params.format, req.query.user)
     try {

@@ -61,7 +61,7 @@ describe( 'Airport View', () => {
     })
 
     test('Boeing View', () => {
-        const view = new AirportView(Adip.airportFromDetails(kbfiData))
+        const view = new AirportView(Adip.parseAirport(kbfiData))
         // console.log(v6)
         expect(view).toBeInstanceOf(AirportView)
         if( view) {
@@ -125,7 +125,7 @@ describe( 'Airport View', () => {
     })
 
     test('1W1 view', () => {
-        const view = new AirportView(Adip.airportFromDetails(k1w1Data));
+        const view = new AirportView(Adip.parseAirport(k1w1Data));
         expect(view).toBeDefined()
         expect(view.tpa).toBe(1229)
     })

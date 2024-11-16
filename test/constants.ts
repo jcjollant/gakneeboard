@@ -19,7 +19,7 @@ export const jcSource = 'google'
 export const samplePublicationCode = '8Q'
 
 export const currentAsOf = 20241031;
-export const currentAirportModelVersion = 6
+export const currentAirportModelVersion = 7
 export const krntAtcs =  [
     {mhz:119.2, useCount:6, name:'SEATTLE-TACOMA APPROACH CONTROL'},
     {mhz:120.1, useCount:4, name:'SEATTLE-TACOMA APPROACH CONTROL'},
@@ -35,3 +35,4 @@ export const krntIap = [
     {name:'RNAV (GPS) Y RWY 16',pdf:'2410/05396RY16.PDF'},
     {name:'RNAV (GPS) Z RWY 16',pdf:'2410/05396RZ16.PDF'}
 ]
+export const krntApd = '2410/05396AD.PDF'

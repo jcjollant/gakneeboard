@@ -6,6 +6,7 @@ import { Frequency } from '../models/Frequency'
 import { Navaid } from '../models/Navaid'
 import { Runway, RunwaySurface, RunwayEnd, PatternDirection } from '../models/Runway'
 import axios from 'axios'
+import { AirportChartData } from '../models/AirportChartData'
 
 const maxNavaids:number = 10
 
@@ -57,136 +58,29 @@ export class Adip {
                 },
             }
 
-        const [airport, approaches] = await Promise.all( [
-            Adip.getAirportDetails(fetchCode, payload, config, saveRawData), 
-            Adip.getAirportChartData(payload, config)
+        const [airport, acd] = await Promise.all( [
+            Adip.fetchAirportDetails(fetchCode, payload, config, saveRawData), 
+            Adip.fetchAirportChartData(payload, config)
         ])
 
         // enrich airport with approaches if both are defined
-        if(airport && approaches) airport.iap = approaches;
+        if(airport && acd) {
+            airport.iap = acd.iap;
+            airport.diagram = acd.diagram
+        }
 
         // console.log('[Adip.fetchAirport]', JSON.stringify(airport))
 
         return airport;
     }
 
-    /**
-     * This is the main logic that turns ADIP raw data into Airport
-     * @param adip 
-     * @returns 
-     */
-    static airportFromDetails( adip:any):Airport {
-        if(!adip || adip.error == 'noAirportData') throw new Error('No adip data')
-        const code:string = ('icaoId' in adip ? adip.icaoId : 'locId' in adip ? adip.locId : '?')
-        const name:string = Adip.getName(adip)
-        const elevation:number = adip.elevation
-        const airport = new Airport(code,name, elevation)
-
-        // Scan adip.facility.frequencies
-        if( adip.ctaf) {
-            airport.addFrequency( 'CTAF', Adip.parseFrequency(adip.ctaf))
-        }
-        if( adip.unicom) {
-            airport.addFrequency( 'UNICOM', Adip.parseFrequency(adip.unicom))
-        }
-        if( adip.effectiveDate) {
-            airport.effectiveDate = adip.effectiveDate
-        }
-        if( adip.arp) {
-            airport.setLocation(adip.arp)
-        }
-        if(adip.trafficPatternAltitude) {
-            airport.setTrafficPatternAltitude(elevation + adip.trafficPatternAltitude)
-        }
-
-        // read frequencies
-        let weatherFound:boolean = false
-        if( adip.facility && adip.facility.frequencies) {
-            const frequencyMapping:Record<string,string> = {'GND/P':'GND','LCL/P':'TWR'}
-            const frequencies:Frequency[] = adip.facility.frequencies.map( (f:any) => {
-                let name:string = f.frequencyUse
-                if( name in frequencyMapping) {
-                    name = frequencyMapping[name]
-                }
-                if( name == 'ATIS') weatherFound = true
-                // Augment the name with Rwy Name
-                return new Frequency(name, Adip.parseFrequency(f.frequency))
-            })
-            // console.log('[Adip.airportFromDetails]',JSON.stringify(frequencies))
-            // add frequencies if they are not military
-            airport.addFrequencies( frequencies.filter(f => !Adip.isMilitary(f.mhz)))
-        }
-        if( !weatherFound && adip.asosAwos && adip.asosAwos[0].frequency) { // second chance to get weather from asosAwos
-            airport.addFrequency( adip.asosAwos[0].sensorType, adip.asosAwos[0].frequency)
-        }
-
-        // read runways
-        if(adip.runways) {
-            const runways:Runway[] = adip.runways.map( (rwy:any) => {
-                const name:string = rwy.runwayIdentifier.replace('/','-')
-                const length:number = Number(rwy.length)
-                const width:number = Number(rwy.width)
-                const runway:Runway = new Runway(name, length, width)
-                runway.setRunwaySurface(Adip.getRunwaySurface(rwy))
-                // runway frequency
-                runway.freq = Adip.getRunwayFrequency(adip,rwy)
-                // ends
-                const magneticVariation:number = Adip.getVariation(adip)
-                for( const rwyEnd of [rwy.baseEnd,rwy.reciprocalEnd]) {
-                    const end:RunwayEnd|undefined = Adip.getRunwayEnd(runway, rwyEnd)
-                    if(!end) continue
-                    const orientation:number = Adip.getOrientation(rwyEnd, magneticVariation)
-                    end.setMagneticOrientation(orientation)
-                    const tp:PatternDirection = Adip.parseTrafficPattern(rwyEnd)
-                    end.setTrafficPattern(tp)
-                }
-                return runway
-            }) 
-            airport.addRunways(runways)
-        }
-    
-        // read navaids
-        if(adip.navaids) {
-            const navaids:Navaid[] = adip.navaids.map( (nav:any) => new Navaid(nav.facilityId, nav.frequency, nav.facilityType, nav.distance, nav.bearingToNavaid))
-            // only consider VORs and limit the total number to maxNavaids
-            airport.addNavaids(navaids.filter(nav => nav.type.includes('VOR')).slice(0,maxNavaids))
-        }
-
-        // ATC frequencies
-        if(adip.satelliteAirports) {
-            // build a raw list without military freq
-            const rawList  = adip.satelliteAirports.map( (sa:any) => {
-                const freq:number = Adip.parseFrequency( sa.frequency);
-                let use:string = sa.frequencyUse;
-                const name:string = sa.masterAirportName;
-                const notes:string = Adip.parseFrequencyNotes(sa.frequency)
-                if(notes.length>0) use += '('+notes+')'
-                return {freq:freq,name:name,use:use}
-            }).filter( (elt:any) => !Adip.isMilitary(elt.freq))
-            // now build the final list with consolidated freq
-            const atcs:Atc[] = []
-            for(const entry of rawList) {
-                const atc = atcs.find( a => a.mhz == entry.freq)
-                if(atc) {
-                    atc.addUse(entry.use)
-                } else {
-                    atcs.push( new Atc( entry.freq, entry.name, entry.use))
-                }
-            }
-            // store data
-            airport.addAtcs( atcs.sort( (a,b) => a.mhz - b.mhz))
-         }
-
-        return airport
-    }
-
     // invokes ADIP Airport chart data API
-    static getAirportChartData(payload:string,config:any):Promise<Approach[]> {
-        return new Promise<Approach[]>((resolve, reject) => {
+    static fetchAirportChartData(payload:string,config:any):Promise<AirportChartData> {
+        return new Promise<AirportChartData>((resolve, reject) => {
             axios.post( 'https://adip.faa.gov/agisServices/public-api/getAirportChartData', payload, config)
                 .then((response) => {
-                    const apch = Adip.iapFromChartData(response.data)
-                    resolve(apch)
+                    const acd = Adip.parseAirportChartData(response.data)
+                    resolve(acd)
                 })
                 .catch( error => {
                     if (error.response) {
@@ -200,14 +94,14 @@ export class Adip {
     }
 
     // invokes Adip Airport details API
-    static getAirportDetails(fetchCode:string, payload:string, config:any, saveRawData:boolean):Promise<Airport|undefined> {
+    static fetchAirportDetails(fetchCode:string, payload:string, config:any, saveRawData:boolean):Promise<Airport|undefined> {
         return new Promise<Airport|undefined>((resolve,reject) => {
             let airport:Airport|undefined = undefined
             axios.post( 'https://adip.faa.gov/agisServices/public-api/getAirportDetails', payload, config)
                 .then( response => {
                     // console.log( '[Adip.getAirportDetails]', JSON.stringify(response.data))
                     try {
-                        airport = Adip.airportFromDetails( response.data)
+                        airport = Adip.parseAirport( response.data)
                         airport.fetchTime = Date.now();
                     } catch(e) {
                         console.log('[Adip.getAirportDetails] failed to parse data', e)
@@ -321,21 +215,136 @@ export class Adip {
         }
     }
 
-    // turn the response from getAirportChartData into a list of instrument approaches
-    static iapFromChartData(data:any):Approach[] {
-        if(!data || !data.charts) return []
-        return data.charts
-            // only take Instrument Approaches
-            .filter( (c:any) => c.chartCode == 'IAP') 
-            // build a pdf relative URI from cycle and file name
-            .map((c:any) => new Approach(c.chartName, data.cycle + '/' + c.pdfName))
-    }
-
     // checks whether a frequency is military
     public static isMilitary(freq:number):boolean {
         return freq >= 225
     }
     
+    /**
+     * This is the main logic that turns ADIP raw data into Airport
+     * @param adip 
+     * @returns 
+     */
+    static parseAirport( adip:any):Airport {
+        if(!adip || adip.error == 'noAirportData') throw new Error('No adip data')
+        const code:string = ('icaoId' in adip ? adip.icaoId : 'locId' in adip ? adip.locId : '?')
+        const name:string = Adip.getName(adip)
+        const elevation:number = adip.elevation
+        const airport = new Airport(code,name, elevation)
+
+        // Scan adip.facility.frequencies
+        if( adip.ctaf) {
+            airport.addFrequency( 'CTAF', Adip.parseFrequency(adip.ctaf))
+        }
+        if( adip.unicom) {
+            airport.addFrequency( 'UNICOM', Adip.parseFrequency(adip.unicom))
+        }
+        if( adip.effectiveDate) {
+            airport.effectiveDate = adip.effectiveDate
+        }
+        if( adip.arp) {
+            airport.setLocation(adip.arp)
+        }
+        if(adip.trafficPatternAltitude) {
+            airport.setTrafficPatternAltitude(elevation + adip.trafficPatternAltitude)
+        }
+
+        // read frequencies
+        let weatherFound:boolean = false
+        if( adip.facility && adip.facility.frequencies) {
+            const frequencyMapping:Record<string,string> = {'GND/P':'GND','LCL/P':'TWR'}
+            const frequencies:Frequency[] = adip.facility.frequencies.map( (f:any) => {
+                let name:string = f.frequencyUse
+                if( name in frequencyMapping) {
+                    name = frequencyMapping[name]
+                }
+                if( name == 'ATIS') weatherFound = true
+                // Augment the name with Rwy Name
+                return new Frequency(name, Adip.parseFrequency(f.frequency))
+            })
+            // console.log('[Adip.airportFromDetails]',JSON.stringify(frequencies))
+            // add frequencies if they are not military
+            airport.addFrequencies( frequencies.filter(f => !Adip.isMilitary(f.mhz)))
+        }
+        if( !weatherFound && adip.asosAwos && adip.asosAwos[0].frequency) { // second chance to get weather from asosAwos
+            airport.addFrequency( adip.asosAwos[0].sensorType, adip.asosAwos[0].frequency)
+        }
+
+        // read runways
+        if(adip.runways) {
+            const runways:Runway[] = adip.runways.map( (rwy:any) => {
+                const name:string = rwy.runwayIdentifier.replace('/','-')
+                const length:number = Number(rwy.length)
+                const width:number = Number(rwy.width)
+                const runway:Runway = new Runway(name, length, width)
+                runway.setRunwaySurface(Adip.getRunwaySurface(rwy))
+                // runway frequency
+                runway.freq = Adip.getRunwayFrequency(adip,rwy)
+                // ends
+                const magneticVariation:number = Adip.getVariation(adip)
+                for( const rwyEnd of [rwy.baseEnd,rwy.reciprocalEnd]) {
+                    const end:RunwayEnd|undefined = Adip.getRunwayEnd(runway, rwyEnd)
+                    if(!end) continue
+                    const orientation:number = Adip.getOrientation(rwyEnd, magneticVariation)
+                    end.setMagneticOrientation(orientation)
+                    const tp:PatternDirection = Adip.parseTrafficPattern(rwyEnd)
+                    end.setTrafficPattern(tp)
+                }
+                return runway
+            }) 
+            airport.addRunways(runways)
+        }
+    
+        // read navaids
+        if(adip.navaids) {
+            const navaids:Navaid[] = adip.navaids.map( (nav:any) => new Navaid(nav.facilityId, nav.frequency, nav.facilityType, nav.distance, nav.bearingToNavaid))
+            // only consider VORs and limit the total number to maxNavaids
+            airport.addNavaids(navaids.filter(nav => nav.type.includes('VOR')).slice(0,maxNavaids))
+        }
+
+        // ATC frequencies
+        if(adip.satelliteAirports) {
+            // build a raw list without military freq
+            const rawList  = adip.satelliteAirports.map( (sa:any) => {
+                const freq:number = Adip.parseFrequency( sa.frequency);
+                let use:string = sa.frequencyUse;
+                const name:string = sa.masterAirportName;
+                const notes:string = Adip.parseFrequencyNotes(sa.frequency)
+                if(notes.length>0) use += '('+notes+')'
+                return {freq:freq,name:name,use:use}
+            }).filter( (elt:any) => !Adip.isMilitary(elt.freq))
+            // now build the final list with consolidated freq
+            const atcs:Atc[] = []
+            for(const entry of rawList) {
+                const atc = atcs.find( a => a.mhz == entry.freq)
+                if(atc) {
+                    atc.addUse(entry.use)
+                } else {
+                    atcs.push( new Atc( entry.freq, entry.name, entry.use))
+                }
+            }
+            // store data
+            airport.addAtcs( atcs.sort( (a,b) => a.mhz - b.mhz))
+         }
+
+        return airport
+    }
+
+    // turn the response from fetchAirportChartData into AirportChartData
+    static parseAirportChartData(data:any):AirportChartData {
+        const output = new AirportChartData()
+        if(!data || !data.charts) return output
+
+        for(const c of data.charts) {
+            if(c.chartCode == 'IAP') {
+                // console.log('IAP', c.pdfName)
+                output.addApproach(new Approach(c.chartName, data.cycle + '/' + c.pdfName))
+            } else if(c.chartCode == 'APD') {
+                output.diagram = data.cycle + '/' + c.pdfName
+            }
+        }
+        return output
+    }
 
     /**
      * Extract frequency from the rest of the field data

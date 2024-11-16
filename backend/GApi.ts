@@ -190,21 +190,21 @@ export class GApi {
     }
 
     /**
-     * Download PDF approach plate and turn it into PNG image
+     * Download PDF from aeronav
      * @param cycle a 6 characters string such as '202411'
      * @param fileName PDF file name
      * @returns PNG data base64 encoded
      */
-    public static async getApproachPlate(cycle:string, fileName:string):Promise<string|undefined> {
+    public static async getAeronavPdf(cycle:string, fileName:string):Promise<string|undefined> {
         const url = `https://aeronav.faa.gov/d-tpp/${cycle}/${fileName}`
         const pdfResponse = await fetch(url)
         if(!pdfResponse.ok) {
-            console.log('[GApi.getApproachPlate] fetch failed', url, pdfResponse.status)
+            console.log('[GApi.getAeronavPdf] fetch failed', url, pdfResponse.status)
             return undefined
         }
-        // console.log('[GApi.getApproachPlate] url', url, 'status', pdfResponse.status)
+        // console.log('[GApi.getAeronavPdf] url', url, 'status', pdfResponse.status)
         const pdfBuffer = Buffer.from(await pdfResponse.arrayBuffer())
-        // console.log('[GApi.getApproachPlate] pdfBuffer', pdfBuffer.byteLength)
+        // console.log('[GApi.getAeronavPdf] pdfBuffer', pdfBuffer.byteLength)
         return pdfBuffer.toString('base64')
     }
 

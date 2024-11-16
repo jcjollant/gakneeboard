@@ -6,7 +6,7 @@ import { Navaid } from './Navaid'
 import { Runway } from './Runway'
 
 export class AirportView {
-    public static currentVersion:number = 6;
+    public static currentVersion:number = 7;
     public static invalidVersion:number = -1;
     code: string;
     name: string;
@@ -20,6 +20,7 @@ export class AirportView {
     asof: number;
     version:number = AirportView.currentVersion;
     iap: Approach[];
+    diag: string|undefined;
 
     constructor(airport:Airport|undefined) {
         if(airport) {
@@ -44,6 +45,7 @@ export class AirportView {
         this.navaids = (airport && airport.navaids) ? airport.navaids : []
         this.atc = (airport && airport.atc) ? airport.atc : []
         this.iap = (airport && airport.iap) ? airport.iap : []
+        this.diag = (airport && airport.diagram) ? airport.diagram : undefined
     }
 
     public static formatAsOf(date:string):number {

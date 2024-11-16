@@ -3,15 +3,16 @@ import { Adip } from '../backend/adip/Adip'
 import { Airport } from '../backend/models/Airport';
 import { PatternDirection, Runway, RunwaySurface } from '../backend/models/Runway'
 import { kbffData, kbfiData, kcdwData, kdzjData, krntData, krntChartData, s43Data } from './adipData'
-import { krntAtcs, krntIap } from './constants';
+import { krntAtcs, krntIap, krntApd } from './constants';
 
 // combines airport details with chart data
 export function airportFromData(airportDetails:any, airportChartData:any):Airport {
-    const airport:Airport = Adip.airportFromDetails(airportDetails)
-    airport.iap = Adip.iapFromChartData(airportChartData)
+    const airport:Airport = Adip.parseAirport(airportDetails)
+    const acd = Adip.parseAirportChartData(airportChartData);
+    airport.iap = acd.iap
+    airport.diagram = acd.diagram
     return airport
 }
-
 
 function checkAtc(airport:Airport,expectedAtcs:any) {
     expect(airport.atc).toHaveLength(expectedAtcs.length)
@@ -147,11 +148,13 @@ describe('Adip', () => {
 
         expect(airport.iap).toBeDefined()
         expect(airport.iap).toEqual(krntIap)
+        expect(airport.diagram).toBeDefined()
+        expect(airport.diagram).toBe(krntApd)
     })
 
     test('S43 fields', () =>{
         const before = Date.now()
-        const airport = Adip.airportFromDetails(s43Data)
+        const airport = Adip.parseAirport(s43Data)
         expect(airport.code).toBe('S43')
         expect(airport.name).toBe('Harvey Fld')
         expect(airport.elev).toBe(22.8)
@@ -161,7 +164,7 @@ describe('Adip', () => {
     })
 
     test('KBFI fields', () => {
-        const airport = Adip.airportFromDetails(kbfiData)
+        const airport = Adip.parseAirport(kbfiData)
         expect(airport.code).toBe('KBFI')
         expect(airport.rwys).toHaveLength(2)
         expect(airport.rwys[0].freq).toBeDefined()
@@ -171,7 +174,7 @@ describe('Adip', () => {
 
     test('KDZJ fields', () => {
         // This data is particular for have AWOS-3PT
-        const airport = Adip.airportFromDetails(kdzjData)
+        const airport = Adip.parseAirport(kdzjData)
         expect(airport.code).toBe('KDZJ')
         expect(airport.freq).toHaveLength(3)
         expect(airport.freq[0].name).toBe('CTAF')
@@ -184,7 +187,7 @@ describe('Adip', () => {
 
     test('KCDW fields', () => {
         // This data is particular for having a huge number of VOR
-        const airport = Adip.airportFromDetails(kcdwData)
+        const airport = Adip.parseAirport(kcdwData)
         expect(airport.code).toBe('KCDW')
         expect(airport.navaids).toHaveLength(10)
 
@@ -199,14 +202,14 @@ describe('Adip', () => {
     })
 
     test('KBFF data', () => {
-        const airport = Adip.airportFromDetails(kbffData)
+        const airport = Adip.parseAirport(kbffData)
         expect(airport.code).toBe('KBFF')
         expect(airport.name).toBe('Western Nebraska Rgnl/wm B Heilig Fld/scottsbluff')
     })
 
     test('Invalid Code', () => {
         try {
-            const airport = Adip.airportFromDetails({"error":"noAirportData"})
+            const airport = Adip.parseAirport({"error":"noAirportData"})
             expect(true).toBeFalsy()
         } catch(e) {
         }

@@ -1,4 +1,4 @@
-const modelVersion:number = 11;
+const modelVersion:number = 12;
 export const versionInvalid:number = -1
 
 import { Atc } from './Atc'
@@ -24,6 +24,7 @@ export class Airport {
     fetchTime:number;
     location: { lat: number; lon: number }|undefined;
     iap: Approach[];
+    diagram: string|undefined;
 
     constructor(code:string, name:string, elevation:number) {
         this.id = undefined;
@@ -41,6 +42,7 @@ export class Airport {
         this.fetchTime = 0;
         this.location = undefined;
         this.iap = []
+        this.diagram = undefined;
     }
 
     static cleanupCode(code: string): string {
