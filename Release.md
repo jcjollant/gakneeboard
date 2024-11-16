@@ -1,5 +1,6 @@
 ##
 * Layout adjustment for Checklist heading
+* New Airport Diagram Page
 ## 11/15/2024
 * Fixed copy page mirror bug
 * Removed confirmation when discarding editor without changes
