@@ -4,7 +4,6 @@ import multer from "multer"
 // const cors = require('cors');
 import { GApi, GApiError } from '../backend/GApi'
 import { UserTools } from '../backend/UserTools'
-import { FeedbackDao } from "../backend/FeedbackDao";
 import { Maintenance } from '../backend/Maintenance'
 import { NavlogTools } from "../backend/NavlogTools";
 const port = 3000
@@ -168,8 +167,10 @@ app.post('/feedback', async(req,res) => {
     // console.log( "[index] feedback body type " + typeof req.body);
     // insert feedback in DB
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
-    await FeedbackDao.save(payload)
-    res.send("Thank you for your feedback")
+    await GApi.feedbackSave(payload).then(() => {
+        // send notification email
+        res.send("Thank you for your feedback")
+    })
 })
 
 

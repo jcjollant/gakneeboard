@@ -37,6 +37,9 @@ Client ID : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent
 * 
 
 # Done
+## 11/17/2024
+* Feedback is sending emails. 
+* Email sending is centralized
 ## 11/16/2024
 * Diagram API and model change
 ## 11/15/2024

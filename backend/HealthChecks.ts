@@ -2,7 +2,7 @@ import { sql } from  "@vercel/postgres";
 import { Airport } from "./models/Airport";
 import { Adip } from './adip/Adip'
 import { AirportDao } from "./AirportDao";
-import { createTransport } from 'nodemailer'
+import { Email, EmailType } from './Email'
 import { PublicationDao } from './PublicationDao'
 
 
@@ -102,62 +102,9 @@ export class HealthCheck {
      * @returns 
      */
     static async sendMail(data:any, failedChecks:number) {
-        const transporter = createTransport({
-            service: 'gmail',
-            auth: {
-              user: 'jeancedric.jollant@gmail.com',
-              pass: 'xzluolxqgtqlzzlh'
-            }
-          });
-
-          const message = 'Found ' + failedChecks + ' fail(s)\n\n' + data;
-
-          const mailOptions = {
-            from: 'Willie <jeancedric.jollant@gmail.com>',
-            to: 'jc@jollant.net',
-            subject: 'Housekeeping',
-            text: message
-          };
-          
-          return new Promise( (resolve, reject) => {
-            transporter.sendMail(mailOptions, function(error:any, info:any){
-                if (error) {
-                  console.log('[HealthChecks.sendMail]', error);
-                  resolve(false)
-                } else {
-                  console.log('[HealthChecks.sendMail] Email sent:', info.response);
-                  resolve(true)
-                }
-              });
-          })
-
+        const message = 'Found ' + failedChecks + ' fail(s)\n\n' + data;
+        await Email.send(message, EmailType.Housekeeping)
     }
-
-    // static async sheetsCheck():Promise<Check> {
-    //     const check:Check = new Check('sheets')
-    //     const sheetCount:number = await SheetDao.count()
-
-    //     if( sheetCount < 9) {
-    //         check.fail("Only " + sheetCount + " sheets")
-    //     } else {
-    //         check.pass( "We have " + sheetCount + " sheets")
-    //     }
-
-    //     return check
-    // }
-
-    // static async usersCheck():Promise<Check> {
-    //     const check:Check = new Check('users')
-    //     const userCount:number = await UserDao.count()
-
-    //     if( userCount < 14) {
-    //         check.fail("Only " + userCount + " users")
-    //     } else {
-    //         check.pass( "We have " + userCount + " users")
-    //     }
-
-    //     return check
-    // }
 
     public static async perform():Promise<Check[]> {
         return Promise.all([

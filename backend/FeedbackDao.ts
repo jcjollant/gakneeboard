@@ -1,4 +1,5 @@
 import { sql } from "@vercel/postgres"
+import { UserDao } from "./dao/UserDao";
 
 export class FeedbackDao {
     public static async count():Promise<number> {
@@ -6,13 +7,10 @@ export class FeedbackDao {
         return result.rows[0].count
     }
 
-    public static async save(data:any) {
-        // console.log( '[FeedbackDao.save]')
-        if( 'user' in data) {
-            await sql`INSERT INTO Feedback (Version,Text,user256) VALUES (${data.version},${data.feedback},${data.user})`;
-        } else {
-            await sql`INSERT INTO Feedback (Version,Text) VALUES (${data.version},${data.feedback})`;
-        }
+    public static async save(version:string,feedback:string,user:string) {
+        const userId = await UserDao.getIdFromHash(user)
+        // console.log( '[FeedbackDao.save]', JSON.stringify(data), userId)
+        await sql`INSERT INTO Feedback (Version,Text,user_id) VALUES (${version},${feedback},${userId})`;
     }
 
 }

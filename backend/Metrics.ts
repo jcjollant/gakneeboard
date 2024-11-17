@@ -2,7 +2,6 @@ import { sql } from  "@vercel/postgres";
 import { UserDao } from "./dao/UserDao"
 import { FeedbackDao } from "./FeedbackDao"
 import { AirportDao } from "./AirportDao";
-import { createTransport } from 'nodemailer'
 import { PublicationDao } from './PublicationDao'
 import { TemplateDao } from "./TemplateDao";
 import { Template } from "./models/Template";
@@ -10,6 +9,7 @@ import { AdipDao } from "./adip/AdipDao";
 import { PageType } from './TemplateTools'
 import { UsageDao, UsageType } from "./dao/UsageDao";
 import { UserTools } from './UserTools' 
+import { Email, EmailType } from "./Email";
 
 export class Metric {
     name:string;
@@ -213,39 +213,11 @@ export class Metrics {
      * Sends an email with the outcome of all checks
      * This methods requires a password that seems to expire ona regular bas
      * @param data 
-     * @param failedChecks 
      * @returns 
      */
-    static async sendMail(data:any) {
-        const transporter = createTransport({
-            service: 'gmail',
-            auth: {
-              user: 'jeancedric.jollant@gmail.com',
-              pass: 'xzluolxqgtqlzzlh'
-            }
-          });
-
-          const message = 'Here are ' + new Date().toDateString() + ' metrics\n\n' + data;
-
-          const mailOptions = {
-            from: 'Waylon <jeancedric.jollant@gmail.com>',
-            to: 'jc@jollant.net',
-            subject: 'Metrics',
-            text: message
-          };
-          
-          return new Promise( (resolve, reject) => {
-            transporter.sendMail(mailOptions, function(error:any, info:any){
-                if (error) {
-                  console.log('[Metrics.sendMail]', error);
-                  resolve(false)
-                } else {
-                  console.log('[Metrics.sendMail] Email sent:', info.response);
-                  resolve(true)
-                }
-              });
-          })
-
+    static async sendMail(data:any):Promise<boolean> {
+        const message = 'Here are ' + new Date().toDateString() + ' metrics\n\n' + data;
+        return Email.send( message,EmailType.Metrics)
     }
 
     public static async perform(commit:boolean=true, sendMail:boolean=true):Promise<String> {

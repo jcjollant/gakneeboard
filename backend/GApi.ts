@@ -16,6 +16,8 @@ import { Sunlight } from './models/Sunlight'
 import { Template } from './models/Template'
 import { User } from './models/User'
 import { UserMiniView } from './models/UserMiniView'
+import { FeedbackDao } from './FeedbackDao'
+import { Email, EmailType } from './Email'
 
 // Google API key
 
@@ -80,6 +82,12 @@ export class GApi {
             UsageDao.create(UsageType.Export, userId, JSON.stringify(exportData))
         ])
         return exporter
+    }
+
+    public static async feedbackSave(payload:any):Promise<void> {
+        return FeedbackDao.save(payload.version, payload.feedback, payload.user).then( async ()=>{
+            await Email.send(payload.feedback,EmailType.Feedback)
+        })
     }
 
     public static getAirportCurrentEffectiveDate() {
