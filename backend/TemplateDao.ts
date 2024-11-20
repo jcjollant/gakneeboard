@@ -77,11 +77,13 @@ export class TemplateDao {
         return result.rows[0]['id'];
     }
 
+    /**
+     * List all templates for metrics use
+     * @returns An overview or template data (id/data)
+     */
     public static async getAllTemplateData():Promise<Template[]> {
-        const result = await sql`
-            SELECT id,data,name, description FROM sheets;
-        `
-        return result.rows.map((row) => new Template(row['id'], row['name'], row['data'], row['description']));
+        const result = await sql`SELECT id,data FROM sheets`
+        return result.rows.map((row) => new Template(row['id'], '', row['data']));
     }
 
     /**
@@ -97,7 +99,7 @@ export class TemplateDao {
         `.then( (result) => {
             // console.log('[SheetDao.getListForUser]', result.rowCount)
             if(result.rowCount) {
-                return result.rows.map( (row) => new Template(row['id'], row['name'], [], row['description'], row['active'], row['code']))
+                return result.rows.map( (row) => new Template(row['id'], row['name'], [], row['description'], 0, row['active'], row['code']))
             } else {
                 return []
             }
@@ -114,16 +116,16 @@ export class TemplateDao {
         let result:any;
         if(userId) {
             result = await sql`
-                SELECT data,name,description FROM sheets WHERE id=${templateId} AND user_id=${userId};
+                SELECT data,name,description,version FROM sheets WHERE id=${templateId} AND user_id=${userId};
             `
         } else {
             result = await sql`
-                SELECT data,name,description FROM sheets WHERE id=${templateId};
+                SELECT data,name,description,version FROM sheets WHERE id=${templateId};
             `
         }
         if( result.rowCount == 0) return undefined
 
         const row = result.rows[0];
-        return new Template( templateId, row['name'], row['data'], row['description']);
+        return new Template( templateId, row['name'], row['data'], row['description'], row['version']);
     }
 }

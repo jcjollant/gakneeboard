@@ -42,7 +42,7 @@ SELECT * FROM health_checks
 INSERT INTO health_checks (data,failures) VALUES ("TEST",1)
 
 #########################################
-# Sheets Pages
+# Teampltes (sheets)
 SELECT * FROM sheets
 
 # Sheets from actual users
@@ -73,6 +73,9 @@ SELECT COUNT(*) as count, user_id FROM sheets WHERE user_id IS NOT NULL AND user
 
 # All sheets for JC with publication status
 SELECT s.id,s.name,s.description,p.active,p.code as code FROM sheets AS s LEFT JOIN publications AS p ON s.id = p.sheetid WHERE user_id=1
+
+# Which templates are saved the most
+SELECT version, id, user_id FROM sheets ORDER BY version DESC
 
 #########################################
 # Publications

@@ -43,7 +43,8 @@ describe( 'GApi Tests', () => {
         // Create a public template
         const tempName = 'Temporary Name'
         const tempDesc = 'Temporary Description'
-        const templateIn = new Template( jcTestTemplateId, tempName, jcTestTemplateData, tempDesc, true)
+        const tempVer = 12;
+        const templateIn = new Template( jcTestTemplateId, tempName, jcTestTemplateData, tempDesc, tempVer, true)
         expect(templateIn.publish).toBeTruthy()
         expect(templateIn.code).toBeUndefined()
         // Save it
@@ -54,6 +55,7 @@ describe( 'GApi Tests', () => {
         expect(templateOut.id).toBe(jcTestTemplateId)
         expect(templateOut.name).toBe(tempName)
         expect(templateOut.desc).toBe(tempDesc)
+        expect(templateOut.ver).toBe(tempVer)
         const publicationCode = templateOut.code        
 
         // get template by publication by code
