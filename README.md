@@ -37,6 +37,8 @@ Client ID : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent
 * 
 
 # Done
+## 11/22/2024
+* Templates return version
 ## 11/17/2024
 * Feedback is sending emails. 
 * Email sending is centralized
