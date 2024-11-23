@@ -36,7 +36,7 @@ Create sections using '##Section Name':
                     <ChecklistViewer :items="data ? data.items2 : []" :theme="theme" :small="true" />
                 </div>
             </div>
-            <div class="version">{{ data.ver }}</div>
+            <div v-if="version > 0" class="version">v{{version}}</div>
         </div>
     </div>
 </template>
@@ -58,10 +58,11 @@ import Textarea from 'primevue/textarea'
 import OneChoice from '../shared/OneChoice.vue'
 
 const emits = defineEmits(['replace','update'])
-
 const props = defineProps({
     data: { type: Object, default: null },
+    version: { type: Number, default: 0 }
 })
+const version = ref(props.version)
 
 function loadProps(newProps) {
     // console.log('[ChecklistPage.loadProps]', JSON.stringify(newProps))
@@ -201,6 +202,13 @@ function onThemeChange(newTheme) {
     border-left: 1px solid lightgrey;
 }
 
+.version {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 0.5rem;
+    color: #aaa;
+}
 
 .viewMode {
     height: 100%;

@@ -1,6 +1,6 @@
 <template>
     <ChecklistPage v-if="type==PageType.checklist" :data="pageData" 
-        @replace="onReplace" @update="onUpdate" />
+        @replace="onReplace" @update="onUpdate" :version="version" />
     <CoverPage v-else-if="type==PageType.cover" :data="pageData" 
         @replace="onReplace" @update="onUpdate" />
     <NavlogPage v-else-if="type==PageType.navLog" :data="pageData"
@@ -36,10 +36,12 @@ const emits = defineEmits(['toast','update'])
 const pageData = ref(null)
 const pageIndex = ref(null)
 const type = ref(PageType.tiles)
+const version = ref(0)
 
 const props = defineProps({
     data: { type: Object, default: null},
     index: { type: Number},
+    version: { type: Number, default: 0},
 })
 
 function loadProps(props) {
@@ -48,6 +50,7 @@ function loadProps(props) {
     pageData.value = props.data.data ? props.data.data : null
     type.value = props.data.type ? props.data.type : null
     pageIndex.value = props.index;
+    version.value = props.version;
 }
 
 onMounted(() => {

@@ -3,13 +3,14 @@
     <div v-if="activeTemplate">
       <div v-if="printSingles" v-for="(page,index) in activeTemplate.data" class="printOnePage printPageBreak">
         <div class="onePage">
-          <Page :data="page"
+          <Page :data="page" :version="activeTemplate.ver"
             :class="{flipMode:(index % 2 == 1 && printFlipMode)}"/>
         </div>
       </div>
       <div v-else class="printTwoPages printPageBreak" v-for="(page) in activePages">
-        <Page :data="page.front" />
-        <Page :data="page.back" :class="{flipMode:printFlipMode}" />
+        <Page :data="page.front" :version="activeTemplate.ver"/>
+        <Page :data="page.back" :version="activeTemplate.ver"
+          :class="{flipMode:printFlipMode}" />
       </div>
     </div>
   </div>
@@ -36,7 +37,7 @@
       <div v-if="activeTemplate" class="pageAll" :class="{'editor':showEditor}">
         <Page v-for="(data,index) in activeTemplate.data" 
           v-show="index >= offset"
-          :data="data" :index="index" :class="'page'+index"
+          :data="data" :index="index" :class="'page'+index" :version="activeTemplate.ver"
           @update="onPageUpdate" @toast="toast.add" />
       </div>
       <i class="pi pi-chevron-circle-right offsetButton"  :class="{'noShow':(offset >= offsetLast)}"
@@ -83,9 +84,6 @@ import Menu from './components/menu/Menu.vue'
 import MenuButton from './components/menu/MenuButton.vue'
 import Page from './components/page/Page.vue'
 
-
-// const frontPageData = ref(null)
-// const backPageData = ref(null)
 const activeTemplate = ref(null)
 const activePages = ref(null)
 let cssPageGap = -1
