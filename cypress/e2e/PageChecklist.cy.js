@@ -4,6 +4,7 @@ describe('Checklist Page', () => {
   it('Checklist work', () => {
     visitAndCloseBanner()
     newPage()
+    
     // set both pages to checlist
     cy.get('.page0 > .list > [aria-label="Checklist"]').click()
     cy.get('.page1 > .list > [aria-label="Checklist"]').click()
