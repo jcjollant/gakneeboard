@@ -1,3 +1,46 @@
+<template>
+    <div class="contentPage pageChecklist">
+        <Header :title="title" :hideReplace="mode!='edit'" :page="true"
+            @click="onHeaderClick" @replace="emits('replace')"></Header>
+        <div v-if="mode == 'edit'" class="settings">
+            <InputGroup>
+                <InputGroupAddon class="checklistNameAddon">Name</InputGroupAddon>
+                <InputText v-model="title" />
+            </InputGroup>
+            <OneChoice v-model="columns" :choices="[colSingle, colDouble]" class="centered"/>
+            <div class="oneOrTwoLists">
+                <Textarea v-model="textData" class="editList"
+                    :class="{ 'smallTextarea': columns.value == 2 }" placeholder="Up to 32 items will fit vertically.
+
+Separate Challenge and Response with '##':
+Master Switch##ON
+Avionics##OFF
+
+Create sections using '##Section Name':
+##Left Wing"></Textarea>
+                <Textarea v-if="columns.value == 2" v-model="textData2" 
+                    class="editList" :class="{ 'smallTextarea': columns.value == 2 }"></Textarea>
+            </div>
+            <ThemeSelector @change="onThemeChange" :theme="theme" />
+            <ActionBar @cancel="onCancel" @apply="onApply" :help="UserUrl.checklistGuide" />
+        </div>
+        <div v-else class="viewMode">
+            <div v-if="columns.value == 1">
+                <ChecklistViewer :items="data ? data.items : []" :theme="theme" />
+            </div>
+            <div v-else class="twoLists">
+                <div class="leftList">
+                    <ChecklistViewer :items="data ? data.items : []" :theme="theme" :small="true" />
+                </div>
+                <div class="rightList">
+                    <ChecklistViewer :items="data ? data.items2 : []" :theme="theme" :small="true" />
+                </div>
+            </div>
+            <div class="version">{{ data.ver }}</div>
+        </div>
+    </div>
+</template>
+
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import { itemsFromList, listFromItems } from '../../assets/checklist'
@@ -100,48 +143,6 @@ function onThemeChange(newTheme) {
 }
 
 </script>
-
-<template>
-    <div class="contentPage pageChecklist">
-        <Header :title="title" :hideReplace="mode!='edit'" :page="true"
-            @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <div v-if="mode == 'edit'" class="settings">
-            <InputGroup>
-                <InputGroupAddon class="checklistNameAddon">Name</InputGroupAddon>
-                <InputText v-model="title" />
-            </InputGroup>
-            <OneChoice v-model="columns" :choices="[colSingle, colDouble]" class="centered"/>
-            <div class="oneOrTwoLists">
-                <Textarea v-model="textData" class="editList"
-                    :class="{ 'smallTextarea': columns.value == 2 }" placeholder="Up to 32 items will fit vertically.
-
-Separate Challenge and Response with '##':
-Master Switch##ON
-Avionics##OFF
-
-Create sections using '##Section Name':
-##Left Wing"></Textarea>
-                <Textarea v-if="columns.value == 2" v-model="textData2" 
-                    class="editList" :class="{ 'smallTextarea': columns.value == 2 }"></Textarea>
-            </div>
-            <ThemeSelector @change="onThemeChange" :theme="theme" />
-            <ActionBar @cancel="onCancel" @apply="onApply" :help="UserUrl.checklistGuide" />
-        </div>
-        <div v-else class="viewMode">
-            <div v-if="columns.value == 1">
-                <ChecklistViewer :items="data ? data.items : []" :theme="theme" />
-            </div>
-            <div v-else class="twoLists">
-                <div class="leftList">
-                    <ChecklistViewer :items="data ? data.items : []" :theme="theme" :small="true" />
-                </div>
-                <div class="rightList">
-                    <ChecklistViewer :items="data ? data.items2 : []" :theme="theme" :small="true" />
-                </div>
-            </div>
-        </div>
-    </div>
-</template>
 
 <style scoped>
 .checklistNameAddon {
