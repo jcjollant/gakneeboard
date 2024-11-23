@@ -1,4 +1,6 @@
-##
+## 11/23/2024
+* Template version number shows in checklist bottom right corner
+## 11/16/2024
 * Layout adjustment for Checklist heading
 * New Airport Diagram Page
 ## 11/15/2024
