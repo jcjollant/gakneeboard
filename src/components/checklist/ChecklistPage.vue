@@ -204,10 +204,10 @@ function onThemeChange(newTheme) {
 
 .version {
     position: absolute;
-    bottom: 5px;
-    right: 5px;
-    font-size: 0.5rem;
-    color: #aaa;
+    bottom: 2px;
+    right: 2px;
+    font-size: 1rem;
+    color: #666;
 }
 
 .viewMode {
