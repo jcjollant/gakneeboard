@@ -96,6 +96,10 @@ describe('Navigation', () => {
     cy.get('.page3').should('have.class','pageChecklist')
     cy.get('.page4').should('have.class','pageChecklist')
     cy.get('.page5').should('have.class','pageChecklist')
+
+    // pages should have a version number
+    cy.get('.page0 .version')
+    cy.get('.page1 .version')
   })
 
   it('Print Dialog', () =>{
