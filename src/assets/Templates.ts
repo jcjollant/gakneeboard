@@ -154,25 +154,6 @@ export class TemplateData {
     }
 
     /**
-    * Gets a template from its id
-    * @param {*} id
-    * @returns
-    */
-    static getById(id:number):any {
-        const url = GApiUrl.template(id)
-        return axios.get( url)
-            .then( response => {
-                const template = response.data;
-                template.data = TemplateData.normalize(template.data)
-                return template;
-            })
-            .catch( error => {
-                reportError( '[Templates.sheetGetById] error ' + JSON.stringify(error))
-                return null
-            })
-    }
-
-    /**
     * transform old format sheet (tiles without pages) into new format
     * @param {*} data 
     * @returns 
