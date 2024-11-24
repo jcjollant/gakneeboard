@@ -1,3 +1,6 @@
+## 11/24/2024
+* Grid Mode for Notes Tile
+* AdSense
 ## 11/23/2024
 * Template version number shows in checklist bottom right corner
 ## 11/16/2024
