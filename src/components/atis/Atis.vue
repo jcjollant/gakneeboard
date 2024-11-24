@@ -1,64 +1,3 @@
-<script setup>
-import { ref,onMounted, watch } from 'vue'
-import Header from '../shared/Header.vue';
-import NoSettings from '../shared/NoSettings.vue'
-import Button from 'primevue/button'
-
-const emits = defineEmits(['replace','update'])
-
-let previousMode = ''
-
-const defaultMode = ''
-const displayMode = ref(defaultMode)
-const settingsMode = ref(false)
-
-const props = defineProps({
-    params: { type: Object, default: null}, // expects {'mode':'compact'}
-})
-
-
-function changeMode(newMode) {
-    displayMode.value = newMode
-    settingsMode.value = false;
-    const params = {mode:newMode}
-    emits('update', params)
-}
-
-function cycleMode() {
-    if(displayMode.value == '') {
-        changeMode('compact')
-    } else {
-        changeMode(defaultMode)
-    }
-}
-
-function loadProps(props) {
-    // console.log('ATIS loadProps ' + JSON.stringify(props))
-    const newMode = props.params.mode
-    // load mode from params but defaults to full
-    if( newMode) {
-        displayMode.value = newMode
-    } else {
-        displayMode.value = defaultMode
-    }
-}
-
-function onHeaderClick() {
-    settingsMode.value = ! settingsMode.value
-}
-
-onMounted(() => {   
-    // console.log('ATIS mounted with ' + JSON.stringify(props.params))
-    loadProps(props)
-    // console.log('onMounted mode ' + mode.value)
-})
-
-watch( props, async() => {
-    // console.log("Airport props changed " + JSON.stringify(props));
-    loadProps(props)
-})
-
-</script>
 <template>
     <div class="tile">
         <Header :title="displayMode==''?'ATIS @':'ATIS'" :left="displayMode==''" :hideReplace="displayMode!='edit'"
@@ -111,6 +50,70 @@ watch( props, async() => {
         <NoSettings v-else />
     </div>
 </template>
+
+<script setup>
+import { ref,onMounted, watch } from 'vue'
+import Header from '../shared/Header.vue';
+import NoSettings from '../shared/NoSettings.vue'
+import Button from 'primevue/button'
+
+const emits = defineEmits(['replace','update'])
+
+let previousMode = ''
+
+const defaultMode = ''
+const displayMode = ref(defaultMode)
+const settingsMode = ref(false)
+
+// Props Management
+const props = defineProps({
+    params: { type: Object, default: null}, // expects {'mode':'compact'}
+})
+
+function loadProps(props) {
+    // console.log('ATIS loadProps ' + JSON.stringify(props))
+    const newMode = props.params.mode
+    // load mode from params but defaults to full
+    if( newMode) {
+        displayMode.value = newMode
+    } else {
+        displayMode.value = defaultMode
+    }
+}
+
+onMounted(() => {   
+    // console.log('ATIS mounted with ' + JSON.stringify(props.params))
+    loadProps(props)
+    // console.log('onMounted mode ' + mode.value)
+})
+
+watch( props, async() => {
+    // console.log("Airport props changed " + JSON.stringify(props));
+    loadProps(props)
+})
+// End of Props management
+
+
+function changeMode(newMode) {
+    displayMode.value = newMode
+    settingsMode.value = false;
+    const params = {mode:newMode}
+    emits('update', params)
+}
+
+function cycleMode() {
+    if(displayMode.value == '') {
+        changeMode('compact')
+    } else {
+        changeMode(defaultMode)
+    }
+}
+
+function onHeaderClick() {
+    settingsMode.value = ! settingsMode.value
+}
+
+</script>
 <style scoped>
 .label {
   position: absolute;
