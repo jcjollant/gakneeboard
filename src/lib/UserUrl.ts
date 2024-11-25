@@ -19,6 +19,7 @@ export class UserUrl {
     static airportTileVideo:string='https://youtu.be/MmahnI5fiS4'
     static editorVideo:string = 'https://youtu.be/v9C5Eyr_A3E'
     static ffExportVideo:string = 'https://youtu.be/BNRY8u1hNmo'
+    static noteTilesVideo:string = 'https://youtu.be/nqgDI-CpFUU'
 
     // other external link
     static dtpp:string = 'https://aeronav.faa.gov/d-tpp/'

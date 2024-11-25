@@ -7,6 +7,8 @@
             <Button label="Blank" @click="changeMode(DisplayMode.Blank)"></Button>
             <Button label="Grid" @click="changeMode(DisplayMode.Grid)" title="2x6 grid"></Button>
             <Button label="Holding" @click="changeMode(DisplayMode.Hold)" title="Holding Pattern"></Button>
+            <font-awesome-icon :icon="['fas', 'video']" class="videoButton"
+                @click="onVideo" title="Quick Intro on note tiles"></font-awesome-icon>
         </div>
         <div v-else-if="displayMode=='grid'" class="grid tileContent">
             <div v-for="i in [1,2,3,4,5,6,7,8,9,10,11,12]">&nbsp;</div>
@@ -41,6 +43,7 @@ import { onMounted, watch, ref } from 'vue'
 import Button from 'primevue/button';
 import Header from '../shared/Header.vue';
 import NoSettings from '../shared/NoSettings.vue';
+import { UserUrl } from '../../lib/UserUrl';
 
 // Enum with display modes
 enum DisplayMode {
@@ -59,7 +62,7 @@ const props = defineProps({
 })
 
 function loadProps(props) {
-    console.log('[NotesTile.loadProps] ' + JSON.stringify(props))
+    // console.log('[NotesTile.loadProps] ' + JSON.stringify(props))
     // load display mode without update
     changeMode(props?.params?.mode,false)
 }
@@ -93,6 +96,10 @@ function changeMode(newMode,update=true) {
 
 function onClick() {
     settingsMode.value = !settingsMode.value
+}
+
+function onVideo() {
+    window.open( UserUrl.noteTilesVideo, '_blank');
 }
 </script>
 
@@ -179,10 +186,26 @@ function onClick() {
 }
 
 .list {
+    position: relative;
     display: grid;
     padding: 10px;
     gap:10px;
     grid-template-rows: repeat(3, 3rem);
+    height: var(--tile-content-height);
+}
+
+.videoButton {
+    position:absolute;
+    left: 0;
+    bottom: 0;
+    line-height: 1.5rem;
+    display: flex;
+    padding: 5px 10px;
+    gap: 10px;
+    cursor: pointer;
+    align-items: center;
+    color: var(--bg);
+    font-size: 0.9rem;
 }
 
 </style>
