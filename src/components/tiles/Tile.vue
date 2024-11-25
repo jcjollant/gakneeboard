@@ -25,7 +25,7 @@
     <FuelBug v-else-if="tile.name==Tile.fuel" :params="tile.data"
         @replace="onReplace" @update="onUpdate"/>  
     <NavlogTile v-else-if="tile.name==Tile.navlog" @replace="onReplace" />
-    <NotesTile v-else-if="tile.name==Tile.notes" 
+    <NotesTile v-else-if="tile.name==Tile.notes" :params="tile.data"
         @replace="onReplace" @update="onUpdate" />
     <RadioTile v-else-if="tile.name==Tile.radios" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" @toast="onToast" />
