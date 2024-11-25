@@ -1,3 +1,6 @@
+## 11/25/2024
+* Notes plus holding mode
+* Fixed Notes not loading previous mode
 ## 11/24/2024
 * Grid Mode for Notes Tile
 * AdSense
