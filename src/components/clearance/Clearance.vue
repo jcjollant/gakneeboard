@@ -114,8 +114,8 @@ onMounted(() => {
 watch( props, async() => {
     loadProps(props)
 })
-
 </script>
+
 <style scoped>
 .label {
   position: absolute;
@@ -174,7 +174,8 @@ watch( props, async() => {
 .clearance {
     display: grid;
     grid-template-columns: auto auto;
-    grid-template-rows: 60px 60px 60px 59px;
+    grid-template-rows: repeat(4, 1fr);
+    /* grid-template-rows: 60px 60px 60px 59px; */
 }
 .modeCraft {
     line-height: 3rem;
