@@ -1,3 +1,17 @@
+<template>
+    <div class="actionBar">
+        <div v-if="help||video" class="floatLeft">
+            <font-awesome-icon v-if="help" :icon="['fas', 'question']" class="actionBarHelp"
+                @click="onHelp" title="Get help on this feature"></font-awesome-icon>
+            <font-awesome-icon v-if="video" :icon="['fas', 'video']" class="actionBarVideo"
+                @click="onVideo" title="Watch a video on this feature"></font-awesome-icon>
+        </div>
+        <Button v-if="actions" v-for="action in actions" @click="onAction(action.action)" :label="action.label" link></Button>
+        <Button v-if="canCancel" @click="emits('cancel')" label="Cancel" link></Button>
+        <Button icon="pi pi-check" @click="emits('apply')" label="Apply" :disabled="!canApply"></Button>
+    </div>
+</template>
+
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import Button from 'primevue/button'
@@ -54,19 +68,6 @@ function onVideo() {
 }
 
 </script>
-<template>
-    <div class="actionBar">
-        <div v-if="help||video" class="floatLeft">
-            <font-awesome-icon v-if="help" :icon="['fas', 'question']" class="actionBarHelp"
-                @click="onHelp" title="Get help on this feature"></font-awesome-icon>
-            <font-awesome-icon v-if="video" :icon="['fas', 'video']" class="actionBarVideo"
-                @click="onVideo" title="Watch a video on this feature"></font-awesome-icon>
-        </div>
-        <Button v-if="actions" v-for="action in actions" @click="onAction(action.action)" :label="action.label" link></Button>
-        <Button v-if="canCancel" @click="emits('cancel')" label="Cancel" link></Button>
-        <Button icon="pi pi-check" @click="emits('apply')" label="Apply" :disabled="!canApply"></Button>
-    </div>
-</template>
 
 <style scoped>
 .floatLeft {
