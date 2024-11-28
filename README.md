@@ -24,6 +24,10 @@ Select Table
 Menu Tools > Import/Export Data
 Save files in c:\src\kneeboard.ga\data
 
+## New Data Cycle
+Refresh currentEffectiveDate in backend/adip/Adip.ts
+Refresh currentAsOf in test/constants.ts
+
 ## Authentication
 ### Apple
 * https://developer.apple.com/account/resources/identifiers/list/serviceId
@@ -37,6 +41,9 @@ Client ID : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent
 * 
 
 # Done
+## 11/27/2024
+* New Effective date
+* Switch to data recap
 ## 11/22/2024
 * Templates return version
 ## 11/17/2024
