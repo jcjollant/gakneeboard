@@ -51,7 +51,7 @@ function loadProps(props) {
     type.value = props.data.type ? props.data.type : null
     pageIndex.value = props.index;
     version.value = props.ver;
-    console.log('[Page.loadProps] version', props.ver)
+    // console.log('[Page.loadProps] version', props.ver)
 }
 
 onMounted(() => {
