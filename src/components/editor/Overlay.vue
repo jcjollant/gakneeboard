@@ -3,24 +3,24 @@
         <div class="rowMiddle flexColumn">
             <div v-for="pair in [1,3,5]">
                 <div class="copyPaste">
-                    <Button :class="'btnCopy' + pair" icon="pi pi-copy" @click="copy(pair)" :title="'Copy Tile ' + pair + ' to Clipboard'"></Button>
+                    <Button :class="'btnCopy' + pair" icon="pi pi-copy" @click="copy(pair)" :title="'Copy Tile ' + pair + ' to Clipboard'" severity="secondary"></Button>
                     <Button :class="'btnPaste' + pair" icon="pi pi-clipboard" @click="paste(pair)" :title="'Paste to Tile ' + pair + ' from Clipboard'"></Button>
                 </div>
-                <Button :class="'btnSwap' + pair + '' + (pair+1)" icon="pi  pi-arrows-h" @click="swap(pair,pair+1)" :title="'Swap Tiles ' + pair + ' and ' + (pair+1)"></Button>
+                <Button :class="'btnSwap' + pair + '' + (pair+1)" icon="pi  pi-arrows-h" @click="swap(pair,pair+1)" :title="'Swap Tiles ' + pair + ' and ' + (pair+1)" severity="secondary"></Button>
                 <div class="copyPaste">
-                    <Button :class="'btnCopy' + (pair+1)" icon="pi pi-copy" @click="copy(pair+1)" :title="'Copy Tile ' + (pair+1) + ' to Clipboard'"></Button>
+                    <Button :class="'btnCopy' + (pair+1)" icon="pi pi-copy" @click="copy(pair+1)" :title="'Copy Tile ' + (pair+1) + ' to Clipboard'" severity="secondary"></Button>
                     <Button :class="'btnPaste' + (pair+1)" icon="pi pi-clipboard" @click="paste(pair+1)" :title="'Paste to Tile ' + (pair+1) + ' from Clipboard'"></Button>
                 </div>
             </div>
         </div>
         <div class="rowSeparator flexColumn">
             <div>
-                <Button class="btnSwap13" icon="pi  pi-arrows-v" @click="swap(1,3)" title="Swap Tiles 1 and 3"></Button>
-                <Button class="btnSwap24" icon="pi  pi-arrows-v" @click="swap(2,4)" title="Swap Tiles 2 and 4"></Button>
+                <Button class="btnSwap13" icon="pi  pi-arrows-v" @click="swap(1,3)" title="Swap Tiles 1 and 3" severity="secondary"></Button>
+                <Button class="btnSwap24" icon="pi  pi-arrows-v" @click="swap(2,4)" title="Swap Tiles 2 and 4" severity="secondary"></Button>
             </div>
             <div>
-                <Button class="btn5" icon="pi  pi-arrows-v" @click="swap(3,5)" title="Swap Tiles 3 and 5"></Button>
-                <Button class="btn6" icon="pi  pi-arrows-v" @click="swap(4,6)" title="Swap Tiles 4 and 6"></Button>
+                <Button class="btnSwap35" icon="pi  pi-arrows-v" @click="swap(3,5)" title="Swap Tiles 3 and 5" severity="secondary"></Button>
+                <Button class="btnSwap46" icon="pi  pi-arrows-v" @click="swap(4,6)" title="Swap Tiles 4 and 6" severity="secondary"></Button>
             </div>
         </div>
     </div>
@@ -94,7 +94,7 @@ function swap(from:number, to:number) {
 .overlay {
     position: relative;
     width: var(--page-width);
-    height: calc( var(--page-height) - 4px);
+    height: var(--page-height);
 }
 .overlay.blue {
     background-color: rgba(33, 150, 243, 0.3);
@@ -115,7 +115,7 @@ function swap(from:number, to:number) {
 }
 
 .rowSeparator {
-    padding: 19px 0;
+    padding: var(--half-button) 0;
     position: absolute;
     left: 0;
     top: 0;

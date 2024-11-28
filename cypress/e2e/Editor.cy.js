@@ -1,3 +1,4 @@
+import { faCopyright } from '@fortawesome/free-solid-svg-icons'
 import { visitAndCloseBanner, feltsTitle, boeingTitle, radioFlowTitle, notesTitle, atisTitle, clearanceTitle, loadDemo } from './shared'
 
 function deletePage(index) {
@@ -32,26 +33,63 @@ describe('Editor', () => {
     // reload demo
     reloadDemo(false,false)
 
-    // Copy Front to Back via clip board
+    // Copy Left to Right via clip board
     cy.get('.editorPage0 > .editorBottom > [aria-label="Copy"]').click()
     // Toast Should say Page 1 
     // <div class="p-toast-message-text" data-pc-section="text"><span class="p-toast-summary" data-pc-section="summary">Page 1 copied to clipboard</span><div class="p-toast-detail" data-pc-section="detail"></div></div>
     cy.get('.p-toast-message-text').contains('Page 1 copied to clipboard')
     cy.get('.editorPage1 > .editorBottom > [aria-label="Paste"]').click()
 
-    cy.get('.page0 > :nth-child(6) > .headerTitle').contains('Clearance @')
-    cy.get('.page1 > :nth-child(6) > .headerTitle').contains('Clearance @')
+    cy.get('.page0 > :nth-child(6) > .headerTitle').contains(clearanceTitle)
+    cy.get('.page1 > :nth-child(6) > .headerTitle').contains(clearanceTitle)
+
+    // copy tile from page0 to page1
+    cy.get('.editorPage0 .btnCopy1').click()
+    cy.get('.editorPage1 .btnPaste2').click()
+    cy.get('.page1 > :nth-child(2) > .headerTitle').contains(boeingTitle)
+
+    // copy tile from page1 to page0
+    cy.get('.editorPage1 .btnCopy3').click()
+    cy.get('.editorPage0 .btnPaste4').click()
+    cy.get('.page0 > :nth-child(4) > .headerTitle').contains(radioFlowTitle)
+
 
     // reload demo
     reloadDemo()
 
-    // Copy Back to Front
+    // Copy right to left
     cy.get('.editorPage1 > .editorBottom > [aria-label="Copy"]').click()
     cy.get('.editorPage0 > .editorBottom > [aria-label="Paste"]').click()
     cy.get('.page0 > :nth-child(2) > .twoLists > .leftList > :nth-child(19)').contains('FIRE')
     cy.get('.page1 > :nth-child(2) > .twoLists > .leftList > :nth-child(19)').contains('FIRE')
 
+    // reload demo
+    reloadDemo()
 
+    // Copy All left tiles to right
+    cy.get('.btnCopy1').click()
+    cy.get('.btnPaste2').click()
+    cy.get(`.page0 > :nth-child(2) > .headerTitle`).contains(boeingTitle)
+    cy.get('.btnCopy3').click()
+    cy.get('.btnPaste4').click()
+    cy.get(`.page0 > :nth-child(4) > .headerTitle`).contains(radioFlowTitle)
+    cy.get('.btnCopy5').click()
+    cy.get('.btnPaste6').click()
+    cy.get(`.page0 > :nth-child(6) > .headerTitle`).contains(atisTitle)
+
+    // reload demo
+    reloadDemo()
+
+    // Copy all right tiles to left    
+    cy.get('.btnCopy2').click()
+    cy.get('.btnPaste1').click()
+    cy.get(`.page0 > :nth-child(1) > .headerTitle`).contains(feltsTitle)
+    cy.get('.btnCopy4').click()
+    cy.get('.btnPaste3').click()
+    cy.get(`.page0 > :nth-child(3) > .headerTitle`).contains(notesTitle)
+    cy.get('.btnCopy6').click()
+    cy.get('.btnPaste5').click()
+    cy.get(`.page0 > :nth-child(6) > .headerTitle`).contains(clearanceTitle)
   })
 
   it('Editor', () => {
@@ -118,7 +156,7 @@ describe('Editor', () => {
     cy.get('.page0 > :nth-child(6) > .headerTitle').contains('Clearance @')
     cy.get('.page1 > :nth-child(6) > .headerTitle').contains('Clearance @')
     // swap something on the left should not affect right
-    cy.get('.editorPage0 > .overlay > .btn1').click()
+    cy.get('.editorPage0 .btnSwap12').click()
     cy.get('.page0 > :nth-child(1) > .headerTitle').contains(feltsTitle)
     cy.get('.page0 > :nth-child(2) > .headerTitle').contains(boeingTitle)
     cy.get('.page1 > :nth-child(1) > .headerTitle').contains(boeingTitle)
@@ -213,50 +251,50 @@ describe('Editor', () => {
     reloadDemo()
 
     // check we have tile swap buttons on left page
-    const expectedButtons = ['btn1', 'btn2', 'btn3', 'btn4', 'btn5', 'btn6', 'btn7']
+    const expectedButtons = ['.btnSwap12', '.btnSwap13', '.btnSwap24', '.btnSwap34', '.btnSwap35', '.btnSwap46', '.btnSwap56']
     for( const expected of expectedButtons) {
-      cy.get('.editorPage0 > .overlay > .' + expected).should('exist')
+      cy.get(expected).should('exist')
     }
     // right should not be there
-    cy.get('.editorPage1 > .overlay > .btn1').should('not.exist')
+    cy.get('.editorPage1 .btnSwap12').should('not.exist')
     // test swaps
     cy.get(':nth-child(1) > .headerTitle').contains(boeingTitle)
     cy.get(':nth-child(2) > .headerTitle').contains(feltsTitle)
     cy.get(':nth-child(3) > .headerTitle').contains(radioFlowTitle)
     cy.get(':nth-child(4) > .headerTitle').contains(notesTitle)
     // Flip 1 and 2
-    cy.get('.editorPage0 > .overlay > .btn1').click()
+    cy.get('.editorPage0 .btnSwap12').click()
     cy.get(':nth-child(1) > .headerTitle').contains(feltsTitle)
     cy.get(':nth-child(2) > .headerTitle').contains(boeingTitle)
     // Should flip 1 and 3
-    cy.get('.editorPage0 > .overlay > .btn2').click()
+    cy.get('.editorPage0 .btnSwap13').click()
     cy.get(':nth-child(1) > .headerTitle').contains(radioFlowTitle)
     cy.get(':nth-child(3) > .headerTitle').contains(feltsTitle)
     // Flip 2 and 4
-    cy.get('.editorPage0 > .overlay > .btn3').click()
+    cy.get('.editorPage0 .btnSwap24').click()
     cy.get(':nth-child(2) > .headerTitle').contains(notesTitle)
     cy.get(':nth-child(4) > .headerTitle').contains(boeingTitle)
     // flip 3 and 4
-    cy.get('.editorPage0 > .overlay > .btn4').click()
+    cy.get('.editorPage0 .btnSwap34').click()
     cy.get(':nth-child(3) > .headerTitle').contains(boeingTitle)
     cy.get(':nth-child(4) > .headerTitle').contains(feltsTitle)
     // flip 3 and 5
-    cy.get('.editorPage0 > .overlay > .btn5').click()
+    cy.get('.editorPage0 .btnSwap35').click()
     cy.get(':nth-child(3) > .headerTitle').contains(atisTitle)
     cy.get(':nth-child(5) > .headerTitle').contains(boeingTitle)
     // flip 4 and 6
-    cy.get('.editorPage0 > .overlay > .btn6').click()
+    cy.get('.editorPage0 .btnSwap46').click()
     cy.get(':nth-child(4) > .headerTitle').contains(clearanceTitle)
     cy.get(':nth-child(6) > .headerTitle').contains(feltsTitle)
     // flip 5 and 6
-    cy.get('.editorPage0 > .overlay > .btn7').click()
+    cy.get('.editorPage0 .btnSwap56').click()
     cy.get(':nth-child(5) > .headerTitle').contains(feltsTitle)
     cy.get(':nth-child(6) > .headerTitle').contains(boeingTitle)
 
     // test page1 swaps
     cy.get('#editorSwap').click()
     // flip 5 and 6
-    cy.get('.editorPage1 > .overlay > .btn7').click()
+    cy.get('.editorPage1  .btnSwap56').click()
     cy.get(':nth-child(6) > .headerTitle').contains(feltsTitle)
     cy.get(':nth-child(5) > .headerTitle').contains(boeingTitle)
   })

@@ -14,26 +14,20 @@
             <div v-for="i in [1,2,3,4,5,6,7,8,9,10,11,12]">&nbsp;</div>
         </div>
         <div v-else-if="displayMode=='hold'" class="hold tileContent">
-            <div class="params">
-                <div class="label">Hold At</div>
+            <div class="params">&nbsp;
+                <div class="label labelTopLeft">Hold At</div>
+                <div class="label labelTopRight">EFC</div>
+                <div class="label labelBottomLeft">Right Turns</div>
+                <div class="label labelBottomRight">Left Turns</div>
             </div>
-            <div class="turns">
-                <!-- <div class="label">Turns</div> -->
-            </div>
-            <div class="altitude">
-                <div class="labelRight">Alt</div>
-            </div>
-            <div class="sep"><div class="label">In</div></div>
-            <div class="name">BRG</div>
-            <div class="sep"><div class="labelRight">In</div></div>
+            <div class="row brg">BRG</div>
             <!-- <div class="">Left</div> -->
-            <div class="name">WCA</div>
-            <div>&nbsp;</div>
-            <div class="heading">&nbsp;</div>
-            <div class="name hdg">HDG</div>
-            <div class="heading">&nbsp;</div>
-            <div class="time"><div class="label">Times</div></div>
-            <div class="bottom">&nbsp;</div>
+            <div class="row wca">WCA</div>
+            <div class="row heading">
+                <div class="box">&nbsp;</div>
+                <div class="name">HDG</div>
+                <div class="box">&nbsp;</div>
+            </div>
         </div>
     </div>
 </template>
@@ -42,7 +36,6 @@
 import { onMounted, watch, ref } from 'vue'
 import Button from 'primevue/button';
 import Header from '../shared/Header.vue';
-import NoSettings from '../shared/NoSettings.vue';
 import { UserUrl } from '../../lib/UserUrl';
 
 // Enum with display modes
@@ -61,7 +54,7 @@ const props = defineProps({
     params: { type: Object, default: null},
 })
 
-function loadProps(props) {
+function loadProps(props:any) {
     // console.log('[NotesTile.loadProps] ' + JSON.stringify(props))
     // load display mode without update
     changeMode(props?.params?.mode,false)
@@ -79,7 +72,7 @@ watch( props, async() => {
 })
 
 
-function changeMode(newMode,update=true) {
+function changeMode(newMode:DisplayMode,update=true) {
     // console.log('[NotesTiles.changeMode]', newMode)
     // Crap in => default out
     if(!newMode) newMode = DisplayMode.Blank
@@ -113,19 +106,9 @@ function onVideo() {
 .grid div {
     border: 1px dashed lightgrey;
 }
-.heading {
-    border: 2px solid black;
-    margin: 2px;
-}
 .hold {
-    display: grid;
-    grid-template-columns: 2fr 1fr 2fr;
-    grid-template-rows: 60px 40px 40px 40px auto;
-}
-.hold .altitude {
-    position: relative;
-    grid-column: 3;
-    border-bottom: 1px dashed grey;
+    display: flex;
+    flex-flow: column;
 }
 .hold .bottom {
     grid-column: 2;
@@ -135,21 +118,30 @@ function onVideo() {
     border-bottom-right-radius: 24px;
     margin-bottom: 36px;
 }
-.hold .hdg {
-    border-bottom: none;
+.hold .box {
+    border: 2px solid black;
+    margin: 2px;
 }
-.hold .name {
-    grid-column: 2;
-    line-height: 40px;
-    border-left: 2px dashed darkgrey;
-    border-right: 2px dashed darkgrey;
-    /* border-bottom: 1px dashed grey; */
-}
-.hold .params {
-    position: relative;
-    grid-column: 1;
+.hold .brg {
     border-bottom: 1px dashed grey;
 }
+
+.hold .params {
+    position: relative;
+    height: 120px;
+    border-bottom: 1px dashed grey;
+}
+.hold .row {
+    line-height: 40px;
+}
+
+.heading {
+    border-top: 1px dashed grey;
+    display: grid;
+    grid-template-columns: auto 50px auto;
+    align-items: center;
+}
+
 .hold .sep {
     position: relative;
     border-bottom: 1px dashed grey;
@@ -163,26 +155,25 @@ function onVideo() {
     border-top-left-radius: 24px;
     border-top-right-radius: 24px;
 }
-.hold .turns {
-    position: relative;
-    grid-column: 2;
-    margin-top: 36px;
-    border: 2px dashed darkgrey;
-    border-bottom: none;
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
-}
 .label {
   position: absolute;
-  left: 3px;
-  top: 0;
   font-size: 10px;
 }
-.labelRight {
-  position: absolute;
+.labelBottomLeft {
+  left: 3px;
+  bottom: 0;
+}
+.labelBottomRight {
+  right: 3px;
+  bottom: 0;
+}
+.labelTopLeft {
+  left: 3px;
+  top: 0;
+}
+.labelTopRight {
   right: 3px;
   top: 0;
-  font-size: 10px;
 }
 
 .list {
