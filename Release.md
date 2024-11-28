@@ -1,3 +1,5 @@
+## 11/27/2024
+* Fixed template version not updating
 ## 11/25/2024
 * Notes plus holding mode
 * Fixed Notes not loading previous mode
