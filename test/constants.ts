@@ -18,7 +18,7 @@ export const jcEmail = 'jcjollant@gmail.com'
 export const jcSource = 'google'
 export const samplePublicationCode = '8Q'
 
-export const currentAsOf = 20241031;
+export const currentAsOf = 20241128;
 export const currentAirportModelVersion = 7
 export const krntAtcs =  [
     {mhz:119.2, useCount:6, name:'SEATTLE-TACOMA APPROACH CONTROL'},

@@ -12,7 +12,7 @@ const maxNavaids:number = 10
 
 export class Adip {
     static basicAuth:string = 'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP'
-    static currentEffectiveDate: string = "2024-10-31T00:00:00"
+    static currentEffectiveDate: string = "2024-11-28T00:00:00"
 
     /**
      * Fetch airport details from Adip then parse it into an Airport object
@@ -111,7 +111,9 @@ export class Adip {
                     if( saveRawData) {
                         // save returned adip data
                         try {
-                            AdipDao.save(fetchCode, response.data)
+                            // save a recap version of the data
+                            const dataRecap:any = {length:response.data.length}
+                            AdipDao.save(fetchCode, dataRecap)
                         } catch(e) {
                             console.log( '[Adip.getAirportDetails] cannot save Adip data')
                         }
