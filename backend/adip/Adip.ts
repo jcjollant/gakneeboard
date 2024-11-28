@@ -112,7 +112,7 @@ export class Adip {
                         // save returned adip data
                         try {
                             // save a recap version of the data
-                            const dataRecap:any = {length:Object.keys(response.data).length}
+                            const dataRecap:any = {length:JSON.stringify(response.data).length}
                             AdipDao.save(fetchCode, dataRecap)
                         } catch(e) {
                             console.log( '[Adip.getAirportDetails] cannot save Adip data')
