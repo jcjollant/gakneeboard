@@ -1,12 +1,28 @@
 <template>
     <div v-if="tiles" class="overlay" :class="{blue: blue}">
-        <Button class="btn1" icon="pi  pi-arrows-h" @click="swap(1,2)"></Button>
-        <Button class="btn2" icon="pi  pi-arrows-v" @click="swap(1,3)"></Button>
-        <Button class="btn3" icon="pi  pi-arrows-v" @click="swap(2,4)"></Button>
-        <Button class="btn4" icon="pi  pi-arrows-h" @click="swap(3,4)"></Button>
-        <Button class="btn5" icon="pi  pi-arrows-v" @click="swap(3,5)"></Button>
-        <Button class="btn6" icon="pi  pi-arrows-v" @click="swap(4,6)"></Button>
-        <Button class="btn7" icon="pi  pi-arrows-h" @click="swap(5,6)"></Button>
+        <div class="rowMiddle flexColumn">
+            <div v-for="pair in [1,3,5]">
+                <div class="copyPaste">
+                    <Button :class="'btnCopy' + pair" icon="pi pi-copy" @click="copy(pair)" :title="'Copy Tile ' + pair + ' to Clipboard'"></Button>
+                    <Button :class="'btnPaste' + pair" icon="pi pi-clipboard" @click="paste(pair)" :title="'Paste to Tile ' + pair + ' from Clipboard'"></Button>
+                </div>
+                <Button :class="'btnSwap' + pair + '' + (pair+1)" icon="pi  pi-arrows-h" @click="swap(pair,pair+1)" :title="'Swap Tiles ' + pair + ' and ' + (pair+1)"></Button>
+                <div class="copyPaste">
+                    <Button :class="'btnCopy' + (pair+1)" icon="pi pi-copy" @click="copy(pair+1)" :title="'Copy Tile ' + (pair+1) + ' to Clipboard'"></Button>
+                    <Button :class="'btnPaste' + (pair+1)" icon="pi pi-clipboard" @click="paste(pair+1)" :title="'Paste to Tile ' + (pair+1) + ' from Clipboard'"></Button>
+                </div>
+            </div>
+        </div>
+        <div class="rowSeparator flexColumn">
+            <div>
+                <Button class="btnSwap13" icon="pi  pi-arrows-v" @click="swap(1,3)" title="Swap Tiles 1 and 3"></Button>
+                <Button class="btnSwap24" icon="pi  pi-arrows-v" @click="swap(2,4)" title="Swap Tiles 2 and 4"></Button>
+            </div>
+            <div>
+                <Button class="btn5" icon="pi  pi-arrows-v" @click="swap(3,5)" title="Swap Tiles 3 and 5"></Button>
+                <Button class="btn6" icon="pi  pi-arrows-v" @click="swap(4,6)" title="Swap Tiles 4 and 6"></Button>
+            </div>
+        </div>
     </div>
     <div v-else class="overlay" :class="{blue: blue}"></div>
 </template>
@@ -17,7 +33,7 @@ import Button from 'primevue/button'
 import { PageType } from '../../assets/Templates';
 
 const blue = ref(false)
-const emits = defineEmits(['swap'])
+const emits = defineEmits(['copy','paste','swap'])
 const tiles = ref(false)
 const offset = ref(0)
 //---------------------
@@ -43,7 +59,14 @@ watch( props, async() => {
 
 // End props management
 //---------------------
-
+function copy(tile:number) {
+    // emits the message and adjust tile index
+    emits('copy', {offset:offset.value, tile:(tile-1)})
+}
+function paste(tile:number) {
+    // emits the message and adjust tile index
+    emits('paste', {offset:offset.value, tile:(tile-1)})
+}
 function swap(from:number, to:number) {
     // emits the message and adjust tile index
     emits('swap', {offset:offset.value,from:(from-1), to:(to-1)})
@@ -52,56 +75,57 @@ function swap(from:number, to:number) {
 
 <style scoped>
 * {
-    --left-offset1: calc( var(--tile-width) - var(--editor-btn-half) + 2px);
-    --left-offset2: calc(var(--tile-width) / 2);
-    --left-offset3: calc(var(--tile-width) * 1.5 - var(--editor-btn-half));
-    --top-offset1:  calc(var(--tile-height) / 2 - var(--editor-btn-half));
-    --top-offset2:  calc(var(--tile-height) - var(--editor-btn-half));
-    --top-offset3:  calc(var(--tile-height) * 1.5 - var(--editor-btn-half));
-    --top-offset4:  calc(var(--tile-height) * 2 - var(--editor-btn-half));
-    --top-offset5:  calc(var(--tile-height) * 2.5 - var(--editor-btn-half));
+    --button-height: 38px;
+    --half-button: 19px;
+}
+.copyPaste {
+    display: flex;
+    flex-flow: column;
+    gap: 5px;
+}
+
+.flexColumn {
+    display: flex;
+    flex-flow: column;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
 }
 .overlay {
     position: relative;
     width: var(--page-width);
-    height: var(--page-height);
+    height: calc( var(--page-height) - 4px);
 }
 .overlay.blue {
     background-color: rgba(33, 150, 243, 0.3);
     z-index: 1;
 }
 .overlay .p-button {
-    position: absolute;
+    height: var(--button-height);
     z-index: 2;
     box-shadow: rgba(0, 0, 0, 0.8) 0px 8px 8px;
 }
-.btn1 {
-    left: var(--left-offset1);
-    top: var(--top-offset1);
-}
-.btn2 {
-    left: var(--left-offset2);
-    top: var(--top-offset2);
-}
-.btn3 {
-    left: var(--left-offset3);
-    top: var(--top-offset2);
-}
-.btn4 {
-    left: var(--left-offset1);
-    top: var(--top-offset3);
-}
-.btn5 {
-    left: var(--left-offset2);
-    top: var(--top-offset4);
-}
-.btn6 {
-    left: var(--left-offset3);
-    top: var(--top-offset4);
-}
-.btn7 {
-    left: var(--left-offset1);
-    top: var(--top-offset5);
+
+.rowMiddle > div {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    padding: 0 5px;
 }
 
+.rowSeparator {
+    padding: 19px 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    justify-content: space-evenly;
+    width:100%;
+}
+.rowSeparator > div {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-around;
+    width: 100%;
+}
 </style>

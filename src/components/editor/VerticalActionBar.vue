@@ -2,13 +2,13 @@
     <div class="verticalBar">
         <Button id="editorCopyToRight" v-if="!edge"
             icon="pi pi-arrow-right" title="Copy Left to Right" 
-            @click="onAction(EditorAction.copyToPage(offset, offset+1))" ></Button>
+            @click="onAction(EditorAction.duplicatePage(offset, offset+1))" ></Button>
         <Button id="editorSwap" v-if="!edge"
             icon="pi pi-arrow-right-arrow-left" title="Swap Left and Right" 
             @click="onAction(EditorAction.swapPage(offset,offset+1))" ></Button>
         <Button id="editorCopyToLeft" v-if="!edge"
             icon="pi pi-arrow-left" title="Copy Right to Left" 
-            @click="onAction(EditorAction.copyToPage(offset+1, offset))" ></Button>
+            @click="onAction(EditorAction.duplicatePage(offset+1, offset))" ></Button>
         <Button id="editorInsert" icon="pi pi-file" :title="last?'Add One Page':'Insert New Page Here'" 
             @click="onAction(EditorAction.insertPage(offset+1))" ></Button>
         <FAButton icon="video" v-if="offset==-1"

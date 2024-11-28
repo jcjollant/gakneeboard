@@ -18,12 +18,12 @@
         <VerticalActionBar class="middle" :offset="index" :last="index==model['data']['length'] - 1" 
           @action="onAction" />
         <Overlay :type="page['type']" :offset="index" class="overlay"
-          @swap="swapTiles" />
+          @swap="swapTiles" @copy="copyTile" @paste="pasteTile" />
         <div class="editorBottom">
           <Button icon="pi pi-copy" label="Copy" title="Copy Page to Clipboard" 
-            @click="onAction(EditorAction.copyToClipboard(index))"></Button>
-          <Button icon="pi pi-clipboard" label="Paste" title="Paste Clipboard to Page" 
-            @click="onAction(EditorAction.paste(index))"></Button>
+            @click="onAction(EditorAction.copyPageToClipboard(index))"></Button>
+          <Button icon="pi pi-clipboard" label="Paste" title="Paste Page from Clipboard" 
+            @click="onAction(EditorAction.pastePage(index))"></Button>
           <Button icon="pi pi-eject" label="Replace" title="Replace Page" 
             @click="onAction(EditorAction.reset(index))"></Button>
           <Button icon="pi pi-trash" label="Delete" title="Delete Page" severity="warning" 
@@ -87,9 +87,13 @@ watch( props, async() => {
 // End props management
 //---------------------
 
+function copyTile(params:any) {
+  onAction(EditorAction.copyTileToClipboard(params.offset, params.tile))  
+}
+
 function onAction(action:EditorAction) {
   let confirmation:any|undefined = undefined
-  if(action.action == EditorAction.COPY_TO_PAGE) confirmation = {message:'Please confirm you want to overwrite page ' + (action.offsetTo + 1), header:'Overwrite Page', acceptLabel:'Yes, Overwrite'}
+  if(action.action == EditorAction.DUPLICATE_PAGE) confirmation = {message:'Please confirm you want to overwrite page ' + (action.offsetTo + 1), header:'Overwrite Page', acceptLabel:'Yes, Overwrite'}
   if(action.action == EditorAction.DELETE_PAGE) confirmation = {message:'Please confirm you want to delete page ' + (action.offset + 1), header:'Delete Page', acceptLabel:'Yes, Delete'}
 
   if(confirmation) {
@@ -138,13 +142,22 @@ async function onEditorAction(ea:EditorAction) {
 
   if(!model.value) return;
 
-  if(ea.action == EditorAction.COPY_TO_CLIPBOARD) {
+  if(ea.action == EditorAction.COPY_PAGE_TO_CLIPBOARD) {
     const pageData = model.value.data[ea.offset]
     // grab data and show toast
     navigator.clipboard.writeText(JSON.stringify(pageData));
     emits('toast',getToastData('Page ' + (ea.offset+1) + ' copied to clipboard'))
 
-  } else if(ea.action == EditorAction.COPY_TO_PAGE) {
+  } else if(ea.action == EditorAction.COPY_TILE_TO_CLIPBOARD) {
+
+    const pageData = model.value.data[ea.offset]
+    pageData['sourceTile'] = ea.offsetTo
+    // grab data and show toast
+    navigator.clipboard.writeText(JSON.stringify(pageData));
+    emits('toast',getToastData('Tile ' + (ea.offsetTo+1) + ' copied to clipboard'))
+
+  } else if(ea.action == EditorAction.DUPLICATE_PAGE) {
+
     model.value.data[ea.offsetTo] = duplicate(model.value.data[ea.offset])
 
   } else if(ea.action == EditorAction.DELETE_PAGE) {
@@ -170,11 +183,26 @@ async function onEditorAction(ea:EditorAction) {
     updateOffset = true;
 
   } else if(ea.action == EditorAction.PASTE_PAGE) {
+
     readPageFromClipboard().then( page => {
       if(model.value)
         model.value.data[ea.offset] = page;
     }).catch( e => {
         emits('toast',getToastData('Cannot Paste', e, toastError))
+    }) 
+
+  } else if(ea.action == EditorAction.PASTE_TILE) {
+    
+    readPageFromClipboard().then( page => {
+      if( !('sourceTile' in page)) throw new Error('No source tile found in clipboard')
+      if(model.value) {
+        if( isNaN(ea.offset) || isNaN(ea.offsetTo)) return;
+        // offset has the page number, offsetTo has the tile number
+        // console.log('[App.onEditorAction] pasteTile', ea.offset, ea.offsetTo, page.sourceTile, page)
+        model.value.data[ea.offset].data[ea.offsetTo] = page.data[page.sourceTile];
+      }
+    }).catch( e => {
+        emits('toast',getToastData('Cannot Paste Tile', e, toastError))
     }) 
 
   } else if(ea.action == EditorAction.RESET_PAGE) {
@@ -207,6 +235,10 @@ async function onEditorAction(ea:EditorAction) {
     emits('offset', offset.value)
   }
   modified.value = true
+}
+
+function pasteTile(params:any) {
+  onAction(EditorAction.pasteTile(params.offset, params.tile))  
 }
 
 function swapTiles(params:any) {
