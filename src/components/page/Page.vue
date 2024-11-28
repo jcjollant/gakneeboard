@@ -41,16 +41,17 @@ const version = ref(0)
 const props = defineProps({
     data: { type: Object, default: null},
     index: { type: Number},
-    version: { type: Number, default: 0},
+    ver: { type: Number, default: 0},
 })
 
 function loadProps(props) {
-//   console.log('[Page.loadProps]', JSON.stringify(props.data))
+    // console.log('[Page.loadProps]', JSON.stringify(props.data))
     if(!props.data) return
     pageData.value = props.data.data ? props.data.data : null
     type.value = props.data.type ? props.data.type : null
     pageIndex.value = props.index;
-    version.value = props.version;
+    version.value = props.ver;
+    console.log('[Page.loadProps] version', props.ver)
 }
 
 onMounted(() => {

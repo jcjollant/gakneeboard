@@ -82,6 +82,7 @@ function loadProps(newProps) {
     } else {
         data.value = null
     }
+    version.value = newProps.version
 }
 
 onMounted(() => {

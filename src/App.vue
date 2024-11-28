@@ -3,13 +3,13 @@
     <div v-if="activeTemplate">
       <div v-if="printSingles" v-for="(page,index) in activeTemplate.data" class="printOnePage printPageBreak">
         <div class="onePage">
-          <Page :data="page" :version="activeTemplate.ver"
+          <Page :data="page" :ver="activeTemplate.ver"
             :class="{flipMode:(index % 2 == 1 && printFlipMode)}"/>
         </div>
       </div>
       <div v-else class="printTwoPages printPageBreak" v-for="(page) in activePages">
-        <Page :data="page.front" :version="activeTemplate.ver"/>
-        <Page :data="page.back" :version="activeTemplate.ver"
+        <Page :data="page.front" :ver="activeTemplate.ver"/>
+        <Page :data="page.back" :ver="activeTemplate.ver"
           :class="{flipMode:printFlipMode}" />
       </div>
     </div>
@@ -37,7 +37,7 @@
       <div v-if="activeTemplate" class="pageAll" :class="{'editor':showEditor}">
         <Page v-for="(data,index) in activeTemplate.data" 
           v-show="index >= offset"
-          :data="data" :index="index" :class="'page'+index" :version="activeTemplate.ver"
+          :data="data" :index="index" :class="'page'+index" :ver="activeTemplate.ver"
           @update="onPageUpdate" @toast="toast.add" />
       </div>
       <i class="pi pi-chevron-circle-right offsetButton"  :class="{'noShow':(offset >= offsetLast)}"
@@ -135,6 +135,7 @@ function loadTemplate(template=null,save=false) {
   template.data = data
 
   activeTemplate.value = template;
+  // console.log('[App.loadTemplate] template version', JSON.stringify(template.ver))
   updateOffsets()
 
   // restore modified state
