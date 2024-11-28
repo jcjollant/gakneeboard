@@ -34,6 +34,8 @@ export class TemplateDao {
             await sql`
                 UPDATE sheets SET data=${data},name=${template.name},description=${template.desc},version=version+1 WHERE id=${template.id}
             `
+            // increment the version accordingly
+            template.ver += 1;
         } else {
             // console.log( "[TemplateDao.createOrUpdate] net new");
             // count the number of sheets for this user
