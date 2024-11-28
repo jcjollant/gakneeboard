@@ -7,6 +7,9 @@ SELECT * FROM unknowns
 
 SELECT * FROM unknowns where code='KBFF'
 
+## Adip cleanup
+UPDATE adip SET data=NULL WHERE code in (SELECT DISTINCT code FROM adip WHERE create_time > ${Adip.currentEffectiveDate}) AND create_time < ${Adip.currentEffectiveDate} AND data NOTNULL
+
 #########################################
 # Feedback table
 
@@ -42,7 +45,7 @@ SELECT * FROM health_checks
 INSERT INTO health_checks (data,failures) VALUES ("TEST",1)
 
 #########################################
-# Teampltes (sheets)
+# Templates (sheets)
 SELECT * FROM sheets
 
 # Sheets from actual users
