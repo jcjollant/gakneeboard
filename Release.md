@@ -1,3 +1,6 @@
+## 11/28/2024
+* Tile Copy/Paste
+* Holding Tile design improvments
 ## 11/27/2024
 * Fixed template version not updating
 ## 11/25/2024
