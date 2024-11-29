@@ -151,6 +151,7 @@ watch(props, () => {
 .theme-red-strong {
     color:white;
     background: red;
+    text-shadow: 2px 2px black;
 }
 .theme-yellow {
     background: lightyellow;
