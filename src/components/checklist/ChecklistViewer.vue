@@ -117,13 +117,6 @@ watch(props, () => {
     grid-column: 1 / span 2
 }
 
-.theme-yellow {
-    background: lightyellow;
-}
-.theme-yellow-strong {
-    color:white;
-    background: darkorange;
-}
 .theme-blue {
     background: #b4c6e7;
 }
@@ -144,6 +137,27 @@ watch(props, () => {
 .theme-grey-strong {
     color:white;
     background: #666;
+}
+.theme-purple {
+    background: #E9E;
+}
+.theme-purple-strong {
+    color:white;
+    background: purple;
+}
+.theme-red {
+    background: pink;
+}
+.theme-red-strong {
+    color:white;
+    background: red;
+}
+.theme-yellow {
+    background: lightyellow;
+}
+.theme-yellow-strong {
+    color:white;
+    background: darkorange;
 }
 
 </style>
