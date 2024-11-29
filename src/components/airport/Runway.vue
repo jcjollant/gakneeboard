@@ -133,7 +133,17 @@ function show(runway) {
     ctx.textAlign = 'center';
     ctx.fillText( southEnd.name, 0, -rwyHLength + rwyFontSize * 1.5);
     ctx.fillText( northEnd.name, 0, rwyHLength - rwyFontSize * 0.5);
-    
+
+    // runway centerline
+    if(rwyColor=='black') {
+        ctx.beginPath();
+        ctx.strokeStyle = 'white';
+        ctx.setLineDash([5, 2])
+        ctx.moveTo( 0, -rwyHLength + rwyFontSize * 2);
+        ctx.lineTo( 0, rwyHLength - rwyFontSize * 2);
+        ctx.stroke();
+    }
+
     // Traffic pattern
     ctx.lineWidth = tpLineWidth;
     ctx.lineCap = 'round';
