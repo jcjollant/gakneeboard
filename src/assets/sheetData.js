@@ -1,5 +1,5 @@
 import { PageType, Template } from './Templates'
-
+import { Tile } from './Tile'
 
 const demoRadioData = [
   {'target':'NAV1','freq':'116.8','name':'SEA VOR'},
@@ -88,6 +88,18 @@ const page1DemoTiles = {
       {'id':5,'name':'radios','data':demoRadioData},
     ]
    }
+
+// const page2DemoTiles = {
+//     type:PageType.tiles,
+//     data:[
+//       {"id":0,"name":"notes","data":{"mode":"hold"}},
+//       {"id":1,"name":"notes","data":{"mode":"grid"}},
+//       {"id":2,"name":"atis","data":{"mode":"categories"}},
+//       {"id":3,"name":"atis","data":{"mode":"cloudClear"}},
+//       {"id":4,"name":"radios","data":{"mode":"nordo","list":[]}},
+//       {"id":5,"name":"clearance","data":{"mode":"boxV"}}
+//     ]
+//    }
 
 const templateDemoTiles = new Template('Tiles Demo', 'Every Tile Available on GA Kneeboard', false, [page0DemoTiles,page1DemoTiles])
 
@@ -272,6 +284,19 @@ export function getTemplateDataFromName(name) {
     return null;
   }
 
+}
+
+export function getTemplateDummy() {
+  const pages = []
+  for( let pageIndex = 0; pageIndex < 2; pageIndex++) {
+    const tiles = []
+    for( let tileIndex = 0; tileIndex < 6; tileIndex++) {
+      tiles.push({id:tileIndex,name:Tile.dummy,data:{header:pageIndex+'-'+tileIndex}})
+    }
+    const page = { type:PageType.tiles, data: tiles}
+    pages.push(page)
+  }
+  return new Template('Dummy Tiles', '12 Dummy Tiles', false, pages)
 }
 
 export function isDefaultName(name) {
