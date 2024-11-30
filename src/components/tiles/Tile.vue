@@ -22,6 +22,7 @@
         @replace="onReplace" @update="onUpdate"/>
     <Clearance v-else-if="tile.name==Tile.clearance" :params="tile.data"
         @replace="onReplace" @update="onUpdate"/>
+    <Dummy v-else-if="tile.name==Tile.dummy" :params="tile.data"  />
     <FuelBug v-else-if="tile.name==Tile.fuel" :params="tile.data"
         @replace="onReplace" @update="onUpdate"/>  
     <NavlogTile v-else-if="tile.name==Tile.navlog" @replace="onReplace" />
@@ -41,14 +42,15 @@ import { Tile } from '../../assets/Tile'
 import Header from '../shared/Header.vue';
 import Airport from '../airport/Airport.vue';
 import Atis from '../atis/Atis.vue'
-import NotesTile from '../notes/NotesTile.vue';
 import ChecklistTile from '../checklist/ChecklistTile.vue';
 import Clearance from '../clearance/Clearance.vue';
+import Dummy from './Dummy.vue';
 import RadioTile from '../radios/RadioTile.vue';
 import SunLight from '../sunlight/SunLight.vue';
 import FuelBug from '../fuel/FuelBug.vue';
 import FAButton from '../shared/FAButton.vue'
 import NavlogTile from '../navlog/NavlogTile.vue';
+import NotesTile from '../notes/NotesTile.vue';
 
 const emits = defineEmits(['update','toast'])
 
@@ -59,7 +61,7 @@ const props = defineProps({
 var state = {}
 const knownTiles = ref([
     {name:'Airport',tile:Tile.airport, class:'double', icon:'plane-departure', tooltip:'Display runway and useful information'},
-    {name:'ATIS',tile:Tile.atis, class:'', icon:'cloud-sun-rain', tooltip:'Write down ATIS information'},
+    {name:'Weather',tile:Tile.atis, class:'', icon:'cloud-sun-rain', tooltip:'Write down ATIS information'},
     {name:'Checklist',tile:Tile.checklist, class:'', icon:'list-check', tooltip:'Short checklist'},
     {name:'Clearance',tile:Tile.clearance, class:'', icon:'plane-circle-check', tooltip:'Write down clearance information'},
     {name:'Fuel',tile:Tile.fuel, class:'', icon:'gas-pump', tooltip:'Track your fuel consumption'},

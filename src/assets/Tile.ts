@@ -3,6 +3,7 @@ export class Tile {
     static atis:string = 'atis';
     static checklist:string = 'checklist';
     static clearance:string = 'clearance';
+    static dummy:string = 'dummy';
     static fuel:string = 'fuel';
     static navlog:string = 'navlog';
     static notes:string = 'notes';
