@@ -19,6 +19,10 @@ const props = defineProps({
 function loadProps(props) {
   // console.log('[TilePage.loadProps]', typeof props.data, JSON.stringify(props.data))
   if(!props.data) return;
+  // build tiles id
+  for(let index=0; index < props.data.length; index++) {
+    props.data[index].id = index
+  }
   tiles.value = props.data
 }
 
