@@ -161,6 +161,7 @@ async function onEditorAction(ea:EditorAction) {
     model.value.data[ea.offsetTo] = duplicate(model.value.data[ea.offset])
 
   } else if(ea.action == EditorAction.DELETE_PAGE) {
+
     // protection against last page removal
     if( model.value.data.length == 2) {
       emits('toast',getToastData( 'Cannot Delete Page', 'Last two pages cannot be deleted. Delete the template instead.', toastError))
@@ -200,6 +201,7 @@ async function onEditorAction(ea:EditorAction) {
         // offset has the page number, offsetTo has the tile number
         // console.log('[App.onEditorAction] pasteTile', ea.offset, ea.offsetTo, page.sourceTile, page)
         model.value.data[ea.offset].data[ea.offsetTo] = page.data[page.sourceTile];
+        model.value.data[ea.offset].data[ea.offsetTo].id = ea.offsetTo;
       }
     }).catch( e => {
         emits('toast',getToastData('Cannot Paste Tile', e, toastError))
@@ -209,11 +211,13 @@ async function onEditorAction(ea:EditorAction) {
     model.value.data[ea.offset] = duplicate(pageDataBlank)
 
   } else if(ea.action == EditorAction.SWAP_PAGE) {
+
     const swap = duplicate(model.value.data[ea.offset])
     model.value.data[ea.offset] = model.value.data[ea.offset + 1]
     model.value.data[ea.offset + 1] = swap;
 
   } else if(ea.action == EditorAction.SWAP_TILES) {
+
     // is this a tile page?
     if(model.value.data[ea.offset].type != PageType.tiles) return;
     const tileFrom = ea.params?.from
