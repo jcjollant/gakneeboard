@@ -1,10 +1,12 @@
 <template>
     <div class="tile">
-        <Header :title="displayMode==''?'ATIS @':'ATIS'" :left="displayMode==''" :hideReplace="displayMode!='edit'"
+        <Header :title="getTitle()" :left="displayMode==''" :hideReplace="displayMode!='edit'"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div v-if="settingsMode" class="list" >
-            <Button label="Full Size" @click="changeMode('')"></Button>
-            <Button label="Compact (x4)" @click="changeMode('compact')"></Button>
+            <Button label="Full Size ATIS" @click="changeMode('')"></Button>
+            <Button label="Compact ATIS (x4)" @click="changeMode('compact')"></Button>
+            <Button label="Flight Categories" @click="changeMode('categories')"></Button>
+            <Button label="Cloud Clearance" @click="changeMode('cloudClear')"></Button>
         </div>
         <div v-else-if="displayMode==''" class="tileContent full" @click="cycleMode">
             <div class="info br">
@@ -47,6 +49,38 @@
                 
             </div>
         </div>
+        <div v-else-if="displayMode=='categories'" class="tileContent categories">
+            <div class="vfrLeft vfr">VFR<span class="alt">3,000ft</span></div>
+            <div class="vfrRight vfr">&nbsp;<span class="vis">5sm</span></div>
+            <div class="mvfrLeft mvfr">MVFR<span class="alt">1,000ft</span></div>
+            <div class="mvfrRight mvfr">&nbsp;<span class="vis">3sm</span></div>
+            <div class="ifrLeft ifr">IFR<span class="alt">500ft</span></div>
+            <div class="ifrRight ifr">&nbsp;<span class="vis">1sm</span></div>
+            <div class="lifr">LIFR</div>
+        </div>
+        <div v-else-if="displayMode=='cloudClear'" class="tileContent cloudClear">
+            <!-- 14 CFR 103.23 -->
+            <div v-for="c in ['B','C','D']" class="className towered" :title="'Class ' + c + ' Airspace'">{{ c }}</div>
+            <div class="className untowered" title="Class E Airspace">E</div>
+            <div class="className untowered" title="Class G Airspace at Night">Gn</div>
+            <div class="className untowered" title="Class G Airspace Day time">Gd</div>
+            <div class="classB req" title="3sm visibility and Clear of Clouds">3:cc</div>
+            <div class="classEHigh req" title="5sm visibility, 1,000ft above, 1,000ft below, 1sm horizontal">5:111<span class="altMin"  title="Above 10,000 ft MSL">10k MSL</span></div>
+            <div class="classCDHigh req" title="3sm visibility, 1,000ft above, 500ft below, 2,000ft horizontal">3:152</div>
+            <div class="classCDLow">
+                <div class="above">1,000ft</div>
+                <div class="at">
+                    <div>3 sm</div>
+                    <font-awesome-icon icon="fa-solid fa-cloud" />
+                    <div>2,000ft</div>
+                </div>
+                <div class="above">500ft</div>
+            </div>
+            <div class="classGMid req" title="1sm visibility, 1,000ft above, 500ft below, 2,000ft horizontal">1:152</div>
+            <div class="classGLow req" title="1sm visibility and Clear of Clouds">1:cc<span class="altMax" title="Below 1,200ft AGL">1k2 AGL</span></div>
+            <!-- <font-awesome-icon icon="fa-solid fa-link" class="link" @click="showRegulation" title="Show Regulation" /> -->
+            <div class="svfr req" title="Special VFR 1sm visibility and Clear of Clouds">SVFR 1:cc</div>
+        </div>
         <NoSettings v-else />
     </div>
 </template>
@@ -56,6 +90,7 @@ import { ref,onMounted, watch } from 'vue'
 import Header from '../shared/Header.vue';
 import NoSettings from '../shared/NoSettings.vue'
 import Button from 'primevue/button'
+import { UserUrl } from '../../lib/UserUrl'
 
 const emits = defineEmits(['replace','update'])
 
@@ -109,12 +144,196 @@ function cycleMode() {
     }
 }
 
+function getTitle() {
+    switch(displayMode.value) {
+        case 'compact': return 'ATIS';
+        case 'categories': return 'Flight Categories';
+        case 'cloudClear': return 'Cloud Clearance';
+        default: return 'ATIS @';
+    }
+}
+
 function onHeaderClick() {
     settingsMode.value = ! settingsMode.value
 }
 
+function showRegulation() {
+    // open link in new tab
+    window.open(UserUrl.cloudClearanceRegulation, '_blank')
+}
+
 </script>
 <style scoped>
+.categories {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    font-weight: 600;
+    font-size: optional;
+}
+.categories div {
+    position: relative;
+    text-align: end;
+    padding: 5px;
+}
+.categories .alt {
+    position: absolute;
+    left: 2px;
+    bottom: 2px;
+    font-size: 1rem;
+    font-weight: normal;
+}
+.categories .ifr {
+    /* color: white; */
+    /* background-color: #E33; */
+    color: #600;
+    border-right: 1px solid #600;
+}
+.categories .ifrLeft {
+    grid-column: 1 / span 2;
+    grid-row: 3;
+    border-top: 1px solid #600;
+}
+.categories .ifrRight {
+    grid-column: 2;
+    grid-row: 4;
+}
+.categories .lifr {
+    color: white;
+    background-color: #E3E;
+}
+.categories .mvfr {
+    /* color: white; */
+    /* background-color: #66E; */
+    color: #006;
+    border-right: 1px solid #006;
+}
+.categories .mvfrLeft {
+    border-top: 1px solid #006;
+    grid-column: 1 / span 3;
+}
+.categories .mvfrRight {
+    grid-column: 3;
+    grid-row: 3 / span 2;
+}
+.categories .vfr {
+    color: #000
+    /* background-color: #6E6; */
+}
+.categories .vfrLeft {
+    grid-column: 1 / span 4;
+}
+.categories .vfrRight {
+    grid-column: 4;
+    grid-row: 2 / span 3;
+}
+.categories .vis {
+    position: absolute;
+    left: 0;
+    bottom: 2px;
+    writing-mode: vertical-lr;
+    font-size: 1rem;
+    font-weight: normal;
+}
+.cloudClear {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: 1fr 3fr 3fr 3fr;
+}
+.cloudClear .altMin {
+    position: absolute;
+    right: 0;
+    bottom : 0;
+    font-size: 0.8rem;
+}
+.cloudClear .altMax {
+    position: absolute;
+    right: 0;
+    top : 0;
+    font-size: 0.6rem;
+}
+.cloudClear .classB {
+    grid-row: 2 / span 3;
+    grid-column: 1;
+    border-right: 1px dashed grey;
+}
+.cloudClear .classCDHigh {
+    grid-row: 2;
+    grid-column: 2 / span 2;
+}
+.cloudClear .classCDLow {
+    grid-row: 3 / span 2;
+    grid-column: 2 / span 4;
+    border-right: 1px dashed grey;
+    display: flex;
+    flex-flow: column;
+    font-size: 0.8rem;
+    justify-content: center;
+    color: #006;
+}
+.cloudClear .classCDLow .fa-cloud {
+    font-size: 1.5rem;
+    color: #006;
+    margin: 10px;
+}
+
+.cloudClear .classCDLow .at {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cloudClear .classEHigh {
+    position: relative;
+    grid-row: 2;
+    grid-column: 4 / span 3;
+    border-bottom: 1px dashed grey;
+    border-left: 1px dashed grey;
+}
+.cloudClear .classGMid {
+    grid-row: 3;
+    grid-column: 6;
+    font-size: 0.8rem;
+}
+.cloudClear .classGLow {
+    position: relative;
+    grid-row: 4;
+    grid-column: 6;
+    border-top: 1px dashed grey;
+}
+.cloudClear .className {
+    font-weight: 600;
+    border-bottom: 1px dashed grey;
+}
+
+.cloudClear .link {
+    position: absolute;
+    left: 5px;
+    bottom: 5px;
+    font-size: 0.7rem;
+    color: #666;
+    cursor: pointer;
+}
+
+.cloudClear .req {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.cloudClear .svfr {
+    border-top: 1px dashed grey;
+    grid-column: 1 / span 6;
+    font-size: 0.8rem;
+    background-color: lightgrey;
+}
+.cloudClear .towered {
+    color: #006
+}
+
+.cloudClear .untowered {
+    color: #606
+}
+
 .label {
   position: absolute;
   left: 3px;
@@ -124,13 +343,12 @@ function onHeaderClick() {
 .tileContent {
     display: grid;
     grid-template-rows: repeat( 4, calc(var(--tile-height / 4)));
-    cursor: pointer;
 }
 .list {
     display: grid;
     padding: 10px;
     gap:10px;
-    grid-template-rows: 3rem 3rem;
+    grid-template-rows: repeat(3 3rem);
 }
 
 .full {
@@ -183,7 +401,7 @@ function onHeaderClick() {
 .compact .altimeter {
     grid-column:3;
 }
-.at {
+.wind .at {
     position: absolute;
     left: 50px;
     top: 20px;

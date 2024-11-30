@@ -2,9 +2,9 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faFacebookF, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import {
     faBan, faBorderAll,
-    faCheck, faCloudSunRain, faComments,
+    faCheck, faCloud, faCloudSunRain, faComments,
     faGasPump, faHeadset, faImage, faJetFighter,
-    faListCheck,
+    faLink, faListCheck,
     faPenToSquare, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture,
     faQuestion, 
     faRoadCircleCheck, faRoute, faRotateLeft,
@@ -23,10 +23,10 @@ import App from './App.vue';
 import './style.css';
 
 library.add( faBan, faBorderAll, 
-    faCheck, faCloudSunRain, faComments, 
+    faCheck, faCloud, faCloudSunRain, faComments, 
     faFacebookF, faGoogle, 
     faGasPump, faHeadset, faImage, faJetFighter, 
-    faListCheck, 
+    faLink, faListCheck, 
     faPenToSquare, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, 
     faQuestion, 
     faRoadCircleCheck, faRotateLeft, faRoute, 
