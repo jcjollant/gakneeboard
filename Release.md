@@ -1,3 +1,7 @@
+## 11/29/2024
+* ATIS becomes Weather with new display modes
+* Airport Asphalt Runways have center line
+* New Themes for Checklists + refreshed demo checklist
 ## 11/28/2024
 * Tile Copy/Paste
 * Holding Tile design improvments

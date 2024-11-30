@@ -18,16 +18,15 @@ describe('ATIS Tile', () => {
 
     // Edit mode
     cy.get('.page0 > :nth-child(5) > .headerTitle').click()
-    // check header size
-    const expectedHeight = 23
-    const expectedButtonHeight = 21
-    cy.get('.headerTitle').invoke('outerHeight').should('be.equal', expectedHeight)
-    cy.get('.headerTitle > .p-button').invoke('outerHeight').should('be.equal', expectedButtonHeight)
 
-    cy.get('[aria-label="Full Size"]').contains('Full Size')
-    cy.get('[aria-label="Compact (x4)"]').contains('Compact (x4)')
+    // Check all display modes are showing up
+    cy.get('[aria-label="Full Size ATIS"]')
+    cy.get('[aria-label="Compact ATIS (x4)"]')
+    cy.get('[aria-label="Flight Categories"]')
+    cy.get('[aria-label="Cloud Clearance"]')
+    
     // Check ATIS has all fields in compact mode
-    cy.get('[aria-label="Compact (x4)"]').click()
+    cy.get('[aria-label="Compact ATIS (x4)"]').click()
     for(let index=1; index <=4; index++) {
       cy.get(`:nth-child(${index}) > .info`).contains('Info')
       cy.get(`:nth-child(${index}) > .wind`).contains('Wind')
