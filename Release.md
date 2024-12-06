@@ -1,3 +1,6 @@
+## 12/05/2024
+* Editor Save and Exit will not save new pages or demos
+* Airport Code is now showing a list of recent airports
 ## 11/29/2024
 * ATIS becomes Weather with new display modes
 * Airport Asphalt Runways have center line
