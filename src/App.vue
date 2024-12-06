@@ -179,7 +179,9 @@ function onEditorDiscard() {
 
 function onEditorSave() {
   showEditor.value = false;
-  if(newCurrentUser.loggedIn) {
+  // Save template if we are logged in and template already has an Id
+  // This is preventing unwanted saves of new pages and demos
+  if(newCurrentUser.loggedIn && activeTemplate.value.id) {
     TemplateData.save(activeTemplate.value).then(t => {
         let message = 'Template "' + t.name + '" saved';
         showToast( getToastData( 'Clear', message))
