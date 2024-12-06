@@ -4,13 +4,18 @@
             <InputGroupAddon :class="{page:page}">{{label}}</InputGroupAddon>
             <InputText v-model="code" @input="onCodeUpdate"/>
         </InputGroup>
-        <span class="airportName" :class="{valid: valid, page:page}">{{ name }}</span>
+        <span v-if="name" class="airportName" :class="{valid: valid, page:page}" 
+            @click="name=null" title="Click to pick a recent airport">{{ name }}</span>
+        <div v-else class="recentAirportList">
+            <div v-for="a in airports" class="recentAirport" :title="a.name" @click="onRecentAirport(a)">{{ a.code }}</div>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { getAirport } from '../../assets/data'
+import { sessionAirports } from '../../assets/data'
 
 import InputText from 'primevue/inputtext'
 import InputGroup from 'primevue/inputgroup'
@@ -23,7 +28,7 @@ const props = defineProps({
     label: { type: String, default: 'Code'},
     page: {type: Boolean, default: false},
 })
-
+const airports = ref([])
 const code = ref()
 const model = defineModel()
 const name = ref('')
@@ -47,6 +52,7 @@ onMounted(() => {
     // console.log('Airport mounted with ' + JSON.stringify(props.params))
     // get this airport data from parameters
     loadProps(props)
+    sessionAirports.addListener(refreshAirportList)
 })
 
 watch( props, async() => {
@@ -94,6 +100,17 @@ function onCodeUpdate() {
     }
 }
 
+function onRecentAirport(airport:any) {
+    code.value = airport.code
+    name.value = airport.name
+    valid.value = true
+    model.value = airport
+    emits('valid', airport)
+}
+
+function refreshAirportList(newAirports) {
+    airports.value =  newAirports;
+}
 
 </script>
 
@@ -111,12 +128,33 @@ function onCodeUpdate() {
 }
 .airportName {
     overflow: hidden;
-    line-height: 1.5rem;
-    height: 1.5rem;
+    line-height: 22px;
+    height: 22px;
     font-size: 0.7rem;
+    cursor: pointer;
 }
 .airportName.page {
     font-size: 0.9rem;
+}
+.recentAirport {
+    border-radius: 3px;
+    color: white;
+    background-color: var(--bg);
+    cursor: pointer;
+    padding: 0 5px;
+}
+.recentAirport:hover {
+    background-color: var(--bg-hover);
+}
+.recentAirportList {
+    display: flex;
+    font-size: 0.7rem;
+    line-height: 22px;
+    height: 22px;
+    overflow: hidden;
+    gap: 5px;
+    align-items: center;
+    flex-wrap: wrap;
 }
 .valid {
     font-weight: bold;
