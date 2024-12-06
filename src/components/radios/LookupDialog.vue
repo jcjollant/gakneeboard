@@ -1,10 +1,10 @@
 <template>
     <Dialog modal header="Frequency Lookup" style="width:45rem" class="lookupDialog">
         <FieldSet legend="Airport">
-            <AirportInput :auto="true" @valid="onAirportInput" class="mb-2"></AirportInput>
-            <div class="listAirports">
+            <AirportInput :auto="true" @valid="onAirport" class="mb-2"></AirportInput>
+            <!-- <div class="listAirports">
                 <Button v-for="airport in airports" @click="onAirport(airport)">{{airport.code}}</Button>
-            </div>
+            </div> -->
         </FieldSet>
         <div class="mt-2 tip">{{selectedAirport ? 'Click on any frequency below to add them to your Radio Flow':'Pick an airport above to see associated frequencies'}}</div>
         <div v-if="selectedAirport" class="airportSpecific">

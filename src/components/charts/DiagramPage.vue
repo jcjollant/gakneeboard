@@ -4,11 +4,11 @@
             @replace="emits('replace')" @click="toggleEditMode"></Header>
         <div v-if="editMode">
             <div class="editMode">
-                <div v-if="knownAirports.length" class="known">
+                <!-- <div v-if="knownAirports.length" class="known">
                     <div class="section">Recent Airports</div>
                     <FAButton v-for="a in knownAirports" :label="a['name']" icon="road-circle-check"
                         @click="onSelection(a)"/>
-                </div>
+                </div> -->
                 <div class="known">
                     <div class="section pickNewAirport">Pick New Airport</div>
                     <AirportInput label="Airport Code" :page="true" v-model="airport"/>
