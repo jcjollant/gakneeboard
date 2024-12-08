@@ -1,3 +1,10 @@
+<template>
+    <div class="container clickable" @click="onClick">
+        <canvas ref="myCanvas"></canvas>
+        <div class="label">{{ label }}</div>
+    </div>
+</template>
+
 <script setup>
 import {onMounted,ref,watch} from 'vue'
 
@@ -260,13 +267,6 @@ function show(runway) {
 
 }
 </script>
-
-<template>
-    <div class="container clickable" @click="onClick">
-        <canvas ref="myCanvas"></canvas>
-        <div class="label">{{ label }}</div>
-    </div>
-</template>
 
 <style scoped>
 .container {
