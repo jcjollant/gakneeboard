@@ -6,35 +6,24 @@
         <div v-if="settingsMode" class="list" >
             <Button label="Blank" @click="changeMode(DisplayMode.Blank)"></Button>
             <Button label="Grid" @click="changeMode(DisplayMode.Grid)" title="2x6 grid"></Button>
-            <Button label="Holding" @click="changeMode(DisplayMode.Hold)" title="Holding Pattern"></Button>
-            <font-awesome-icon :icon="['fas', 'video']" class="videoButton"
-                @click="onVideo" title="Quick Intro on note tiles"></font-awesome-icon>
+            <Button label="Compass" @click="changeMode(DisplayMode.Compass)" title="Compass"></Button>
+            <Button label="C R A F T" @click="changeMode(DisplayMode.Craft)" title="CRAFT Clearance"></Button>
+            <!-- <font-awesome-icon :icon="['fas', 'video']" class="videoButton"
+                @click="onVideo" title="Quick Intro on note tiles"></font-awesome-icon> -->
         </div>
         <div v-else-if="displayMode=='grid'" class="grid tileContent">
             <div v-for="i in [1,2,3,4,5,6,7,8,9,10,11,12]">&nbsp;</div>
         </div>
-        <div v-else-if="displayMode=='hold'" class="hold tileContent">
-            <div class="params">&nbsp;
-                <div class="label labelTopLeft">Hold At</div>
-                <div class="label labelTopRight">EFC</div>
-                <div class="label labelBottomLeft">Right Turns</div>
-                <div class="label labelBottomRight">Left Turns</div>
-            </div>
-            <div class="row brg">BRG</div>
-            <!-- <div class="">Left</div> -->
-            <div class="row wca">WCA</div>
-            <div class="row heading">
-                <div class="box">&nbsp;</div>
-                <div class="name">HDG</div>
-                <div class="box">&nbsp;</div>
-            </div>
-        </div>
+        <CompassContent v-else-if="displayMode==DisplayMode.Compass" />
+        <CraftContent v-else-if="displayMode==DisplayMode.Craft" />
     </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, watch, ref } from 'vue'
 import Button from 'primevue/button';
+import CompassContent from './CompassContent.vue';
+import CraftContent from '../clearance/CraftContent.vue';
 import Header from '../shared/Header.vue';
 import { UserUrl } from '../../lib/UserUrl';
 
@@ -42,7 +31,8 @@ import { UserUrl } from '../../lib/UserUrl';
 enum DisplayMode {
     Blank = '',
     Grid = 'grid',
-    Hold = 'hold'
+    Compass = 'compass',
+    Craft = 'craft',
 }
 
 const displayMode = ref(DisplayMode.Blank)
@@ -106,76 +96,6 @@ function onVideo() {
 .grid div {
     border: 1px dashed lightgrey;
 }
-.hold {
-    display: flex;
-    flex-flow: column;
-}
-.hold .bottom {
-    grid-column: 2;
-    border: 2px dashed darkgrey;
-    border-top: none;
-    border-bottom-left-radius: 24px;
-    border-bottom-right-radius: 24px;
-    margin-bottom: 36px;
-}
-.hold .box {
-    border: 2px solid black;
-    margin: 2px;
-}
-.hold .brg {
-    border-bottom: 1px dashed grey;
-}
-
-.hold .params {
-    position: relative;
-    height: 120px;
-    border-bottom: 1px dashed grey;
-}
-.hold .row {
-    line-height: 40px;
-}
-
-.heading {
-    border-top: 1px dashed grey;
-    display: grid;
-    grid-template-columns: auto 50px auto;
-    align-items: center;
-}
-
-.hold .sep {
-    position: relative;
-    border-bottom: 1px dashed grey;
-}
-.hold .time {
-    position: relative;
-}
-.hold .top {
-    padding-top: 16px;
-    border-top: 2px solid black;
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
-}
-.label {
-  position: absolute;
-  font-size: 10px;
-}
-.labelBottomLeft {
-  left: 3px;
-  bottom: 0;
-}
-.labelBottomRight {
-  right: 3px;
-  bottom: 0;
-}
-.labelTopLeft {
-  left: 3px;
-  top: 0;
-}
-.labelTopRight {
-  right: 3px;
-  top: 0;
-}
-
 .list {
     position: relative;
     display: grid;
