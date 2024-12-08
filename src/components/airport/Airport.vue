@@ -1,7 +1,7 @@
 <script setup>
 import {ref, onMounted, watch} from 'vue';
 import { getAirport, getFreqCtaf, getFreqWeather} from '../../assets/data.js'
-import { Formatter } from '../../assets/Formatter.ts'
+import { Formatter } from '../../lib/Formatter.ts'
 
 import AirportEdit from './AirportEdit.vue';
 import Corner from './Corner.vue';

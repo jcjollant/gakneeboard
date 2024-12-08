@@ -5,7 +5,7 @@ import { navlogQueue } from '../../assets/data';
 
 import Header from '../shared/Header.vue'
 import PlaceHolder from '../shared/PlaceHolder.vue';
-import { Formatter } from '../../assets/Formatter';
+import { Formatter } from '../../lib/Formatter';
 import NoSettings from '../shared/NoSettings.vue';
 
 const items = ref(null)

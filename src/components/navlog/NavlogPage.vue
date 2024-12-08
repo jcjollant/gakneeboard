@@ -91,7 +91,7 @@
 import { onMounted, ref, watch } from 'vue'
 
 import { duplicate, navlogQueue } from '../../assets/data'
-import { Formatter } from '../../assets/Formatter'
+import { Formatter } from '../../lib/Formatter'
 import { Navlog } from '../../assets/Navlog'
 
 import Header from '../shared/Header.vue'

@@ -112,7 +112,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
-import { Formatter } from '../../assets/Formatter'
+import { Formatter } from '../../lib/Formatter'
 import { emitToast, emitToastError, emitToastWarning } from '../../assets/toast'
 import { Navlog } from '../../assets/Navlog'
 import { NavlogEntry } from '../../assets/NavlogEntry'

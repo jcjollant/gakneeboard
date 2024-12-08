@@ -30,7 +30,7 @@
 
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { Formatter } from '../../assets/Formatter'
+import { Formatter } from '../../lib/Formatter'
 import { UserUrl } from '../../lib/UserUrl';
 
 import ActionBar from '../shared/ActionBar.vue'

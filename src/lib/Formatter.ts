@@ -13,6 +13,11 @@ export class Formatter {
         return alt.toFixed(0)
     }
 
+    static compassHeading(heading: number): any {
+        let value=heading%360;
+        if(value == 0) value = 360;
+        return String(value).padStart(3,'0');
+    }
 
     static distance(dist:any) {
         if(dist == null || dist === undefined) return '?'
