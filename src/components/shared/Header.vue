@@ -1,6 +1,6 @@
 <template>
-    <div class="headerTitle" :class="{ clickable: clickable, left: left}">
-        <div class="titleText" :class="{ stealth: stealth}">{{ title }}</div>
+    <div class="headerTitle" :class="{ clickable: clickable, left: left, stealth:stealth}">
+        <div class="titleText">{{ title }}</div>
         <Button v-if="replace" class="replaceButton" :class="{'hidden':hideReplace}" icon="pi pi-eject" 
             :title="'Replace ' + (page ? 'Page' : 'Tile')" link
             @click.stop="emits('replace')"></Button>
@@ -60,6 +60,10 @@ watch( props, async() => {
     position: relative;
     height: 23px;
     line-height: 23px;
+}
+.headerTitle.stealth {
+    border-bottom: 1px dashed white;
+
 }
 .clickable:hover .replaceButton {
     display: inline-flex;
