@@ -1,3 +1,8 @@
+## 12/08/2024
+* Notes tile has compass and CRAFT
+* Improved Notes Blank steath mode
+* Holding moved from Notes to Clearance tile. Also improved layout
+* Fixed checklist placeholder items count
 ## 12/05/2024
 * Editor Save and Exit will not save new pages or demos
 * Airport Code is now showing a list of recent airports
