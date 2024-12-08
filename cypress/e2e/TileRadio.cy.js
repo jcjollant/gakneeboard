@@ -32,10 +32,10 @@ describe('Radios Tile', () => {
     cy.get('.p-inputgroup-addon').contains('Code')
     const expectedAirportCodes = ['KRNT', 'KBFI', 'W39', 'O26', 'KAWO']
     for( let code of expectedAirportCodes) {
-      cy.get('.listAirports').contains(code)
+      cy.get('.recentAirportList').contains(code)
     }
     // Click Renton
-    cy.get('.listAirports > :nth-child(1)').click()
+    cy.get('.recentAirportList > :nth-child(1)').click()
     // Hint should change
     cy.get('.tip').contains('Click on any frequency below to add them to your Radio Flow')
     // FielSets should change
