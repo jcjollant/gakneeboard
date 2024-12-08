@@ -1,20 +1,15 @@
 <template>
     <div class="tile">
-        <Header :title="'Clearance @'" :left="true" :hideReplace="!settingMode"
+        <Header :title="displayMode==DisplayMode.Hold ? 'Hold @' : 'Clearance @'" :left="true" :hideReplace="!settingMode"
             @click="onMenuClick" @replace="emits('replace')"></Header>
         <div v-if="settingMode" class="settingsList">
             <Button label="Just CRAFT" @click="changeMode('craft')"></Button>
             <Button label="Vertical Boxes" @click="changeMode('boxV')"></Button>
             <Button label="Horizontal Boxes" @click="changeMode('boxH')"></Button>
+            <Button label="Holding" @click="changeMode(DisplayMode.Hold)" title="Holding Pattern"></Button>
         </div>
-        <div v-else-if="displayMode=='craft'" class="tileContent modeCraft" @click="cycleMode">
-            <div class="craftWatermark">C</div>
-            <div class="craftWatermark">R</div>
-            <div class="craftWatermark">A</div>
-            <div class="craftWatermark">F</div>
-            <div class="craftWatermark">T</div>
-        </div>
-        <div v-else-if="displayMode=='boxV'" class="tileContent clearance" @click="cycleMode">
+        <CraftContent v-else-if="displayMode==DisplayMode.Craft" @click="cycleMode"/>
+        <div v-else-if="displayMode==DisplayMode.BoxV" class="tileContent clearance" @click="cycleMode">
             <div class="boxCleared box">
                 <div class="label">To</div>
                 <div class="watermrk">C</div>
@@ -36,6 +31,7 @@
                 <div class="watermrk">T</div>
             </div>
         </div>
+        <HoldingContent v-else-if="displayMode==DisplayMode.Hold" />
         <div v-else class="tileContent clearance" @click="cycleMode">
             <div class="boxCleared box">
                 <div class="label">To</div>
@@ -61,6 +57,7 @@
                 <div class="watermrk">T</div>
             </div>
         </div>
+
     </div>
 
 </template>
@@ -68,7 +65,9 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import Button from 'primevue/button'
+import CraftContent from './CraftContent.vue';
 import Header from '../shared/Header.vue';
+import HoldingContent from './HoldingContent.vue';
 
 const emits = defineEmits(['replace','update'])
 const displayMode=ref('craft')
@@ -76,6 +75,15 @@ const props = defineProps({
     params: { type: Object, default: null},
 })
 const settingMode=ref(false)
+
+// Enum with display modes
+enum DisplayMode {
+    BoxV = 'boxV',
+    BoxH = 'boxH',
+    Craft = 'craft',
+    Hold = 'hold',
+}
+
 
 function changeMode(newMode:string) {
     displayMode.value = newMode;
@@ -85,12 +93,12 @@ function changeMode(newMode:string) {
 }
 
 function cycleMode() {
-    if( displayMode.value=='craft') {
-         changeMode('boxV');
-    } else if( displayMode.value=='boxV') {
-        changeMode('boxH');
+    if( displayMode.value==DisplayMode.Craft) {
+         changeMode(DisplayMode.BoxV);
+    } else if( displayMode.value==DisplayMode.BoxV) {
+        changeMode(DisplayMode.BoxH);
     } else {
-        changeMode('craft');
+        changeMode(DisplayMode.Craft);
     }
 }
 
@@ -177,15 +185,6 @@ watch( props, async() => {
     grid-template-rows: repeat(4, 1fr);
     /* grid-template-rows: 60px 60px 60px 59px; */
 }
-.modeCraft {
-    line-height: 3rem;
-    font-weight:600;
-    font-size: 30px;
-    opacity: 0.2;
-    text-align: left;
-    padding-left: 5px;
-}
-
 .tileContent {
     cursor: pointer;
 }
@@ -203,7 +202,7 @@ watch( props, async() => {
     display: grid;
     padding: 10px;
     gap: 10px;
-    grid-template-rows: repeat( 3, 3rem);
+    grid-template-rows: repeat( 4, 3rem);
 }
 
 </style>
