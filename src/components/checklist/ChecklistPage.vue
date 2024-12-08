@@ -10,14 +10,7 @@
             <OneChoice v-model="columns" :choices="[colSingle, colDouble]" class="centered"/>
             <div class="oneOrTwoLists">
                 <Textarea v-model="textData" class="editList"
-                    :class="{ 'smallTextarea': columns.value == 2 }" placeholder="Up to 32 items will fit vertically.
-
-Separate Challenge and Response with '##':
-Master Switch##ON
-Avionics##OFF
-
-Create sections using '##Section Name':
-##Left Wing"></Textarea>
+                    :class="{ 'smallTextarea': columns.value == 2 }" :placeholder="getPlaceHolder()"></Textarea>
                 <Textarea v-if="columns.value == 2" v-model="textData2" 
                     class="editList" :class="{ 'smallTextarea': columns.value == 2 }"></Textarea>
             </div>
@@ -106,6 +99,18 @@ const theme = ref('theme-yellow')
 let nameBeforeEdit = ''
 let themeBeforeEdit = 'theme-yellow'
 const columns = ref(colSingle)
+
+function getPlaceHolder() {
+    const items = columns.value.value == 1 ? 33 : 35
+    return `Up to ${items} items will fit vertically.
+
+Separate Challenge and Response with '##':
+Master Switch##ON
+Avionics##OFF
+
+Create sections using '##Section Name':
+##Left Wing`
+}
 
 function onApply() {
     // turn textData into a list of items
