@@ -1,12 +1,14 @@
 <template>
-    <div v-if="items.length > 0" v-for="(item, index) in items" 
-        class="checklist">
-        <div v-if="'s' in item" class="section"
-            :class="getClassSection(item)">{{ item.s }}</div>
-        <div v-else :class="getClassChallenge(item,index)">{{ item.c }}</div>
-        <div v-if="'r' in item" :class="getClassResponse(item,index)">{{ item.r }}</div>
+    <div>
+        <div v-if="items.length > 0" v-for="(item, index) in items" 
+            class="item">
+            <div v-if="'s' in item" class="section"
+                :class="getClassSection(item)">{{ item.s }}</div>
+            <div v-else :class="getClassChallenge(item,index)">{{ item.c }}</div>
+            <div v-if="'r' in item" :class="getClassResponse(item,index)">{{ item.r }}</div>
+        </div>
+        <PlaceHolder v-else title="No Items" />
     </div>
-    <PlaceHolder v-else title="No Items" />
 </template>
 
 <script setup>
@@ -18,11 +20,11 @@ import PlaceHolder from '../shared/PlaceHolder.vue';
 const props = defineProps({
     items: { type: Object, default: [] },
     theme: { type: String, default: 'theme-yellow'},
-    small: { type: Boolean, default : false},
+    size: { type: Number, default: 1 },
 })
 
 const theme = ref('theme-yellow')
-const small = ref(false)
+const size = ref(1)
 const items = ref([])
 
 // Use theme only when item is strong or line is event and theme is not blank
@@ -34,18 +36,16 @@ function getClassSection(item) {
 }
 
 function getClassChallenge(item, index) {
-//class="challenge" :class="{'smallFont': small, 'spanned':!('r' in item)}
     const output = ['challenge'];
-    if(small.value) output.push('smallFont')
+    if(size.value > 1) output.push('size' + size.value)
     if(!('r' in item)) output.push('spanned')
     if(index%2) output.push(theme.value)
     return output
 }
 
 function getClassResponse(item, index) {
-//class="response" :class="{'smallFont': small}"
     const output = ['response']
-    if(small.value) output.push('smallFont')
+    if(size.value > 1) output.push('size' + size.value)
     if(index%2) output.push(theme.value)
     return output
 }
@@ -54,7 +54,7 @@ function loadProps(newProps) {
     // console.log('[ChecklistViewer.loadProps]', JSON.stringify(newProps))
     if(!newProps) return;
     theme.value = newProps.theme;
-    small.value = newProps.small;
+    size.value = newProps.size;
     items.value = newProps.items;
 }
 
@@ -75,16 +75,14 @@ watch(props, () => {
     height: 23px;
 }
 
-.checklist {
+.item {
     display: grid;
     grid-template-columns: 70% auto;
     line-height: 23px;
-    /* border-bottom: 1px solid lightgrey; */
 }
 
 .normal {
     color: black;
-    /* background: lightgray; */
     border-top: 1px solid lightgrey;
     border-bottom: 1px solid lightgrey;
 }
@@ -107,10 +105,16 @@ watch(props, () => {
     text-shadow: 2px 2px black;
 }
 
-.smallFont {
+.size2 {
     font-size: 0.8rem;
     line-height: 23px;
     height: 22px;
+}
+
+.size3 {
+    font-size: 0.7rem;
+    line-height: 19px;
+    height: 19px;
 }
 
 .spanned {
