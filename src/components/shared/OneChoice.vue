@@ -17,6 +17,7 @@ const emits = defineEmits(["change"]);
 const model = defineModel()
 
 function onChoice(choice) {
+    // console.log('[OneChoice.onChouce]', choice)
     model.value = choice
     emits('change')
 }
