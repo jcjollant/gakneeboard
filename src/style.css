@@ -24,7 +24,7 @@
   --page-width: 500px;
   --page-width-two: 1050px;
   --page-height: 800px;
-  --page-content: calc(var(--page-height) - var(--header-height));
+  --page-content: calc(var(--page-height) - var(--header-height) - 1px);
   --pages-gap: 50px;
   --tile-content-height: 240px;
   --tile-height: 265px;
@@ -33,6 +33,12 @@
 
 .clickable {
   cursor: pointer;
+}
+
+.flex {
+  display:flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hidden {
