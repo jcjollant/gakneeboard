@@ -41,7 +41,7 @@ function replacePage(type) {
     </div>
 </template>
 
-<style>
+<style scoped>
 .list {
     display: flex;
     flex-flow: column;
