@@ -1,3 +1,5 @@
+## 12/092024
+* Three Columns checklist
 ## 12/08/2024
 * Notes tile has compass and CRAFT
 * Improved Notes Blank steath mode
