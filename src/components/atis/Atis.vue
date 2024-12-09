@@ -348,7 +348,7 @@ function showRegulation() {
     display: grid;
     padding: 10px;
     gap:10px;
-    grid-template-rows: repeat(3 3rem);
+    grid-template-rows: repeat(4, 3rem);
 }
 
 .full {
