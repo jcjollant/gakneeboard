@@ -11,15 +11,16 @@ import {
     faStarOfLife, faSun,
     faVideo, faWalkieTalkie, faXmark
 } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import 'primeicons/primeicons.css';
-import PrimeView from 'primevue/config';
-import ConfirmationService from 'primevue/confirmationservice';
-import 'primevue/resources/themes/saga-blue/theme.css';
-import ToastService from 'primevue/toastservice';
 import { createApp } from 'vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import ConfirmationService from 'primevue/confirmationservice';
+import PrimeView from 'primevue/config';
+import ToastService from 'primevue/toastservice';
+import 'primeicons/primeicons.css';
+import 'primevue/resources/themes/saga-blue/theme.css';
 import GoogleSignInPluggin from 'vue3-google-signin';
 import App from './App.vue';
+import router from './router';
 import './style.css';
 
 library.add( faBan, faBorderAll, 
@@ -38,5 +39,6 @@ createApp(App)
     .use(ConfirmationService)
     .use(ToastService)
     .use(GoogleSignInPluggin, {clientId: '864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent.com'})
+    .use(router)
     .component('font-awesome-icon', FontAwesomeIcon)
     .mount('#app')
