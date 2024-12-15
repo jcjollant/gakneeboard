@@ -39,6 +39,7 @@ onMounted(() => {
     font-size: x-large;
     opacity: .3;
     height: 200px;
+    width: 100%;
 }
 .small {
     font-size: 0.8rem;
