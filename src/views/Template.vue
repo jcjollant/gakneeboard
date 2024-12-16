@@ -57,27 +57,26 @@
     @toast="toast.add" @toggle="onMenuToggle"
     >
   </Menu>
-  <div @click="onThumbnail">Thumbnail</div>
 </template>
 
 <script setup>
-import { onBeforeMount, onMounted, onUnmounted, ref } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { duplicate, newCurrentUser, postPrint } from '../assets/data.js'
 import { getTemplateDemoTiles } from '../assets/sheetData.js'
+import html2canvas from 'html2canvas'
+import { LocalStore } from '../lib/LocalStore.ts'
 import { TemplateData } from '../assets/TemplateData.ts'
 import { getToastData, toastError } from '../assets/toast.js'
-import { LocalStore } from '../lib/LocalStore.ts'
-
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 import { useRoute } from 'vue-router'
+
 // Components
 import Editor from '../components/editor/Editor.vue'
 import Feedback from '../components/menu/Feedback.vue'
 import Menu from '../components/menu/Menu.vue'
 import MenuButton from '../components/menu/MenuButton.vue'
 import Page from '../components/page/Page.vue'
-import html2canvas from 'html2canvas'
 
 const activeTemplate = ref(null)
 const activePages = ref(null)
@@ -136,10 +135,21 @@ function loadTemplate(template=null,save=false) {
   templateModified.value = template.modified;
   // console.log('[Template.loadTemplate]', offset.value, offsetLast.value)
 
-  // save the template to local storage
-  if(save) {
-    saveTemplateLocally(false)
-  }
+  // asynchronous localstorage maintenance
+  setTimeout( async() => {
+    return new Promise( async(resolve, reject) => {
+      // save the template to local storage
+      if(save) {
+        saveTemplateLocally(false)
+      }
+      
+      // create a thumbnail if necessary
+      if( template.id && LocalStore.thumbnailGet(template.id) == null) {
+        updateThumbnail()
+      }
+      resolve(true)
+    })
+  }, 1000)
 }
 
 function onEditor() {
@@ -310,29 +320,6 @@ function onPrintPreview(show) {
   }
 }
 
-function onThumbnail() {
-  // console.log('[Template.onThumbnail]')
-  html2canvas(document.querySelector(".page0")).then(canvas => {
-    // scale image to fit the thummbnail
-    const scaledCanvas = document.createElement('canvas')
-    const scaleFactor = 0.5
-    scaledCanvas.width = canvas.width * scaleFactor
-    scaledCanvas.height = canvas.height * scaleFactor
-    const scaledCtx = scaledCanvas.getContext('2d')
-    scaledCtx.scale(scaleFactor, scaleFactor)
-    scaledCtx.drawImage(canvas, 0, 0)
-    const scaledImg = scaledCanvas.toDataURL('image/png')
-
-    // trigger image download
-    const link = document.createElement('a')
-    link.download = 'thumbnail.png'
-    link.href = scaledImg
-    link.click()
-
-    // LocalStore.saveThumbnail(activeTemplate.value.id, scaledImg)
-  })
-}
-
 function restorePrintOptions() {
     // Bring everything back to normal
     printPreview.value = false;
@@ -345,6 +332,7 @@ function saveTemplateLocally(modified=false) {
   // console.log('[Template.saveActiveSheet]', modified)
   LocalStore.saveTemplate(activeTemplate.value, modified)
   templateModified.value = modified
+  updateThumbnail()
 }
 
 function showToast(data) {
@@ -376,6 +364,32 @@ function updateOffsets() {
   singlePage.value = pageFit == 1;
   offsetLast.value = maxOffset;
   // console.log('[Template.updateOffset] offsetLast', maxOffset)
+}
+
+function updateThumbnail() {
+  console.log('[Template.updateThumbnail]', activeTemplate.value?.id)
+  if( activeTemplate.value && activeTemplate.value.id) {
+    html2canvas(document.querySelector(".page0")).then(canvas => {
+      // scale image to fit the thummbnail
+      const scaledCanvas = document.createElement('canvas')
+      const scaleFactor = 0.5
+      scaledCanvas.width = canvas.width * scaleFactor
+      scaledCanvas.height = canvas.height * scaleFactor
+      const scaledCtx = scaledCanvas.getContext('2d')
+      scaledCtx.scale(scaleFactor, scaleFactor)
+      scaledCtx.drawImage(canvas, 0, 0)
+      const scaledImg = scaledCanvas.toDataURL('image/png')
+
+      // actually save image
+      LocalStore.thumbnailSave(activeTemplate.value.id, scaledImg)
+
+      // trigger image download
+      // const link = document.createElement('a')
+      // link.download = 'thumbnail.png'
+      // link.href = scaledImg
+      // link.click()
+    })
+  }
 }
 
 </script>
