@@ -166,10 +166,6 @@ export class LocalStore {
       return localStorage.getItem(LocalStore.user);
     }
 
-    static getThumbnail(id:number) {
-        return localStorage.getItem(LocalStore.thumbnailPrefix + id)
-    }
-
     static saveApproachPlate(pdfFile:string, plate:string) {
         const key = this.approachPrefix + pdfFile
         localStorage.setItem(key, plate)
@@ -186,10 +182,6 @@ export class LocalStore {
         localStorage.setItem(LocalStore.template, JSON.stringify( data))
     }
 
-    static saveThumbnail( id:number, data:any) {
-        localStorage.setItem(LocalStore.thumbnailPrefix + id, data)
-    }
-
     /**
      * Should we show how does it work
      * @returns true if we should show or false otherwise
@@ -204,4 +196,17 @@ export class LocalStore {
     static stopHowDoesItWork() {
         localStorage.setItem( LocalStore.howDoesItWork, "false")
     }
+
+    /**
+     * Retrieve thumbnail data 
+     * @param id template id
+     */
+    static thumbnailGet(id:number) {
+        return localStorage.getItem(LocalStore.thumbnailPrefix + id)
+    }
+
+    static thumbnailSave( id:number, data:any) {
+        localStorage.setItem(LocalStore.thumbnailPrefix + id, data)
+    }
+
 }
