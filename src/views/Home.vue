@@ -36,7 +36,7 @@ import { useRouter } from 'vue-router';
 import { LocalStore } from '../lib/LocalStore';
 import { getTemplateDataFromName, SheetName } from '../assets/sheetData';
 import { useToast } from 'primevue/usetoast';
-import { getToastError } from '../assets/toast';
+import { getToastError, getToastWarning } from '../assets/toast';
 import PlaceHolder from '../components/shared/PlaceHolder.vue';
 import TemplateSelector from '../components/templates/TemplateSelector.vue';
 import Toast from 'primevue/toast';
@@ -58,7 +58,19 @@ const toast = useToast()
 onMounted( () => {
   user.value = newCurrentUser
   localTemplate.value = user.value.templates[0]
+  setTimeout(() => {
+    checkThumbnails()
+  }, 500)
 })
+
+function checkThumbnails() {
+    for(const t of newCurrentUser?.templates) {
+        if(!LocalStore.thumbnailGet(t.id)) {
+            toast.add(getToastWarning('Missing Thumbnails', 'Open Templates to recreate thumbnails', 5000))
+            return;
+        }
+    }
+}
 
 function onDemoSelection(name) {
     const templateData = getTemplateDataFromName(name)
