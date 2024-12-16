@@ -11,8 +11,6 @@
                 <TemplateSelector v-if="user.templates.length > 0" v-for="(template,index) in user.templates" 
                     :template="template"  @selection="onTemplateSelection(template.id)" />
                 <PlaceHolder v-else title="No Templates (yet)" subtitle="Your saved templates will show here"/>
-                <div>{{ user.templates.length }}</div>
-                <!-- <router-link to="/template/1">Template 1</router-link> -->
             </div>
         </div>
         <div class="section">
