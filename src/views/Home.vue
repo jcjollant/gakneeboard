@@ -7,16 +7,20 @@
         <div class="section">
             <div class="header">Templates</div>
             <div class="templateList">
-                <TemplateSelector :template="localTemplate" :temporary="true" @selection="onTemplateSelection(0)"/>
+                <TemplateSelector :template="newTemplate" :temporary="true" src="/thumbnails/new.png"
+                    @selection="onNewTemplate"/>
+                <TemplateSelector :template="localTemplate" :temporary="true" 
+                    @selection="onTemplateSelection(0)"/>
                 <TemplateSelector v-if="user.templates.length > 0" v-for="(template,index) in user.templates" 
-                    :template="template"  @selection="onTemplateSelection(template.id)" />
+                    :template="template"  
+                    @selection="onTemplateSelection(template.id)" />
                 <PlaceHolder v-else title="No Templates (yet)" subtitle="Your saved templates will show here"/>
             </div>
         </div>
         <div class="section">
             <div class="header">Demos</div>
             <div class="templateList">
-                <TemplateSelector v-for="(d) in demos" :template="d.template" :demo="true"
+                <TemplateSelector v-for="(d) in demos" :template="d.template" :demo="true" :src="'/thumbnails/'+d.src"
                     @selection="onDemoSelection(d.name)" />
                 <!-- list all demos -->
             </div>
@@ -38,13 +42,15 @@ import TemplateSelector from '../components/templates/TemplateSelector.vue';
 import Toast from 'primevue/toast';
 
 const demos = ref([
-    {name: SheetName.default, template: {name:'Default',desc:'Tiles and Checklist'}},
-    {name: SheetName.checklist, template: {name:'Checklist',desc:'Checklists syntax Showcase'}},
-    {name: SheetName.tiles, template: {name:'Tiles',desc:'Tiles Gallery'}},
-    {name: SheetName.navlog, template: {name:'NavLog',desc:'Navlog page and companion tiles'}},
-    {name: SheetName.skyhawk, template: {name:'C172 Reference',desc:'A sample Skyhawk Reference'}},
+    {name: SheetName.default, src: 'default.png', template: {name:'Default',desc:'Tiles and Checklist'}},
+    {name: SheetName.checklist, src: 'checklist.png', template: {name:'Checklist',desc:'Checklists syntax Showcase'}},
+    {name: SheetName.tiles, src: 'tiles.png', template: {name:'Tiles',desc:'Tiles Gallery'}},
+    {name: SheetName.navlog, src: 'navlog.png', template: {name:'NavLog',desc:'Navlog page and companion tiles'}},
+    {name: SheetName.skyhawk, src: 'skyhawk.png', template: {name:'C172 Reference',desc:'A sample Skyhawk Reference'}},
+    {name: SheetName.charts, src: 'charts.png', template: {name:'Charts',desc:'Airport Diagram and Instrument Approach'}},
 ])
-const localTemplate = ref(null)
+const localTemplate = ref({name:'Local',desc:'Resume your last session'})
+const newTemplate = ref({name:'New',desc:'Create a new template'})
 const user = ref(new CurrentUser())
 const router = useRouter()
 const toast = useToast()
@@ -64,6 +70,10 @@ function onDemoSelection(name) {
     LocalStore.saveTemplate(templateData);
     // Load localstore
     router.push( '/template/0')
+}
+
+function onNewTemplate() {
+    onDemoSelection(SheetName.new)
 }
 
 function onTemplateSelection(index) {
