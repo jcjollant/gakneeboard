@@ -53,7 +53,8 @@ import { onMounted, ref, watch } from 'vue'
 
 import { emitToast, emitToastError, emitToastInfo } from '../../assets/toast'
 import { newCurrentUser } from "../../assets/data"
-import { Template, TemplateData } from '../../assets/Templates'
+import { Template } from '../../assets/Templates'
+import { TemplateData } from '../../assets/TemplateData'
 import OneChoice from '../shared/OneChoice.vue'
 import TemplateDescription from './TemplateDescription.vue'
 
@@ -67,16 +68,13 @@ import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputText from "primevue/inputtext";
 
-
 const emits = defineEmits(["close","delete","load","toast"]);
-
-const loadYours = {label:'Yours',value:0}
-const loadCommunity = {label:'Community',value:1}
-const loadChoices = ref([loadYours,loadCommunity])
-
 const confirm = useConfirm()
 const deleteMode = ref(false)
 const fetching = ref(false)
+const loadYours = {label:'Yours',value:0}
+const loadCommunity = {label:'Community',value:1}
+const loadChoices = ref([loadYours,loadCommunity])
 const loadTemplate = ref(null)
 const activeLoad = ref(loadYours)
 const templateCode = ref('')
