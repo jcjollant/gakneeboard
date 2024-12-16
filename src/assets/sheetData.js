@@ -1,4 +1,5 @@
-import { PageType, Template } from './Templates'
+import { PageType} from './PageType'
+import { Template } from './Templates'
 import { Tile } from './Tile'
 
 const demoRadioData = [
@@ -12,18 +13,24 @@ const demoRadioData = [
   {'target':'COM1','freq':'132.95','name':'PAE TWR 34L'}
 ]
 
-
-export const sheetNameDemo = 'default-demo'
-export const sheetNameDemoChecklist = 'default-demo-checklist'
-export const sheetNameDemoNavlog = 'default-demo-navlog'
-export const sheetNameDemoTiles = 'default-demo-tiles'
-export const sheetNameNew = 'default-new-sheet'
-export const sheetNameReset = 'default-reset'
+export class SheetName {
+  static default = 'gak-default'
+  static checklist = 'gak-checklist'
+  static navlog = 'gak-navlog'
+  static tiles = 'gak-tiles'
+  static new = 'gak-new'
+  static reset = 'gak-reset'
+  static skyhawk = 'gak-skyhawk'
+}
+// export const sheetNameDemoNavlog = 'default-demo-navlog'
+// export const sheetNameDemoTiles = 'default-demo-tiles'
+// export const sheetNameNew = 'default-new-sheet'
+// export const sheetNameReset = 'default-reset'
 
 import { duplicate } from './data'
 
 // used to check if a sheet name is already taken by defaults
-const defaultNames = [sheetNameDemo, sheetNameDemoTiles, sheetNameDemoChecklist, sheetNameReset]
+const defaultNames = [SheetName.default, SheetName.tiles, SheetName.checklist, SheetName.reset]
 
 // blank pages
 const pageDataBlankTiles = {type:PageType.tiles,data:[
@@ -89,18 +96,6 @@ const page1DemoTiles = {
     ]
    }
 
-// const page2DemoTiles = {
-//     type:PageType.tiles,
-//     data:[
-//       {"id":0,"name":"notes","data":{"mode":"hold"}},
-//       {"id":1,"name":"notes","data":{"mode":"grid"}},
-//       {"id":2,"name":"atis","data":{"mode":"categories"}},
-//       {"id":3,"name":"atis","data":{"mode":"cloudClear"}},
-//       {"id":4,"name":"radios","data":{"mode":"nordo","list":[]}},
-//       {"id":5,"name":"clearance","data":{"mode":"boxV"}}
-//     ]
-//    }
-
 const templateDemoTiles = new Template('Tiles Demo', 'Every Tile Available on GA Kneeboard', false, [page0DemoTiles,page1DemoTiles])
 
 const page0DemoChecklist = { type:PageType.checklist,data:{name:'Preflight',theme:'yellow',items:[{s:'Cabin',"t":"strong"},{c:'Docs AR(R)OW',r:'CHECKED'},{c:'Control Wheel Lock + Pitot Cover',r:'REMOVED'},{c:'Kneeboard, Eyewear',r:'READY'},{c:'Headset, iPad',r:'INSTALLED'},{c:'Sentry, Camera, Power Bank',r:'INSTALLED'},{c:'Section 3',r:'READY'},{c:'Fire Extinguisher',r:'LATCHED'},{s:'Panel'},{c:'Ignition Switch',r:'OFF'},{c:'Avionics',r:'OFF'},{c:'Master Batt',r:'ON'},{c:'Lights + Pitot Heat',r:'ON'},{c:'Flaps',r:'FULL'},{s:'Walk Around',"t":"strong"},{c:'All Lights',r:'CHECKED'},{c:'Antenas (Comm, ELT, Nav, GPS, OAT)',r:'CHECKED'},{c:'Wings (Frost, Ice)',r:'CLEAR'},{c:'Windshield',r:'CLEAN'},{c:'Pitot Tube',r:'HOT'},{s:'Panel'},{c:'Lights + Pitot Heat',r:'OFF'},{c:'Fuel Quantity',r:'CHECKED'},{c:'Hobbs & Tach',r:'RECORD'},{c:'Master Switches',r:'OFF'},]}}
@@ -110,6 +105,14 @@ const page3DemoChecklist = { type:PageType.checklist,"data":{"name":"Emergencies
 
 const templateDemoChecklist = new Template('Checklist Demo', 'A C172 preflight Checklist', false, 
   [page0DemoChecklist,page1DemoChecklist,page2DemoChecklist,page3DemoChecklist])
+
+
+[{"data":[{"id":0,"name":"airport","data":{"code":"0S9","rwy":"09-27","rwyOrientation":"magnetic","corners":["weather","twr","field","tpa"]}},{"id":1,"name":"atis","data":{"mode":"compact"}},{"id":2,"name":"radios","data":[{"mhz":"127.750","name":"KBFI ATIS"},{"mhz":"118.300","name":"KBFI TWR"},{"mhz":"119.025","name":"0S9 AWOS-3P"},{"mhz":"123.000","name":"0S9 CTAF"},{"mhz":"128.650","name":"KPAE ATIS"},{"mhz":"120.200","name":"KPAE TWR"},{"mhz":"122.900","name":"LK WA CTAF"},{"mhz":"118.200","name":"CHINOOK A MOA"}]},{"id":3,"name":"checklist","data":{"name":"Route / Alt","items":[{"c":"0S9","r":"4,500"},{"c":"JANNE","r":"2,500"},{"c":"SEKIE","r":"2,000"},{"c":"KRNT TPA","r":"1,000"},{"s":"","t":"blank"},{"s":"Alternate"},{"c":"KBFI TPA","r":"1,022"}],"theme":"blue"}},{"id":4,"name":"airport","data":{"code":"KRNT","rwy":"16-34","rwyOrientation":"vertical","corners":["weather","twr","field","tpa"]}},{"id":5,"name":"notes","data":{}}],"type":"tiles"},{"data":[{"id":0,"name":"checklist","data":{"name":"Limits","items":[{"c":"Vne","r":"163"},{"c":"Va @ 2,550/2,200","r":"105/98"},{"c":"Vno","r":"129"},{"c":"Vfe 10/20","r":"110/85"},{"c":"Vg","r":"68"},{"c":"Vs0/1","r":"40/48"},{"c":"Max XWind","r":"15kts"},{"c":"Landing","r":" 1,300ft"},{"c":"TOW","r":"2,550"},{"s":"","t":"blank"}],"theme":"purple"}},{"id":1,"name":"airport","data":{"code":"KBFI","rwy":"14L-32R","rwyOrientation":"vertical","corners":["weather","twr","field","tpa"]}},{"id":2,"name":"radios","data":{"mode":"nordo","list":[]}},{"id":3,"name":"sunlight","data":{"from":"0S9","to":"0S9"}},{"id":4,"name":"atis","data":{"mode":"categories"}},{"id":5,"name":"atis","data":{"mode":"cloudClear"}}],"type":"tiles"}]
+const page0DemoSkyhawk = { type:PageType.tiles, data:[{"id":0,"name":"airport","data":{"code":"0S9","rwy":"09-27","rwyOrientation":"magnetic","corners":["weather","twr","field","tpa"]}},{"id":1,"name":"atis","data":{"mode":"compact"}},{"id":2,"name":"radios","data":[{"mhz":"127.750","name":"KBFI ATIS"},{"mhz":"118.300","name":"KBFI TWR"},{"mhz":"119.025","name":"0S9 AWOS-3P"},{"mhz":"123.000","name":"0S9 CTAF"},{"mhz":"128.650","name":"KPAE ATIS"},{"mhz":"120.200","name":"KPAE TWR"},{"mhz":"122.900","name":"LK WA CTAF"},{"mhz":"118.200","name":"CHINOOK A MOA"}]},{"id":3,"name":"checklist","data":{"name":"Route / Alt","items":[{"c":"0S9","r":"4,500"},{"c":"JANNE","r":"2,500"},{"c":"SEKIE","r":"2,000"},{"c":"KRNT TPA","r":"1,000"},{"s":"","t":"blank"},{"s":"Alternate"},{"c":"KBFI TPA","r":"1,022"}],"theme":"blue"}},{"id":4,"name":"airport","data":{"code":"KRNT","rwy":"16-34","rwyOrientation":"vertical","corners":["weather","twr","field","tpa"]}},{"id":5,"name":"notes","data":{}}]}
+const page1DemoSkyhawk = { type:PageType.tiles, data:[{"id":0,"name":"checklist","data":{"name":"Limits","items":[{"c":"Vne","r":"163"},{"c":"Va @ 2,550/2,200","r":"105/98"},{"c":"Vno","r":"129"},{"c":"Vfe 10/20","r":"110/85"},{"c":"Vg","r":"68"},{"c":"Vs0/1","r":"40/48"},{"c":"Max XWind","r":"15kts"},{"c":"Landing","r":" 1,300ft"},{"c":"TOW","r":"2,550"},{"s":"","t":"blank"}],"theme":"purple"}},{"id":1,"name":"airport","data":{"code":"KBFI","rwy":"14L-32R","rwyOrientation":"vertical","corners":["weather","twr","field","tpa"]}},{"id":2,"name":"radios","data":{"mode":"nordo","list":[]}},{"id":3,"name":"sunlight","data":{"from":"0S9","to":"0S9"}},{"id":4,"name":"atis","data":{"mode":"categories"}},{"id":5,"name":"atis","data":{"mode":"cloudClear"}}]}
+const templateDemoSkyhawk = new Template('C172 VFR','Skyhawk VFR Reference Template', false,
+  [page0DemoSkyhawk,page1DemoSkyhawk])
+
 
 const page0DemoNavlog = {
   type: PageType.navLog,
@@ -235,7 +238,6 @@ export function getPageBlank(type) {
   return duplicate(source)
 }
 
-
 /**
  * @returns a copy of blank sheet data
  */
@@ -270,16 +272,18 @@ export function getTemplateDemoChecklist() {
 
 // turn a default name into its data or null if the name is unkown
 export function getTemplateDataFromName(name) {
-  if( name == sheetNameDemo) {
+  if( name == SheetName.default) {
     return getTemplateDemo()
-  } else if( name == sheetNameDemoTiles) {
+  } else if( name == SheetName.tiles) {
     return getTemplateDemoTiles()
-  } else if( name == sheetNameDemoChecklist) {
+  } else if( name == SheetName.checklist) {
     return getTemplateDemoChecklist()
-  } else if( name == sheetNameDemoNavlog) {
+  } else if( name == SheetName.navlog) {
     return getTemplateDemoNavlog()
-  } else if( name == sheetNameNew) { 
+  } else if( name == SheetName.new) { 
     return getTemplateBlank()
+  } else if( name == SheetName.skyhawk) { 
+    return duplicate(templateDemoSkyhawk)
   } else {
     return null;
   }
