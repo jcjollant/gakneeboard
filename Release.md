@@ -1,4 +1,7 @@
-## 12/092024
+##
+* New HomePage with thumbnails
+* New Demos : Skyhawk, Charts
+## 12/09/2024
 * Three Columns checklist
 ## 12/08/2024
 * Notes tile has compass and CRAFT
