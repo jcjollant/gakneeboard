@@ -15,7 +15,6 @@
     </div>
   </div>
   <div v-else class="main">
-    <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
     <Feedback v-model:visible="showFeedback"
       @close="showFeedback=false" @toast="toast.add" />
 
@@ -24,7 +23,6 @@
       @offset="onOffset" 
       @save="onEditorSave" 
       @toast="toast.add"/>
-    <Toast />
     <div class="sheetName"
       :class="{'sheetNameOffset':menuOpen, 'sheetNameModified': templateModified}"
       :title="templateModified ? 'Template has been modified' : ''">
@@ -50,60 +48,56 @@
       icon="pen-to-square" title="Toggle Editor Mode" label="Page Editor" :active="showEditor"
      :class="{'editorButtonActive':showEditor}" class="editorButton" 
       @click="onEditor"/>
-    <div class="versionDialog" :title="'Frontend/Backend versions ' + versionText" >{{ versionText }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span></div>
   </div>
-  <Menu class="menu" :activeTemplate="activeTemplate" v-show="!printPreview" v-if="!showEditor" :singlePage="singlePage"
-    @howDoesItWork="showHowDoesItWork=true"
+  <Menu class="menu" v-show="!printPreview" v-if="!showEditor" 
+    :singlePage="singlePage" :activeTemplate="activeTemplate" 
     @load="onMenuLoad" 
     @print="onPrint" @printOptions="onPrintOptions" @printPreview="onPrintPreview"
     @save="onMenuSave"
     @toast="toast.add" @toggle="onMenuToggle"
     >
   </Menu>
+  <div @click="onThumbnail">Thumbnail</div>
 </template>
 
 <script setup>
-// import HelloWorld from './components/HelloWorld.vue'
-import { inject } from "@vercel/analytics"
 import { onBeforeMount, onMounted, onUnmounted, ref } from 'vue'
-
-import { backend, duplicate, getBackend, newCurrentUser, postPrint, version } from '../assets/data.js'
+import { duplicate, newCurrentUser, postPrint } from '../assets/data.js'
 import { getTemplateDemoTiles } from '../assets/sheetData.js'
-import { TemplateData } from '../assets/Templates.ts'
+import { TemplateData } from '../assets/TemplateData.ts'
 import { getToastData, toastError } from '../assets/toast.js'
 import { LocalStore } from '../lib/LocalStore.ts'
 
-import Toast from 'primevue/toast'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
-
+import { useRoute } from 'vue-router'
+// Components
 import Editor from '../components/editor/Editor.vue'
-import HowDoesItWork from '../components/HowDoesItWork.vue'
 import Feedback from '../components/menu/Feedback.vue'
 import Menu from '../components/menu/Menu.vue'
 import MenuButton from '../components/menu/MenuButton.vue'
 import Page from '../components/page/Page.vue'
+import html2canvas from 'html2canvas'
 
 const activeTemplate = ref(null)
 const activePages = ref(null)
 let cssPageGap = -1
 let cssPageWidth = -1
 const confirm = useConfirm()
+const menuOpen = ref(false)
 const offset = ref(0)
 const offsetLast = ref(0)
-const templateModified = ref(false)
-let templateBeforeEdit = null;
-
 const printFlipMode = ref(false)
 const printPreview = ref(false)
 const printSingles = ref(false)
+const route = useRoute()
 const showEditor = ref(false)
 const showFeedback = ref(false)
 const showHowDoesItWork = ref(true)
-const menuOpen = ref(false)
 const singlePage = ref(false)
+let templateBeforeEdit = null;
+const templateModified = ref(false)
 const toast = useToast()
-const versionText = ref('')
 
 function getTemplateName() {
   let name = ''
@@ -118,7 +112,7 @@ function getTemplateName() {
 
 // update all widgets with provided data
 function loadTemplate(template=null,save=false) {
-  // console.log( '[App.loadTemplate]', typeof data, JSON.stringify(sheet))
+  // console.log( '[Template.loadTemplate]', typeof data, JSON.stringify(sheet))
 
   // if we don't know what to show, we load a copy of the demo page
   if( !template) {
@@ -135,37 +129,18 @@ function loadTemplate(template=null,save=false) {
   template.data = data
 
   activeTemplate.value = template;
-  // console.log('[App.loadTemplate] template version', JSON.stringify(template.ver))
+  // console.log('[Template.loadTemplate] template version', JSON.stringify(template.ver))
   updateOffsets()
 
   // restore modified state
   templateModified.value = template.modified;
-  // console.log('[App.loadTemplate]', offset.value, offsetLast.value)
+  // console.log('[Template.loadTemplate]', offset.value, offsetLast.value)
 
   // save the template to local storage
   if(save) {
     saveTemplateLocally(false)
   }
 }
-
-function onCloseHowDoesItWork() {
-  showHowDoesItWork.value =  false
-  LocalStore.stopHowDoesItWork()
-}
-
-// Before the app starts, we request backend information, load user and potentially show how does it work
-onBeforeMount(()=>{
-  // activate the last known user
-  newCurrentUser.restore()
-
-  // console.log('[App.onBeforeMount]')
-  getBackend().then(() => {
-    versionText.value = version + '/' + backend.version
-  })
-  LocalStore.cleanUp()
-  // How does it work popup check
-  showHowDoesItWork.value = LocalStore.showHowDoesItWork()
-})
 
 function onEditor() {
   templateBeforeEdit = duplicate(activeTemplate.value)
@@ -187,7 +162,7 @@ function onEditorSave() {
         showToast( getToastData( 'Clear', message))
         saveTemplateLocally(false);
       }).catch( e => {
-        console.log('[App.onEditorSave] error', e)
+        console.log('[Template.onEditorSave] error', e)
         saveTemplateLocally(true);
       })
   } else {
@@ -196,10 +171,10 @@ function onEditorSave() {
 }
 
 function onMenuLoad(template) {
-  // console.log('[App.onMenuLoad]', JSON.stringify(sheet))
+  // console.log('[Template.onMenuLoad]', JSON.stringify(sheet))
 
   if(!template || !template.data) {
-    console.log('[App.onMenuLoad] could not load', JSON.stringify(template))
+    console.log('[Template.onMenuLoad] could not load', JSON.stringify(template))
     return
   }
 
@@ -220,7 +195,7 @@ function onMenuLoad(template) {
 }
 
 function onMenuSave(template) {
-  // console.log('[App.onMenuSave]', JSON.stringify(template))
+  // console.log('[Template.onMenuSave]', JSON.stringify(template))
   activeTemplate.value = template;
   saveTemplateLocally(false)
 }
@@ -229,35 +204,24 @@ function onMenuToggle(value) {
   menuOpen.value = value
 }
 
-onMounted(async () => {
-  // console.log('[App.onMounted]')
+onMounted(() =>{
+  // console.log('[Template.onMounted]')
   try {
-    // console.log( '[App.onMounted]', JSON.stringify(window.location.search))
-    // Do we have anything to load from URL?
-    let urlParams = new URLSearchParams(window.location.search);
-    if( urlParams.has('sheet') || urlParams.has('t')) {
-      const code = urlParams.has('t') ? urlParams.get('t') : urlParams.get('sheet')
-      // console.log('[App.onMounted] sheet code', sheetCode)
-
-      // Get that publication data
-      TemplateData.getPublication(code).then( template => {
-        // console.log('[App.onMounted] sheet', JSON.stringify(sheet))
+    if(route.params.id && route.params.id > 0) {
+      TemplateData.get(route.params.id).then( template => {
         if(template) {
           loadTemplate(template)
         } else {
-          showToast( getToastData( 'Load Template','Code not found ' + code, toastError))
+          showToast( getToastData( 'Load Template','Invalid Template Id ' + route.params.id, toastError))
           loadTemplate(LocalStore.getTemplate())
         }
-      }).catch(e => {
-          showToast( getToastData( 'Load Template','Error fetching template ' + code, toastError))
-          loadTemplate(LocalStore.getTemplate())
-      }) 
-    } else {
-      // Vanilla scenario load local sheet
+      })
+    } else { 
+      // no template id => load local template
       loadTemplate(LocalStore.getTemplate())
     }
   } catch(e) {
-    console.log('[App.onMounted] local data is corrupted' + e)
+    console.log('[Template.onMounted] failed loading template ' + e)
     // revert to demo tiles
     loadTemplate(getTemplateDemoTiles(), true)
   }
@@ -267,16 +231,19 @@ onMounted(async () => {
   window.addEventListener('resize', updateOffsets)
   updateOffsets()
   // window.addEventListener('afterprint', afterPrint)
-
-  // Analytics
-  inject();
 })
+
+onUnmounted(() => {
+  // remove event listeners
+  window.removeEventListener('resize', updateOffsets)
+})
+
 
 // Validate and assign new offset value
 function onOffset(newOffset) {
-  // console.log('[App.onOffset]', newOffset, offsetLast.value)
+  // console.log('[Template.onOffset]', newOffset, offsetLast.value)
   if(newOffset < 0 || newOffset > offsetLast.value){
-    console.log('[App.onOffset] invalid offset', newOffset)
+    console.log('[Template.onOffset] invalid offset', newOffset)
     return;
   } 
 
@@ -285,14 +252,14 @@ function onOffset(newOffset) {
 }
 
 function onPageUpdate(pageData) {
-  // console.log('[App.onPageUpdate] index', pageData.index)
+  // console.log('[Template.onPageUpdate] index', pageData.index)
   // save template data without index
   activeTemplate.value.data[pageData.index] = {data:pageData.data,type:pageData.type}
   saveTemplateLocally(true)
 }
 
 function onPrint(options) {
-  // console.log('[App.onPrint]')
+  // console.log('[Template.onPrint]')
   onPrintPreview(true)
   printFlipMode.value = options.flipBackPage;
   printSingles.value = (options.pagePerSheet == 1)
@@ -317,8 +284,9 @@ function onPrint(options) {
   }, 500);
 }
 
+// Custom events
 function onPrintOptions(options) {
-  // console.log('[App.onPrintOptions]', JSON.stringify(options))
+  // console.log('[Template.onPrintOptions]', JSON.stringify(options))
   if( options) {
     printFlipMode.value = options.flipBackPage;
     printSingles.value = (options.pagePerSheet == 1)
@@ -328,7 +296,7 @@ function onPrintOptions(options) {
 }
 
 function onPrintPreview(show) {
-  // console.log('[App.onPrintPreview]', show)
+  // console.log('[Template.onPrintPreview]', show)
   printPreview.value = show
   if(show) {
     // build a list of neighbor pages, used for printing
@@ -342,10 +310,28 @@ function onPrintPreview(show) {
   }
 }
 
-onUnmounted(() => {
-  // remove event listeners
-  window.removeEventListener('resize', updateOffsets)
-})
+function onThumbnail() {
+  // console.log('[Template.onThumbnail]')
+  html2canvas(document.querySelector(".page0")).then(canvas => {
+    // scale image to fit the thummbnail
+    const scaledCanvas = document.createElement('canvas')
+    const scaleFactor = 0.5
+    scaledCanvas.width = canvas.width * scaleFactor
+    scaledCanvas.height = canvas.height * scaleFactor
+    const scaledCtx = scaledCanvas.getContext('2d')
+    scaledCtx.scale(scaleFactor, scaleFactor)
+    scaledCtx.drawImage(canvas, 0, 0)
+    const scaledImg = scaledCanvas.toDataURL('image/png')
+
+    // trigger image download
+    const link = document.createElement('a')
+    link.download = 'thumbnail.png'
+    link.href = scaledImg
+    link.click()
+
+    // LocalStore.saveThumbnail(activeTemplate.value.id, scaledImg)
+  })
+}
 
 function restorePrintOptions() {
     // Bring everything back to normal
@@ -356,7 +342,7 @@ function restorePrintOptions() {
 }
 
 function saveTemplateLocally(modified=false) {
-  // console.log('[App.saveActiveSheet]', modified)
+  // console.log('[Template.saveActiveSheet]', modified)
   LocalStore.saveTemplate(activeTemplate.value, modified)
   templateModified.value = modified
 }
@@ -366,7 +352,7 @@ function showToast(data) {
 }
 
 function updateOffsets() {
-  // console.log('[App.onResize]', window.innerWidth)
+  // console.log('[Template.onResize]', window.innerWidth)
   if(!activeTemplate.value) return;
 
   if( cssPageGap == -1) {
@@ -375,7 +361,7 @@ function updateOffsets() {
 
     cssPageGap = parseInt(elt.getPropertyValue('--pages-gap'));
     cssPageWidth = parseInt(elt.getPropertyValue('--page-width'));
-    // console.log('[App.updateOffset] cssPageGap', cssPageGap)
+    // console.log('[Template.updateOffset] cssPageGap', cssPageGap)
   }
 
   // how many pages can fit in the new width?
@@ -383,13 +369,13 @@ function updateOffsets() {
   const pageCount = activeTemplate.value.data.length;
   // cssPageGap * (1 + numPages) +  cssPageWidth * numPages
   const maxOffset = Math.max(pageCount - pageFit, 0)
-  // console.log('[App.onResize] fitting', fittingPages, 'offsetLast', offsetLast.value)
+  // console.log('[Template.onResize] fitting', fittingPages, 'offsetLast', offsetLast.value)
 
   // adjust offset if we have blankspace
   if(offset.value > maxOffset) offset.value = maxOffset
   singlePage.value = pageFit == 1;
   offsetLast.value = maxOffset;
-  // console.log('[App.updateOffset] offsetLast', maxOffset)
+  // console.log('[Template.updateOffset] offsetLast', maxOffset)
 }
 
 </script>
@@ -494,15 +480,6 @@ function updateOffsets() {
   font-style: italic;
   color: orange;
   opacity: 0.4;
-}
-
-.versionDialog {
-  position: fixed;
-  right: 5px;
-  bottom: 5px;
-  font-size: 8px;
-  margin:auto;
-  color: darkslategrey;
 }
 
 </style>
