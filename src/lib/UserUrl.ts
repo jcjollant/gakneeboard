@@ -1,7 +1,7 @@
 export class UserUrl {
     // Within the GA Kneeboard
-    static privacy:string="./privacy.html"
-    static eula:string="./eula.html"
+    static privacy:string="/privacy.html"
+    static eula:string="/eula.html"
     static main:string = 'https://kneeboard.ga'
 
     // Blog stuff
