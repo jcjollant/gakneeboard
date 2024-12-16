@@ -11,6 +11,7 @@ export class LocalStore {
     static template = 'template'
     static templateOld = 'sheet'
     static templateOlder = 'page1'
+    static thumbnailPrefix = 'tthumb-'
     static MAX_AIRPORTS = 15
     static MAX_APPROACHES = 5
     static LEAN_AIRPORTS = 10
@@ -165,6 +166,10 @@ export class LocalStore {
       return localStorage.getItem(LocalStore.user);
     }
 
+    static getThumbnail(id:number) {
+        return localStorage.getItem(LocalStore.thumbnailPrefix + id)
+    }
+
     static saveApproachPlate(pdfFile:string, plate:string) {
         const key = this.approachPrefix + pdfFile
         localStorage.setItem(key, plate)
@@ -179,6 +184,10 @@ export class LocalStore {
     static saveTemplate( data:any,modified=false) {
         if(data) data.modified = modified;
         localStorage.setItem(LocalStore.template, JSON.stringify( data))
+    }
+
+    static saveThumbnail( id:number, data:any) {
+        localStorage.setItem(LocalStore.thumbnailPrefix + id, data)
     }
 
     /**
