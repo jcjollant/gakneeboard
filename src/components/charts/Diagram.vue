@@ -34,7 +34,7 @@ onMounted(async () => {
 
 const initPDF = async () => {
     const pdfjs = await import('pdfjs-dist/build/pdf')
-    pdfjs.GlobalWorkerOptions.workerSrc = './pdf.worker.min.mjs';
+    pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 }
 
 function loadPdf() {
