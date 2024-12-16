@@ -15,6 +15,7 @@ const props = defineProps({
   template: { type: Object, default: null},
   temporary: { type: Boolean, default: false},
   demo: { type: Boolean, default: false},
+  src: { type: String, default: null }
 })
 const template = ref(null)
 const thumbnail = ref(null)
@@ -23,7 +24,12 @@ onMounted(() => {
     // console.log('[TemplateSelector.onMounted]', props.template)
     if( props.template) {
         template.value = props.template
-        thumbnail.value = LocalStore.getThumbnail(props.template.id)
+        // get thumbnail from src
+        if( props.src ) {
+            thumbnail.value = props.src
+        } else {
+            thumbnail.value = LocalStore.thumbnailGet(props.template.id)
+        }
     } else {
         template.value = { name: '?', desc: 'No Description'}
     }
@@ -69,7 +75,7 @@ function onSelection() {
 img {
     width: 100px;
     height: 80px;
-    object-fit: fill;
+    object-fit: cover;
     /* border-radius: 5px; */
 }
 </style>
