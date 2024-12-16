@@ -1,6 +1,7 @@
 ##
 * New HomePage with thumbnails
 * New Demos : Skyhawk, Charts
+* Improved Demo : Checklist
 ## 12/09/2024
 * Three Columns checklist
 ## 12/08/2024
