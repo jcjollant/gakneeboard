@@ -39,8 +39,8 @@
         <Button icon="pi pi-print" :label="singlePage?'':'Print'" title="Print Active Template"
           @click="onPrint"></Button>
         <div class="separator"></div>
-        <Button :label="singlePage?'':'New'" icon="pi pi-file" id="menuNew" title="Reset Template" @click="onTemplateLoad(getTemplateBlank())"></Button>
-        <Button :label="singlePage?'':'Load'" icon="pi pi-folder-open" id="menuLoad" title="Open Existing Template" @click="onMenuLoad"></Button>
+        <!-- <Button :label="singlePage?'':'New'" icon="pi pi-file" id="menuNew" title="Reset Template" @click="onTemplateLoad(getTemplateBlank())"></Button> -->
+        <!-- <Button :label="singlePage?'':'Load'" icon="pi pi-folder-open" id="menuLoad" title="Open Existing Template" @click="onMenuLoad"></Button> -->
         <Button :label="singlePage?'':'Save'" icon="pi pi-save" id="menuSave" title="Save Active Template" @click="onMenuSave"></Button>
         <Button :label="singlePage?'':'Export'" icon="pi pi-file-export" id="menuExport" title="Export Active Template" @click="onMenuExport"></Button>
         <Button :label="singlePage?'':'Demos'" icon="pi pi-clipboard" id="menuDemos" title="Load Demo Template" @click="showDemoSelection=true" severity="secondary"></Button>
@@ -59,7 +59,8 @@ import { ref, onMounted } from 'vue';
 import { newCurrentUser } from '../../assets/data'
 import { getTemplateBlank } from '../../assets/sheetData'
 import { emitToast, emitToastError, emitToastInfo, emitToastWarning } from '../../assets/toast'
-import { TemplateData, TemplateSaveDialogMode } from '../../assets/Templates'
+import { TemplateData } from '../../assets/TemplateData';
+import { TemplateSaveDialogMode } from '../../assets/Templates'
 
 import Button from 'primevue/button'
 import { useConfirm } from 'primevue/useconfirm'
