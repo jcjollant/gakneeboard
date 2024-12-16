@@ -11,6 +11,10 @@ export function getToastError(summary,detail,life=3000) {
     return { severity: toastError, summary: summary, detail: detail, life: life}
 }
 
+export function getToastWarning(summary,detail,life=3000) {
+    return { severity: toastWarning, summary: summary, detail: detail, life: life}
+}
+
 export function emitToast(emits, title,message, life=3000) {
     emits('toast', getToastData(title, message, toastSuccess, life))
 }
