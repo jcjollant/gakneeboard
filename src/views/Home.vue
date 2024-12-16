@@ -1,30 +1,77 @@
 <template>
     <div class="home">
+        <Toast />
+        <!-- <div class="section">
+            <div class="header">What's New?</div>
+        </div> -->
         <div class="section">
             <div class="header">Templates</div>
-            <div class="sectionContent">
-                <PlaceHolder title="No Templates (yet)" subtitle="Your Templates will show here"/>
+            <div class="templateList">
+                <TemplateSelector :template="localTemplate" :temporary="true" @selection="onTemplateSelection(0)"/>
+                <TemplateSelector v-if="user.templates.length > 0" v-for="(template,index) in user.templates" 
+                    :template="template"  @selection="onTemplateSelection(template.id)" />
+                <PlaceHolder v-else title="No Templates (yet)" subtitle="Your saved templates will show here"/>
                 <div>{{ user.templates.length }}</div>
                 <!-- <router-link to="/template/1">Template 1</router-link> -->
             </div>
         </div>
         <div class="section">
             <div class="header">Demos</div>
+            <div class="templateList">
+                <TemplateSelector v-for="(d) in demos" :template="d.template" :demo="true"
+                    @selection="onDemoSelection(d.name)" />
+                <!-- list all demos -->
+            </div>
         </div>
     </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { onMounted, ref } from 'vue';
-import PlaceHolder from '../components/shared/PlaceHolder.vue';
 import { newCurrentUser } from '../assets/data';
 import { CurrentUser } from '../assets/CurrentUser';
+import { useRouter } from 'vue-router';
+import { LocalStore } from '../lib/LocalStore';
+import { getTemplateDataFromName, SheetName } from '../assets/sheetData';
+import { useToast } from 'primevue/usetoast';
+import { getToastError } from '../assets/toast';
+import PlaceHolder from '../components/shared/PlaceHolder.vue';
+import TemplateSelector from '../components/templates/TemplateSelector.vue';
+import Toast from 'primevue/toast';
 
+const demos = ref([
+    {name: SheetName.default, template: {name:'Default',desc:'Tiles and Checklist'}},
+    {name: SheetName.checklist, template: {name:'Checklist',desc:'Checklists syntax Showcase'}},
+    {name: SheetName.tiles, template: {name:'Tiles',desc:'Tiles Gallery'}},
+    {name: SheetName.navlog, template: {name:'NavLog',desc:'Navlog page and companion tiles'}},
+    {name: SheetName.skyhawk, template: {name:'C172 Reference',desc:'A sample Skyhawk Reference'}},
+])
+const localTemplate = ref(null)
 const user = ref(new CurrentUser())
+const router = useRouter()
+const toast = useToast()
 
 onMounted( () => {
   user.value = newCurrentUser
+  localTemplate.value = user.value.templates[0]
 })
+
+function onDemoSelection(name) {
+    const templateData = getTemplateDataFromName(name)
+    if(!templateData) {
+        toast.add(getToastError('Load Demo', 'Unknown Demo Template'))
+        return;
+    }
+    // Save demo data to localstore
+    LocalStore.saveTemplate(templateData);
+    // Load localstore
+    router.push( '/template/0')
+}
+
+function onTemplateSelection(index) {
+    router.push( '/template/' + index)
+}
+
 </script>
 
 <style scoped>
@@ -46,5 +93,11 @@ onMounted( () => {
     border: 3px solid lightgrey;
     border-radius: 10px;
     flex-grow: 1;
+}
+.templateList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
 }
 </style>
