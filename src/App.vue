@@ -1,9 +1,14 @@
 <template>
     <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
-    <router-link to="/">Home</router-link>
-    <router-link to="/template/0">Templates</router-link>
-    <router-view></router-view>
-    <div class="versionDialog" :title="'Frontend/Backend versions ' + versionText" >{{ versionText }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span></div>
+    <Feedback v-model:visible="showFeedback" />
+    <Toast />
+    <div class="application">
+        <Menu v-if="route.name!='Print'"></Menu>
+        <router-view></router-view>
+    </div>
+    <MenuButton v-if="route.name!='Print'" icon="comments" class="feedbackButton" label="Give Feedback"
+      @click="showFeedback=true" />
+    <div v-if="route.name!='Print'" class="versionDialog" :title="'Frontend/Backend versions ' + versionText" >{{ versionText }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span></div>
 </template>
 
 <script setup>
@@ -12,12 +17,17 @@ import { inject } from "@vercel/analytics"
 import { backend, getBackend, newCurrentUser, version } from './assets/data';
 import { LocalStore } from './lib/LocalStore';
 import { TemplateData } from './assets/TemplateData';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 // Components
+import Feedback from './components/Feedback.vue'
 import HowDoesItWork from './components/HowDoesItWork.vue'
+import Menu from './components/menu/Menu.vue'
+import MenuButton from './components/menu/MenuButton.vue';
+import Toast from 'primevue/toast'
 
-
+const route = useRoute()
 const router = useRouter()
+const showFeedback = ref(false)
 const showHowDoesItWork = ref(true)
 const versionText = ref('')
 
@@ -32,9 +42,6 @@ onBeforeMount( () => {
 
     // How does it work popup check
     showHowDoesItWork.value = LocalStore.showHowDoesItWork()
-    if( showHowDoesItWork.value ) {
-        LocalStore.setHowDoesItWork(false)
-    }
 
     LocalStore.cleanUp()
 })
@@ -80,6 +87,18 @@ function onCloseHowDoesItWork() {
 </script>
 
 <style scoped>
+.application {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  width: 100%;
+}
+.feedbackButton {
+  position: fixed;
+  left: var(--menu-border-offset);;
+  bottom: var(--menu-border-offset);;
+}
+
 .versionDialog {
   position: fixed;
   right: 5px;

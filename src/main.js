@@ -2,10 +2,11 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faFacebookF, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import {
     faBan, faBorderAll,
-    faCheck, faCloud, faCloudSunRain, faComments,
+    faCheck, faCircleInfo, faCloud, faCloudSunRain, faComments,
+    faFileExport,
     faGasPump, faHeadset, faImage, faJetFighter,
     faLink, faListCheck,
-    faPenToSquare, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture,
+    faPenToSquare, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, faPrint,
     faQuestion, 
     faRoadCircleCheck, faRoute, faRotateLeft,
     faStarOfLife, faSun,
@@ -24,11 +25,11 @@ import router from './router';
 import './style.css';
 
 library.add( faBan, faBorderAll, 
-    faCheck, faCloud, faCloudSunRain, faComments, 
-    faFacebookF, faGoogle, 
+    faCheck, faCircleInfo, faCloud, faCloudSunRain, faComments, 
+    faFacebookF, faFileExport, faGoogle, 
     faGasPump, faHeadset, faImage, faJetFighter, 
     faLink, faListCheck, 
-    faPenToSquare, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, 
+    faPenToSquare, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, faPrint, 
     faQuestion, 
     faRoadCircleCheck, faRotateLeft, faRoute, 
     faStarOfLife, faSun, 

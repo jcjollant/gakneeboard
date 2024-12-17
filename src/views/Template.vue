@@ -1,30 +1,12 @@
 <template>
-  <div v-if="printPreview" @click="restorePrintOptions">
-    <div v-if="activeTemplate">
-      <div v-if="printSingles" v-for="(page,index) in activeTemplate.data" class="printOnePage printPageBreak">
-        <div class="onePage">
-          <Page :data="page" :ver="activeTemplate.ver"
-            :class="{flipMode:(index % 2 == 1 && printFlipMode)}"/>
-        </div>
-      </div>
-      <div v-else class="printTwoPages printPageBreak" v-for="(page) in activePages">
-        <Page :data="page.front" :ver="activeTemplate.ver"/>
-        <Page :data="page.back" :ver="activeTemplate.ver"
-          :class="{flipMode:printFlipMode}" />
-      </div>
-    </div>
-  </div>
-  <div v-else class="main">
-    <Feedback v-model:visible="showFeedback"
-      @close="showFeedback=false" @toast="toast.add" />
-
+  <div class="main">
     <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
       @discard="onEditorDiscard" 
       @offset="onOffset" 
       @save="onEditorSave" 
       @toast="toast.add"/>
     <div class="sheetName"
-      :class="{'sheetNameOffset':menuOpen, 'sheetNameModified': templateModified}"
+      :class="{ 'sheetNameModified': templateModified}"
       :title="templateModified ? 'Template has been modified' : ''">
       <div>{{ getTemplateName() }}</div>
     </div>
@@ -42,26 +24,16 @@
         title="Next Page" id="offsetNext"
         @click="onOffset(offset + 1)"></i>
     </div>
-    <MenuButton icon="comments" class="feedbackButton" label="Give Feedback"
-      @click="showFeedback=true" />
     <MenuButton id="btnEditor" v-if="!showEditor"
       icon="pen-to-square" title="Toggle Editor Mode" label="Page Editor" :active="showEditor"
      :class="{'editorButtonActive':showEditor}" class="editorButton" 
       @click="onEditor"/>
   </div>
-  <Menu class="menu" v-show="!printPreview" v-if="!showEditor" 
-    :singlePage="singlePage" :activeTemplate="activeTemplate" 
-    @load="onMenuLoad" 
-    @print="onPrint" @printOptions="onPrintOptions" @printPreview="onPrintPreview"
-    @save="onMenuSave"
-    @toast="toast.add" @toggle="onMenuToggle"
-    >
-  </Menu>
 </template>
 
 <script setup>
-import { nextTick, onMounted, onUnmounted, ref } from 'vue'
-import { duplicate, newCurrentUser, postPrint } from '../assets/data.js'
+import { onMounted, onUnmounted, ref } from 'vue'
+import { duplicate, newCurrentUser } from '../assets/data.js'
 import { getTemplateDemoTiles } from '../assets/sheetData.js'
 import html2canvas from 'html2canvas'
 import { LocalStore } from '../lib/LocalStore.ts'
@@ -73,26 +45,17 @@ import { useRoute } from 'vue-router'
 
 // Components
 import Editor from '../components/editor/Editor.vue'
-import Feedback from '../components/menu/Feedback.vue'
-import Menu from '../components/menu/Menu.vue'
 import MenuButton from '../components/menu/MenuButton.vue'
 import Page from '../components/page/Page.vue'
 
 const activeTemplate = ref(null)
-const activePages = ref(null)
 let cssPageGap = -1
 let cssPageWidth = -1
 const confirm = useConfirm()
-const menuOpen = ref(false)
 const offset = ref(0)
 const offsetLast = ref(0)
-const printFlipMode = ref(false)
-const printPreview = ref(false)
-const printSingles = ref(false)
 const route = useRoute()
 const showEditor = ref(false)
-const showFeedback = ref(false)
-const showHowDoesItWork = ref(true)
 const singlePage = ref(false)
 let templateBeforeEdit = null;
 const templateModified = ref(false)
@@ -180,38 +143,34 @@ function onEditorSave() {
   }
 }
 
-function onMenuLoad(template) {
-  // console.log('[Template.onMenuLoad]', JSON.stringify(sheet))
+// function onMenuLoad(template) {
+//   // console.log('[Template.onMenuLoad]', JSON.stringify(sheet))
 
-  if(!template || !template.data) {
-    console.log('[Template.onMenuLoad] could not load', JSON.stringify(template))
-    return
-  }
+//   if(!template || !template.data) {
+//     console.log('[Template.onMenuLoad] could not load', JSON.stringify(template))
+//     return
+//   }
 
-  const title = 'Load Template "' + template.name + '"'
-  if( templateModified.value) {
-    confirm.require({
-        message: 'Do you want to replace all pages in the current template?',
-        header: title,
-        rejectLabel: 'No',
-        acceptLabel: 'Yes, Replace',
-        accept: () => {
-          loadTemplate(template, true)
-        }
-      })
-  } else {
-    loadTemplate(template, true)
-  }
-}
+//   const title = 'Load Template "' + template.name + '"'
+//   if( templateModified.value) {
+//     confirm.require({
+//         message: 'Do you want to replace all pages in the current template?',
+//         header: title,
+//         rejectLabel: 'No',
+//         acceptLabel: 'Yes, Replace',
+//         accept: () => {
+//           loadTemplate(template, true)
+//         }
+//       })
+//   } else {
+//     loadTemplate(template, true)
+//   }
+// }
 
 function onMenuSave(template) {
   // console.log('[Template.onMenuSave]', JSON.stringify(template))
   activeTemplate.value = template;
   saveTemplateLocally(false)
-}
-
-function onMenuToggle(value) {
-  menuOpen.value = value
 }
 
 onMounted(() =>{
@@ -221,8 +180,11 @@ onMounted(() =>{
       TemplateData.get(route.params.id).then( template => {
         if(template) {
           loadTemplate(template)
+          // set as active template
+          LocalStore.saveTemplate(template)
         } else {
           showToast( getToastData( 'Load Template','Invalid Template Id ' + route.params.id, toastError))
+          // restore last template
           loadTemplate(LocalStore.getTemplate())
         }
       })
@@ -268,66 +230,6 @@ function onPageUpdate(pageData) {
   saveTemplateLocally(true)
 }
 
-function onPrint(options) {
-  // console.log('[Template.onPrint]')
-  onPrintPreview(true)
-  printFlipMode.value = options.flipBackPage;
-  printSingles.value = (options.pagePerSheet == 1)
-
-  // These things don't change
-  showEditor.value = false;
-  showHowDoesItWork.value = false;
-
-  // print window content after a short timeout to let flipmode kickin
-  setTimeout( async () => {
-    return new Promise( (res) => {
-      postPrint(options)
-      const preTime = new Date().getTime();
-      window.print();
-      const postTime = new Date().getTime();
-      // on iOS, window.print returns immediately
-      if(postTime - preTime > 500) { 
-        restorePrintOptions();
-      }
-      res(true)
-    })
-  }, 500);
-}
-
-// Custom events
-function onPrintOptions(options) {
-  // console.log('[Template.onPrintOptions]', JSON.stringify(options))
-  if( options) {
-    printFlipMode.value = options.flipBackPage;
-    printSingles.value = (options.pagePerSheet == 1)
-  } else {
-    restorePrintOptions();
-  }
-}
-
-function onPrintPreview(show) {
-  // console.log('[Template.onPrintPreview]', show)
-  printPreview.value = show
-  if(show) {
-    // build a list of neighbor pages, used for printing
-    const pageList = []
-    const templateData = activeTemplate.value.data
-    for( let index = 0; index < templateData.length; index+=2) {
-      const pages = {front:templateData[index], back:templateData[index+1]??null}
-      pageList.push(pages)
-    }
-    activePages.value = pageList
-  }
-}
-
-function restorePrintOptions() {
-    // Bring everything back to normal
-    printPreview.value = false;
-    printFlipMode.value = false;
-    showEditor.value = false;
-    showHowDoesItWork.value = false;
-}
-
 function saveTemplateLocally(modified=false) {
   // console.log('[Template.saveActiveSheet]', modified)
   LocalStore.saveTemplate(activeTemplate.value, modified)
@@ -367,8 +269,9 @@ function updateOffsets() {
 }
 
 function updateThumbnail() {
-  console.log('[Template.updateThumbnail]', activeTemplate.value?.id)
+  // console.log('[Template.updateThumbnail]', activeTemplate.value?.id)
   if( activeTemplate.value && activeTemplate.value.id) {
+    // Capture page 0 into an image
     html2canvas(document.querySelector(".page0")).then(canvas => {
       // scale image to fit the thummbnail
       const scaledCanvas = document.createElement('canvas')
@@ -396,18 +299,13 @@ function updateThumbnail() {
 
 <style scoped>
 .editorButton {
-  position: fixed;
+  position: absolute;
   right: var(--menu-border-offset);;
   top: var(--menu-border-offset);;
 }
 
-.feedbackButton {
-  position: fixed;
-  left: var(--menu-border-offset);;
-  bottom: var(--menu-border-offset);;
-}
-
 .main {
+  position: relative;
   display: flex;
   flex-flow: column;
   justify-content: center;
@@ -432,26 +330,11 @@ function updateThumbnail() {
   overflow: hidden;
 }
 
-.printOnePage {
-  display: flex;
-  width: 100%;
-  justify-content: center;
-}
-.printTwoPages {
-  display: grid;
-  grid-template-columns: auto auto;
-  gap: 0 var(--pages-gap);
-  width: fit-content;
-}
 .twoPages {
     display: flex;
     gap: var(--pages-gap);
 }
 
-.onePage {
-  display:flex;
-  justify-content: center;
-}
 .offsetButton {
   font-size: 2rem;
   color: #333;
@@ -459,17 +342,10 @@ function updateThumbnail() {
   cursor: pointer;
   z-index: 1;
 }
-.menu {
-  position: fixed;
-  left:5px;
-  top:5px;
-}
-.flipMode {
-  transform: scale(-1,-1);
-}
+
 .sheetName {
   position : absolute;
-  font-size: 3rem;
+  font-size: 2rem;
   font-weight: 700;
   opacity: 0.3;
   width: 100%;
