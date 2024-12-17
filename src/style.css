@@ -191,7 +191,7 @@
 
 @media print {
   @page {
-    margin: 25px;
+    margin: 0.25in;
   }
   .printPageBreak {
     page-break-before: always;
