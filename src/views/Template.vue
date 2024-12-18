@@ -1,15 +1,16 @@
 <template>
   <div class="main">
+    <TemplateMenu :name="getTemplateName()" />
     <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
       @discard="onEditorDiscard" 
       @offset="onOffset" 
       @save="onEditorSave" 
       @toast="toast.add"/>
-    <div class="sheetName"
+    <!-- <div class="sheetName"
       :class="{ 'sheetNameModified': templateModified}"
       :title="templateModified ? 'Template has been modified' : ''">
       <div>{{ getTemplateName() }}</div>
-    </div>
+    </div> -->
     <div class="pageGroup" :class="{'editor':showEditor}" >
       <i class="pi pi-chevron-circle-left offsetButton" :class="{'noShow':(offset == 0)}"
         title="Previous Page" id="offsetPrev"
@@ -24,10 +25,10 @@
         title="Next Page" id="offsetNext"
         @click="onOffset(offset + 1)"></i>
     </div>
-    <MenuButton id="btnEditor" v-if="!showEditor"
+    <!-- <MenuButton id="btnEditor" v-if="!showEditor"
       icon="pen-to-square" title="Toggle Editor Mode" label="Page Editor" :active="showEditor"
      :class="{'editorButtonActive':showEditor}" class="editorButton" 
-      @click="onEditor"/>
+      @click="onEditor"/> -->
   </div>
 </template>
 
@@ -45,12 +46,14 @@ import { useRoute } from 'vue-router'
 
 // Components
 import Editor from '../components/editor/Editor.vue'
+import TemplateMenu from '../components/menu/TemplateMenu.vue'
 import MenuButton from '../components/menu/MenuButton.vue'
 import Page from '../components/page/Page.vue'
 
 const activeTemplate = ref(null)
 let cssPageGap = -1
 let cssPageWidth = -1
+const emits = defineEmits(['template'])
 const confirm = useConfirm()
 const offset = ref(0)
 const offsetLast = ref(0)
@@ -73,7 +76,7 @@ function getTemplateName() {
 }
 
 // update all widgets with provided data
-function loadTemplate(template=null,save=false) {
+function loadTemplate(template=null,saveToLocalStorage=false) {
   // console.log( '[Template.loadTemplate]', typeof data, JSON.stringify(sheet))
 
   // if we don't know what to show, we load a copy of the demo page
@@ -102,13 +105,8 @@ function loadTemplate(template=null,save=false) {
   setTimeout( async() => {
     return new Promise( async(resolve, reject) => {
       // save the template to local storage
-      if(save) {
-        saveTemplateLocally(false)
-      }
-      
-      // create a thumbnail if necessary
-      if( template.id && LocalStore.thumbnailGet(template.id) == null) {
-        updateThumbnail()
+      if(saveToLocalStorage) {
+        saveTemplateToLocalStore(false)
       }
       resolve(true)
     })
@@ -133,13 +131,13 @@ function onEditorSave() {
     TemplateData.save(activeTemplate.value).then(t => {
         let message = 'Template "' + t.name + '" saved';
         showToast( getToastData( 'Clear', message))
-        saveTemplateLocally(false);
+        saveTemplateToLocalStore(false,true);
       }).catch( e => {
         console.log('[Template.onEditorSave] error', e)
-        saveTemplateLocally(true);
+        saveTemplateToLocalStore(true,false);
       })
   } else {
-    saveTemplateLocally(true);
+    saveTemplateToLocalStore(true,false);
   }
 }
 
@@ -170,7 +168,7 @@ function onEditorSave() {
 function onMenuSave(template) {
   // console.log('[Template.onMenuSave]', JSON.stringify(template))
   activeTemplate.value = template;
-  saveTemplateLocally(false)
+  saveTemplateToLocalStore(false)
 }
 
 onMounted(() =>{
@@ -179,9 +177,8 @@ onMounted(() =>{
     if(route.params.id && route.params.id > 0) {
       TemplateData.get(route.params.id).then( template => {
         if(template) {
-          loadTemplate(template)
-          // set as active template
-          LocalStore.saveTemplate(template)
+          loadTemplate(template, true)
+          emits('template',template)
         } else {
           showToast( getToastData( 'Load Template','Invalid Template Id ' + route.params.id, toastError))
           // restore last template
@@ -227,14 +224,16 @@ function onPageUpdate(pageData) {
   // console.log('[Template.onPageUpdate] index', pageData.index)
   // save template data without index
   activeTemplate.value.data[pageData.index] = {data:pageData.data,type:pageData.type}
-  saveTemplateLocally(true)
+  saveTemplateToLocalStore(true)
 }
 
-function saveTemplateLocally(modified=false) {
+function saveTemplateToLocalStore(modified=false,updateThumbnail=false) {
   // console.log('[Template.saveActiveSheet]', modified)
   LocalStore.saveTemplate(activeTemplate.value, modified)
   templateModified.value = modified
-  updateThumbnail()
+  if(updateThumbnail) {
+    updateThumbnail()
+  }
 }
 
 function showToast(data) {
@@ -308,7 +307,6 @@ function updateThumbnail() {
   position: relative;
   display: flex;
   flex-flow: column;
-  justify-content: center;
   align-items: center;
   gap: 1rem;
   min-height: 100vh;
