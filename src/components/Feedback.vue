@@ -34,7 +34,7 @@ import Textarea from "primevue/textarea";
 import FloatLabel from "primevue/floatlabel"
 import Checkbox from 'primevue/checkbox';
 
-const emits = defineEmits(['update:visible']);
+const emits = defineEmits(['close']);
 
 const feedbackText = ref('')
 const contactMeValue = ref('')
@@ -48,7 +48,7 @@ onUpdated( () => {
 })
 
 function closeMe() {
-  emits('update:visible', false)
+  emits('close')
 }
 
 /**
