@@ -1,7 +1,7 @@
 <template>
     <div class="menu">
         <div class="left">
-            <router-link to="/">GA Kneeboard</router-link>
+            <Logo @click="router.push('/')" />
         </div>
 
         <div v-if="route.name=='Template'" class="actions">
@@ -23,6 +23,7 @@
 // import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import FAButton from '../shared/FAButton.vue';
+import Logo from './Logo.vue'
 
 const route = useRoute()
 const router = useRouter()
