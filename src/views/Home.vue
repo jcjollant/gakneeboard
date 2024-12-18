@@ -4,6 +4,7 @@
         <!-- <div class="section">
             <div class="header">What's New?</div>
         </div> -->
+        <Menu />
         <div class="section">
             <div class="header">Templates</div>
             <div class="templateList">
@@ -37,6 +38,7 @@ import { LocalStore } from '../lib/LocalStore';
 import { getTemplateDataFromName, SheetName } from '../assets/sheetData';
 import { useToast } from 'primevue/usetoast';
 import { getToastError, getToastWarning } from '../assets/toast';
+import Menu from '../components/menu/Menu.vue';
 import PlaceHolder from '../components/shared/PlaceHolder.vue';
 import TemplateSelector from '../components/templates/TemplateSelector.vue';
 import Toast from 'primevue/toast';
@@ -107,12 +109,12 @@ function onTemplateSelection(index) {
     display: flex;
     flex-flow: column;
     gap: 10px;
-    padding: 5px;;
 }
 .section {
     border: 3px solid lightgrey;
     border-radius: 10px;
     flex-grow: 1;
+    margin: 0 10px;
 }
 .templateList {
     display: flex;
