@@ -1,10 +1,9 @@
 <template>
     <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
-    <Feedback v-model:visible="showFeedback" />
+    <Feedback v-model:visible="showFeedback" @close="showFeedback=false" />
     <Toast />
     <div class="application">
-        <Menu v-if="route.name!='Print'"></Menu>
-        <router-view></router-view>
+        <router-view @template="console.log('test')"></router-view>
     </div>
     <MenuButton v-if="route.name!='Print'" icon="comments" class="feedbackButton" label="Give Feedback"
       @click="showFeedback=true" />
