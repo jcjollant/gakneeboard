@@ -1,17 +1,29 @@
 <template>
   <div class="main">
-    <TemplateMenu :name="getTemplateName()" />
+    <Menu :name="getTemplateName()" @about="emits('about')" />
     <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
       @discard="onEditorDiscard" 
       @offset="onOffset" 
-      @save="onEditorSave" 
-      @toast="toast.add"/>
+      @save="onEditorSave" />
+
     <!-- <div class="sheetName"
       :class="{ 'sheetNameModified': templateModified}"
       :title="templateModified ? 'Template has been modified' : ''">
       <div>{{ getTemplateName() }}</div>
     </div> -->
     <div class="pageGroup" :class="{'editor':showEditor}" >
+      <div class="templateMenu">
+        <MenuButton id="btnEditor" v-if="!showEditor"
+          icon="pen-to-square" title="Toggle Edit Tools" label="Show Tools" :active="showEditor"
+          :class="{'editorButtonActive':showEditor}" class="editorButton" 
+          @click="onEditor"/>
+        <MenuButton id="btnPrint" icon="print" title="Print Template" label="Print"
+          @click="onPrint"/>
+        <MenuButton id="btnSave" icon="save" title="Save Template" label="Save"
+          @click="onSave"/>
+        <MenuButton id="btnExport" icon="file-export" title="Export Template" label="Export"
+          @click="onSave"/>
+      </div>
       <i class="pi pi-chevron-circle-left offsetButton" :class="{'noShow':(offset == 0)}"
         title="Previous Page" id="offsetPrev"
         @click="onOffset(offset - 1)"></i>
@@ -19,16 +31,12 @@
         <Page v-for="(data,index) in activeTemplate.data" 
           v-show="index >= offset"
           :data="data" :index="index" :class="'page'+index" :ver="activeTemplate.ver"
-          @update="onPageUpdate" @toast="toast.add" />
+          @update="onPageUpdate" />
       </div>
       <i class="pi pi-chevron-circle-right offsetButton"  :class="{'noShow':(offset >= offsetLast)}"
         title="Next Page" id="offsetNext"
         @click="onOffset(offset + 1)"></i>
     </div>
-    <!-- <MenuButton id="btnEditor" v-if="!showEditor"
-      icon="pen-to-square" title="Toggle Editor Mode" label="Page Editor" :active="showEditor"
-     :class="{'editorButtonActive':showEditor}" class="editorButton" 
-      @click="onEditor"/> -->
   </div>
 </template>
 
@@ -39,21 +47,21 @@ import { getTemplateDemoTiles } from '../assets/sheetData.js'
 import html2canvas from 'html2canvas'
 import { LocalStore } from '../lib/LocalStore.ts'
 import { TemplateData } from '../assets/TemplateData.ts'
-import { getToastData, toastError } from '../assets/toast.js'
+import { Toaster } from '../assets/Toaster.ts'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 import { useRoute } from 'vue-router'
 
 // Components
 import Editor from '../components/editor/Editor.vue'
-import TemplateMenu from '../components/menu/TemplateMenu.vue'
+import Menu from '../components/menu/Menu.vue'
 import MenuButton from '../components/menu/MenuButton.vue'
 import Page from '../components/page/Page.vue'
 
 const activeTemplate = ref(null)
 let cssPageGap = -1
 let cssPageWidth = -1
-const emits = defineEmits(['template'])
+const emits = defineEmits(['about','template'])
 const confirm = useConfirm()
 const offset = ref(0)
 const offsetLast = ref(0)
@@ -62,7 +70,7 @@ const showEditor = ref(false)
 const singlePage = ref(false)
 let templateBeforeEdit = null;
 const templateModified = ref(false)
-const toast = useToast()
+const toaster = new Toaster(useToast())
 
 function getTemplateName() {
   let name = ''
@@ -130,7 +138,7 @@ function onEditorSave() {
   if(newCurrentUser.loggedIn && activeTemplate.value.id) {
     TemplateData.save(activeTemplate.value).then(t => {
         let message = 'Template "' + t.name + '" saved';
-        showToast( getToastData( 'Clear', message))
+        toaster.success( 'Clear', message)
         saveTemplateToLocalStore(false,true);
       }).catch( e => {
         console.log('[Template.onEditorSave] error', e)
@@ -165,10 +173,28 @@ function onEditorSave() {
 //   }
 // }
 
-function onMenuSave(template) {
-  // console.log('[Template.onMenuSave]', JSON.stringify(template))
-  activeTemplate.value = template;
-  saveTemplateToLocalStore(false)
+async function onSave() {
+  if( !newCurrentUser.loggedIn) {
+    warnNoUser()
+    return
+  }
+  try {
+      // retreive data from active template
+      template.data = activeTemplate.value.data;
+      toaster.info( 'Say Request', 'Saving template ' + template.name)
+      await TemplateData.save(template).then(t => {
+        // console.log('[Menu.onTemplateSave]', JSON.stringify(t))
+        let message = 'Template "' + t.name + '" saved';
+        if(t.publish && t.code) {
+          message += '\nShare code is ' + t.code
+        }
+        emits('save', t)
+        toaster.success( 'Clear', message)
+      })
+  } catch( e) {
+    console.log('[Menu.onTemplateSave]', e)
+    toaster.error('Save Template','Could not save template "' + template.name + '"')
+  }  
 }
 
 onMounted(() =>{
@@ -180,7 +206,7 @@ onMounted(() =>{
           loadTemplate(template, true)
           emits('template',template)
         } else {
-          showToast( getToastData( 'Load Template','Invalid Template Id ' + route.params.id, toastError))
+          toaster.error( 'Load Template','Invalid Template Id ' + route.params.id)
           // restore last template
           loadTemplate(LocalStore.getTemplate())
         }
@@ -234,10 +260,6 @@ function saveTemplateToLocalStore(modified=false,updateThumbnail=false) {
   if(updateThumbnail) {
     updateThumbnail()
   }
-}
-
-function showToast(data) {
-  toast.add(data)
 }
 
 function updateOffsets() {
@@ -297,11 +319,6 @@ function updateThumbnail() {
 </script>
 
 <style scoped>
-.editorButton {
-  position: absolute;
-  right: var(--menu-border-offset);;
-  top: var(--menu-border-offset);;
-}
 
 .main {
   position: relative;
@@ -313,6 +330,7 @@ function updateThumbnail() {
 }
 
 .pageGroup {
+  position: relative;
   display: grid;
   grid-template-columns: var(--pages-gap) 1fr var(--pages-gap);
   align-items: center;
@@ -327,6 +345,16 @@ function updateThumbnail() {
   justify-content: center;
   overflow: hidden;
 }
+
+.templateMenu {
+  position: absolute;
+  left: var(--menu-border-offset);
+  top: var(--menu-border-offset);
+  display: flex;
+  flex-flow: column;
+  gap: var(--menu-border-offset)
+}
+
 
 .twoPages {
     display: flex;
