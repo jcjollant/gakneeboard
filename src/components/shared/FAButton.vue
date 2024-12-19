@@ -1,7 +1,7 @@
 <template>
     <div class="fabutton" :aria-label="label" :class="{'link':link,menu:menu}">
         <font-awesome-icon v-if="icon" :icon="['fas',icon]" />
-        <div v-if="label">{{ label }}</div>
+        <div v-if="label" class="label">{{ label }}</div>
     </div>
 </template>
 
@@ -32,6 +32,7 @@ const props = defineProps({
     line-height: 2.5rem;
     height: 40px;
     min-width: 38px;
+    padding: 0 10px;
 }
 .fabutton.link {
     color: var(--bg);
@@ -41,6 +42,7 @@ const props = defineProps({
 .fabutton.menu {
     height: 26px;
     color: var(--bg);
+    background-color: lightgray;
     min-width: fit-content;
 }
 .fabutton.menu:hover {
