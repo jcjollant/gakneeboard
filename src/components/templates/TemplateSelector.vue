@@ -50,8 +50,6 @@ function onSelection() {
     height: 2.5rem;
 }
 .preview{
-    width: 100px;
-    height: 80px;
     background-color: lightgrey;
 }
 .templateSelector {
@@ -73,8 +71,8 @@ function onSelection() {
     border: 3px dashed lightgrey;
 }
 img {
-    width: 100px;
-    height: 80px;
+    width: calc(var(--page-width) / 5);
+    height: calc(var(--page-height) / 5);
     object-fit: cover;
     /* border-radius: 5px; */
 }
