@@ -18,7 +18,7 @@ const props = defineProps({
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0 9px;
+    padding: 0 11px;
     gap: 10px;
     font-size: 18px;
     height: 40px;
