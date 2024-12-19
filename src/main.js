@@ -9,7 +9,7 @@ import {
     faPenToSquare, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, faPrint,
     faQuestion, 
     faRoadCircleCheck, faRoute, faRotateLeft,
-    faStarOfLife, faSun,
+    faSave, faStarOfLife, faSun, faUser,
     faVideo, faWalkieTalkie, faXmark
 } from '@fortawesome/free-solid-svg-icons';
 import { createApp } from 'vue';
@@ -32,7 +32,7 @@ library.add( faBan, faBorderAll,
     faPenToSquare, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, faPrint, 
     faQuestion, 
     faRoadCircleCheck, faRotateLeft, faRoute, 
-    faStarOfLife, faSun, 
+    faSave, faStarOfLife, faSun, faUser,
     faVideo, faWalkieTalkie, faXmark)
 
 createApp(App)
