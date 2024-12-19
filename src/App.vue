@@ -2,8 +2,8 @@
     <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
     <Feedback v-model:visible="showFeedback" @close="showFeedback=false" />
     <Toast />
-    <div class="application">
-        <router-view @template="console.log('test')"></router-view>
+    <div class="application" @about="console.log('about')">
+        <router-view ></router-view>
     </div>
     <MenuButton v-if="route.name!='Print'" icon="comments" class="feedbackButton" label="Give Feedback"
       @click="showFeedback=true" />
