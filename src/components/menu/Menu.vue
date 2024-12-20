@@ -6,12 +6,6 @@
             <div v-if="name" title="Active Template Name">{{name}}</div>
         </div>
 
-        <div v-if="route.name=='Template'" class="actions">
-            <FAButton icon="fa-print" label="Print" :menu="true" title="Export Template" @click="onPrint" />
-            <FAButton icon="fa-circle-info" label="Save" :menu="true" title="Export Template"></FAButton>
-            <FAButton icon="fa-file-export" label="Export" :menu="true" title="Export Template"></FAButton>
-        </div>
-
         <div class="right">
             <!-- <FAButton icon="fa-circle-info" :menu="true" @click="router.push('/about')" title="About GA Kneeboard"></FAButton> -->
             <Session />
