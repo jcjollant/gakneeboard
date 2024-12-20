@@ -1,5 +1,9 @@
 import { ToastServiceMethods } from "primevue/toastservice";
 
+export const useToaster = (toast:ToastServiceMethods) => {
+    return new Toaster(toast);
+}
+
 export class Toaster {
     private toast:ToastServiceMethods;
 

@@ -29,7 +29,7 @@
     <NotesTile v-else-if="tile.name==Tile.notes" :params="tile.data"
         @replace="onReplace" @update="onUpdate" />
     <RadioTile v-else-if="tile.name==Tile.radios" :params="tile.data" 
-        @replace="onReplace" @update="onUpdate" @toast="onToast" />
+        @replace="onReplace" @update="onUpdate" />
     <SunLight v-else-if="tile.name==Tile.sunlight" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" />
 </template>
@@ -52,7 +52,7 @@ import FAButton from '../shared/FAButton.vue'
 import NavlogTile from '../navlog/NavlogTile.vue';
 import NotesTile from '../notes/NotesTile.vue';
 
-const emits = defineEmits(['update','toast'])
+const emits = defineEmits(['update'])
 
 const props = defineProps({
     tile: { type: Object, default: null},
@@ -104,10 +104,6 @@ function onUpdate(params = '') {
     // keep same id and name, just refresh the param
     state = { 'id':state.id,'name': state.name, 'data':params}
     emits('update',state)
-}
-
-function onToast(data) {
-    emits('toast', data)
 }
 
 </script>

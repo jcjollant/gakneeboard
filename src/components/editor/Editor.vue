@@ -28,26 +28,26 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { EditorAction } from '../../assets/EditorAction'
+import { useConfirm } from 'primevue/useconfirm'
+import { useToast } from 'primevue/usetoast'
+import { useToaster } from '../../assets/Toaster'
+import { PageType } from '../../assets/PageType'
+// import { Template } from '../../assets/Templates'
+import { pageDataBlank, readPageFromClipboard } from '../../assets/sheetData'
+import { duplicate } from '../../assets/data'
 
 import Button from 'primevue/button'
 import ConfirmDialog from 'primevue/confirmdialog'
-import { useConfirm } from 'primevue/useconfirm'
 import Overlay from './Overlay.vue'
-import { PageType } from '../../assets/PageType'
-// import { Template } from '../../assets/Templates'
 import VerticalActionBar from './VerticalActionBar.vue'
-import { getToastData, toastError } from '../../assets/toast'
-import { pageDataBlank, readPageFromClipboard } from '../../assets/sheetData'
-import { duplicate } from '../../assets/data'
-import MenuButton from '../menu/MenuButton.vue'
 
-
-const emits = defineEmits(['discard','save','toast','offset'])
+const emits = defineEmits(['discard','save','offset'])
 const confirm = useConfirm()
 const model = defineModel({type:Object})
 const modified = ref(false)
 const offset = ref(0)
 const sheets = ref([])
+const toaster = useToaster(useToast())
 
 //---------------------
 // Props management
@@ -137,7 +137,7 @@ async function onEditorAction(ea:EditorAction) {
     const pageData = model.value.data[ea.offset]
     // grab data and show toast
     navigator.clipboard.writeText(JSON.stringify(pageData));
-    emits('toast',getToastData('Page ' + (ea.offset+1) + ' copied to clipboard'))
+    toaster.success('Editor', 'Page ' + (ea.offset+1) + ' copied to clipboard')
 
   } else if(ea.action == EditorAction.COPY_TILE_TO_CLIPBOARD) {
 
@@ -145,7 +145,7 @@ async function onEditorAction(ea:EditorAction) {
     pageData['sourceTile'] = ea.offsetTo
     // grab data and show toast
     navigator.clipboard.writeText(JSON.stringify(pageData));
-    emits('toast',getToastData('Tile ' + (ea.offsetTo+1) + ' copied to clipboard'))
+    toaster.success('Editor', 'Tile ' + (ea.offsetTo+1) + ' copied to clipboard')
 
   } else if(ea.action == EditorAction.DUPLICATE_PAGE) {
 
@@ -155,7 +155,7 @@ async function onEditorAction(ea:EditorAction) {
 
     // protection against last page removal
     if( model.value.data.length == 2) {
-      emits('toast',getToastData( 'Cannot Delete Page', 'Last two pages cannot be deleted. Delete the template instead.', toastError))
+      toaster.warning('Cannot Delete Page', 'Last two pages cannot be deleted. Delete the template instead.')
       return;
     }
     // remove page from active template
@@ -180,7 +180,7 @@ async function onEditorAction(ea:EditorAction) {
       if(model.value)
         model.value.data[ea.offset] = page;
     }).catch( e => {
-        emits('toast',getToastData('Cannot Paste', e, toastError))
+        toaster.error('Editor', 'Cannot Paste ' + e)
     }) 
 
   } else if(ea.action == EditorAction.PASTE_TILE) {
@@ -195,7 +195,7 @@ async function onEditorAction(ea:EditorAction) {
         model.value.data[ea.offset].data[ea.offsetTo].id = ea.offsetTo;
       }
     }).catch( e => {
-        emits('toast',getToastData('Cannot Paste Tile', e, toastError))
+        toaster.error('Editor','Cannot Paste Tile' + e)
     }) 
 
   } else if(ea.action == EditorAction.RESET_PAGE) {

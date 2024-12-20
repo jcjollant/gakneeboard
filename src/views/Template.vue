@@ -45,9 +45,9 @@ import { getTemplateDemoTiles } from '../assets/sheetData.js'
 import html2canvas from 'html2canvas'
 import { LocalStore } from '../lib/LocalStore.ts'
 import { TemplateData } from '../assets/TemplateData.ts'
-import { Toaster } from '../assets/Toaster.ts'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
+import { useToaster } from '../assets/Toaster.ts'
 import { useRoute, useRouter } from 'vue-router'
 
 // Components
@@ -70,7 +70,7 @@ const showEditor = ref(false)
 const showSettings = ref(false)
 const singlePage = ref(false)
 let templateBeforeEdit = null;
-const toaster = new Toaster(useToast())
+const toaster = useToaster(useToast())
 
 onMounted(() =>{
   // console.log('[Template.onMounted]')

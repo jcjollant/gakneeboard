@@ -13,16 +13,16 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { newCurrentUser } from '../../assets/data';
-import { Toaster } from '../../assets/toaster';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
+import { useToaster } from '../../assets/Toaster';
 import ConfirmDialog from 'primevue/confirmdialog';
 import FAButton from '../shared/FAButton.vue';
 import SignIn from '../signin/SignIn.vue';
 
 const confirm = useConfirm()
 const showSignIn = ref(false)
-const toaster = new Toaster(useToast())
+const toaster = useToaster(useToast())
 const user = ref(newCurrentUser)
 
 onMounted( () => {

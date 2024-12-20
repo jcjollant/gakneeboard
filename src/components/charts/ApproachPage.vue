@@ -31,7 +31,7 @@ import { getAirport } from '../../assets/data';
 import { UserUrl } from '../../lib/UserUrl';
 
 const pngOutput = ref(null)
-const emits = defineEmits(['replace','toast','update'])
+const emits = defineEmits(['replace','update'])
 const editMode = ref(true)
 const airport = ref(null)
 const selectedPdf = ref('')

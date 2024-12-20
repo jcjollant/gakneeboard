@@ -113,27 +113,27 @@
 import { onMounted, ref, watch } from 'vue'
 
 import { Formatter } from '../../lib/Formatter'
-import { emitToast, emitToastError, emitToastWarning } from '../../assets/toast'
 import { Navlog } from '../../assets/Navlog'
 import { NavlogEntry } from '../../assets/NavlogEntry'
 import { EditorItem } from '../../assets/EditorItem'
+import { useConfirm } from 'primevue/useconfirm'
+import { NavlogData } from '../../lib/NavlogData'
+import { useToast } from 'primevue/usetoast'
+import { useToaster }  from '../../assets/Toaster'
+import { UserUrl } from '../../lib/UserUrl'
 
 import ActionBar from '../shared/ActionBar.vue'
 import AirportInput from '../shared/AirportInput.vue'
-import NavlogLegEditor from './NavlogLegEditor.vue'
-import NavlogCheckpointEditor from './NavlogCheckpointEditor.vue'
-
 import Button from 'primevue/button'
 import FilePick from '../shared/FilePick.vue'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
-import { useConfirm } from 'primevue/useconfirm'
+import NavlogLegEditor from './NavlogLegEditor.vue'
+import NavlogCheckpointEditor from './NavlogCheckpointEditor.vue'
 import OneChoice from '../shared/OneChoice.vue'
-import { NavlogData } from '../../lib/NavlogData'
-import { UserUrl } from '../../lib/UserUrl'
 
-const emits = defineEmits(['apply','cancel','toast'])
+const emits = defineEmits(['apply','cancel'])
 
 const navlogModeCreate = {label:'Create New Log',value:'new'}
 const navlogModeContinue = {label:'Continue Existing Log',value:'continue'}
@@ -160,6 +160,7 @@ const navlogMode = ref(navlogModeCreate)
 const reserveFuel = ref(null)
 const showEditorCheckpoint = ref(false)
 const showEditorLeg = ref(false)
+const toaster = useToaster( useToast())
 const totalDistance = ref(0)
 const totalTime = ref(0)
 const totalFuel = ref(0)
@@ -271,7 +272,7 @@ function onApply() {
     }
 
     if(!codeFrom.value || !codeTo.value) {
-        emitToastError( emits, 'Airports', 'We need 2 airports to create a navigation log')
+        toaster.error( 'Airports', 'We need 2 airports to create a navigation log')
         return;
     }
 
@@ -292,16 +293,16 @@ function onApply() {
 //    console.log('[NavlogEdit.onApply]', JSON.stringify(newNavLog))
     if(items.value.length) {
         if(newNavLog.getFuelFrom() <= 0) {
-            emitToastError( emits, 'Bingo Fuel', 'Like aircrafts, navlogs need initial fuel')
+            toaster.error( 'Bingo Fuel', 'Like aircrafts, navlogs need initial fuel')
             return;
         }
 
         if(newNavLog.getFuelReserve() < 0) {
-            emitToastError( emits, 'Invalid Reserve', 'Fuel reserve cannot be negative')
+            toaster.error( 'Invalid Reserve', 'Fuel reserve cannot be negative')
             return;
         }
         if(newNavLog.getFuelReserve() == 0) {
-            emitToastWarning(emits, 'No Reserve?', 'Fuel reserve is set to 0.\nRemind me to take the next flight.', 5000)
+            toaster.warn('No Reserve?', 'Fuel reserve is set to 0.\nRemind me to take the next flight.', 5000)
         }
     }
     emits('apply', newNavLog)
@@ -312,7 +313,7 @@ function onApply() {
  */
 function onCreate() {
     if(!codeFrom.value || !codeTo.value) {
-        emitToastError( emits, 'Airports Required', 'We need two airports to create the log')
+        toaster.error( 'Airports Required', 'We need two airports to create the log')
         return
     }
 
@@ -328,7 +329,7 @@ function onCreate() {
 
         const maxCount = Navlog.maxItems - 2
         if(altList.length > maxCount) {
-            emitToastError(emits, 'Too Many Legs', `You have ${altList.length - maxCount} more legs than supported maximum (${maxCount})`, 5000 )
+            toaster.error( 'Too Many Legs', `You have ${altList.length - maxCount} more legs than supported maximum (${maxCount})`, 5000 )
             return
         }
 
@@ -372,7 +373,7 @@ function onCreate() {
     totalFuel.value = 0
 
     mode.value = modeEntries;
-    emitToast(emits, 'Clear','Navlog Created')
+    toaster.success('Clear','Navlog Created')
 
 }
 
@@ -454,7 +455,7 @@ function onFlightPlanUpload(file) {
         mode.value = modeEntries
     }).catch( (e) => {
         console.log('[NavlogEdit.onFlightPlanUpload] failed ' + e)
-        emitToastError(emits, 'INOP', 'Flight plan upload failed')
+        toaster.error( 'INOP', 'Flight plan upload failed')
     }).finally( () => {
         uploading.value = false;
     })
@@ -463,7 +464,7 @@ function onFlightPlanUpload(file) {
 function onItemAdd(index) {
     // console.log('[NavlogEdit.onAddItem]', index, items.value.length)
     if(items.value.length >= Navlog.maxItems) {
-        emitToastError( emits, 'Log Full', `We cannot display more than ${Navlog.maxItems} checkpoints in the navlog`)
+        toaster.error( 'Log Full', `We cannot display more than ${Navlog.maxItems} checkpoints in the navlog`)
         return
     }
     const newItem = EditorItem.naked('?')

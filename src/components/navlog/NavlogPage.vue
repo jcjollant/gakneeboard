@@ -4,7 +4,7 @@
             <Header title="NavLog Editor" :hideReplace="false" :page="true"
                 @replace="emits('replace')"></Header>
             <NavlogEdit :navlog="navlog"
-                @toast="onToast" @cancel="onEditCancel" @apply="onEditApply" />
+                @cancel="onEditCancel" @apply="onEditApply" />
         </div>
         <div v-else-if="checkpoints==null">
             <Header :title="title" :page="true" 
@@ -99,7 +99,7 @@ import NavlogEdit from './NavlogEdit.vue'
 import PlaceHolder from '../shared/PlaceHolder.vue'
 
 
-const emits = defineEmits(['replace','toast','update'])
+const emits = defineEmits(['replace', 'update'])
 const modeEdit = 'edit'
 const modeDisplay = ''
 const continued = ref(false)
@@ -215,10 +215,6 @@ function onNavlogUpdate(navlog) {
     if(!continued.value) return;
     // console.log('[NavlogPage.onNavlogUpdate]', JSON.stringify(navlog))
     applyData(navlog)
-}
-
-function onToast(data) {
-    emits('toast', data)
 }
 
 </script>

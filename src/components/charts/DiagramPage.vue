@@ -43,7 +43,7 @@ import { UserUrl } from '../../lib/UserUrl';
 
 const airport = ref(null)
 const editMode = ref(false)
-const emits = defineEmits(['replace','toast','update'])
+const emits = defineEmits(['replace','update'])
 const knownAirports = ref(<any>[])
 const selectedPdf = ref('')
 const title = ref('Airport Diagram')

@@ -4,14 +4,14 @@
     <CoverPage v-else-if="type==PageType.cover" :data="pageData" 
         @replace="onReplace" @update="onUpdate" />
     <NavlogPage v-else-if="type==PageType.navLog" :data="pageData"
-        @replace="onReplace" @update="onUpdate" @toast="onToast" />
+        @replace="onReplace" @update="onUpdate" />
     <TilePage v-else-if="type==PageType.tiles" :data="pageData" 
         @update="onUpdate" @toast="onToast" />
     <NotesPage v-else-if="type==PageType.notes" @replace="onReplace(PageType.selection)" />
     <ApproachPage v-else-if="type==PageType.approach" :data="pageData"
-        @update="onUpdate" @replace="onReplace" @toast="onToast" />
+        @update="onUpdate" @replace="onReplace"  />
     <DiagramPage v-else-if="type==PageType.diagram" :data="pageData"
-        @update="onUpdate" @replace="onReplace" @toast="onToast" />
+        @update="onUpdate" @replace="onReplace" />
     <SelectionPage v-else @replace="onReplace" />
 </template>
 

@@ -32,6 +32,8 @@
 import { onMounted, ref, watch } from 'vue'
 import { Formatter } from '../../lib/Formatter'
 import { UserUrl } from '../../lib/UserUrl';
+import { useToast } from 'primevue/usetoast';
+import { useToaster } from '../../assets/Toaster'
 
 import ActionBar from '../shared/ActionBar.vue'
 import Header from '../shared/Header.vue';
@@ -44,11 +46,12 @@ import Button from 'primevue/button'
 import Textarea from 'primevue/textarea';
 import Nordo from './Nordo.vue';
 
-const emits = defineEmits(['replace','update','toast'])
+const emits = defineEmits(['replace','update'])
 const editMode=ref(false)
 const maxFreqCount = 18
 const mode=ref('')
 const textData = ref('')
+const toaster = useToaster(useToast())
 const frequencies = ref([])
 const showLookup = ref(false)
 const lookupTime = ref(0)
@@ -116,11 +119,11 @@ function loadListFromText() {
 
 function addFrequency(freq) {
     if( frequencies.value.length >= maxFreqCount) {
-        toast('Radio boxes are full', 'warn')
+        toaster.warning('Radio Flow', 'Radio boxes are full')
         return;
     }
     frequencies.value.push(freq)
-    toast( freq.name + ' added (' + (frequencies.value.length) + '/' + maxFreqCount + ')')
+    toaster.success( 'Radio Flow', freq.name + ' added (' + (frequencies.value.length) + '/' + maxFreqCount + ')')
 
     // refresh the list
     updateTextarea()
@@ -165,10 +168,6 @@ function onLookup() {
 //         mode.value = ''
 //     }
 // }
-
-function toast(message, severity='success') {
-    emits( 'toast', { severity: severity, summary: 'Radio Flow', detail: message, life: 2000})
-}
 
 function updateTextarea() {
     textData.value = frequencies.value.map( f => Formatter.frequency(f.mhz) + ',' + f.name).join('\n')

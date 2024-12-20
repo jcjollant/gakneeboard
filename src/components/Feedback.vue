@@ -27,7 +27,7 @@
 import { onUpdated, ref } from 'vue'
 import { getCurrentUser, sendFeedback } from '../assets/data.js'
 import { useToast } from 'primevue/usetoast';
-import { Toaster } from '../assets/Toaster.ts';
+import { useToaster } from '../assets/Toaster.ts';
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import Textarea from "primevue/textarea";
@@ -39,7 +39,7 @@ const emits = defineEmits(['close']);
 const feedbackText = ref('')
 const contactMeValue = ref('')
 const user = ref(null)
-const toaster = new Toaster(useToast());
+const toaster = useToaster(useToast());
 
 onUpdated( () => {
   // console.log('[Feedback.onUpdated]')

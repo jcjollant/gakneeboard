@@ -12,9 +12,9 @@
 
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { Toaster } from '../../assets/Toaster'
 import { UserUrl } from '../../lib/UserUrl';
 import { useToast } from 'primevue/usetoast'
+import { useToaster } from '../../assets/Toaster';
 
 import Button from 'primevue/button'
 import OneChoice from '../shared/OneChoice.vue';
@@ -26,7 +26,7 @@ const pubPrivate = {label:'Private'}
 const publishChoice = ref(pubPublic)
 const publish = defineModel()
 const template = ref(null)
-const toaster = new Toaster(useToast())
+const toaster = useToaster(useToast())
 
 //-----------------
 // Props management

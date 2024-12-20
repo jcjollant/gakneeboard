@@ -1,6 +1,6 @@
 <template>
     <div class="tiles pageTiles">
-        <Tile v-for="tile in tiles" :tile="tile" @update="onUpdate" @toast="onToast" />
+        <Tile v-for="tile in tiles" :tile="tile" @update="onUpdate" />
     </div>
 </template>
 
@@ -9,7 +9,7 @@ import { onMounted, ref, watch } from 'vue'
 
 import Tile from './Tile.vue'
 
-const emits = defineEmits(['toast','update'])
+const emits = defineEmits(['update'])
 
 // Props management
 const props = defineProps({
@@ -39,10 +39,6 @@ watch( props, async() => {
 // end of props management
 
 const tiles=ref()
-
-function onToast(data) {
-  emits('toast', data)
-}
 
 function onUpdate(newTileData) {
   const newPageData = tiles.value
