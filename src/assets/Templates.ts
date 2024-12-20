@@ -26,12 +26,6 @@ export class Template {
     }
 }
 
-export class TemplateSaveDialogMode {
-    static save = 'save'
-    static saveAs = 'saveAs'
-    static overwrite = 'overwrite'
-}
-
 export class TemplatePage {
     type:string
     data:any
