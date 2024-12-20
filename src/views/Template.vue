@@ -2,27 +2,25 @@
   <div class="main">
     <Menu :name="getTemplateName()" @about="emits('about')" />
     <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
-      @discard="onEditorDiscard" 
-      @offset="onOffset" 
-      @save="onEditorSave" />
-
-    <!-- <div class="sheetName"
-      :class="{ 'sheetNameModified': templateModified}"
-      :title="templateModified ? 'Template has been modified' : ''">
-      <div>{{ getTemplateName() }}</div>
-    </div> -->
+      @offset="onOffset" />
+    <TemplateSettings v-model:visible="showSettings" :template="activeTemplate"
+      @close="showSettings=false" @save="onSettings" />
     <div class="pageGroup" :class="{'editor':showEditor}" >
       <div class="templateMenu">
-        <MenuButton id="btnEditor" v-if="!showEditor"
-          icon="pen-to-square" title="Toggle Edit Tools" label="Show Tools" :active="showEditor"
-          :class="{'editorButtonActive':showEditor}" class="editorButton" 
-          @click="onEditor"/>
         <MenuButton id="btnPrint" icon="print" title="Print Template" label="Print"
           @click="onPrint"/>
-        <MenuButton id="btnSave" icon="save" title="Save Template" label="Save"
+        <MenuButton id="btnSave" icon="save" title="Save Template to the Cloud" label="Save"
           @click="onSave"/>
-        <MenuButton id="btnExport" icon="file-export" title="Export Template" label="Export"
+        <MenuButton id="btnEditor"
+          icon="screwdriver-wrench" title="Toggle Edit Tools" label="Editor Tools" :active="showEditor"
+          :class="{'editorButtonActive':showEditor}" class="editorButton" 
+          @click="onEditor"/>
+        <MenuButton id="btnExport" icon="file-export" title="Export Template to Various Formats" label="Export"
           @click="onSave"/>
+        <MenuButton id="btnSettings" icon="gear" title="Template Name and Description" label="Settings"
+          @click="showSettings=true"/>
+        <MenuButton id="btnDelete" icon="trash" title="Delete Template" label="Delete" :danger="true"
+          @click="onDelete"/>
       </div>
       <i class="pi pi-chevron-circle-left offsetButton" :class="{'noShow':(offset == 0)}"
         title="Previous Page" id="offsetPrev"
@@ -50,13 +48,14 @@ import { TemplateData } from '../assets/TemplateData.ts'
 import { Toaster } from '../assets/Toaster.ts'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 // Components
 import Editor from '../components/editor/Editor.vue'
 import Menu from '../components/menu/Menu.vue'
 import MenuButton from '../components/menu/MenuButton.vue'
 import Page from '../components/page/Page.vue'
+import TemplateSettings from '../components/templates/TemplateSettings.vue'
 
 const activeTemplate = ref(null)
 let cssPageGap = -1
@@ -66,136 +65,12 @@ const confirm = useConfirm()
 const offset = ref(0)
 const offsetLast = ref(0)
 const route = useRoute()
+const router = useRouter()
 const showEditor = ref(false)
+const showSettings = ref(false)
 const singlePage = ref(false)
 let templateBeforeEdit = null;
-const templateModified = ref(false)
 const toaster = new Toaster(useToast())
-
-function getTemplateName() {
-  let name = ''
-  if( !activeTemplate.value || !activeTemplate.value.name) {
-    name = 'New Template'
-  } else {
-    name = activeTemplate.value.name
-  } 
-  if( templateModified.value) name += '*'
-  return name;
-}
-
-// update all widgets with provided data
-function loadTemplate(template=null,saveToLocalStorage=false) {
-  // console.log( '[Template.loadTemplate]', typeof data, JSON.stringify(sheet))
-
-  // if we don't know what to show, we load a copy of the demo page
-  if( !template) {
-    template = getTemplateDemoTiles();
-  }
-
-  // make sure data is at the latest format
-  const data = TemplateData.normalize(template.data)
-
-  // we are on the first page and last page is calculated based on number of pages
-  offset.value = 0
-  // frontPageData.value = data[0]
-  // backPageData.value = data[1]
-  template.data = data
-
-  activeTemplate.value = template;
-  // console.log('[Template.loadTemplate] template version', JSON.stringify(template.ver))
-  updateOffsets()
-
-  // restore modified state
-  templateModified.value = template.modified;
-  // console.log('[Template.loadTemplate]', offset.value, offsetLast.value)
-
-  // asynchronous localstorage maintenance
-  setTimeout( async() => {
-    return new Promise( async(resolve, reject) => {
-      // save the template to local storage
-      if(saveToLocalStorage) {
-        saveTemplateToLocalStore(false)
-      }
-      resolve(true)
-    })
-  }, 1000)
-}
-
-function onEditor() {
-  templateBeforeEdit = duplicate(activeTemplate.value)
-  showEditor.value = true;
-}
-
-function onEditorDiscard() {
-  activeTemplate.value = templateBeforeEdit;
-  showEditor.value = false;
-}
-
-function onEditorSave() {
-  showEditor.value = false;
-  // Save template if we are logged in and template already has an Id
-  // This is preventing unwanted saves of new pages and demos
-  if(newCurrentUser.loggedIn && activeTemplate.value.id) {
-    TemplateData.save(activeTemplate.value).then(t => {
-        let message = 'Template "' + t.name + '" saved';
-        toaster.success( 'Clear', message)
-        saveTemplateToLocalStore(false,true);
-      }).catch( e => {
-        console.log('[Template.onEditorSave] error', e)
-        saveTemplateToLocalStore(true,false);
-      })
-  } else {
-    saveTemplateToLocalStore(true,false);
-  }
-}
-
-// function onMenuLoad(template) {
-//   // console.log('[Template.onMenuLoad]', JSON.stringify(sheet))
-
-//   if(!template || !template.data) {
-//     console.log('[Template.onMenuLoad] could not load', JSON.stringify(template))
-//     return
-//   }
-
-//   const title = 'Load Template "' + template.name + '"'
-//   if( templateModified.value) {
-//     confirm.require({
-//         message: 'Do you want to replace all pages in the current template?',
-//         header: title,
-//         rejectLabel: 'No',
-//         acceptLabel: 'Yes, Replace',
-//         accept: () => {
-//           loadTemplate(template, true)
-//         }
-//       })
-//   } else {
-//     loadTemplate(template, true)
-//   }
-// }
-
-async function onSave() {
-  if( !newCurrentUser.loggedIn) {
-    warnNoUser()
-    return
-  }
-  try {
-      // retreive data from active template
-      template.data = activeTemplate.value.data;
-      toaster.info( 'Say Request', 'Saving template ' + template.name)
-      await TemplateData.save(template).then(t => {
-        // console.log('[Menu.onTemplateSave]', JSON.stringify(t))
-        let message = 'Template "' + t.name + '" saved';
-        if(t.publish && t.code) {
-          message += '\nShare code is ' + t.code
-        }
-        emits('save', t)
-        toaster.success( 'Clear', message)
-      })
-  } catch( e) {
-    console.log('[Menu.onTemplateSave]', e)
-    toaster.error('Save Template','Could not save template "' + template.name + '"')
-  }  
-}
 
 onMounted(() =>{
   // console.log('[Template.onMounted]')
@@ -233,6 +108,95 @@ onUnmounted(() => {
   window.removeEventListener('resize', updateOffsets)
 })
 
+function getTemplateName() {
+  let name = ''
+  if( !activeTemplate.value || !activeTemplate.value.name) {
+    name = 'New Template'
+  } else {
+    name = activeTemplate.value.name
+  } 
+  if( activeTemplate.value?.modified) name += '*'
+  return name;
+}
+
+// update all widgets with provided data
+function loadTemplate(template=null,saveToLocalStorage=false) {
+  // console.log( '[Template.loadTemplate]', typeof data, JSON.stringify(sheet))
+
+  // if we don't know what to show, we load a copy of the demo page
+  if( !template) {
+    template = getTemplateDemoTiles();
+  }
+
+  // make sure data is at the latest format
+  const data = TemplateData.normalize(template.data)
+
+  // we are on the first page and last page is calculated based on number of pages
+  offset.value = 0
+  // frontPageData.value = data[0]
+  // backPageData.value = data[1]
+  template.data = data
+
+  activeTemplate.value = template;
+  // console.log('[Template.loadTemplate] template version', JSON.stringify(template.ver))
+  updateOffsets()
+
+  // console.log('[Template.loadTemplate]', offset.value, offsetLast.value)
+
+  // asynchronous localstorage maintenance
+  setTimeout( async() => {
+    return new Promise( async(resolve, reject) => {
+      // save the template to local storage
+      if(saveToLocalStorage) {
+        saveTemplateToLocalStore(false)
+      }
+      resolve(true)
+    })
+  }, 1000)
+}
+
+function onDelete() {
+  // if the template is new there is nothing to delete
+  if(!activeTemplate.value.id) {
+    router.push('/')
+    return;
+  }
+  const name = activeTemplate.value.name
+  confirm.require({
+      message: 'Do you want to delete "' + name +'"',
+      header: "Delete Template",
+      rejectLabel: 'No',
+      acceptLabel: "Yes, Delete",
+      accept: async () => {
+        toaster.info( 'Calling Tower', 'Requesting deletion of ' + name)
+        await TemplateData.delete(activeTemplate.value).then( () => {
+          // go back to home page
+          router.push('/')
+          // and give visual feedback
+          toaster.success( 'Clear', 'Template "' + name + '" deleted')
+        })
+      }
+    })
+
+}
+
+function onEditor() {
+  showEditor.value = !showEditor.value;
+}
+
+// function onEditorSave() {
+//   showEditor.value = false;
+//   // Save template if we are logged in and template already has an Id
+//   // This is preventing unwanted saves of new pages and demos
+//   if(newCurrentUser.loggedIn && activeTemplate.value.id) {
+//     TemplateData.save(activeTemplate.value).then(t => {
+//         let message = 'Template "' + t.name + '" saved';
+//         toaster.success( 'Clear', message)
+//       }).catch( e => {
+//         console.log('[Template.onEditorSave] error', e)
+//       })
+//   }
+// }
 
 // Validate and assign new offset value
 function onOffset(newOffset) {
@@ -248,16 +212,72 @@ function onOffset(newOffset) {
 
 function onPageUpdate(pageData) {
   // console.log('[Template.onPageUpdate] index', pageData.index)
-  // save template data without index
+  activeTemplate.value.modified = true
+  // save template data for that pages
   activeTemplate.value.data[pageData.index] = {data:pageData.data,type:pageData.type}
-  saveTemplateToLocalStore(true)
+  // save template locally after some time so UI has a chance to update
+  setTimeout( () => saveTemplateToLocalStore(pageData.index == 0), 1000)
 }
 
-function saveTemplateToLocalStore(modified=false,updateThumbnail=false) {
-  // console.log('[Template.saveActiveSheet]', modified)
-  LocalStore.saveTemplate(activeTemplate.value, modified)
-  templateModified.value = modified
-  if(updateThumbnail) {
+
+function onPrint() {
+  saveTemplateToLocalStore()
+  router.push('/print')
+}
+
+async function onSave() {
+  if( !newCurrentUser.loggedIn) {
+    toaster.warning('Squawk and Ident','Please sign in to use custom templates')
+    return
+  }
+  try {
+      // retrieve data from active template
+      toaster.info( 'Say Request', 'Saving template ' + activeTemplate.value.name)
+      await TemplateData.save(activeTemplate.value).then(t => {
+        // console.log('[Template.onSave]', activeTemplate.value.id, JSON.stringify(t))
+        let message = 'Template "' + t.name + '" saved';
+        if(t.publish && t.code) {
+          message += '\nShare code is ' + t.code
+        }
+        toaster.success( 'Clear', message)
+        // update version number
+        activeTemplate.value.ver = t.ver
+        // update code
+        activeTemplate.value.code = t.code
+
+        // mark the template as not modified anymore
+        activeTemplate.value.modified = false
+
+        // did we just get an id?
+        if(!activeTemplate.value.id) {
+          activeTemplate.value.id = t.id
+          router.push('/template/' + t.id)
+        }
+      })
+  } catch( e) {
+    console.log('[Menu.onTemplateSave]', e)
+    toaster.error('Save Template','Could not save template "' + activeTemplate.value?.name + '"')
+  }  
+}
+
+function onSettings(settings) {
+  // console.log('[Template.onSettings]', settings)
+  showSettings.value = false;
+  if( activeTemplate.value.name != settings.name 
+    || activeTemplate.value.desc != settings.desc 
+    || activeTemplate.value.publish != settings.publish) {
+    activeTemplate.value.name = settings.name
+    activeTemplate.value.desc = settings.desc
+    activeTemplate.value.publish = settings.publish
+    activeTemplate.value.modified = true
+    onSave()
+  }
+}
+
+function saveTemplateToLocalStore(thumbnail=false) {
+  // console.log('[Template.saveTemplateToLocaStore]', thumbnail)
+  LocalStore.saveTemplate(activeTemplate.value)
+  if(thumbnail) {
     updateThumbnail()
   }
 }
@@ -315,10 +335,12 @@ function updateThumbnail() {
     })
   }
 }
-
 </script>
 
 <style scoped>
+#btnDelete {
+  margin-top: 40px;;
+}
 
 .main {
   position: relative;
@@ -397,5 +419,4 @@ function updateThumbnail() {
   color: orange;
   opacity: 0.4;
 }
-
 </style>
