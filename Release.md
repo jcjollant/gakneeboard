@@ -2,6 +2,8 @@
 * New HomePage with thumbnails
 * New Demos : Skyhawk, Charts
 * Improved Demo : Checklist
+* New url system allows to bookmark templates
+* New Template actions layout
 ## 12/09/2024
 * Three Columns checklist
 ## 12/08/2024
