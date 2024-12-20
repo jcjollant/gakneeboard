@@ -1,20 +1,10 @@
 <template>
   <div class="editor">
     <ConfirmDialog />
-    <div class="editorTitle">
-      <div>Page Editor</div>
-    </div>
-    <div class="editorMenu">
-      <MenuButton id="editorBtnSave" icon="check" label="Save Edits and Close" 
-        @click="onExitAndSave" />
-      <MenuButton id="editorBtnDiscard" icon="xmark" label="Discard Edits and Close" :active="true"
-        @click="onDiscard" />
-    </div>
     <div class="editorPageAll" v-if="model">
       <VerticalActionBar :offset="-1" @action="onAction"/>
       <div v-for="(page,index) in model['data']" v-show="index >= offset"
         class="editorPage" :class="'editorPage' + index">
-        <div class="editorPageName">Page {{ index+1 }}</div>
         <VerticalActionBar class="middle" :offset="index" :last="index==model['data']['length'] - 1" 
           @action="onAction" />
         <Overlay :type="page['type']" :offset="index" class="overlay"
@@ -267,7 +257,6 @@ function swapTiles(params:any) {
   flex-flow: column;
   justify-content: center;
   gap: 1rem;
-  background-color: lightgrey;
   min-width: var(--editor-min-width)
 }
 .editorBottom {
