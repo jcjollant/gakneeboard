@@ -4,12 +4,13 @@ import {
     faBan, faBorderAll,
     faCheck, faChevronRight, faCircleInfo, faCloud, faCloudSunRain, faComments,
     faFileExport,
-    faGasPump, faHeadset, faImage, faJetFighter,
+    faGasPump, faGear, faHeadset, faImage, faJetFighter,
     faLink, faListCheck,
     faPenToSquare, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, faPrint,
     faQuestion, 
     faRoadCircleCheck, faRoute, faRotateLeft,
-    faSave, faStarOfLife, faSun, faUser,
+    faSave, faScrewdriverWrench, faStarOfLife, faSun, 
+    faTrash, faUser,
     faVideo, faWalkieTalkie, faXmark
 } from '@fortawesome/free-solid-svg-icons';
 import { createApp } from 'vue';
@@ -27,12 +28,13 @@ import './style.css';
 library.add( faBan, faBorderAll, 
     faCheck, faChevronRight, faCircleInfo, faCloud, faCloudSunRain, faComments, 
     faFacebookF, faFileExport, faGoogle, 
-    faGasPump, faHeadset, faImage, faJetFighter, 
+    faGasPump, faGear, faHeadset, faImage, faJetFighter, 
     faLink, faListCheck, 
     faPenToSquare, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, faPrint, 
     faQuestion, 
     faRoadCircleCheck, faRotateLeft, faRoute, 
-    faSave, faStarOfLife, faSun, faUser,
+    faSave, faScrewdriverWrench, faStarOfLife, faSun, 
+    faTrash, faUser,
     faVideo, faWalkieTalkie, faXmark)
 
 createApp(App)
