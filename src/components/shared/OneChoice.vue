@@ -9,6 +9,7 @@
 </template>
 
 <script setup>
+
 const props = defineProps({
   choices: { type: Object, default: [{label:'No Choice'}]},
 })
