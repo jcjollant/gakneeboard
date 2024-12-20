@@ -177,8 +177,7 @@ export class LocalStore {
     }
 
     // Save sheet data to browser
-    static saveTemplate( data:any,modified=false) {
-        if(data) data.modified = modified;
+    static saveTemplate( data:any) {
         localStorage.setItem(LocalStore.template, JSON.stringify( data))
     }
 
