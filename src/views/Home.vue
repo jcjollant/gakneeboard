@@ -87,7 +87,13 @@ function onDemoSelection(name) {
 }
 
 function onNewTemplate() {
-    onDemoSelection(SheetName.new)
+    const templateData = getTemplateDataFromName(SheetName.new)
+    templateData.name = 'New Template'
+
+    // Save demo data to localstore
+    LocalStore.saveTemplate(templateData);
+    // Load localstore
+    router.push( '/template/new')
 }
 
 function onTemplateSelection(index) {
