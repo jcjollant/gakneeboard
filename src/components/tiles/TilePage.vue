@@ -1,6 +1,6 @@
 <template>
     <div class="tiles pageTiles">
-        <Tile v-for="tile in tiles" :tile="tile" @update="onUpdate" />
+        <Tile v-for="(tile,index) in tiles" :tile="tile" @update="onUpdate" :class="'tile'+index" />
     </div>
 </template>
 
