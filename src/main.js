@@ -2,7 +2,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faFacebookF, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import {
     faBan, faBorderAll,
-    faCheck, faChevronRight, faCircleInfo, faCloud, faCloudSunRain, faComments,
+    faCamera, faCheck, faChevronRight, faCircleInfo, faCloud, faCloudSunRain, faComments,
     faFileExport,
     faGasPump, faGear, faHeadset, faImage, faJetFighter,
     faLink, faListCheck,
@@ -26,7 +26,7 @@ import router from './router';
 import './style.css';
 
 library.add( faBan, faBorderAll, 
-    faCheck, faChevronRight, faCircleInfo, faCloud, faCloudSunRain, faComments, 
+    faCamera, faCheck, faChevronRight, faCircleInfo, faCloud, faCloudSunRain, faComments, 
     faFacebookF, faFileExport, faGoogle, 
     faGasPump, faGear, faHeadset, faImage, faJetFighter, 
     faLink, faListCheck, 
