@@ -1,80 +1,65 @@
-import { visitAndCloseBanner, maintenanceMode } from './shared'
+import { visitAndCloseBanner, maintenanceMode, visitSkipBanner, environment, kenmoreTitle, selectionTitle } from './shared'
 
 describe('Authenticated User', () => {
-  it('Sign in and Load Page', () => {
-    visitAndCloseBanner()
-
-    // 
-
-
+  it('Sign in and Load Page', async () => {
+    visitSkipBanner()
+    // Authenticate
     maintenanceMode()
 
-    // user name should show up
+    // As signed in User I can see my name
     cy.get('.session').contains('Jc')
+    // Reload to get templates
+    cy.visit(environment)
 
     // As an authenticated I can see my templates
-    // load page should open
-    cy.get('#menuLoad').click()
-    cy.get('.contentPlaceholder').contains('Select a template')
-
+    let totalTemplates = 3
+    cy.get('.templateSection > .templateList').children().should('have.length', totalTemplates)
     // Should have at least the 'Anchor' page
-    cy.get('[aria-label="Anchor"]').click()
-    cy.get('.templateDescription > :nth-child(2)').contains('(none)')
+    cy.get('.templateSection > .templateList > :nth-child(3)').contains('Anchor')
+    cy.get('.templateSection > .templateList > :nth-child(3)').click()
+    cy.get('.tile0 > .headerTitle').contains(kenmoreTitle)
+    cy.get('.logo').click()
 
-    // Do Not Load
-    cy.get('.actionDialog > .p-button-link').click()
+    // As a signed in user, I should be able to make a copy of any template
 
-    // Save the page into something disposable
-    const tempName = 'Temp'
-    const tempDescription = 'Temporary Description'
-    cy.get('#menuSave').click()
-    cy.get('.p-dialog-header').contains('Save New Template')
-    cy.get('.pageName > .p-inputtext').type('{selectAll}').type(tempName)
-    cy.get('.pageDescription > .p-inputtext').type('{selectAll}').type(tempDescription)
-
+    // As a signed in user I can create and save a template
+    cy.get('.templateNew').click()
+    cy.get('.page0 > .headerTitle').contains(selectionTitle)
+    // Customize with Notes page on the left
+    cy.get('.page0 > .list > [aria-label="Notes"]').click()
     cy.intercept({
       method: 'POST',
       url: '**/template',
     }).as('postTemplate');
-    cy.get('.actionDialog > [aria-label="Save"]').click()
+    cy.get('#btnSave').click()
+    cy.url().then((url) => {
+      const id = url.split('/').pop()
+      // Id should be reflected in the URL
+      expect(id).to.be.greaterThan(0)
+    })    
     cy.wait('@postTemplate').its('response.statusCode').should('equal', 200)
 
-    // second time we save we should have the short save
-    cy.get('#menuSave').click()
-    cy.get('.p-dialog-header').contains('Save "' + tempName + '"')
-    cy.get('.pageName > .p-inputtext').should( 'have.value', tempName)
-    cy.get('.pageDescription > .p-inputtext').should( 'have.value', tempDescription)
+    // that new template should be in the home page
+    totalTemplates++;
+    cy.get('.logo').click()
+    cy.get('.templateSection > .templateList').children().should('have.length', totalTemplates)
 
-    // navigate save options
-    cy.get('[aria-label="Replace..."]').click()
-    cy.get('.p-dialog-header').contains('Overwrite Existing Template')
-    cy.get('.p-fieldset-legend').contains('Your 2 Templates')
-    // select temp
-    cy.get('[aria-label="Temp"]').click()
-    cy.get('.p-confirm-dialog > .p-dialog-header').contains('Overwrite Template')
-    // do not confirm
-    cy.get('.p-confirm-dialog-reject').click()
-    cy.get('.actionDialog > .p-button').click()
-
-    // Now delete it
-    cy.get('#menuLoad').click()
-    // Delete mode
-    cy.get('.templateList > .p-button-icon-only').click()
+    cy.get('#btnDelete').click()
+    cy.get('.p-confirm-dialog-message').contains('Do you want to delete "New Template"')
     cy.intercept({
       method: 'DELETE',
       url: '**/template/**',
     }).as('deleteTemplate');
-
-    cy.get('[aria-label="Temp"]').click()
-    // confirmation
+    // Confirm delete
     cy.get('.p-confirm-dialog-accept').click()
 
-    // Delete Temp
-    cy.wait('@deleteTemplate').its('response.statusCode').should('equal', 200)
+    // that deleted template should NOT be in the home page
+    totalTemplates--;
+    cy.get('.logo').click()
+    cy.get('.templateSection > .templateList').children().should('have.length', totalTemplates)
 
-    // Close dialog
-    cy.get('.actionDialog > .p-button-link').click()
 
+    // As an authenticated User, I can sign out
     // Check Sign out
     cy.get('.active').click()
     cy.get('.p-confirm-dialog-message').contains("You will loose access")
@@ -84,19 +69,5 @@ describe('Authenticated User', () => {
     cy.get('.menuIcon').click()
     cy.get('[aria-label="Sign In"]')
 
-  })
-
-  it.skip('Shows Publications', () => {
-    cy.viewport('macbook-16')
-    visitAndCloseBanner()
-    maintenanceMode()
-
-    // open menu
-    cy.get('.menuIcon').click()
-    // Load Template
-    cy.get('#menuLoad').click()
-    cy.get('.choiceInactive').contains('Community').click()
-    cy.get('[aria-label="Page 2"]')
-    cy.get('.p-datatable-tbody').children().should('have.length', 5)
   })
 })

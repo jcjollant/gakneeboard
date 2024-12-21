@@ -10,12 +10,15 @@ export const placeHolderSubtitle = 'Click header to configure'
 export const maintenanceLogin = '12b39a0daff8fc144fc678663395f6ce5706c778a259167ebc307144fcc96146'
 export const maintenanceTest ='4d51414ceb16fe67ec67ef5194a76036fc54b59846c9e8da52841717fe4b6247'
 
-export const feltsTitle = 'Felts Fld'
-export const boeingTitle = 'Boeing Fld/king County Intl'
-export const radioFlowTitle = 'Radios'
-export const notesTitle = 'Notes'
 export const atisTitle = 'ATIS @'
+export const boeingTitle = 'Boeing Fld/king County Intl'
 export const clearanceTitle = 'Clearance @'
+export const feltsTitle = 'Felts Fld'
+export const kenmoreTitle = 'Kenmore Air Harbor'
+export const notesTitle = 'Notes'
+export const radioFlowTitle = 'Radios'
+export const rentonTitle = 'Renton Muni'
+export const selectionTitle = 'Page Selection'
 
 export function visitAndCloseBanner() {
     cy.visit(environment)

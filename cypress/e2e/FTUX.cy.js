@@ -1,4 +1,4 @@
-import { environment, visitAndCloseBanner, visitSkipBanner } from './shared.js'
+import { atisTitle, boeingTitle, clearanceTitle, environment, feltsTitle, notesTitle, radioFlowTitle, rentonTitle, selectionTitle, visitAndCloseBanner, visitSkipBanner } from './shared.js'
 
 describe('First Time User Experience', () => {
 
@@ -47,8 +47,46 @@ describe('First Time User Experience', () => {
         expectedDemos.forEach((demo, index) => {
             cy.get('.demoSection > .templateList').children().eq(index).contains(demo)
         })
-
+        
         // As a new user, I should see the version number
         cy.get('.versionDialog')
+    })
+
+    // As a new User I can open demos
+    it('Open Demos', () => {
+        visitSkipBanner()
+        cy.get('.demo0').click()
+        cy.get('.tile0 > .headerTitle').contains(boeingTitle)
+        cy.get('.tile1 > .headerTitle').contains(feltsTitle)
+        cy.get('.tile2 > .headerTitle').contains(radioFlowTitle)
+        cy.get('.tile3 > .headerTitle').contains(notesTitle)
+        cy.get('.tile4 > .headerTitle').contains(atisTitle)
+        cy.get('.tile5 > .headerTitle').contains(clearanceTitle)
+
+        // go back via image
+        cy.get('.logo-img').click()
+        cy.get('.demo1').click()
+        cy.get('.page0 > .headerTitle').contains('Preflight')
+
+        // go back via name
+        cy.get('.logo-name').click()
+        cy.get('.demo2').click()
+        cy.get('.tile0 > .headerTitle').contains(rentonTitle)
+        cy.get('.tile1 > .headerTitle').contains(boeingTitle)
+    })
+
+    it('Create new template', () => {
+        visitSkipBanner()
+
+        // As a new User, I can create a new Template
+        cy.get('.templateNew').click()
+        cy.get('.page0 > .headerTitle').contains(selectionTitle)
+        // Customize with Notes page on the left
+        cy.get('.page0 > .list > [aria-label="Notes"]').click()
+
+        // As a new User I cannot save a template without signing in
+        cy.get('#btnSave').click()
+        cy.get('.p-toast-detail').contains('Please sign in to use custom templates')
+
     })
 })
