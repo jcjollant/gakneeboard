@@ -60,8 +60,10 @@ export class CurrentUser {
     }
 
     removeTemplate(id:number) {
+      // console.log('[CurrentUser.removeTemplate]', id, this.templates.length)
       // no need to resort, just remove the entry
       this.templates = this.templates.filter((t) => t.id !== id);
+      // console.log('[CurrentUser.removeTemplate]', this.templates.length)
       this.notify()
     }
 
@@ -75,7 +77,7 @@ export class CurrentUser {
     }
 
     sortTemplates() {
-      if(this.templates && this.templates.length > 2) {
+      if(this.templates && this.templates.length > 1) {
         this.templates.sort((a, b) => a.name.localeCompare(b.name));
       }
     }
@@ -88,6 +90,7 @@ export class CurrentUser {
           this.templates = data.templates ? data.templates : [];
           this.sortTemplates()
           this.maxTemplateCount = Number(data.maxTemp ? data.maxTemp : 0);
+          localStorage.setItem(LocalStore.user, JSON.stringify(data))
 
           // notify listeners
           this.notify()
