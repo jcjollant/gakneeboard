@@ -233,7 +233,7 @@ function onPageUpdate(pageData) {
   // save template data for that pages
   activeTemplate.value.data[pageData.index] = {data:pageData.data,type:pageData.type}
   // save template locally after some time so UI has a chance to update
-  setTimeout( () => saveTemplateToLocalStore(pageData.index == 0), 1000)
+  saveTemplateToLocalStore(pageData.index == 0)
 }
 
 
@@ -286,8 +286,9 @@ function onSettings(settings) {
     activeTemplate.value.name = settings.name
     activeTemplate.value.desc = settings.desc
     activeTemplate.value.publish = settings.publish
-    activeTemplate.value.modified = true
-    onSave()
+    // We consider the template as modified if it's a cloud template
+    activeTemplate.value.modified = activeTemplate.value.id > 0
+    saveTemplateToLocalStore()
   }
 }
 
@@ -295,7 +296,8 @@ function saveTemplateToLocalStore(thumbnail=false) {
   // console.log('[Template.saveTemplateToLocaStore]', thumbnail)
   LocalStore.saveTemplate(activeTemplate.value)
   if(thumbnail) {
-    updateThumbnail('local')
+    // give page time to update
+    setTimeout( () => updateThumbnail(activeTemplate.value.id), 1000)
   }
 }
 
@@ -350,8 +352,8 @@ function updateThumbnail(index) {
       // link.href = scaledImg
       // link.click()
 
-      console.log( '[Template.updateThumbnail] done', index, scaledImg.length)
-    })
+      // console.log( '[Template.updateThumbnail] done', index, scaledImg.length)
+    }).catch((e) => console.log('[Template.updateThumbnail] failed', e))
   }
 }
 </script>
