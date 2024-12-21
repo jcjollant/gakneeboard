@@ -243,6 +243,10 @@ function swapTiles(params:any) {
 </script>
 
 <style scoped>
+* {
+  --editor-bottom-height: 50px;
+  --editor-height: calc(var(--page-height) + var(--editor-bottom-height));
+}
 .active {
   background-color: white;
   color: black;
@@ -250,12 +254,11 @@ function swapTiles(params:any) {
 .editor {
   position: absolute;
   left: 0;
-  top: 0;
+  top: calc(var(--menu-height) + var(--main-gap)); 
   width: 100%;
-  height: 100%;
+  height: var(--editor-height);
   display: flex;
   flex-flow: column;
-  justify-content: center;
   gap: 1rem;
   min-width: var(--editor-min-width)
 }
@@ -264,7 +267,7 @@ function swapTiles(params:any) {
   justify-content: center;
   gap: 10px;
   padding: 5px;
-  height: 50px;
+  height: var(--editor-bottom-height);
   width: 100%;
 }
 .editorMask {
@@ -279,7 +282,6 @@ function swapTiles(params:any) {
   display: flex;
   flex-flow: column;
   align-items: end;
-  /* justify-content: flex-end; */
   gap: 10px;
   z-index: 2;
 }
@@ -287,8 +289,8 @@ function swapTiles(params:any) {
 .editorPage {
   display: grid;
   gap:0;
+  grid-template-rows: var(--page-height) 50px;
   grid-template-columns: var(--page-width) var(--pages-gap);
-  grid-template-rows: 50px var(--page-height) 50px;
 }
 .editorSheets {
   font-weight: bolder;
@@ -311,7 +313,7 @@ function swapTiles(params:any) {
   gap: 0;
   justify-content: center;
   overflow: hidden;
-  height: calc( var(--page-height) + 100px);
+  /* height: var(--editor-height); */
 }
 
 .editorTitle {
@@ -327,7 +329,7 @@ function swapTiles(params:any) {
 
 .middle {
   grid-column: 2;
-  grid-row: 1 / span 3;
+  grid-row: 1;
 }
 
 </style>
