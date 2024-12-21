@@ -5,11 +5,6 @@
             <font-awesome-icon v-if="name" class="icon" icon="fa-chevron-right" />
             <div v-if="name" title="Active Template Name">{{name}}</div>
         </div>
-
-        <div class="right">
-            <!-- <FAButton icon="fa-circle-info" :menu="true" @click="router.push('/about')" title="About GA Kneeboard"></FAButton> -->
-            <Session />
-        </div>
     </div>
 </template>
 
@@ -24,11 +19,8 @@ const emits = defineEmits(['about'])
 const props = defineProps({
     name: String, default: null
 })
-const route = useRoute()
 const router = useRouter()
 
-
-const onPrint = () => router.push('/print')
 
 </script>
 
@@ -48,7 +40,7 @@ const onPrint = () => router.push('/print')
     font-weight: bold;
 }
 .menu {
-    height: 2rem;
+    height: var(--menu-height);
     display: flex;
     justify-content: space-between;
     align-items: center;
