@@ -3,7 +3,7 @@
       @authentication="onAuthentication" />
     <ConfirmDialog />
     <div class="session">
-        <FAButton v-if="user.loggedIn" :label="user.name" title="Sign Out" :menu="true" class="signout"
+        <FAButton v-if="loggedIn" :label="newCurrentUser.name" title="Sign Out" :menu="true" class="signout"
           @click="onSignOut"></FAButton>
         <FAButton v-else label="Sign In" icon="fa-user" title="Sign In to enable custom data" :menu="true"
           @click="showSignIn=true"></FAButton>
@@ -11,9 +11,10 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { newCurrentUser } from '../../assets/data';
 import { useConfirm } from 'primevue/useconfirm';
+import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import { useToaster } from '../../assets/Toaster';
 import ConfirmDialog from 'primevue/confirmdialog';
@@ -21,19 +22,29 @@ import FAButton from '../shared/FAButton.vue';
 import SignIn from '../signin/SignIn.vue';
 
 const confirm = useConfirm()
+const router = useRouter()
 const showSignIn = ref(false)
 const toaster = useToaster(useToast())
-const user = ref(newCurrentUser)
+const loggedIn = ref(false)
 
 onMounted( () => {
+    // console.log('[Session.onMounted]')
     newCurrentUser.addListener(onUserUpdate)
+    loggedIn.value = newCurrentUser.loggedIn
 })
 
-function onAuthentication(newUser) {
-  // console.log('[Menu.onAuthentication] ' + JSON.stringify(userParam))
+onUnmounted( () => {
+    // console.log('[Session.onUnmounted]')
+    newCurrentUser.removeListener(onUserUpdate)
+})
+
+function onAuthentication(newUser:any) {
+  // console.log('[Session.onAuthentication] ' + JSON.stringify(userParam))
   showSignIn.value = false
   if( newUser) {
-    toaster.info('Clear', 'Welcome ' + newUser.name)
+    toaster.success('Clear', 'Welcome ' + newUser.name)
+    // reload Home Page
+    router.push({name:'Home',query:{_r:Date.now()}});
   } else {
     toaster.warning('Engine Roughness', 'Authentication failed');  
   }
@@ -47,16 +58,17 @@ function onSignOut() {
       accept: () => {
         // logout and remo
         newCurrentUser.logout()
+        toaster.info('Signed Out', 'Log back in to access your templates')
 
-        // reload the page
-        location.reload()
+        // reload Home Page
+        router.push({name:'Home',query:{_r:Date.now()}});
       }
     })
 }
 
-function onUserUpdate(currentUser) {
-  // console.log('[TemplateMenu.onUserUpdate]', JSON.stringify(currentUser))
-  user.value = currentUser
+function onUserUpdate(currentUser:any) {
+  // console.log('[Session.onUserUpdate]', JSON.stringify(currentUser.loggedIn))
+  loggedIn.value = newCurrentUser.loggedIn
 }
 
 
