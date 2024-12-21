@@ -4,6 +4,7 @@
     <About v-model:visible="showAbout" @close="showAbout=false" />
     <Maintenance v-model:visible="showMaintenance" @close="showMaintenance=false" />
     <Toast />
+    <ConfirmDialog />
     <div class="application" @about="console.log('about')">
         <router-view ></router-view>
     </div>
@@ -14,7 +15,8 @@
       @click="showFeedback=true" />
     <MenuButton v-if="route.name!='Print'" icon="circle-info" class="aboutButton" label="About GA Kneeboard"
       @click="showAbout=true" />
-    <div v-if="route.name!='Print'" class="versionDialog" :title="'Frontend/Backend versions ' + versionText" >{{ versionText }}<span class="maintenanceDialog" v-show="true"
+    <div v-if="route.name!='Print'" class="versionDialog" :title="'Frontend/Backend versions ' + versionText" >{{ versionText }}
+      <span class="maintenanceButton" v-show="true"
         @click="showMaintenance=true" @close="showMaintenance=false">&nbsp</span></div>
 </template>
 
@@ -27,6 +29,7 @@ import { TemplateData } from './assets/TemplateData';
 import { useRoute, useRouter } from 'vue-router';
 // Components
 import About from './components/menu/About.vue'
+import ConfirmDialog from 'primevue/confirmdialog';
 import Feedback from './components/Feedback.vue'
 import HowDoesItWork from './components/HowDoesItWork.vue'
 import Maintenance from './components/menu/Maintenance.vue'
@@ -83,6 +86,7 @@ onMounted( () => {
             }) 
         })
     }
+    showMaintenance.value = false;
 
     // Analytics
     inject();

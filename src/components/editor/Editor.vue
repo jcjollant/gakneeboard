@@ -1,6 +1,5 @@
 <template>
   <div class="editor">
-    <ConfirmDialog />
     <div class="editorPageAll" v-if="model">
       <VerticalActionBar :offset="-1" @action="onAction"/>
       <div v-for="(page,index) in model['data']" v-show="index >= offset"
@@ -16,7 +15,7 @@
             @click="onAction(EditorAction.pastePage(index))"></Button>
           <Button icon="pi pi-eject" label="Replace" title="Replace Page" 
             @click="onAction(EditorAction.reset(index))"></Button>
-          <Button icon="pi pi-trash" label="Delete" title="Delete Page" severity="warning" 
+          <Button icon="pi pi-trash" label="Delete" title="Delete Page" severity="warning" class="btnDelete"
             @click="onAction(EditorAction.deletePage(index))"></Button>
         </div>
       </div>
@@ -37,9 +36,9 @@ import { pageDataBlank, readPageFromClipboard } from '../../assets/sheetData'
 import { duplicate } from '../../assets/data'
 
 import Button from 'primevue/button'
-import ConfirmDialog from 'primevue/confirmdialog'
 import Overlay from './Overlay.vue'
 import VerticalActionBar from './VerticalActionBar.vue'
+import { LocalStore } from '../../lib/LocalStore'
 
 const emits = defineEmits(['discard','save','offset'])
 const confirm = useConfirm()
@@ -100,30 +99,6 @@ function onAction(action:EditorAction) {
   } else {
     onEditorAction(action)
   }
-}
-
-// User selected Discard and close
-function onDiscard() {
-  // confirm and get out
-  if(modified.value) {
-    confirm.require({
-        message: 'Would you like to close the editor without saving modifications?',
-        header: 'Discard Changes',
-        rejectLabel: 'No',
-        acceptLabel: 'Yes, Discard',
-        accept: () => {
-          discard()
-        }
-      })
-  } else {
-    discard()
-  }
-}
-
-// Leave the editor
-function onExitAndSave() {
-  modified.value = false
-  emits('save')  
 }
 
 // Pages are manipulated via editor buttons
@@ -230,6 +205,7 @@ async function onEditorAction(ea:EditorAction) {
     emits('offset', offset.value)
   }
   modified.value = true
+  LocalStore.saveTemplate(model.value)
 }
 
 function pasteTile(params:any) {

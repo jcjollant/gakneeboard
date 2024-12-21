@@ -1,7 +1,6 @@
 <template>
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
       @authentication="onAuthentication" />
-    <ConfirmDialog />
     <div class="session">
         <FAButton v-if="loggedIn" :label="newCurrentUser.name" title="Sign Out" :menu="true" class="signout"
           @click="onSignOut"></FAButton>
@@ -17,7 +16,6 @@ import { useConfirm } from 'primevue/useconfirm';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import { useToaster } from '../../assets/Toaster';
-import ConfirmDialog from 'primevue/confirmdialog';
 import FAButton from '../shared/FAButton.vue';
 import SignIn from '../signin/SignIn.vue';
 
