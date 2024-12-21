@@ -7,4 +7,5 @@ export class PageType {
   static navLog = 'navlog';
   static notes = 'notes';
   static approach = 'approach';
+  static loading = 'loading';
 }
