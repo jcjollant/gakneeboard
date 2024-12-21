@@ -3,17 +3,15 @@
         <div class="left">
             <Logo @click="router.push('/')" />
             <font-awesome-icon v-if="name" class="icon" icon="fa-chevron-right" />
-            <div v-if="name" title="Active Template Name">{{name}}</div>
+            <div v-if="name" title="Active Template Name" class="templateName">{{name}}</div>
         </div>
     </div>
 </template>
 
 <script setup>
 // import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import FAButton from '../shared/FAButton.vue';
+import { useRouter } from 'vue-router'
 import Logo from './Logo.vue';
-import Session from './Session.vue';
 
 const emits = defineEmits(['about'])
 const props = defineProps({
