@@ -1,4 +1,4 @@
-import { currentVersionNumber, environment, loadDemo, visitAndCloseBanner, visitSkipBanner } from './shared'
+import { environment, loadDemo, visitSkipBanner } from './shared'
 
 describe('Navigation', () => {
   it('Offset', () => {
