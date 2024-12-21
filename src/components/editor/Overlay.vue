@@ -74,10 +74,6 @@ function swap(from:number, to:number) {
 </script>
 
 <style scoped>
-* {
-    --button-height: 38px;
-    --half-button: 19px;
-}
 .copyPaste {
     display: flex;
     flex-flow: column;
@@ -115,7 +111,7 @@ function swap(from:number, to:number) {
 }
 
 .rowSeparator {
-    padding: var(--half-button) 0;
+    padding: calc(var(--button-height) / 2) 0;
     position: absolute;
     left: 0;
     top: 0;
