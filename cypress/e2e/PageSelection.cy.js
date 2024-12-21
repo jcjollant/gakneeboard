@@ -1,4 +1,4 @@
-import { visitAndCloseBanner, newPage } from './shared'
+import { visitSkipBanner, newTemplate } from './shared'
 
 function ejectAndConfirm() {
 
@@ -7,8 +7,8 @@ function ejectAndConfirm() {
 describe('Selection Page', () => {
 
   it('Try All Pages', () => {
-    visitAndCloseBanner()
-    newPage()
+    visitSkipBanner()
+    newTemplate()
     // Tiles on Page 1
     cy.get('.page0 > .list > [aria-label="Tiles"]').click()
     cy.get('.page0 > :nth-child(6) > .headerTitle').contains('Tile Selection')

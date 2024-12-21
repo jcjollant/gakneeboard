@@ -1,4 +1,4 @@
-import { visitAndCloseBanner, newPage } from './shared'
+import { newTemplate, visitSkipBanner } from './shared'
 
 function checkBlankState() {
     cy.get('.titleContainer').contains('Title')
@@ -8,8 +8,8 @@ function checkBlankState() {
 
 describe('Cover Page', () => {
   it('Basic flow', () => {
-    visitAndCloseBanner()
-    newPage()
+    visitSkipBanner()
+    newTemplate()
     // set left page to cover
     cy.get('.page0 > .list > [aria-label="Cover"]').click()
 
@@ -23,9 +23,9 @@ describe('Cover Page', () => {
     const newTitle = 'New Title'
     const newUrl = 'https://lh3.googleusercontent.com/pw/AP1GczPLO8wvSxY_E4wiez6KGvT8qhXwJyDwp6vg1_HZ_3gOYfTEFCrylQ2GyCNJuSAzpa_7mVFPgeNbpGjJnSfOeEQ9Io7G1jzW4DScU0RJ144bE7bRX23JlNbyjpfZKXzmV2UjCoYQdD_Nwz26zCPxxU47AQ=w2150-h968-s-no-gm?authuser=0'
     const newSubtitle = 'New Subtitle'
-    cy.get(':nth-child(1) > .p-inputtext').type('{selectall}').type(newTitle)
-    cy.get(':nth-child(2) > .p-inputtext').type('{selectall}').type(newUrl)
-    cy.get(':nth-child(3) > .p-inputtext').type('{selectall}').type(newSubtitle)
+    cy.get(':nth-child(1) > .p-inputtext').type('{selectall}').type(newTitle, {delay:0})
+    cy.get(':nth-child(2) > .p-inputtext').type('{selectall}').type(newUrl, {delay:0})
+    cy.get(':nth-child(3) > .p-inputtext').type('{selectall}').type(newSubtitle, {delay:0})
 
     // Cancel should revert to default state
     cy.get('.actionBar > .p-button-link').click()
@@ -33,9 +33,9 @@ describe('Cover Page', () => {
 
     // change everything again
     cy.get('.titleContainer').click()
-    cy.get(':nth-child(1) > .p-inputtext').type('{selectall}').type(newTitle)
-    cy.get(':nth-child(2) > .p-inputtext').type('{selectall}').type(newUrl)
-    cy.get(':nth-child(3) > .p-inputtext').type('{selectall}').type(newSubtitle)
+    cy.get(':nth-child(1) > .p-inputtext').type('{selectall}').type(newTitle, {delay:0})
+    cy.get(':nth-child(2) > .p-inputtext').type('{selectall}').type(newUrl, {delay:0})
+    cy.get(':nth-child(3) > .p-inputtext').type('{selectall}').type(newSubtitle, {delay:0})
 
     // Apply
     cy.get('[aria-label="Apply"]').click()
@@ -44,9 +44,6 @@ describe('Cover Page', () => {
     cy.get('.titleContainer').contains(newTitle)
     cy.get('img')
     cy.get('.subtitle').contains(newSubtitle)
-
-    // TODO check page description is valid (when we can simulate login)
-    cy.get('.menuIcon').click()
 
   })
 })

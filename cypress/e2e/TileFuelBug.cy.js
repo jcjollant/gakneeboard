@@ -1,12 +1,13 @@
-import { visitAndCloseBanner, newPage } from './shared'
+import { loadDemo, visitSkipBanner } from './shared'
 
 describe('Fuel Bug Tile', () => {
   it('Fuel Bug Tile', () => {
-    visitAndCloseBanner()
+    visitSkipBanner()
+    loadDemo('Tiles')
 
-    cy.get('.page1 > :nth-child(4) > .headerTitle > div').contains('Fuel Bug')
+    cy.get('.page1 .tile3 > .headerTitle').contains('Fuel Bug')
     // switch to edits mode
-    cy.get('.page1 > :nth-child(4) > .headerTitle > div').click()
+    cy.get('.page1 .tile3 > .headerTitle').click()
         // check it has hint
     cy.get('.actionBarHelp')
 

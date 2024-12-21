@@ -1,21 +1,20 @@
-import { visitAndCloseBanner, newPage, placeHolderSubtitle } from './shared'
+import { loadDemo, placeHolderSubtitle, visitSkipBanner } from './shared'
 
 describe('Tiles', () => {
   // ========================================================================
   // Sunlight
   // ========================================================================
   it('Sunlight Tile', () => {
-    visitAndCloseBanner()
+    visitSkipBanner()
+    loadDemo('Tiles')
 
     cy.intercept({
       method: 'GET',
       url: 'https://ga-api-seven.vercel.app/airports/**',
     }).as('getAirports');
 
-    cy.wait(2000)
-
     // check header is present
-    cy.get('.page1 > :nth-child(3) > .headerTitle > div').contains('Sun Light')
+    cy.get('.page1 .tile2 > .headerTitle').contains('Sun Light')
     // date should be today
     const today = new Date().toLocaleString('en-US', {weekday: 'short', month: 'short', day: 'numeric'})
     cy.get('.date').contains( today)

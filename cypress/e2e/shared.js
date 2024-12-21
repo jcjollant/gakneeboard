@@ -14,11 +14,29 @@ export const atisTitle = 'ATIS @'
 export const boeingTitle = 'Boeing Fld/king County Intl'
 export const clearanceTitle = 'Clearance @'
 export const feltsTitle = 'Felts Fld'
+export const holdTitle = 'Hold @'
 export const kenmoreTitle = 'Kenmore Air Harbor'
 export const notesTitle = 'Notes'
 export const radioFlowTitle = 'Radios'
 export const rentonTitle = 'Renton Muni'
 export const selectionTitle = 'Page Selection'
+
+export function demoChecklistOnPage(index) {
+    cy.get(`.page${index}`).should('have.class','pageChecklist')
+    cy.get(`.page${index} .list0 > :nth-child(13)`).contains('Engine FAILURE')
+    cy.get(`.page${index} .list0 > :nth-child(19)`).contains('Engine FIRE')
+}
+
+export function demoTilesOnPage(index) {
+    cy.get(`.page${index}`).should('have.class','pageTiles')
+
+    cy.get(`.page${index} > :nth-child(1) > .headerTitle`).contains(boeingTitle)
+    cy.get(`.page${index} > :nth-child(2) > .headerTitle`).contains(feltsTitle)
+    cy.get(`.page${index} > :nth-child(3) > .headerTitle`).contains(radioFlowTitle)
+    cy.get(`.page${index} > :nth-child(4) > .headerTitle`).contains(notesTitle)
+    cy.get(`.page${index} > :nth-child(5) > .headerTitle`).contains(atisTitle)
+    cy.get(`.page${index} > :nth-child(6) > .headerTitle`).contains(clearanceTitle)
+}
 
 export function visitAndCloseBanner() {
     cy.visit(environment)
@@ -34,27 +52,32 @@ export function visitSkipBanner() {
 
 export function maintenanceMode() {
     // Open menu
-    cy.get('.maintenanceDialog').click()
+    cy.get('.maintenanceButton').click()
+    
     // type code in maintenance window
-    cy.get('.p-inputtext').type(maintenanceLogin)
+    cy.get('.p-dialog-content .p-inputtext:not([disabled])').type(maintenanceLogin,{delay:0})
+
     // submit
-    cy.get('.p-dialog-content > div > .p-button').click()
+    cy.intercept({method: 'GET',url: '**/maintenance/**',}).as('getMaintenance')
+    cy.get('.p-dialog-content .p-button').click()
+    cy.wait('@getMaintenance').its('response.statusCode').should('equal', 200)
+    // wait for dialog closure
+    cy.get('.p-dialog-content').should('not.exist');
 }
 
-export function loadDemo(name, openMenu=true,confirm=true) {
-    const classes = {'tiles':'.tilesDemo','navlog':'.navlogDemo', 'checklist':'.checklistDemo', 'default':'.defaultDemo'}
-    if(openMenu) cy.get('.menuIcon').click()
-    cy.get('#menuDemos').click()
-    cy.get(classes[name]).click()
-    if(confirm) cy.get('.p-confirm-dialog-accept').click()
+export function loadDemo(index=0) {
+    // Turn text into index if necessary
+    const expectedDemos = ['Default','Checklist','Tiles', 'NavLog']
+    const indexOf = expectedDemos.indexOf(index)
+    if(indexOf > -1) index = indexOf;
+
+    cy.get('.demo' + index).click()
+    // wait for the page to be loaded
+    cy.get('#btnPrint')
 }
 
-export function newPage(confirm=false) {
-    // Reset tiles and check all are reset
-    cy.get('.menuIcon').click()
-    cy.get('#menuNew').click()
-    if(confirm) cy.get('.p-confirm-dialog-accept').click()
-    cy.get('.menuIcon').click()
+export function newTemplate() {
+    cy.get('.templateNew').click()
 
     // both pages should be in selection mode
     cy.get('.page0 > .headerTitle').contains('Page Selection')

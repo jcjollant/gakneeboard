@@ -1,4 +1,4 @@
-import { visitAndCloseBanner, newPage } from './shared'
+import { visitAndCloseBanner, newTemplate, visitSkipBanner } from './shared'
 
 function checkBlankState() {
     cy.get('.titleContainer').contains('Title')
@@ -8,12 +8,13 @@ function checkBlankState() {
 
 describe('Approach Page', () => {
   it('Basic flow', () => {
-    visitAndCloseBanner()
-    newPage()
+    visitSkipBanner()
+
+    newTemplate()
 
     // select approch pages on both sides
-    cy.get('.page0 > .list > [aria-label="Instrument Approach"]').click()
-    cy.get('.page1 > .list > [aria-label="Instrument Approach"]').click()
+    cy.get('.page0  [aria-label="Instrument Approach"]').click()
+    cy.get('.page1  [aria-label="Instrument Approach"]').click()
 
 
     // by default, we should be in edit mode
@@ -29,13 +30,11 @@ describe('Approach Page', () => {
 
     // Bogus airport should not allow toggle
     cy.get('.page0 > :nth-child(2) > .editMode > .airportCode > .p-inputgroup > .p-inputtext').type('{selectall}').type('KJC')
-    cy.wait(250)
     cy.get('.page0 > .headerTitle').click()
     cy.get('.page0 > :nth-child(2) > .editMode > .airportCode')
 
     // Valid airport should show all approaches
     cy.get('.page0 > :nth-child(2) > .editMode > .airportCode > .p-inputgroup > .p-inputtext').type('{selectall}').type('KRNT')
-    cy.wait(250)
     cy.intercept({
       method: 'GET',
       url: '**/05396RY16.PDF',

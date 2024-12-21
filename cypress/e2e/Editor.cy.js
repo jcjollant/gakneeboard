@@ -1,37 +1,30 @@
-import { faCopyright } from '@fortawesome/free-solid-svg-icons'
-import { visitAndCloseBanner, feltsTitle, boeingTitle, radioFlowTitle, notesTitle, atisTitle, clearanceTitle, loadDemo } from './shared'
+import { visitAndCloseBanner, feltsTitle, boeingTitle, radioFlowTitle, notesTitle, atisTitle, clearanceTitle, loadDemo, visitSkipBanner, environment,
+ demoChecklistOnPage, demoTilesOnPage } from './shared'
 
 function deletePage(index) {
     cy.get('.editorPage' + index + ' > .editorBottom > .p-button-warning').click()
     cy.get('.p-confirm-dialog-message').contains('delete page ' + (index + 1))
     cy.get('.p-confirm-dialog-accept').click()
-
 }
 
-function demoChecklistOn(page) {
-    cy.get(`${page} > :nth-child(2) > .twoLists > .leftList > :nth-child(19)`).contains('FIRE')
-}
+function reloadDemoWithEditor() {
+    cy.visit(environment)
+    loadDemo(0)
+    // wait for airport to be loaded
+    cy.get('.page0 .tile0 > .headerTitle').should('not.contain','Loading')
 
-function reloadDemo(closeEditor=true,modified=true) {
-    // close editor
-    if (closeEditor) { 
-      cy.get('#editorBtnSave').click()
-    }
-    loadDemo('default',true,modified)
-
-    cy.get('.menuIcon').click()
     // reopen editor
     cy.get('#btnEditor').click()
+
 }
 
 describe('Editor', () => {
   it('Copy/Paste', () => {
-    visitAndCloseBanner()
-    cy.wait(500)
+    visitSkipBanner()
     cy.viewport('macbook-16')
 
     // reload demo
-    reloadDemo(false,false)
+    reloadDemoWithEditor()
 
     // Copy Left to Right via clip board
     cy.get('.editorPage0 > .editorBottom > [aria-label="Copy"]').click()
@@ -55,16 +48,16 @@ describe('Editor', () => {
 
 
     // reload demo
-    reloadDemo()
+    reloadDemoWithEditor()
 
     // Copy right to left
     cy.get('.editorPage1 > .editorBottom > [aria-label="Copy"]').click()
     cy.get('.editorPage0 > .editorBottom > [aria-label="Paste"]').click()
-    cy.get('.page0 > :nth-child(2) > .twoLists > .leftList > :nth-child(19)').contains('FIRE')
-    cy.get('.page1 > :nth-child(2) > .twoLists > .leftList > :nth-child(19)').contains('FIRE')
+    demoChecklistOnPage(0)
+    demoChecklistOnPage(1)
 
     // reload demo
-    reloadDemo()
+    reloadDemoWithEditor()
 
     // Copy All left tiles to right
     cy.get('.btnCopy1').click()
@@ -78,7 +71,7 @@ describe('Editor', () => {
     cy.get(`.page0 > :nth-child(6) > .headerTitle`).contains(atisTitle)
 
     // reload demo
-    reloadDemo()
+    reloadDemoWithEditor()
 
     // Copy all right tiles to left    
     cy.get('.btnCopy2').click()
@@ -93,11 +86,11 @@ describe('Editor', () => {
   })
 
   it('Editor', () => {
-    visitAndCloseBanner()
+    visitSkipBanner()
 
     cy.viewport('macbook-16')
     // enable editor
-    cy.get('#btnEditor').click()
+    reloadDemoWithEditor()
 
     // check size makes sense
     const expectedHeight = 800
@@ -105,15 +98,9 @@ describe('Editor', () => {
     // cy.get('.twoPages').invoke('outerHeight').should('be.equal', expectedHeight)
     cy.get('.editorPage0 > .overlay').invoke('outerHeight').should('be.equal', expectedHeight)
 
-    // Menu buttons
-    cy.get('#editorBtnSave')
-    cy.get('#editorBtnDiscard')
-
     // Check we have all action buttons
     const expectedPages = [0,1]
     for( let pageIndex = 0; pageIndex < 2; pageIndex++) {
-      // Page name
-      cy.get('.editorPage' + pageIndex + ' > .editorPageName').contains('Page ' + (pageIndex + 1))
       // Page controls
       cy.get('.editorPage' + pageIndex + ' > .editorBottom > [aria-label="Copy"]')
       cy.get('.editorPage' + pageIndex + ' > .editorBottom > [aria-label="Paste"]')
@@ -140,7 +127,7 @@ describe('Editor', () => {
     cy.get('.page0').contains('Page Selection')
     cy.get('.page1').contains('Page Selection').should('not.exist')
 
-    reloadDemo();
+    reloadDemoWithEditor();
 
     // reset right
     cy.get('.editorPage1 > .editorBottom > [aria-label="Replace"]').click()
@@ -148,13 +135,13 @@ describe('Editor', () => {
     cy.get('.page1').contains('Page Selection')
 
     // reload demo
-    reloadDemo()
+    reloadDemoWithEditor()
 
     // Copy left to right and confirm
     cy.get('#editorCopyToRight').click()
     cy.get('.p-confirm-dialog-accept').click()
-    cy.get('.page0 > :nth-child(6) > .headerTitle').contains('Clearance @')
-    cy.get('.page1 > :nth-child(6) > .headerTitle').contains('Clearance @')
+    cy.get('.page0 > :nth-child(6) > .headerTitle').contains(clearanceTitle)
+    cy.get('.page1 > :nth-child(6) > .headerTitle').contains(clearanceTitle)
     // swap something on the left should not affect right
     cy.get('.editorPage0 .btnSwap12').click()
     cy.get('.page0 > :nth-child(1) > .headerTitle').contains(feltsTitle)
@@ -163,7 +150,7 @@ describe('Editor', () => {
     cy.get('.page1 > :nth-child(2) > .headerTitle').contains(feltsTitle)
 
     // reload demo
-    reloadDemo()
+    reloadDemoWithEditor()
 
     // Add a page in first position
     cy.get('#editorInsert').click()
@@ -171,8 +158,8 @@ describe('Editor', () => {
     cy.get('.page0').contains('Page Selection')
     // delete new page
     deletePage(0)
-    // Flight page should be back at that position
-    cy.get('.page0').contains('Felts Fld')
+    // Tiles page should be back at that position
+    demoTilesOnPage(0)
 
     // Insert page in the middle
     cy.get('.editorPage0 > .verticalBar > #editorInsert').click()
@@ -190,34 +177,34 @@ describe('Editor', () => {
     // Copy left to right and confirm
     cy.get('#editorCopyToLeft').click()
     cy.get('.p-confirm-dialog-accept').click()
-    demoChecklistOn('.page0')
-    demoChecklistOn('.page1')
+    demoChecklistOnPage(0)
+    demoChecklistOnPage(1)
 
 
-    // delete last two pages should not be possible
+    // As user I cannot delete the last two pages of a template
     deletePage(1)
     // toast should say no more pages
     cy.get('.p-toast-message-text').contains('Last two pages cannot be deleted')
-
     // Page 1 should still be there
     cy.get('.page1').contains('Flight')
 
-    // Insert page in the middle and discard
+    // As a user I can add and delete pages from a template
+    reloadDemoWithEditor()
+    // Insert page in the middle and delete it
     cy.get('.editorPage0 > .verticalBar > #editorInsert').click()
-
-    cy.get('#editorBtnDiscard').click()
+    cy.get('.page1').contains('Page Selection')
+    cy.get('.editorPage1 .btnDelete').click()
     cy.get('.p-confirm-dialog-accept').click()
 
     // we should be back to default demo
-    cy.get('.page0').contains('Felts Fld')
+    cy.get('.page0').contains(feltsTitle)
     cy.get('.page1').contains('Flight')
 
     // open editor again
-    cy.get('#btnEditor').click()
+    reloadDemoWithEditor()
     // Insert page in first position and save
     cy.get('.editorPage0 > .verticalBar > #editorInsert').click()
-    cy.get('#editorBtnSave').click()
-    cy.get('.page0').contains('Felts Fld')
+    cy.get('.page0').contains(feltsTitle)
     cy.get('.page1').contains('Page Selection')
     cy.get('.page2').contains('Flight')
 
@@ -233,22 +220,21 @@ describe('Editor', () => {
   })
   
   it('Swaps', () => {
-    visitAndCloseBanner()
-    cy.wait(500)
+    visitSkipBanner()
     cy.viewport('macbook-16')
 
     // reload demo
-    reloadDemo(false,false)
+    reloadDemoWithEditor()
 
     // swap left and right
-    cy.get('.page0 > :nth-child(6) > .headerTitle').contains('Clearance @')
-    demoChecklistOn('.page1')
+    demoTilesOnPage(0)
+    demoChecklistOnPage(1)
     cy.get('#editorSwap').click()
-    demoChecklistOn('.page0')
-    cy.get('.page1 > :nth-child(6) > .headerTitle').contains('Clearance @')
+    demoChecklistOnPage(0)
+    demoTilesOnPage(1)
 
     // Test tiles swapping
-    reloadDemo()
+    reloadDemoWithEditor()
 
     // check we have tile swap buttons on left page
     const expectedButtons = ['.btnSwap12', '.btnSwap13', '.btnSwap24', '.btnSwap34', '.btnSwap35', '.btnSwap46', '.btnSwap56']

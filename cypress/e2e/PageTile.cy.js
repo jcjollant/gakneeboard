@@ -1,9 +1,9 @@
-import { visitAndCloseBanner, newPage } from './shared'
+import { visitAndCloseBanner, newPage, visitSkipBanner, newTemplate } from './shared'
 
 describe('Tile Page', () => {
   it('Basic flow', () => {
-    visitAndCloseBanner()
-    newPage()
+    visitSkipBanner()
+    newTemplate()
     // set left page to cover
     cy.get('.page0 > .list > [aria-label="Tiles"]').click()
 

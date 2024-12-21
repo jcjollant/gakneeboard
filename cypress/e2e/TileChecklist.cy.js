@@ -1,8 +1,9 @@
-import { visitAndCloseBanner, newPage, placeHolderSubtitle } from './shared'
+import { placeHolderSubtitle, visitSkipBanner, loadDemo } from './shared'
 
 describe('Checklist Tile', () => {
   it('Checklist Tile', () => {
-    visitAndCloseBanner()
+    visitSkipBanner()
+    loadDemo('Tiles')
 
     const title = 'Power OFF stalls'
     const title3 = 'Name3'

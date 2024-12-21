@@ -1,9 +1,9 @@
-import { visitAndCloseBanner, newPage } from './shared'
+import { visitAndCloseBanner, newPage, visitSkipBanner, newTemplate } from './shared'
 
 describe('Checklist Page', () => {
   it('Checklist work', () => {
-    visitAndCloseBanner()
-    newPage()
+    visitSkipBanner()
+    newTemplate()
     
     // set both pages to checlist
     cy.get('.page0 > .list > [aria-label="Checklist"]').click()
@@ -50,15 +50,15 @@ describe('Checklist Page', () => {
     cy.get('.page0 .textArea3').should('have.class','text3')
 
     const list1= ['##Section1','Challenge1.1##Response1.1','##','','Challenge1.2','Challenge1.3##','##!Emergency','##*Strong']
-    cy.get('.page0 .textArea1').type(list1.join('\n'))
+    cy.get('.page0 .textArea1').type(list1.join('\n'), {delay:0})
     const list2 = ['##Section2','Challenge2.1##Response2.1','##','','Challenge2.2','Challenge2.3##']
-    cy.get('.page0 .textArea2').type(list2.join('\n'))
+    cy.get('.page0 .textArea2').type(list2.join('\n'), {delay:0})
     const list3 = ['##!Section3.0','Challenge3.1##Response3.1','##','','Challenge3.2','Challenge3.3##','##Section3.4']
-    cy.get('.page0 .textArea3').type(list3.join('\n'))
+    cy.get('.page0 .textArea3').type(list3.join('\n'), {delay:0})
     cy.get('.theme-green').click()
     cy.get('[aria-label="Apply"]').click()
 
-    // test locastorage is reflecting that list
+    // test localstorage is reflecting that list
     cy.getLocalStorage('template')
       .then(t => {
         const template = JSON.parse(t)
@@ -67,6 +67,7 @@ describe('Checklist Page', () => {
         // page 0 should be a checklist
         expect(template.data[0].type).to.equal('checklist')
         // checklist should have all items
+        // debugger
         expect(template.data[0].data.items.length).to.equal(list1.length)
         expect(template.data[0].data.items2.length).to.equal(list2.length)
         expect(template.data[0].data.items3.length).to.equal(list3.length)
@@ -147,7 +148,7 @@ describe('Checklist Page', () => {
     // Change color to blue and title to Title1
     cy.get('.page0 > .headerTitle').click()
     cy.get('.theme-blue > label').click()
-    cy.get('.p-inputgroup > .p-inputtext').type('Title1')
+    cy.get('.p-inputgroup > .p-inputtext').type('Title1', {delay:0})
     cy.get('[aria-label="Apply"]').click()
     // check it's blue
     cy.get('.page0 .list0 > :nth-child(2) > .challenge').should('have.class', 'theme-blue')
@@ -170,10 +171,10 @@ describe('Checklist Page', () => {
     // change color and title but don't save
     cy.get('.page0 > .headerTitle').click()
     cy.get('.theme-green > label').click()
-    cy.get('.p-inputgroup > .p-inputtext').type('Title2')
+    cy.get('.p-inputgroup > .p-inputtext').type('Title2', {delay:0})
     cy.get('[aria-label="Cancel"]').click()
     cy.get('.page0 .list0 > :nth-child(2) > .challenge').should('have.class','theme-blue')
-    cy.get('.page0 > .headerTitle').contains('Title1')
+    cy.get('.page0 > .headerTitle').contains('Title1', {delay:0})
 
   })
 })

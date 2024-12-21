@@ -1,37 +1,10 @@
-import { visitAndCloseBanner, newPage, maintenanceMode, placeHolderSubtitle, boeingTitle, loadDemo } from './shared'
+import { boeingTitle, loadDemo, maintenanceMode, newTemplate, visitSkipBanner } from './shared'
 
 describe('Tiles', () => {
   it('Airport Tile', () => {
-    visitAndCloseBanner()
-
-    // wait for airports query
-    // cy.intercept({
-    //   method: 'GET',
-    //   url: 'https://ga-api-seven.vercel.app/airports/**',
-    // }).as('getAirports');
-
-//    cy.wait('@getAirports').its('response.statusCode').should('equal', 200)
-    cy.wait(1000)
-
-    newPage()
-
-    // sets one page in Tiles, other in Checlisk
-    cy.get('.page0 > .list > [aria-label="Tiles"]').click()
-    cy.get('.page1 > .list > [aria-label="Checklist"]').click()
-
-    // check all tiles are in reset mode on page 1
-    for( const tile of [1, 2, 3, 4, 5, 6]) {
-      cy.get(`:nth-child(1) > :nth-child(${tile}) > .headerTitle > div`).contains('Tile Selection')
-    }
-
-    // Check page 2 is in checlist mode
-    cy.get('.page1 > .headerTitle').contains("Checklist")
-
-    // load tiles demo page
+    visitSkipBanner()
     maintenanceMode()
-    loadDemo('tiles')
-    // Close menu
-    cy.get('.menuIcon').click()
+    loadDemo('Tiles')
 
     // test All expected tiles are loading
     const expectedTiles = [

@@ -1,12 +1,13 @@
-import { visitAndCloseBanner, titleAtis, maintenanceMode, loadDemo } from './shared'
+import { loadDemo, maintenanceMode, visitSkipBanner } from './shared'
 
 describe('Navlog Tile', () => {
   it('Navlog Tile', () => {
-    visitAndCloseBanner()
+    visitSkipBanner()
+    loadDemo('Tiles')
 
     // swap tile for navlog
-    cy.get('.page0 > :nth-child(5) > .headerTitle').click()
-    cy.get('.page0 > :nth-child(5) > .headerTitle > .p-button').click({force: true})
+    cy.get('.page0 .tile4 > .headerTitle').click()
+    cy.get('.page0 .tile4 > .headerTitle > .p-button').click({force: true})
     cy.get('[aria-label="Navlog"]').click()
     cy.get('.navlogTile > .headerTitle > div').contains('NavLog')
     cy.get('.placeHolder > :nth-child(1) > :nth-child(1)').contains('No Log')
@@ -16,7 +17,8 @@ describe('Navlog Tile', () => {
     maintenanceMode()
 
     // load navlog demo
-    loadDemo('navlog')
+    visitSkipBanner()
+    loadDemo('NavLog')
 
     // Check tile is there
     cy.get('.page1 > :nth-child(6) > .headerTitle').contains('NavLog')

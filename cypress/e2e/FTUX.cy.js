@@ -1,4 +1,4 @@
-import { atisTitle, boeingTitle, clearanceTitle, environment, feltsTitle, notesTitle, radioFlowTitle, rentonTitle, selectionTitle, visitAndCloseBanner, visitSkipBanner } from './shared.js'
+import { atisTitle, boeingTitle, clearanceTitle, demoChecklistOnPage, demoTilesOnPage, environment, feltsTitle, notesTitle, radioFlowTitle, rentonTitle, selectionTitle, visitAndCloseBanner, visitSkipBanner, loadDemo } from './shared.js'
 
 describe('First Time User Experience', () => {
 
@@ -55,13 +55,12 @@ describe('First Time User Experience', () => {
     // As a new User I can open demos
     it('Open Demos', () => {
         visitSkipBanner()
+        cy.viewport('macbook-16')
+
+        // Check Demo 0
         cy.get('.demo0').click()
-        cy.get('.tile0 > .headerTitle').contains(boeingTitle)
-        cy.get('.tile1 > .headerTitle').contains(feltsTitle)
-        cy.get('.tile2 > .headerTitle').contains(radioFlowTitle)
-        cy.get('.tile3 > .headerTitle').contains(notesTitle)
-        cy.get('.tile4 > .headerTitle').contains(atisTitle)
-        cy.get('.tile5 > .headerTitle').contains(clearanceTitle)
+        demoTilesOnPage(0)
+        demoChecklistOnPage(1)
 
         // go back via image
         cy.get('.logo-img').click()
@@ -73,6 +72,26 @@ describe('First Time User Experience', () => {
         cy.get('.demo2').click()
         cy.get('.tile0 > .headerTitle').contains(rentonTitle)
         cy.get('.tile1 > .headerTitle').contains(boeingTitle)
+
+        // Check demo pages description work
+        const expectedDemos = [ 
+            {i:0, l:'Default', t:'Default Demo',c:['pageTiles','pageChecklist']}, 
+            {i:1, l:'Checklist',t:'Checklist syntax Showcase',c:['pageChecklist','pageChecklist']}, 
+            {i:2, l:'Tiles', t:'Every Tile Available on GA Kneeboard',c:['pageTiles','pageTiles']}, 
+            {i:3, l:'NavLog', t:'Navlog page along with six tiles',c:['pageNavlog','pageTiles']}, 
+            {i:4, l:'C172 Reference', t:'A sample Skyhawk Reference',c:['pageTiles','pageTiles']}, 
+            {i:5, l:'Charts', t:'Airport Diagram and Instrument Approach',c:['approachPage','approachPage']}, 
+        ]
+        cy.get('.logo-img').click()
+        cy.get('.demoSection > .templateList').children().should('have.length', expectedDemos.length)
+        for(const ed of expectedDemos) {
+            visitSkipBanner()
+            cy.get(`.demo${ed.i}`).contains(ed.l);
+            cy.get(`.demo${ed.i}`).title(ed.t);
+            loadDemo(ed.i)
+            cy.get('.page0').should('have.class',ed.c[0])
+            cy.get('.page1').should('have.class',ed.c[1])
+        }
     })
 
     it('Create new template', () => {
@@ -88,5 +107,12 @@ describe('First Time User Experience', () => {
         cy.get('#btnSave').click()
         cy.get('.p-toast-detail').contains('Please sign in to use custom templates')
 
+        // As a new User I can rename a template
+        const newName = 'NewName'
+        cy.get('#btnSettings').click()
+        cy.get('.pageName > .p-inputtext').type( '{selectAll}'+newName,{delay:0})
+        cy.get('.pageDescription > .p-inputtext').type('NewDescription',{delay:0})
+        cy.get('[aria-label="Save"]').click()
+        cy.get('.templateName').contains(newName);
     })
 })

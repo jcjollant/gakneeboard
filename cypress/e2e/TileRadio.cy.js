@@ -1,11 +1,9 @@
-import { visitAndCloseBanner, newPage, placeHolderSubtitle } from './shared'
-import { radioFlowTitle } from './shared'
+import { placeHolderSubtitle, radioFlowTitle, visitSkipBanner, loadDemo } from './shared'
 
 describe('Radios Tile', () => {
   it('Radio Tile', () => {
-    visitAndCloseBanner()
-
-    // cy.wait(2000)
+    visitSkipBanner()
+    loadDemo('Tiles')
     
     // Check all fields are present in Radio flow
     cy.fixture('radioFlow').then((radioFlow) => {
@@ -16,7 +14,7 @@ describe('Radios Tile', () => {
     })
 
     // check header is present
-    cy.get('.page1 > :nth-child(6) > .headerTitle > div').contains(radioFlowTitle)
+    cy.get('.page1 .tile5 > .headerTitle').contains(radioFlowTitle)
 
     // Switch to edit mode
     cy.get('.page1 > :nth-child(6) > .headerTitle > div').click()
@@ -109,5 +107,18 @@ describe('Radios Tile', () => {
     cy.get('[aria-label="Apply"]').click()
     // Nordo controls should be gone
     cy.get('[title="Declare Emergency"]').should('not.exist')
+  })
+
+  it('Lost Comms', () => {
+    visitSkipBanner()
+    loadDemo('Tiles')
+    cy.get('.page1 .tile5 > .headerTitle').click()
+    // switch to lost comms
+    cy.get('.page1 .tile5 .choiceInactive').click()
+    cy.get('.page1 .tile5 [aria-label="Apply"]').click()
+    const expectedLostCommsFields = ['Signal', 'Ground', 'Air', 'T/O', 'Land', 'Taxi', 'STOP', 'Give Way', 'Taxi Off Rwy', 'Use Extreme Caution', 'Start', '7500', '7600', '7700']
+    for(let i=0; i<expectedLostCommsFields.length; i++) {
+      cy.get(`.page1 .tile5`).contains(expectedLostCommsFields[i])
+    }
   })
 })

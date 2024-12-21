@@ -1,22 +1,22 @@
-import { visitAndCloseBanner, newPage } from './shared'
+import { visitSkipBanner, newTemplate } from './shared'
 
 function enterCode(page, code) {
-    cy.get(`.page${page} > :nth-child(2) > .editMode > :nth-child(2) > .airportCode > .p-inputgroup > .p-inputtext`).type('{selectall}').type(code)
+    cy.get(`.page${page} .p-inputtext`).type('{selectall}').type(code, {delay:0})
 }
 
 function testEditMode(page,edit) {
   if(edit) {
-    cy.get(`.page${page} > :nth-child(2) > .editMode > :nth-child(2) > .pickNewAirport`)
+    cy.get(`.page${page}  .section`).contains('Pick New Airport')
 
   } else {
-    cy.get(`.page${page} > :nth-child(2) > .editMode > :nth-child(2) > .pickNewAirport`).should('not.exist')
+    cy.get(`.page${page} .section`).should('not.exist')
   }
 }
 
 describe('Diagram Page', () => {
   it('Basic flow', () => {
-    visitAndCloseBanner()
-    newPage()
+    visitSkipBanner()
+    newTemplate()
 
     // select Diagram pages on both sides
     cy.get('.page0 > .list > [aria-label="Airport Diagram"]').click()
