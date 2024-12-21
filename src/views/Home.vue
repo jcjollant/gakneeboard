@@ -9,7 +9,7 @@
                     @selection="onNewTemplate"/>
                 <TemplateSelector :template="localTemplate" :temporary="true" src="local"
                     @selection="onTemplateSelection('local')"/>
-                <TemplateSelector v-if="user.templates.length > 0" v-for="(template,index) in user.templates" 
+                <TemplateSelector v-if="templates.length > 0" v-for="(template,index) in templates" 
                     :template="template"  
                     @selection="onTemplateSelection(template.id)" />
                 <div v-else>
@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { newCurrentUser } from '../assets/data';
 import { CurrentUser } from '../assets/CurrentUser';
 import { useRouter } from 'vue-router';
@@ -52,26 +52,33 @@ const demos = ref([
 ])
 const localTemplate = ref({name:'Local',desc:'Resume your last session'})
 const newTemplate = ref({name:'New',desc:'Create a new template'})
-const user = ref(new CurrentUser())
 const router = useRouter()
+const templates = ref([])
 const toast = useToast()
 
 onMounted( () => {
-  user.value = newCurrentUser
-  localTemplate.value = user.value.templates[0]
-  setTimeout(() => {
-    checkThumbnails()
-  }, 500)
+    // console.log('[Home.onMounted]')
+    templates.value = newCurrentUser.templates
+    // console.log('[Home.onMounted] template length', templates.value.length)
+    newCurrentUser.addListener(userUpdate);
+    localTemplate.value = templates.value[0]
+    // setTimeout(() => {
+    //     checkThumbnails()
+    // }, 500)
 })
 
-function checkThumbnails() {
-    for(const t of newCurrentUser?.templates) {
-        if(!LocalStore.thumbnailGet(t.id)) {
-            toast.add(getToastWarning('Missing Thumbnails', 'Open Templates to recreate thumbnails', 5000))
-            return;
-        }
-    }
-}
+onUnmounted( () => {
+    newCurrentUser.removeListener(userUpdate)
+})
+
+// function checkThumbnails() {
+//     for(const t of newCurrentUser?.templates) {
+//         if(!LocalStore.thumbnailGet(t.id)) {
+//             toast.add(getToastWarning('Missing Thumbnails', 'Open Templates to recreate thumbnails', 5000))
+//             return;
+//         }
+//     }
+// }
 
 function onDemoSelection(name) {
     const templateData = getTemplateDataFromName(name)
@@ -99,6 +106,11 @@ function onTemplateSelection(index) {
     router.push( '/template/' + index)
 }
 
+function userUpdate() {
+    // console.log('[Home.userUpdate]')
+    templates.value = newCurrentUser.templates
+    // console.log('[Home.userUpdate] template length', templates.value.length)
+}
 </script>
 
 <style scoped>
