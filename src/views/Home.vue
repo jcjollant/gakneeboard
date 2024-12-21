@@ -5,7 +5,7 @@
         <div class="section templateSection">
             <div class="header">Templates</div>
             <div class="templateList">
-                <TemplateSelector :template="newTemplate" :temporary="true" src="/thumbnails/new.png"
+                <TemplateSelector :template="newTemplate" :temporary="true" src="/thumbnails/new.png" class="templateNew"
                     @selection="onNewTemplate"/>
                 <TemplateSelector :template="localTemplate" :temporary="true" src="local"
                     @selection="onTemplateSelection('local')"/>
@@ -20,7 +20,7 @@
         <div class="section demoSection">
             <div class="header">Demos</div>
             <div class="templateList">
-                <TemplateSelector v-for="(d) in demos" :template="d.template" :demo="true" :src="'/thumbnails/'+d.src"
+                <TemplateSelector v-for="(d,index) in demos" :template="d.template" :demo="true" :src="'/thumbnails/'+d.src" :class="'demo'+index"
                     @selection="onDemoSelection(d.name)" />
                 <!-- list all demos -->
             </div>
