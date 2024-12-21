@@ -45,11 +45,10 @@ describe('Diagram Page', () => {
     cy.get('.page0 [aria-label="Show Diagram"]')
     cy.get('.page0 .notfound').should('not.exist')
 
+    // cy.intercept({ method: 'GET', url: '**/pdf.worker.min.mjs',}).as('getWorker')
+
     // make selection
-    cy.intercept({
-      method: 'GET',
-      url: '**/05396AD.PDF',
-    }).as('getPDF');
+    cy.intercept({ method: 'GET', url: '**/05396AD.PDF',}).as('getPDF');
     cy.get('.page0 [aria-label="Show Diagram"]').click()
 
     // accept 200 or 304
