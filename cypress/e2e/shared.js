@@ -20,22 +20,22 @@ export const clearanceTitle = 'Clearance @'
 export function visitAndCloseBanner() {
     cy.visit(environment)
 
-
     // remove banner
     cy.contains('Got it').click()
 }
 
+export function visitSkipBanner() {
+    localStorage.setItem( "howDoesItWork", "false")
+    cy.visit(environment)
+}
+
 export function maintenanceMode() {
     // Open menu
-    cy.get('.menuIcon').click()
-    cy.get('.buttonsList > :nth-child(9)').click()
+    cy.get('.maintenanceDialog').click()
     // type code in maintenance window
     cy.get('.p-inputtext').type(maintenanceLogin)
     // submit
     cy.get('.p-dialog-content > div > .p-button').click()
-
-    // and close the menu
-    cy.get('.menuIcon').click()
 }
 
 export function loadDemo(name, openMenu=true,confirm=true) {
