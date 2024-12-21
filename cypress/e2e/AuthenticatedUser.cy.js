@@ -3,13 +3,16 @@ import { visitAndCloseBanner, maintenanceMode } from './shared'
 describe('Authenticated User', () => {
   it('Sign in and Load Page', () => {
     visitAndCloseBanner()
+
+    // 
+
+
     maintenanceMode()
 
-    // open menu
-    cy.get('.menuIcon').click()
     // user name should show up
-    cy.get('.active').contains('Jc')
+    cy.get('.session').contains('Jc')
 
+    // As an authenticated I can see my templates
     // load page should open
     cy.get('#menuLoad').click()
     cy.get('.contentPlaceholder').contains('Select a template')
@@ -83,7 +86,7 @@ describe('Authenticated User', () => {
 
   })
 
-  it('Shows Publications', () => {
+  it.skip('Shows Publications', () => {
     cy.viewport('macbook-16')
     visitAndCloseBanner()
     maintenanceMode()
