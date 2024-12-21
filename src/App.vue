@@ -124,7 +124,7 @@ function onCloseHowDoesItWork() {
   min-width: 100px;
 }
 .versionDialog {
-  position: absolute;
+  position: fixed;
   right: 10px;
   bottom: 0;
   font-size: 8px;
