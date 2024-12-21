@@ -1,7 +1,12 @@
 <template>
     <div class="templateSelector" :class="{temporary:temporary,demo:demo,public:template?.publish}" :title="template?.desc"
         @click="onSelection">
-        <div class="preview"><img :src="thumbnail" /></div>
+        <div class="preview">
+            <img v-if="thumbnail" :src="thumbnail" />
+            <div v-else class="default">
+                <font-awesome-icon icon="fa-camera" />
+            </div>
+        </div>
         <div class="name">{{template?.name}}</div>
     </div>
 </template>
@@ -35,6 +40,7 @@ onMounted(() => {
         } else {
             thumbnail.value = LocalStore.thumbnailGet(props.template.id)
         }
+        // console.log('[TemplateSelector.onMounted] thumbnail', thumbnail.value)
     } else {
         template.value = { name: '?', desc: 'No Description'}
     }
@@ -47,6 +53,15 @@ function onSelection() {
 </script>
 
 <style scoped>
+.default {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5rem;
+    color: lightgrey;
+    width: calc(var(--page-width) / 5);
+    height: calc(var(--page-height) / 5);
+}
 .name {
     display: flex;
     justify-content: center;
@@ -55,7 +70,7 @@ function onSelection() {
     height: 2.5rem;
 }
 .preview{
-    background-color: lightgrey;
+    background-color: white;
 }
 .templateSelector {
     display: flex;
