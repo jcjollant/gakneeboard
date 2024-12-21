@@ -1,5 +1,6 @@
 import { duplicate } from "./data";
 import { LocalStore } from "../lib/LocalStore";
+import { User } from "../model/User";
 
 export class CurrentUser {
     loggedIn:boolean
@@ -11,19 +12,19 @@ export class CurrentUser {
 
 
     constructor() {
-        // console.log('[CurrentUser.constructor] constructor called')
-        this.loggedIn = false;
-        this.sha256 = "";
-        this.name = "";
-        this.templates = [];
-        this.maxTemplateCount = 0;
-        this.listeners = [];
+      // console.log('[CurrentUser.constructor] constructor called')
+      this.loggedIn = false;
+      this.sha256 = "";
+      this.name = "";
+      this.templates = [];
+      this.maxTemplateCount = 0;
+      this.listeners = [];
     }
 
     addListener(listener:any) {
       // console.log('[CurrentUser.addListener] Adding listener', listener)
       this.listeners.push(listener)
-      // console.log('[CurrentUser.addListener] added a listener', this.listenners.length)
+      // console.log('[CurrentUser.addListener] added a listener', this.listeners.length)
     }
 
     login(data:any) {
@@ -35,17 +36,26 @@ export class CurrentUser {
 
     logout() {
       // console.log('[CurrentUser.logout]')
-        this.loggedIn = false;
-        this.sha256 = "";
-        this.name = "";
-        this.templates = [];
-        localStorage.removeItem(LocalStore.user)
+      this.loggedIn = false;
+      this.sha256 = "";
+      this.name = "";
+      this.templates = [];
+      localStorage.removeItem(LocalStore.user)
+      this.notify()
     }
 
     notify() {
-      // console.log('[CurrentUser.update] notifying listeners', this.listenners.length)
+      // console.log('[CurrentUser.update] notifying listeners', this.listeners.length)
       for(const listener of this.listeners) {
         listener(this)
+      }
+    }
+
+    removeListener(listener:any) {
+      const index = this.listeners.indexOf(listener)
+      if(index > -1) {
+        this.listeners.splice(index, 1)
+        // console.log('[CurrentUser.removeListener] removed a listener', this.listeners.length)
       }
     }
 
@@ -57,10 +67,10 @@ export class CurrentUser {
 
     restore() {
       // attempt to restore user from localstore
-      const lsUser = LocalStore.getUser()
+      const lsUser:User|undefined = LocalStore.getUser()
 
       if( lsUser) {
-        this.login(JSON.parse(lsUser))
+        this.login(lsUser)
       }
     }
 
