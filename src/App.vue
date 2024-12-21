@@ -2,6 +2,7 @@
     <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
     <Feedback v-model:visible="showFeedback" @close="showFeedback=false" />
     <About v-model:visible="showAbout" @close="showAbout=false" />
+    <Maintenance v-model:visible="showMaintenance" @close="showMaintenance=false" />
     <Toast />
     <div class="application" @about="console.log('about')">
         <router-view ></router-view>
@@ -14,7 +15,7 @@
     <MenuButton v-if="route.name!='Print'" icon="circle-info" class="aboutButton" label="About GA Kneeboard"
       @click="showAbout=true" />
     <div v-if="route.name!='Print'" class="versionDialog" :title="'Frontend/Backend versions ' + versionText" >{{ versionText }}<span class="maintenanceDialog" v-show="true"
-        @click="onMaintenanceDialog">&nbsp</span></div>
+        @click="showMaintenance=true" @close="showMaintenance=false">&nbsp</span></div>
 </template>
 
 <script setup>
@@ -28,6 +29,7 @@ import { useRoute, useRouter } from 'vue-router';
 import About from './components/menu/About.vue'
 import Feedback from './components/Feedback.vue'
 import HowDoesItWork from './components/HowDoesItWork.vue'
+import Maintenance from './components/menu/Maintenance.vue'
 import MenuButton from './components/menu/MenuButton.vue';
 import Session from './components/menu/Session.vue'
 import Toast from 'primevue/toast'
@@ -37,6 +39,7 @@ const router = useRouter()
 const showAbout = ref(false)
 const showFeedback = ref(false)
 const showHowDoesItWork = ref(true)
+const showMaintenance = ref(false)
 const versionText = ref('')
 
 // Before the app starts, we request backend information, load user and potentially show how does it work
