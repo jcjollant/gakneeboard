@@ -17,12 +17,15 @@
   --bg: #2196F3;
   --bg-hover: #0D89EC;
   --bg-public: #689F38;
+  --button-height: 38px;
   --min-width: 750px;
   --editor-min-width: 750px;
   --editor-btn-half: 19px;
   --header-height: 23px;
   --logo-font-size: 18px;
+  --main-gap: 1rem;
   --menu-border-offset: 10px;
+  --menu-height: 2rem;
   --page-width: 500px;
   --page-width-two: 1050px;
   --page-height: 800px;

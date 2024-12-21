@@ -31,7 +31,7 @@ const props = defineProps({
     transition-duration: 0.2s;
     line-height: 2.5rem;
     height: 40px;
-    min-width: 38px;
+    min-width: var(--button-height);
     padding: 0 10px;
 }
 .fabutton.link {

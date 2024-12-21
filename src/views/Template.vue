@@ -1,8 +1,8 @@
 <template>
   <div class="main">
-    <Menu :name="getTemplateName()" @about="emits('about')" />
-    <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
-      @offset="onOffset" />
+    <Menu :name="getTemplateName()"></Menu>
+    <TemplateExport v-model:visible="showExport" :template="activeTemplate"
+      @close="showExport=false" @export="onExport" />
     <TemplateSettings v-model:visible="showSettings" :template="activeTemplate"
       @close="showSettings=false" @save="onSettings" />
     <div class="pageGroup" :class="{'editor':showEditor}" >
@@ -16,7 +16,7 @@
           :class="{'editorButtonActive':showEditor}" class="editorButton" 
           @click="onEditor"/>
         <MenuButton id="btnExport" icon="file-export" title="Export Template to Various Formats" label="Export"
-          @click="onSave"/>
+          @click="showExport=true"/>
         <MenuButton id="btnSettings" icon="gear" title="Template Name and Description" label="Settings"
           @click="showSettings=true"/>
         <MenuButton id="btnDelete" icon="trash" title="Delete Template" label="Delete" :danger="true"
@@ -31,10 +31,16 @@
           :data="data" :index="index" :class="'page'+index" :ver="activeTemplate.ver"
           @update="onPageUpdate" />
       </div>
+      <div v-else class="pageAll">
+        <LoadingPage></LoadingPage>
+        <LoadingPage></LoadingPage>
+      </div>
       <i class="pi pi-chevron-circle-right offsetButton"  :class="{'noShow':(offset >= offsetLast)}"
         title="Next Page" id="offsetNext"
         @click="onOffset(offset + 1)"></i>
     </div>
+    <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
+      @offset="onOffset" />
   </div>
 </template>
 
@@ -52,9 +58,11 @@ import { useRoute, useRouter } from 'vue-router'
 
 // Components
 import Editor from '../components/editor/Editor.vue'
+import LoadingPage from '../components/page/LoadingPage.vue'
 import Menu from '../components/menu/Menu.vue'
 import MenuButton from '../components/menu/MenuButton.vue'
 import Page from '../components/page/Page.vue'
+import TemplateExport from '../components/templates/TemplateExport.vue'
 import TemplateSettings from '../components/templates/TemplateSettings.vue'
 
 const activeTemplate = ref(null)
@@ -67,6 +75,7 @@ const offsetLast = ref(0)
 const route = useRoute()
 const router = useRouter()
 const showEditor = ref(false)
+const showExport = ref(false)
 const showSettings = ref(false)
 const singlePage = ref(false)
 let templateBeforeEdit = null;
@@ -76,6 +85,7 @@ onMounted(() =>{
   // console.log('[Template.onMounted]')
   try {
     if(route.params.id && route.params.id > 0) {
+      activeTemplate.value = null;
       TemplateData.get(route.params.id).then( template => {
         if(template) {
           loadTemplate(template, true)
@@ -148,7 +158,11 @@ function loadTemplate(template=null,saveToLocalStorage=false) {
     return new Promise( async(resolve, reject) => {
       // save the template to local storage
       if(saveToLocalStorage) {
-        saveTemplateToLocalStore(false)
+        saveTemplateToLocalStore()
+      }
+      // refresh thumbnail if it doesnt exist
+      if(template.id > 0 && LocalStore.thumbnailGet(template.id) == null) {
+        updateThumbnail(template.id)
       }
       resolve(true)
     })
@@ -184,19 +198,22 @@ function onEditor() {
   showEditor.value = !showEditor.value;
 }
 
-// function onEditorSave() {
-//   showEditor.value = false;
-//   // Save template if we are logged in and template already has an Id
-//   // This is preventing unwanted saves of new pages and demos
-//   if(newCurrentUser.loggedIn && activeTemplate.value.id) {
-//     TemplateData.save(activeTemplate.value).then(t => {
-//         let message = 'Template "' + t.name + '" saved';
-//         toaster.success( 'Clear', message)
-//       }).catch( e => {
-//         console.log('[Template.onEditorSave] error', e)
-//       })
-//   }
-// }
+function onExport(format) {
+  showExport.value = false;
+  toaster.info( 'Exporting', activeTemplate.value.name)
+  TemplateData.export(activeTemplate.value, format).then( eo => {
+    // create file link in browser's memory
+    // console.log('[Teamplate.onExport] blob', eo.blob.size)
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(eo.blob)
+    link.download = eo.filename
+    link.click()
+    URL.revokeObjectURL(link.href)
+  }).catch( e => {
+    console.log('[Menu.onExportExport] failed ' + e)
+    toaster.error( 'Export Error', e.message)
+  })  
+}
 
 // Validate and assign new offset value
 function onOffset(newOffset) {
@@ -278,7 +295,7 @@ function saveTemplateToLocalStore(thumbnail=false) {
   // console.log('[Template.saveTemplateToLocaStore]', thumbnail)
   LocalStore.saveTemplate(activeTemplate.value)
   if(thumbnail) {
-    updateThumbnail()
+    updateThumbnail('local')
   }
 }
 
@@ -309,14 +326,14 @@ function updateOffsets() {
   // console.log('[Template.updateOffset] offsetLast', maxOffset)
 }
 
-function updateThumbnail() {
+function updateThumbnail(index) {
   // console.log('[Template.updateThumbnail]', activeTemplate.value?.id)
-  if( activeTemplate.value && activeTemplate.value.id) {
+  if( activeTemplate.value) {
     // Capture page 0 into an image
     html2canvas(document.querySelector(".page0")).then(canvas => {
       // scale image to fit the thummbnail
       const scaledCanvas = document.createElement('canvas')
-      const scaleFactor = 0.5
+      const scaleFactor = 200 / canvas.width;
       scaledCanvas.width = canvas.width * scaleFactor
       scaledCanvas.height = canvas.height * scaleFactor
       const scaledCtx = scaledCanvas.getContext('2d')
@@ -325,13 +342,15 @@ function updateThumbnail() {
       const scaledImg = scaledCanvas.toDataURL('image/png')
 
       // actually save image
-      LocalStore.thumbnailSave(activeTemplate.value.id, scaledImg)
+      LocalStore.thumbnailSave(index, scaledImg)
 
       // trigger image download
       // const link = document.createElement('a')
       // link.download = 'thumbnail.png'
       // link.href = scaledImg
       // link.click()
+
+      console.log( '[Template.updateThumbnail] done', index, scaledImg.length)
     })
   }
 }
@@ -347,7 +366,7 @@ function updateThumbnail() {
   display: flex;
   flex-flow: column;
   align-items: center;
-  gap: 1rem;
+  gap: var(--main-gap);
   min-height: 100vh;
 }
 
@@ -371,10 +390,11 @@ function updateThumbnail() {
 .templateMenu {
   position: absolute;
   left: var(--menu-border-offset);
-  top: var(--menu-border-offset);
+  top: 0;
   display: flex;
   flex-flow: column;
-  gap: var(--menu-border-offset)
+  gap: var(--menu-border-offset);
+  z-index: 2;
 }
 
 

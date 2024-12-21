@@ -6,12 +6,13 @@
     <NavlogPage v-else-if="type==PageType.navLog" :data="pageData"
         @replace="onReplace" @update="onUpdate" />
     <TilePage v-else-if="type==PageType.tiles" :data="pageData" 
-        @update="onUpdate" @toast="onToast" />
+        @update="onUpdate" />
     <NotesPage v-else-if="type==PageType.notes" @replace="onReplace(PageType.selection)" />
     <ApproachPage v-else-if="type==PageType.approach" :data="pageData"
         @update="onUpdate" @replace="onReplace"  />
     <DiagramPage v-else-if="type==PageType.diagram" :data="pageData"
         @update="onUpdate" @replace="onReplace" />
+    <LoadingPage v-else-if="type==PageType.loading" />
     <SelectionPage v-else @replace="onReplace" />
 </template>
 
@@ -30,9 +31,10 @@ import SelectionPage from './SelectionPage.vue'
 import TilePage from '../tiles/TilePage.vue'
 
 import { useConfirm } from 'primevue/useconfirm'
+import LoadingPage from './LoadingPage.vue'
 
 const confirm = useConfirm()
-const emits = defineEmits(['toast','update'])
+const emits = defineEmits(['update'])
 const pageData = ref(null)
 const pageIndex = ref(null)
 const type = ref(PageType.tiles)
@@ -92,10 +94,6 @@ function onReplace(newType=undefined) {
             }
         })
     }
-}
-
-function onToast(data) {
-  emits('toast', data)
 }
 
 function onUpdate( newData) {

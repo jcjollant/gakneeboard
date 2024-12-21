@@ -1,13 +1,20 @@
 <template>
     <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
     <Feedback v-model:visible="showFeedback" @close="showFeedback=false" />
+    <About v-model:visible="showAbout" @close="showAbout=false" />
     <Toast />
     <div class="application" @about="console.log('about')">
         <router-view ></router-view>
     </div>
+    <div class="session">
+      <Session v-if="route.name!='Print'" />
+    </div>
     <MenuButton v-if="route.name!='Print'" icon="comments" class="feedbackButton" label="Give Feedback"
       @click="showFeedback=true" />
-    <div v-if="route.name!='Print'" class="versionDialog" :title="'Frontend/Backend versions ' + versionText" >{{ versionText }}<span class="maintenanceDialog" v-show="true" @click="onMaintenanceDialog">&nbsp</span></div>
+    <MenuButton v-if="route.name!='Print'" icon="circle-info" class="aboutButton" label="About GA Kneeboard"
+      @click="showAbout=true" />
+    <div v-if="route.name!='Print'" class="versionDialog" :title="'Frontend/Backend versions ' + versionText" >{{ versionText }}<span class="maintenanceDialog" v-show="true"
+        @click="onMaintenanceDialog">&nbsp</span></div>
 </template>
 
 <script setup>
@@ -18,14 +25,16 @@ import { LocalStore } from './lib/LocalStore';
 import { TemplateData } from './assets/TemplateData';
 import { useRoute, useRouter } from 'vue-router';
 // Components
+import About from './components/menu/About.vue'
 import Feedback from './components/Feedback.vue'
 import HowDoesItWork from './components/HowDoesItWork.vue'
-import Menu from './components/menu/Menu.vue'
 import MenuButton from './components/menu/MenuButton.vue';
+import Session from './components/menu/Session.vue'
 import Toast from 'primevue/toast'
 
 const route = useRoute()
 const router = useRouter()
+const showAbout = ref(false)
 const showFeedback = ref(false)
 const showHowDoesItWork = ref(true)
 const versionText = ref('')
@@ -37,12 +46,11 @@ onBeforeMount( () => {
 
     getBackend().then(() => {
         versionText.value = version + '/' + backend.version
+        LocalStore.cleanUp()
     })
 
     // How does it work popup check
     showHowDoesItWork.value = LocalStore.showHowDoesItWork()
-
-    LocalStore.cleanUp()
 })
 
 onMounted( () => {
@@ -97,11 +105,21 @@ function onCloseHowDoesItWork() {
   left: var(--menu-border-offset);;
   bottom: var(--menu-border-offset);;
 }
-
-.versionDialog {
+.aboutButton {
+  position: fixed;
+  right: var(--menu-border-offset);;
+  bottom: var(--menu-border-offset);;
+}
+.session {
   position: fixed;
   right: 5px;
-  bottom: 5px;
+  top: 3px;
+  min-width: 100px;
+}
+.versionDialog {
+  position: absolute;
+  right: 10px;
+  bottom: 0;
   font-size: 8px;
   margin:auto;
   color: darkslategrey;

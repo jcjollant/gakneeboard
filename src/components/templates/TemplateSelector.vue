@@ -26,7 +26,12 @@ onMounted(() => {
         template.value = props.template
         // get thumbnail from src
         if( props.src ) {
-            thumbnail.value = props.src
+            if(props.src == 'local') {
+                // special value for local thumbnail
+                thumbnail.value = LocalStore.thumbnailGet(props.src)
+            } else {
+                thumbnail.value = props.src
+            }
         } else {
             thumbnail.value = LocalStore.thumbnailGet(props.template.id)
         }

@@ -1,21 +1,20 @@
 <template>
     <div class="home">
         <Toast />
-        <!-- <div class="section">
-            <div class="header">What's New?</div>
-        </div> -->
-        <Menu />
+        <Menu></Menu>
         <div class="section">
             <div class="header">Templates</div>
             <div class="templateList">
                 <TemplateSelector :template="newTemplate" :temporary="true" src="/thumbnails/new.png"
                     @selection="onNewTemplate"/>
-                <TemplateSelector :template="localTemplate" :temporary="true" 
-                    @selection="onTemplateSelection(0)"/>
+                <TemplateSelector :template="localTemplate" :temporary="true" src="local"
+                    @selection="onTemplateSelection('local')"/>
                 <TemplateSelector v-if="user.templates.length > 0" v-for="(template,index) in user.templates" 
                     :template="template"  
                     @selection="onTemplateSelection(template.id)" />
-                <PlaceHolder v-else title="No Templates (yet)" subtitle="Your saved templates will show here"/>
+                <div v-else>
+                    <PlaceHolder title="No Templates (yet)" subtitle="Your saved templates will show here"/>
+                </div>
             </div>
         </div>
         <div class="section">

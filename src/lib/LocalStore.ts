@@ -1,3 +1,4 @@
+import { User } from "../model/User"
 import { DiagramData } from "./DiagramData"
 
 export class LocalStore {
@@ -142,6 +143,8 @@ export class LocalStore {
 
             LocalStore.airportCleanUp()
             LocalStore.approachCleanUp()
+            LocalStore.thumbnailCleanUp()
+
             resolve(true)
         })
     }
@@ -162,8 +165,12 @@ export class LocalStore {
     }
 
     // return active user
-    static getUser() {
-      return localStorage.getItem(LocalStore.user);
+    static getUser():User|undefined {
+        const userString = localStorage.getItem(LocalStore.user)
+        if(userString) {
+            return JSON.parse(userString)
+        }
+        return undefined;
     }
 
     static saveApproachPlate(pdfFile:string, plate:string) {
@@ -197,6 +204,27 @@ export class LocalStore {
     }
 
     /**
+     * Remove thumbnails that do not belong to this user
+     */
+    static thumbnailCleanUp() {
+        const user:User|undefined = LocalStore.getUser()
+        if(!user) return;
+        // build a list of know user ids
+        const idList = user.templates.map( t => String(t.id))
+        // console.log('[LocalStore.thumbnailCleanUp] id list', idList)
+        const thumbList = Object.keys(localStorage)
+            .filter( (key:string) => key.startsWith(LocalStore.thumbnailPrefix))
+            .map( (key:string) => key.substring(LocalStore.thumbnailPrefix.length))
+        // console.log('[LocalStore.thumbnailCleanUp] thumb list', thumbList)
+        const deadThumb = thumbList.filter( key => !idList.includes(key) && key != 'local')
+        // console.log('[LocalStore.thumbnailCleanUp] dead thumbs', deadThumb)
+        for(const dt of deadThumb) {
+            localStorage.removeItem(LocalStore.thumbnailPrefix + dt)
+            console.log('[LocalStore.thumbnailCleanUp] removing ' + dt)
+        }
+    }
+
+    /**
      * Retrieve thumbnail data 
      * @param id template id
      */
@@ -204,7 +232,7 @@ export class LocalStore {
         return localStorage.getItem(LocalStore.thumbnailPrefix + id)
     }
 
-    static thumbnailSave( id:number, data:any) {
+    static thumbnailSave( id:string, data:any) {
         localStorage.setItem(LocalStore.thumbnailPrefix + id, data)
     }
 
