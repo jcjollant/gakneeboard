@@ -52,14 +52,14 @@ function draw() {
         ctx.beginPath();
         if( i % 90 == 0) {
             ctx.lineWidth = 3;
-            ctx.font = "12px Verdana"
+            ctx.font = "16px Verdana"
             lineLength = 20
             // we don't draw first text to draw it upward eventually
             drawTopText = true
             drawBottomText = (i != 90 && i != 270)
         } else if( i % 30 == 0) {
             ctx.lineWidth = 2;
-            ctx.font = "8px Verdana"
+            ctx.font = "12px Verdana"
             lineLength = 10
             drawTopText = true
             drawBottomText = true
