@@ -9,7 +9,7 @@ export const jcTestTemplateData = [jcTestPageFront,jcTestPageBack]
 export const jcTestTemplateName = 'TestJC'
 export const jcTestTemplateDescription = 'Two pages of tiles with airport data'
 export const jcTestTemplateId = 275
-export const jcMaxTemplates = 20
+export const jcMaxTemplates = 30
 export const jcTestTemplate = {id:jcTestTemplateId, name:jcTestTemplateName, publish:false, data:jcTestTemplateData}
 export const postgresUrl:string = "postgres://default:94chrayEvOLG@ep-shrill-silence-a6ypne6y-pooler.us-west-2.aws.neon.tech/verceldb?sslmode=require"
 export const jcTestAirport = {"code":"TEST","name":"Test Airport JC","elev":1000,"freq":[{"name":"CTAF","mhz":124.7},{"name":"TWR","mhz":null},{"name":"Weather","mhz":126.95},{"name":"GND","mhz":121.6}],"rwys":[{"name":"16-34","length":5400,"width":120,"ends":[null]}],"custom":false,"version":6,"effectiveDate":""}

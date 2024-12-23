@@ -2,7 +2,7 @@
 import { describe, expect, test} from '@jest/globals';
 import { Template } from '../backend/models/Template.ts'
 import { TemplateDao } from '../backend/TemplateDao.ts'
-import { postgresUrl, jcUserId, asUserId, jcTestTemplateName, jcTestTemplateData, jcTestTemplateId } from './constants.ts';
+import { postgresUrl, jcUserId, asUserId, jcTestTemplateName, jcTestTemplateData, jcTestTemplateId, jcMaxTemplates } from './constants.ts';
 
 process.env.POSTGRES_URL=postgresUrl
 
@@ -151,6 +151,20 @@ describe('Custom Templates', () => {
 
     test('Count', async () => {
         expect(await TemplateDao.count()).toBeGreaterThan(8)
+    })
+
+    test('Count by User', async() => {
+        const counts:[number,number][] = await TemplateDao.countByUser()
+        // we should see values
+        expect(counts.length).toBeGreaterThan(0)
+        // user id 1 should have at least 10 template and no more than jcMaxTempaltes
+        const user1Counts = counts.find( (c:any) => c[0] === 1)
+        if(user1Counts === undefined) {
+            expect(false).toBe(true)
+            return
+        }
+        expect(user1Counts[1]).toBeGreaterThan(10)
+        expect(user1Counts[1]).toBeLessThanOrEqual(jcMaxTemplates)
     })
 
 });

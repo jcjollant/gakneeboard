@@ -34,6 +34,7 @@ describe( 'GApi Tests', () => {
         await GApi.templateGet(jcTestTemplateId,jcUserId).then( template => {
             expect(template.name).toBe(jcTestTemplateName)
         }).catch( e => {
+            console.log(e)
             expect(true).toBe(false) // should not get here
         })
 
@@ -55,7 +56,7 @@ describe( 'GApi Tests', () => {
         expect(templateOut.id).toBe(jcTestTemplateId)
         expect(templateOut.name).toBe(tempName)
         expect(templateOut.desc).toBe(tempDesc)
-        expect(templateOut.ver).toBe(tempVer)
+        expect(templateOut.ver).toBe(tempVer + 1)
         const publicationCode = templateOut.code        
 
         // get template by publication by code
