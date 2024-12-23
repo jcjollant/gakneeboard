@@ -72,6 +72,22 @@ export class AirportDao {
         return result.rows[0]['id'];
     }
 
+    /**
+     * Build a list of airports that have a current model version and effective date
+     * @returns Matching list
+     */
+    public static async readCurrent(currentEffectiveDate:string):Promise<Airport[]> {
+        const result = await sql`SELECT id,code,data,version FROM Airports WHERE version = ${Airport.currentVersion}`;
+        return result.rows.map( row => {
+            const airport:Airport = JSON.parse(row.data)
+            airport.id = row.id
+            airport.code = row.code
+            airport.version = row.version
+            return airport
+        }).filter( a => a.effectiveDate === currentEffectiveDate)
+    }
+
+
     public static async readCustom(code:string, creatorId:number):Promise<string|undefined> {
         // console.log( "[AirportDao] readCustom " + code + " / " + creatorId);
         const result = await sql`
