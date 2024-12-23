@@ -3,6 +3,7 @@
     <PrintOptions v-model:visible="showOptions"
         @options="onOptionsUpdate"
         @print="onPrint"
+        @close="showOptions=false"
         />
     <div v-if="template">
       <div v-if="printSingles" v-for="(page,index) in template.data" class="printOnePage printPageBreak">
@@ -46,8 +47,9 @@ onMounted(() => {
 });
 
 watch(showOptions, (value) => {
-    console.log('[Print.showOptions]', value, printing)
+    // console.log('[Print.showOptions]', value, printing)
     if(!value && !printing) {
+        showOptions.value = false
         // go back to template mode
         router.back()
     }
