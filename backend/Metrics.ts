@@ -10,6 +10,7 @@ import { PageType } from './TemplateTools'
 import { UsageDao, UsageType } from "./dao/UsageDao";
 import { UserTools } from './UserTools' 
 import { Email, EmailType } from "./Email";
+import { Adip } from "./adip/Adip";
 
 export class Metric {
     name:string;
@@ -48,7 +49,7 @@ export class Metrics {
         const output:Metric[] = []
         output.push( new Metric(this.airportsTotalKey, await AirportDao.count()))
         output.push( new Metric(this.airportsValidKey, await AirportDao.countValid()))
-        output.push( new Metric(this.airportsCurrentKey, await AirportDao.countCurrent()))
+        output.push( new Metric(this.airportsCurrentKey, (await AirportDao.readCurrent(Adip.currentEffectiveDate)).length))
         return output
     }
 
