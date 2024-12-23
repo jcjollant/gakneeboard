@@ -11,6 +11,11 @@ export class TemplateDao {
         return Number(result.rows[0].count)
     }
 
+    public static async countByUser():Promise<[number,number][]> {
+        const result = await sql`SELECT user_id, count(*) FROM Sheets GROUP BY user_id ORDER BY count DESC`;
+        return result.rows.map( (row) => [Number(row.user_id), Number(row.count)])
+    }
+
     /**
      * Create a new Sheet or update and existing one for a given user.
      * @param template 
