@@ -41,6 +41,9 @@ Client ID : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent
 * 
 
 # Done
+## 12/23/2024 4520
+* Added airport currency to Waylon
+* Added Maxout users to Willie
 ## 11/27/2024
 * New Effective date
 * Switch to data recap
