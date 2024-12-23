@@ -4,6 +4,9 @@ import { Adip } from './adip/Adip'
 import { AirportDao } from "./AirportDao";
 import { Email, EmailType } from './Email'
 import { PublicationDao } from './PublicationDao'
+import { UserDao } from "./dao/UserDao";
+import { TemplateDao } from "./TemplateDao";
+import { User } from "./models/User";
 
 
 export class Check {
@@ -109,7 +112,7 @@ export class HealthCheck {
     public static async perform():Promise<Check[]> {
         return Promise.all([
                 HealthCheck.effectiveDateCheck(), 
-                // HealthCheck.usersCheck(),
+                HealthCheck.usersCheck(),
                 // HealthCheck.feedbackCheck(),
                 // HealthCheck.sheetsCheck(),
                 HealthCheck.airportDuplicatesCheck(),
@@ -127,5 +130,32 @@ export class HealthCheck {
         })
     
     }
-    
+
+    /**
+     * Look for unhealthy user accounts such as maxed out templates
+     * @returns 
+     */
+    static async usersCheck():Promise<Check> {
+        const check:Check = new Check('users')
+        const templatesByUser = await TemplateDao.countByUser()
+        // what is the max number of templates per user
+        const users = await new UserDao().getAll();
+        const usersCount:number = users.length
+
+        // which users are at of over the maximum?
+        const maxedOut = templatesByUser.map( ([userId, count]) => {
+            const user:User|undefined = users.find( (user:User) => user.id == userId)
+            if(!user) return [userId, count, 0]
+            // Use default to maxtemplate if none is provided
+            if(!user.maxTemplates) return [userId, count, User.defaultMaxTemplates]
+            return [userId, count, user.maxTemplates]
+        }).filter( ([userId,count,max]) => count >= max)
+
+        if( maxedOut.length > 0) {
+            check.fail("Found " + maxedOut.length + " users with maxed out templates")
+        } else {
+            check.pass( "We have " + usersCount + " healthy users")
+        }
+        return check
+    }   
 }
