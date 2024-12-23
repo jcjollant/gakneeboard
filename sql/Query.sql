@@ -62,13 +62,10 @@ SELECT COUNT(*) FROM sheets WHERE user_Id=1
 # Templates per user
 SELECT COUNT(*) as count, user_id FROM sheets GROUP BY user_id ORDER BY count DESC
 
-# Sheets per user
-SELECT COUNT(*) as count, user_id FROM sheets WHERE user_id IS NOT NULL GROUP BY user_id
-
 # Who are Sheet creators
 SELECT COUNT(*) as count, user_id FROM sheets GROUP BY user_id ORDER BY count DESC
 
-# Who are Sheet creators
+# Who are the biggest users
 SELECT COUNT(*) as count, user_id FROM sheets WHERE user_id IS NOT NULL GROUP BY user_id ORDER BY count DESC
 
 # Who are Sheet creators

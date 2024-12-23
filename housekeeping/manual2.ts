@@ -1,5 +1,4 @@
 // import { HouseKeeping } from "../backend/HouseKeepings";
-import { Metrics } from "../backend/Metrics";
 import { postgresUrl } from "../test/constants"
 
 // import { FmdWriter } from "../backend/exporters/FmdWriter"
@@ -7,9 +6,33 @@ import { postgresUrl } from "../test/constants"
 process.env.POSTGRES_URL=postgresUrl;
 
 
-Metrics.usage().then(metrics => {
-    for(const metric of metrics)
-        console.log(metric.name, metric.value)
+
+//================
+// Airport metrics
+// import { Metrics } from "../backend/Metrics";
+// Metrics.airports().then(metrics => {
+//     for(const metric of metrics)
+//         console.log(metric.name, metric.value)
+// })
+
+//================================
+// Show a list of current airports
+// import { Adip } from "../backend/adip/Adip";
+// import { AirportDao } from "../backend/AirportDao";
+// AirportDao.readCurrent(Adip.currentEffectiveDate).then(list => console.log(list.map(a => a.code).join(',')))
+
+//===================
+// Show Usage metrics
+// Metrics.usage().then(metrics => {
+//     for(const metric of metrics)
+//         console.log(metric.name, metric.value)
+// })
+
+//========
+// Users Check
+import { HealthCheck } from "../backend/HealthChecks";
+HealthCheck.usersCheck() .then( check => {
+    console.log(check.name, check.status, check.msg)
 })
 
 // Metrics.templateDetails().then(metrics => {
