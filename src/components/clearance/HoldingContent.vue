@@ -15,7 +15,8 @@
                 </div>
             </div>
             <div class="label labelTopRight">RAD/CRS</div>
-            <div class="label labelBottomLeft">&#x021B6 Turns &#x021B7</div>
+            <div class="label labelBottomLeft">Established</div>
+            <div class="turns">&#x021B6 &#x021B7</div>
             <div class="label labelBottomRight">EFC</div>
         </div>
         <div class="row brg">CRS</div>
@@ -26,6 +27,7 @@
             <div class="name">HDG</div>
             <div class="box">&nbsp;</div>
         </div>
+        <div class="row time">Time</div>
     </div>
 </template>
 
@@ -57,19 +59,17 @@
     border: 2px solid black;
     margin: 2px;
 }
-.hold .brg {
-    border-bottom: 1px dashed grey;
-}
-
 .hold .params {
     position: relative;
-    height: 120px;
-    border-bottom: 1px dashed grey;
+    height: 110px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
 }
 .hold .row {
-    line-height: 40px;
+    line-height: 30px;
+    border-top: 1px dashed grey;
 }
-
 .hold .sep {
     position: relative;
     border-bottom: 1px dashed grey;
@@ -89,7 +89,6 @@
     grid-template-columns: auto 50px auto;
     align-items: center;
 }
-
 .label {
   position: absolute;
   font-size: 10px;
@@ -97,7 +96,6 @@
 .labelBottomLeft {
   left: 3px;
   bottom: 0;
-  font-size: 15px;
 }
 .labelBottomRight {
   right: 3px;
@@ -111,6 +109,4 @@
   right: 3px;
   top: 0;
 }
-
-
 </style>

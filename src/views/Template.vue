@@ -289,6 +289,8 @@ function onSettings(settings) {
     // We consider the template as modified if it's a cloud template
     activeTemplate.value.modified = activeTemplate.value.id > 0
     saveTemplateToLocalStore()
+    // save template if relevant
+    if(newCurrentUser.loggedIn && activeTemplate.value.id ) onSave()
   }
 }
 
