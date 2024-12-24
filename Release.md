@@ -1,10 +1,12 @@
+## 12/23/2024 4520
+* Hold Mode improvments
 ## 12/22/2024 4512
 * Bigger font on Notes/Compass
 * Fixed do not print
 ## 12/21/2024
-1) 4511
+2) 4511
 * Fixed version position
-4510)
+1) 4510
 * New HomePage with thumbnails
 * New Demos : Skyhawk, Charts
 * Improved Demo : Checklist
