@@ -22,6 +22,7 @@ export class SheetName {
   static reset = 'gak-reset'
   static skyhawk = 'gak-skyhawk'
   static charts = 'gak-charts'
+  static holds = 'gak-holds'
 }
 
 import { duplicate } from './data'
@@ -94,6 +95,20 @@ const page1DemoTiles = {
    }
 
 const templateDemoTiles = new Template('Tiles Demo', 'Every Tile Available on GA Kneeboard', false, [page0DemoTiles,page1DemoTiles])
+
+const page0DemoHold = {
+  type: PageType.tiles,
+  name:"Holds Demo",
+  data: [
+    {id:0, name:Tile.clearance, data: { mode: "hold"}},
+    {id:1, name:Tile.notes, data: { mode: "compass"}},
+    {id:2, name:Tile.clearance, data: { mode: "hold"}},
+    {id:3, name:Tile.notes, data: { mode: "compass"}},
+    {id:4, name:Tile.clearance, data: { mode: "hold"}},
+    {id:5, name:Tile.notes, data: { mode: "compass"}},
+  ]
+}
+const templateDemoHolds = new Template('Holds Demo', 'Two sheets of Holds and Compass', false, Array(4).fill(page0DemoHold))
 
 const page0DemoChecklist = { type:PageType.checklist,data:{name:'Preflight',theme:'yellow',items:[{s:'Cabin',t:"strong"},{c:'Docs AR(R)OW',r:'CHECKED'},{c:'Control Wheel Lock + Pitot Cover',r:'REMOVED'},{c:'Kneeboard, Eyewear',r:'READY'},{c:'Headset, iPad',r:'INSTALLED'},{c:'Sentry, Camera, Power Bank',r:'INSTALLED'},{c:'Section 3',r:'READY'},{c:'Fire Extinguisher',r:'LATCHED'},{s:'Panel'},{c:'Ignition Switch',r:'OFF'},{c:'Avionics',r:'OFF'},{c:'Master Batt',r:'ON'},{c:'Lights + Pitot Heat',r:'ON'},{c:'Flaps',r:'FULL'},{s:'Walk Around',"t":"strong"},{c:'All Lights',r:'CHECKED'},{c:'Antenas (Comm, ELT, Nav, GPS, OAT)',r:'CHECKED'},{c:'Wings (Frost, Ice)',r:'CLEAR'},{c:'Windshield',r:'CLEAN'},{c:'Pitot Tube',r:'HOT'},{s:'Panel'},{c:'Lights + Pitot Heat',r:'OFF'},{c:'Fuel Quantity',r:'CHECKED'},{c:'Hobbs & Tach',r:'RECORD'},{c:'Master Switches',r:'OFF'},{s:'Checklist Capacity',t:"strong"},{c:'Max Items',r:'33'}]}}
 // const page1DemoChecklist = { type:PageType.checklist,data:{name:'Preflight',theme:'yellow',items:[{s:'Tail'},{c:'Tie Down',r:'REMOVED'},{c:'Control Surface',r:'CHECKED'},{s:'Right Wing'},{c:'Tie Down',r:'REMOVED'},{c:'Control Surface',r:'CHECKED'},{c:'Main Tire, Wheel Pin, Brake Pad',r:'CHECKED'},{s:'Nose'},{c:'Engine Oil (8qt for long flight)',r:'> 6qt'},{c:'Prop & Spinner',r:'CHECKED'},{c:'Engine Air Inlets / Belt',r:'CHECKED'},{c:'Air Filter',r:'CHECKED'},{c:'Static Source',r:'CHECKED'},{c:'Front Tire / Shock',r:'CHECKED'},{s:'Left Wing'},{c:'Tie Down',r:'REMOVED'},{c:'Control Surface',r:'CHECKED'},{c:'Main Tire, Wheel Pin, Brake Pad',r:'CHECKED'},{c:'Fuel Vent',r:'CHECKED'},{c:'Stall Warning',r:'CHECKED'},{s:'Fuel Test',"t":"strong"},{c:'Drain x13 + Smell',r:'TEST'},{c:'Dipstick measure x2',r:'BOTH'},{c:'Fuel Cap Seal x2',r:'CHECKED'},{c:'Fuel Cap Secured x2',r:'CHECKED'},]}}
@@ -288,6 +303,8 @@ export function getTemplateDataFromName(name) {
     return duplicate(templateDemoSkyhawk)
   } else if( name == SheetName.charts) { 
     return duplicate(templateDemoCharts)
+  } else if( name == SheetName.holds) { 
+    return duplicate(templateDemoHolds)
   } else {
     return null;
   }

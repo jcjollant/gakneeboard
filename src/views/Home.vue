@@ -49,6 +49,7 @@ const demos = ref([
     {name: SheetName.navlog, src: 'navlog.png', template: {name:'NavLog',desc:'Navlog page and companion tiles'}},
     {name: SheetName.skyhawk, src: 'skyhawk.png', template: {name:'C172 Reference',desc:'A sample Skyhawk Reference'}},
     {name: SheetName.charts, src: 'charts.png', template: {name:'Charts',desc:'Airport Diagram and Instrument Approach'}},
+    {name: SheetName.holds, src: 'holds.png', template: {name:'Holds',desc:'Full sheet of Holds and Compasses'}},
 ])
 const localTemplate = ref({name:'Local',desc:'Resume your last session'})
 const newTemplate = ref({name:'New',desc:'Create a new template'})
