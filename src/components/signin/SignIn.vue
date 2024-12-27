@@ -23,13 +23,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import Dialog from 'primevue/dialog';
-import AppleSignInButton from "./AppleSignInButton.vue"
-import { GoogleSignInButton } from "vue3-google-signin"
-import Button from 'primevue/button'; 
+import { onBeforeMount, ref } from 'vue'
 import { authenticationRequest } from '../../assets/data'
+
+// Components
+import AppleSignInButton from "./AppleSignInButton.vue"
+import Button from 'primevue/button'; 
+import Dialog from 'primevue/dialog';
 // import FacebookSignInButton from './FacebookSignInButton.vue'
+import GoogleSignInButton from './GoogleSignInButton.vue';
 
 const emits = defineEmits(["close",'authentication']);
 const authenticating = ref(false)
