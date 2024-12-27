@@ -36,6 +36,7 @@ import Maintenance from './components/menu/Maintenance.vue'
 import MenuButton from './components/menu/MenuButton.vue';
 import Session from './components/menu/Session.vue'
 import Toast from 'primevue/toast'
+import { getTemplateDataFromName } from './assets/sheetData';
 
 const route = useRoute()
 const router = useRouter()
@@ -85,6 +86,13 @@ onMounted( () => {
                 showToast( getToastData( 'Load Template','Error fetching template ' + code, toastError))
             }) 
         })
+    } else if( urlParams.has('d')){
+      const name = urlParams.get('d');
+      const template = getTemplateDataFromName( 'gak-' + name )
+      if( template) {
+        LocalStore.saveTemplate(template)
+        router.push('/template/0')
+      }
     }
     showMaintenance.value = false;
 
