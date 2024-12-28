@@ -48,7 +48,7 @@ describe('Clearance Tile', () => {
     cy.get('.page0 .tile5 > .headerTitle').click()
     cy.get('[aria-label="Holding"]').click()
     cy.get('.page0 .tile5 > .headerTitle').contains(holdTitle)
-    const expectedHoldField = ['Turns', 'RAD/CRS', 'EFC', 'CRS', 'WCA', 'HDG']
+    const expectedHoldField = ['Established', 'RAD/CRS', 'EFC', 'CRS', 'WCA', 'HDG']
     for(let i=0; i<expectedHoldField.length; i++) {
       cy.get(`.page0 .tile5`).contains(expectedHoldField[i])
     }
