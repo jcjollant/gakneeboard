@@ -13,7 +13,7 @@ export class Formatter {
         return alt.toFixed(0)
     }
 
-    static compassHeading(heading: number): any {
+    static compassHeading(heading: number): string {
         let value=heading%360;
         if(value == 0) value = 360;
         return String(value).padStart(3,'0');
