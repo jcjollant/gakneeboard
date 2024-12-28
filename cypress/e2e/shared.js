@@ -20,6 +20,16 @@ export const radioFlowTitle = 'Radios'
 export const rentonTitle = 'Renton Muni'
 export const selectionTitle = 'Page Selection'
 
+export const expectedDemos = [ 
+    {i:0, l:'Default', t:'Default Demo',c:['pageTiles','pageChecklist']}, 
+    {i:1, l:'Checklist',t:'Checklist syntax Showcase',c:['pageChecklist','pageChecklist']}, 
+    {i:2, l:'Tiles', t:'Every Tile Available on GA Kneeboard',c:['pageTiles','pageTiles']}, 
+    {i:3, l:'NavLog', t:'Navlog page along with six tiles',c:['pageNavlog','pageTiles']}, 
+    {i:4, l:'C172 Reference', t:'A sample Skyhawk Reference',c:['pageTiles','pageTiles']}, 
+    {i:5, l:'Charts', t:'Airport Diagram and Instrument Approach',c:['approachPage','approachPage']},
+    {i:6, l:'Holds', t:'Full sheet of Holds and Compasses',c:['pageTiles','pageTiles']},
+]
+
 export function demoChecklistOnPage(index) {
     cy.get(`.page${index}`).should('have.class','pageChecklist')
     cy.get(`.page${index} .list0 > :nth-child(13)`).contains('Engine FAILURE')
