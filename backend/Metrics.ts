@@ -36,6 +36,9 @@ export class Metrics {
     static usersAppleKey:string = 'usersApple'
     static usersFacebookKey:string = 'usersFacebook'
     static sessionsKey:string = 'sessions'
+    static sessions7Key:string = 'sessions-7d'
+    static sessions14Key:string = 'sessions-14d'
+    static sessions28Key:string = 'sessions-28d'
     static printsKey:string = 'prints'
     static exportsKey:string = 'exports'
 
@@ -55,7 +58,13 @@ export class Metrics {
 
     static async usage():Promise<Metric[]> {
         const counts = await UsageDao.countByType()
-        return counts.map( (count) => new Metric(Metrics.usageTypeToKey(count.type), count.count))
+        const usageMetrics = counts.map( (count) => new Metric(Metrics.usageTypeToKey(count.type), count.count))
+
+        usageMetrics.push( new Metric(this.sessions7Key, await UsageDao.countSessionsSince(7)))
+        usageMetrics.push( new Metric(this.sessions14Key, await UsageDao.countSessionsSince(14)))
+        usageMetrics.push( new Metric(this.sessions28Key, await UsageDao.countSessionsSince(28)))
+        
+        return usageMetrics
     }
 
     static usageTypeToKey(type:UsageType):string {

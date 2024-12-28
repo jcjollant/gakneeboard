@@ -91,3 +91,18 @@ SELECT COUNT(p.*), s.user_id FROM publications as p LEFT JOIN sheets as s ON p.s
 UPDATE publications SET active = TRUE WHERE sheetid = 275
 
 SELECT * FROM publications WHERE sheetid = 275
+
+#########
+# Usage
+
+# Most recent session for each user
+SELECT user_id, MAX(create_time) FROM usage WHERE user_id NOTNULL AND usage_type = 'session' GROUP BY user_id ORDER BY "max" desc LIMIT 100 
+
+# Most recent session for each user in the last 30 day
+SELECT user_id, MAX(create_time) FROM usage WHERE user_id NOTNULL AND usage_type = 'session' AND create_time > current_date - 30 GROUP BY user_id ORDER BY "max" desc LIMIT 100 
+
+# Active users in the last 30 days
+SELECT user_id FROM usage WHERE user_id NOTNULL AND usage_type = 'session' AND create_time > current_date - 30 GROUP BY user_id 
+
+# Prints in the past 30 days
+SELECT count(*) FROM usage WHERE usage_type = 'print' and create_time > current_date - 30 

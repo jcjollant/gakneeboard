@@ -1,4 +1,4 @@
-import { sql } from "@vercel/postgres";
+import { db, sql } from "@vercel/postgres";
 import { Dao } from "./Dao";
 
 export enum UsageType {
@@ -42,6 +42,24 @@ export class UsageDao extends Dao {
                         output.push({type:row.usage_type as UsageType, count:Number(row.count)})
                     }
                     resolve(output)
+                })
+                .catch( err => reject(err))
+        })
+    }
+
+    /**
+     * Count the numebr of sessions since the given number of days, 
+     * @param days 
+     * @returns 
+     */
+    public static async countSessionsSince(days:number) {
+        return new Promise<number>(async (resolve, reject) => {
+            const client = await db.connect()
+            client.query(`SELECT user_id FROM usage WHERE user_id NOTNULL AND usage_type='session' AND create_time > current_date - ${days} GROUP BY user_id`)
+            // client.query("SELECT user_id FROM usage WHERE user_id NOTNULL AND usage_type='session' AND create_time > current_date - " + days + " GROUP BY user_id")
+                .then( res => {
+                    resolve(Number(res.rows.length))
+                    client.release()
                 })
                 .catch( err => reject(err))
         })
