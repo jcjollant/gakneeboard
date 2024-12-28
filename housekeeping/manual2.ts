@@ -1,11 +1,5 @@
-// import { HouseKeeping } from "../backend/HouseKeepings";
 import { postgresUrl } from "../test/constants"
-
-// import { FmdWriter } from "../backend/exporters/FmdWriter"
-
 process.env.POSTGRES_URL=postgresUrl;
-
-
 
 //================
 // Airport metrics
@@ -30,9 +24,24 @@ process.env.POSTGRES_URL=postgresUrl;
 
 //========
 // Users Check
-import { HealthCheck } from "../backend/HealthChecks";
-HealthCheck.usersCheck() .then( check => {
-    console.log(check.name, check.status, check.msg)
+// import { HealthCheck } from "../backend/HealthChecks";
+// HealthCheck.usersCheck() .then( check => {
+//     console.log(check.name, check.status, check.msg)
+// })
+
+// HealthCheck
+import { HealthCheck, Check } from "../backend/HealthChecks";
+HealthCheck.perform(false).then(checks => {
+    const reset = "\x1b[0m"
+    let color = "\x1b[32m"
+    for(const check of checks) {
+        if(check.status == Check.SUCCESS) {
+            color = "\x1b[32m"
+        } else {
+            color = "\x1b[31m"
+        }
+        console.log(check.name, color+'['+check.status+']'+reset, check.msg)
+    }
 })
 
 // Metrics.templateDetails().then(metrics => {

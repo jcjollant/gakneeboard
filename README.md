@@ -41,8 +41,11 @@ Client ID : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent
 * 
 
 # Done
-## 12/18/2024 4522
+## 12/18/2024 
+1) 4522
 * Reverted Adip date
+2) 4523
+* Improved effective date check
 ## 12/27/2024
 * Data Refresh 12/26
 ## 12/23/2024 4520

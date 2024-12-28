@@ -52,6 +52,7 @@ export class HealthCheck {
         const check:Check = new Check('effectiveDate')
         const rentonCode:string = "KRNT"
 
+        // Force an Adip Check
         await Promise.all([AirportDao.readList( [rentonCode]),Adip.fetchAirport(rentonCode,false)]).then((results) => {
             try {
                 const rentonDb:Airport = results[0][0][1]
@@ -67,8 +68,10 @@ export class HealthCheck {
                     check.fail(rentonCode + " does not have effectiveDate in ADIP")
                 } else if(rentonDb.effectiveDate != rentonAdip.effectiveDate) {
                     check.fail("effective date mismatch db=" + rentonDb.effectiveDate + ", ADIP=" + rentonAdip.effectiveDate)
+                } else if( rentonAdip.effectiveDate != Adip.currentEffectiveDate) {
+                    check.fail("effective date mismatch ExpectedADIP=" + Adip.currentEffectiveDate + ", ActualADIP=" + rentonAdip.effectiveDate)
                 } else {
-                    check.pass("effective date check match : " + rentonDb.effectiveDate)
+                    check.pass("Matching " + rentonDb.effectiveDate)
                     // console.log("effective date check match : " + rentonDb.effectiveDate)
                 }
             } catch(e) {
@@ -109,7 +112,7 @@ export class HealthCheck {
         await Email.send(message, EmailType.Housekeeping)
     }
 
-    public static async perform():Promise<Check[]> {
+    public static async perform(email:boolean=true):Promise<Check[]> {
         return Promise.all([
                 HealthCheck.effectiveDateCheck(), 
                 HealthCheck.usersCheck(),
@@ -121,11 +124,15 @@ export class HealthCheck {
             const failedChecks:number = allChecks.filter((check) => check.status === Check.FAIL).length
             const data:string = JSON.stringify(allChecks)
 
-            console.log( '[HealthCheck.perform]', data, 'failures', failedChecks)
+            // console.log( '[HealthCheck.perform]', data, 'failures', failedChecks)
             await sql`INSERT INTO health_checks (data,failures) VALUES (${data},${failedChecks})`;
     
-            console.log( '[HealthCheck.perform] sending email')
-            await HealthCheck.sendMail( data, failedChecks)
+            // console.log( '[HealthCheck.perform] sending email')
+            if(email) {
+                await HealthCheck.sendMail( data, failedChecks)
+            } else {
+                console.log('Skipping email')
+            }
             return allChecks
         })
     
