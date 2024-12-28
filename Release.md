@@ -1,6 +1,9 @@
-## 12/27/2024 4522
+## 12/27/2024 
+1) 4522
 * New Google Sign In button
 * Demo are directy accessible via ?d=name
+2) 4523
+* Vercel rewrite for route parameters
 ## 12/24/2024 4521
 * New Holds demo
 ## 12/23/2024 4520
