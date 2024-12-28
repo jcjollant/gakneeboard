@@ -1,3 +1,54 @@
+
+<template>
+    <div class="tile">
+        <Header :title="title" :hideReplace="mode!='edit'"
+            @click="onHeaderClick" @replace="emits('replace')"></Header>
+        <AirportEdit v-if="mode=='edit'" :airport="airportData" :rwyName="runwayName" :rwyOrientation="rwyOrientation"
+            @close="onHeaderClick" @selection="onSettingsUpdate" />
+        <div v-else-if="mode=='list'" class="content" >
+            <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
+            <div class="runwayList">
+                <div class="runwayListRow">
+                    <div class="runwayListHeader">Rwy</div>
+                    <!-- <div class="runwayListHeader">TP</div> -->
+                    <div class="runwayListHeader">Len</div>
+                    <div class="runwayListHeader">Freq</div>
+                </div>
+                <div class="runwayListRow" v-for="rwy in rwyList">
+                    <div class="runwayListItemRunway">
+                        <span :class="getTpClass(rwy.ends[0])">{{rwy.ends[0].name}}</span>-
+                        <span :class="getTpClass(rwy.ends[1])">{{rwy.ends[1]?rwy.ends[1].name:'' }}</span>
+                    </div>
+                    <div class="runwayListItem">{{ Math.round(rwy.length / 100) }}</div>
+                    <div class="runwayListItem">{{ rwy.freq?rwy.freq.toFixed(3):'' }}</div>
+                </div>
+            </div>
+            <div class="footer">
+                <CornerStatic label="Elev" :value="elevation" position="bottom"/>
+                <CornerStatic label="TPA" :value="tpa" position="bottom"/>
+                <CornerStatic :label="weatherType" :value="Formatter.frequency(weatherFreq)" position="bottom"/>
+            </div>
+        </div>
+        <div class="content" v-else=""> <!-- Normal mode -->
+            <div v-if="airportCode">
+                <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
+                <div v-if="unknownRunway" class="unknownRwy">Unknown Runway</div>
+                <Runway v-else :runway="selectedRunway" :pattern="patternMode" :orientation="rwyOrientation"
+                    @update="onPatternUpdate" />
+                <Corner class="corner top left" :airport="airportData" :data="corner0" :runway="selectedRunway" 
+                    @update="onCornerUpdate" />
+                <Corner class="corner top right" :airport="airportData" :data="corner1"  :runway="selectedRunway" 
+                    @update="onCornerUpdate"/>
+                <Corner class="corner bottom left" :airport="airportData" :data="corner2"  :runway="selectedRunway" :flip="true"  
+                    @update="onCornerUpdate"/>
+                <Corner class="corner bottom right" :airport="airportData" :data="corner3"  :runway="selectedRunway" :flip="true"  
+                    @update="onCornerUpdate"/>
+            </div>
+            <PlaceHolder v-else title="No Airport" />
+        </div>
+    </div>    
+</template>
+
 <script setup>
 import {ref, onMounted, watch} from 'vue';
 import { getAirport, getFreqCtaf, getFreqWeather} from '../../assets/data.js'
@@ -73,7 +124,6 @@ function loadProps(newProps) {
     title.value = "Loading " + code + '...'
     getAirport( code, true)
         .then(airport => {
-            onNewAirport(airport)
             // is there a follow up request?
             if(airport && airport.promise) {
                 airport.promise.then((outcome) => {
@@ -84,6 +134,8 @@ function loadProps(newProps) {
                         onNewAirport(outcome.airport)
                     } 
                 })
+            } else { // No follow up request, we already have all we need
+                onNewAirport(airport)
             }
         })
 }
@@ -308,57 +360,6 @@ function updateWidget() {
 }
 
 </script>
-
-<template>
-    <div class="tile">
-        <Header :title="title" :hideReplace="mode!='edit'"
-            @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <AirportEdit v-if="mode=='edit'" :airport="airportData" :rwyName="runwayName" :rwyOrientation="rwyOrientation"
-            @close="onHeaderClick" @selection="onSettingsUpdate" />
-        <div v-else-if="mode=='list'" class="content" >
-            <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
-            <div class="runwayList">
-                <div class="runwayListRow">
-                    <div class="runwayListHeader">Rwy</div>
-                    <!-- <div class="runwayListHeader">TP</div> -->
-                    <div class="runwayListHeader">Len</div>
-                    <div class="runwayListHeader">Freq</div>
-                </div>
-                <div class="runwayListRow" v-for="rwy in rwyList">
-                    <div class="runwayListItemRunway">
-                        <span :class="getTpClass(rwy.ends[0])">{{rwy.ends[0].name}}</span>-
-                        <span :class="getTpClass(rwy.ends[1])">{{rwy.ends[1]?rwy.ends[1].name:'' }}</span>
-                    </div>
-                    <div class="runwayListItem">{{ Math.round(rwy.length / 100) }}</div>
-                    <div class="runwayListItem">{{ rwy.freq?rwy.freq.toFixed(3):'' }}</div>
-                </div>
-            </div>
-            <div class="footer">
-                <CornerStatic label="Elev" :value="elevation" position="bottom"/>
-                <CornerStatic label="TPA" :value="tpa" position="bottom"/>
-                <CornerStatic :label="weatherType" :value="Formatter.frequency(weatherFreq)" position="bottom"/>
-            </div>
-        </div>
-        <div class="content" v-else=""> <!-- Normal mode -->
-            <div v-if="airportCode">
-                <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
-                <div v-if="unknownRunway" class="unknownRwy">Unknown Runway</div>
-                <Runway v-else :runway="selectedRunway" :pattern="patternMode" :orientation="rwyOrientation"
-                    @update="onPatternUpdate" />
-                <Corner class="corner top left" :airport="airportData" :data="corner0" :runway="selectedRunway" 
-                    @update="onCornerUpdate" />
-                <Corner class="corner top right" :airport="airportData" :data="corner1"  :runway="selectedRunway" 
-                    @update="onCornerUpdate"/>
-                <Corner class="corner bottom left" :airport="airportData" :data="corner2"  :runway="selectedRunway" :flip="true"  
-                    @update="onCornerUpdate"/>
-                <Corner class="corner bottom right" :airport="airportData" :data="corner3"  :runway="selectedRunway" :flip="true"  
-                    @update="onCornerUpdate"/>
-            </div>
-            <PlaceHolder v-else title="No Airport" />
-        </div>
-    </div>    
-</template>
-
 <style scoped>
     .content {
         position: relative;
