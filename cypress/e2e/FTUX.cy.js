@@ -1,4 +1,4 @@
-import { atisTitle, boeingTitle, clearanceTitle, demoChecklistOnPage, demoTilesOnPage, environment, feltsTitle, notesTitle, radioFlowTitle, rentonTitle, selectionTitle, visitAndCloseBanner, visitSkipBanner, loadDemo } from './shared.js'
+import { boeingTitle, demoChecklistOnPage, demoTilesOnPage, environment, expectedDemos, loadDemo, rentonTitle, selectionTitle, visitAndCloseBanner, visitSkipBanner } from './shared.js'
 
 describe('First Time User Experience', () => {
 
@@ -42,10 +42,9 @@ describe('First Time User Experience', () => {
 
         // As a new user, I should see the demos
         cy.get('.demoSection')
-        const expectedDemos = ['Default','Checklist','Tiles','NavLog','C172 Reference','Charts']
         cy.get('.demoSection > .templateList').children().should('have.length', expectedDemos.length)
         expectedDemos.forEach((demo, index) => {
-            cy.get('.demoSection > .templateList').children().eq(index).contains(demo)
+            cy.get('.demoSection > .templateList').children().eq(index).contains(demo.l)
         })
         
         // As a new user, I should see the version number
@@ -74,14 +73,6 @@ describe('First Time User Experience', () => {
         cy.get('.tile1 > .headerTitle').contains(boeingTitle)
 
         // Check demo pages description work
-        const expectedDemos = [ 
-            {i:0, l:'Default', t:'Default Demo',c:['pageTiles','pageChecklist']}, 
-            {i:1, l:'Checklist',t:'Checklist syntax Showcase',c:['pageChecklist','pageChecklist']}, 
-            {i:2, l:'Tiles', t:'Every Tile Available on GA Kneeboard',c:['pageTiles','pageTiles']}, 
-            {i:3, l:'NavLog', t:'Navlog page along with six tiles',c:['pageNavlog','pageTiles']}, 
-            {i:4, l:'C172 Reference', t:'A sample Skyhawk Reference',c:['pageTiles','pageTiles']}, 
-            {i:5, l:'Charts', t:'Airport Diagram and Instrument Approach',c:['approachPage','approachPage']}, 
-        ]
         cy.get('.logo-img').click()
         cy.get('.demoSection > .templateList').children().should('have.length', expectedDemos.length)
         for(const ed of expectedDemos) {
