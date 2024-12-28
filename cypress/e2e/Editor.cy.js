@@ -10,8 +10,9 @@ function deletePage(index) {
 function reloadDemoWithEditor() {
     cy.visit(environment)
     loadDemo(0)
-    // wait for airport to be loaded
+    // wait for airports to be loaded
     cy.get('.page0 .tile0 > .headerTitle').should('not.contain','Loading')
+    cy.get('.page0 .tile1 > .headerTitle').should('not.contain','Loading')
 
     // reopen editor
     cy.get('#btnEditor').click()
