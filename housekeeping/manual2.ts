@@ -18,11 +18,11 @@ process.env.POSTGRES_URL=postgresUrl;
 //===================
 // Show Usage metrics
 //===================
-import { Metrics } from "../backend/Metrics";
-Metrics.usage().then(metrics => {
-    for(const metric of metrics)
-        console.log(metric.name, metric.value)
-})
+// import { Metrics } from "../backend/Metrics";
+// Metrics.usage().then(metrics => {
+//     for(const metric of metrics)
+//         console.log(metric.name, metric.value)
+// })
 
 //============
 // Users Check
@@ -47,10 +47,14 @@ Metrics.usage().then(metrics => {
 //     }
 // })
 
-// Metrics.templateDetails().then(metrics => {
-//     for(const metric of metrics)
-//         console.log(metric.name, metric.value)
-// })
+//=================
+// Template Details
+//=================
+import { Metrics } from "../backend/Metrics";
+Metrics.templateDetails().then(metrics => {
+    for(const metric of metrics)
+        console.log(metric.name, metric.value)
+})
 
 // new Dao('prints').count().then( r => console.log(r))
 // Adip.fetchAirport('OG14').then(airport => console.log(JSON.stringify(airport)));
