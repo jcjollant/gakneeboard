@@ -1,7 +1,8 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faFacebookF, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import {
-    faBan, faBorderAll,
+    faArrowDown, faArrowUp,
+    faBan, faBars, faBorderAll,
     faCamera, faCheck, faChevronRight, faCircleInfo, faCloud, faCloudSunRain, faComments,
     faFileExport,
     faGasPump, faGear, faHeadset, faImage, faJetFighter,
@@ -26,7 +27,9 @@ import App from './App.vue';
 import router from './router';
 import './style.css';
 
-library.add( faBan, faBorderAll, 
+library.add( 
+    faArrowDown, faArrowUp,
+    faBan, faBars, faBorderAll, 
     faCamera, faCheck, faChevronRight, faCircleInfo, faCloud, faCloudSunRain, faComments, 
     faFacebookF, faFileExport, faGoogle, 
     faGasPump, faGear, faHeadset, faImage, faJetFighter, 

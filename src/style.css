@@ -17,6 +17,7 @@
   --bg: #2196F3;
   --bg-hover: #0D89EC;
   --bg-public: #689F38;
+  --bg-strip: #eef;
   --button-height: 38px;
   --min-width: 750px;
   --editor-min-width: 750px;
@@ -73,6 +74,29 @@
   position: relative;
   border: 1px solid darkgray;
   background:white;
+}
+
+.stripAction {
+  position:absolute;
+  display: flex;
+  gap: 2px;
+  top: 2px;
+  right: 2px;
+  z-index: 1;
+}
+
+.stripBox {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: white;
+}
+
+.stripContent {
+  position: relative;
+  font-size: 13px;
+}
+.stripHeader {
+  border-bottom: 1px dashed grey;
 }
 
 .editItem {

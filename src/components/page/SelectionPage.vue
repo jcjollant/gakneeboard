@@ -32,6 +32,7 @@ const emits = defineEmits(['replace'])
 
 const topPages = ref([
     {name:'Tiles',type:PageType.tiles, icon:'border-all', tooltip:'A 2x3 grid of customizable tiles like Airport, ATIS, Radios, ...'},
+    {name:'Strips',type:PageType.strips, icon:'bars', tooltip:'Customizable horizontal strips'},
     {name:'Checklist',type:PageType.checklist, icon:'list-check', tooltip:'A customizable checklist'},
     {name:'Notes',type:PageType.notes, icon:'pen-to-square', tooltip:'A blank page to write down instructions'},
 ])
