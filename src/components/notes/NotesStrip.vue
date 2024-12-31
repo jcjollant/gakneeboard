@@ -25,6 +25,7 @@ watch(props, () => {
 
 <style scoped>
 .notes {
+    position: relative;
     /* opacity: 0.3; */
     border-radius: 5px;
     /* background: white ; */
