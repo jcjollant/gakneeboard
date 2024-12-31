@@ -3,7 +3,7 @@
         <div class="top">
             <div class="logo"><font-awesome-icon :icon="['fas','camera']" /></div>
             <div class="topRight">
-                <Header title="FLIGHT NOTES" :page="true"></Header>
+                <Header title="FLIGHT NOTES" :page="true" @replace="emits('replace')"></Header>
                 <div class="line1">
                     <LabelInput label="DATE:" />
                     <LabelInput label="TAIL #:" />
@@ -54,7 +54,7 @@
                 <LabelInput label="MDA/DA:" />
                 <LabelInput label="MSA:" />
             </div>
-            <div class="arivalTaxi taxi">
+            <div class="arrivalTaxi taxi">
                 <div>TAXI to PARKING via:</div>
                 <div>&nbsp</div>
                 <div class="rightAlign">
@@ -72,6 +72,7 @@ import FlightNotesWeather from './FlightNotesWeather.vue';
 import Header from '../shared/Header.vue';
 import LabelInput from '../shared/LabelInput.vue';
 
+const emits = defineEmits(['replace']);
 </script>
 
 
