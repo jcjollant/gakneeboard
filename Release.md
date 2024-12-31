@@ -1,3 +1,5 @@
+## 12/30/2024 5011
+* Improved turns legibility in holds
 ## 12/27/2024 
 1) 4522
 * New Google Sign In button

@@ -16,7 +16,7 @@
             </div>
             <div class="label labelTopRight">RAD/CRS</div>
             <div class="label labelBottomLeft">Established</div>
-            <div class="turns">&#x021B6 &#x021B7</div>
+            <div class="turns">&#x021B7 &#x021B6</div>
             <div class="label labelBottomRight">EFC</div>
         </div>
         <div class="row brg">CRS</div>
@@ -108,5 +108,9 @@
 .labelTopRight {
   right: 3px;
   top: 0;
+}
+.turns {
+    font-size: 1.5rem;
+    line-height: 1rem;
 }
 </style>
