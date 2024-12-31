@@ -232,8 +232,11 @@ function onPageUpdate(pageData) {
   activeTemplate.value.modified = true
   // save template data for that pages
   activeTemplate.value.data[pageData.index] = {data:pageData.data,type:pageData.type}
-  // save template locally after some time so UI has a chance to update
-  saveTemplateToLocalStore(pageData.index == 0)
+  // Only update templates for changes pertaining to the first page and while a template is not new
+  // console.log('[Template.onPageUpdate]', route.params.id)
+  const saveThumnail = (pageData.index == 0 && route.params.id != 'new')
+  // save template locally
+  saveTemplateToLocalStore(saveThumnail)
 }
 
 
