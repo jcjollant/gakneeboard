@@ -1,11 +1,12 @@
 export class PageType {
-  static selection = 'selection';
-  static tiles = 'tiles';
-  static diagram = 'diagram';
+  static approach = 'approach';
   static checklist = 'checklist';
   static cover = 'cover';
+  static diagram = 'diagram';
+  static flightNotes = 'flightnotes'
+  static loading = 'loading';
   static navLog = 'navlog';
   static notes = 'notes';
-  static approach = 'approach';
-  static loading = 'loading';
+  static selection = 'selection';
+  static tiles = 'tiles';
 }

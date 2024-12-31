@@ -13,6 +13,7 @@
     <DiagramPage v-else-if="type==PageType.diagram" :data="pageData"
         @update="onUpdate" @replace="onReplace" />
     <LoadingPage v-else-if="type==PageType.loading" />
+    <FlightNotesPage v-else-if="type==PageType.flightNotes" />
     <SelectionPage v-else @replace="onReplace" />
 </template>
 
@@ -25,6 +26,7 @@ import ApproachPage from '../charts/ApproachPage.vue'
 import ChecklistPage from '../checklist/ChecklistPage.vue'
 import CoverPage from '../cover/CoverPage.vue'
 import DiagramPage from '../charts/DiagramPage.vue'
+import FlightNotesPage from '../clearance/FlightNotesPage.vue'
 import NavlogPage from '../navlog/NavlogPage.vue'
 import NotesPage from '../notes/NotesPage.vue'
 import SelectionPage from './SelectionPage.vue'
