@@ -39,6 +39,6 @@ watch(props, () => {
     display: grid;
     grid-template-columns: 1.1fr 1fr 0.8fr 5fr 1fr 1fr;
     align-items: center;
-    line-height: 1.5rem;
+    line-height: 2rem;
 }
 </style>
