@@ -3,8 +3,13 @@
         <Header :title="'New Page Selection'" :replace="false" :clickable="false"></Header>
         <!-- <div class="widgetTitle">Tile Selection</div> -->
         <div class="list">
-            <Separator name="Basics" />
-            <FAButton v-for="page in topPages" :label="page.name" :title="page.tooltip" :icon="page.icon"
+            <template v-for="section in sections">
+                <Separator :name="section.name" />
+                <FAButton v-for="page in section.pages" :label="page.name" :title="page.tooltip" :icon="page.icon"
+                    @click="replacePage(page.type)"/>
+            </template>
+            <!-- <Separator name="Basics" />
+            <FAButton v-for="page in basicPages" :label="page.name" :title="page.tooltip" :icon="page.icon"
                 @click="replacePage(page.type)"/>
             <Separator name="Navigation" />
             <FAButton v-for="page in knownPages" :label="page.name" :title="page.tooltip" :icon="page.icon"
@@ -14,7 +19,7 @@
                 @click="replacePage(page.type)"/>
             <Separator name="Cosmetics" />
             <FAButton v-for="page in cosmeticPages" :label="page.name" :title="page.tooltip" :icon="page.icon"
-                @click="replacePage(page.type)"/>
+                @click="replacePage(page.type)"/> -->
         </div>
     </div>
 </template>
@@ -30,25 +35,32 @@ import Separator from './Separator.vue'
 
 const emits = defineEmits(['replace'])
 
-const topPages = ref([
+const group1 = ref([
     {name:'Tiles',type:PageType.tiles, icon:'border-all', tooltip:'A 2x3 grid of customizable tiles like Airport, ATIS, Radios, ...'},
     {name:'Strips',type:PageType.strips, icon:'bars', tooltip:'Customizable horizontal strips'},
     {name:'Checklist',type:PageType.checklist, icon:'list-check', tooltip:'A customizable checklist'},
-    {name:'Notes',type:PageType.notes, icon:'pen-to-square', tooltip:'A blank page to write down instructions'},
 ])
-const knownPages = ref([
+const group2 = ref([
     {name:'NavLog',type:PageType.navLog, icon:'route', tooltip:'A Navigation Log with checkpoints and headings'},
-    {name:'IFR Flight Notes',type:PageType.flightNotes, icon:'pen-to-square', tooltip:'Aviation101 IFR flight notes page'},
+    // {name:'IFR Flight Notes',type:PageType.flightNotes, icon:'pen-to-square', tooltip:'Aviation101 IFR flight notes page'},
 ])
-const chartsPages = ref([
+const group3 = ref([
     {name:'Airport Diagram',type:PageType.diagram, icon:'road-circle-check',tooltip:'Airport Diagram (FAA)'},
     {name:'Instrument Approach',type:PageType.approach, icon:'plane-arrival', tooltip:'Instrument Approach Plates (FAA)'},
 ])
-const cosmeticPages = ref([
+const group4 = ref([
     {name:'Cover',type:PageType.cover, icon:'image', tooltip:'A cover page for your stylish templates'},
+    {name:'Notes',type:PageType.notes, icon:'pen-to-square', tooltip:'A blank page to write down instructions'},
 ])
 
-function replacePage(type) {
+const sections = ref([
+    {name:'Composable', pages:group1},
+    {name:'Navigation', pages:group2},
+    {name:'Charts', pages:group3},
+    {name:'Cosmetics', pages:group4}
+])
+
+function replacePage(type:PageType) {
     // console.log('[SelectionPage.replacePage]', type)
     emits('replace',type)
 }
