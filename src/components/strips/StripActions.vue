@@ -1,8 +1,8 @@
 <template>
     <div class="stripAction">
-        <font-awesome-icon class="button" :icon="['fas','arrow-up']" @click="emits('action', StripAction.moveUp)" />
-        <font-awesome-icon class="button" :icon="['fas','arrow-down']" @click="emits('action', StripAction.moveDown)" />
-        <font-awesome-icon class="button red" :icon="['fas','trash']" @click="emits('action', StripAction.remove)" />
+        <font-awesome-icon class="button actionUp" :icon="['fas','arrow-up']" @click="emits('action', StripAction.moveUp)" />
+        <font-awesome-icon class="button actionDown" :icon="['fas','arrow-down']" @click="emits('action', StripAction.moveDown)" />
+        <font-awesome-icon class="button red actionRemove" :icon="['fas','trash']" @click="emits('action', StripAction.remove)" />
     </div>
 </template>
 

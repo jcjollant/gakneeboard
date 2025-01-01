@@ -26,13 +26,13 @@ watch(props, () => {
 <style scoped>
 .notes {
     position: relative;
-    /* opacity: 0.3; */
     border-radius: 5px;
-    /* background: white ; */
     border: none;
+    flex-grow: 1;
 }
 .box {
-    height: 100px;
+    min-height: 50px;
+    height: 100%;
 }
 
 </style>

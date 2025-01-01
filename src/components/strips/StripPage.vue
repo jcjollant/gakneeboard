@@ -3,19 +3,22 @@
         <Header title="Strips" :page="true" @replace="emits('replace')" @click="editMode=!editMode"></Header>
         <div class="stripContainer">
             <div class="stripList" >
-                <div v-if="strips.length" v-for="(s,index) in strips" >
-                    <AtisStrip v-if="s == StripType.atis" :edit="editMode" @action="action(index, $event)" />
-                    <TaxiStrip v-if="s == StripType.taxi" :edit="editMode" @action="action(index, $event)"/>
-                    <NotesStrip v-if="s == StripType.notes" :edit="editMode" @action="action(index, $event)"/>
-                </div>
+                <template v-if="strips.length" v-for="(s,index) in strips" >
+                    <AtisStrip v-if="s == StripType.atis" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
+                    <TaxiStrip v-if="s == StripType.taxi" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
+                    <NotesStrip v-if="s == StripType.notes" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
+                    <RadioStrip v-if="s == StripType.radio" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
+                </template>
+                <PlaceHolder v-else :title="'No Strip'" :subtitle="editMode ? 'Add New Strips Below' : 'Click Header to Configure'"/>
             </div>
-            <SelectionStrip v-if="editMode" @selection="addStrip" />
+            <SelectionStrip v-if="editMode" @selection="addStrip" @done="editMode=false" class="selectionStrip" />
         </div>
     </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { StripAction } from '../../assets/StripAction';
+import { StripPageData } from '../../assets/StripPageData';
 import { StripType } from '../../assets/StripType';
 
 import AtisStrip from '../atis/AtisStrip.vue';
@@ -23,17 +26,29 @@ import Header from '../shared/Header.vue';
 import NotesStrip from '../notes/NotesStrip.vue';
 import SelectionStrip from './SelectionStrip.vue';
 import TaxiStrip from './TaxiStrip.vue';
+import PlaceHolder from '../shared/PlaceHolder.vue';
+import RadioStrip from '../radios/RadioStrip.vue';
 
-const editMode = ref(true)
-const emits = defineEmits(['replace'])
+const editMode = ref(false)
+const emits = defineEmits(['replace','update'])
+const props = defineProps<{data:StripPageData}>()
 const strips = ref<StripType[]>([])
+
+onMounted(() => {
+    // console.log('[StripPage.onMounted]', props.data)
+    strips.value = props.data?.list || []
+    if(strips.value.length == 0) {
+        editMode.value = true
+    }
+})
 
 function addStrip(type: StripType) {
     strips.value.push(type)
+    update()
 }
 
 function action(itemId:number, param:any) {
-    console.log('[StripPage.action]', itemId, param)
+    // console.log('[StripPage.action]', itemId, param)
     if(param == StripAction.remove) {
         strips.value.splice(itemId, 1)
     } else if( param == StripAction.moveUp) {
@@ -48,7 +63,19 @@ function action(itemId:number, param:any) {
             strips.value[itemId+1] = strips.value[itemId]
             strips.value[itemId] = tmp
         }
+    } else {
+        console.log('Unknown action', param)
+        return
     }
+    update()
+}
+
+// Send an update to parent for storage
+function update() {
+    const data:StripPageData = {
+        list: strips.value
+    }
+    emits('update', data)
 }
 
 </script>
@@ -58,13 +85,14 @@ function action(itemId:number, param:any) {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 100%;
+    flex-grow: 1;
 }
 .stripList {
     display: flex;
     flex-flow: column;
     gap: 5px;
     padding: 5px;
+    flex-grow: 1;
 }
 .stripPage {
     display: flex;

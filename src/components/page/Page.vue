@@ -7,14 +7,17 @@
         @replace="onReplace" @update="onUpdate" />
     <TilePage v-else-if="type==PageType.tiles" :data="pageData" 
         @update="onUpdate" />
-    <NotesPage v-else-if="type==PageType.notes" @replace="onReplace(PageType.selection)" />
+    <NotesPage v-else-if="type==PageType.notes" 
+        @replace="onReplace(PageType.selection)" />
     <ApproachPage v-else-if="type==PageType.approach" :data="pageData"
-        @update="onUpdate" @replace="onReplace"  />
+        @replace="onReplace" @update="onUpdate" />
     <DiagramPage v-else-if="type==PageType.diagram" :data="pageData"
-        @update="onUpdate" @replace="onReplace" />
+        @replace="onReplace" @update="onUpdate"  />
     <LoadingPage v-else-if="type==PageType.loading" />
-    <FlightNotesPage v-else-if="type==PageType.flightNotes" @replace="onReplace" />
-    <StripPage v-else-if="type==PageType.strips" @replace="onReplace" />
+    <FlightNotesPage v-else-if="type==PageType.flightNotes" 
+        @replace="onReplace" />
+    <StripPage v-else-if="type==PageType.strips" :data="pageData"
+        @replace="onReplace" @update="onUpdate" />
     <SelectionPage v-else @replace="onReplace" />
 </template>
 
@@ -75,10 +78,9 @@ watch( props, async(newP, oldP) => {
 function onReplace(newType=undefined) {
     // console.log('[Page.onReplace]', newType)
     if(newType) {
-        let newData = {}
+        let newData = newType == PageType.tiles ? [] : {}
         if(newType == PageType.tiles) {
             // create 6 empty tiles
-            newData = []
             for(let index = 0; index<6; index++) {
                 newData.push({id:index,name:'',data:{}})
             }

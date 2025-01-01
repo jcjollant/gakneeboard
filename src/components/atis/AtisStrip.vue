@@ -8,8 +8,9 @@
         <div class="top">ALT</div>
         <div class="top">APCH</div>
         <div class="top">RWY</div>
+        <div class="infoBox stripBox"></div>
         <div class="stripBox"></div>
-        <div class="stripBox wind"><div class="gust">G</div></div>
+        <!-- <div class="stripBox wind"><div class="gust">G</div></div> -->
         <div class="stripBox"></div>
         <div class="stripBox skyCondition">
             <div v-for="letter in ['C','F','S','B','O']">{{ letter }}</div>
@@ -49,7 +50,7 @@ watch(props, () => {
 .weather {
     position: relative;
     display: grid;
-    grid-template-columns: 23fr 28fr 12fr 26fr 23fr 25fr 30fr 25fr;
+    grid-template-columns: 1.5fr 5fr 2fr 4fr 4fr 4fr 3fr 3fr;
     grid-template-rows: 1rem 40px;
     width: 100%;
     border-right: none;
@@ -66,6 +67,9 @@ watch(props, () => {
 
 .rightAlign {
     text-align: right;
+}
+.infoBox {
+    border: 2px solid grey;
 }
 .skyCondition {
     display: flex;
