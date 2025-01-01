@@ -4,7 +4,7 @@
         <div class="stripBox">&nbsp;</div>
         <div class="label">via</div>
         <div class="stripBox">&nbsp;</div>
-        <div class="label">X / HS</div>
+        <div class="label" title="Cross / Hold Short">X / HS</div>
         <div class="stripBox">&nbsp;</div>
         <StripActions v-if="edit" @action="emits('action', $event)" />
     </div>
