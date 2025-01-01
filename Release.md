@@ -1,3 +1,8 @@
+## 01/01/2025 5012
+* New Page type Strips
+* New Page slection layout
+* Fixed airport loading issue on current data
+
 ## 12/30/2024 5011
 * Improved turns legibility in holds
 ## 12/27/2024 
