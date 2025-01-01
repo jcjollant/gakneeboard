@@ -124,18 +124,18 @@ function loadProps(newProps) {
     title.value = "Loading " + code + '...'
     getAirport( code, true)
         .then(airport => {
+            // Refresh with that data to get immediate visuals
+            onNewAirport(airport)
             // is there a follow up request?
             if(airport && airport.promise) {
                 airport.promise.then((outcome) => {
                     // console.log( '[Airport.loadProps] outcome', JSON.stringify(outcome))
-                    // if data was not curren, load new version
+                    // if data was not current, load new version
                     if(!outcome.current && outcome.airport){
                         // console.log( '[Airport.loadProps] data was not current', JSON.stringify(outcome))
                         onNewAirport(outcome.airport)
-                    } 
+                    }
                 })
-            } else { // No follow up request, we already have all we need
-                onNewAirport(airport)
             }
         })
 }
