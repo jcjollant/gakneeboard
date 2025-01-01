@@ -2,12 +2,12 @@
     <div class="stripContent weather">
         <div class="top">INFO</div>
         <div class="top">WIND</div>
-        <div class="top">VIS</div>
-        <div class="top">SKY</div>
-        <div class="top">T°/DP</div>
-        <div class="top">ALT</div>
-        <div class="top">APCH</div>
-        <div class="top">RWY</div>
+        <div class="top" title="Visibility">VIS</div>
+        <div class="top" title="Sky Condition">SKY</div>
+        <div class="top" title="Temperature / Dew Point">T°/DP</div>
+        <div class="top" title="Altimeter Setting">ALT</div>
+        <div class="top" title="Approach in Use">APCH</div>
+        <div class="top" title="Runway in Use">RWY</div>
         <div class="infoBox stripBox"></div>
         <div class="stripBox"></div>
         <!-- <div class="stripBox wind"><div class="gust">G</div></div> -->
