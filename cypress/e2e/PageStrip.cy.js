@@ -2,7 +2,7 @@ import { visitAndCloseBanner, newPage, visitSkipBanner, newTemplate } from './sh
 
 function testEditMode(present=true) {
   if(present) {
-    const expectedStrips = ['ATIS', 'Radio', 'Taxi', 'Notes', 'Done']
+    const expectedStrips = ['ATIS', 'Radio', 'Taxi', 'Notes']
     for( const type of expectedStrips) {
       cy.get('.selectionStrip').contains(type)
     }
@@ -11,7 +11,7 @@ function testEditMode(present=true) {
   }
 }
 
-describe('Tile Page', () => {
+describe('Strip Page', () => {
   it('Basic flow', () => {
     cy.viewport(1300, 768)
     visitSkipBanner()
@@ -26,7 +26,7 @@ describe('Tile Page', () => {
     testEditMode(true)
 
     // As user I should be able to leave edit mode with the done button
-    cy.get('.selectionStrip [aria-label="Done"]').click()
+    cy.get('.selectionStrip .fa-check').click()
     testEditMode(false)
     // Placeholder should be refreshed
     cy.get('.placeHolder').contains('Click Header to Configure')
