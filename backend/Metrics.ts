@@ -34,11 +34,13 @@ enum Key {
     exports = 'exports',
     feedbacks = 'feedbacks',
     pageApproach = 'approachPageCount',
+    pageDiagram = 'diagramPageCount',
     pageChecklist = 'checklistPageCount',
     pageCover = 'coverPageCount',
     pageNavlog = 'navlogPageCount',
     pageNotes = 'notesPageCount',
     pageSelection = 'selectionPageCount',
+    pageStrip = 'stripPageCount',
     pageTiles = 'tilePageCount',
     pagesTotal = 'totalPageCount',
     prints = 'prints',
@@ -144,7 +146,7 @@ export class Metrics {
         const templates:Template[] = await TemplateDao.getAllTemplateData()
 
         // build a list of all metrics
-        const metricsKeys:Key[] = [Key.pagesTotal, Key.pageTiles, Key.pageChecklist, Key.pageCover, Key.pageSelection, Key.pageNavlog, Key.pageNotes, Key.pageApproach,
+        const metricsKeys:Key[] = [Key.pagesTotal, Key.pageTiles, Key.pageChecklist, Key.pageStrip, Key.pageCover, Key.pageSelection, Key.pageNavlog, Key.pageNotes, Key.pageApproach, Key.pageDiagram,
             Key.tilesTotal, Key.tileAirport, Key.tileAtis, Key.tileChecklist, Key.tileClearance, Key.tileFuel, Key.tileNavlog, Key.tileNotes, Key.tileRadios, Key.tileSunlight, Key.templatesStale]
         // populate the dictionary with metrics
         const ml:{[key:string]:Metric} = {}
@@ -178,6 +180,8 @@ export class Metrics {
                     }
                 } else if(page.type == PageType.checklist) {
                     ml[Key.pageChecklist].addOne()
+                } else if(page.type == PageType.strips) {
+                    ml[Key.pageStrip].addOne()
                 } else if(page.type == PageType.cover) {
                     ml[Key.pageCover].addOne()
                 } else if(page.type == PageType.selection) {
@@ -188,6 +192,8 @@ export class Metrics {
                     ml[Key.pageNotes].addOne()
                 } else if(page.type == PageType.approach) {
                     ml[Key.pageApproach].addOne()
+                } else if(page.type == PageType.diagram) {
+                    ml[Key.pageDiagram].addOne()
                 } else {
                     continue
                 }
