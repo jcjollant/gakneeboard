@@ -5,6 +5,8 @@
       @close="showExport=false" @export="onExport" />
     <TemplateSettings v-model:visible="showSettings" :template="activeTemplate"
       @close="showSettings=false" @save="onSettings" />
+    <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
+      @offset="onOffset" />
     <div class="pageGroup" :class="{'editor':showEditor}" >
       <div class="templateMenu">
         <MenuButton id="btnPrint" icon="print" title="Print Template" label="Print"
@@ -39,8 +41,6 @@
         title="Next Page" id="offsetNext"
         @click="onOffset(offset + 1)"></i>
     </div>
-    <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
-      @offset="onOffset" />
   </div>
 </template>
 

@@ -66,5 +66,6 @@ watch( props, async() => {
   gap: 5px;
   width: var(--pages-gap);
   height: var(--page-height);
+  z-index: 1;
 }
 </style>
