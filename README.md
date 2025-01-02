@@ -41,6 +41,10 @@ Client ID : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent
 * 
 
 # Done
+## 01/02/2025 5010
+* Added diagram and strips to page counts
+## 12/29/2024 4525
+* Metrics code cleanup
 ## 12/28/2024 
 1) 4522
 * Reverted Adip date
