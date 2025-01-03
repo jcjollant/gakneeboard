@@ -30,13 +30,11 @@
 
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue';
-import { newCurrentUser } from '../assets/data';
-import { CurrentUser } from '../assets/CurrentUser';
+import { newCurrentUser, routeToLocalTemplate } from '../assets/data';
 import { useRouter } from 'vue-router';
-import { LocalStore } from '../lib/LocalStore';
 import { getTemplateDataFromName, SheetName } from '../assets/sheetData';
 import { useToast } from 'primevue/usetoast';
-import { getToastError, getToastWarning } from '../assets/toast';
+import { getToastError } from '../assets/toast';
 import Menu from '../components/menu/Menu.vue';
 import PlaceHolder from '../components/shared/PlaceHolder.vue';
 import TemplateSelector from '../components/templates/TemplateSelector.vue';
@@ -88,9 +86,7 @@ function onDemoSelection(name) {
         return;
     }
     // Save demo data to localstore
-    LocalStore.saveTemplate(templateData);
-    // Load localstore
-    router.push( '/template/0')
+    routeToLocalTemplate(router, templateData);
 }
 
 function onNewTemplate() {
@@ -98,9 +94,7 @@ function onNewTemplate() {
     templateData.name = 'New Template'
 
     // Save demo data to localstore
-    LocalStore.saveTemplate(templateData);
-    // Load localstore
-    router.push( '/template/new')
+    routeToLocalTemplate(router, templateData);
 }
 
 function onTemplateSelection(index) {
