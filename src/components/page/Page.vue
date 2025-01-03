@@ -43,13 +43,11 @@ import LoadingPage from './LoadingPage.vue'
 const confirm = useConfirm()
 const emits = defineEmits(['update'])
 const pageData = ref(null)
-const pageIndex = ref(null)
 const type = ref(PageType.tiles)
 const version = ref(0)
 
 const props = defineProps({
     data: { type: Object, default: null},
-    index: { type: Number},
     ver: { type: Number, default: 0},
 })
 
@@ -58,7 +56,6 @@ function loadProps(props) {
     if(!props.data) return
     pageData.value = props.data.data ? props.data.data : null
     type.value = props.data.type ? props.data.type : null
-    pageIndex.value = props.index;
     version.value = props.ver;
     // console.log('[Page.loadProps] version', props.ver)
 }
@@ -78,16 +75,7 @@ watch( props, async(newP, oldP) => {
 function onReplace(newType=undefined) {
     // console.log('[Page.onReplace]', newType)
     if(newType) {
-        let newData = newType == PageType.tiles ? [] : {}
-        if(newType == PageType.tiles) {
-            // create 6 empty tiles
-            for(let index = 0; index<6; index++) {
-                newData.push({id:index,name:'',data:{}})
-            }
-        }
-        const newPageData = {type:newType,data:newData, index:pageIndex.value}
-        // console.log('[Page.onReplace]', JSON.stringify(newPageData))
-        emits('update', newPageData)
+        onUpdateType(newType)
     } else {
         // confirm and show page selection
         confirm.require({
@@ -96,16 +84,28 @@ function onReplace(newType=undefined) {
             rejectLabel: 'No',
             acceptLabel: 'Yes, Replace',
             accept: () => {
-                type.value = PageType.selection
+                onUpdateType(PageType.selection)
             }
         })
     }
 }
 
+/**
+ * Page Data has been updated
+ * @param newData 
+ */
 function onUpdate( newData) {
     // console.log('[Page.onUpdate]', JSON.stringify(newData))
     // enrich page data with type and index
-    const newPageData = {type:type.value,data:newData,index:pageIndex.value}
+    const newPageData = {type:type.value,data:newData}
+    emits('update', newPageData)
+}
+
+function onUpdateType( newType) {
+    pageData.value = {}
+    type.value = newType
+    const newPageData = {type:newType,data:{}}
+
     emits('update', newPageData)
 }
 
