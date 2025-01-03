@@ -23,10 +23,11 @@
 <script setup>
 import { onBeforeMount, onMounted, ref } from 'vue';
 import { inject } from "@vercel/analytics"
-import { backend, getBackend, newCurrentUser, version } from './assets/data';
+import { backend, getBackend, newCurrentUser, routeToLocalTemplate, version } from './assets/data';
 import { LocalStore } from './lib/LocalStore';
 import { TemplateData } from './assets/TemplateData';
 import { useRoute, useRouter } from 'vue-router';
+import { getTemplateDataFromName } from './assets/sheetData';
 // Components
 import About from './components/menu/About.vue'
 import ConfirmDialog from 'primevue/confirmdialog';
@@ -36,7 +37,6 @@ import Maintenance from './components/menu/Maintenance.vue'
 import MenuButton from './components/menu/MenuButton.vue';
 import Session from './components/menu/Session.vue'
 import Toast from 'primevue/toast'
-import { getTemplateDataFromName } from './assets/sheetData';
 
 const route = useRoute()
 const router = useRouter()
@@ -74,9 +74,7 @@ onMounted( () => {
             TemplateData.getPublication(code).then( template => {
                 console.log('[App.onMounted] publication found ', template)
                 if(template) {
-                    // Copy this template in localstore
-                    LocalStore.saveTemplate(template)
-                    router.push('/template/0')
+                    routeToLocalTemplate(router, template)
                 } else {
                     // template not found?
                     showToast( getToastData( 'Load Template','Code not found ' + code, toastError))
@@ -90,8 +88,7 @@ onMounted( () => {
       const name = urlParams.get('d');
       const template = getTemplateDataFromName( 'gak-' + name )
       if( template) {
-        LocalStore.saveTemplate(template)
-        router.push('/template/0')
+        loadLocalTemplate( template )
       }
     }
     showMaintenance.value = false;
