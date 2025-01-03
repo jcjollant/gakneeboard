@@ -29,9 +29,8 @@
         @click="onOffset(offset - 1)"></i>
       <div v-if="activeTemplate" class="pageAll" :class="{'editor':showEditor}">
         <Page v-for="(data,index) in activeTemplate.data" 
-          v-show="index >= offset"
-          :data="data" :index="index" :class="'page'+index" :ver="activeTemplate.ver"
-          @update="onPageUpdate" />
+          v-show="index >= offset" :data="data" :class="'page'+index" :ver="activeTemplate.ver"
+          @update="onPageUpdate(index, $event)" />
       </div>
       <div v-else class="pageAll">
         <LoadingPage></LoadingPage>
@@ -45,22 +44,22 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue'
-import { duplicate, newCurrentUser } from '../assets/data.js'
-import { getTemplateDemoTiles } from '../assets/sheetData.js'
 import html2canvas from 'html2canvas'
-import { LocalStore } from '../lib/LocalStore.ts'
-import { TemplateData } from '../assets/TemplateData.ts'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
-import { useToaster } from '../assets/Toaster.ts'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { newCurrentUser } from '../assets/data.js'
+import { getTemplateDemoTiles } from '../assets/sheetData.js'
+import { TemplateData } from '../assets/TemplateData.ts'
+import { useToaster } from '../assets/Toaster.ts'
+import { LocalStore } from '../lib/LocalStore.ts'
 
 // Components
 import Editor from '../components/editor/Editor.vue'
-import LoadingPage from '../components/page/LoadingPage.vue'
 import Menu from '../components/menu/Menu.vue'
 import MenuButton from '../components/menu/MenuButton.vue'
+import LoadingPage from '../components/page/LoadingPage.vue'
 import Page from '../components/page/Page.vue'
 import TemplateExport from '../components/templates/TemplateExport.vue'
 import TemplateSettings from '../components/templates/TemplateSettings.vue'
@@ -227,14 +226,14 @@ function onOffset(newOffset) {
   updateOffsets()
 }
 
-function onPageUpdate(pageData) {
+function onPageUpdate(index, pageData) {
   // console.log('[Template.onPageUpdate] index', pageData.index)
   activeTemplate.value.modified = true
   // save template data for that pages
-  activeTemplate.value.data[pageData.index] = {data:pageData.data,type:pageData.type}
+  activeTemplate.value.data[index] = {data:pageData.data,type:pageData.type}
   // Only update templates for changes pertaining to the first page and while a template is not new
   // console.log('[Template.onPageUpdate]', route.params.id)
-  const saveThumnail = (pageData.index == 0 && route.params.id != 'new')
+  const saveThumnail = (index == 0 && route.params.id != 'local')
   // save template locally
   saveTemplateToLocalStore(saveThumnail)
 }
@@ -242,7 +241,10 @@ function onPageUpdate(pageData) {
 
 function onPrint() {
   saveTemplateToLocalStore()
-  router.push('/print')
+  // put local in the history so Print comes back to the correct template in progress
+  router.push('/template/local').then(() =>{
+    router.push('/print')
+  })
 }
 
 async function onSave() {
