@@ -388,6 +388,12 @@ async function requestOneAirport( code) {
   return airport
 }
 
+export function routeToLocalTemplate(router, template) {
+    LocalStore.saveTemplate(template)
+    router.push('/template/local')
+}
+
+
 /**
  * Send feedback to the backend with version and follow up flag
  * @param {*} text feedback text
