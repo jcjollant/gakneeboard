@@ -1,5 +1,9 @@
 ## 01/02/2025 5014
-Page Selection can be used with Editor
+1) 5014
+* Page Selection can be used with Editor
+2) 5015
+* Removed description from new page
+* FIxed print routing issue
 ## 01/01/2025 5012 5013
 1) 5012
 * New Page type Strips
