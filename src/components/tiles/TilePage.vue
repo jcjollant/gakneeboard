@@ -18,12 +18,23 @@ const props = defineProps({
 
 function loadProps(props) {
   // console.log('[TilePage.loadProps]', typeof props.data, JSON.stringify(props.data))
-  if(!props.data) return;
-  // build tiles id
-  for(let index=0; index < props.data.length; index++) {
-    props.data[index].id = index
+  if(!props.data || !Object.keys(props.data).length) { // we need to prime the tiles
+      // console.log('[TilePage.loadProps] no data')
+
+      let newData = []
+      // create 6 empty tiles
+      for(let index = 0; index<6; index++) {
+          newData.push({id:index,name:'',data:{}})
+      }
+      tiles.value = newData;
+      // console.log('[TilePage.loadProps]', JSON.stringify(tiles.value))
+  } else { // we have usable data
+    // build tiles id
+    for(let index=0; index < props.data.length; index++) {
+      props.data[index].id = index
+    }
+    tiles.value = props.data
   }
-  tiles.value = props.data
 }
 
 onMounted(() => {
