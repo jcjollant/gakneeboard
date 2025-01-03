@@ -42,7 +42,7 @@ const pageDataBlankTiles = {type:PageType.tiles,data:[
 const pageDataBlankChecklist = {type:PageType.checklist, data:{}}
 export const pageDataBlank = {type:PageType.selection,data:{}}
 // Template Blank has two blank pages
-const templateBlank = new Template('Blank','Two selection pages', false, [pageDataBlank,pageDataBlank])
+const templateBlank = new Template('Blank','', false, [pageDataBlank,pageDataBlank])
 
 const page0DemoDefault = {
     type:PageType.tiles,
