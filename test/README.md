@@ -5,6 +5,11 @@ Open the UI
 Run the test suite:
 `npx cypress run`
 
+Try / Debug tests
+`npx cypress open`
+
+Run Cypress tests 
+`npx cypress run --browser chrome`
 
 ## Print Checks
 * Load Checklist Demo
