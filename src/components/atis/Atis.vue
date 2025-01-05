@@ -1,14 +1,9 @@
 <template>
     <div class="tile">
-        <Header :title="getTitle()" :left="displayMode==''" :hideReplace="displayMode!='edit'"
+        <Header :title="getTitle()" :left="displayMode==''"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <div v-if="settingsMode" class="list" >
-            <Button label="Full Size ATIS" @click="changeMode('')"></Button>
-            <Button label="Compact ATIS (x4)" @click="changeMode('compact')"></Button>
-            <Button label="Flight Categories" @click="changeMode('categories')"></Button>
-            <Button label="Cloud Clearance" @click="changeMode('cloudClear')"></Button>
-        </div>
-        <div v-else-if="displayMode==''" class="tileContent full" @click="cycleMode">
+        <DisplayModeSelection v-if="displaySelection" :modes="modesList" @selection="changeMode" />
+        <div v-else-if="displayMode==DisplayMode.FullATIS" class="tileContent full" @click="cycleMode">
             <div class="info br">
                 <div class="label">Info</div>
             </div>
@@ -31,7 +26,7 @@
                 <div class="label">Alt</div>
             </div>
         </div>
-        <div v-else-if="displayMode=='compact'" class="tileContent" @click="cycleMode">
+        <div v-else-if="displayMode==DisplayMode.CompactATIS" class="tileContent" @click="cycleMode">
             <div v-for="n in 4" class="compact">
                 <div class="info br" :class="{bb: n < 4 }">
                     <div class="label">Info</div>
@@ -49,7 +44,7 @@
                 
             </div>
         </div>
-        <div v-else-if="displayMode=='categories'" class="tileContent categories">
+        <div v-else-if="displayMode==DisplayMode.Categories" class="tileContent categories">
             <div class="vfrLeft vfr">VFR<span class="alt">3,000ft</span></div>
             <div class="vfrRight vfr">&nbsp;<span class="vis">5sm</span></div>
             <div class="mvfrLeft mvfr">MVFR<span class="alt">1,000ft</span></div>
@@ -58,7 +53,7 @@
             <div class="ifrRight ifr">&nbsp;<span class="vis">1sm</span></div>
             <div class="lifr">LIFR</div>
         </div>
-        <div v-else-if="displayMode=='cloudClear'" class="tileContent cloudClear">
+        <div v-else-if="displayMode==DisplayMode.CloudClearance" class="tileContent cloudClear">
             <!-- 14 CFR 103.23 -->
             <div v-for="c in ['B','C','D']" class="className towered" :title="'Class ' + c + ' Airspace'">{{ c }}</div>
             <div class="className untowered" title="Class E Airspace">E</div>
@@ -85,20 +80,31 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref,onMounted, watch } from 'vue'
+
+import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../shared/Header.vue';
 import NoSettings from '../shared/NoSettings.vue'
-import Button from 'primevue/button'
-import { UserUrl } from '../../lib/UserUrl'
+
+// Enum with display modes
+enum DisplayMode {
+    FullATIS = '',
+    CompactATIS = 'compact',
+    Categories = 'categories',
+    CloudClearance = 'cloudCLear',
+}
 
 const emits = defineEmits(['replace','update'])
-
-let previousMode = ''
-
-const defaultMode = ''
+const defaultMode = DisplayMode.FullATIS
 const displayMode = ref(defaultMode)
-const settingsMode = ref(false)
+const displaySelection = ref(false)
+const modesList = ref([
+    {label:'Full Size ATIS', value:DisplayMode.FullATIS},
+    {label:'Compact ATIS (x4)', value:DisplayMode.CompactATIS},
+    {label:'Flight Categories', value:DisplayMode.Categories},
+    {label:'Cloud Clearance', value:DisplayMode.CloudClearance}
+])
 
 // Props Management
 const props = defineProps({
@@ -131,7 +137,7 @@ watch( props, async() => {
 
 function changeMode(newMode) {
     displayMode.value = newMode
-    settingsMode.value = false;
+    displaySelection.value = false;
     const params = {mode:newMode}
     emits('update', params)
 }
@@ -146,23 +152,19 @@ function cycleMode() {
 
 function getTitle() {
     switch(displayMode.value) {
-        case 'compact': return 'ATIS';
-        case 'categories': return 'Flight Categories';
-        case 'cloudClear': return 'Cloud Clearance';
+        case DisplayMode.CompactATIS: return 'ATIS';
+        case DisplayMode.Categories: return 'Flight Categories';
+        case DisplayMode.CloudClearance: return 'Cloud Clearance';
         default: return 'ATIS @';
     }
 }
 
 function onHeaderClick() {
-    settingsMode.value = ! settingsMode.value
-}
-
-function showRegulation() {
-    // open link in new tab
-    window.open(UserUrl.cloudClearanceRegulation, '_blank')
+    displaySelection.value = ! displaySelection.value
 }
 
 </script>
+
 <style scoped>
 .categories {
     display: grid;

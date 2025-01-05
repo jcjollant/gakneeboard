@@ -1,17 +1,10 @@
 <template>
     <div class="tile">
         <Header title="Notes"
-            :stealth="!settingsMode && displayMode==''" :hideReplace="!settingsMode"
+            :stealth="!displaySelection && displayMode==DisplayMode.Blank" :hideReplace="!displaySelection"
             @click="onClick" @replace="emits('replace')"></Header>
-        <div v-if="settingsMode" class="list" >
-            <Button label="Blank" @click="changeMode(DisplayMode.Blank)"></Button>
-            <Button label="Grid" @click="changeMode(DisplayMode.Grid)" title="2x6 grid"></Button>
-            <Button label="Compass" @click="changeMode(DisplayMode.Compass)" title="Compass"></Button>
-            <Button label="C R A F T" @click="changeMode(DisplayMode.Craft)" title="CRAFT Clearance"></Button>
-            <!-- <font-awesome-icon :icon="['fas', 'video']" class="videoButton"
-                @click="onVideo" title="Quick Intro on note tiles"></font-awesome-icon> -->
-        </div>
-        <div v-else-if="displayMode=='grid'" class="grid tileContent">
+        <DisplayModeSelection v-if="displaySelection" :modes="modesList" @selection="changeMode" />
+        <div v-else-if="displayMode==DisplayMode.Grid" class="grid tileContent">
             <div v-for="i in [1,2,3,4,5,6,7,8,9,10,11,12]">&nbsp;</div>
         </div>
         <CompassContent v-else-if="displayMode==DisplayMode.Compass" />
@@ -21,11 +14,12 @@
 
 <script setup lang="ts">
 import { onMounted, watch, ref } from 'vue'
-import Button from 'primevue/button';
+import { UserUrl } from '../../lib/UserUrl';
+
 import CompassContent from './CompassContent.vue';
 import CraftContent from '../clearance/CraftContent.vue';
+import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../shared/Header.vue';
-import { UserUrl } from '../../lib/UserUrl';
 
 // Enum with display modes
 enum DisplayMode {
@@ -37,7 +31,14 @@ enum DisplayMode {
 
 const displayMode = ref(DisplayMode.Blank)
 const emits = defineEmits(['replace','update'])
-const settingsMode = ref(false)
+const modesList = ref([
+    {label:'Blank',value:DisplayMode.Blank},
+    {label:'Grid',value:DisplayMode.Grid},
+    {label:'Compass',value:DisplayMode.Compass},
+    {label:'C R A F T',value:DisplayMode.Craft}
+])
+
+const displaySelection = ref(false)
 
 // Props management
 const props = defineProps({
@@ -68,7 +69,7 @@ function changeMode(newMode:DisplayMode,update=true) {
     if(!newMode) newMode = DisplayMode.Blank
 
     displayMode.value = newMode
-    settingsMode.value = false;
+    displaySelection.value = false;
 
     // console.log('[NotesTiles.changeMode] title ' + title.value)
     const params = {mode:newMode}
@@ -78,7 +79,7 @@ function changeMode(newMode:DisplayMode,update=true) {
 }
 
 function onClick() {
-    settingsMode.value = !settingsMode.value
+    displaySelection.value = !displaySelection.value
 }
 
 function onVideo() {

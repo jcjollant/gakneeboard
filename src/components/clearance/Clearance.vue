@@ -1,13 +1,8 @@
 <template>
     <div class="tile">
-        <Header :title="displayMode==DisplayMode.Hold ? 'Hold @' : 'Clearance @'" :left="true" :hideReplace="!settingMode"
+        <Header :title="displayMode==DisplayMode.Hold ? 'Hold @' : 'Clearance @'" :left="true" :hideReplace="!displaySelection"
             @click="onMenuClick" @replace="emits('replace')"></Header>
-        <div v-if="settingMode" class="settingsList">
-            <Button label="Just CRAFT" @click="changeMode('craft')"></Button>
-            <Button label="Vertical Boxes" @click="changeMode('boxV')"></Button>
-            <Button label="Horizontal Boxes" @click="changeMode('boxH')"></Button>
-            <Button label="Holding" @click="changeMode(DisplayMode.Hold)" title="Holding Pattern"></Button>
-        </div>
+        <DisplayModeSelection v-if="displaySelection" :modes="modesList" @selection="changeMode" />
         <CraftContent v-else-if="displayMode==DisplayMode.Craft" @click="cycleMode"/>
         <div v-else-if="displayMode==DisplayMode.BoxV" class="tileContent clearance" @click="cycleMode">
             <div class="boxCleared box">
@@ -64,17 +59,10 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import Button from 'primevue/button'
 import CraftContent from './CraftContent.vue';
+import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../shared/Header.vue';
 import HoldingContent from './HoldingContent.vue';
-
-const emits = defineEmits(['replace','update'])
-const displayMode=ref('craft')
-const props = defineProps({
-    params: { type: Object, default: null},
-})
-const settingMode=ref(false)
 
 // Enum with display modes
 enum DisplayMode {
@@ -84,10 +72,24 @@ enum DisplayMode {
     Hold = 'hold',
 }
 
+const emits = defineEmits(['replace','update'])
+const displayMode=ref(DisplayMode.Craft)
+const modesList = ref([
+    {label:'Just CRAFT', value:DisplayMode.Craft},
+    {label:'Vertical Boxes', value:DisplayMode.BoxV},
+    {label:'Horizontal Boxes', value:DisplayMode.BoxH},
+    {label:'Holding', value:DisplayMode.Hold},
+])
+const props = defineProps({
+    params: { type: Object, default: null},
+})
+const displaySelection=ref(false)
 
-function changeMode(newMode:string) {
+
+
+function changeMode(newMode:DisplayMode) {
     displayMode.value = newMode;
-    settingMode.value = false;
+    displaySelection.value = false;
     const params = {mode:newMode}
     emits('update', params)
 }
@@ -107,12 +109,12 @@ function loadProps(props:any) {
     if( props.params && props.params.mode) {
         displayMode.value = props.params.mode
     } else {
-        displayMode.value = 'craft'
+        displayMode.value = DisplayMode.Craft
     }
 }
 
 function onMenuClick() {
-    settingMode.value = !settingMode.value
+    displaySelection.value = !displaySelection.value
 }
 
 onMounted(() => {   
@@ -198,11 +200,4 @@ watch( props, async() => {
     bottom: 2px;
     opacity: 0.2;
 }
-.settingsList {
-    display: grid;
-    padding: 10px;
-    gap: 10px;
-    grid-template-rows: repeat( 4, 3rem);
-}
-
 </style>
