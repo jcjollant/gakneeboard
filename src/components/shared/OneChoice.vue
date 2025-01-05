@@ -2,7 +2,7 @@
     <div class="oneChoice">
         <div v-for="c in choices" :aria-label="c.label" 
             @click="onChoice(c)" 
-            class="choice" :class="{'choiceActive':(model.label==c.label),'choiceInactive':(model.label!=c.label)}"
+            class="choice" :class="{'choiceActive':(model.label==c.label),'choiceInactive':(model.label!=c.label),'thinPad':thinpad}"
             :title="c.title?c.title:null"
             >{{c.label}}</div>
     </div>
@@ -12,6 +12,7 @@
 
 const props = defineProps({
   choices: { type: Object, default: [{label:'No Choice'}]},
+  thinpad: { type: Boolean, default: false },
 })
 
 const emits = defineEmits(["change"]);
@@ -41,5 +42,9 @@ function onChoice(choice) {
 }
 .choiceActive {
     background-color: #b4c6e7;
+}
+.thinPad {
+    font-size: 14px;
+    padding: 3px 7px;
 }
 </style>
