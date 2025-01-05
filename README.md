@@ -9,11 +9,7 @@ Start on local network (to allow access from other devices on the network)
 `npm run dev -- --host`
 
 # Testing
-Try / Debug tests
-`npx cypress open`
-
-Run Cypress tests 
-`npx cypress run --browser chrome`
+=> See tests/Readme.md
 
 # Release
 ## Checklist
