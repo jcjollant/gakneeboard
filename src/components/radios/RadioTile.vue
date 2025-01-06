@@ -18,7 +18,7 @@
                     <ActionBar @apply="onApply" @cancel="onCancel" :help="UserUrl.radioFlowTileGuide" />
                 </div>
                 <div v-else class="clickable" @click="onEditMode">
-                    <PlaceHolder v-if="frequencies.length==0" title="No Radios" subtitle="Click Here to configure" />
+                    <PlaceHolder v-if="frequencies.length==0" title="No Radios" subtitle="Click Here to Add Frequencies" />
                     <div v-else class="freqList" :class="{small:frequencies.length > 8}" >
                         <FrequencyBox v-for="freq in frequencies" :freq="freq" :small="frequencies.length > 8" />
                     </div>
@@ -66,7 +66,7 @@ let listBeforeEdit = []
 const modesList = ref([
     {label:'Freq. List', value:DisplayMode.FreqList},
     {label:'Lost Comms', value:DisplayMode.LostComms},
-    {label:'VOR Serice Volumes', value:DisplayMode.ServiceVolumes},
+    {label:'VOR Service Volumes', value:DisplayMode.ServiceVolumes},
 ])
 const props = defineProps({
     params: { type: Object, default: null}, // expecting a list of radio {'target':'COM1', 'freq':'-.-', 'name':'-'}
