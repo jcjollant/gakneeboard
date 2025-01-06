@@ -11,6 +11,8 @@ import { UsageDao, UsageType } from "./dao/UsageDao";
 import { UserTools } from './UserTools' 
 import { Email, EmailType } from "./Email";
 import { Adip } from "./adip/Adip";
+import { UserTemplateData } from "./models/UserTemplateData";
+import { UserUsage } from "./models/UserUsage";
 
 export class Metric {
     name:string;
@@ -221,6 +223,20 @@ export class Metrics {
     static async sendMail(data:any):Promise<boolean> {
         const message = 'Here are ' + new Date().toDateString() + ' metrics\n\n' + data;
         return Email.send( message,EmailType.Metrics)
+    }
+
+    public static async pagePerUser():Promise<Map<number,UserUsage>> {
+        const result:UserTemplateData[] = await TemplateDao.getTemplateDataByUser()
+        // console.log( 'templates count', result.length)
+        return result.reduce( (acc, utd) => {
+            // console.log( entry.id, entry.pages)
+            // console.log( utd.userId, templateData.length)
+            const usage = acc.get(utd.userId) || new UserUsage()
+            usage.addTemplate(JSON.parse(utd.data))
+            acc.set(utd.userId, usage)
+            // console.log(entry.id, value)
+            return acc
+        }, new Map<number,UserUsage>())
     }
 
     public static async perform(commit:boolean=true, sendMail:boolean=true):Promise<String> {

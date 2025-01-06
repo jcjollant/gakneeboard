@@ -50,10 +50,19 @@ process.env.POSTGRES_URL=postgresUrl;
 //=================
 // Template Details
 //=================
+// import { Metrics } from "../backend/Metrics";
+// Metrics.templateDetails().then(metrics => {
+//     for(const metric of metrics)
+//         console.log(metric.name, metric.value)
+// })
+
+
+//====================
+// Page count per user
 import { Metrics } from "../backend/Metrics";
-Metrics.templateDetails().then(metrics => {
-    for(const metric of metrics)
-        console.log(metric.name, metric.value)
+Metrics.pagePerUser().then( output => {
+    console.log(output)
+    console.log(JSON.stringify(output))
 })
 
 // new Dao('prints').count().then( r => console.log(r))

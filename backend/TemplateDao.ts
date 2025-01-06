@@ -1,5 +1,6 @@
 import { sql } from "@vercel/postgres"
 import { Template } from "./models/Template";
+import { UserTemplateData } from "./models/UserTemplateData";
 
 export class TemplateDao {
     static modelVersion:number = 1;
@@ -111,6 +112,14 @@ export class TemplateDao {
                 return []
             }
         })
+    }
+
+    /**
+     * @returns A list of user ids and their sheet data
+     */
+    public static async getTemplateDataByUser():Promise<UserTemplateData[]> {
+        const result = await sql`SELECT user_id,data FROM sheets`
+        return result.rows.map((row) => new UserTemplateData(Number(row['user_id']), row['data']));
     }
 
     /**
