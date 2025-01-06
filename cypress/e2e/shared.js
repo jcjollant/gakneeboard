@@ -17,6 +17,8 @@ export const holdTitle = 'Hold @'
 export const kenmoreTitle = 'Kenmore Air Harbor'
 export const notesTitle = 'Notes'
 export const radioFlowTitle = 'Radios'
+export const lostCommsTitle = 'Lost Comms'
+export const serviceVolumeTitle = 'VOR Service Volumes'
 export const rentonTitle = 'Renton Muni'
 export const selectionTitle = 'Page Selection'
 
