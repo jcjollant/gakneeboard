@@ -1,7 +1,7 @@
 <template>
     <div class="vorrange">
         <img :src="type.img" class="serviceVolume" />
-        <OneChoice v-model="type" :choices="volumeList" :thinpad="true" />
+        <OneChoice v-model="type" :choices="volumeList" :thinpad="true" class="volumeChoice" />
     </div>
 </template>
 
