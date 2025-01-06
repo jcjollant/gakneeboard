@@ -1,8 +1,8 @@
 <template>
     <div class="oneChoice">
-        <div v-for="c in choices" :aria-label="c.label" 
+        <div v-for="(c,index) in choices" :aria-label="c.label" 
             @click="onChoice(c)" 
-            class="choice" :class="{'choiceActive':(model.label==c.label),'choiceInactive':(model.label!=c.label),'thinPad':thinpad}"
+            class="choice" :class="[{'choiceActive':(model.label==c.label),'choiceInactive':(model.label!=c.label),'thinPad':thinpad}, `choice${index}`]"
             :title="c.title?c.title:null"
             >{{c.label}}</div>
     </div>
