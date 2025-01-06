@@ -2,8 +2,11 @@ import { maintenanceMode, visitSkipBanner, environment, kenmoreTitle, selectionT
 
 describe('Authenticated User', () => {
   it('Sign in and Load Page', async () => {
+    cy.intercept({method: 'GET',url: 'https://ga-api-seven.vercel.app/',}).as('getBackend')
     visitSkipBanner()
+
     // Authenticate
+    cy.wait('@getBackend').its('response.statusCode').should('equal', 200)
     maintenanceMode()
 
     cy.intercept({method: 'GET',url: '**/airports/**',}).as('getAirports');
@@ -35,7 +38,7 @@ describe('Authenticated User', () => {
     cy.url().then((url) => {
       const id = url.split('/').pop()
       // Id should be reflected in the URL
-      expect(id).to.equal('new')
+      expect(id).to.equal('local')
       // expect(id).to.be.greaterThan(0)
     })    
     cy.get('.page0 > .headerTitle').contains(selectionTitle)
@@ -55,8 +58,8 @@ describe('Authenticated User', () => {
     cy.visit(environment)
     cy.get('.templateSection > .templateList').children().should('have.length', totalTemplates)
 
-    // Open new template
-    cy.get('[title="Two selection pages"]').click()
+    // Open newly created template
+    cy.get('.templateSection > .templateList > :nth-child(4)').click()
     cy.wait('@getTemplate')
 
     // delete template

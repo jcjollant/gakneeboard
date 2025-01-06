@@ -23,6 +23,8 @@ describe('Tiles', () => {
     cy.get('.topRightCorner').contains('KSFF')
     cy.get('.bottomLeftCorner').contains('Solar Noon')
     cy.get('.bottomRightCorner').contains('Golden Hour')
+    cy.wait('@getAirports').its('response.statusCode').should('equal', 200)
+
     // switch to overnight mode
     cy.get('.page1 > :nth-child(3) > .headerTitle > div').click()
     // check it has hint
@@ -30,7 +32,7 @@ describe('Tiles', () => {
 
     cy.get('.nightFlight').click()
     cy.get('[aria-label="Apply"]').click()
-    cy.wait(500)
+
     // Check corners in night mode
     cy.get('.topLeftCorner').contains('KRNT')
     cy.get('.topRightCorner').contains('KSFF')
