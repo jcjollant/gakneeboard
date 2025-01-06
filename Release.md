@@ -1,3 +1,6 @@
+## 01/05/2025 5020
+* Radio tile has a new mode to display VOR service volumes
+* Radio is now using  Display Selection components
 ## 01/02/2025 5014
 1) 5014
 * Page Selection can be used with Editor
