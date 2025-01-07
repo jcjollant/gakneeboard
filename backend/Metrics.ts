@@ -232,7 +232,7 @@ export class Metrics {
             // console.log( entry.id, entry.pages)
             // console.log( utd.userId, templateData.length)
             const usage = acc.get(utd.userId) || new UserUsage()
-            usage.addTemplate(JSON.parse(utd.data))
+            usage.addTemplate(utd.pages)
             acc.set(utd.userId, usage)
             // console.log(entry.id, value)
             return acc

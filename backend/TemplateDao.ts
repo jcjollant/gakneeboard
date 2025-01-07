@@ -119,8 +119,8 @@ export class TemplateDao {
      * @returns A list of user ids and their sheet data
      */
     public static async getTemplateDataByUser():Promise<UserTemplateData[]> {
-        const result = await sql`SELECT user_id,data FROM sheets`
-        return result.rows.map((row) => new UserTemplateData(Number(row['user_id']), row['data']));
+        const result = await sql`SELECT user_id,pages FROM sheets`
+        return result.rows.map((row) => new UserTemplateData(Number(row['user_id']), row['pages']));
     }
 
     /**

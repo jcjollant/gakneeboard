@@ -1,8 +1,8 @@
 export class UserTemplateData {
     userId:number
-    data:any
-    constructor( userId:number, data:any) {
+    pages:number
+    constructor( userId:number, pages:number) {
         this.userId = userId
-        this.data = data
+        this.pages = pages
     }
 }

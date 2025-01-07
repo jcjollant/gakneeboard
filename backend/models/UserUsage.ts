@@ -5,8 +5,8 @@ export class UserUsage {
         this.pages = 0
         this.templates = 0
     }
-    addTemplate(data:any) {
+    addTemplate(pages:number) {
         this.templates++
-        this.pages += data.length
+        this.pages += pages
     }
 }
