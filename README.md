@@ -41,6 +41,8 @@ Client ID : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent
 * 
 
 # Done
+## 01/06/2025 5020
+* Templates now have page counts
 ## 01/02/2025 5010
 * Added diagram and strips to page counts
 ## 12/29/2024 4525
