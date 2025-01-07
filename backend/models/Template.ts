@@ -29,10 +29,11 @@ export class Template {
     code:string|undefined;
     desc:string|undefined;
     ver:number;
+    pages:number;
 
     constructor( 
             id:number, name:string, dataParam:any, description:string|undefined=undefined, 
-            version:number=0, publish:boolean|undefined=false, code:string|undefined=undefined) {
+            version:number=0, publish:boolean|undefined=false, code:string|undefined=undefined, pages:number=0) {
         this.id = id;
         this.name = name;
         this.desc = description ? description : undefined;
@@ -45,6 +46,7 @@ export class Template {
         this.ver = version;
         this.publish = publish ?? false; // false if undefined
         this.code = code;
+        this.pages = pages
     }
 
     setPublication(pub: Publication|undefined) {

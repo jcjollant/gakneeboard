@@ -54,7 +54,9 @@ DELETE FROM airports WHERE DATA LIKE '%"code":"?"%'
 
 SELECT COUNT(*) FROM airports where data like '%"code":"?"%'
 
-SELECT * FROM airports WHERE Code ='KXX'
+#-------------------------
+# Specific airport by code
+SELECT * FROM airports WHERE Code ='KPAE'
 
 SELECT * FROM airports WHERE Code = ANY (ARRAY['JC','PAE','JCJ'])
 
@@ -66,7 +68,7 @@ SELECT * FROM airports WHERE Code IN ('RNT','JFK') AND creatorId is NULL
 
 DELETE FROM airports WHERE Code IN ('RNT','JFK') AND creatorId is NULL AND id > 200
 
-# Custom airports fir JC
+# Custom airports for JC
 SELECT Data FROM Airports WHERE creatorId = 1
 
 # Custom airports from anyone

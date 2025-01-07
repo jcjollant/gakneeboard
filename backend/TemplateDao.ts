@@ -35,10 +35,11 @@ export class TemplateDao {
         }
         // data contains the whole object
         const data:string = JSON.stringify(template.data);
+        template.pages = template.data.length;
         if( template.id) {
             // console.log( "[SheetDao.createOrUpdate] updating", pageId);
             await sql`
-                UPDATE sheets SET data=${data},name=${template.name},description=${template.desc},version=version+1 WHERE id=${template.id}
+                UPDATE sheets SET data=${data},name=${template.name},description=${template.desc},pages=${template.pages},version=version+1 WHERE id=${template.id}
             `
             // increment the version accordingly
             template.ver += 1;
@@ -49,8 +50,8 @@ export class TemplateDao {
             // const count = r1.rows[0]['count'] as number;
             // if( count >= TemplateDao.maxSheets && userId != 1) throw new Error("Maximum number of sheets reached");
             const result = await sql`
-                INSERT INTO sheets (name, data, description, version, user_id)
-                VALUES (${template.name}, ${data}, ${template.desc}, ${this.modelVersion}, ${userId})
+                INSERT INTO sheets (name, data, description, pages, version, user_id)
+                VALUES (${template.name}, ${data}, ${template.desc}, ${template.pages}, ${this.modelVersion}, ${userId})
                 RETURNING id;
             `
             template.id = result.rows[0]['id']
@@ -96,18 +97,18 @@ export class TemplateDao {
 
     /**
      * Gets a list of pages for a given user. The list is returned as an array of 
-     * objects without the sheet data
+     * objects without data nor version
      * @param userId 
      * @returns list of found sheets
      */
     public static async getOverviewListForUser(userId:number):Promise<Template[]> {
         // console.log('[SheetDao.getListForUser] user', userId)
         return await sql`
-            SELECT s.id,s.name,s.description,p.active,p.code as code FROM sheets AS s LEFT JOIN publications AS p ON s.id = p.sheetid WHERE user_id=${userId}
+            SELECT s.id,s.name,s.description,s.pages,p.active,p.code as code FROM sheets AS s LEFT JOIN publications AS p ON s.id = p.sheetid WHERE user_id=${userId}
         `.then( (result) => {
             // console.log('[SheetDao.getListForUser]', result.rowCount)
             if(result.rowCount) {
-                return result.rows.map( (row) => new Template(row['id'], row['name'], [], row['description'], 0, row['active'], row['code']))
+                return result.rows.map( (row) => new Template(row['id'], row['name'], [], row['description'], 0, row['active'], row['code'], row['pages']))
             } else {
                 return []
             }
