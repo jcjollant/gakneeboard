@@ -24,6 +24,7 @@ const emits = defineEmits(['selection','done'])
 const strips = ref([
     {name: 'Radio', type: StripType.radio, class: 'tileRadio', title: 'Facility Frequencies strip'},
     {name: 'ATIS', type: StripType.atis, class: 'tileAtis', title: 'ATIS information strip'},
+    {name: 'CRAFT', type: StripType.craft, class: 'tileCraft', title: 'Departure Clearance'},
     {name: 'Taxi', type: StripType.taxi, class: 'tileTaxi', title: 'Taxi Instructions strip'},
     {name: 'Notes', type: StripType.notes, class: 'tileNotes', title: 'An expandable strip to take notes'},
 ])

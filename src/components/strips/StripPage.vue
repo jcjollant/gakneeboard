@@ -5,8 +5,9 @@
             <div class="stripList" >
                 <template v-if="strips.length" v-for="(s,index) in strips" >
                     <AtisStrip v-if="s == StripType.atis" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
-                    <TaxiStrip v-if="s == StripType.taxi" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
+                    <CraftStrip v-if="s == StripType.craft" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
                     <NotesStrip v-if="s == StripType.notes" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
+                    <TaxiStrip v-if="s == StripType.taxi" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
                     <RadioStrip v-if="s == StripType.radio" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
                 </template>
                 <PlaceHolder v-else :title="'No Strip'" :subtitle="editMode ? 'Add New Strips Below' : 'Click Header to Configure'"/>
@@ -22,6 +23,7 @@ import { StripPageData } from '../../assets/StripPageData';
 import { StripType } from '../../assets/StripType';
 
 import AtisStrip from '../atis/AtisStrip.vue';
+import CraftStrip from './CraftStrip.vue';
 import Header from '../shared/Header.vue';
 import NotesStrip from '../notes/NotesStrip.vue';
 import SelectionStrip from './SelectionStrip.vue';
