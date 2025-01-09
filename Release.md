@@ -1,5 +1,8 @@
-## 01/09/2025 5022
-* Fixed Strip page update bug
+## 01/09/2025 5022 5023
+1) 5022
+*  Fixed Strip page update bug
+2) 5023
+* Added BETA logo
 ## 01/08/2025 5021
 * Added Craft Strip
 * Radio Strip Atis and ground have been regrouped
