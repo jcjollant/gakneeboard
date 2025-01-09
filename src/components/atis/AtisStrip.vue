@@ -13,7 +13,7 @@
         <!-- <div class="stripBox wind"><div class="gust">G</div></div> -->
         <div class="stripBox"></div>
         <div class="stripBox skyCondition">
-            <div v-for="letter in ['C','F','S','B','O']">{{ letter }}</div>
+            <div v-for="letter in ['F','S','B','O']">{{ letter }}</div>
         </div>
         <div class="stripBox"></div>
         <div class="stripBox"></div>
@@ -27,7 +27,7 @@
 import { onMounted, ref, watch } from 'vue';
 import StripActions from '../strips/StripActions.vue';
 
-const emits=defineEmits(['action'])
+const emits = defineEmits(['action'])
 const edit = ref(false)
 const props = defineProps({
     edit: { type: Boolean, required: false, default: false }
