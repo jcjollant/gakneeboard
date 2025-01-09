@@ -2,7 +2,8 @@ import { visitAndCloseBanner, newPage, visitSkipBanner, newTemplate } from './sh
 
 function testEditMode(present=true) {
   if(present) {
-    const expectedStrips = ['ATIS', 'Radio', 'Taxi', 'Notes']
+    const expectedStrips = ['ATIS', 'CRAFT', 'Radio', 'Taxi', 'Notes']
+    cy.get('.selectionStrip > .list').children().should('have.length', expectedStrips.length + 1)
     for( const type of expectedStrips) {
       cy.get('.selectionStrip').contains(type)
     }
@@ -36,20 +37,24 @@ describe('Strip Page', () => {
     testEditMode(true)
 
     // As User I can add strips of all kinds
-    cy.get('.tileAtis').click()
+    cy.get('.stripAtis').click()
     let expectedStrips = 1
     cy.get('.stripList').children().should('have.length', expectedStrips)
     cy.get('.strip0').contains('INFO')
 
-    cy.get('.tileRadio').click()
+    cy.get('.stripRadio').click()
     cy.get('.stripList').children().should('have.length', ++expectedStrips)
     cy.get('.strip1').contains('AIRPORT')
 
-    cy.get('.tileTaxi').click()
+    cy.get('.stripTaxi').click()
     cy.get('.stripList').children().should('have.length', ++expectedStrips)
     cy.get('.strip2').contains('TAXI to')
 
-    cy.get('.tileNotes').click()
+    cy.get('.stripCraft').click()
+    cy.get('.stripList').children().should('have.length', ++expectedStrips)
+    cy.get('.strip3').contains('CLEARED')
+
+    cy.get('.stripNotes').click()
     cy.get('.stripList').children().should('have.length', ++expectedStrips)
 
     // As User I can move strings about
@@ -78,6 +83,10 @@ describe('Strip Page', () => {
     cy.get('.strip0').contains('TAXI to')
 
     // Delete the third one (Taxi)
+    cy.get('.strip0 .stripAction > .actionRemove').click()
+    cy.get('.stripList').children().should('have.length', --expectedStrips)
+
+    // Delete the fourth (Craft)
     cy.get('.strip0 .stripAction > .actionRemove').click()
     cy.get('.stripList').children().should('have.length', --expectedStrips)
 
