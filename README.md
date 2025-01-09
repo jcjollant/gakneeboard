@@ -41,6 +41,8 @@ Client ID : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent
 * 
 
 # Done
+## 01/08/2025 5021
+* Refresh pages count utility
 ## 01/06/2025 5020
 * Templates now have page counts
 ## 01/02/2025 5010
