@@ -145,4 +145,14 @@ export class TemplateDao {
         const row = result.rows[0];
         return new Template( templateId, row['name'], row['data'], row['description'], row['version']);
     }
+
+    public static async refreshPagesCount(templateId:number):Promise<number|undefined> {
+        const result = await sql `SELECT data FROM sheets WHERE id=${templateId}`
+        if( result.rowCount == 0) return undefined;
+        const pages = JSON.parse(result.rows[0]['data']).length;
+        await sql`
+            UPDATE sheets SET pages=${pages} WHERE id=${templateId};
+        `
+        return pages
+    }
 }
