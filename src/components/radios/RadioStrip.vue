@@ -1,10 +1,10 @@
 <template>
     <div class="stripContent radio">
         <div class="top">AIRPORT</div>
-        <div class="top">ATIS Freq.</div>
+        <div class="top">ATIS</div>
+        <div class="top">GROUND</div>
         <div class="top">CLEARANCE</div>
         <div class="top">TOWER</div>
-        <div class="top">GROUND</div>
         <div class="top">FLTPL</div>
         <div class="stripBox"></div>
         <div class="stripBox"></div>
