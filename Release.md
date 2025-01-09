@@ -1,3 +1,7 @@
+## 01/08/2025 5021
+* Added Craft Strip
+* Radio Strip Atis and ground have been regrouped
+* Atis strip cleared has been removed from sky condition
 ## 01/05/2025 5020
 * Radio tile has a new mode to display VOR service volumes
 * Radio is now using  Display Selection components
