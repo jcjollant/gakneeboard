@@ -17,7 +17,7 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { StripAction } from '../../assets/StripAction';
 import { StripPageData } from '../../assets/StripPageData';
 import { StripType } from '../../assets/StripType';
@@ -38,11 +38,13 @@ const strips = ref<StripType[]>([])
 
 onMounted(() => {
     // console.log('[StripPage.onMounted]', props.data)
-    strips.value = props.data?.list || []
-    if(strips.value.length == 0) {
-        editMode.value = true
-    }
+    loadProps(props)
 })
+
+watch(props, () => {
+    loadProps(props)
+})
+
 
 function addStrip(type: StripType) {
     strips.value.push(type)
@@ -70,6 +72,13 @@ function action(itemId:number, param:any) {
         return
     }
     update()
+}
+
+function loadProps(props: any) {
+    strips.value = props.data?.list || []
+    if(strips.value.length == 0) {
+        editMode.value = true
+    }
 }
 
 // Send an update to parent for storage
