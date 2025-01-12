@@ -22,22 +22,25 @@
         <div class="mb-5 guides">
           <Button v-for="guide in guides" :label="guide.name" @click="openUrl(guide.url)" severity="help"></Button>
         </div>
-        <div class="mb-5 justify">last, GA Kneeboard public <a :href="UserUrl.facebookGroup" target="_blank">Facebook Group</a> is a good place to interract.</div>
+        <div class="mb-5 justify">GA Kneeboard public <a :href="UserUrl.facebookProfile" target="_blank">Facebook Profile</a> is a good source for updates.</div>
       </div>
       <div v-else-if="activeTopic.value==topicWarning.value" class="warning-content mb-5">
         <div class="topWarning">
           <i class='pi pi-exclamation-triangle bigIcon'></i>
-          <span>Always confirm all data provided by this app</span>
+          <span>This is NOT an official source of flight information</span>
           <i class='pi pi-exclamation-triangle bigIcon'></i>
         </div>
-        <div class="warning-item mr-3">Airport information</div>
-        <div>May not be current. Cross check with an official source before you fly.</div>
-        <div class="warning-item mr-3">Traffic Pattern Altitude</div>
-        <div>Is calculated by adding 1000ft to field elevation. This may not be true for your situation.</div>
+        <div class="topWarning">
+        <div class="topSub">Always take time to confirm all data points as a good preflight</div>
+        </div>        
+        <div class="warning-item mr-3">Information Currency</div>
+        <div>FAA refreshes data every 28 days. The app may not be current.</div>
+        <div class="warning-item mr-3">Pattern Altitudes</div>
+        <div>Airport may have several TPA we are only showing one.</div>
         <div class="warning-item mr-3">Traffic Pattern Entry</div>
-        <div>Are calculated theoretical values which may not apply for your situation.</div>
+        <div>Are calculated theoretical values. They are not procedures.</div>
         <div class="warning-item mr-3">Weather Frequency</div>
-        <div>Does not account for aircraft direction. Check chart supplements.</div>
+        <div>Does not account for complex frequency allocation.</div>
         <div class="warning-item mr-3">Runway Frequency</div>
         <div>May not be displayed for airport that have a complex frequency allocation.</div>
         <div class="warning-item mr-3">Radio Flow Frequencies</div>
@@ -88,7 +91,7 @@ function openUrl(url) {
 
 <style scoped>
 .aboutPopup {
-  width:45rem;
+  width:40rem;
 }
 
 .bigIcon {
@@ -114,9 +117,15 @@ ol {
   gap: 0.5rem;
   font-size: larger;
   font-weight: bold;
-  padding-bottom: 2rem;
   color: darkorange;
   margin: auto;
+}
+.topSub {
+  font-size: 1rem;
+  font-weight: normal;
+  color: black;
+  margin: auto;
+  margin-bottom: 2rem;
 }
 .warning-content {
   display: grid;

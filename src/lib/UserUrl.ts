@@ -25,6 +25,7 @@ export class UserUrl {
     // other external link
     static dtpp:string = 'https://aeronav.faa.gov/d-tpp/'
     static facebookGroup:string = 'https://www.facebook.com/groups/1479675382917767'
+    static facebookProfile:string ='https://www.facebook.com/profile.php?id=61566105696113'
     static garminAce:string = 'https://www8.garmin.com/support/download_details.jsp?id=5075'
     static patreon:string = 'https://patreon.com/GAKneeboard'
 
