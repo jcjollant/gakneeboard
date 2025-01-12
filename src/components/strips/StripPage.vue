@@ -1,5 +1,5 @@
 <template>
-    <div class="contentPage stripPage">
+    <div class="contentPage pageStrips">
         <Header title="Strips" :page="true" @replace="emits('replace')" @click="editMode=!editMode"></Header>
         <div class="stripContainer">
             <div class="stripList" >
@@ -105,7 +105,7 @@ function update() {
     padding: 5px;
     flex-grow: 1;
 }
-.stripPage {
+.pageStrips {
     display: flex;
     flex-direction: column;
     background: var(--bg-strip);
