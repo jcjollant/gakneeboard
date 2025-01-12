@@ -176,7 +176,7 @@ const page1DemoCharts = {type:PageType.approach, data:{airport:"KRNT",pdf:0}}
 const templateDemoCharts = new Template('Chart Demo', 'Airport Diagram and Instrument Approach', false, [page0DemoCharts,page1DemoCharts])
 
 const pageDemoIFRFlight = {type:PageType.strips, data:{list:['radio','atis','craft','notes','radio','atis','craft','notes']}}
-const templateDemoIFRFlight = new Template('IFR Flight', 'Two pages of Strips for IFR Flights', false, [pageDemoIFRFlight])
+const templateDemoIFRFlight = new Template('IFR Flight', 'Two pages of Strips for IFR Flights', false, [pageDemoIFRFlight,pageDemoIFRFlight])
 
 export function describePage(sheet, pageNumber, maxLength=undefined) {
   if(!sheet) return "empty";
