@@ -1,3 +1,8 @@
+## 0112/2025 5024
+* New Strips Demo
+* Improved Checklist Demo layout
+* Reworked About layout and content
+* Updated Facebook page link in the Help page
 ## 01/09/2025 5022 5023
 1) 5022
 *  Fixed Strip page update bug
