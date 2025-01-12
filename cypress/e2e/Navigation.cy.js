@@ -12,7 +12,7 @@ describe('Navigation', () => {
 
     // Load Checklist Demo and navigate offset
     cy.visit(environment)
-    loadDemo(1)
+    loadDemo('Checklist')
 
     cy.get('#offsetPrev').should('have.class','noShow')
     cy.get('#offsetNext').should('not.have.class','noShow')

@@ -57,18 +57,20 @@ describe('First Time User Experience', () => {
         cy.viewport('macbook-16')
 
         // Check Demo 0
-        cy.get('.demo0').click()
+        loadDemo('Default')
         demoTilesOnPage(0)
         demoChecklistOnPage(1)
 
         // go back via image
         cy.get('.logo-img').click()
-        cy.get('.demo1').click()
+        // Open Checklist demo
+        loadDemo('Checklist')
         cy.get('.page0 > .headerTitle').contains('Preflight')
 
         // go back via name
         cy.get('.logo-name').click()
-        cy.get('.demo2').click()
+        // Open Tiles demo
+        loadDemo('Tiles')
         cy.get('.tile0 > .headerTitle').contains(rentonTitle)
         cy.get('.tile1 > .headerTitle').contains(boeingTitle)
 

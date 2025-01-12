@@ -24,12 +24,13 @@ export const selectionTitle = 'Page Selection'
 
 export const expectedDemos = [ 
     {i:0, l:'Default', t:'Default Demo',c:['pageTiles','pageChecklist']}, 
-    {i:1, l:'Checklist',t:'Checklist syntax Showcase',c:['pageChecklist','pageChecklist']}, 
-    {i:2, l:'Tiles', t:'Every Tile Available on GA Kneeboard',c:['pageTiles','pageTiles']}, 
-    {i:3, l:'NavLog', t:'Navlog page along with six tiles',c:['pageNavlog','pageTiles']}, 
-    {i:4, l:'C172 Reference', t:'A sample Skyhawk Reference',c:['pageTiles','pageTiles']}, 
+    {i:1, l:'C172 Reference', t:'A sample Skyhawk Reference',c:['pageTiles','pageTiles']}, 
+    {i:2, l:'Checklist',t:'Checklist syntax Showcase',c:['pageChecklist','pageChecklist']}, 
+    {i:3, l:'Tiles', t:'Every Tile Available on GA Kneeboard',c:['pageTiles','pageTiles']}, 
+    {i:4, l:'NavLog', t:'Navlog page along with six tiles',c:['pageNavlog','pageTiles']}, 
     {i:5, l:'Charts', t:'Airport Diagram and Instrument Approach',c:['approachPage','approachPage']},
-    {i:6, l:'Holds', t:'Full sheet of Holds and Compasses',c:['pageTiles','pageTiles']},
+    {i:6, l:'Holds Practice', t:'Full sheet of Holds and Compasses',c:['pageTiles','pageTiles']},
+    {i:7, l:'IFR Flight', t:'Full sheet of Holds and Compasses',c:['pageStrips','pageStrips']},
 ]
 
 export function demoChecklistOnPage(index) {
@@ -78,7 +79,7 @@ export function maintenanceMode() {
 
 export function loadDemo(index=0) {
     // Turn text into index if necessary
-    const expectedDemos = ['Default','Checklist','Tiles', 'NavLog']
+    const expectedDemos = ['Default','C172','Checklist','Tiles', 'NavLog', 'Charts', 'Holds', 'IFR']
     const indexOf = expectedDemos.indexOf(index)
     if(indexOf > -1) index = indexOf;
 
