@@ -42,12 +42,13 @@ import Toast from 'primevue/toast';
 
 const demos = ref([
     {name: SheetName.default, src: 'default.png', template: {name:'Default',desc:'Tiles and Checklist'}},
+    {name: SheetName.skyhawk, src: 'skyhawk.png', template: {name:'C172 Reference',desc:'A sample Skyhawk Reference'}},
     {name: SheetName.checklist, src: 'checklist.png', template: {name:'Checklist',desc:'Checklists syntax Showcase'}},
     {name: SheetName.tiles, src: 'tiles.png', template: {name:'Tiles',desc:'Tiles Gallery'}},
     {name: SheetName.navlog, src: 'navlog.png', template: {name:'NavLog',desc:'Navlog page and companion tiles'}},
-    {name: SheetName.skyhawk, src: 'skyhawk.png', template: {name:'C172 Reference',desc:'A sample Skyhawk Reference'}},
     {name: SheetName.charts, src: 'charts.png', template: {name:'Charts',desc:'Airport Diagram and Instrument Approach'}},
-    {name: SheetName.holds, src: 'holds.png', template: {name:'Holds',desc:'Full sheet of Holds and Compasses'}},
+    {name: SheetName.holds, src: 'holds.png', template: {name:'Holds Practice',desc:'Full sheet of Holds and Compasses'}},
+    {name: SheetName.ifrflight, src: 'strips.png', template: {name:'IFR Flight',desc:'Strips for IFR flights notekeeping'}},
 ])
 const localTemplate = ref({name:'Local',desc:'Resume your last session'})
 const newTemplate = ref({name:'New',desc:'Create a new template'})
