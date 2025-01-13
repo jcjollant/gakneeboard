@@ -1,9 +1,22 @@
 <template>
+    <Dialog modal header="Account Details" v-model:visible="showAccount" class="accountDialog">
+      <div>
+        <div class="account">
+            <div class="key">Templates</div><div class="value templatesCount">{{currentUser.templates.length}} / {{ currentUser.maxTemplateCount }}</div>
+            <div class="key">Pages</div><div class="value pagesCount">{{pagesCount}}</div>
+            <div class="key">Account Type</div><div class="value accountType">Beta</div>
+        </div>
+        <div class="actions">
+          <Button link label="Sign Out" class="btnSignOut" @click="onSignOut"></Button>
+          <Button label="Stay In Pattern" @click="showAccount=false"></Button>
+        </div>
+      </div>
+    </Dialog>
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
       @authentication="onAuthentication" />
     <div class="session">
-        <FAButton v-if="loggedIn" :label="currentUser.name" title="Sign Out" :menu="true" class="signout"
-          @click="onSignOut"></FAButton>
+        <FAButton v-if="loggedIn" :label="currentUser.name" title="Account Details" :menu="true" class="signout"
+          @click="onAccountDetails"></FAButton>
         <FAButton v-else label="Sign In" icon="fa-user" title="Sign In to enable custom data" :menu="true"
           @click="showSignIn=true"></FAButton>
     </div>
@@ -16,11 +29,15 @@ import { useConfirm } from 'primevue/useconfirm';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import { useToaster } from '../../assets/Toaster';
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
 import FAButton from '../shared/FAButton.vue';
 import SignIn from '../signin/SignIn.vue';
 
 const confirm = useConfirm()
+const pagesCount = ref(0)
 const router = useRouter()
+const showAccount = ref(false)
 const showSignIn = ref(false)
 const toaster = useToaster(useToast())
 const loggedIn = ref(false)
@@ -36,6 +53,18 @@ onUnmounted( () => {
     currentUser.removeListener(onUserUpdate)
 })
 
+function onAccountDetails() {
+  // refresh total values
+  const total = currentUser.templates.reduce( (previous, template:any) => {
+    previous.pages += template.pages
+    previous.versions += template.ver
+    return previous
+  }, {pages:0,versions:0})
+  // console.log('[Session.onAccountDetails] ', total)
+  pagesCount.value = total.pages
+  showAccount.value = true
+}
+
 function onAuthentication(newUser:any) {
   // console.log('[Session.onAuthentication] ' + JSON.stringify(userParam))
   showSignIn.value = false
@@ -48,6 +77,7 @@ function onAuthentication(newUser:any) {
   }
 }
 function onSignOut() {
+  showAccount.value = false
   confirm.require({
       message: 'You will loose access to your custom content.',
       header: 'Close Session',
@@ -73,6 +103,21 @@ function onUserUpdate(currentUser:any) {
 </script>
 
 <style scoped>
+.account {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 10px;
+  width: 20rem;
+}
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 20px;
+}
+.key {
+  font-weight: bold;
+  text-align: right;
+}
 .session {
     background-color: lightgrey;
 }

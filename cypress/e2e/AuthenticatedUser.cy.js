@@ -78,9 +78,22 @@ describe('Authenticated User', () => {
     cy.get('.templateSection > .templateList').children().should('have.length', totalTemplates)
 
 
-    // As an authenticated User, I can sign out
-    // Check Sign out
+    // As an authenticated User, I view my account details
+    // Click Name
     cy.get('.session .fabutton').click()
+    // Should open Account details
+    cy.get('.p-dialog-header').contains('Account Details')
+    cy.get('.templatesCount').contains('1 / 5')
+    cy.get('.pagesCount').contains('2')
+    cy.get('.accountType').contains('Beta')
+    // Stay signed in
+    cy.get('[aria-label="Stay In Pattern"]').click()
+
+    // As an authenticated User, I can sign out
+    // reopen dialog
+    cy.get('.session .fabutton').click()
+    // Click Sign out
+    cy.get('.btnSignOut').click()
     cy.get('.p-confirm-dialog-message').contains("You will loose access")
     cy.get('.p-confirm-dialog-accept').click()
 
