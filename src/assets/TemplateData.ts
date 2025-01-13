@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { contentTypeJson, getUrlWithUser, newCurrentUser } from './data.js'
+import { contentTypeJson, getUrlWithUser, currentUser } from './data.js'
 import { isDefaultName } from './sheetData.js'
 import { GApiUrl } from '../lib/GApiUrl.js'
 import { PageType } from './PageType.js'
@@ -21,13 +21,13 @@ export class TemplateData {
      */
     static async delete(template:any) {
         const url = GApiUrl.template(template.id)
-        if( !newCurrentUser.loggedIn) {
+        if( !currentUser.loggedIn) {
             throw new Error('Cannot delete template without user')
         }
-        return axios.delete(url,{params:{user:newCurrentUser.sha256}})
+        return axios.delete(url,{params:{user:currentUser.sha256}})
             .then( response => {
                 // console.log('[TemplateData.delete] template deleted', sheet.id)
-                newCurrentUser.removeTemplate(template.id)
+                currentUser.removeTemplate(template.id)
                 return template
             })
             .catch( error => {
@@ -50,7 +50,7 @@ export class TemplateData {
             axios({
                 url:url,
                 method:'get',
-                params:{user:newCurrentUser.sha256}, 
+                params:{user:currentUser.sha256}, 
                 responseType:'arraybuffer',
                 }).then( response => {
                     // console.log('[TemplateData.export] template exported', JSON.stringify(response.headers))
@@ -150,18 +150,18 @@ export class TemplateData {
     */
     static save(template:any):any {
         const url = GApiUrl.template()
-        if( !newCurrentUser.loggedIn) {
+        if( !currentUser.loggedIn) {
             throw new Error('Cannot save template without user')
         }
         if( isDefaultName(template.name)) {
             throw new Error('Template name conflicts with defaults')
         }
-        const payload = {user:newCurrentUser.sha256, sheet:template}
+        const payload = {user:currentUser.sha256, sheet:template}
         return axios.post(url, payload, contentTypeJson)
             .then( response => {
                 // console.log('[Templates.save]', JSON.stringify(response))
                 const updatedTemplate = response.data
-                newCurrentUser.updateTemplate(updatedTemplate)
+                currentUser.updateTemplate(updatedTemplate)
                 return updatedTemplate
             })
             .catch( error => {

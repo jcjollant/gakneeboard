@@ -23,7 +23,7 @@
 <script setup>
 import { onBeforeMount, onMounted, ref } from 'vue';
 import { inject } from "@vercel/analytics"
-import { backend, getBackend, newCurrentUser, routeToLocalTemplate, version } from './assets/data';
+import { backend, getBackend, currentUser, routeToLocalTemplate, version } from './assets/data';
 import { LocalStore } from './lib/LocalStore';
 import { TemplateData } from './assets/TemplateData';
 import { useRoute, useRouter } from 'vue-router';
@@ -49,7 +49,7 @@ const versionText = ref('')
 // Before the app starts, we request backend information, load user and potentially show how does it work
 onBeforeMount( () => {
     // activate the last known user
-    newCurrentUser.restore()
+    currentUser.restore()
 
     getBackend().then(() => {
         versionText.value = version + '/' + backend.version

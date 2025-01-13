@@ -30,7 +30,7 @@
 
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue';
-import { newCurrentUser, routeToLocalTemplate } from '../assets/data';
+import { currentUser, routeToLocalTemplate } from '../assets/data';
 import { useRouter } from 'vue-router';
 import { getTemplateDataFromName, SheetName } from '../assets/sheetData';
 import { useToast } from 'primevue/usetoast';
@@ -58,9 +58,9 @@ const toast = useToast()
 
 onMounted( () => {
     // console.log('[Home.onMounted]')
-    templates.value = newCurrentUser.templates
+    templates.value = currentUser.templates
     // console.log('[Home.onMounted] template length', templates.value.length)
-    newCurrentUser.addListener(userUpdate);
+    currentUser.addListener(userUpdate);
     localTemplate.value = templates.value[0]
     // setTimeout(() => {
     //     checkThumbnails()
@@ -68,11 +68,11 @@ onMounted( () => {
 })
 
 onUnmounted( () => {
-    newCurrentUser.removeListener(userUpdate)
+    currentUser.removeListener(userUpdate)
 })
 
 // function checkThumbnails() {
-//     for(const t of newCurrentUser?.templates) {
+//     for(const t of currentUser?.templates) {
 //         if(!LocalStore.thumbnailGet(t.id)) {
 //             toast.add(getToastWarning('Missing Thumbnails', 'Open Templates to recreate thumbnails', 5000))
 //             return;
@@ -104,7 +104,7 @@ function onTemplateSelection(index) {
 
 function userUpdate() {
     // console.log('[Home.userUpdate]')
-    templates.value = newCurrentUser.templates
+    templates.value = currentUser.templates
     // console.log('[Home.userUpdate] template length', templates.value.length)
 }
 </script>

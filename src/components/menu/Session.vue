@@ -2,7 +2,7 @@
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
       @authentication="onAuthentication" />
     <div class="session">
-        <FAButton v-if="loggedIn" :label="newCurrentUser.name" title="Sign Out" :menu="true" class="signout"
+        <FAButton v-if="loggedIn" :label="currentUser.name" title="Sign Out" :menu="true" class="signout"
           @click="onSignOut"></FAButton>
         <FAButton v-else label="Sign In" icon="fa-user" title="Sign In to enable custom data" :menu="true"
           @click="showSignIn=true"></FAButton>
@@ -11,7 +11,7 @@
 
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref } from 'vue';
-import { newCurrentUser } from '../../assets/data';
+import { currentUser } from '../../assets/data';
 import { useConfirm } from 'primevue/useconfirm';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
@@ -27,13 +27,13 @@ const loggedIn = ref(false)
 
 onMounted( () => {
     // console.log('[Session.onMounted]')
-    newCurrentUser.addListener(onUserUpdate)
-    loggedIn.value = newCurrentUser.loggedIn
+    currentUser.addListener(onUserUpdate)
+    loggedIn.value = currentUser.loggedIn
 })
 
 onUnmounted( () => {
     // console.log('[Session.onUnmounted]')
-    newCurrentUser.removeListener(onUserUpdate)
+    currentUser.removeListener(onUserUpdate)
 })
 
 function onAuthentication(newUser:any) {
@@ -55,7 +55,7 @@ function onSignOut() {
       acceptLabel: 'Sign Out',
       accept: () => {
         // logout and remo
-        newCurrentUser.logout()
+        currentUser.logout()
         toaster.info('Signed Out', 'Log back in to access your templates')
 
         // reload Home Page
@@ -66,7 +66,7 @@ function onSignOut() {
 
 function onUserUpdate(currentUser:any) {
   // console.log('[Session.onUserUpdate]', JSON.stringify(currentUser.loggedIn))
-  loggedIn.value = newCurrentUser.loggedIn
+  loggedIn.value = currentUser.loggedIn
 }
 
 

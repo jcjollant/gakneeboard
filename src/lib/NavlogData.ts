@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import { newCurrentUser } from '../assets/data';
+import { currentUser } from '../assets/data';
 import { NavlogEntry } from '../assets/NavlogEntry';
 import { GApiUrl } from './GApiUrl';
 
@@ -9,7 +9,7 @@ export class NavlogData {
         const url = GApiUrl.flightPlanToNavlog()
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('user', newCurrentUser.sha256);
+        formData.append('user', currentUser.sha256);
         const headers = { headers: { 'Content-Type': 'multipart/form-data' }};
         const promise:Promise<NavlogEntry[]> = new Promise((resolve, reject) => {
             axios.post(url, formData, headers).then( r => {

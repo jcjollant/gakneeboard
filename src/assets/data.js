@@ -17,7 +17,7 @@ const contentType = contentTypeJson;
 let pendingCodes = []
 let sunlightCache = {}
 export const backend = new Backend()
-export const newCurrentUser = new CurrentUser()
+export const currentUser = new CurrentUser()
 export const navlogQueue = new NavlogQueue()
 export const sessionAirports = new SessionAirports()
 
@@ -38,8 +38,8 @@ export async function authenticationRequest( payload) {
         // remove unknown airports because some may be due to unauhtenticated user
         sessionAirports.cleanUp()
 
-        newCurrentUser.login( response.data)
-        resolve(newCurrentUser)
+        currentUser.login( response.data)
+        resolve(currentUser)
       })
       .catch( e => {
         reportError( '[data.authenticate] ' + JSON.stringify(e))
@@ -58,9 +58,9 @@ export function duplicate(source) {
  * @returns 
  */
 export async function getUrlWithUser(url) {
-  // console.log('[data.getUrlWithUser]', JSON.stringify(newCurrentUser))
-  if( newCurrentUser.loggedIn) {
-    return axios.get(url,{params:{user:newCurrentUser.sha256}})
+  // console.log('[data.getUrlWithUser]', JSON.stringify(currentUser))
+  if( currentUser.loggedIn) {
+    return axios.get(url,{params:{user:currentUser.sha256}})
   } else {
     return axios.get(url)
   }
@@ -200,9 +200,9 @@ export async function getBackend() {
 
           // Do we have anything about the user?
           if( response.data.user) {
-            newCurrentUser.update( response.data.user)
+            currentUser.update( response.data.user)
           } else {
-            newCurrentUser.logout()
+            currentUser.logout()
           }
 
           resolve(backend)
@@ -222,7 +222,7 @@ export async function getBackend() {
  * @returns Whatever the current user is. Could be null if user is not authenticated
  */
 export function getCurrentUser() {
-  return newCurrentUser
+  return currentUser
 }
 
 export function getFrequency(freqList, name) {
@@ -261,7 +261,7 @@ export async function getMaintenance(code) {
     axios.get(url).then( response => {
         // console.log('[data.getMaintenance]', JSON.stringify(response.data))
         if( typeof response.data === 'object' && 'sha256' in response.data) {
-          newCurrentUser.login( response.data)
+          currentUser.login( response.data)
         }
         resolve()
       }).catch( error => {
@@ -404,7 +404,7 @@ export async function sendFeedback(text,contactMe) {
   const url = apiRootUrl + 'feedback'
   const payload = {version:version,feedback:text}
   if( contactMe) {
-    payload.user = newCurrentUser.sha256;
+    payload.user = currentUser.sha256;
   }
 
   axios.post( url, payload, contentTypeJson)
@@ -433,7 +433,7 @@ async function waitForAirportData( code) {
 
 export async function saveCustomAirport(airport) {
   const url = apiRootUrl + 'airport'
-  const payload = {user:newCurrentUser.sha256, airport:airport}
+  const payload = {user:currentUser.sha256, airport:airport}
   await axios.post( url, payload, contentType)
     .then( response => {
       // console.log( '[data] custom airport saved', airport.code)

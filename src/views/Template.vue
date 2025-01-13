@@ -49,7 +49,7 @@ import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { newCurrentUser } from '../assets/data.js'
+import { currentUser } from '../assets/data.js'
 import { getTemplateDemoTiles } from '../assets/sheetData.js'
 import { TemplateData } from '../assets/TemplateData.ts'
 import { useToaster } from '../assets/Toaster.ts'
@@ -248,7 +248,7 @@ function onPrint() {
 }
 
 async function onSave() {
-  if( !newCurrentUser.loggedIn) {
+  if( !currentUser.loggedIn) {
     toaster.warning('Squawk and Ident','Please sign in to use custom templates')
     return
   }
@@ -295,7 +295,7 @@ function onSettings(settings) {
     activeTemplate.value.modified = activeTemplate.value.id > 0
     saveTemplateToLocalStore()
     // save template if relevant
-    if(newCurrentUser.loggedIn && activeTemplate.value.id ) onSave()
+    if(currentUser.loggedIn && activeTemplate.value.id ) onSave()
   }
 }
 
