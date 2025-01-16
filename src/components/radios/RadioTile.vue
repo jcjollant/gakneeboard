@@ -1,10 +1,11 @@
 <template>
     <div class="tile">
         <LookupDialog v-model:visible="showLookup" :time="lookupTime" @add="addFrequency" />
-        <Header :title="getTitle()" :hideReplace="listEditMode"
+        <Header :title="getTitle()" :hideReplace="!displaySelection" :left="displayMode==DisplayMode.Ils"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div class="tileContent">
             <DisplayModeSelection v-if="displaySelection" :modes="modesList" @selection="onChangeMode" />
+            <Ils v-else-if="displayMode==DisplayMode.Ils" />
             <ServiceVolumes v-else-if="displayMode==DisplayMode.ServiceVolumes" v-model="serviceVolume"/>
             <Nordo v-else-if="displayMode==DisplayMode.LostComms" />
             <div v-else-if="displayMode==DisplayMode.FreqList" class="main">
@@ -41,6 +42,7 @@ import Button from 'primevue/button'
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../shared/Header.vue';
 import FrequencyBox from './FrequencyBox.vue'
+import Ils from './Ils.vue';
 import LookupDialog from './LookupDialog.vue'
 import Nordo from './Nordo.vue';
 import PlaceHolder from '../shared/PlaceHolder.vue'
@@ -51,6 +53,7 @@ const DisplayMode = Object.freeze ({
     FreqList : '',
     LostComms : 'nordo',
     ServiceVolumes : 'sv',
+    Ils: 'ils',
 })
 const displaySelection = ref(false)
 const emits = defineEmits(['replace','update'])
@@ -64,7 +67,8 @@ const showLookup = ref(false)
 const lookupTime = ref(0)
 let listBeforeEdit = []
 const modesList = ref([
-    {label:'Freq. List', value:DisplayMode.FreqList},
+    {label:'Frequencies', value:DisplayMode.FreqList},
+    {label:'ILS or LOC', value:DisplayMode.Ils},
     {label:'Lost Comms', value:DisplayMode.LostComms},
     {label:'VOR Service Volumes', value:DisplayMode.ServiceVolumes},
 ])
@@ -96,6 +100,7 @@ function getTitle() {
     if(displayMode.value == DisplayMode.FreqList) return 'Radios';
     if(displayMode.value == DisplayMode.LostComms) return 'Lost Comms';
     if(displayMode.value == DisplayMode.ServiceVolumes) return 'VOR Service Volumes';
+    if(displayMode.value == DisplayMode.Ils) return 'ILS or LOC @'; 
 
     return '?';
 }

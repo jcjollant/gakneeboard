@@ -104,7 +104,7 @@ function onCodeUpdate() {
 
 function onRecentAirport(airportCode:string) {
     const airport:Airport = JSON.parse(LocalStore.airportGet(airportCode))
-    console.log('[AirportInput.onRecentAirport]', airportCode, airport)
+    // console.log('[AirportInput.onRecentAirport]', airportCode, airport)
     code.value = airport.code
     name.value = airport.name
     valid.value = true

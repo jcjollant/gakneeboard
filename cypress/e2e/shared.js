@@ -21,6 +21,7 @@ export const lostCommsTitle = 'Lost Comms'
 export const serviceVolumeTitle = 'VOR Service Volumes'
 export const rentonTitle = 'Renton Muni'
 export const selectionTitle = 'Page Selection'
+export const ilsTitle = 'ILS or LOC @'
 
 export const expectedDemos = [ 
     {i:0, l:'Default', t:'Default Demo',c:['pageTiles','pageChecklist']}, 

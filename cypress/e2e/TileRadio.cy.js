@@ -1,4 +1,9 @@
-import { placeHolderSubtitle, radioFlowTitle, visitSkipBanner, loadDemo, lostCommsTitle, serviceVolumeTitle } from './shared'
+import { ilsTitle, loadDemo, lostCommsTitle, radioFlowTitle, serviceVolumeTitle, visitSkipBanner } from './shared'
+
+const labelFrequencies = 'Frequencies'
+const labelIlsOrLoc  = 'ILS or LOC'
+const labelLostComms = 'Lost Comms'
+const labelVORSV = 'VOR Service Volumes'
 
 describe('Radios Tile', () => {
   it('Radio Tile', () => {
@@ -18,7 +23,7 @@ describe('Radios Tile', () => {
 
     // Swicth to Display mode selection
     cy.get('.page1 > .tile5 > .headerTitle').click()
-    const expectedDisplayModes = ['Freq. List', 'Lost Comms', 'VOR Service Volumes']
+    const expectedDisplayModes = [ labelFrequencies, labelIlsOrLoc, labelLostComms, labelVORSV]
     for(const displayMode of expectedDisplayModes) {
       cy.get('.modesList').contains(displayMode)
     }
@@ -43,7 +48,7 @@ describe('Radios Tile', () => {
       cy.get('.recentAirportList').contains(code)
     }
     // Click Renton
-    cy.get('.recentAirportList > :nth-child(1)').click()
+    cy.get('.recentAirportList > :nth-child(4)').click()
     // Hint should change
     cy.get('.tip').contains('Click on any frequency below to add them to your Radio Flow')
     // FielSets should change
@@ -93,13 +98,39 @@ describe('Radios Tile', () => {
     cy.get('.placeHolder').contains('Click Here to Add Frequencies')
   })
 
+  it('ILS', () => {
+    visitSkipBanner()
+    loadDemo('Tiles')
+    cy.get('.page1 > .tile5 > .headerTitle').click()
+
+    // switch to ILS
+    cy.get(`[aria-label="${labelIlsOrLoc}"]`).click()
+    // test tile title updated
+    cy.get('.page1 > .tile5 > .headerTitle').contains(ilsTitle)
+
+    // check Fields
+    const expectedILSFields = ['APCH/RWY', 'CRS', 'ILOC', 'ATIS', 'ATC', 'TWR/CTAF', 'Fixes', 'Min.', 'Missed']
+    for(const field of expectedILSFields) {
+      cy.get(`.page1 .tile5`).contains(field)
+    }
+
+    // test localstore has the correct data
+    cy.getLocalStorage('template')
+      .then(t => {
+        const template = JSON.parse(t)
+        // console.log('>>>>', template)
+        expect(template.data[1].data[5].data['mode']).to.equal('ils')
+      })
+
+  })
+
   it('Lost Comms', () => {
     visitSkipBanner()
     loadDemo('Tiles')
     cy.get('.page1 > .tile5 > .headerTitle').click()
 
     // switch to Lost comms
-    cy.get('[aria-label="Lost Comms"]').click()
+    cy.get(`[aria-label="${labelLostComms}"]`).click()
     // test tile title updated
     cy.get('.page1 > .tile5 > .headerTitle').contains(lostCommsTitle)
 
@@ -109,8 +140,8 @@ describe('Radios Tile', () => {
     cy.get('[title="Declare Emergency"]')
 
     const expectedLostCommsFields = ['Signal', 'Ground', 'Air', 'T/O', 'Land', 'Taxi', 'STOP', 'Give Way', 'Taxi Off Rwy', 'Use Extreme Caution', 'Start', '7500', '7600', '7700']
-    for(let i=0; i<expectedLostCommsFields.length; i++) {
-      cy.get(`.page1 .tile5`).contains(expectedLostCommsFields[i])
+    for(const field of expectedLostCommsFields) {
+      cy.get(`.page1 .tile5`).contains(field)
     }
 
     // test localstore has the correct data
@@ -131,7 +162,7 @@ describe('Radios Tile', () => {
     cy.get('.page1 > .tile5 > .headerTitle').click()
 
     // switch to Service Volumes
-    cy.get('[aria-label="VOR Service Volumes"]').click()
+    cy.get(`[aria-label="${labelVORSV}"]`).click()
     // test tile title updated
     cy.get('.page1 > .tile5 > .headerTitle').contains(serviceVolumeTitle)
 
