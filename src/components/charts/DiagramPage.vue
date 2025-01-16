@@ -15,7 +15,7 @@
                     <div v-if="airport">
                         <FAButton v-if="airport['diag']" label="Show Diagram" icon="road-circle-check" class="showDiagram"
                             @click="onSelection(airport)"/>
-                        <div v-else class="notfound">(No Associated Airport Diagram)</div>
+                        <div v-else class="notfound">(No Associated Airport Diagram for {{ airport.code }})</div>
                     </div>
                 </div>
                 <div class="known" v-if="selectedPdf">

@@ -7,7 +7,7 @@
         <span v-if="name" class="airportName" :class="{valid: valid, page:page}" 
             @click="name=null" title="Click to pick a recent airport">{{ name }}</span>
         <div v-else class="recentAirportList">
-            <div v-for="a in airports" class="recentAirport" :title="a.name" @click="onRecentAirport(a)">{{ a.code }}</div>
+            <div v-for="a in airports" class="recentAirport" @click="onRecentAirport(a)">{{ a }}</div>
         </div>
     </div>
 </template>
@@ -15,6 +15,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { getAirport } from '../../assets/data'
+import { LocalStore } from '../../lib/LocalStore'
 import { sessionAirports } from '../../assets/data'
 
 import InputText from 'primevue/inputtext'
@@ -53,6 +54,7 @@ onMounted(() => {
     // get this airport data from parameters
     loadProps(props)
     sessionAirports.addListener(refreshAirportList)
+    refreshAirportList(null)
 })
 
 watch( props, async() => {
@@ -100,7 +102,9 @@ function onCodeUpdate() {
     }
 }
 
-function onRecentAirport(airport:any) {
+function onRecentAirport(airportCode:string) {
+    const airport:Airport = JSON.parse(LocalStore.airportGet(airportCode))
+    console.log('[AirportInput.onRecentAirport]', airportCode, airport)
     code.value = airport.code
     name.value = airport.name
     valid.value = true
@@ -109,7 +113,7 @@ function onRecentAirport(airport:any) {
 }
 
 function refreshAirportList(newAirports) {
-    airports.value =  newAirports;
+    airports.value =  LocalStore.airportRecentsGet().reverse();
 }
 
 </script>

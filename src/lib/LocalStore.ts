@@ -20,7 +20,7 @@ export class LocalStore {
     static airportAdd(code:string, airport:any) {
         if(!airport) return;
         localStorage.setItem(LocalStore.airportPrefix + airport.code, JSON.stringify(airport))
-        LocalStore.airportUpdateRecents(code)
+        LocalStore.airportRecentsUpdate(code)
     }
 
     static airportCleanUp() {
@@ -50,19 +50,24 @@ export class LocalStore {
         }
     }
 
-    static airportGet(code:string) {
+    static airportGet(code:string):string|null {
         const airport = localStorage.getItem( LocalStore.airportPrefix + code)
         if( airport) {
-            LocalStore.airportUpdateRecents(code)
+            LocalStore.airportRecentsUpdate(code)
         }
         return airport
     }
 
-    static airportRemove(code:string) {
-        localStorage.removeItem(LocalStore.airportPrefix + code)
+    static airportRecentsGet():string[] {
+        let recentAirports = localStorage.getItem(LocalStore.recentAirports)
+        if(recentAirports) {
+            return recentAirports.split('-')
+        } else {
+            return []
+        }
     }
 
-    static airportUpdateRecents(code:string) {
+    static airportRecentsUpdate(code:string) {
         const promise = new Promise((resolve) => {
             let recentAirports = localStorage.getItem(LocalStore.recentAirports)
             if(recentAirports) {
@@ -80,6 +85,10 @@ export class LocalStore {
             localStorage.setItem(LocalStore.recentAirports, recentAirports)
             resolve(true)
         })
+    }
+
+    static airportRemove(code:string) {
+        localStorage.removeItem(LocalStore.airportPrefix + code)
     }
 
     static approachCleanUp() {
