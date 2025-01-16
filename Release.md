@@ -1,3 +1,7 @@
+## 01/15/2025 5031
+* New ILS Display mode for Radio Tile
+* Airport Code pickup is using local cache (showing more recent value)
+* Diagram Page showing Airport Code if diagram does not exist
 ## 01/12/2025 5024 5030
 1) 5024
 * New Strips Demo
