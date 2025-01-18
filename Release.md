@@ -1,5 +1,8 @@
-## 01/18/2025 5032
+## 01/18/2025 5032 5033
+1) 5033
 * Beta survey
+2) 5033
+* Fixed Beta Survey
 ## 01/15/2025 5031
 * New ILS Display mode for Radio Tile
 * Airport Code pickup is using local cache (showing more recent value)
