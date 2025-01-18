@@ -1,12 +1,12 @@
 import { User } from "../model/User"
-import { DiagramData } from "./DiagramData"
 
 export class LocalStore {
     static airportPrefix:string = 'airport-'
     static approachPrefix:string = 'apch-'
     static user:string = 'user'
     static userOld:string = 'kb-user'
-    static howDoesItWork:string = 'howDoesItWork'
+    static howDoesItWork_deprecated:string = 'howDoesItWork'
+    static popup:string = 'popup'
     static recentAirports:string = 'airports'
     static recentApproaches:string = 'approaches'
     static template = 'template'
@@ -182,6 +182,40 @@ export class LocalStore {
         return undefined;
     }
 
+    /**
+     * Should we show a specific popup
+     * The three stages for 'popup' are null / 1 / 2
+     * @returns true if we should show or false otherwise
+     */
+    static popupShow(id:number):boolean {
+        const popup = localStorage.getItem( LocalStore.popup);
+        if( id == 1) { // we want hdiw
+            // we show "how does it work" if neither the popup nor set and the legacy value
+            // If popup is 1 or legacy is false then we don't show
+            return ( popup == null && localStorage.getItem(LocalStore.howDoesItWork_deprecated) == null);
+        } else if( id == 2) { // we want the second popup
+            // we only show the popup if the first one has been seen but not the second
+            return (popup == '1')
+        }
+
+        return false;
+    }
+
+    /**
+     * Stop further showing how does it work by setting the flag in local store
+     */
+    static popupHide(id:number) {
+        if( id == 1) {
+            localStorage.setItem(LocalStore.popup, '1')
+        } else if( id == 2) {
+            localStorage.removeItem(LocalStore.howDoesItWork_deprecated)
+            localStorage.setItem(LocalStore.popup, '2')
+
+        }
+    }
+
+
+
     static saveApproachPlate(pdfFile:string, plate:string) {
         const key = this.approachPrefix + pdfFile
         localStorage.setItem(key, plate)
@@ -195,21 +229,6 @@ export class LocalStore {
     // Save sheet data to browser
     static saveTemplate( data:any) {
         localStorage.setItem(LocalStore.template, JSON.stringify( data))
-    }
-
-    /**
-     * Should we show how does it work
-     * @returns true if we should show or false otherwise
-     */
-    static showHowDoesItWork():boolean {
-        return localStorage.getItem( LocalStore.howDoesItWork) != 'false'    
-    }
-
-    /**
-     * Stop further showing how does it work by setting the flag in local store
-     */
-    static stopHowDoesItWork() {
-        localStorage.setItem( LocalStore.howDoesItWork, "false")
     }
 
     /**

@@ -399,7 +399,7 @@ export function routeToLocalTemplate(router, template) {
  * @param {*} text feedback text
  * @param {*} contactMe boolean
  */
-export async function sendFeedback(text,contactMe) {
+export async function sendFeedback(text,contactMe=true) {
   // console.log( '[data] feedback ' + JSON.stringify(data))
   const url = apiRootUrl + 'feedback'
   const payload = {version:version,feedback:text}
