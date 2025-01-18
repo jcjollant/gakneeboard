@@ -13,7 +13,7 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import { LocalStore } from '../../lib/LocalStore';
+import { LocalStore } from '@/lib/LocalStore';
 
 const emits = defineEmits(['selection'])
 const props = defineProps({ 

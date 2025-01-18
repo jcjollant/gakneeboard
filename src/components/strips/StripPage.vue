@@ -18,9 +18,9 @@
 </template>
 <script lang="ts" setup>
 import { onMounted, ref, watch } from 'vue';
-import { StripAction } from '../../assets/StripAction';
-import { StripPageData } from '../../assets/StripPageData';
-import { StripType } from '../../assets/StripType';
+import { StripAction } from '@/assets/StripAction';
+import { StripPageData } from '@/assets/StripPageData';
+import { StripType } from '@/assets/StripType';
 
 import AtisStrip from '../atis/AtisStrip.vue';
 import CraftStrip from './CraftStrip.vue';

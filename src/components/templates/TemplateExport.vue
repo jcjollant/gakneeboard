@@ -21,7 +21,7 @@
 import { ref } from 'vue';
 import Dialog from 'primevue/dialog'
 import OneChoice from '../shared/OneChoice.vue';
-import { UserUrl } from '../../lib/UserUrl';
+import { UserUrl } from '@/lib/UserUrl';
 
 import Button from 'primevue/button';
 import Fieldset from 'primevue/fieldset';

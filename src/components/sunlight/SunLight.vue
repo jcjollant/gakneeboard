@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { getAirport, getSunlight } from '../../assets/data'
-import { UserUrl } from '../../lib/UserUrl'
+import { getAirport, getSunlight } from '@/assets/data'
+import { UserUrl } from '@/lib/UserUrl'
 
 import ActionBar from '../shared/ActionBar.vue'
 import AirportInput from '../shared/AirportInput.vue'

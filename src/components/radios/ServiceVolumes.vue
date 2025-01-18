@@ -8,7 +8,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import OneChoice from '../shared/OneChoice.vue';
-import { ServiceVolume } from '../../model/ServiceVolume';
+import { ServiceVolume } from '@/model/ServiceVolume';
 
 const emits = defineEmits(['volume'])
 const model = defineModel()

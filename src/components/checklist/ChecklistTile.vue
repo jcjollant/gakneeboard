@@ -23,8 +23,8 @@
 
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { itemsFromList, listFromItems } from '../../assets/checklist'
-import { UserUrl } from '../../lib/UserUrl'
+import { itemsFromList, listFromItems } from '@/assets/checklist'
+import { UserUrl } from '@/lib/UserUrl'
 
 import ActionBar from '../shared/ActionBar.vue'
 import ChecklistViewer from './ChecklistViewer.vue'

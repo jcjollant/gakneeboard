@@ -1,11 +1,11 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 
-import { navlogQueue } from '../../assets/data';
+import { navlogQueue } from '@/assets/data';
 
 import Header from '../shared/Header.vue'
 import PlaceHolder from '../shared/PlaceHolder.vue';
-import { Formatter } from '../../lib/Formatter';
+import { Formatter } from '@/lib/Formatter';
 import NoSettings from '../shared/NoSettings.vue';
 
 const items = ref(null)

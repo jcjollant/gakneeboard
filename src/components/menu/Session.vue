@@ -24,11 +24,11 @@
 
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref } from 'vue';
-import { currentUser } from '../../assets/data';
+import { currentUser } from '@/assets/data';
 import { useConfirm } from 'primevue/useconfirm';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
-import { useToaster } from '../../assets/Toaster';
+import { useToaster } from '@/assets/Toaster';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import FAButton from '../shared/FAButton.vue';

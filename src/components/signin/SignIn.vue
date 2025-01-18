@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue'
-import { authenticationRequest } from '../../assets/data'
+import { authenticationRequest } from '@/assets/data'
 
 // Components
 import AppleSignInButton from "./AppleSignInButton.vue"

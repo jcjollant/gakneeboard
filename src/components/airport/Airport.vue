@@ -51,14 +51,14 @@
 
 <script setup>
 import {ref, onMounted, watch} from 'vue';
-import { getAirport, getFreqCtaf, getFreqWeather} from '../../assets/data.js'
-import { Formatter } from '../../lib/Formatter.ts'
+import { getAirport, getFreqCtaf, getFreqWeather} from '@/assets/data.js'
+import { Formatter } from '@/lib/Formatter.ts'
 
 import AirportEdit from './AirportEdit.vue';
 import Corner from './Corner.vue';
-import CornerStatic from '../shared/CornerStatic.vue';
-import Header from '../shared/Header.vue'
-import PlaceHolder from '../shared/PlaceHolder.vue'
+import CornerStatic from '@/components/shared/CornerStatic.vue';
+import Header from '@/components/shared/Header.vue'
+import PlaceHolder from '@/components/shared/PlaceHolder.vue'
 import Runway from './Runway.vue'
 
 const emits = defineEmits(['replace','update'])

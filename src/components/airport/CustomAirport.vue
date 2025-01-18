@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { Airport, Runway } from '../../assets/Airport'
+import { Airport, Runway } from '@/assets/Airport'
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'
@@ -11,7 +11,7 @@ import InputGroupAddon from 'primevue/inputgroupaddon'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
 import ToggleButton from 'primevue/togglebutton'
-import { saveCustomAirport, getFreqCtaf, getFreqWeather, getFreqGround } from '../../assets/data'
+import { saveCustomAirport, getFreqCtaf, getFreqWeather, getFreqGround } from '@/assets/data'
 
 const emits = defineEmits(["close","updated"]);
 

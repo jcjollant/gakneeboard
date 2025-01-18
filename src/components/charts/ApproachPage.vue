@@ -27,8 +27,8 @@ import AirportInput from '../shared/AirportInput.vue';
 import ApproachPlate from './Diagram.vue';
 import Header from '../shared/Header.vue';
 import FAButton from '../shared/FAButton.vue';
-import { getAirport } from '../../assets/data';
-import { UserUrl } from '../../lib/UserUrl';
+import { getAirport } from '@/assets/data';
+import { UserUrl } from '@/lib/UserUrl';
 
 const pngOutput = ref(null)
 const emits = defineEmits(['replace','update'])

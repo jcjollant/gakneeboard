@@ -6,7 +6,7 @@ import Dialog from 'primevue/dialog'
 import FloatLabel from 'primevue/floatlabel'
 import InputText from 'primevue/inputtext'
 
-import { NavlogEntry } from '../../assets/NavlogEntry'
+import { NavlogEntry } from '@/assets/NavlogEntry'
 
 import PlaceHolder from '../shared/PlaceHolder.vue'
 

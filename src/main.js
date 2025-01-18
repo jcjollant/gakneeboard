@@ -23,7 +23,7 @@ import ConfirmationService from 'primevue/confirmationservice';
 import 'primevue/resources/themes/saga-blue/theme.css';
 import ToastService from 'primevue/toastservice';
 import { createApp } from 'vue';
-import App from './App.vue';
+import App from '@/App.vue';
 import router from './router';
 import './style.css';
 

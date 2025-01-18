@@ -29,7 +29,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import * as data from '../../assets/data.js'
+import * as data from '@/assets/data.js'
 
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner';
@@ -38,7 +38,7 @@ import ActionBar from '../shared/ActionBar.vue'
 import AirportInput from '../shared/AirportInput.vue'
 import CustomAirport from './CustomAirport.vue';
 import OneChoice from '../shared/OneChoice.vue'
-import { UserUrl } from '../../lib/UserUrl.ts';
+import { UserUrl } from '@/lib/UserUrl.ts';
 
 const emits = defineEmits(['close','selection'])
 const orientations = [{label:'Vertical',value:'v'},{label:'Magnetic',value:'m'}]

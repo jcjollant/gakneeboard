@@ -1,9 +1,9 @@
 <script setup>
 import { ref } from 'vue'
 
-import { getMaintenance } from '../../assets/data'
+import { getMaintenance } from '@/assets/data'
 import { useToast } from 'primevue/usetoast';
-import { useToaster } from '../../assets/Toaster';
+import { useToaster } from '@/assets/Toaster';
 
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog';

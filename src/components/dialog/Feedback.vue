@@ -25,9 +25,9 @@
 <script setup>
 // import { defineEmits } from "vue";
 import { onUpdated, ref } from 'vue'
-import { getCurrentUser, sendFeedback } from '../assets/data.js'
+import { getCurrentUser, sendFeedback } from '@/assets/data.js'
 import { useToast } from 'primevue/usetoast';
-import { useToaster } from '../assets/Toaster.ts';
+import { useToaster } from '@/assets/Toaster.ts';
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import Textarea from "primevue/textarea";

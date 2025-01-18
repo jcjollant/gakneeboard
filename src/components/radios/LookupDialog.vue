@@ -27,8 +27,8 @@
 
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { sessionAirports } from '../../assets/data'
-import { formatAtcGroups, formatFrequency } from '../../assets/format'
+import { sessionAirports } from '@/assets/data'
+import { formatAtcGroups, formatFrequency } from '@/assets/format'
 
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'

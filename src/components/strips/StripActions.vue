@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts" setup>
-import { StripAction } from '../../assets/StripAction';
+import { StripAction } from '@/assets/StripAction';
 const emits = defineEmits(['action'])
 
 </script>

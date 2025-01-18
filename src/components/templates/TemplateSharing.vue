@@ -12,9 +12,9 @@
 
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { UserUrl } from '../../lib/UserUrl';
+import { UserUrl } from '@/lib/UserUrl';
 import { useToast } from 'primevue/usetoast'
-import { useToaster } from '../../assets/Toaster';
+import { useToaster } from '@/assets/Toaster';
 
 import Button from 'primevue/button'
 import OneChoice from '../shared/OneChoice.vue';

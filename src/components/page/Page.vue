@@ -24,7 +24,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
-import { PageType } from '../../assets/PageType'
+import { PageType } from '@/assets/PageType'
 
 import ApproachPage from '../charts/ApproachPage.vue'
 import ChecklistPage from '../checklist/ChecklistPage.vue'

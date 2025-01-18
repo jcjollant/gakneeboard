@@ -38,8 +38,8 @@ import AirportInput from '../shared/AirportInput.vue';
 import ApproachPlate from './Diagram.vue';
 import FAButton from '../shared/FAButton.vue';
 import Header from '../shared/Header.vue';
-import { getAirport, sessionAirports } from '../../assets/data';
-import { UserUrl } from '../../lib/UserUrl';
+import { getAirport, sessionAirports } from '@/assets/data';
+import { UserUrl } from '@/lib/UserUrl';
 
 const airport = ref(null)
 const editMode = ref(false)

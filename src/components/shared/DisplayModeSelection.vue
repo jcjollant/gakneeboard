@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { DisplayModeChoice } from '../../model/DisplayModeChoice'
+import { DisplayModeChoice } from '@/model/DisplayModeChoice'
 import Button from 'primevue/button'
 
 const emits = defineEmits(['selection'])

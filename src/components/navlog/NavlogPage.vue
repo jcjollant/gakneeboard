@@ -90,9 +90,9 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
-import { duplicate, navlogQueue } from '../../assets/data'
-import { Formatter } from '../../lib/Formatter'
-import { Navlog } from '../../assets/Navlog'
+import { duplicate, navlogQueue } from '@/assets/data'
+import { Formatter } from '@/lib/Formatter'
+import { Navlog } from '@/assets/Navlog'
 
 import Header from '../shared/Header.vue'
 import NavlogEdit from './NavlogEdit.vue'

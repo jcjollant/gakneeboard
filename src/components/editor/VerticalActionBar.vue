@@ -18,8 +18,8 @@
 </template>
 
 <script setup lang="ts">
-import { EditorAction } from '../../assets/EditorAction';
-import { UserUrl } from '../../lib/UserUrl';
+import { EditorAction } from '@/assets/EditorAction';
+import { UserUrl } from '@/lib/UserUrl';
 
 import Button from 'primevue/button';
 import FAButton from '../shared/FAButton.vue';

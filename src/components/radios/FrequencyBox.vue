@@ -1,5 +1,5 @@
 <script setup>
-import { Formatter } from '../../lib/Formatter'
+import { Formatter } from '@/lib/Formatter'
 
 const props = defineProps({
     freq: { type: Object, default: null},

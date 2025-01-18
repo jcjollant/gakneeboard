@@ -39,7 +39,7 @@ import OneChoice from '../shared/OneChoice.vue';
 import Button from "primevue/button";
 import Dialog from 'primevue/dialog'
 import FieldSet from 'primevue/fieldset'
-import { UserUrl } from '../../lib/UserUrl';
+import { UserUrl } from '@/lib/UserUrl';
 
 const emits = defineEmits(["print","options",'close']);
 

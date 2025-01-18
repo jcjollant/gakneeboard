@@ -133,8 +133,8 @@ import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
 
-import { NavlogEntry } from '../../assets/NavlogEntry'
-import { Formatter } from '../../lib/Formatter'
+import { NavlogEntry } from '@/assets/NavlogEntry'
+import { Formatter } from '@/lib/Formatter'
 
 import PlaceHolder from '../shared/PlaceHolder.vue'
 

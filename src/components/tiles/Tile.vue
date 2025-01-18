@@ -37,7 +37,7 @@
 <script setup>
 import {onMounted, ref, watch} from 'vue';
 
-import { Tile } from '../../assets/Tile'
+import { Tile } from '@/assets/Tile'
 
 import Header from '../shared/Header.vue';
 import Airport from '../airport/Airport.vue';

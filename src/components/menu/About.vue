@@ -64,7 +64,7 @@ import { ref } from "vue";
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import OneChoice from "../shared/OneChoice.vue";
-import { UserUrl } from '../../lib/UserUrl.ts'
+import { UserUrl } from '@/lib/UserUrl.ts'
 
 const emits = defineEmits(["close","hdiw"]);
 

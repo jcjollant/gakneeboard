@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { UserUrl } from '../../lib/UserUrl'
+import { UserUrl } from '@/lib/UserUrl'
 
 import InputNumber from 'primevue/inputnumber'
 import Button from 'primevue/button'

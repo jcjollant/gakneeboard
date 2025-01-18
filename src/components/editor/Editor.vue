@@ -26,19 +26,19 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { EditorAction } from '../../assets/EditorAction'
+import { EditorAction } from '@/assets/EditorAction'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
-import { useToaster } from '../../assets/Toaster'
-import { PageType } from '../../assets/PageType'
-// import { Template } from '../../assets/Templates'
-import { pageDataBlank, readPageFromClipboard } from '../../assets/sheetData'
-import { duplicate } from '../../assets/data'
+import { useToaster } from '@/assets/Toaster'
+import { PageType } from '@/assets/PageType'
+// import { Template } from '@/assets/Templates'
+import { pageDataBlank, readPageFromClipboard } from '@/assets/sheetData'
+import { duplicate } from '@/assets/data'
 
 import Button from 'primevue/button'
 import Overlay from './Overlay.vue'
 import VerticalActionBar from './VerticalActionBar.vue'
-import { LocalStore } from '../../lib/LocalStore'
+import { LocalStore } from '@/lib/LocalStore'
 
 const emits = defineEmits(['discard','save','offset'])
 const confirm = useConfirm()

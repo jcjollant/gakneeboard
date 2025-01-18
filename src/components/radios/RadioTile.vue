@@ -31,11 +31,11 @@
 
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { Formatter } from '../../lib/Formatter'
-import { UserUrl } from '../../lib/UserUrl';
+import { Formatter } from '@/lib/Formatter'
+import { UserUrl } from '@/lib/UserUrl';
 import { useToast } from 'primevue/usetoast';
-import { useToaster } from '../../assets/Toaster'
-import { ServiceVolume} from '../../model/ServiceVolume'
+import { useToaster } from '@/assets/Toaster'
+import { ServiceVolume} from '@/model/ServiceVolume'
 
 import ActionBar from '../shared/ActionBar.vue'
 import Button from 'primevue/button'

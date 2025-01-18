@@ -112,15 +112,15 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
-import { Formatter } from '../../lib/Formatter'
-import { Navlog } from '../../assets/Navlog'
-import { NavlogEntry } from '../../assets/NavlogEntry'
-import { EditorItem } from '../../assets/EditorItem'
+import { Formatter } from '@/lib/Formatter'
+import { Navlog } from '@/assets/Navlog'
+import { NavlogEntry } from '@/assets/NavlogEntry'
+import { EditorItem } from '@/assets/EditorItem'
 import { useConfirm } from 'primevue/useconfirm'
-import { NavlogData } from '../../lib/NavlogData'
+import { NavlogData } from '@/lib/NavlogData'
 import { useToast } from 'primevue/usetoast'
-import { useToaster }  from '../../assets/Toaster'
-import { UserUrl } from '../../lib/UserUrl'
+import { useToaster }  from '@/assets/Toaster'
+import { UserUrl } from '@/lib/UserUrl'
 
 import ActionBar from '../shared/ActionBar.vue'
 import AirportInput from '../shared/AirportInput.vue'

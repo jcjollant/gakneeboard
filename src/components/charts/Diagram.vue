@@ -7,7 +7,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { DiagramData } from '../../lib/DiagramData';
+import { DiagramData } from '@/lib/DiagramData';
 import { getDocument } from 'pdfjs-dist'
 
 const placeHolderText = ref('')

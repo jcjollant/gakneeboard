@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { onMounted, watch, ref } from 'vue'
-import { UserUrl } from '../../lib/UserUrl';
+import { UserUrl } from '@/lib/UserUrl';
 
 import CompassContent from './CompassContent.vue';
 import CraftContent from '../clearance/CraftContent.vue';

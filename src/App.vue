@@ -31,8 +31,8 @@ import { getTemplateDataFromName } from './assets/sheetData';
 // Components
 import About from './components/menu/About.vue'
 import ConfirmDialog from 'primevue/confirmdialog';
-import Feedback from './components/Feedback.vue'
-import HowDoesItWork from './components/HowDoesItWork.vue'
+import Feedback from './components/dialog/Feedback.vue'
+import HowDoesItWork from './components/dialog/HowDoesItWork.vue'
 import Maintenance from './components/menu/Maintenance.vue'
 import MenuButton from './components/menu/MenuButton.vue';
 import Session from './components/menu/Session.vue'

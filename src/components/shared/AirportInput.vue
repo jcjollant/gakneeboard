@@ -14,9 +14,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import { getAirport } from '../../assets/data'
-import { LocalStore } from '../../lib/LocalStore'
-import { sessionAirports } from '../../assets/data'
+import { getAirport } from '@/assets/data'
+import { LocalStore } from '@/lib/LocalStore'
+import { sessionAirports } from '@/assets/data'
 
 import InputText from 'primevue/inputtext'
 import InputGroup from 'primevue/inputgroup'
