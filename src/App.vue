@@ -65,7 +65,7 @@ onBeforeMount( () => {
     if(!showHowDoesItWork.value && currentUser.loggedIn && currentUser.templates.length > 1) {
       showPopup.value = LocalStore.popupShow(2)
     }
-    console.log('[App.onBeforeMount]', showHowDoesItWork.value, showPopup.value)
+    // console.log('[App.onBeforeMount]', showHowDoesItWork.value, showPopup.value)
 })
 
 onMounted( () => {
