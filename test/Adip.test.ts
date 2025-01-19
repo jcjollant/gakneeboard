@@ -2,7 +2,14 @@ import {describe, expect, test} from '@jest/globals';
 import { Adip } from '../backend/adip/Adip'
 import { Airport } from '../backend/models/Airport';
 import { PatternDirection, Runway, RunwaySurface } from '../backend/models/Runway'
-import { kbffData, kbfiData, kcdwData, kdzjData, krntData, krntChartData, s43Data } from './adipData'
+import kbffData from './jsonData/airport/kbff.json'
+import kcdwData from './jsonData/airport/kcdw.json'
+import kdzjData from './jsonData/airport/kdzj.json'
+import kbfiData from './jsonData/airport/kbfi.json'
+import krntData from './jsonData/airport/krnt.json'
+import krntChartData from './jsonData/chart/krnt.json'
+import kpaeChartData from './jsonData/chart/kpae.json'
+import s43Data from './jsonData/airport/s43.json'
 import { krntAtcs, krntIap, krntApd } from './constants';
 
 // combines airport details with chart data
@@ -213,5 +220,20 @@ describe('Adip', () => {
             expect(true).toBeFalsy()
         } catch(e) {
         }
+    })
+
+    test('Chart Data', () => {
+        const kpae = Adip.parseAirportChartData(kpaeChartData)
+        expect(kpae.iap).toBeDefined()
+        expect(kpae.iap).toHaveLength(7)
+        expect(kpae.diagram).toBeDefined()
+        expect(kpae.dep).toBeDefined()
+        expect(kpae.dep).toHaveLength(1)
+        const krnt = Adip.parseAirportChartData(krntChartData)
+        expect(krnt.iap).toBeDefined()
+        expect(krnt.iap).toHaveLength(3)
+        expect(krnt.diagram).toBeDefined()
+        expect(krnt.dep).toBeDefined()
+        expect(krnt.dep).toHaveLength(2)
     })
 })

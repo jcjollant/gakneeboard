@@ -4,7 +4,10 @@ import { Airport } from '../backend/models/Airport';
 import { AirportView } from '../backend/models/AirportView';
 import { PatternDirection } from '../backend/models/Runway'
 
-import { k1w1Data, kbfiData, krntChartData, krntData } from './adipData'
+import { k1w1Data } from './adipData'
+import kbfiData from './jsonData/airport/kbfi.json'
+import krntChartData from './jsonData/chart/krnt.json'
+import krntData from './jsonData/airport/krnt.json'
 import { krntAtcs, krntIap } from './constants';
 import { airportFromData } from './Adip.test' 
 
