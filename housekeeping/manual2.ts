@@ -59,10 +59,18 @@ process.env.POSTGRES_URL=postgresUrl;
 
 //====================
 // Page count per user
+// import { Metrics } from "../backend/Metrics";
+// Metrics.pagePerUser().then( output => {
+//     console.log(output)
+//     console.log(JSON.stringify(output))
+// })
+
+//====================
+// User Categories
 import { Metrics } from "../backend/Metrics";
-Metrics.pagePerUser().then( output => {
-    console.log(output)
-    console.log(JSON.stringify(output))
+Metrics.usersPerAccountCategory().then( metrics => {
+    for(const metric of metrics)
+        console.log(metric.name, metric.value)
 })
 
 //====================

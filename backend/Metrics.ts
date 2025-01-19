@@ -66,6 +66,10 @@ enum Key {
     usersGoogle = 'usersGoogle',
     usersApple = 'usersApple',
     usersFacebook = 'usersFacebook',
+    userCat0 = 'cat-0',
+    userCat1 = 'cat-1-4',
+    userCat5 = 'cat-5-19',
+    userCat20 = 'cat-20',
 }
 
 export class Metrics {
@@ -239,12 +243,42 @@ export class Metrics {
         }, new Map<number,UserUsage>())
     }
 
+    static async usersPerAccountCategory():Promise<Metric[]> {
+        const output = new Promise<Metric[]>( (resolve, reject) => {
+            Metrics.pagePerUser().then(  async usage => {
+                const cat0 = new Metric(Key.userCat0)
+                const cat1 = new Metric(Key.userCat1)
+                const cat5 = new Metric(Key.userCat5)
+                const cat20 = new Metric(Key.userCat20)
+                // reduce UserUsage map to individual metric
+                usage.forEach( (value:UserUsage, key:number) => {
+                    if(value.pages == 0) {
+                        cat0.addOne()
+                    } else if(value.pages < 5) {
+                        cat1.addOne()
+                    } else if(value.pages < 20) {
+                        cat5.addOne()
+                    } else {
+                        cat20.addOne()
+                    }
+                })
+                if(cat0.value == 0) {
+                    const userCount = await new UserDao().count();
+                    cat0.value = userCount - cat1.value - cat5.value - cat20.value;
+                }
+                resolve([cat0, cat1, cat5, cat20])
+            })
+        })
+        return output
+    }
+
     public static async perform(commit:boolean=true, sendMail:boolean=true):Promise<String> {
         return Promise.all([
                 Metrics.users(),
                 Metrics.feedbacks(),
                 Metrics.templateDetails(),
                 Metrics.usage(),
+                Metrics.usersPerAccountCategory(),
                 Metrics.publicationsCheck(),
                 Metrics.templates(),
                 Metrics.airports(), 
