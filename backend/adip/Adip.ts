@@ -1,6 +1,6 @@
 import { AdipDao } from './AdipDao'
 import { Airport } from '../models/Airport'
-import { Approach } from '../models/Approach'
+import { Chart } from '../models/Chart'
 import { Atc } from '../models/Atc'
 import { Frequency } from '../models/Frequency'
 import { Navaid } from '../models/Navaid'
@@ -68,6 +68,7 @@ export class Adip {
         if(airport && acd) {
             airport.iap = acd.iap;
             airport.diagram = acd.diagram
+            // airport.dep = acd.dep
         }
 
         // console.log('[Adip.fetchAirport]', JSON.stringify(airport))
@@ -341,9 +342,11 @@ export class Adip {
         for(const c of data.charts) {
             if(c.chartCode == 'IAP') {
                 // console.log('IAP', c.pdfName)
-                output.addApproach(new Approach(c.chartName, data.cycle + '/' + c.pdfName))
+                output.addApproach(new Chart(c.chartName, data.cycle + '/' + c.pdfName))
             } else if(c.chartCode == 'APD') {
                 output.diagram = data.cycle + '/' + c.pdfName
+            } else if(c.chartCode == 'DP') {
+                output.addDeparture(new Chart(c.chartName, data.cycle + '/' + c.pdfName))
             }
         }
         return output

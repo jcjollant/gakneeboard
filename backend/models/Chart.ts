@@ -1,4 +1,4 @@
-export class Approach {
+export class Chart {
     name:string;
     pdf:string;
 
