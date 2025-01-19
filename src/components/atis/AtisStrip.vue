@@ -9,11 +9,12 @@
         <div class="top" title="Approach in Use">APCH</div>
         <div class="top" title="Runway in Use">RWY</div>
         <div class="infoBox stripBox"></div>
+        <div class="stripBox inline">
+            <div v-for="letter in ['Clm','Vrb','Gst']">{{ letter }}</div>
+        </div>
         <div class="stripBox"></div>
-        <!-- <div class="stripBox wind"><div class="gust">G</div></div> -->
-        <div class="stripBox"></div>
-        <div class="stripBox skyCondition">
-            <div v-for="letter in ['F','S','B','O']">{{ letter }}</div>
+        <div class="stripBox inline">
+            <div v-for="letter in ['Fw','Sc','Br','Ov']">{{ letter }}</div>
         </div>
         <div class="stripBox"></div>
         <div class="stripBox"></div>
@@ -71,10 +72,13 @@ watch(props, () => {
 .infoBox {
     border: 2px solid grey;
 }
-.skyCondition {
+.inline {
     display: flex;
     justify-content: space-around;
     font-weight: bolder;
     color: darkgrey;
+}
+.stripBox {
+    position: relative;
 }
 </style>
