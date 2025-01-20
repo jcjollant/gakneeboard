@@ -2,7 +2,8 @@
     <div class="tile">
         <Header :title="getTitle()" :left="true" :hideReplace="!displaySelection"
             @click="onMenuClick" @replace="emits('replace')"></Header>
-        <DisplayModeSelection v-if="displaySelection" :modes="modesList" @selection="changeMode" />
+        <DisplayModeSelection v-if="displaySelection" :modes="modesList" :activeMode="displayMode"
+            @selection="changeMode" />
         <div v-else-if="displayMode==DisplayMode.BoxV" class="tileContent clearance" @click="cycleMode">
             <div class="boxCleared box">
                 <div class="tileBoxLabel">To</div>
@@ -35,8 +36,8 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import CraftContent from './CraftContent.vue';
-import DisplayModeSelection from '@/components/shared/DisplayModeSelection.vue';
-import Header from '@/components/shared/Header.vue';
+import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
+import Header from '../shared/Header.vue';
 import HoldingContent from './HoldingContent.vue';
 import DepartureContent from './DepartureContent.vue';
 

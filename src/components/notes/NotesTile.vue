@@ -3,7 +3,7 @@
         <Header title="Notes"
             :stealth="!displaySelection && displayMode==DisplayMode.Blank" :hideReplace="!displaySelection"
             @click="onClick" @replace="emits('replace')"></Header>
-        <DisplayModeSelection v-if="displaySelection" :modes="modesList" @selection="changeMode" />
+        <DisplayModeSelection v-if="displaySelection" :modes="modesList" :activeMode="displayMode" @selection="changeMode" />
         <div v-else-if="displayMode==DisplayMode.Grid" class="grid tileContent">
             <div v-for="i in [1,2,3,4,5,6,7,8,9,10,11,12]">&nbsp;</div>
         </div>

@@ -2,7 +2,7 @@
     <div class="tile">
         <Header :title="getTitle()" :left="displayMode==''"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <DisplayModeSelection v-if="displaySelection" :modes="modesList" @selection="changeMode" />
+        <DisplayModeSelection v-if="displaySelection" :modes="modesList" :activeMode="displayMode" @selection="changeMode" />
         <div v-else-if="displayMode==DisplayMode.FullATIS" class="tileContent full" @click="cycleMode">
             <div class="info br">
                 <div class="tileBoxLabel">Info</div>

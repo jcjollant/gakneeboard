@@ -1,6 +1,7 @@
 <template>
     <div class="modesList">
-        <Button v-for="mode in modes" :label="mode.label" @click="emits('selection', mode.value)"></Button>
+        <Button v-for="mode in modes" :label="mode.label" :severity="mode.value==activeMode ? 'primary' : 'secondary'" class="entry"
+            @click="emits('selection', mode.value)"></Button>
     </div>
 
 </template>
@@ -12,15 +13,19 @@ import Button from 'primevue/button'
 const emits = defineEmits(['selection'])
 const props = defineProps({
     modes: { type: Array<DisplayModeChoice>, default: []},
+    activeMode: { type: String, default: ''}
 })
 
 </script>
 
 <style scoped>
 .modesList {
-    display: grid;
+    display: flex;
+    flex-flow: column;
     padding: 10px;
     gap: 10px;
-    grid-template-rows: repeat( 4, 3rem);
+}
+.entry {
+    line-height: 29px;
 }
 </style>

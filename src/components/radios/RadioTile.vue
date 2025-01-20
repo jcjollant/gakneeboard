@@ -4,7 +4,8 @@
         <Header :title="getTitle()" :hideReplace="!displaySelection" :left="displayMode==DisplayMode.Ils"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div class="tileContent">
-            <DisplayModeSelection v-if="displaySelection" :modes="modesList" @selection="onChangeMode" />
+            <DisplayModeSelection v-if="displaySelection" :modes="modesList" :activeMode="displayMode"
+                @selection="onChangeMode" />
             <Ils v-else-if="displayMode==DisplayMode.Ils" />
             <ServiceVolumes v-else-if="displayMode==DisplayMode.ServiceVolumes" v-model="serviceVolume"/>
             <Nordo v-else-if="displayMode==DisplayMode.LostComms" />
