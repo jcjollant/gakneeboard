@@ -1,5 +1,9 @@
+## 01/20/2025 5040
+* Weather Strip inline cues for calm and variable
+* New Departure Display mode for IFR Tile (renamed)
+* New Display mode highlight active mode
 ## 01/18/2025 5032 5033
-1) 5033
+1) 5032
 * Beta survey
 2) 5033
 * Fixed Beta Survey
