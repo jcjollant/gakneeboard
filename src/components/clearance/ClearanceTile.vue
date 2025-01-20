@@ -1,58 +1,33 @@
 <template>
     <div class="tile">
-        <Header :title="displayMode==DisplayMode.Hold ? 'Hold @' : 'Clearance @'" :left="true" :hideReplace="!displaySelection"
+        <Header :title="getTitle()" :left="true" :hideReplace="!displaySelection"
             @click="onMenuClick" @replace="emits('replace')"></Header>
         <DisplayModeSelection v-if="displaySelection" :modes="modesList" @selection="changeMode" />
-        <CraftContent v-else-if="displayMode==DisplayMode.Craft" @click="cycleMode"/>
         <div v-else-if="displayMode==DisplayMode.BoxV" class="tileContent clearance" @click="cycleMode">
             <div class="boxCleared box">
-                <div class="label">To</div>
+                <div class="tileBoxLabel">To</div>
                 <div class="watermrk">C</div>
             </div>
             <div class="boxRouteV box">
-                <div class="label">Route</div>
+                <div class="tileBoxLabel">Route</div>
                 <div class="watermrk">R</div>
             </div>
             <div class="boxAltitudeV box">
-                <div class="label">Altitude</div>
+                <div class="tileBoxLabel">Altitude</div>
                 <div class="watermrk">A</div>
             </div>
             <div class="boxFrequencyV box">
-                <div class="label">Freq.</div>
+                <div class="tileBoxLabel">Freq.</div>
                 <div class="watermrk">F</div>
             </div>
             <div class="boxTransponder box">
-                <div class="label">Xpdr</div>
+                <div class="tileBoxLabel">Xpdr</div>
                 <div class="watermrk">T</div>
             </div>
         </div>
-        <HoldingContent v-else-if="displayMode==DisplayMode.Hold" />
-        <div v-else class="tileContent clearance" @click="cycleMode">
-            <div class="boxCleared box">
-                <div class="label">To</div>
-                <div class="watermrk">C</div>
-            </div>
-            <div class="boxRouteH box">
-                <div class="label">Route</div>
-                <div class="watermrk">R</div>
-            </div>
-            <div class="boxAltitudeH box">
-                <div class="label">Altitude</div>
-                <div class="watermrk">A</div>
-            </div>
-            <div class="boxExpectH box">
-                <div class="label">Exp.</div>
-            </div>
-            <div class="boxFrequencyH box">
-                <div class="label">Freq.</div>
-                <div class="watermrk">F</div>
-            </div>
-            <div class="boxTransponder box">
-                <div class="label">Xpdr</div>
-                <div class="watermrk">T</div>
-            </div>
-        </div>
-
+        <DepartureContent v-else-if="displayMode==DisplayMode.Departure" @click="cycleMode" />
+        <HoldingContent v-else-if="displayMode==DisplayMode.Hold" @click="cycleMode" />
+        <CraftContent v-else @click="cycleMode"/>
     </div>
 
 </template>
@@ -60,14 +35,16 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import CraftContent from './CraftContent.vue';
-import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
-import Header from '../shared/Header.vue';
+import DisplayModeSelection from '@/components/shared/DisplayModeSelection.vue';
+import Header from '@/components/shared/Header.vue';
 import HoldingContent from './HoldingContent.vue';
+import DepartureContent from './DepartureContent.vue';
 
 // Enum with display modes
 enum DisplayMode {
     BoxV = 'boxV',
-    BoxH = 'boxH',
+    BoxH_deprecated = 'boxH',
+    Departure = 'dep',
     Craft = 'craft',
     Hold = 'hold',
 }
@@ -75,9 +52,9 @@ enum DisplayMode {
 const emits = defineEmits(['replace','update'])
 const displayMode=ref(DisplayMode.Craft)
 const modesList = ref([
-    {label:'Just CRAFT', value:DisplayMode.Craft},
+    {label:'C R A F T', value:DisplayMode.Craft},
+    {label:'Departure', value:DisplayMode.Departure},
     {label:'Vertical Boxes', value:DisplayMode.BoxV},
-    {label:'Horizontal Boxes', value:DisplayMode.BoxH},
     {label:'Holding', value:DisplayMode.Hold},
 ])
 const props = defineProps({
@@ -95,18 +72,25 @@ function changeMode(newMode:DisplayMode) {
 }
 
 function cycleMode() {
-    if( displayMode.value==DisplayMode.Craft) {
-         changeMode(DisplayMode.BoxV);
-    } else if( displayMode.value==DisplayMode.BoxV) {
-        changeMode(DisplayMode.BoxH);
-    } else {
-        changeMode(DisplayMode.Craft);
-    }
+    // find index of current displayMode in modesList
+    let index = modesList.value.findIndex((mode:any) => mode.value==displayMode.value) + 1
+    if(index == modesList.value.length) index = 0
+    // console.log('[ClearanceTile.cycleMode]', index)
+    // change mode to the next in the list
+    changeMode(modesList.value[index].value)
+}
+
+function getTitle() {
+    if( displayMode.value==DisplayMode.Hold) return 'Hold @'
+    if( displayMode.value==DisplayMode.Departure) return 'Depart @'
+    return 'Clearance @'
 }
 
 function loadProps(props:any) {
     // console.log('[Clearance.loadProps]', JSON.stringify(props))
     if( props.params && props.params.mode) {
+        // for compatibility with old versions
+        if(props.params.mode==DisplayMode.BoxH_deprecated) props.params.mode = DisplayMode.BoxV;
         displayMode.value = props.params.mode
     } else {
         displayMode.value = DisplayMode.Craft
@@ -127,12 +111,6 @@ watch( props, async() => {
 </script>
 
 <style scoped>
-.label {
-  position: absolute;
-  left: 3px;
-  top: 0;
-  font-size: 10px;
-}
 .box {
   position: relative;
 }
@@ -185,7 +163,6 @@ watch( props, async() => {
     display: grid;
     grid-template-columns: auto auto;
     grid-template-rows: repeat(4, 1fr);
-    /* grid-template-rows: 60px 60px 60px 59px; */
 }
 .tileContent {
     cursor: pointer;
