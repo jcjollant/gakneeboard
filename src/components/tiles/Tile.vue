@@ -43,7 +43,7 @@ import Header from '../shared/Header.vue';
 import Airport from '../airport/Airport.vue';
 import Atis from '../atis/Atis.vue'
 import ChecklistTile from '../checklist/ChecklistTile.vue';
-import Clearance from '../clearance/Clearance.vue';
+import Clearance from '@/components/clearance/ClearanceTile.vue';
 import Dummy from './Dummy.vue';
 import RadioTile from '../radios/RadioTile.vue';
 import SunLight from '../sunlight/SunLight.vue';
@@ -61,14 +61,14 @@ const props = defineProps({
 var state = {}
 const knownTiles = ref([
     {name:'Airport',tile:Tile.airport, class:'double', icon:'plane-departure', tooltip:'Display runway and useful information'},
+    {name:'Notes',tile:Tile.notes, class:'', icon:'pen-to-square',  tooltip:'A blank tile to write stuff'},
     {name:'Weather',tile:Tile.atis, class:'', icon:'cloud-sun-rain', tooltip:'Write down ATIS information'},
     {name:'Checklist',tile:Tile.checklist, class:'', icon:'list-check', tooltip:'Short checklist'},
-    {name:'Clearance',tile:Tile.clearance, class:'', icon:'plane-circle-check', tooltip:'Write down clearance information'},
+    {name:'Radios',tile:Tile.radios, class:'', icon:'headset',  tooltip:'Radio frequencies'},
+    {name:'IFR',tile:Tile.clearance, class:'', icon:'plane-circle-check', tooltip:'Instrument Flying'},
+    {name:'Sunlight',tile:Tile.sunlight, class:'', icon:'sun',  tooltip:'Sunrise, Sunset, Civil Twilight...'},
     {name:'Fuel',tile:Tile.fuel, class:'', icon:'gas-pump', tooltip:'Track your fuel consumption'},
     {name:'Navlog',tile:Tile.navlog, class:'', icon:'route',  tooltip:'Companion Tile to the Navlog Page'},
-    {name:'Notes',tile:Tile.notes, class:'', icon:'pen-to-square',  tooltip:'A blank tile to write stuff'},
-    {name:'Radios',tile:Tile.radios, class:'', icon:'headset',  tooltip:'Radio frequencies'},
-    {name:'Sunlight',tile:Tile.sunlight, class:'', icon:'sun',  tooltip:'Sunrise, Sunset, Civil Twilight...'},
 ])
 const tile = ref({})
 
