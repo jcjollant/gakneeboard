@@ -5,41 +5,41 @@
         <DisplayModeSelection v-if="displaySelection" :modes="modesList" @selection="changeMode" />
         <div v-else-if="displayMode==DisplayMode.FullATIS" class="tileContent full" @click="cycleMode">
             <div class="info br">
-                <div class="label">Info</div>
+                <div class="tileBoxLabel">Info</div>
             </div>
             <div class="wind br">
-                <div class="label">Wind</div>
+                <div class="tileBoxLabel">Wind</div>
             </div>
             <div class="runway">
-                <div class="label">Rwy</div>
+                <div class="tileBoxLabel">Rwy</div>
             </div>
             <div class="visibility bt bb">
-                <div class="label">Vis</div>
+                <div class="tileBoxLabel">Vis</div>
             </div>
             <div class="sky bt bl">
-                <div class="label">Sky</div>
+                <div class="tileBoxLabel">Sky</div>
             </div>
             <div class="temperature bb">
-                <div class="label">Temp</div>
+                <div class="tileBoxLabel">Temp</div>
             </div>
             <div class="altimeter">
-                <div class="label">Alt</div>
+                <div class="tileBoxLabel">Alt</div>
             </div>
         </div>
         <div v-else-if="displayMode==DisplayMode.CompactATIS" class="tileContent" @click="cycleMode">
             <div v-for="n in 4" class="compact">
                 <div class="info br" :class="{bb: n < 4 }">
-                    <div class="label">Info</div>
+                    <div class="tileBoxLabel">Info</div>
                 </div>
                 <div class="wind br" :class="{bb: n < 4 }">
-                    <div class="label">Wind</div>
+                    <div class="tileBoxLabel">Wind</div>
                     <span class="at">@</span>
                 </div>
                 <div class="altimeter br" :class="{bb: n < 4 }">
-                    <div class="label">Alt</div>
+                    <div class="tileBoxLabel">Alt</div>
                 </div>
                 <div class="runway" :class="{bb: n < 4 }">
-                    <div class="label">Rwy</div>
+                    <div class="tileBoxLabel">Rwy</div>
                 </div>
                 
             </div>
@@ -336,12 +336,6 @@ function onHeaderClick() {
     color: #606
 }
 
-.label {
-  position: absolute;
-  left: 3px;
-  top: 0;
-  font-size: 10px;
-}
 .tileContent {
     display: grid;
     grid-template-rows: repeat( 4, calc(var(--tile-height / 4)));

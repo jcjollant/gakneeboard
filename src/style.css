@@ -68,6 +68,13 @@
   position: relative; /* Needed for absolute positioning fo children */
 }
 
+.tileBoxLabel {
+  position: absolute;
+  left: 3px;
+  top: 0;
+  font-size: 10px;
+}
+
 .contentPage {
   width: var(--page-width);
   height: var(--page-height);
