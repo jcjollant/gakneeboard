@@ -1,5 +1,5 @@
 <template>
-    <div class="tileContent">
+    <div class="tileContent modeCompass">
         <canvas ref="myCanvas" class="tileContent"></canvas>
     </div>
 </template>

@@ -14,36 +14,36 @@
                 @click="onReplace(tile.tile)"></Button> -->
         </div>
     </div>
-    <Airport v-else-if="tile.name==Tile.airport" :params="tile.data" 
+    <Airport v-else-if="tile.name==TileType.airport" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" />
-    <Atis v-else-if="tile.name==Tile.atis" :params="tile.data"
+    <Atis v-else-if="tile.name==TileType.atis" :params="tile.data"
         @replace="onReplace" @update="onUpdate"/>
-    <ChecklistTile v-else-if="tile.name==Tile.checklist" :params="tile.data" 
+    <ChecklistTile v-else-if="tile.name==TileType.checklist" :params="tile.data" 
         @replace="onReplace" @update="onUpdate"/>
-    <Clearance v-else-if="tile.name==Tile.clearance" :params="tile.data"
+    <IfrTile v-else-if="tile.name==TileType.clearance" :params="tile.data"
         @replace="onReplace" @update="onUpdate"/>
-    <Dummy v-else-if="tile.name==Tile.dummy" :params="tile.data"  />
-    <FuelBug v-else-if="tile.name==Tile.fuel" :params="tile.data"
+    <Dummy v-else-if="tile.name==TileType.dummy" :params="tile.data"  />
+    <FuelBug v-else-if="tile.name==TileType.fuel" :params="tile.data"
         @replace="onReplace" @update="onUpdate"/>  
-    <NavlogTile v-else-if="tile.name==Tile.navlog" @replace="onReplace" />
-    <NotesTile v-else-if="tile.name==Tile.notes" :params="tile.data"
+    <NavlogTile v-else-if="tile.name==TileType.navlog" @replace="onReplace" />
+    <NotesTile v-else-if="tile.name==TileType.notes" :params="tile.data"
         @replace="onReplace" @update="onUpdate" />
-    <RadioTile v-else-if="tile.name==Tile.radios" :params="tile.data" 
+    <RadioTile v-else-if="tile.name==TileType.radios" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" />
-    <SunLight v-else-if="tile.name==Tile.sunlight" :params="tile.data" 
+    <SunLight v-else-if="tile.name==TileType.sunlight" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" />
 </template>
 
 <script setup>
 import {onMounted, ref, watch} from 'vue';
 
-import { Tile } from '@/assets/Tile'
+import { TileType } from '@/model/TileType'
 
 import Header from '../shared/Header.vue';
 import Airport from '../airport/Airport.vue';
 import Atis from '../atis/Atis.vue'
 import ChecklistTile from '../checklist/ChecklistTile.vue';
-import Clearance from '@/components/clearance/ClearanceTile.vue';
+import IfrTile from '@/components/clearance/IfrTile.vue';
 import Dummy from './Dummy.vue';
 import RadioTile from '../radios/RadioTile.vue';
 import SunLight from '../sunlight/SunLight.vue';
@@ -60,15 +60,15 @@ const props = defineProps({
 
 var state = {}
 const knownTiles = ref([
-    {name:'Airport',tile:Tile.airport, class:'double', icon:'plane-departure', tooltip:'Display runway and useful information'},
-    {name:'Notes',tile:Tile.notes, class:'', icon:'pen-to-square',  tooltip:'A blank tile to write stuff'},
-    {name:'Weather',tile:Tile.atis, class:'', icon:'cloud-sun-rain', tooltip:'Write down ATIS information'},
-    {name:'Checklist',tile:Tile.checklist, class:'', icon:'list-check', tooltip:'Short checklist'},
-    {name:'Radios',tile:Tile.radios, class:'', icon:'headset',  tooltip:'Radio frequencies'},
-    {name:'IFR',tile:Tile.clearance, class:'', icon:'plane-circle-check', tooltip:'Instrument Flying'},
-    {name:'Sunlight',tile:Tile.sunlight, class:'', icon:'sun',  tooltip:'Sunrise, Sunset, Civil Twilight...'},
-    {name:'Fuel',tile:Tile.fuel, class:'', icon:'gas-pump', tooltip:'Track your fuel consumption'},
-    {name:'Navlog',tile:Tile.navlog, class:'', icon:'route',  tooltip:'Companion Tile to the Navlog Page'},
+    {name:'Airport',tile:TileType.airport, class:'double', icon:'plane-departure', tooltip:'Display runway and useful information'},
+    {name:'Notes',tile:TileType.notes, class:'', icon:'pen-to-square',  tooltip:'A blank tile to write stuff'},
+    {name:'Weather',tile:TileType.atis, class:'', icon:'cloud-sun-rain', tooltip:'Write down ATIS information'},
+    {name:'Checklist',tile:TileType.checklist, class:'', icon:'list-check', tooltip:'Short checklist'},
+    {name:'Radios',tile:TileType.radios, class:'', icon:'headset',  tooltip:'Radio frequencies'},
+    {name:'IFR',tile:TileType.clearance, class:'', icon:'plane-circle-check', tooltip:'Instrument Flying'},
+    {name:'Sunlight',tile:TileType.sunlight, class:'', icon:'sun',  tooltip:'Sunrise, Sunset, Civil Twilight...'},
+    {name:'Fuel',tile:TileType.fuel, class:'', icon:'gas-pump', tooltip:'Track your fuel consumption'},
+    {name:'Navlog',tile:TileType.navlog, class:'', icon:'route',  tooltip:'Companion Tile to the Navlog Page'},
 ])
 const tile = ref({})
 

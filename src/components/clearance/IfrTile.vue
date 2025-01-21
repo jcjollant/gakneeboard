@@ -4,37 +4,18 @@
             @click="onMenuClick" @replace="emits('replace')"></Header>
         <DisplayModeSelection v-if="displaySelection" :modes="modesList" :activeMode="displayMode"
             @selection="changeMode" />
-        <div v-else-if="displayMode==DisplayMode.BoxV" class="tileContent clearance" @click="cycleMode">
-            <div class="boxCleared box">
-                <div class="tileBoxLabel">To</div>
-                <div class="watermrk">C</div>
-            </div>
-            <div class="boxRouteV box">
-                <div class="tileBoxLabel">Route</div>
-                <div class="watermrk">R</div>
-            </div>
-            <div class="boxAltitudeV box">
-                <div class="tileBoxLabel">Altitude</div>
-                <div class="watermrk">A</div>
-            </div>
-            <div class="boxFrequencyV box">
-                <div class="tileBoxLabel">Freq.</div>
-                <div class="watermrk">F</div>
-            </div>
-            <div class="boxTransponder box">
-                <div class="tileBoxLabel">Xpdr</div>
-                <div class="watermrk">T</div>
-            </div>
-        </div>
+        <ApproachContent v-if="displayMode==DisplayMode.Approach" @click="cycleMode" />
         <DepartureContent v-else-if="displayMode==DisplayMode.Departure" @click="cycleMode" />
         <HoldingContent v-else-if="displayMode==DisplayMode.Hold" @click="cycleMode" />
-        <CraftContent v-else @click="cycleMode"/>
+        <CraftBoxedContent v-else @click="cycleMode" />
     </div>
 
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
+import ApproachContent from './ApproachContent.vue';
+import CraftBoxedContent from './CraftBoxedContent.vue';
 import CraftContent from './CraftContent.vue';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../shared/Header.vue';
@@ -43,20 +24,21 @@ import DepartureContent from './DepartureContent.vue';
 
 // Enum with display modes
 enum DisplayMode {
+    Approach = 'apch',
     BoxV = 'boxV',
     BoxH_deprecated = 'boxH',
     Departure = 'dep',
-    Craft = 'craft',
+    Craft_deprecated = 'craft',
     Hold = 'hold',
 }
 
 const emits = defineEmits(['replace','update'])
 const displayMode=ref(DisplayMode.Craft)
 const modesList = ref([
-    {label:'C R A F T', value:DisplayMode.Craft},
+    {label:'CRAFT Clearance', value:DisplayMode.BoxV},
+    {label:'Approach', value:DisplayMode.Approach},
     {label:'Departure', value:DisplayMode.Departure},
-    {label:'Vertical Boxes', value:DisplayMode.BoxV},
-    {label:'Holding', value:DisplayMode.Hold},
+    {label:'Hold', value:DisplayMode.Hold},
 ])
 const props = defineProps({
     params: { type: Object, default: null},
@@ -82,6 +64,7 @@ function cycleMode() {
 }
 
 function getTitle() {
+    if( displayMode.value==DisplayMode.Approach) return 'Approach @'
     if( displayMode.value==DisplayMode.Hold) return 'Hold @'
     if( displayMode.value==DisplayMode.Departure) return 'Depart @'
     return 'Clearance @'
@@ -92,6 +75,7 @@ function loadProps(props:any) {
     if( props.params && props.params.mode) {
         // for compatibility with old versions
         if(props.params.mode==DisplayMode.BoxH_deprecated) props.params.mode = DisplayMode.BoxV;
+        if(props.params.mode==DisplayMode.Craft_deprecated) props.params.mode = DisplayMode.BoxV;
         displayMode.value = props.params.mode
     } else {
         displayMode.value = DisplayMode.Craft
@@ -112,70 +96,4 @@ watch( props, async() => {
 </script>
 
 <style scoped>
-.box {
-  position: relative;
-}
-
-.boxCleared {
-    grid-column: 1;
-    border-bottom: 1px dashed darkgrey;
-    border-right: 1px dashed darkgrey;
-}
-.boxRouteV {
-    grid-column: 1;
-    grid-row: 2 / span 3;
-    border-right: 1px dashed darkgrey;
-}
-.boxRouteH {
-    grid-column: 1 / span 2;
-    border-bottom: 1px dashed darkgrey;
-}
-.boxAltitudeV {
-    grid-row: 1 / span 2;
-    grid-column: 2;
-    border-bottom: 1px dashed darkgrey;
-}
-.boxAltitudeH {
-    grid-row: 3;
-    grid-column: 1;
-    border-bottom: 1px dashed darkgrey;
-}
-.boxExpectH {
-    grid-row: 3;
-    grid-column: 2;
-    border-bottom: 1px dashed darkgrey;
-}
-.boxFrequencyV {
-    grid-row: 3;
-    grid-column: 2;
-    border-bottom: 1px dashed darkgrey;
-}
-.boxFrequencyH {
-    grid-row: 4;
-    grid-column: 1;
-    border-right: 1px dashed darkgrey;
-}
-.boxTransponder {
-    grid-row: 4;
-    grid-column: 2;
-}
-
-.clearance {
-    display: grid;
-    grid-template-columns: auto auto;
-    grid-template-rows: repeat(4, 1fr);
-}
-.tileContent {
-    cursor: pointer;
-}
-
-.watermrk {
-    line-height: 1;
-    font-weight:600;
-    font-size: 30px;
-    position:absolute;
-    left: 2px;
-    bottom: 2px;
-    opacity: 0.2;
-}
 </style>
