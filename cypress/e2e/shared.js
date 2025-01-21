@@ -1,5 +1,5 @@
 const devEnv = 'http://localhost:5173/'
-const prodEnv = 'https://kneeboard.ga'
+// const prodEnv = 'https://kneeboard.ga'
 export const environment = devEnv
 // const devBackend = 'http://localhost:3000/'
 // export const backend = devBackend
@@ -16,12 +16,18 @@ export const feltsTitle = 'Felts Fld'
 export const holdTitle = 'Hold @'
 export const kenmoreTitle = 'Kenmore Air Harbor'
 export const notesTitle = 'Notes'
-export const radioFlowTitle = 'Radios'
+export const radioTitle = 'Radios'
 export const lostCommsTitle = 'Lost Comms'
 export const serviceVolumeTitle = 'VOR Service Volumes'
 export const rentonTitle = 'Renton Muni'
 export const selectionTitle = 'Page Selection'
-export const ilsTitle = 'ILS or LOC @'
+export const departureTitle = 'Depart @'
+export const approachTitle = 'Approach @'
+
+export class TileTypeLabel {
+    static notes = 'Notes'
+    static radios = 'Radios'
+}
 
 export const expectedDemos = [ 
     {i:0, l:'Default', t:'Default Demo',c:['pageTiles','pageChecklist']}, 
@@ -45,7 +51,7 @@ export function demoTilesOnPage(index) {
 
     cy.get(`.page${index} > :nth-child(1) > .headerTitle`).contains(boeingTitle)
     cy.get(`.page${index} > :nth-child(2) > .headerTitle`).contains(feltsTitle)
-    cy.get(`.page${index} > :nth-child(3) > .headerTitle`).contains(radioFlowTitle)
+    cy.get(`.page${index} > :nth-child(3) > .headerTitle`).contains(radioTitle)
     cy.get(`.page${index} > :nth-child(4) > .headerTitle`).contains(notesTitle)
     cy.get(`.page${index} > :nth-child(5) > .headerTitle`).contains(atisTitle)
     cy.get(`.page${index} > :nth-child(6) > .headerTitle`).contains(clearanceTitle)
@@ -97,3 +103,8 @@ export function newTemplate() {
     cy.get('.page1 > .headerTitle').contains('Page Selection')
 }
 
+export function replaceTile(pageNum, tileNum, label) {
+    cy.get(`.page${pageNum} > .tile${tileNum} > .headerTitle > .p-button`).click({force: true})
+    cy.get(`[aria-label="${label}"]`).click()
+
+}

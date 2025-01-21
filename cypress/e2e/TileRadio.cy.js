@@ -1,7 +1,6 @@
-import { ilsTitle, loadDemo, lostCommsTitle, radioFlowTitle, serviceVolumeTitle, visitSkipBanner } from './shared'
+import { loadDemo, lostCommsTitle, notesTitle, radioTitle, serviceVolumeTitle, TileTypeLabel, visitSkipBanner, replaceTile } from './shared'
 
 const labelFrequencies = 'Frequencies'
-const labelIlsOrLoc  = 'ILS or LOC'
 const labelLostComms = 'Lost Comms'
 const labelVORSV = 'VOR Service Volumes'
 
@@ -19,17 +18,18 @@ describe('Radios Tile', () => {
     })
 
     // check header is the expected one
-    cy.get('.page1 .tile5 > .headerTitle').contains(radioFlowTitle)
+    cy.get('.page1 .tile5 > .headerTitle').contains(radioTitle)
 
-    // Swicth to Display mode selection
+    // Switch to Display mode selection
     cy.get('.page1 > .tile5 > .headerTitle').click()
-    const expectedDisplayModes = [ labelFrequencies, labelIlsOrLoc, labelLostComms, labelVORSV]
+    const expectedDisplayModes = [ labelFrequencies, labelLostComms, labelVORSV]
     for(const displayMode of expectedDisplayModes) {
       cy.get('.modesList').contains(displayMode)
     }
 
     // Clicking on the header should bring back normal mode
     cy.get('.page1 > .tile5 > .headerTitle').click()
+    cy.get('.page1 .tile5 .modesList').should('not.exist')
 
     // Switch to edit mode
     cy.get(`.freqList`).click()
@@ -82,46 +82,20 @@ describe('Radios Tile', () => {
     // Test textarea content
     cy.get('.p-inputtextarea').should('have.value','124.700,KRNT CTAF\n110.600,PAE VOR/DME\n119.200,SEATTLE-TACOMA APPROACH CONTROL')
 
-    // Switch tile type to notes then coma back to radio
-    cy.get('.page1 > .tile5 > .headerTitle > .p-button').click({force: true})
-    cy.get('[aria-label="Notes"]').click()
-    cy.get('.page1 > .tile5 > .headerTitle > div').contains('Notes')
+    // switch left tile to radio so it doesnt merge
+    replaceTile(1,4,TileTypeLabel.radios)
+    // Switch tile type to notes then come back to radio
+    replaceTile(1,5,TileTypeLabel.notes)
+    cy.get('.page1 > .tile5 > .headerTitle > div').contains(notesTitle)
     // Change tile back to Radio 
     cy.get('.page1 > .tile5 > .headerTitle').click()
-    cy.get('.page1 > .tile5 > .headerTitle > .p-button').click({force: true})
-    cy.get('[aria-label="Radios"]').click()
+    replaceTile(1,5,TileTypeLabel.radios)
 
     // Header should be back to Radio
-    cy.get('.page1 > .tile5 > .headerTitle > div').contains(radioFlowTitle)
+    cy.get('.page1 > .tile5 > .headerTitle > div').contains(radioTitle)
     // check we have the placeholder
     cy.get('.placeHolder').contains('No Radios')
     cy.get('.placeHolder').contains('Click Here to Add Frequencies')
-  })
-
-  it('ILS', () => {
-    visitSkipBanner()
-    loadDemo('Tiles')
-    cy.get('.page1 > .tile5 > .headerTitle').click()
-
-    // switch to ILS
-    cy.get(`[aria-label="${labelIlsOrLoc}"]`).click()
-    // test tile title updated
-    cy.get('.page1 > .tile5 > .headerTitle').contains(ilsTitle)
-
-    // check Fields
-    const expectedILSFields = ['APCH/RWY', 'CRS', 'ILOC', 'ATIS', 'ATC', 'TWR/CTAF', 'Fixes', 'Min.', 'Missed']
-    for(const field of expectedILSFields) {
-      cy.get(`.page1 .tile5`).contains(field)
-    }
-
-    // test localstore has the correct data
-    cy.getLocalStorage('template')
-      .then(t => {
-        const template = JSON.parse(t)
-        // console.log('>>>>', template)
-        expect(template.data[1].data[5].data['mode']).to.equal('ils')
-      })
-
   })
 
   it('Lost Comms', () => {
@@ -178,6 +152,14 @@ describe('Radios Tile', () => {
       const volume = expectedVolumes[index]
       cy.get('.page1 .tile5 .volumeChoice .choice' + index).contains(volume.label)
       cy.get('.page1 .tile5 .volumeChoice .choice' + index).click()
+      cy.get('.serviceVolume').should('have.attr', 'src', volume.src)
+    }
+    // go back to first
+    cy.get('.page1 .tile5 .volumeChoice .choice0').click()
+    for(let index = 1; index < expectedVolumes.length; index++) {
+      const volume = expectedVolumes[index]
+      // clicking inside the tile should cycle volumes
+      cy.get('.serviceVolume').click()
       cy.get('.serviceVolume').should('have.attr', 'src', volume.src)
     }
 
