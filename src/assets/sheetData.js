@@ -1,6 +1,6 @@
 import { PageType} from './PageType'
 import { Template } from './Templates'
-import { Tile } from './Tile'
+import { TileType } from '../model/TileType'
 
 const demoRadioData = [
   {'target':'NAV1','freq':'116.8','name':'SEA VOR'},
@@ -101,12 +101,12 @@ const page0DemoHold = {
   type: PageType.tiles,
   name:"Holds Demo",
   data: [
-    {id:0, name:Tile.clearance, data: { mode: "hold"}},
-    {id:1, name:Tile.notes, data: { mode: "compass"}},
-    {id:2, name:Tile.clearance, data: { mode: "hold"}},
-    {id:3, name:Tile.notes, data: { mode: "compass"}},
-    {id:4, name:Tile.clearance, data: { mode: "hold"}},
-    {id:5, name:Tile.notes, data: { mode: "compass"}},
+    {id:0, name:TileType.clearance, data: { mode: "hold"}},
+    {id:1, name:TileType.notes, data: { mode: "compass"}},
+    {id:2, name:TileType.clearance, data: { mode: "hold"}},
+    {id:3, name:TileType.notes, data: { mode: "compass"}},
+    {id:4, name:TileType.clearance, data: { mode: "hold"}},
+    {id:5, name:TileType.notes, data: { mode: "compass"}},
   ]
 }
 const templateDemoHolds = new Template('Holds Demo', 'Two sheets of Holds and Compass', false, Array(4).fill(page0DemoHold))
@@ -320,7 +320,7 @@ export function getTemplateDummy() {
   for( let pageIndex = 0; pageIndex < 2; pageIndex++) {
     const tiles = []
     for( let tileIndex = 0; tileIndex < 6; tileIndex++) {
-      tiles.push({id:tileIndex,name:Tile.dummy,data:{header:pageIndex+'-'+tileIndex}})
+      tiles.push({id:tileIndex,name:TileType.dummy,data:{header:pageIndex+'-'+tileIndex}})
     }
     const page = { type:PageType.tiles, data: tiles}
     pages.push(page)

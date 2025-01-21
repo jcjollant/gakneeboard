@@ -1,4 +1,4 @@
-export class Tile {
+export class TileType {
     static airport:string = 'airport';
     static atis:string = 'atis';
     static checklist:string = 'checklist';
