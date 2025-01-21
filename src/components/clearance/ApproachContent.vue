@@ -1,5 +1,5 @@
 <template>
-    <div class="tileContent ilsorloc">
+    <div class="tileContent approach">
         <div class="apch label bb br">APCH/RWY</div>
         <div class="crs label bb br">CRS</div>
         <div class="iloc label bb">ILOC</div>
@@ -13,7 +13,7 @@
 </template>
 
 <style scoped>
-.ilsorloc {
+.approach {
     display: grid;
     position: relative;
     grid-template-columns: repeat(12, 1fr);
