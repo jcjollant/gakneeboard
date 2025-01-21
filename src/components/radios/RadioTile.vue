@@ -6,7 +6,6 @@
         <div class="tileContent">
             <DisplayModeSelection v-if="displaySelection" :modes="modesList" :activeMode="displayMode"
                 @selection="onChangeMode" />
-            <Ils v-else-if="displayMode==DisplayMode.Ils" />
             <ServiceVolumes v-else-if="displayMode==DisplayMode.ServiceVolumes" v-model="serviceVolume"/>
             <Nordo v-else-if="displayMode==DisplayMode.LostComms" />
             <div v-else-if="displayMode==DisplayMode.FreqList" class="main">
@@ -43,7 +42,6 @@ import Button from 'primevue/button'
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../shared/Header.vue';
 import FrequencyBox from './FrequencyBox.vue'
-import Ils from './Ils.vue';
 import LookupDialog from './LookupDialog.vue'
 import Nordo from './Nordo.vue';
 import PlaceHolder from '../shared/PlaceHolder.vue'
@@ -54,7 +52,6 @@ const DisplayMode = Object.freeze ({
     FreqList : '',
     LostComms : 'nordo',
     ServiceVolumes : 'sv',
-    Ils: 'ils',
 })
 const displaySelection = ref(false)
 const emits = defineEmits(['replace','update'])
@@ -69,7 +66,6 @@ const lookupTime = ref(0)
 let listBeforeEdit = []
 const modesList = ref([
     {label:'Frequencies', value:DisplayMode.FreqList},
-    {label:'ILS or LOC', value:DisplayMode.Ils},
     {label:'Lost Comms', value:DisplayMode.LostComms},
     {label:'VOR Service Volumes', value:DisplayMode.ServiceVolumes},
 ])
