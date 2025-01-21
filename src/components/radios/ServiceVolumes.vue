@@ -1,6 +1,6 @@
 <template>
     <div class="vorrange">
-        <img :src="type.img" class="serviceVolume" />
+        <img :src="type.img" class="serviceVolume" @click="cycle" />
         <OneChoice v-model="type" :choices="volumeList" :thinpad="true" class="volumeChoice" />
     </div>
 </template>
@@ -33,6 +33,13 @@ watch( type, () => {
     model.value = type.value.value
 })
 
+function cycle() {
+    const idx = volumeList.findIndex((v:any) => v.value === type.value.value)
+    const next = (idx + 1) % volumeList.length
+    type.value = volumeList[next]
+//    emits('volume', type.value.value)
+}
+
 function loadModel() {
     // console.log('[ServiceVolumes.watch]', model)
     const vol = volumeList.find((v:any) => v.value === model.value)
@@ -47,6 +54,7 @@ function loadModel() {
 .serviceVolume {
     width: var(--tile-width);
     object-fit: contain;
+    cursor: pointer;
 }
 .vorrange {
     display: flex;
