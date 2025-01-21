@@ -4,7 +4,7 @@
             :stealth="!displaySelection && displayMode==DisplayMode.Blank" :hideReplace="!displaySelection"
             @click="onClick" @replace="emits('replace')"></Header>
         <DisplayModeSelection v-if="displaySelection" :modes="modesList" :activeMode="displayMode" @selection="changeMode" />
-        <div v-else-if="displayMode==DisplayMode.Grid" class="grid tileContent">
+        <div v-else-if="displayMode==DisplayMode.Grid" class="modeGrid tileContent">
             <div v-for="i in [1,2,3,4,5,6,7,8,9,10,11,12]">&nbsp;</div>
         </div>
         <CompassContent v-else-if="displayMode==DisplayMode.Compass" />
@@ -33,9 +33,9 @@ const displayMode = ref(DisplayMode.Blank)
 const emits = defineEmits(['replace','update'])
 const modesList = ref([
     {label:'Blank',value:DisplayMode.Blank},
-    {label:'Grid',value:DisplayMode.Grid},
+    {label:'C R A F T',value:DisplayMode.Craft},
     {label:'Compass',value:DisplayMode.Compass},
-    {label:'C R A F T',value:DisplayMode.Craft}
+    {label:'Grid',value:DisplayMode.Grid},
 ])
 
 const displaySelection = ref(false)
@@ -89,12 +89,12 @@ function onVideo() {
 
 <style scoped>
 
-.grid {
+.modeGrid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(6, 1fr);
 }
-.grid div {
+.modeGrid div {
     border: 1px dashed lightgrey;
 }
 .list {
