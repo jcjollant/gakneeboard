@@ -1,4 +1,4 @@
-import { visitAndCloseBanner, feltsTitle, boeingTitle, radioFlowTitle, notesTitle, atisTitle, clearanceTitle, loadDemo, visitSkipBanner, environment,
+import { visitAndCloseBanner, feltsTitle, boeingTitle, radioTitle, notesTitle, atisTitle, clearanceTitle, loadDemo, visitSkipBanner, environment,
  demoChecklistOnPage, demoTilesOnPage } from './shared'
 
 function deletePage(index) {
@@ -45,7 +45,7 @@ describe('Editor', () => {
     // copy tile from page1 to page0
     cy.get('.editorPage1 .btnCopy3').click()
     cy.get('.editorPage0 .btnPaste4').click()
-    cy.get('.page0 > :nth-child(4) > .headerTitle').contains(radioFlowTitle)
+    cy.get('.page0 > :nth-child(4) > .headerTitle').contains(radioTitle)
 
 
     // reload demo
@@ -66,7 +66,7 @@ describe('Editor', () => {
     cy.get(`.page0 > :nth-child(2) > .headerTitle`).contains(boeingTitle)
     cy.get('.btnCopy3').click()
     cy.get('.btnPaste4').click()
-    cy.get(`.page0 > :nth-child(4) > .headerTitle`).contains(radioFlowTitle)
+    cy.get(`.page0 > :nth-child(4) > .headerTitle`).contains(radioTitle)
     cy.get('.btnCopy5').click()
     cy.get('.btnPaste6').click()
     cy.get(`.page0 > :nth-child(6) > .headerTitle`).contains(atisTitle)
@@ -247,7 +247,7 @@ describe('Editor', () => {
     // test swaps
     cy.get(':nth-child(1) > .headerTitle').contains(boeingTitle)
     cy.get(':nth-child(2) > .headerTitle').contains(feltsTitle)
-    cy.get(':nth-child(3) > .headerTitle').contains(radioFlowTitle)
+    cy.get(':nth-child(3) > .headerTitle').contains(radioTitle)
     cy.get(':nth-child(4) > .headerTitle').contains(notesTitle)
     // Flip 1 and 2
     cy.get('.editorPage0 .btnSwap12').click()
@@ -255,7 +255,7 @@ describe('Editor', () => {
     cy.get(':nth-child(2) > .headerTitle').contains(boeingTitle)
     // Should flip 1 and 3
     cy.get('.editorPage0 .btnSwap13').click()
-    cy.get(':nth-child(1) > .headerTitle').contains(radioFlowTitle)
+    cy.get(':nth-child(1) > .headerTitle').contains(radioTitle)
     cy.get(':nth-child(3) > .headerTitle').contains(feltsTitle)
     // Flip 2 and 4
     cy.get('.editorPage0 .btnSwap24').click()
