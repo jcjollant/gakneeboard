@@ -1,11 +1,14 @@
 <template>
     <div class="tiles pageTiles">
-        <Tile v-for="(tile,index) in tiles" :tile="tile" @update="onUpdate" :class="'tile'+index" />
+        <Tile v-for="(tile,index) in tiles" v-show="!tile.hide" 
+          :tile="tile" :class="[{'span-2':tile.span2},`tile${index}`]" 
+          @update="onUpdate" />
     </div>
 </template>
 
 <script setup>
 import { onMounted, ref, watch } from 'vue'
+import { TileType } from '../../model/TileType'
 
 import Tile from './Tile.vue'
 
@@ -35,6 +38,16 @@ function loadProps(props) {
     }
     tiles.value = props.data
   }
+
+  // apply spanned tile processing
+  for( const index of [0,2,4])
+    if(tiles.value[index].name == TileType.notes && tiles.value[index+1].name == TileType.notes) {
+      tiles.value[index]['span2'] = true
+      tiles.value[index + 1]['hide'] = true
+    } else { 
+      // force next tile hide to false so during tile selection, the next tile is displayed event if it was hidden before the selection
+      tiles.value[index + 1]['hide'] = false
+    }
 }
 
 onMounted(() => {
@@ -52,6 +65,7 @@ watch( props, async() => {
 const tiles=ref()
 
 function onUpdate(newTileData) {
+  // console.log('[TilePage.onUpdate]', newTileData)
   const newPageData = tiles.value
   // update the correct tile
   newPageData[newTileData.id] = newTileData;
@@ -65,5 +79,9 @@ function onUpdate(newTileData) {
   display: grid;
   grid-template-columns: auto auto;
   gap: 1px 2px;
+}
+.span-2 {
+  grid-column: span 2;
+  width: unset;
 }
 </style>
