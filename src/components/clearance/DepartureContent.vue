@@ -4,8 +4,8 @@
             <div class="boxAtis box br">
                 <div class="tileBoxLabel">Atis</div>
             </div>
-            <div class="boxGround box br">
-                <div class="tileBoxLabel">Grnd</div>
+            <div class="boxClearance box br">
+                <div class="tileBoxLabel">Clearance</div>
             </div>
             <div class="boxTower box">
                 <div class="tileBoxLabel">Twr</div>
@@ -81,7 +81,7 @@
 .boxAtis {
     flex-grow: 6;
 }
-.boxGround {
+.boxClearance {
     flex-grow: 6;
 }
 .boxTower {
