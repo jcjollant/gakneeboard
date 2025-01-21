@@ -1,6 +1,6 @@
 <template>
     <div class="tile">
-        <Header :title="getTitle()" :left="true" :hideReplace="!displaySelection"
+        <Header :title="getTitle()" :left="!displaySelection" :hideReplace="!displaySelection"
             @click="onMenuClick" @replace="emits('replace')"></Header>
         <DisplayModeSelection v-if="displaySelection" :modes="modesList" :activeMode="displayMode"
             @selection="changeMode" />
@@ -64,6 +64,7 @@ function cycleMode() {
 }
 
 function getTitle() {
+    if( displaySelection.value) return "IFR"
     if( displayMode.value==DisplayMode.Approach) return 'Approach @'
     if( displayMode.value==DisplayMode.Hold) return 'Hold @'
     if( displayMode.value==DisplayMode.Departure) return 'Depart @'
@@ -76,6 +77,7 @@ function loadProps(props:any) {
         // for compatibility with old versions
         if(props.params.mode==DisplayMode.BoxH_deprecated) props.params.mode = DisplayMode.BoxV;
         if(props.params.mode==DisplayMode.Craft_deprecated) props.params.mode = DisplayMode.BoxV;
+        if(props.params.mode=="") props.params.mode = DisplayMode.BoxV;
         displayMode.value = props.params.mode
     } else {
         displayMode.value = DisplayMode.Craft
