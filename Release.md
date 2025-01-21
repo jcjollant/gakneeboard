@@ -1,7 +1,12 @@
-## 01/20/2025 5040
+## 01/20/2025 5040 5041
+1) 5040
 * Weather Strip inline cues for calm and variable
 * New Departure Display mode for IFR Tile (renamed)
 * New Display mode highlight active mode
+2) 5041
+* Two notes tiles side by side will merge into one wide note
+* ILS tile now have an Approach and Departure (in addition to CRAFT Clearance and HOLD) 
+* Radio tile loses ILS or LOC (which is now under IFR)
 ## 01/18/2025 5032 5033
 1) 5032
 * Beta survey
