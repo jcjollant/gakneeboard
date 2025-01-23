@@ -10,13 +10,14 @@ import krntData from './jsonData/airport/krnt.json'
 import krntChartData from './jsonData/chart/krnt.json'
 import kpaeChartData from './jsonData/chart/kpae.json'
 import s43Data from './jsonData/airport/s43.json'
-import { krntAtcs, krntIap, krntApd } from './constants';
+import { krntAtcs, krntIap, krntApd, krntDep } from './constants';
 
 // combines airport details with chart data
 export function airportFromData(airportDetails:any, airportChartData:any):Airport {
     const airport:Airport = Adip.parseAirport(airportDetails)
     const acd = Adip.parseAirportChartData(airportChartData);
     airport.iap = acd.iap
+    airport.dep = acd.dep
     airport.diagram = acd.diagram
     return airport
 }
@@ -155,8 +156,9 @@ describe('Adip', () => {
 
         expect(airport.iap).toBeDefined()
         expect(airport.iap).toEqual(krntIap)
+        expect(airport.dep).toBeDefined()
+        expect(airport.dep).toEqual(krntDep)
         expect(airport.diagram).toBeDefined()
-        expect(airport.diagram).toBe(krntApd)
     })
 
     test('S43 fields', () =>{

@@ -18,9 +18,8 @@ export const jcEmail = 'jcjollant@gmail.com'
 export const jcSource = 'google'
 export const samplePublicationCode = '8Q'
 
-// export const currentAsOf = 20241226;
-export const currentAsOf = 20241128;
-export const currentAirportModelVersion = 7
+export const currentAsOf = 20250123;
+export const currentAirportModelVersion = 8
 export const krntAtcs =  [
     {mhz:119.2, useCount:6, name:'SEATTLE-TACOMA APPROACH CONTROL'},
     {mhz:120.1, useCount:4, name:'SEATTLE-TACOMA APPROACH CONTROL'},
@@ -35,5 +34,9 @@ export const krntIap = [
     {name:'RNAV (GPS) RWY 34',pdf:'2410/05396R34.PDF'},
     {name:'RNAV (GPS) Y RWY 16',pdf:'2410/05396RY16.PDF'},
     {name:'RNAV (GPS) Z RWY 16',pdf:'2410/05396RZ16.PDF'}
+]
+export const krntDep = [
+    {"name": "BELLEVUE FOUR", "pdf": "2410/05396BELLEVUE.PDF"},
+    {"name": "RENTN THREE", "pdf": "2410/05396RENTN.PDF"},
 ]
 export const krntApd = '2410/05396AD.PDF'

@@ -1,10 +1,12 @@
+
+
 import {describe, expect, test} from '@jest/globals';
 import { Adip } from '../backend/adip/Adip';
 import { Airport } from '../backend/models/Airport';
 import { AirportView } from '../backend/models/AirportView';
 import { PatternDirection } from '../backend/models/Runway'
 
-import { k1w1Data } from './adipData'
+import k1w1Data from './jsonData/airport/k1w1.json'
 import kbfiData from './jsonData/airport/kbfi.json'
 import krntChartData from './jsonData/chart/krnt.json'
 import krntData from './jsonData/airport/krnt.json'
@@ -61,6 +63,7 @@ describe( 'Airport View', () => {
         expect(view.navaids).toHaveLength(0)
         expect(view.atc).toHaveLength(0)
         expect(view.iap).toHaveLength(0)
+        expect(view.dep).toHaveLength(0)
     })
 
     test('Boeing View', () => {
@@ -125,6 +128,7 @@ describe( 'Airport View', () => {
         checkAtc(view, krntAtcs)
         // Instrument approaches
         expect(view.iap).toEqual(krntIap)
+        expect(view.dep).toHaveLength(2)
     })
 
     test('1W1 view', () => {

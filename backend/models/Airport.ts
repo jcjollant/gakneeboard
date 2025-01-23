@@ -1,4 +1,4 @@
-const modelVersion:number = 13;
+const modelVersion:number = 14;
 export const versionInvalid:number = -1
 
 import { Atc } from './Atc'
@@ -24,7 +24,7 @@ export class Airport {
     fetchTime:number;
     location: { lat: number; lon: number }|undefined;
     iap: Chart[];
-    // dep: Chart[];
+    dep: Chart[];
     diagram: string|undefined;
 
     constructor(code:string, name:string, elevation:number) {
@@ -43,7 +43,7 @@ export class Airport {
         this.fetchTime = 0;
         this.location = undefined;
         this.iap = []
-        // this.dep = []
+        this.dep = []
         this.diagram = undefined;
     }
 
