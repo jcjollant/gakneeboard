@@ -41,6 +41,8 @@ Client ID : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent
 * 
 
 # Done
+## 01/22/2025 5040
+* Data Refresh and departure charts
 ## 01/19/2025 5030
 * Added User category metrics
 ## 01/08/2025 5021
