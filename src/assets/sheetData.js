@@ -3,14 +3,14 @@ import { Template } from './Templates'
 import { TileType } from '../model/TileType'
 
 const demoRadioData = [
-  {'target':'NAV1','freq':'116.8','name':'SEA VOR'},
-  {'target':'NAV2','freq':'113.4','name':'OLM VOR'},
-  {'target':'COM1','freq':'124.7','name':'RNT TWR'},
-  {'target':'COM2','freq':'126.95','name':'RNT ATIS'},
-  {'target':'COM1','freq':'123.0','name':'S43 CTAF'},
-  {'target':'COM2','freq':'128.65','name':'PAE ATIS'},
-  {'target':'COM1','freq':'120.2','name':'PAE TWR 34R'},
-  {'target':'COM1','freq':'132.95','name':'PAE TWR 34L'}
+  {'mhz':116.8,'name':'SEA VOR'},
+  {'mhz':113.4,'name':'OLM VOR'},
+  {'mhz':124.7,'name':'RNT TWR'},
+  {'mhz':126.95,'name':'RNT ATIS'},
+  {'mhz':123.0,'name':'S43 CTAF'},
+  {'mhz':128.65,'name':'PAE ATIS'},
+  {'mhz':120.2,'name':'PAE TWR 34R'},
+  {'mhz':132.95,'name':'PAE TWR 34L'}
 ]
 
 export class SheetName {
@@ -326,6 +326,12 @@ export function getTemplateDummy() {
     pages.push(page)
   }
   return new Template('Dummy Tiles', '12 Dummy Tiles', false, pages)
+}
+
+export function isBlankNote(tile) {
+  if(!tile || tile.name != TileType.notes) return false;
+  if('mode' in tile.data && tile.data.mode != '') return false;
+  return true;
 }
 
 export function isDefaultName(name) {
