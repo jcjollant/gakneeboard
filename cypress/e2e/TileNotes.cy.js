@@ -35,10 +35,24 @@ describe('Notes Tile', () => {
     cy.get(`[aria-label="${labelGrid}"]`).click()
     cy.get('.page0 > .tile3 .modeGrid')
 
-    // Two notes side by side should merge
+    // Two notes side by side should merge when both are notes
     replaceTile(0,2,TileTypeLabel.notes)
+    // 2 is blank, 3 is grid
+    cy.get('.page0 > .tile2').should('not.have.class','span-2')
+    cy.get('.page0 > .tile3').should('not.have.css', 'display', 'none')
+    // Switch 3 back to blank
+    cy.get('.page0 > .tile3 > .headerTitle').click()
+    cy.get(`[aria-label="${labelBlank}"]`).click()
+    // now they should merge
     cy.get('.page0 > .tile2').should('have.class','span-2')
     cy.get('.page0 > .tile3').should('have.css', 'display', 'none')
+    // Switch 2 to compass
+    cy.get('.page0 > .tile2 > .headerTitle').click()
+    cy.get(`[aria-label="${labelCompass}"]`).click()
+    // They should not merge
+    cy.get('.page0 > .tile2').should('not.have.class','span-2')
+    cy.get('.page0 > .tile3').should('not.have.css', 'display', 'none')
+
     replaceTile(0,2,TileTypeLabel.radios)
     cy.get('.page0 > .tile2').should('not.have.class','span-2')
     cy.get('.page0 > .tile3').should('not.have.css', 'display', 'none')
