@@ -1,3 +1,7 @@
+## 01/26/2025 5050
+* Notes will only merge if both are blank
+* Departure can show pre selected airport
+* Smaller font for Craft Clearance and Departure
 ## 01/20/2025 5040 5041
 1) 5040
 * Weather Strip inline cues for calm and variable
