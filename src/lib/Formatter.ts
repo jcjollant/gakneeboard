@@ -28,13 +28,20 @@ export class Formatter {
     /**
      * Turns a frequency into it's string representation
      * @param freq can be a number, an object with a 'mhz' or 'freq' property, or a string
-     * @returns 
+     * @returns Formatted string
      */
-    static frequency(freq:any) {
+    static frequency(freq:any):string {
         // console.log('[Formatter.frequency]', typeof freq, JSON.stringify(freq))
-        if( !freq && !freq.mhz && !freq.freq) return Formatter.noFrequency
-        const value = freq.mhz ? freq.mhz : (freq.freq ? freq.freq : freq);
-        return Number(value).toFixed(3)
+        let output = Formatter.noFrequency
+        if(typeof freq === "number") {
+            if(freq > 0) output = Number(freq).toFixed(3)
+        }
+        else if((freq.mhz) || (freq.freq)) {
+            const value = freq.mhz ? freq.mhz : (freq.freq ? freq.freq : freq);
+            output = Number(value).toFixed(3)
+        }
+        // console.log('[Formatter.frequency] output', output)
+        return output;
     }
 
     static fuel(fuel:any) {
