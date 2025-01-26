@@ -5,8 +5,11 @@
             <InputText v-model="code" @input="onCodeUpdate"/>
         </InputGroup>
         <span v-if="name" class="airportName" :class="{valid: valid, page:page}" 
-            @click="name=null" title="Click to pick a recent airport">{{ name }}</span>
-        <div v-else class="recentAirportList">
+            @click="name=''" title="Click to pick a recent airport">{{ name }}</span>
+        <div v-else-if="!expanded" class="recentAirportList">
+            <div v-for="a in airports" class="recentAirport" @click="onRecentAirport(a)">{{ a }}</div>
+        </div>
+        <div v-if="expanded" class="recentAirportList expanded">
             <div v-for="a in airports" class="recentAirport" @click="onRecentAirport(a)">{{ a }}</div>
         </div>
     </div>
@@ -14,9 +17,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import { getAirport } from '@/assets/data'
-import { LocalStore } from '@/lib/LocalStore'
-import { sessionAirports } from '@/assets/data'
+import { Airport } from '../../model/Airport.ts'
+import { getAirport } from '../../assets/data'
+import { LocalStore } from '../../lib/LocalStore'
+import { sessionAirports } from '../../assets/data'
 
 import InputText from 'primevue/inputtext'
 import InputGroup from 'primevue/inputgroup'
@@ -28,8 +32,10 @@ const props = defineProps({
     code: { type: String, default: ''},
     label: { type: String, default: 'Code'},
     page: {type: Boolean, default: false},
+    expanded: {type: Boolean, default: false},
 })
-const airports = ref([])
+const noAirport:string[] = []
+const airports = ref(noAirport)
 const code = ref()
 const model = defineModel()
 const name = ref('')
@@ -103,13 +109,17 @@ function onCodeUpdate() {
 }
 
 function onRecentAirport(airportCode:string) {
-    const airport:Airport = JSON.parse(LocalStore.airportGet(airportCode))
-    // console.log('[AirportInput.onRecentAirport]', airportCode, airport)
-    code.value = airport.code
-    name.value = airport.name
-    valid.value = true
-    model.value = airport
-    emits('valid', airport)
+    try {
+        const airport:Airport = LocalStore.airportGet(airportCode)
+        // console.log('[AirportInput.onRecentAirport]', airportCode, airport)
+        code.value = airport.code
+        name.value = airport.name
+        valid.value = true
+        model.value = airport
+        emits('valid', airport)
+    } catch(e) {
+        console.log('[AirportInput] onRecentAirport',e)
+    }
 }
 
 function refreshAirportList(newAirports) {
@@ -163,6 +173,11 @@ function refreshAirportList(newAirports) {
 .valid {
     font-weight: bold;
     /* color:darkgreen */
+}
+
+.expanded {
+    grid-column: 1 / span 2;
+    height: fit-content;
 }
 
 :deep(.p-component), :deep(.p-inputgroup-addon) {
