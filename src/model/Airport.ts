@@ -1,4 +1,4 @@
-const modelVersion:number = 6;
+const modelVersion:number = 8;
 
 class Frequency {
     name: string;
@@ -135,6 +135,50 @@ export class Runway {
 
 }
 
+export class Chart {
+    name: string;
+    pdf: string;
+    constructor(name:string, pdf:string) {
+        this.name = name;
+        this.pdf = pdf;
+    }
+    static copy(chart:any) {
+        return new Chart(chart.name, chart.pdf)
+    }
+}
+
+export class Navaid {
+    id:string;
+    freq:number;
+    type:string;
+    dist:number;
+    to:number;
+    constructor(id:string, freq:number, type:string, dist:number, to:number) {
+        this.id = id;
+        this.freq = freq;
+        this.type = type;
+        this.dist = dist;
+        this.to = to;
+    }
+    static copy(navaid:any):Navaid {
+        return new Navaid(navaid.id, navaid.freq, navaid.type, navaid.dist, navaid.to)
+    }
+}
+
+export class Atc {
+    mhz: number;
+    name: string;
+    use: string[];
+    constructor(mhz:number, name:string, use:string[]) {
+        this.mhz = mhz;
+        this.name = name;
+        this.use = use;
+    }
+    static copy(atc:any):Atc {
+        return new Atc(atc.mhz, atc.name, atc.use)
+    }
+}
+
 export class Airport {
     static currentVersion:number = modelVersion;
     code: string;
@@ -145,8 +189,14 @@ export class Airport {
     custom: boolean;
     version:number;
     effectiveDate:string;
+    asof:number;
+    iap: Chart[];
+    dep: Chart[];
+    diagram:string|undefined;
+    navaids:Navaid[];
+    atc:Atc[];
 
-    constructor(code:string, name:string, elevation:number) {
+    constructor(code:string='', name:string='', elevation:number=0) {
         this.code = code;
         this.name = name;
         this.elev = elevation;
@@ -155,6 +205,30 @@ export class Airport {
         this.custom = false;
         this.version = modelVersion;
         this.effectiveDate = '';
+        this.asof = 0;
+        this.iap = [];
+        this.dep = [];
+        this.diagram = undefined;
+        this.navaids = [];
+        this.atc = [];
+    }
+
+    // copy constructor
+    static copy(airport:any) {
+        const newAirport = new Airport(airport.code, airport.name, airport.elev)
+        newAirport.freq = airport.freq
+        newAirport.rwys = airport.rwys
+        newAirport.custom = airport.custom
+        newAirport.version = airport.version
+        newAirport.effectiveDate = airport.effectiveDate
+        newAirport.asof = airport.asof;
+        newAirport.iap = airport.iap.map((chart:any) => Chart.copy(chart))
+        newAirport.dep = airport.iap.map((chart:any) => Chart.copy(chart))
+        newAirport.diagram = airport.diagram
+        newAirport.navaids = airport.navaids.map((navaid:any) => Navaid.copy(navaid))
+        newAirport.atc = airport.atc.map((atc:any) => Atc.copy(atc))
+        
+        return newAirport
     }
 
     public static isValidCode(code:string):boolean {
