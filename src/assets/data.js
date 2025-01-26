@@ -3,7 +3,7 @@ export const version = 5041
 const apiRootUrl = GApiUrl.root
 
 import axios from 'axios'
-import { Airport } from './Airport.ts'
+import { Airport } from '../model/Airport.ts'
 import { Backend } from './Backend.ts'
 import { CurrentUser } from './CurrentUser.ts'
 import { GApiUrl } from '../lib/GApiUrl.ts'
@@ -23,6 +23,7 @@ export const sessionAirports = new SessionAirports()
 
 function airportCurrent( airport) {
   if( !backend.ready && !airport) return false;
+  // console.log('[data.airportCurrent', airport.asof, backend.airportEffectiveDate)
   const dateMatch = airport.asof && backend.airportEffectiveDate && airport.asof == backend.airportEffectiveDate
   const modelMatch = airport.version && backend.airportModelVersion && airport.version == backend.airportModelVersion
   // console.log( '[data.airportCurrent] ' + airport.code + ' ' + dateMatch + ' ' + modelMatch )
@@ -98,12 +99,9 @@ export async function getAirport( codeParam, group = false) {
       return await waitForAirportData( code)
     }
 
-    // do we already have this airport in localStorage?
-    const localCopy = LocalStore.airportGet(code)
-    if(localCopy && localCopy != "null") {
-      // console.log('[data.getAirport] localCopy', JSON.stringify(localCopy))
+    try {
+      const localAirport = LocalStore.airportGet(code)
       // we have local airport information
-      const localAirport = JSON.parse( localCopy)
       if( backend.ready) {
         if( airportCurrent( localAirport)) {
           // console.log('[data.getAirport] localAirport ', code, 'is current')
@@ -139,6 +137,8 @@ export async function getAirport( codeParam, group = false) {
       })
       // we return stale airport with promise
       return localAirport;
+    } catch(e) {
+      // no local copy
     }
 
     // add ourselves to the list of pending queries

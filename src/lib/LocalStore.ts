@@ -1,3 +1,4 @@
+import { Airport } from '../model/Airport'
 import { User } from "../model/User"
 
 export class LocalStore {
@@ -50,12 +51,21 @@ export class LocalStore {
         }
     }
 
-    static airportGet(code:string):string|null {
-        const airport = localStorage.getItem( LocalStore.airportPrefix + code)
-        if( airport) {
+    /**
+     * Finds an airport by code in the local store
+     * @param code Airport code
+     * @returns 
+     */
+
+    static airportGet(code:string):Airport {
+        const storeAirport = localStorage.getItem( LocalStore.airportPrefix + code)
+        if( storeAirport) {
             LocalStore.airportRecentsUpdate(code)
+            return Airport.copy(JSON.parse(storeAirport))
+        } else {
+            // Throw new error
+            throw new Error('Airport ' + code + ' not found in local store')
         }
-        return airport
     }
 
     static airportRecentsGet():string[] {
