@@ -6,8 +6,8 @@ const labelApproach = "Approach"
 const labelDeparture = "Departure"
 const labelHold = "Hold"
 
-describe('Clearance Tile', () => {
-  it('Clearance Tile', () => {
+describe('IFR Tile', () => {
+  it('IFR Tile', () => {
     visitSkipBanner()
     loadDemo('Tiles')
     // Header
@@ -22,14 +22,6 @@ describe('Clearance Tile', () => {
     for(const displayMode of expectedDisplayModes) {
       cy.get('.modesList').contains(displayMode)
     }
-
-    // Display modes should cycle
-    cy.get(`[aria-label="${labelCraftClearance}"]`).click()
-    cy.get('.clearance').click()
-    cy.get('.approach').click()
-    cy.get('.departure').click()
-    cy.get('.hold').click()
-    cy.get('.clearance')
 
   })
 
@@ -76,7 +68,7 @@ describe('Clearance Tile', () => {
     cy.get('.page0 > .tile5 > .headerTitle').contains(approachTitle)
 
     // check Fields
-    const expectedILSFields = ['APCH/RWY', 'CRS', 'ILOC', 'ATIS', 'ATC', 'TWR/CTAF', 'Fixes', 'Min.', 'Missed']
+    const expectedILSFields = ['APCH/RWY', 'CRS', 'ILOC', 'CRS', 'App Con', 'Tower / CTAF', 'Ground', 'IAF', 'IAF Alt', 'Minimum', 'Missed']
     for(const field of expectedILSFields) {
       cy.get(`.page0 .tile5`).contains(field)
     }
@@ -101,23 +93,32 @@ describe('Clearance Tile', () => {
     cy.get('.page0 > .tile5 > .headerTitle').contains(departureTitle)
 
     // Check fields
-    cy.get('.boxAtis').contains('Atis')
-    cy.get('.boxClearance').contains('Clearance')
-    cy.get('.boxTower').contains("Twr")
-    cy.get('.boxInfo').contains('Info')
-    cy.get('.boxWind').contains('Wind')
-    cy.get('.boxAltimeterSetting').contains('Altimeter')
-    cy.get('.boxRunway').contains('Rwy')
-    cy.get('.boxClearedTo').contains('To')
-    cy.get('.boxRoute').contains('Route')
-    cy.get('.boxAltitudes').contains('Alt/Exp')
-    cy.get('.boxFrequency').contains('Freq')
-    cy.get('.boxTransponder').contains('XPDR')
+    const expected = [
+      {class:'.boxClearance', label:'Clearance'},
+      {class:'.boxGround', label:'Ground'},
+      {class:'.boxTower', label:'Tower / CTAF'},
+      {class:'.boxClearedTo', label:'To'},
+      {class:'.boxRoute', label:'Route'},
+      {class:'.boxAltitudes', label:'Alt/Exp'},
+      {class:'.boxFrequency', label:'Freq'},
+      {class:'.boxTransponder', label:'XPDR'},
+      {class:'.boxTaxi', label:'Taxi'},
+    ]
+    for(const field of expected) {
+      cy.get(`${field.class}`).contains(field.label)
+    }
+
     cy.get('.boxClearedTo > .watermrk').contains('C')
     cy.get('.boxRoute > .watermrk').contains('R')
     cy.get('.boxAltitudes > .watermrk').contains('A')
     cy.get('.boxFrequency > .watermrk').contains('F')
     cy.get('.boxTransponder > .watermrk').contains('T')
+
+    // click inside the tile should switch to editmode
+    cy.get('.page0 > .tile5').click()
+    cy.get('.editMode')
+    cy.get('.page0 > .tile5').contains('Manual')
+    cy.get('.page0 > .tile5').contains('Cancel')
 
 
     // test localstore has the correct data

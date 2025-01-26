@@ -8,6 +8,8 @@ describe('Radios Tile', () => {
   it('Radio Tile', () => {
     visitSkipBanner()
     loadDemo('Tiles')
+
+    cy.intercept({method: 'GET',url: '**/airports/**',}).as('getAirports');
     
     // Check all fields are present in Radio flow
     cy.fixture('radioFlow').then((radioFlow) => {
@@ -16,6 +18,8 @@ describe('Radios Tile', () => {
         cy.get(`.freqList > :nth-child(${index+1})`).contains(radioFlow[index].name)
       }
     })
+
+    cy.wait('@getAirports').its('response.statusCode').should('equal', 200)
 
     // check header is the expected one
     cy.get('.page1 .tile5 > .headerTitle').contains(radioTitle)

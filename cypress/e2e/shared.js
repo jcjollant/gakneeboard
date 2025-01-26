@@ -65,7 +65,7 @@ export function visitAndCloseBanner() {
 }
 
 export function visitSkipBanner() {
-    localStorage.setItem( "howDoesItWork", "false")
+    localStorage.setItem( "popup", "2")
     cy.visit(environment)
 }
 
