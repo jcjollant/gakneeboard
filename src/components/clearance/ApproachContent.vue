@@ -1,26 +1,42 @@
 <template>
     <div class="tileContent approach">
-        <div class="apch label bb br">APCH/RWY</div>
-        <div class="crs label bb br">CRS</div>
-        <div class="iloc label bb">ILOC</div>
-        <div class="atis label bb br">ATIS</div>
-        <div class="atc label bb br">ATC</div>
-        <div class="twr label bb">TWR/CTAF</div>
-        <div class="fixes label bb">Fixes</div>
-        <div class="min label bb">Min.</div>
-        <div class="missed label">Missed<span class="climb">&#8593;</span></div>
+        <div class="row bb">
+            <div class="apch tileBoxLabel br">APCH/RWY</div>
+            <div class="iloc tileBoxLabel br">ILOC</div>
+            <div class="crs tileBoxLabel">CRS</div>
+        </div>
+        <div class="row bb">
+            <div class="atis tileBoxLabel br">App Con</div>
+            <div class="atc tileBoxLabel br">Tower / CTAF</div>
+            <div class="twr tileBoxLabel">Ground</div>
+        </div>
+        <div class="row bb">
+            <div class="fixes tileBoxLabel br">IAF</div>
+            <div class="alt tileBoxLabel br">IAF Alt</div>
+            <div class="min tileBoxLabel">Minimum</div>
+        </div> 
+        <div class="row">
+            <div class="missed tileBoxLabel">Missed<span class="climb">&#8593;</span></div>
+        </div>
     </div>
 </template>
 
 <style scoped>
 .approach {
     display: grid;
-    position: relative;
-    grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: repeat(4, auto);
-    font-size: 10px;
-    text-align: left;
+    grid-template-rows: repeat(4, 1fr);
 }
+
+.row {
+    display: flex;
+}
+
+.tileBoxLabel {
+    text-align: start;
+    padding: 2px;
+    position: relative;
+}
+
 .label {
     padding-left: 2px;
 }
@@ -30,35 +46,13 @@
 .br {
     border-right: 1px dashed grey;
 }
-.apch, .iaf {
-    grid-column: 1 / span 5;
+.atis, .atc, .twr, .iloc, .apch, .crs, .fixes, .alt, .min {
+    /* flex-grow: 1; */
+    flex: 1 1 0px;
 }
-.crs {
-    grid-column: 6 / span 3;
-}
-.iloc {
-    grid-column: 9 / span 4;
-}
-.atis {
-    grid-column: 1 / span 4;
-}
-.atc {
-    grid-column: 5 / span 4;
-}
-.twr {
-    grid-column: 9 / span 4;
-}
-.fixes {
-    grid-column: 1 / span 9;
-}
-.min {
-    text-align: right;
-    padding-right: 2px;
-    grid-column: 10 / span 3;
-}
+
 .missed {
     position: relative;
-    grid-column: 1 / span 12;
 }
 .climb {
     position: absolute;

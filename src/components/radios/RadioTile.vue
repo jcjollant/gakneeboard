@@ -1,7 +1,7 @@
 <template>
     <div class="tile">
         <LookupDialog v-model:visible="showLookup" :time="lookupTime" @add="addFrequency" />
-        <Header :title="getTitle()" :hideReplace="!displaySelection" :left="displayMode==DisplayMode.Ils"
+        <Header :title="getTitle()" :hideReplace="!displaySelection"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div class="tileContent">
             <DisplayModeSelection v-if="displaySelection" :modes="modesList" :activeMode="displayMode"
@@ -29,19 +29,20 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { Frequency } from '../../model/Frequency';
+import { Formatter } from '../../lib/Formatter'
 import { onMounted, ref, watch } from 'vue'
-import { Formatter } from '@/lib/Formatter'
-import { UserUrl } from '@/lib/UserUrl';
+import { ServiceVolume} from '../../model/ServiceVolume'
+import { UserUrl } from '../../lib/UserUrl';
 import { useToast } from 'primevue/usetoast';
-import { useToaster } from '@/assets/Toaster'
-import { ServiceVolume} from '@/model/ServiceVolume'
+import { useToaster } from '../../assets/Toaster'
 
 import ActionBar from '../shared/ActionBar.vue'
 import Button from 'primevue/button'
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../shared/Header.vue';
-import FrequencyBox from './FrequencyBox.vue'
+import FrequencyBox from '../shared/FrequencyBox.vue'
 import LookupDialog from './LookupDialog.vue'
 import Nordo from './Nordo.vue';
 import PlaceHolder from '../shared/PlaceHolder.vue'
@@ -60,10 +61,11 @@ const maxFreqCount = 18
 const displayMode=ref('') // active display mode
 const textData = ref('')
 const toaster = useToaster(useToast())
-const frequencies = ref([])
+const noFreq:Frequency[] = []
+const frequencies = ref(noFreq)
 const showLookup = ref(false)
 const lookupTime = ref(0)
-let listBeforeEdit = []
+let listBeforeEdit:Frequency[] = []
 const modesList = ref([
     {label:'Frequencies', value:DisplayMode.FreqList},
     {label:'Lost Comms', value:DisplayMode.LostComms},
@@ -97,33 +99,32 @@ function getTitle() {
     if(displayMode.value == DisplayMode.FreqList) return 'Radios';
     if(displayMode.value == DisplayMode.LostComms) return 'Lost Comms';
     if(displayMode.value == DisplayMode.ServiceVolumes) return 'VOR Service Volumes';
-    if(displayMode.value == DisplayMode.Ils) return 'ILS or LOC @'; 
 
     return '?';
 }
 
-function loadData(data) {
+function loadData(data:any) {
     // console.log('[RadioTile.loadData]', JSON.stringify(data))
     if( data && (Array.isArray(data) || 'list' in data)) {
-        let list = []
+        let list:Frequency[] = []
         // old format, all data is the actual list
         // new format, list is in data.list
         let listData = Array.isArray(data) ? data : data.list;
 
-        // new format has mode
-        if('mode' in data) displayMode.value = data.mode
-
-
-        listData.forEach( (freq) => {
+        listData.forEach( (freq:any) => {
             if( 'target' in freq) { // old format
                 // turn freq into mhz, keep name. Target is lost
-                list.push( {mhz:Number(freq.freq),name:freq.name})
+                list.push( new Frequency( Number(freq.target),freq.name))
             } else {
-                list.push(freq)
+                list.push( Frequency.copy(freq))
             }
         })
+        // console.log('[RadioTile.loadData] list', list)
         frequencies.value = list
         updateTextarea()
+
+        // Restore display mode
+        if('mode' in data) displayMode.value = data.mode
 
         // restote service volume
         if('sv' in data) serviceVolume.value = data.sv
@@ -133,13 +134,13 @@ function loadData(data) {
 }
 
 function loadListFromText() {
-    const list = []
+    const list:Frequency[] = []
     textData.value.split('\n').forEach( (row) => {
         const [mhz,name] = row.split(',')
         // if we have enough values, we make a radio out of it
-        // ther is an upper limit at 15
-        if( mhz && name && list.length < maxFreqCount) {
-            const freq = {mhz:mhz,name:name}
+        // there is an upper limit at 15
+        if( list.length < maxFreqCount && mhz && name) {
+            const freq = new Frequency(Number(mhz),name)
             list.push(freq)
         }
     })
@@ -147,12 +148,12 @@ function loadListFromText() {
     return list;
 }
 
-function addFrequency(freq) {
+function addFrequency(freq:any) {
     if( frequencies.value.length >= maxFreqCount) {
         toaster.warning('Radio Flow', 'Radio boxes are full')
         return;
     }
-    frequencies.value.push(freq)
+    frequencies.value.push(Frequency.copy(freq))
     toaster.success( 'Radio Flow', freq.name + ' added (' + (frequencies.value.length) + '/' + maxFreqCount + ')')
 
     // refresh the list
@@ -169,7 +170,7 @@ function onApply() {
 
 function onCancel() {
     listEditMode.value = false;
-    loadData( listBeforeEdit, false)
+    loadData( listBeforeEdit)
 }
 
 function onChangeMode(mode) {
@@ -199,7 +200,7 @@ function onLookup() {
 }
 
 function updateTextarea() {
-    textData.value = frequencies.value.map( f => Formatter.frequency(f.mhz) + ',' + f.name).join('\n')
+    textData.value = frequencies.value.map( (f:Frequency) => Formatter.frequency(f.mhz) + ',' + f.name).join('\n')
 }
 </script>
 
@@ -216,15 +217,15 @@ function updateTextarea() {
 }
 .freqList {
     padding: 5px;
-    display: grid;
-    grid-template-columns: auto auto;
+    display: flex;
+    flex-wrap: wrap;
     gap: 5px;
     /* justify-content: center; */
     overflow: hidden;
 }
 .freqList.small {
-    grid-template-columns: auto auto auto;
-
+    display: flex;
+    flex-wrap: wrap;
 }
 .br {
     border-right: 1px dashed darkgrey;
