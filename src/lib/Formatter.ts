@@ -1,7 +1,7 @@
 export class Formatter {
     static noFuel:string = '-.-'
     static noTime:string = '--:--'
-    static noFrequency:string = '-.-'
+    public static noFrequency:string = '-.-'
     static noHeading:string = '---'
     static noSpeed:string = '--'
 

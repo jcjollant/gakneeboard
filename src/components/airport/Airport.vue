@@ -52,7 +52,7 @@
 <script setup>
 import {ref, onMounted, watch} from 'vue';
 import { getAirport, getFreqCtaf, getFreqWeather} from '../../assets/data.js'
-import { Formatter } from '@/lib/Formatter.ts'
+import { Formatter } from '../../lib/Formatter.ts'
 
 import AirportEdit from './AirportEdit.vue';
 import Corner from './Corner.vue';
@@ -327,7 +327,7 @@ function showAirport( airport) {
     // title.value = airport.code + ":" + airport.name
     title.value = airport.name
     const weather = getFreqWeather( airport.freq)
-    weatherFreq.value = Formatter.frequency(weather.mhz)
+    weatherFreq.value = weather ? Formatter.frequency(weather.mhz) : Formatter.noFrequency
     weatherType.value = weather ? weather.name : '-'
 
     // If traffic is runway specific, it will be overriden by showRunway
