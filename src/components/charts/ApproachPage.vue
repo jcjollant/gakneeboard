@@ -92,7 +92,7 @@ async function showApproach(index) {
         return true;
 
     } catch(e) {
-        console.log('[ApproachPage.showApproach]' + e)
+        console.log('[ApproachPage.showApproach]' + e, airport.value)
         return false;        
     }
 }

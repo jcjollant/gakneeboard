@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { Airport, Runway } from '@/assets/Airport'
+import { Airport, Runway } from '../../model/Airport'
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'

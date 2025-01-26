@@ -5,7 +5,6 @@ import FuelGauge from './FuelGauge.vue';
 import FuelEdit from './FuelEdit.vue';
 import { onMounted } from 'vue';
 import { watch } from 'vue';
-// import NoSettings from '../NoSettings.vue';
 
 const emits = defineEmits(['replace','update'])
 const props = defineProps({
@@ -65,7 +64,6 @@ function onSettingsUpdate(newUsable, newFuelFlow, newReserve) {
     <div class="tile">
         <Header title="Fuel Bug" :hideReplace="!editMode"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <!-- <NoSettings v-if="editMode" /> -->
         <FuelEdit v-if="editMode" :usable="usable" :fuelFlow="fuelFlow" :reserve="reserve"
             @close="onHeaderClick" @update="onSettingsUpdate"/>
         <div v-else class="fuelGrid">

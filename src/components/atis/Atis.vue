@@ -111,7 +111,7 @@ const props = defineProps({
     params: { type: Object, default: null}, // expects {'mode':'compact'}
 })
 
-function loadProps(props) {
+function loadProps(props:any) {
     // console.log('ATIS loadProps ' + JSON.stringify(props))
     const newMode = props.params.mode
     // load mode from params but defaults to full

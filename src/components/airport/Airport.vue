@@ -26,7 +26,7 @@
             <div class="footer">
                 <CornerStatic label="Elev" :value="elevation" position="bottom"/>
                 <CornerStatic label="TPA" :value="tpa" position="bottom"/>
-                <CornerStatic :label="weatherType" :value="Formatter.frequency(weatherFreq)" position="bottom"/>
+                <CornerStatic :label="weatherType" :value="weatherFreq" position="bottom"/>
             </div>
         </div>
         <div class="content" v-else=""> <!-- Normal mode -->
@@ -51,7 +51,7 @@
 
 <script setup>
 import {ref, onMounted, watch} from 'vue';
-import { getAirport, getFreqCtaf, getFreqWeather} from '@/assets/data.js'
+import { getAirport, getFreqCtaf, getFreqWeather} from '../../assets/data.js'
 import { Formatter } from '@/lib/Formatter.ts'
 
 import AirportEdit from './AirportEdit.vue';
@@ -312,7 +312,7 @@ function onSettingsUpdate( newAirport, newRunway, newOrientation) {
 }
 
 function showAirport( airport) {
-    // console.log( "Showing airport " + JSON.stringify(airport))
+    // console.log( "[Airport.showAirport] Showing airport ", JSON.stringify(airport))
     if( airport == null) {
         // if airport data is missing, we switch to edit mode
         console.log( 'Airport data missing')
@@ -327,7 +327,7 @@ function showAirport( airport) {
     // title.value = airport.code + ":" + airport.name
     title.value = airport.name
     const weather = getFreqWeather( airport.freq)
-    weatherFreq.value = weather ? weather.mhz.toString() : '-'
+    weatherFreq.value = Formatter.frequency(weather.mhz)
     weatherType.value = weather ? weather.name : '-'
 
     // If traffic is runway specific, it will be overriden by showRunway
@@ -438,14 +438,10 @@ function updateWidget() {
     .runwayListRow {
         display: grid;
         grid-template-columns: 40% 20% 40%;
-        /* grid-template-columns: 30% 20% 20% 30%; */
     }
-
     .runwayListHeader {
         font-size: 10px;
-        /* text-align: center; */
     }
-
     .unknownRwy{
         line-height: 13rem;
     }
