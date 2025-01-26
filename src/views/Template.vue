@@ -142,8 +142,6 @@ function loadTemplate(template=null,saveToLocalStorage=false) {
 
   // we are on the first page and last page is calculated based on number of pages
   offset.value = 0
-  // frontPageData.value = data[0]
-  // backPageData.value = data[1]
   template.data = data
 
   activeTemplate.value = template;
@@ -233,9 +231,8 @@ function onPageUpdate(index, pageData) {
   activeTemplate.value.data[index] = {data:pageData.data,type:pageData.type}
   // Only update templates for changes pertaining to the first page and while a template is not new
   // console.log('[Template.onPageUpdate]', route.params.id)
-  const saveThumnail = (index == 0 && route.params.id != 'local')
   // save template locally
-  saveTemplateToLocalStore(saveThumnail)
+  saveTemplateToLocalStore()
 }
 
 
@@ -252,6 +249,8 @@ async function onSave() {
     toaster.warning('Squawk and Ident','Please sign in to use custom templates')
     return
   }
+  // give page time to update the thumbnail
+  setTimeout( () => updateThumbnail(activeTemplate.value.id), 1000)
   try {
       // retrieve data from active template
       toaster.info( 'Say Request', 'Saving template ' + activeTemplate.value.name)
@@ -299,13 +298,9 @@ function onSettings(settings) {
   }
 }
 
-function saveTemplateToLocalStore(thumbnail=false) {
+function saveTemplateToLocalStore() {
   // console.log('[Template.saveTemplateToLocaStore]', thumbnail)
   LocalStore.saveTemplate(activeTemplate.value)
-  if(thumbnail) {
-    // give page time to update
-    setTimeout( () => updateThumbnail(activeTemplate.value.id), 1000)
-  }
 }
 
 function updateOffsets() {
