@@ -7,8 +7,8 @@
                 @click="onVideo" title="Watch a video on this feature"></font-awesome-icon>
         </div>
         <Button v-if="actions" v-for="action in actions" @click="onAction(action.action)" :label="action.label" link></Button>
-        <Button v-if="canCancel" @click="emits('cancel')" label="Cancel" link></Button>
-        <Button icon="pi pi-check" @click="emits('apply')" label="Apply" :disabled="!canApply"></Button>
+        <Button v-if="showCancel" @click="emits('cancel')" label="Cancel" link></Button>
+        <Button v-if="showApply" icon="pi pi-check" @click="emits('apply')" label="Apply" :disabled="!canApply"></Button>
     </div>
 </template>
 
@@ -18,8 +18,9 @@ import Button from 'primevue/button'
 
 const emits = defineEmits(['apply','cancel','action'])
 const help = ref(null)
+const showApply = ref(true)
+const showCancel = ref(true)
 const canApply = ref(true)
-const canCancel = ref(true)
 const video = ref(null)
 
 //------------------------------
@@ -28,7 +29,8 @@ const props = defineProps({
     help: { type: String, default: null },
     video: { type: String, default: null },
     canApply : { type: Boolean, default: true},
-    canCancel : { type: Boolean, default: true},
+    showApply : { type: Boolean, default: true},
+    showCancel : { type: Boolean, default: true},
     // Should be a list of objects such as {label:"My Action", action:"myaction"}
     actions : { type: Object, default: null},
 })
@@ -36,8 +38,9 @@ const props = defineProps({
 function loadProps(newProps) {
     help.value = newProps.help
     canApply.value = newProps.canApply
-    canCancel.value = newProps.canCancel
+    showCancel.value = newProps.showCancel
     video.value = newProps.video
+    showApply.value = newProps.showApply
 }
 
 onMounted(() => {

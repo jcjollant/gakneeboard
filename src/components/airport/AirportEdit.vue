@@ -22,7 +22,7 @@
             </div>
         </div>
         <ActionBar :video="UserUrl.airportTileVideo"
-            :canApply="canApply" :canCancel="canCancel"
+            :canApply="canApply" :showCancel="showCancel"
             @apply="onApply" @cancel="onCancel"  />
     </div>
 </template>
@@ -60,9 +60,8 @@ function loadProps(props) {
         // update edit field value to reflect airport code
         airportCode.value = airport.code;
         // if we have an airport to start with, we can revert.
-        canCancel.value = true;
+        showCancel.value = true;
         canApply.value = true;
-        // console.log('[AirportEdit.loadProps]', canCancel.value, canApply.value)
         // select the first runway by default
         if( props.rwyName) {
             selectedRwy.value = props.rwyName
@@ -98,7 +97,7 @@ const loading = ref(false)
 const rwyList = ref([])
 const airportCode = ref('')
 const airportName = ref('')
-const canCancel = ref(false)
+const showCancel = ref(false)
 const canApply = ref(false)
 const canCreate = ref(false)
 const canEdit = ref(false)
@@ -145,7 +144,7 @@ function loadAirportData(newAirport) {
         canEdit.value = false
     }
     canCreate.value = false
-    canCancel.value = true
+    showCancel.value = true
 }
 
 // settings are applied
