@@ -1,5 +1,5 @@
 <template>
-    <div  class="tileContent clearance" @click="cycleMode">
+    <div  class="tileContent clearance">
         <div class="boxCleared box bb">
             <div class="tileBoxLabel">To</div>
             <div class="watermrk">C</div>
@@ -51,7 +51,7 @@
 .watermrk {
     line-height: 1;
     font-weight:600;
-    font-size: 30px;
+    font-size: 15px;
     position:absolute;
     left: 2px;
     bottom: 2px;
