@@ -1,14 +1,14 @@
 <template>
     <div class="tileContent approach">
         <div class="row bb">
-            <div class="apch tileBoxLabel br">APCH/RWY</div>
+            <div class="atis tileBoxLabel br">ATIS</div>
             <div class="iloc tileBoxLabel br">ILOC</div>
             <div class="crs tileBoxLabel">CRS</div>
         </div>
         <div class="row bb">
-            <div class="atis tileBoxLabel br">App Con</div>
-            <div class="atc tileBoxLabel br">Tower / CTAF</div>
-            <div class="twr tileBoxLabel">Ground</div>
+            <div class="atc tileBoxLabel br">App Con</div>
+            <div class="twr tileBoxLabel br">Tower / CTAF</div>
+            <div class="gnd tileBoxLabel">Ground</div>
         </div>
         <div class="row bb">
             <div class="fixes tileBoxLabel br">IAF</div>
@@ -46,7 +46,7 @@
 .br {
     border-right: 1px dashed grey;
 }
-.atis, .atc, .twr, .iloc, .apch, .crs, .fixes, .alt, .min {
+.atis, .atc, .twr, .iloc, .apch, .crs, .gnd, .fixes, .alt, .min {
     /* flex-grow: 1; */
     flex: 1 1 0px;
 }
