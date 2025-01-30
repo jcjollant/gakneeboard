@@ -1,3 +1,6 @@
+## 01/30/2025 5051
+* Aproach tile title is showing Airport + Apch, meant to capture approach name in title
+* ATIS has replaced APCH/RMY
 ## 01/26/2025 5050
 * Notes will only merge if both are blank
 * Departure can show pre selected airport
