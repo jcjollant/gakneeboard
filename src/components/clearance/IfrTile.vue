@@ -105,9 +105,9 @@ function emitUpdate() {
 
 function getTitle() {
     if( displaySelection.value) return "IFR"
-    let title;
+    let title:string;
     if( displayMode.value==DisplayMode.Approach) {
-        title =  'Approach @'
+        title =  'Apch'
     } else if( displayMode.value==DisplayMode.Hold) {
         title = 'Hold @'
     } else if( displayMode.value==DisplayMode.Departure) {
@@ -116,7 +116,12 @@ function getTitle() {
         title = 'Clearance @'
     }
     if( airport.value) {
-        title += ' ' + airport.value.code
+        // append for all modes except approach which is prepend
+        if( displayMode.value == DisplayMode.Approach) {
+            title = airport.value.code + ' ' + title
+        } else {
+            title += ' ' + airport.value.code
+        }
     }
     return title
 }
