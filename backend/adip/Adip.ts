@@ -221,7 +221,7 @@ export class Adip {
 
     // checks whether a frequency is military
     public static isMilitary(freq:number):boolean {
-        return freq >= 225
+        return freq >= 225 || freq < 118
     }
     
     /**
@@ -256,15 +256,16 @@ export class Adip {
         // read frequencies
         let weatherFound:boolean = false
         if( adip.facility && adip.facility.frequencies) {
-            const frequencyMapping:Record<string,string> = {'GND/P':'GND','LCL/P':'TWR'}
+            const frequencyMapping:Record<string,string> = {'GND/P':'GND','LCL/P':'TWR', 'LCL/P IC':'TWR'}
             const frequencies:Frequency[] = adip.facility.frequencies.map( (f:any) => {
                 let name:string = f.frequencyUse
+                // remap some frequencies
                 if( name in frequencyMapping) {
                     name = frequencyMapping[name]
                 }
                 if( name == 'ATIS') weatherFound = true
                 // Augment the name with Rwy Name
-                return new Frequency(name, Adip.parseFrequency(f.frequency))
+                return new Frequency(name, Adip.parseFrequency(f.frequency), Adip.parseFrequencyNotes(f.frequency))
             })
             // console.log('[Adip.airportFromDetails]',JSON.stringify(frequencies))
             // add frequencies if they are not military
