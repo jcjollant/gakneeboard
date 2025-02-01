@@ -7,6 +7,7 @@ import kcdwData from './jsonData/airport/kcdw.json'
 import kdzjData from './jsonData/airport/kdzj.json'
 import kbfiData from './jsonData/airport/kbfi.json'
 import krntData from './jsonData/airport/krnt.json'
+import kpaeData from './jsonData/airport/kpae.json'
 import krntChartData from './jsonData/chart/krnt.json'
 import kpaeChartData from './jsonData/chart/kpae.json'
 import s43Data from './jsonData/airport/s43.json'
@@ -238,4 +239,28 @@ describe('Adip', () => {
         expect(krnt.dep).toBeDefined()
         expect(krnt.dep).toHaveLength(2)
     })
+
+    test('Tower Frequencies', () => {
+        const kpae = Adip.parseAirport(kpaeData);
+
+        // We should see frequency notes
+        const allFreq = [ 
+            ['CTAF',132.95,''],
+            ['UNICOM',122.95,''],
+            ['ATIS',128.65,''],
+            ['CD/P',127.175,''],
+            ['GND',121.8,''],
+            ['TWR',120.2,'RWY 16L/34R'],
+            ['TWR',132.95,'RWY 16R/34L'],
+            ]
+        expect(kpae.freq).toHaveLength(allFreq.length)
+        // Test all frequencies
+        for(let index = 0; index < allFreq.length; index++) {
+            const expected = allFreq[index]
+            const actual = kpae.freq[index]
+            expect(actual.name).toBe(expected[0])
+            expect(actual.mhz).toBe(expected[1])
+            expect(actual.notes).toBe(expected[2])
+        }
+  })
 })
