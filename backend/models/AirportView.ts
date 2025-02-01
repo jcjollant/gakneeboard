@@ -6,7 +6,7 @@ import { Navaid } from './Navaid'
 import { Runway } from './Runway'
 
 export class AirportView {
-    public static currentVersion:number = 8;
+    public static currentVersion:number = 9;
     public static invalidVersion:number = -1;
     code: string;
     name: string;
