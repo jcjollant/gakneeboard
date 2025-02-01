@@ -106,7 +106,8 @@ describe( 'GApi Tests', () => {
 
     test('Militrary frequencies', () => {
         expect(GApi.isMilitary('-.-')).toBe(false)
-        expect(GApi.isMilitary('')).toBe(false)
+        expect(GApi.isMilitary('')).toBe(true)
+        expect(GApi.isMilitary('117')).toBe(true)
         expect(GApi.isMilitary('121.6')).toBe(false)
         expect(GApi.isMilitary('261.6')).toBe(true)
     })
