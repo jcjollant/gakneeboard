@@ -1,7 +1,7 @@
 <template>
     <div class="tile">
         <LookupDialog v-model:visible="showLookup" :time="lookupTime" @add="addFrequency" />
-        <Header :title="getTitle()" :hideReplace="!displaySelection"
+        <Header :title="getTitle()" :showReplace="displaySelection"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div class="tileContent">
             <DisplayModeSelection v-if="displaySelection" :modes="modesList" :activeMode="displayMode"

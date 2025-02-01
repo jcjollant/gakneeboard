@@ -17,7 +17,8 @@ const props = defineProps({
     clickable: { type: Boolean, default:true},
     left: { type: Boolean, default:false},
     replace: { type:Boolean, default:true},
-    hideReplace: { type:Boolean, default:true},
+    showDisplayMode: { type:Boolean, default:false},
+    showReplace: { type:Boolean, default:false},
     stealth: { type: Boolean, default:false},
     title: { type: String, required:true},
     page: { type: Boolean, default:false},
@@ -38,7 +39,7 @@ function updateProps(props) {
     // console.log('Heeader update props ' + JSON.stringify(props))
     title.value = props.title
     replace.value = props.replace
-    hideReplace.value = props.hideReplace
+    hideReplace.value = !props.showReplace
     left.value = props.left
     clickable.value = props.clickable
     stealth.value = props.stealth

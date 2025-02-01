@@ -52,7 +52,7 @@ onMounted(() => {
 </script>
 <template>
     <div class="navlogTile tile">
-        <Header title="NavLog" :hideReplace="mode!='edit'"
+        <Header title="NavLog" :showReplace="mode=='edit'"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div v-if="mode==''" class="tileContent">
             <div v-if="items">

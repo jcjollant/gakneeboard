@@ -62,7 +62,7 @@ function onSettingsUpdate(newUsable, newFuelFlow, newReserve) {
 
 <template>
     <div class="tile">
-        <Header title="Fuel Bug" :hideReplace="!editMode"
+        <Header title="Fuel Bug" :showReplace="editMode"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <FuelEdit v-if="editMode" :usable="usable" :fuelFlow="fuelFlow" :reserve="reserve"
             @close="onHeaderClick" @update="onSettingsUpdate"/>

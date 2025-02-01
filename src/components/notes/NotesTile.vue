@@ -1,7 +1,7 @@
 <template>
     <div class="tile">
         <Header title="Notes"
-            :stealth="!displaySelection && displayMode==DisplayMode.Blank" :hideReplace="!displaySelection"
+            :stealth="!displaySelection && displayMode==DisplayMode.Blank" :showReplace="displaySelection"
             @click="onClick" @replace="emits('replace')"></Header>
         <DisplayModeSelection v-if="displaySelection" :modes="modesList" :activeMode="displayMode" @selection="changeMode" />
         <div v-else-if="displayMode==DisplayMode.Grid" class="modeGrid tileContent">
