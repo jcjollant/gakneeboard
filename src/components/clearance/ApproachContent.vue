@@ -12,7 +12,7 @@
             <div v-if="airportMode" class="airportFreq">
                 <FrequencyBox :freq="freqAtc" :small="true"/>
             </div>
-            <div v-else class="atc tileBoxLabel br">App Con</div>
+            <div v-else class="atc tileBoxLabel br">TRACON</div>
             <div class="fixes tileBoxLabel br">IAF</div>
         </div>
         <div class="row bb">
@@ -58,8 +58,7 @@ function loadProps(props:any) {
         airportMode.value = true
         const airport:Airport = props.airport
         // console.log('[DepartureContent] loadProps', props.airport)
-        const cdFreq = airport.getFreqClearance()
-        freqAtc.value = Frequency.fromType(cdFreq,FrequencyType.clearance)
+        freqAtc.value = Frequency.fromType(0,FrequencyType.tracon)
         // console.log('[DepartureContent] loadProps', freqClearance.value)
         const gndFreq = airport.getFreqGround()
         freqGround.value = Frequency.fromType(gndFreq,FrequencyType.ground)
