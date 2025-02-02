@@ -1,7 +1,7 @@
 <template>
     <div class="headerTitle" :class="{ clickable: clickable, left: left, stealth:stealth}">
         <div class="titleText">{{ title }}</div>
-        <div v-if="displayMode" title="Show Display Modes" class="displayButton headerButton" 
+        <div v-if="displayMode" title="Change tile mode" class="displayButton headerButton" 
             @click="emits('display')">
             <font-awesome-icon :icon="['fas','fa-display']" />
         </div>
