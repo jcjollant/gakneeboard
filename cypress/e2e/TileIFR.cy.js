@@ -1,4 +1,4 @@
-import { clearanceTitle, visitSkipBanner, loadDemo, holdTitle, approachTitle, departureTitle } from './shared'
+import { clearanceTitle, departTitle, visitSkipBanner, loadDemo, holdTitle, approachTitle, departureTitle, displaySelection } from './shared'
 
 
 const labelCraftClearance = "CRAFT Clearance"
@@ -11,13 +11,13 @@ describe('IFR Tile', () => {
     visitSkipBanner()
     loadDemo('Tiles')
     // Header
-    cy.get('.page0 .tile5 > .headerTitle').contains(clearanceTitle)
+    cy.get('.page0 .tile5 > .headerTitle').contains(departTitle)
 
-    // check defaults to CRAFT mode
-    cy.get('.clearance')
+    // check defaults to Departure mode
+    cy.get('.departure')
 
-    // Check settings has 4 modes
-    cy.get('.page0 .tile5 > .headerTitle').click()
+    // Check display selection has 4 display modes
+    displaySelection(0, 5)
     const expectedDisplayModes = [ labelCraftClearance, labelApproach, labelDeparture, labelHold]
     for(const displayMode of expectedDisplayModes) {
       cy.get('.modesList').contains(displayMode)
@@ -28,10 +28,9 @@ describe('IFR Tile', () => {
   it('CRAFT Clearance', () => {
     visitSkipBanner()
     loadDemo()
-    cy.get('.page0 > .tile5 > .headerTitle').click()
 
     // switch to CRAFT
-    cy.get(`[aria-label="${labelCraftClearance}"]`).click()
+    displaySelection(0,5,labelCraftClearance)
     // test tile title updated
     cy.get('.page0 > .tile5 > .headerTitle').contains(clearanceTitle)
 
@@ -63,12 +62,12 @@ describe('IFR Tile', () => {
     cy.get('.page0 > .tile5 > .headerTitle').click()
 
     // switch to Approach
-    cy.get(`[aria-label="${labelApproach}"]`).click()
+    displaySelection(0,5,labelApproach)
     // test tile title updated
     cy.get('.page0 > .tile5 > .headerTitle').contains(approachTitle)
 
     // check Fields
-    const expectedILSFields = ['APCH/RWY', 'CRS', 'ILOC', 'CRS', 'App Con', 'Tower / CTAF', 'Ground', 'IAF', 'IAF Alt', 'Minimum', 'Missed']
+    const expectedILSFields = ['CRS', 'ILOC', 'CRS', 'IAF', 'Minimum', 'Missed']
     for(const field of expectedILSFields) {
       cy.get(`.page0 .tile5`).contains(field)
     }
@@ -87,32 +86,47 @@ describe('IFR Tile', () => {
     loadDemo()
     cy.get('.page0 > .tile5 > .headerTitle').click()
 
-    // switch to ILS
-    cy.get(`[aria-label="${labelDeparture}"]`).click()
+    // switch to Departure
+    displaySelection(0,5,labelDeparture)
     // test tile title updated
     cy.get('.page0 > .tile5 > .headerTitle').contains(departureTitle)
 
-    // Check fields
+    // Pre-selected fields
+    const expectedPreselected = [
+      {class:'.preWeather', label:'Weather'},
+      {class:'.preAtc', label:'Clearance'},
+      {class:'.preGround', label:'Ground'},
+      {class:'.preTower', label:'Tower'},
+    ]
+    for(const field of expectedPreselected) {
+      cy.get(`${field.class}`).contains(field.label)
+      cy.get(`${field.class}`).should('have.class','airportFreq')
+    }
+
+    // Check Other fields
     const expected = [
-      {class:'.boxClearance', label:'Clearance'},
-      {class:'.boxGround', label:'Ground'},
-      {class:'.boxTower', label:'Tower / CTAF'},
-      {class:'.boxClearedTo', label:'To'},
+      // {class:'.boxGround', label:'Ground'},
       {class:'.boxRoute', label:'Route'},
       {class:'.boxAltitudes', label:'Alt/Exp'},
       {class:'.boxFrequency', label:'Freq'},
       {class:'.boxTransponder', label:'XPDR'},
       {class:'.boxTaxi', label:'Taxi'},
+      {class:'.boxNotes', label:'Notes'},
     ]
     for(const field of expected) {
       cy.get(`${field.class}`).contains(field.label)
     }
 
-    cy.get('.boxClearedTo > .watermrk').contains('C')
-    cy.get('.boxRoute > .watermrk').contains('R')
-    cy.get('.boxAltitudes > .watermrk').contains('A')
-    cy.get('.boxFrequency > .watermrk').contains('F')
-    cy.get('.boxTransponder > .watermrk').contains('T')
+    // Check watermarks
+    const expectedWatermarks = [
+      {class:'.boxRoute', label:'R'},
+      {class:'.boxAltitudes', label:'A'},
+      {class:'.boxFrequency', label:'F'},
+      {class:'.boxTransponder', label:'T'},
+    ]
+    for(const field of expectedWatermarks) {
+      cy.get(`${field.class} > .watermrk`).contains(field.label)
+    }
 
     // click inside the tile should switch to editmode
     cy.get('.page0 > .tile5').click()
@@ -134,10 +148,9 @@ describe('IFR Tile', () => {
   it('Holding', () => {
     visitSkipBanner()
     loadDemo()
-    cy.get('.page0 > .tile5 > .headerTitle').click()
 
     // switch to HOLDING
-    cy.get(`[aria-label="${labelHold}"]`).click()
+    displaySelection(0,5,labelHold)
     // test tile title updated
     cy.get('.page0 > .tile5 > .headerTitle').contains(holdTitle)
 

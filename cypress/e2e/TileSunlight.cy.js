@@ -1,4 +1,4 @@
-import { loadDemo, placeHolderSubtitle, visitSkipBanner } from './shared'
+import { loadDemo, placeHolderSubtitle, replaceTile, visitSkipBanner } from './shared'
 
 describe('Tiles', () => {
   // ========================================================================
@@ -26,8 +26,13 @@ describe('Tiles', () => {
     cy.wait('@getAirports').its('response.statusCode').should('equal', 200)
 
     // switch to overnight mode
-    cy.get('.page1 > :nth-child(3) > .headerTitle > div').click()
+    cy.get('.page1 > .tile2 > .sunlight').click()
     // check it has hint
+    cy.get('.actionBarHelp')
+    // exit
+    cy.get('[aria-label="Apply"]').click()
+    // Clicking title should also activate editmode
+    cy.get('.page1 > .tile2 > .headerTitle').click()
     cy.get('.actionBarHelp')
 
     cy.get('.nightFlight').click()
@@ -40,14 +45,11 @@ describe('Tiles', () => {
     cy.get('.bottomRightCorner').contains('To')
     cy.get('.date').contains( 'Night Flight')
     // Test Tile can be replaced by Notes
-    cy.get('.page1 > :nth-child(3) > .headerTitle > div').click()
-    cy.get('.page1 > :nth-child(3) > .headerTitle > .p-button').click({force: true})
-    cy.get('[aria-label="Notes"]').click()
+    cy.get('.page1 > .tile2 > .sunlight').click()
+    replaceTile(1, 2, 'Notes')
     cy.get(':nth-child(2) > :nth-child(3) > .headerTitle > div').contains('Notes')
     // Change tile back to Sunlight
-    cy.get(':nth-child(2) > :nth-child(3) > .headerTitle > div').click()
-    cy.get(':nth-child(2) > :nth-child(3) > .headerTitle > .p-button').click({force: true})
-    cy.get('[aria-label="Sunlight"]').click()
+    replaceTile(1, 2, 'Sunlight')
     // We should see the placeholder
     cy.get('.page1 > :nth-child(3) > :nth-child(2) > .placeHolder').contains('No Airport')
     cy.get('.page1 > :nth-child(3) > :nth-child(2) > .placeHolder').contains(placeHolderSubtitle)

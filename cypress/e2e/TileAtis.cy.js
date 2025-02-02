@@ -18,7 +18,7 @@ describe('ATIS Tile', () => {
     cy.get('.altimeter').contains('Alt')
 
     // Edit mode
-    cy.get('.page0 .tile4 > .headerTitle').click()
+    cy.get('.page0 .tile4 > .headerTitle > .displayButton').click({force: true})
 
     // Check all display modes are showing up
     cy.get('[aria-label="Full Size ATIS"]')
@@ -37,7 +37,7 @@ describe('ATIS Tile', () => {
     }
 
     // Flight Categories
-    cy.get('.page0 .tile4 > .headerTitle').click()
+    cy.get('.page0 .tile4 > .headerTitle > .displayButton').click({force: true})
     cy.get('[aria-label="Flight Categories"]').click()
     const expectedCategories = ['LIFR','IFR','MVFR','VFR','3,000ft','1,000ft','500ft','1sm','3sm','5sm']
     // const tile4 = cy.get('.page0 .tile4')
@@ -46,7 +46,7 @@ describe('ATIS Tile', () => {
     }
 
     // Cloud Clearance
-    cy.get('.page0 .tile4 > .headerTitle').click()
+    cy.get('.page0 .tile4 > .headerTitle > .displayButton').click({force: true})
     cy.get('[aria-label="Cloud Clearance"]').click()
     const expectedClearances = ['3:cc','3:152','5:111','1:152','1:cc','SVFR','3 sm','1,000ft','2,000ft','500ft','10k MSL','1k2 AGL']
     // const tile4 = cy.get('.page0 .tile4')

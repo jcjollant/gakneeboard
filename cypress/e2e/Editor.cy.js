@@ -1,5 +1,6 @@
 import { visitAndCloseBanner, feltsTitle, boeingTitle, radioTitle, notesTitle, atisTitle, clearanceTitle, loadDemo, visitSkipBanner, environment,
- demoChecklistOnPage, demoTilesOnPage } from './shared'
+ demoChecklistOnPage, demoTilesOnPage, 
+ departureTitle} from './shared'
 
 function deletePage(index) {
     cy.get('.editorPage' + index + ' > .editorBottom > .p-button-warning').click()
@@ -34,8 +35,8 @@ describe('Editor', () => {
     cy.get('.p-toast-message-text').contains('Page 1 copied to clipboard')
     cy.get('.editorPage1 > .editorBottom > [aria-label="Paste"]').click()
 
-    cy.get('.page0 > :nth-child(6) > .headerTitle').contains(clearanceTitle)
-    cy.get('.page1 > :nth-child(6) > .headerTitle').contains(clearanceTitle)
+    cy.get('.page0 > :nth-child(6) > .headerTitle').contains(departureTitle)
+    cy.get('.page1 > :nth-child(6) > .headerTitle').contains(departureTitle)
 
     // copy tile from page0 to page1
     cy.get('.editorPage0 .btnCopy1').click()
@@ -83,7 +84,7 @@ describe('Editor', () => {
     cy.get(`.page0 > :nth-child(3) > .headerTitle`).contains(notesTitle)
     cy.get('.btnCopy6').click()
     cy.get('.btnPaste5').click()
-    cy.get(`.page0 > :nth-child(6) > .headerTitle`).contains(clearanceTitle)
+    cy.get(`.page0 > :nth-child(6) > .headerTitle`).contains(departureTitle)
   })
 
   it('Editor', () => {
@@ -141,8 +142,8 @@ describe('Editor', () => {
     // Copy left to right and confirm
     cy.get('#editorCopyToRight').click()
     cy.get('.p-confirm-dialog-accept').click()
-    cy.get('.page0 > :nth-child(6) > .headerTitle').contains(clearanceTitle)
-    cy.get('.page1 > :nth-child(6) > .headerTitle').contains(clearanceTitle)
+    cy.get('.page0 > :nth-child(6) > .headerTitle').contains(departureTitle)
+    cy.get('.page1 > :nth-child(6) > .headerTitle').contains(departureTitle)
     // swap something on the left should not affect right
     cy.get('.editorPage0 .btnSwap12').click()
     cy.get('.page0 > :nth-child(1) > .headerTitle').contains(feltsTitle)
@@ -271,7 +272,7 @@ describe('Editor', () => {
     cy.get(':nth-child(5) > .headerTitle').contains(boeingTitle)
     // flip 4 and 6
     cy.get('.editorPage0 .btnSwap46').click()
-    cy.get(':nth-child(4) > .headerTitle').contains(clearanceTitle)
+    cy.get(':nth-child(4) > .headerTitle').contains(departureTitle)
     cy.get(':nth-child(6) > .headerTitle').contains(feltsTitle)
     // flip 5 and 6
     cy.get('.editorPage0 .btnSwap56').click()

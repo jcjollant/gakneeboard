@@ -1,4 +1,4 @@
-import { loadDemo, lostCommsTitle, notesTitle, radioTitle, serviceVolumeTitle, TileTypeLabel, visitSkipBanner, replaceTile } from './shared'
+import { displaySelection, loadDemo, lostCommsTitle, notesTitle, radioTitle, serviceVolumeTitle, TileTypeLabel, visitSkipBanner, replaceTile } from './shared'
 
 const labelFrequencies = 'Frequencies'
 const labelLostComms = 'Lost Comms'
@@ -25,14 +25,14 @@ describe('Radios Tile', () => {
     cy.get('.page1 .tile5 > .headerTitle').contains(radioTitle)
 
     // Switch to Display mode selection
-    cy.get('.page1 > .tile5 > .headerTitle').click()
+    displaySelection(1, 5)
     const expectedDisplayModes = [ labelFrequencies, labelLostComms, labelVORSV]
     for(const displayMode of expectedDisplayModes) {
       cy.get('.modesList').contains(displayMode)
     }
 
-    // Clicking on the header should bring back normal mode
-    cy.get('.page1 > .tile5 > .headerTitle').click()
+    // bring back normal mode
+    displaySelection(1, 5)
     cy.get('.page1 .tile5 .modesList').should('not.exist')
 
     // Switch to edit mode
@@ -105,10 +105,9 @@ describe('Radios Tile', () => {
   it('Lost Comms', () => {
     visitSkipBanner()
     loadDemo('Tiles')
-    cy.get('.page1 > .tile5 > .headerTitle').click()
 
     // switch to Lost comms
-    cy.get(`[aria-label="${labelLostComms}"]`).click()
+    displaySelection(1,5,labelLostComms)
     // test tile title updated
     cy.get('.page1 > .tile5 > .headerTitle').contains(lostCommsTitle)
 
@@ -137,10 +136,9 @@ describe('Radios Tile', () => {
   it('Service Volumes', () => {
     visitSkipBanner()
     loadDemo('Tiles')
-    cy.get('.page1 > .tile5 > .headerTitle').click()
 
     // switch to Service Volumes
-    cy.get(`[aria-label="${labelVORSV}"]`).click()
+    displaySelection(1,5,labelVORSV)
     // test tile title updated
     cy.get('.page1 > .tile5 > .headerTitle').contains(serviceVolumeTitle)
 

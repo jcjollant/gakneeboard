@@ -12,6 +12,7 @@ export const maintenanceTest ='4d51414ceb16fe67ec67ef5194a76036fc54b59846c9e8da5
 export const atisTitle = 'ATIS @'
 export const boeingTitle = 'Boeing Fld/king County Intl'
 export const clearanceTitle = 'Clearance @'
+export const departTitle = 'Depart @'
 export const feltsTitle = 'Felts Fld'
 export const holdTitle = 'Hold @'
 export const kenmoreTitle = 'Kenmore Air Harbor'
@@ -22,11 +23,16 @@ export const serviceVolumeTitle = 'VOR Service Volumes'
 export const rentonTitle = 'Renton Muni'
 export const selectionTitle = 'Page Selection'
 export const departureTitle = 'Depart @'
-export const approachTitle = 'Approach @'
+export const approachTitle = 'Apch'
+export const pageNameCover = 'Cover'
+export const pageNameInstrumentApproach = 'Instrument Approach'
+export const pageNameNavlog = 'NavLog'
+export const pageNameNotes = 'Notes'
 
 export class TileTypeLabel {
     static notes = 'Notes'
     static radios = 'Radios'
+    static navlog = 'Navlog'
 }
 
 export const expectedDemos = [ 
@@ -54,7 +60,7 @@ export function demoTilesOnPage(index) {
     cy.get(`.page${index} > :nth-child(3) > .headerTitle`).contains(radioTitle)
     cy.get(`.page${index} > :nth-child(4) > .headerTitle`).contains(notesTitle)
     cy.get(`.page${index} > :nth-child(5) > .headerTitle`).contains(atisTitle)
-    cy.get(`.page${index} > :nth-child(6) > .headerTitle`).contains(clearanceTitle)
+    cy.get(`.page${index} > :nth-child(6) > .headerTitle`).contains(departTitle)
 }
 
 export function visitAndCloseBanner() {
@@ -103,8 +109,24 @@ export function newTemplate() {
     cy.get('.page1 > .headerTitle').contains('Page Selection')
 }
 
-export function replaceTile(pageNum, tileNum, label) {
-    cy.get(`.page${pageNum} > .tile${tileNum} > .headerTitle > .p-button`).click({force: true})
-    cy.get(`[aria-label="${label}"]`).click()
+export function replacePage(pageNum, newPage=undefined) {
+    cy.get(`.page${pageNum} .replaceButton`).click({force:true})
+    cy.get('.p-confirm-dialog-accept').click()
+    cy.get('.contentPage > .headerTitle').contains('Page Selection')
+    if(newPage) cy.get(`.page${pageNum} [aria-label="${newPage}"]`).click()
+}
+
+/**
+    Will replace a tile with a new one if label is provided
+ */
+export function replaceTile(pageNum, tileNum, label=undefined) {
+    cy.get(`.page${pageNum} > .tile${tileNum} .replaceButton`).click({force: true})
+    if(label) cy.get(`[aria-label="${label}"]`).click()
+
+}
+
+export function displaySelection(pageNum, tileNum, mode=undefined) {
+    cy.get(`.page${pageNum} > .tile${tileNum} .displayButton`).click({force: true})
+    if( mode) cy.get(`[aria-label="${mode}"]`).click()
 
 }

@@ -1,4 +1,4 @@
-import { loadDemo, maintenanceMode, visitSkipBanner } from './shared'
+import { displaySelection, loadDemo, maintenanceMode, replaceTile, TileTypeLabel, visitSkipBanner } from './shared'
 
 describe('Navlog Tile', () => {
   it('Navlog Tile', () => {
@@ -6,9 +6,8 @@ describe('Navlog Tile', () => {
     loadDemo('Tiles')
 
     // swap tile for navlog
-    cy.get('.page0 .tile4 > .headerTitle').click()
-    cy.get('.page0 .tile4 > .headerTitle > .p-button').click({force: true})
-    cy.get('[aria-label="Navlog"]').click()
+
+    replaceTile(0,4,TileTypeLabel.navlog)
     cy.get('.navlogTile > .headerTitle > div').contains('NavLog')
     cy.get('.placeHolder > :nth-child(1) > :nth-child(1)').contains('No Log')
     cy.get('.small').contains('Create a log in the navlog page')
@@ -29,8 +28,7 @@ describe('Navlog Tile', () => {
 
     // check replace
     // cy.get('.page1 > :nth-child(6) > .headerTitle').trigger('mous')
-    cy.get('.page1 > :nth-child(6) > .headerTitle > .p-button').invoke('show').click()
-    cy.get('.page1 > :nth-child(6) > .headerTitle').contains('Tile Selection')
+    replaceTile(1,5)
 
   })
 

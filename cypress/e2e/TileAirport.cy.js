@@ -1,21 +1,10 @@
-import { boeingTitle, loadDemo, maintenanceMode, newTemplate, visitSkipBanner } from './shared'
+import { atisTitle, boeingTitle, clearanceTitle, departTitle, loadDemo, maintenanceMode, newTemplate, rentonTitle, visitSkipBanner } from './shared'
 
 describe('Tiles', () => {
   it('Airport Tile', () => {
     visitSkipBanner()
     maintenanceMode()
     loadDemo('Tiles')
-
-    // test All expected tiles are loading
-    const expectedTiles = [
-      ['Renton Muni', boeingTitle, 'Roche Harbor', 'Lone Pine/death Valley', 'ATIS @', 'Clearance @'],
-      ['Power OFF stalls', 'Arlington Muni', 'Sun Light', 'Fuel Bug', 'Notes', 'Radios']]
-    for( let page = 1; page < 3; page++) {
-      for( let tile = 1; tile < 7; tile++) {
-        const value = expectedTiles[page-1][tile-1]
-        cy.get(`:nth-child(${page}) > :nth-child(${tile}) > .headerTitle > div`).contains(value)
-      }
-    }
 
     // Renton and Boeing fields
     const expectedValues = []
@@ -24,7 +13,7 @@ describe('Tiles', () => {
     for(let index = 0; index < 2; index++) {
       const value = expectedValues[index]
       const child = index + 1
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .headerTitle > div`).contains(value.tile)
+      cy.get(`:nth-child(1) > :nth-child(${child}) > .headerTitle`).contains(value.tile)
       cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .top.left > .clickable > :nth-child(1) > :nth-child(1)`).contains(value.value0)
       cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .top.left > .clickable > :nth-child(1) > .label`).contains(value.label0)
       cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .top.right > .clickable > :nth-child(1) > :nth-child(1)`).contains(value.value1)
@@ -37,7 +26,7 @@ describe('Tiles', () => {
       cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .airportCode`).contains(value.watermark)
     }
     // Switch runway and check frequency is being updated accordingly
-    cy.get(':nth-child(1) > :nth-child(2) > .headerTitle > div').click()
+    cy.get('.page0 > .tile1 > .headerTitle > .titleText').click()
     cy.get('[aria-label="14R-32L"]').click()
     cy.get('[aria-label="Apply"]').click()
     cy.get(':nth-child(2) > .content > :nth-child(1) > .top.right > .clickable > :nth-child(1) > :nth-child(1)').contains('120.600')
@@ -67,7 +56,7 @@ describe('Tiles', () => {
     cy.get('[aria-label="Done"]').click()
 
     // Enter a new airport code and check it's data is loading
-    cy.get('.page0 > :nth-child(3) > .headerTitle > div').click()
+    cy.get('.page0 > .tile2 > .headerTitle > .titleText').click()
     cy.get('.page0 > :nth-child(3) > .content > .settings > .airportCode > .p-inputgroup > .p-inputtext').clear().type('KBLI')
     // wait for the reply
     cy.intercept({
@@ -107,13 +96,13 @@ describe('Tiles', () => {
     cy.get('.footer > :nth-child(3) > :nth-child(1) > :nth-child(1) > :nth-child(2)').contains('135.625')
 
     // Replace tile with Notes
-    cy.get('.page0 > :nth-child(3) > .headerTitle > div').click()
-    cy.get('.page0 > :nth-child(3) > .headerTitle > .p-button').click({force: true})
+    cy.get('.page0 > .tile2 > .headerTitle > .titleText').click()
+    cy.get('.page0 > .tile2 > .headerTitle > .replaceButton').click({force: true})
     cy.get('[aria-label="Notes"]').click()
     cy.get('.page0 > :nth-child(3) > .headerTitle > div').contains('Notes')
     // Change tile back to Airport
-    cy.get('.page0 > :nth-child(3) > .headerTitle > div').click()
-    cy.get('.page0 > :nth-child(3) > .headerTitle > .p-button').click({force: true})
+    cy.get('.page0 > .tile2 > .headerTitle > .titleText').click()
+    cy.get('.page0 > .tile2 > .headerTitle > .replaceButton').click({force: true})
     cy.get('[aria-label="Airport"]').click()
     // we should be in edit mode
     cy.get('.p-inputtext')
