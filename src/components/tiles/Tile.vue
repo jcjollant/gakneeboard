@@ -1,17 +1,11 @@
 <template>
     <div v-if="!tile || tile.name==''" class="tile">
-        <Header :title="'Tile Selection'" :replace="false" :clickable="false"></Header>
-        <!-- <div class="widgetTitle">Tile Selection</div> -->
+        <Header :title="title" :replace="false" :clickable="false"></Header>
         <div class="tileContent list">
             <FAButton v-for="tile in knownTiles"
                 :icon="tile.icon" 
                 :label="tile.name" :class="tile.class" :title="tile.tooltip"
                 @click="onReplace(tile.tile)"/>
-
-            <!-- <Button v-for="tile in knownTiles" 
-                :icon="tile.icon"
-                :label="tile.name" :class="tile.class" :title="tile.tooltip"
-                @click="onReplace(tile.tile)"></Button> -->
         </div>
     </div>
     <Airport v-else-if="tile.name==TileType.airport" :params="tile.data" 
@@ -24,7 +18,7 @@
         @replace="onReplace" @update="onUpdate"/>
     <Dummy v-else-if="tile.name==TileType.dummy" :params="tile.data"  />
     <FuelBug v-else-if="tile.name==TileType.fuel" :params="tile.data"
-        @replace="onReplace" @update="onUpdate"/>  
+        @replace="onReplace" @update="onUpdate"/>
     <NavlogTile v-else-if="tile.name==TileType.navlog" @replace="onReplace" />
     <NotesTile v-else-if="tile.name==TileType.notes" :params="tile.data"
         @replace="onReplace" @update="onUpdate" />
@@ -36,14 +30,13 @@
 
 <script setup>
 import {onMounted, ref, watch} from 'vue';
-
-import { TileType } from '@/model/TileType'
+import { TileType } from '../../model/TileType'
 
 import Header from '../shared/Header.vue';
 import Airport from '../airport/Airport.vue';
 import Atis from '../atis/Atis.vue'
 import ChecklistTile from '../checklist/ChecklistTile.vue';
-import IfrTile from '@/components/clearance/IfrTile.vue';
+import IfrTile from '../../components/clearance/IfrTile.vue';
 import Dummy from './Dummy.vue';
 import RadioTile from '../radios/RadioTile.vue';
 import SunLight from '../sunlight/SunLight.vue';
@@ -70,7 +63,10 @@ const knownTiles = ref([
     {name:'Fuel',tile:TileType.fuel, class:'', icon:'gas-pump', tooltip:'Track your fuel consumption'},
     {name:'Navlog',tile:TileType.navlog, class:'', icon:'route',  tooltip:'Companion Tile to the Navlog Page'},
 ])
+const selectedTile = ref(undefined)
 const tile = ref({})
+const defaultTitle = 'Tile Selection'
+const title = ref(defaultTitle)
 
 onMounted(() => {
     // console.log('Tile mounted')
@@ -90,11 +86,14 @@ function loadProps( props) {
 }
 
 // replace a tile with a new one
-function onReplace(newName = '') {
-    // widget.value = { 'id':widget.value.id,'name': newName.toLowerCase(), 'data':{}}
-    state = { 'id':tile.value.id,'name': newName.toLowerCase(), 'data':{}}
+function onReplace(newName = '', mode=undefined) {
+    // console.log('[Tile.onReplace]', newName, mode)
+
+    const tileName = newName.toLowerCase()
+    state = { id:tile.value.id,name: tileName, data:{}}
+    if(mode) state.data.mode = mode
     tile.value = state
-    // console.log( "Widget emits update with " + JSON.stringify(widget.value))
+    title.value = defaultTitle
     emits('update',state)
 }
 
@@ -114,7 +113,15 @@ function onUpdate(params = '') {
     padding: 10px;
     gap:5px;
     grid-template-columns: 110px 110px;
-    grid-template-rows: auto auto auto auto;
+    grid-template-rows: repeat(5, 1fr);
+    height: 186px;
+}
+
+.modesList {
+    display: grid;
+    padding: 10px;
+    gap:5px;
+    grid-template-rows: repeat(4, 1fr);
     height: 186px;
 }
 
@@ -122,6 +129,8 @@ function onUpdate(params = '') {
     grid-column: 1 / span 2;
 }
 
-
+.tileName {
+    line-height: 2.5rem;
+}
 
 </style>
