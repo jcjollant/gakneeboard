@@ -1,8 +1,8 @@
 <template>
     <div class="tile">
         <Header :title="getTitle()" :left="displayMode==''"
-            @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <DisplayModeSelection v-if="displaySelection" :modes="modesList" :activeMode="displayMode" @selection="changeMode" />
+            @replace="emits('replace')" @display="displaySelection=!displaySelection"></Header>
+        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList"  @selection="changeMode" />
         <div v-else-if="displayMode==DisplayMode.FullATIS" class="tileContent full" @click="cycleMode">
             <div class="info br">
                 <div class="tileBoxLabel">Info</div>
@@ -151,6 +151,7 @@ function cycleMode() {
 }
 
 function getTitle() {
+    if( displaySelection.value) return "Weather Tile Mode"
     switch(displayMode.value) {
         case DisplayMode.CompactATIS: return 'ATIS';
         case DisplayMode.Categories: return 'Flight Categories';

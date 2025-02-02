@@ -1,3 +1,60 @@
+<template>
+    <div class="tile">
+        <Header title="Sun Light" :showReplace="mode=='edit'" :displayMode="false"
+            @click="onHeaderClick" 
+            @replace="emits('replace')">
+        </Header>
+        <div class="tileContent" v-if="mode==''">
+            <div v-if="airportFromCode">
+                <Circle :time="circleKey" :night="nightFlight" />
+                <div v-if="loading" class="loading">Fetching...</div>
+                <div v-else class="text">
+                    <div v-if="nightFlight">
+                        <div><span class="pr2">{{civilTwilightPm}}</span><span>{{civilTwilightAm}}</span></div>
+                        <div class="pb1">Civil Twilight</div>
+                        <div><span class="pr4">{{sunsetTime}}</span><span>{{sunriseTime}}</span></div>
+                        <div class="sunrise"><span class="pr2">Sunset</span><span>Sunrise</span></div>
+                    </div>
+                    <div v-else>
+                        <div class="sunrise pt1"><span class="pr2">Sunrise</span><span>Sunset</span></div>
+                        <div><span class="pr4">{{sunriseTime}}</span><span>{{sunsetTime}}</span></div>
+                        <div class="pt1">Civil Twilight</div>
+                        <div><span class="pr2">{{civilTwilightAm}}</span><span>{{civilTwilightPm}}</span></div>
+                    </div>
+                </div>
+                <CornerStatic class="corner topLeftCorner" label="From" :value="airportFromCode"/>
+                <CornerStatic class="corner topRightCorner" label="To" :value="airportToCode"/>
+                <CornerStatic class="corner bottomLeftCorner" position="bottom"
+                    :label="nightFlight?'From':'Solar Noon'" 
+                    :value="nightFlight?formatDate(dateFrom):solarNoon" />
+                <CornerStatic class="corner bottomRightCorner" position="bottom" 
+                    :label="nightFlight?'To':'Golden Hour'" 
+                    :value="nightFlight?formatDate(dateTo):goldenHour"/>
+                <div v-if="nightFlight" class="date">Night Flight</div>
+                <div v-else class="date" :title="dateFrom ? dateFrom.toDateString() : '?'">{{ dateFrom ? dateFrom.toLocaleString('en-US', dateFormatBottom) : '?' }}</div>
+            </div>
+            <PlaceHolder v-else title="No Airport" />
+        </div>
+        <div v-else class="content">
+            <div class="settings">
+                <AirportInput :code="airportFromCode" label="From" :auto="true"
+                    @valid="onAirportFrom" />
+                <AirportInput :code="airportToCode" label="To" :auto="true"
+                    @valid="onAirportTo"   />
+                <InputGroup>
+                    <InputGroupAddon class="airportCodeLabel">Date</InputGroupAddon>
+                    <Calendar v-model="dateFrom" showIcon />
+                </InputGroup>
+                <div class="nightFlight">
+                    <Checkbox v-model="nightFlight" inputId="nightFlight" binary/>
+                    <label for="nightFlight" class="ml-2">Overnight Flight</label>
+                </div> 
+            </div>
+            <ActionBar @cancel="onHeaderClick" @apply="onApply" :help="UserUrl.sunlightTileGuide" />
+        </div>
+    </div>    
+</template>
+
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { getAirport, getSunlight } from '@/assets/data'
@@ -56,10 +113,6 @@ function loadProps(newProps) {
     state = newProps.params
     airportFromCode.value = state.from
     airportToCode.value = state.to ? state.to : state.from
-    // loadAirportFrom( state.from)
-    // loadAirportTo(state.to ? state.to : state.from)
-    // Force edit mode if we don't have a code yet
-//    if(!airportFromCode.value) mode.value = 'edit'
     // default to today if we don't have a date
     // default to day flight if we don't have a settings
     const now = new Date()
@@ -177,62 +230,6 @@ function onHeaderClick() {
 
 </script>
 
-<template>
-    <div class="tile">
-        <Header title="Sun Light" :showReplace="mode=='edit'"
-            @click="onHeaderClick" 
-            @replace="emits('replace')">
-        </Header>
-        <div class="tileContent" v-if="mode==''">
-            <div v-if="airportFromCode">
-                <Circle :time="circleKey" :night="nightFlight" />
-                <div v-if="loading" class="loading">Fetching...</div>
-                <div v-else class="text">
-                    <div v-if="nightFlight">
-                        <div><span class="pr2">{{civilTwilightPm}}</span><span>{{civilTwilightAm}}</span></div>
-                        <div class="pb1">Civil Twilight</div>
-                        <div><span class="pr4">{{sunsetTime}}</span><span>{{sunriseTime}}</span></div>
-                        <div class="sunrise"><span class="pr2">Sunset</span><span>Sunrise</span></div>
-                    </div>
-                    <div v-else>
-                        <div class="sunrise pt1"><span class="pr2">Sunrise</span><span>Sunset</span></div>
-                        <div><span class="pr4">{{sunriseTime}}</span><span>{{sunsetTime}}</span></div>
-                        <div class="pt1">Civil Twilight</div>
-                        <div><span class="pr2">{{civilTwilightAm}}</span><span>{{civilTwilightPm}}</span></div>
-                    </div>
-                </div>
-                <CornerStatic class="corner topLeftCorner" label="From" :value="airportFromCode"/>
-                <CornerStatic class="corner topRightCorner" label="To" :value="airportToCode"/>
-                <CornerStatic class="corner bottomLeftCorner" position="bottom"
-                    :label="nightFlight?'From':'Solar Noon'" 
-                    :value="nightFlight?formatDate(dateFrom):solarNoon" />
-                <CornerStatic class="corner bottomRightCorner" position="bottom" 
-                    :label="nightFlight?'To':'Golden Hour'" 
-                    :value="nightFlight?formatDate(dateTo):goldenHour"/>
-                <div v-if="nightFlight" class="date">Night Flight</div>
-                <div v-else class="date" :title="dateFrom ? dateFrom.toDateString() : '?'">{{ dateFrom ? dateFrom.toLocaleString('en-US', dateFormatBottom) : '?' }}</div>
-            </div>
-            <PlaceHolder v-else title="No Airport" />
-        </div>
-        <div v-else class="content">
-            <div class="settings">
-                <AirportInput :code="airportFromCode" label="From" :auto="true"
-                    @valid="onAirportFrom" />
-                <AirportInput :code="airportToCode" label="To" :auto="true"
-                    @valid="onAirportTo"   />
-                <InputGroup>
-                    <InputGroupAddon class="airportCodeLabel">Date</InputGroupAddon>
-                    <Calendar v-model="dateFrom" showIcon />
-                </InputGroup>
-                <div class="nightFlight">
-                    <Checkbox v-model="nightFlight" inputId="nightFlight" binary/>
-                    <label for="nightFlight" class="ml-2">Overnight Flight</label>
-                </div> 
-            </div>
-            <ActionBar @cancel="onHeaderClick" @apply="onApply" :help="UserUrl.sunlightTileGuide" />
-        </div>
-    </div>    
-</template>
 <style scoped>
 .corner {
     position: absolute; /* Absolute positioning within container */

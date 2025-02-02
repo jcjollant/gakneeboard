@@ -1,6 +1,6 @@
 <template>
     <div class="tile">
-        <Header :title="title"
+        <Header :title="title" :displayMode="false"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div v-if="mode=='edit'" class="settings">
             <div class="oneLine">

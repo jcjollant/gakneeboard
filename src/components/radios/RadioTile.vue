@@ -2,9 +2,9 @@
     <div class="tile">
         <LookupDialog v-model:visible="showLookup" :time="lookupTime" @add="addFrequency" />
         <Header :title="getTitle()" :showReplace="displaySelection"
-            @click="onHeaderClick" @replace="emits('replace')"></Header>
+            @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
         <div class="tileContent">
-            <DisplayModeSelection v-if="displaySelection" :modes="modesList" :activeMode="displayMode"
+            <DisplayModeSelection v-if="displaySelection" :modes="modesList" v-model="displayMode"
                 @selection="onChangeMode" />
             <ServiceVolumes v-else-if="displayMode==DisplayMode.ServiceVolumes" v-model="serviceVolume"/>
             <Nordo v-else-if="displayMode==DisplayMode.LostComms" />
@@ -48,6 +48,7 @@ import Nordo from './Nordo.vue';
 import PlaceHolder from '../shared/PlaceHolder.vue'
 import Textarea from 'primevue/textarea';
 import ServiceVolumes from './ServiceVolumes.vue';
+import { FrequencyType } from '../../model/FrequencyType';
 
 const DisplayMode = Object.freeze ({
     FreqList : '',
@@ -96,11 +97,12 @@ function emitUpdate() {
 }
 
 function getTitle() {
-    if(displayMode.value == DisplayMode.FreqList) return 'Radios';
-    if(displayMode.value == DisplayMode.LostComms) return 'Lost Comms';
-    if(displayMode.value == DisplayMode.ServiceVolumes) return 'VOR Service Volumes';
-
-    return '?';
+    if(displaySelection.value) return "Radios Tile Mode";
+    switch(displayMode.value) {
+        case DisplayMode.LostComms: return 'Lost Comms';
+        case DisplayMode.ServiceVolumes: return 'VOR Service Volumes';
+        default: return 'Radios';
+    }
 }
 
 function loadData(data:any) {
@@ -114,7 +116,7 @@ function loadData(data:any) {
         listData.forEach( (freq:any) => {
             if( 'target' in freq) { // old format
                 // turn freq into mhz, keep name. Target is lost
-                list.push( new Frequency( Number(freq.target),freq.name))
+                list.push( new Frequency( Number(freq.target), freq.name))
             } else {
                 list.push( Frequency.copy(freq))
             }
@@ -140,7 +142,7 @@ function loadListFromText() {
         // if we have enough values, we make a radio out of it
         // there is an upper limit at 15
         if( list.length < maxFreqCount && mhz && name) {
-            const freq = new Frequency(Number(mhz),name)
+            const freq = new Frequency(Number(mhz), name)
             list.push(freq)
         }
     })
@@ -183,12 +185,6 @@ function onChangeMode(mode) {
 function onEditMode() {
     listBeforeEdit = frequencies.value
     listEditMode.value = true
-}
-
-function onHeaderClick() {
-    // console.log('onHeaderClick')
-    displaySelection.value = !displaySelection.value;
-    // console.log('onHeaderClick', displaySelection.value)
 }
 
 function onLookup() {

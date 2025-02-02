@@ -1,3 +1,23 @@
+<template>
+    <div class="tile">
+        <Header title="Fuel Bug" :showReplace="editMode" :displayMode="false"
+            @click="onHeaderClick" @replace="emits('replace')"></Header>
+        <FuelEdit v-if="editMode" :usable="usable" :fuelFlow="fuelFlow" :reserve="reserve"
+            @close="onHeaderClick" @update="onSettingsUpdate"/>
+        <div v-else class="fuelGrid">
+            <div class="bb left">1</div>
+            <div class="bb right">2</div>
+            <div class="bb left">3</div>
+            <div class="bb right">4</div>
+            <div class="bb left">5</div>
+            <div class="bb right">6</div>
+            <div class="left">7</div>
+            <div class="right">8</div>
+            <FuelGauge class="gauge" :usable="usable" :fuelFlow="fuelFlow" :reserve="reserve" />
+        </div>
+    </div>
+</template>
+
 <script setup>
 import { ref } from 'vue'
 import Header from '../shared/Header.vue'
@@ -59,26 +79,6 @@ function onSettingsUpdate(newUsable, newFuelFlow, newReserve) {
 }
 
 </script>
-
-<template>
-    <div class="tile">
-        <Header title="Fuel Bug" :showReplace="editMode"
-            @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <FuelEdit v-if="editMode" :usable="usable" :fuelFlow="fuelFlow" :reserve="reserve"
-            @close="onHeaderClick" @update="onSettingsUpdate"/>
-        <div v-else class="fuelGrid">
-            <div class="bb left">1</div>
-            <div class="bb right">2</div>
-            <div class="bb left">3</div>
-            <div class="bb right">4</div>
-            <div class="bb left">5</div>
-            <div class="bb right">6</div>
-            <div class="left">7</div>
-            <div class="right">8</div>
-            <FuelGauge class="gauge" :usable="usable" :fuelFlow="fuelFlow" :reserve="reserve" />
-        </div>
-    </div>
-</template>
 
 <style scoped>
 .fuelGrid{

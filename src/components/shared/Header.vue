@@ -1,23 +1,28 @@
 <template>
     <div class="headerTitle" :class="{ clickable: clickable, left: left, stealth:stealth}">
         <div class="titleText">{{ title }}</div>
-        <Button v-if="replace" class="replaceButton" :class="{'hidden':hideReplace}" icon="pi pi-eject" 
-            :title="'Replace ' + (page ? 'Page' : 'Tile')" link
-            @click.stop="emits('replace')"></Button>
+        <div v-if="displayMode" title="Show Display Modes" class="displayButton headerButton" 
+            @click="emits('display')">
+            <font-awesome-icon :icon="['fas','fa-display']" />
+        </div>
+        <div v-if="replace" :title="'Replace ' + (page ? 'Page' : 'Tile')" class="replaceButton headerButton" 
+            @click.stop="emits('replace')">
+            <font-awesome-icon :icon="['fas','fa-eject']" />
+        </div>
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted,ref, watch } from 'vue';
-import Button from 'primevue/button'
 
-const emits = defineEmits(['replace'])
+const emits = defineEmits(['display','replace'])
 
 const props = defineProps({
     clickable: { type: Boolean, default:true},
     left: { type: Boolean, default:false},
-    replace: { type:Boolean, default:true},
+    displayMode : { type: Boolean, default:true},
     showDisplayMode: { type:Boolean, default:false},
+    replace: { type:Boolean, default:true},
     showReplace: { type:Boolean, default:false},
     stealth: { type: Boolean, default:false},
     title: { type: String, required:true},
@@ -64,9 +69,8 @@ watch( props, async() => {
 }
 .headerTitle.stealth {
     border-bottom: 1px dashed white;
-
 }
-.clickable:hover .replaceButton {
+.clickable:hover .headerButton {
     display: inline-flex;
 }
 .clickable:hover {
@@ -74,26 +78,31 @@ watch( props, async() => {
     font-weight: bolder;
     opacity: 1;
 }
-.replaceButton {
-    position:absolute;
-    font-size: 13px;
-    right: 1px;
-    top:1px;
-    width: 21px;
-    height: 21px;
-    /* padding: 5px; */
+.headerButton {
+    display: none;
+    color: var(--bg);
     margin: 0;
-    /* background-color: darkred; */
-    /* color: green; */
-    border: 0
+    border: 0;
+    top:1px;
+    padding: 4px;
+    border-radius: 2px;
+    font-size: 12px;
+    border-radius: 2px;
+    position:absolute;
 }
-.replaceButton:hover {
+.headerButton:hover {
     background-color: darkblue;
     color:white;
 }
+.displayButton {
+    left: 1px;
+}
+.replaceButton {
+    right: 1px;
+}
 .left {
     justify-content: flex-start;
-    padding-left: 20px;
+    padding-left: 26px;
 }
 .stealth {
     opacity: 0.3;
