@@ -15,8 +15,8 @@
             </div>
             <ActionBar @apply="onApply" @cancel="onCancel" :help="UserUrl.checklistGuide" />
         </div>
-        <div v-else class="checklistMain">
-            <ChecklistViewer :items="items" :theme="theme" :small="true" />
+        <div v-else class="checklistMain" @click="onHeaderClick">
+            <ChecklistViewer :items="items" :theme="theme" :size="2" />
         </div>
     </div>
 </template>
@@ -119,6 +119,9 @@ function onThemeChange(newTheme) {
 </script>
 
 <style scoped>
+.checklistMain {
+    cursor: pointer;
+}
 .editList {
     resize: none;
     font-family: 'Courier New', Courier, monospace;
