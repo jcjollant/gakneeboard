@@ -1,50 +1,51 @@
 <template>
     <div class="tileContent departure">
-        <div v-if="airportMode" class="airportFreq">
-            <FrequencyBox class="prebox" :freq="freqClearance" :small="true"/>
-            <FrequencyBox class="prebox" :freq="freqGround" :small="true"/>
-            <FrequencyBox class="prebox" :freq="freqTower" :small="true"/>
-        </div>
-        <div v-else class="row bb">
-            <div class="boxClearance box br">
-                <div class="tileBoxLabel">{{labelClearance}}</div>
-            </div>
-            <div class="boxGround box br">
-                <div class="tileBoxLabel">{{labelGround}}</div>
-            </div>
-            <div class="boxTower box">
-                <div class="tileBoxLabel">{{labelTower}} / {{labelCtaf}}</div>
-            </div>
-        </div>
         <div class="row bb">
-            <div class="boxClearedTo box br">
-                <div class="tileBoxLabel">To</div>
-                <div class="watermrk">C</div>
+            <div v-if="airportMode" class="airportFreq">
+                <FrequencyBox :freq="freqWeather"  :small="true"/>
             </div>
+            <div v-else class="atis tileBoxLabel br">Weather</div>
             <div class="boxRoute box">
                 <div class="tileBoxLabel">Route</div>
                 <div class="watermrk">R</div>
             </div>
         </div>
         <div class="row bb">
+            <div v-if="airportMode" class="airportFreq">
+                <FrequencyBox :freq="freqClearance" :small="true"/>
+            </div>
+            <div v-else class="atc tileBoxLabel br">Clearance</div>
             <div class="boxAltitudes box br">
                 <div class="tileBoxLabel">Alt/Exp</div>
                 <div class="watermrk">A</div>
             </div>
-            <div class="boxFrequency box br">
+            <div class="boxFrequency box">
                 <div class="tileBoxLabel">Freq</div>
                 <div class="watermrk">F</div>
             </div>
-            <div class="boxTransponder box">
+        </div>
+        <div class="row bb">
+            <div v-if="airportMode" class="airportFreq">
+                <FrequencyBox :freq="freqTower" :small="true"/>
+            </div>
+            <div v-else class="twr tileBoxLabel br">Tower / CTAF</div>
+            <div class="boxTransponder box br">
                 <div class="tileBoxLabel">XPDR</div>
                 <div class="watermrk">T</div>
             </div>
-        </div>
-        <div class="row">
             <div class="boxTaxi box">
                 <div class="tileBoxLabel">Taxi</div>
             </div>
         </div>
+        <div class="row">
+            <div v-if="airportMode" class="airportFreq">
+                <FrequencyBox :freq="freqGround" :small="true"/>
+            </div>
+            <div v-else class="gnd tileBoxLabel br">Ground</div>
+            <div class="boxNotes box">
+                <div class="tileBoxLabel">Notes</div>
+            </div>
+        </div> 
     </div>
 </template>
 
@@ -54,15 +55,13 @@ import { Airport } from '../../model/Airport'
 import { Frequency } from '../../model/Frequency'
 
 import FrequencyBox from '../shared/FrequencyBox.vue'
+import { FrequencyType } from '../../model/FrequencyType'
 
-const noFreq = new Frequency(0,'')
+const noFreq = Frequency.noFreq()
 const freqClearance = ref(noFreq)
 const freqGround = ref(noFreq)
 const freqTower = ref(noFreq)
-const labelClearance = 'Clearance'
-const labelCtaf = 'CTAF'
-const labelGround = 'Ground'
-const labelTower = 'Tower'
+const freqWeather = ref(noFreq)
 const airportMode = ref(false)
 const props = defineProps({
     airport: { type: Airport, default: null},
@@ -75,14 +74,17 @@ function loadProps(props:any) {
         airportMode.value = true
         const airport:Airport = props.airport
         // console.log('[DepartureContent] loadProps', props.airport)
-        const cdFreq = airport.getFreq('CD/P')
-        freqClearance.value = new Frequency(cdFreq ? cdFreq : 0,labelClearance)
+        const cdFreq = airport.getFreqClearance()
+        freqClearance.value = Frequency.fromType(cdFreq, FrequencyType.clearance)
         // console.log('[DepartureContent] loadProps', freqClearance.value)
-        const gndFreq = airport.getFreq('GND')
-        freqGround.value = new Frequency(gndFreq ? gndFreq : 0,labelGround)
-        const twrFreq = airport.getFreq('TWR')
-        const ctafFreq = airport.getFreq('CTAF')
-        freqTower.value = twrFreq ? new Frequency(twrFreq,labelTower) : ( ctafFreq ? new Frequency(ctafFreq,labelCtaf) : noFreq)
+        const gndFreq = airport.getFreqGround()
+        freqGround.value = Frequency.fromType(gndFreq,FrequencyType.ground)
+        const twrFreq = airport.getFreqTowerIfr()
+        // console.log('[DepartureContent.loadProps] twrFreq', twrFreq)
+        const ctafFreq = airport.getFreqCtaf()
+        freqTower.value = twrFreq ? Frequency.fromType(twrFreq,FrequencyType.tower) : ( ctafFreq ? Frequency.fromType(ctafFreq,FrequencyType.ctaf) : noFreq)
+        const weatherFreq = airport.getFreqWeather()
+        freqWeather.value = weatherFreq ? Frequency.fromType(weatherFreq.mhz, FrequencyType.weather) : noFreq
     } else {
         airportMode.value = false
         freqClearance.value = noFreq
@@ -106,7 +108,6 @@ watch(props, async() => {
 .departure {
     display: grid;
     grid-template-rows: repeat(4, 1fr);
-    cursor: pointer;
 }
 
 .row {
@@ -125,6 +126,7 @@ watch(props, async() => {
     gap: 5px;
     padding: 5px;
     background-color: lightgrey;
+    flex: 0.9 1 0px;
 }
 .bb {
     border-bottom: 1px dashed darkgrey;
@@ -134,35 +136,16 @@ watch(props, async() => {
     border-right: 1px dashed darkgrey;
 }
 
-.boxGround, .boxClearance, .boxTower {
-    flex-grow: 1;
+.boxClearedTo, .boxAltitudes, .boxFrequency, .boxTaxi, .boxTransponder {
+    flex: 1 1 0px;
 }
-.boxInfo {
-    flex-grow: 1.5;
+
+.atis, .atc, .twr, .gnd {
+    flex: 0.9 1 0px;
 }
-.boxWind {
-    flex-grow: 4.5;
-}
-.boxAltimeterSetting {
-    flex-grow: 3;
-}
-.boxRunway {
-    flex-grow: 2.5;
-}
-.boxClearedTo {
-    flex-grow: 2;
-}
-.boxRoute {
-    flex-grow: 5;
-}
-.boxAltitudes {
-    flex-grow: 3;
-}
-.boxFrequency {
-    flex-grow: 5;
-}
-.boxTransponder {
-    flex-grow: 4;
+
+.boxRoute, .boxNotes {
+    flex: 2 1 0px;
 }
 
 .watermrk {
@@ -174,5 +157,12 @@ watch(props, async() => {
     bottom: 2px;
     opacity: 0.2;
 }
+
+.tileBoxLabel {
+    text-align: start;
+    padding: 2px;
+    position: relative;
+}
+
 
 </style>
