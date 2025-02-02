@@ -7,7 +7,7 @@
                 @cancel="onEditCancel" @apply="onEditApply" />
         </div>
         <div v-else-if="checkpoints==null">
-            <Header :title="title" :page="true" 
+            <Header :title="title" :page="true"  :displayMode="false"
                 @click="onHeaderClick" @replace="emits('replace')"></Header>
             <PlaceHolder title="No Entries"></PlaceHolder>
         </div>

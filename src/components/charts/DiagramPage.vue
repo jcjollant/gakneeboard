@@ -1,6 +1,6 @@
 <template>
     <div class="contentPage approachPage">
-        <Header :title="title" :page="true"
+        <Header :title="title" :page="true" :displayMode="false"
             @replace="emits('replace')" @click="toggleEditMode"></Header>
         <div v-if="editMode">
             <div class="editMode">
