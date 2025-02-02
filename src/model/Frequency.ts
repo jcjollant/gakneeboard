@@ -22,6 +22,7 @@ export class Frequency {
             case FrequencyType.clearance: name = 'Clearance'; break;
             case FrequencyType.ctaf: name =  'CTAF'; break;
             case FrequencyType.tower: name =  'Tower'; break;
+            case FrequencyType.tracon: name =  'TRACON'; break;
             case FrequencyType.ground: name =  'Ground'; break;
             case FrequencyType.weather: name =  'Weather'; break;
             case FrequencyType.custom: name =  'Custom'; break;

@@ -1,9 +1,10 @@
 export enum FrequencyType {
-    weather = 'w',
-    tower = 't',
-    ground = 'g',
     clearance = 'cl',
     ctaf = 'ct',
     custom = 'cu',
+    weather = 'w',
+    tracon = 'tr',
+    tower = 'tw',
+    ground = 'gr',
     unknown = '?',
 }
