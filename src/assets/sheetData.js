@@ -48,12 +48,12 @@ const templateBlank = new Template('Blank','', false, [pageDataBlank,pageDataBla
 const page0DemoDefault = {
     type:PageType.tiles,
     data:[
-      {"id":0,"name":"airport","data":{"code":"KBFI","rwy":"14L-32R","rwyOrientation":"magnetic","corners":["weather","twr","field","tpa"]}},
-      {"id":1,"name":"airport","data":{"code":"KSFF","rwy":"04L-22R","rwyOrientation":"vertical","corners":["weather","twr","field","tpa"],"pattern":2}},
-      {"id":2,"name":"radios","data":[{"mhz":"116.8","name":"SEA VOR"},{"mhz":"124.7","name":"OLM VOR"},{"mhz":"124.7","name":"RNT TWR"},{"mhz":"126.95","name":"RNT ATIS"},{"mhz":"123","name":"S43 CTAF"},{"mhz":"128.65","name":"PAE ATIS"},{"mhz":"120.2","name":"PAE TWR 34R"},{"mhz":"132.95","name":"PAE TWR 34L"}]},
-      {"id":3,"name":"notes","data":{}},
-      {"id":4,"name":"atis","data":{}},
-      {"id":5,"name":"clearance","data":{}}
+      {id:0,name:"airport","data":{"code":"KBFI","rwy":"14L-32R","rwyOrientation":"magnetic","corners":["weather","twr","field","tpa"]}},
+      {id:1,name:"airport","data":{"code":"KSFF","rwy":"04L-22R","rwyOrientation":"vertical","corners":["weather","twr","field","tpa"],"pattern":2}},
+      {id:2,name:"radios","data":[{"mhz":"116.8","name":"SEA VOR"},{"mhz":"124.7","name":"OLM VOR"},{"mhz":"124.7","name":"RNT TWR"},{"mhz":"126.95","name":"RNT ATIS"},{"mhz":"123","name":"S43 CTAF"},{"mhz":"128.65","name":"PAE ATIS"},{"mhz":"120.2","name":"PAE TWR 34R"},{"mhz":"132.95","name":"PAE TWR 34L"}]},
+      {id:3,name:"notes","data":{}},
+      {id:4,name:"atis","data":{}},
+      {id:5,name:"clearance","data":{mode:'dep',airport:'kbfi'}}
     ]}
 const page1DemoDefault = {
     type:PageType.checklist,
@@ -75,12 +75,12 @@ const page0DemoTiles = {
     type:PageType.tiles,
     name:"Tiles Demo",
     data:[
-      {'id':0,'name':'airport','data':{'code':'krnt','rwy':'16-34'}},
-      {'id':1,'name':'airport','data':{'code':'kbfi','rwy':'14L-32R'}},
-      {'id':2,'name':'airport','data':{'code':'w39','rwy':'NE-SW','rwyOrientation':'magnetic'}},
-      {'id':3,'name':'airport','data':{'code':'O26','rwy':'13-31'}},
-      {'id':4,'name':'atis','data':{}},
-      {'id':5,'name':'clearance','data':{}},
+      {id:0,name:'airport','data':{'code':'krnt','rwy':'16-34'}},
+      {id:1,name:'airport','data':{'code':'kbfi','rwy':'14L-32R'}},
+      {id:2,name:'airport','data':{'code':'w39','rwy':'NE-SW','rwyOrientation':'magnetic'}},
+      {id:3,name:'airport','data':{'code':'O26','rwy':'13-31'}},
+      {id:4,name:'atis','data':{}},
+      {id:5,name:"clearance","data":{mode:'dep',airport:'kbfi'}}
    ]}
 
 const page1DemoTiles = {
