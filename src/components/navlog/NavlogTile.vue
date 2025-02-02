@@ -1,3 +1,27 @@
+<template>
+    <div class="navlogTile tile">
+        <Header title="NavLog" :showReplace="mode=='edit'" :displayMode="false"
+            @click="onHeaderClick" @replace="emits('replace')"></Header>
+        <div v-if="mode==''" class="tileContent">
+            <div v-if="items">
+                <div v-for="i in items" class="navlogEntry" :class="i.entryClass">
+                    <div v-if="i.last" class="nameArrival"> {{ i.name + ' (Arrival)' }}</div>
+                    <div v-else class="nameGroup">
+                        <div class="entryName">{{ i.name }}</div>
+                        <i class='pi attitude' :class="i.attClass"></i>
+                        <div>{{ Formatter.altitude(i.tAlt) }}</div>
+                    </div>
+                    <div v-if="!i.last">{{ Formatter.heading(i.mh) }}</div>
+                </div>
+            </div>
+            <PlaceHolder v-else title="No Log" subtitle="Create a log in the navlog page to show it's summary here" />
+        </div>
+        <PlaceHolder v-else title="No Settings" subtitle="Data is automatically synced with NavLog page" />
+
+    </div>
+
+</template>
+
 <script setup>
 import { onMounted, ref } from 'vue'
 
@@ -50,29 +74,7 @@ onMounted(() => {
 })
 
 </script>
-<template>
-    <div class="navlogTile tile">
-        <Header title="NavLog" :showReplace="mode=='edit'"
-            @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <div v-if="mode==''" class="tileContent">
-            <div v-if="items">
-                <div v-for="i in items" class="navlogEntry" :class="i.entryClass">
-                    <div v-if="i.last" class="nameArrival"> {{ i.name + ' (Arrival)' }}</div>
-                    <div v-else class="nameGroup">
-                        <div class="entryName">{{ i.name }}</div>
-                        <i class='pi attitude' :class="i.attClass"></i>
-                        <div>{{ Formatter.altitude(i.tAlt) }}</div>
-                    </div>
-                    <div v-if="!i.last">{{ Formatter.heading(i.mh) }}</div>
-                </div>
-            </div>
-            <PlaceHolder v-else title="No Log" subtitle="Create a log in the navlog page to show it's summary here" />
-        </div>
-        <PlaceHolder v-else title="No Settings" subtitle="Data is automatically synced with NavLog page" />
 
-    </div>
-
-</template>
 <style scoped>
 .arrowClimb {
     color: #800;
