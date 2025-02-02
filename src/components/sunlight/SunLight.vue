@@ -1,10 +1,9 @@
 <template>
     <div class="tile">
         <Header title="Sun Light" :showReplace="mode=='edit'" :displayMode="false"
-            @click="onHeaderClick" 
-            @replace="emits('replace')">
+            @replace="emits('replace')" @click="onClick" >
         </Header>
-        <div class="tileContent" v-if="mode==''">
+        <div class="tileContent sunlight" v-if="mode==''" @click="onClick">
             <div v-if="airportFromCode">
                 <Circle :time="circleKey" :night="nightFlight" />
                 <div v-if="loading" class="loading">Fetching...</div>
@@ -50,7 +49,7 @@
                     <label for="nightFlight" class="ml-2">Overnight Flight</label>
                 </div> 
             </div>
-            <ActionBar @cancel="onHeaderClick" @apply="onApply" :help="UserUrl.sunlightTileGuide" />
+            <ActionBar @cancel="onClick" @apply="onApply" :help="UserUrl.sunlightTileGuide" />
         </div>
     </div>    
 </template>
@@ -215,14 +214,14 @@ function onApply() {
         // console.log('[SunLight.onApply]', airportFromCode.value, airportToCode.value, date.value)
         // fetch data for these airports
         getData()
-        onHeaderClick()
+        onClick()
     } else {
         console.log('From Airport is invalid or date is not set')
     }
 }
 
 // Toggle between edit mode and current mode
-function onHeaderClick() {
+function onClick() {
     const edit = mode.value == 'edit'
     mode.value = (edit ? '' : 'edit')
     if(edit) circleKey.value = Date.now()
@@ -231,6 +230,9 @@ function onHeaderClick() {
 </script>
 
 <style scoped>
+.sunlight {
+    cursor: pointer;
+}
 .corner {
     position: absolute; /* Absolute positioning within container */
     padding: 5px; /* Adjust padding for better visibility */
