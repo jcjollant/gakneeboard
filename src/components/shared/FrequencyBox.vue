@@ -1,7 +1,7 @@
 <template>
     <div class="frequencyBox" :class="small?'fbSmall':'fbMedium'">
         <div class="name" :class="small?'nameSmall':'nameMedium'">{{freq.name}}</div>
-        <div :class="small?'freqSmall':'freqMedium'">{{ Formatter.frequency(freq.mhz) }}</div>
+        <div :class="small?'freqSmall':'freqMedium'">{{ freq.mhz ? Formatter.frequency(freq.mhz) : '' }}</div>
     </div>
 </template>
 
