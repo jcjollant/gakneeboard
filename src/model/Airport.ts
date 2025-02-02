@@ -1,4 +1,4 @@
-const modelVersion:number = 8;
+const modelVersion:number = 9;
 
 class Frequency {
     name: string;
@@ -180,6 +180,7 @@ export class Atc {
 }
 
 export class Airport {
+    // copy constructor
     static currentVersion:number = modelVersion;
     code: string;
     name: string;
@@ -261,6 +262,35 @@ export class Airport {
 
     getFreq(name:string):number|undefined {
         return this.freq.find((freq) => freq.name == name)?.mhz
+    }
+
+    getFreqClearance():number|undefined {
+        return this.getFreq('CD/P')
+    }
+
+    getFreqCtaf():number|undefined {
+        return this.getFreq('CTAF');
+    }
+
+    getFreqGround():number|undefined {
+        return this.getFreq('GND')
+    }
+
+    getFreqTower():number|undefined {
+        return this.getFreq('TWR');
+    }
+
+    getFreqTowerIfr():number|undefined {
+        const list = this.freq.filter( f => f.name.includes('TWR'))
+        if( list.length == 0) return undefined
+        // return the first element
+        return list.sort( (f1,f2) => f2.mhz - f1.mhz)[0].mhz;
+    }
+
+    getFreqWeather() {
+        const patterns = ['ATIS','ASOS','AWOS','Weather']
+        // test wether freq.name contains any of the patterns
+        return this.freq.find((freq) => (patterns.some(p => freq.name.includes(p))))
     }
 
     setEffectiveDate(date:string) {
