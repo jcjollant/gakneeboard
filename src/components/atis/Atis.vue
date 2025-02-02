@@ -1,6 +1,6 @@
 <template>
     <div class="tile">
-        <Header :title="getTitle()" :left="displayMode==''"
+        <Header :title="getTitle()" :left="!displaySelection && displayMode==DisplayMode.FullATIS"
             @replace="emits('replace')" @display="displaySelection=!displaySelection"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList"  @selection="changeMode" />
         <div v-else-if="displayMode==DisplayMode.FullATIS" class="tileContent full" @click="cycleMode">
