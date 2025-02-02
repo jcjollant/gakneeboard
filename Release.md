@@ -1,3 +1,6 @@
+## 02/02/2025 5052
+* Display mode is consistent accross all tiles
+* Approach tile with preselected frequencies
 ## 01/30/2025 5051
 * Aproach tile title is showing Airport + Apch, meant to capture approach name in title
 * ATIS has replaced APCH/RMY
