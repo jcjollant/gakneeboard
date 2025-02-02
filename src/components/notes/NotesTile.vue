@@ -1,20 +1,24 @@
 <template>
     <div class="tile">
-        <Header title="Notes"
-            :stealth="!displaySelection && displayMode==DisplayMode.Blank" :showReplace="displaySelection"
-            @click="onClick" @replace="emits('replace')"></Header>
-        <DisplayModeSelection v-if="displaySelection" :modes="modesList" :activeMode="displayMode" @selection="changeMode" />
-        <div v-else-if="displayMode==DisplayMode.Grid" class="modeGrid tileContent">
+        <Header :title="displaySelection ? 'Notes Tile Mode' : 'Notes'"
+            :stealth="!displaySelection && displayMode==DisplayModeNotes.Blank" :showReplace="displaySelection"
+            @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
+        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" @selection="changeDisplayMode" />
+        <div v-else-if="displayMode==DisplayModeNotes.Blank" class="tileContent">
+            <div class="blank">&nbsp;</div>
+        </div>
+        <div v-else-if="displayMode==DisplayModeNotes.Grid" class="modeGrid tileContent">
             <div v-for="i in [1,2,3,4,5,6,7,8,9,10,11,12]">&nbsp;</div>
         </div>
-        <CompassContent v-else-if="displayMode==DisplayMode.Compass" />
-        <CraftContent v-else-if="displayMode==DisplayMode.Craft" />
+        <CompassContent v-else-if="displayMode==DisplayModeNotes.Compass" />
+        <CraftContent v-else-if="displayMode==DisplayModeNotes.Craft" />
     </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, watch, ref } from 'vue'
-import { UserUrl } from '@/lib/UserUrl';
+import { UserUrl } from '../../lib/UserUrl';
+import { DisplayModeNotes } from '../../model/DisplayMode'; 
 
 import CompassContent from './CompassContent.vue';
 import CraftContent from '../clearance/CraftContent.vue';
@@ -22,24 +26,16 @@ import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../shared/Header.vue';
 
 // Enum with display modes
-enum DisplayMode {
-    Blank = '',
-    Grid = 'grid',
-    Compass = 'compass',
-    Craft = 'craft',
-}
 
-const displayMode = ref(DisplayMode.Blank)
+const displayMode = ref(DisplayModeNotes.Blank)
 const emits = defineEmits(['replace','update'])
-const modesList = ref([
-    {label:'Blank',value:DisplayMode.Blank},
-    {label:'C R A F T',value:DisplayMode.Craft},
-    {label:'Compass',value:DisplayMode.Compass},
-    {label:'Grid',value:DisplayMode.Grid},
-])
-
 const displaySelection = ref(false)
-
+const displayModes = [
+    {label:'Blank',value:DisplayModeNotes.Blank},
+    {label:'C R A F T',value:DisplayModeNotes.Craft},
+    {label:'Compass',value:DisplayModeNotes.Compass},
+    {label:'Grid',value:DisplayModeNotes.Grid},
+]
 // Props management
 const props = defineProps({
     params: { type: Object, default: null},
@@ -47,8 +43,8 @@ const props = defineProps({
 
 function loadProps(props:any) {
     // console.log('[NotesTile.loadProps] ' + JSON.stringify(props))
-    // load display mode without update
-    changeMode(props?.params?.mode,false)
+    // restore display mode without update
+    changeDisplayMode(props?.params?.mode,false)
 }
 
 onMounted(() => {   
@@ -63,10 +59,10 @@ watch( props, async() => {
 })
 
 
-function changeMode(newMode:DisplayMode,update=true) {
+function changeDisplayMode(newMode:DisplayModeNotes,update=true) {
     // console.log('[NotesTiles.changeMode]', newMode)
     // Crap in => default out
-    if(!newMode) newMode = DisplayMode.Blank
+    if(!newMode) newMode = DisplayModeNotes.Blank
 
     displayMode.value = newMode
     displaySelection.value = false;
@@ -76,10 +72,6 @@ function changeMode(newMode:DisplayMode,update=true) {
 
     // notify the parent if needed
     if(update) emits('update', params)
-}
-
-function onClick() {
-    displaySelection.value = !displaySelection.value
 }
 
 function onVideo() {
