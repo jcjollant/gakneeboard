@@ -8,7 +8,7 @@ import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
 import OverlayPanel from 'primevue/overlaypanel'
 import RadioButton from 'primevue/radiobutton'
-import { getFreqCtaf, getFreqWeather, getFreqGround, getFrequency, getNavaid } from '@/assets/data';
+import { getFreqCtaf, getFreqWeather, getFreqGround, getFrequency, getNavaid } from '../../assets/data';
 import { formatFrequency, formatAtcGroups } from '@/assets/format'
 
 
