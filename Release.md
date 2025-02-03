@@ -1,5 +1,8 @@
-## 02/03/2025 5060
+## 02/03/2025 5060 5061
+1) 5060
 * Full Atis is now able to merge
+2) 5061
+* Fixed truncatd Q in radio box
 ## 02/02/2025 5052
 * Display mode is consistent accross all tiles
 * Approach tile with preselected frequencies
