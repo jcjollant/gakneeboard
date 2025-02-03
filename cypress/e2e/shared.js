@@ -33,6 +33,7 @@ export class TileTypeLabel {
     static notes = 'Notes'
     static radios = 'Radios'
     static navlog = 'Navlog'
+    static atis = 'Weather'
 }
 
 export const expectedDemos = [ 
