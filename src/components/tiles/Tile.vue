@@ -10,7 +10,7 @@
     </div>
     <Airport v-else-if="tile.name==TileType.airport" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" />
-    <Atis v-else-if="tile.name==TileType.atis" :params="tile.data"
+    <Atis v-else-if="tile.name==TileType.atis" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate"/>
     <ChecklistTile v-else-if="tile.name==TileType.checklist" :params="tile.data" 
         @replace="onReplace" @update="onUpdate"/>
@@ -20,7 +20,7 @@
     <FuelBug v-else-if="tile.name==TileType.fuel" :params="tile.data"
         @replace="onReplace" @update="onUpdate"/>
     <NavlogTile v-else-if="tile.name==TileType.navlog" @replace="onReplace" />
-    <NotesTile v-else-if="tile.name==TileType.notes" :params="tile.data"
+    <NotesTile v-else-if="tile.name==TileType.notes" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate" />
     <RadioTile v-else-if="tile.name==TileType.radios" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" />

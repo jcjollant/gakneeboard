@@ -19,3 +19,11 @@ export enum DisplayModeIfr {
     Craft_deprecated = 'craft',
     Hold = 'hold',
 }
+
+export enum DisplayModeAtis {
+    FullATIS = '',
+    CompactATIS = 'compact',
+    Categories = 'categories',
+    CloudClearance = 'cloudCLear',
+}
+

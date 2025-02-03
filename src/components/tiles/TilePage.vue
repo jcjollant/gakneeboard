@@ -8,16 +8,17 @@
 
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { isBlankNote } from '../../assets/sheetData'
+import { isSameTypeAndMode } from '../../assets/sheetData'
 
 import Tile from './Tile.vue'
+import { TileType } from '../../model/TileType'
+import { DisplayModeAtis, DisplayModeNotes } from '../../model/DisplayMode'
 
 const emits = defineEmits(['update'])
-
-// Props management
 const props = defineProps({
     data: { type: Object, default: null},
 })
+const tiles=ref([])
 
 function loadProps(props) {
   // console.log('[TilePage.loadProps]', typeof props.data, JSON.stringify(props.data))
@@ -44,7 +45,7 @@ function loadProps(props) {
     // we merge two tiles if they are side by side and are blanks notes tiles
     const leftTile = tiles.value[index];
     const rightTile = tiles.value[index+1];
-    if(isBlankNote(leftTile) && isBlankNote(rightTile)) {
+    if(isSameTypeAndMode(leftTile, rightTile, TileType.notes, DisplayModeNotes.Blank) || isSameTypeAndMode(leftTile, rightTile, TileType.atis, DisplayModeAtis.FullATIS)) {
       tiles.value[index]['span2'] = true
       tiles.value[index + 1]['hide'] = true
     } else { 
@@ -66,7 +67,6 @@ watch( props, async() => {
 
 // end of props management
 
-const tiles=ref()
 
 function onUpdate(newTileData) {
   // console.log('[TilePage.onUpdate]', newTileData)

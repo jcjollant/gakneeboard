@@ -328,9 +328,10 @@ export function getTemplateDummy() {
   return new Template('Dummy Tiles', '12 Dummy Tiles', false, pages)
 }
 
-export function isBlankNote(tile) {
-  if(!tile || tile.name != TileType.notes) return false;
-  if('mode' in tile.data && tile.data.mode != '') return false;
+export function isSameTypeAndMode(tile1, tile2, type, mode) {
+  if(!tile1 || !tile2) return false;
+  if(tile1.name != type || tile2.name != type) return false;
+  if( ('mode' in tile1.data && tile1.data?.mode != mode) || ('mode' in tile2.data && tile2.data?.mode != mode)) return false;
   return true;
 }
 

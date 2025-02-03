@@ -1,9 +1,55 @@
 <template>
-    <div class="tile">
-        <Header :title="getTitle()" :left="!displaySelection && displayMode==DisplayMode.FullATIS"
+    <div class="tile" ref="thisTile">
+        <Header :title="getTitle()" :left="!displaySelection && displayMode==DisplayModeAtis.FullATIS && !expanded"
             @replace="emits('replace')" @display="displaySelection=!displaySelection"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList"  @selection="changeMode" />
-        <div v-else-if="displayMode==DisplayMode.FullATIS" class="tileContent full" @click="cycleMode">
+        <div v-else-if="displayMode==DisplayModeAtis.FullATIS && expanded" class="tileContent">
+            <div v-for="n in 4" class="expanded" :class="{'bb': n < 4}">
+                <div class="infoEx br">
+                    <div class="tileBoxLabel">Info</div>
+                </div>
+                <div class="windEx br">
+                    <div class="tileBoxLabel">Wind</div>
+                    <div class="at">@</div>
+                    <div class="wtrmrk">
+                        <div>Calm</div>
+                        <div>Vrbl</div>
+                    </div>
+                </div>
+                <div class="visEx br">
+                    <div class="tileBoxLabel">Vis</div>
+                    <div class="wtrmrk">
+                        <div>Ra</div>
+                        <div>Fg</div>
+                        <div>Br</div>
+                    </div>
+                </div>
+                <div class="skyEx br">
+                    <div class="tileBoxLabel">Sky</div>
+                    <div class="wtrmrk">
+                        <div>Fw</div>
+                        <div>Sc</div>
+                        <div>Bk</div>
+                        <div>Ov</div>
+                    </div>
+                </div>
+                <div class="tempEx br">
+                    <div class="tileBoxLabel">Temp</div>
+                </div>
+                <div class="altEx br">
+                    <div class="tileBoxLabel">Alt</div>
+                    <div class="wtrmrk">
+                        <div>28</div>
+                        <div>29</div>
+                        <div>30</div>
+                    </div>
+                </div>
+                <div class="rwyEx">
+                    <div class="tileBoxLabel">Rwy</div>
+                </div>
+            </div>
+        </div>
+        <div v-else-if="displayMode==DisplayModeAtis.FullATIS" class="tileContent full" @click="cycleMode">
             <div class="info br">
                 <div class="tileBoxLabel">Info</div>
             </div>
@@ -26,7 +72,7 @@
                 <div class="tileBoxLabel">Alt</div>
             </div>
         </div>
-        <div v-else-if="displayMode==DisplayMode.CompactATIS" class="tileContent" @click="cycleMode">
+        <div v-else-if="displayMode==DisplayModeAtis.CompactATIS" class="tileContent" @click="cycleMode">
             <div v-for="n in 4" class="compact">
                 <div class="info br" :class="{bb: n < 4 }">
                     <div class="tileBoxLabel">Info</div>
@@ -44,7 +90,7 @@
                 
             </div>
         </div>
-        <div v-else-if="displayMode==DisplayMode.Categories" class="tileContent categories">
+        <div v-else-if="displayMode==DisplayModeAtis.Categories" class="tileContent categories">
             <div class="vfrLeft vfr">VFR<span class="alt">3,000ft</span></div>
             <div class="vfrRight vfr">&nbsp;<span class="vis">5sm</span></div>
             <div class="mvfrLeft mvfr">MVFR<span class="alt">1,000ft</span></div>
@@ -53,7 +99,7 @@
             <div class="ifrRight ifr">&nbsp;<span class="vis">1sm</span></div>
             <div class="lifr">LIFR</div>
         </div>
-        <div v-else-if="displayMode==DisplayMode.CloudClearance" class="tileContent cloudClear">
+        <div v-else-if="displayMode==DisplayModeAtis.CloudClearance" class="tileContent cloudClear">
             <!-- 14 CFR 103.23 -->
             <div v-for="c in ['B','C','D']" class="className towered" :title="'Class ' + c + ' Airspace'">{{ c }}</div>
             <div class="className untowered" title="Class E Airspace">E</div>
@@ -86,30 +132,27 @@ import { ref,onMounted, watch } from 'vue'
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../shared/Header.vue';
 import NoSettings from '../shared/NoSettings.vue'
+import { DisplayModeAtis } from '../../model/DisplayMode';
 
 // Enum with display modes
-enum DisplayMode {
-    FullATIS = '',
-    CompactATIS = 'compact',
-    Categories = 'categories',
-    CloudClearance = 'cloudCLear',
-}
 
 const emits = defineEmits(['replace','update'])
-const defaultMode = DisplayMode.FullATIS
+const defaultMode = DisplayModeAtis.FullATIS
 const displayMode = ref(defaultMode)
 const displaySelection = ref(false)
+const expanded = ref(false)
 const modesList = ref([
-    {label:'Full Size ATIS', value:DisplayMode.FullATIS},
-    {label:'Compact ATIS (x4)', value:DisplayMode.CompactATIS},
-    {label:'Flight Categories', value:DisplayMode.Categories},
-    {label:'Cloud Clearance', value:DisplayMode.CloudClearance}
+    {label:'Full Size ATIS', value:DisplayModeAtis.FullATIS},
+    {label:'Compact ATIS (x4)', value:DisplayModeAtis.CompactATIS},
+    {label:'Flight Categories', value:DisplayModeAtis.Categories},
+    {label:'Cloud Clearance', value:DisplayModeAtis.CloudClearance}
 ])
-
-// Props Management
 const props = defineProps({
     params: { type: Object, default: null}, // expects {'mode':'compact'}
+    span2: {type: Boolean, default: false}
 })
+const thisTile=ref<HTMLElement | null>(null)
+
 
 function loadProps(props:any) {
     // console.log('ATIS loadProps ' + JSON.stringify(props))
@@ -120,6 +163,8 @@ function loadProps(props:any) {
     } else {
         displayMode.value = defaultMode
     }
+    expanded.value = props.span2
+    // console.log('[Atis.loadProps]', expanded.value)
 }
 
 onMounted(() => {   
@@ -136,6 +181,7 @@ watch( props, async() => {
 
 
 function changeMode(newMode) {
+    // console.log('[Atis.changeMode]', newMode)
     displayMode.value = newMode
     displaySelection.value = false;
     const params = {mode:newMode}
@@ -153,9 +199,9 @@ function cycleMode() {
 function getTitle() {
     if( displaySelection.value) return "Weather Tile Mode"
     switch(displayMode.value) {
-        case DisplayMode.CompactATIS: return 'ATIS';
-        case DisplayMode.Categories: return 'Flight Categories';
-        case DisplayMode.CloudClearance: return 'Cloud Clearance';
+        case DisplayModeAtis.CompactATIS: return 'ATIS';
+        case DisplayModeAtis.Categories: return 'Flight Categories';
+        case DisplayModeAtis.CloudClearance: return 'Cloud Clearance';
         default: return 'ATIS @';
     }
 }
@@ -167,6 +213,15 @@ function onHeaderClick() {
 </script>
 
 <style scoped>
+.tileContent {
+    display: grid;
+    grid-template-rows: repeat( 4, 1fr);
+    width: 100%;
+}
+.expanded {
+    display: flex;
+    position: relative;
+}
 .categories {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -337,10 +392,6 @@ function onHeaderClick() {
     color: #606
 }
 
-.tileContent {
-    display: grid;
-    grid-template-rows: repeat( 4, calc(var(--tile-height / 4)));
-}
 .list {
     display: grid;
     padding: 10px;
@@ -404,5 +455,49 @@ function onHeaderClick() {
     top: 20px;
     font-size: 0.8rem;
     color: darkgrey;
+}
+
+.infoEx, .windEx, .visEx, .skyEx, .tempEx, .altEx, .rwyEx {
+    position: relative;
+}
+.infoEx {
+    flex: 1.5 1 0px;
+}
+.windEx {
+    flex: 4.5 1 0px;
+}
+.visEx {
+    flex: 2.5 1 0px;
+}
+.skyEx {
+    flex: 4 1 0px;
+}
+.tempEx {
+    flex: 3 1 0px;
+}
+.altEx {
+    flex: 4 1 0px;
+}
+.rwyEx {
+    flex: 2 1 0px;
+}
+.wtrmrk {
+    position: absolute;
+    display: flex;
+    font-size: 10px;
+    font-weight: 600;
+    opacity: 0.3;
+    bottom: 0;
+    justify-content: space-between;
+    width: 100%;
+    padding: 2px 4px;
+}
+.at {
+    display: flex;
+    font-size: 15px;
+    font-weight: bolder;
+    padding-left: 55px;
+    padding-top: 20px;
+    opacity: 0.3;
 }
 </style>
