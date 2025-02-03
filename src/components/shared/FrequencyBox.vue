@@ -37,7 +37,7 @@ const props = defineProps({
     font-size: 14px;
 }
 .freqMedium {
-    line-height: 34px;
+    line-height: 32px;
     font-size: 20px;
 }
 .name {
@@ -47,12 +47,12 @@ const props = defineProps({
 }
 
 .nameSmall {
-    height: 10px;
+    height: 12px;
     font-size: 10px;
     padding-left: 2px;
 }
 .nameMedium {
-    height: 16px;
+    height: 20px;
     padding-left: 5px;
     font-size: 16px;
 }
