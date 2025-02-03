@@ -1,3 +1,5 @@
+## 02/03/2025 5060
+* Full Atis is now able to merge
 ## 02/02/2025 5052
 * Display mode is consistent accross all tiles
 * Approach tile with preselected frequencies
