@@ -128,14 +128,18 @@ function loadData(data:any) {
         frequencies.value = list
         updateTextarea()
 
-        // Restore display mode
-        if('mode' in data) displayMode.value = data.mode
-
         // restote service volume
         if('sv' in data) serviceVolume.value = data.sv
     } else {
         frequencies.value = []
     }
+    // Restore display mode
+    if(data && 'mode' in data) {
+        displayMode.value = data.mode
+    } else {
+        displayMode.value = DisplayModeRadios.FreqList
+    }
+
 }
 
 function loadListFromText() {
