@@ -214,7 +214,7 @@ function updateTextarea() {
 
 <style scoped>
 .expanded {
-    width: var(--page-width)
+    width: calc( var(--page-width) - 2px)
 }
 .edit {
     position: relative;

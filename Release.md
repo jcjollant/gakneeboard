@@ -8,6 +8,8 @@
 * Radio Tile is able to merge to side by side Frequency lists
 * Fixed radio would not swap without data
 * Fixed swap on merged tiles
+4) 5063
+* Fixed Radio tile width when expanded
 ## 02/02/2025 5052
 * Display mode is consistent accross all tiles
 * Approach tile with preselected frequencies
