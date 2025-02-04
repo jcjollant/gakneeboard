@@ -15,7 +15,8 @@ import {
     faRotateLeft,
     faRoute,
     faSave, faScrewdriverWrench, faStarOfLife, faSun,
-    faTrash, faUser,
+    faTowerCell, faTowerObservation, faTrash, 
+    faUser,
     faVideo, faWalkieTalkie, faXmark
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -42,7 +43,8 @@ library.add(
     faQuestion, 
     faRoadCircleCheck, faRotateLeft, faRoute, 
     faSave, faScrewdriverWrench, faStarOfLife, faSun, 
-    faTrash, faUser,
+    faTowerCell, faTowerObservation, faTrash, 
+    faUser,
     faVideo, faWalkieTalkie, faXmark)
 
 createApp(App)
