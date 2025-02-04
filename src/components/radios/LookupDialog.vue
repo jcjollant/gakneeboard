@@ -10,38 +10,57 @@
         <div v-if="selectedAirport" class="airportSpecific">
             <FieldSet :legend="selectedAirport['code'] + ' Local Frequencies'">
                 <div class="listLocal">
-                    <Button v-for="f in localFrequencies" :label="f['label']" @click="addFrequency(f.mhz, f.name)" class="freqButton" link></Button>
+                    <Button v-for="f in localFrequencies" :label="f.label" @click="addFrequency(f)" class="freqButton" link></Button>
                 </div>
             </FieldSet>
             <FieldSet :legend="selectedAirport['code'] + ' Navaids'" class="listNavaids">
-                <Button v-for="f in navaidFrequencies" :label="f['label']" @click="addFrequency(f.mhz, f.name)" class="freqButton" link></Button>
+                <Button v-for="f in navaidFrequencies" :label="f.label" @click="addFrequency(f)" class="freqButton" link></Button>
             </FieldSet>
             <FieldSet v-for="group in atcGroups" :legend="group['name']" >
                 <div class="listAtc">
-                    <Button v-for="f in group['atcs']" :label="f['label']" @click="addFrequency(f.mhz, group.name)" class="freqButton left" link :title="f.use"></Button>
+                    <Button v-for="f in group.items" :label="formatLabel(f.label)" @click="addFrequency(f)" class="freqButton left" link :title="f.label"></Button>
                 </div>
             </FieldSet>
         </div>
     </Dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { sessionAirports } from '@/assets/data'
-import { formatAtcGroups, formatFrequency } from '@/assets/format'
+import { sessionAirports } from '../../assets/data'
+import { AtcGroup } from '../../model/AtcGroup.ts'
+import { Frequency, FrequencyType, FrequencyLabelled } from '../../model/Frequency'
+import { Formatter } from '../../lib/Formatter.ts'
 
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import FieldSet from 'primevue/fieldset'
 
 import AirportInput from '../shared/AirportInput.vue'
+import { Airport } from '../../model/Airport'
 
 const emits = defineEmits(["add"]);
-const airports = ref([])
-const selectedAirport = ref(null)
-const localFrequencies = ref([])
-const navaidFrequencies = ref([])
-const atcGroups = ref([])
+const airports = ref<Airport[]>([])
+const noAirport = new Airport()
+const selectedAirport = ref(noAirport)
+const localFrequencies = ref<FrequencyLabelled[]>([])
+const navaidFrequencies = ref<FrequencyLabelled[]>([])
+const atcGroups = ref<LookupAtcGroup[]>([])
+const maxLabelLength = 70;
+
+class LookupAtcGroup {
+    name:string;
+    items:FrequencyLabelled[];
+    constructor(g:AtcGroup) {
+        this.name = g.name;
+        this.items = g.atcs.map(atc => {
+            let label = Formatter.frequency(atc.mhz) + ' ' + atc.name;
+            // replace frequency name with group name
+            const frequency:Frequency = new Frequency(atc.mhz, g.name, atc.type)
+            return new FrequencyLabelled( frequency, label)
+        })
+    }
+}
 
 //--------------------------------
 // Props management
@@ -58,32 +77,32 @@ watch(props, () => {
 })
 //--------------------------------
 
-function addFrequency(mhz,name) {
-    emits('add', {mhz:mhz,name:name})
+function addFrequency(item:FrequencyLabelled) {
+    emits('add', item.freq)
 }
 
-function onAirport(airport) {
+function formatLabel(label:string) {
+    if(label.length > maxLabelLength) return label.substring(0,maxLabelLength) + '...'
+    return label
+}
+
+function onAirport(airport:Airport) {
     selectedAirport.value = airport
 
     if( !airport) return;
     
-    const local = airport.freq.map( f => { return {mhz:f.mhz, name:airport.code + ' ' + f.name,label:formatFrequency(f) + ' ' + f.name}})
+    const local = airport.freq.map( f => new FrequencyLabelled( new Frequency(f.mhz, airport.code + ' ' + f.name, Frequency.typeFromString(f.name)), Formatter.frequency(f.mhz) + ' ' + f.name))
     localFrequencies.value = local;
-    const navaids = airport.navaids.map( n => { return {mhz:n.freq, name:n.id + ' ' + n.type, label:formatFrequency(n) + ' ' + n.id + ' ' + n.type}})
+    const navaids = airport.navaids.map( n => new FrequencyLabelled( new Frequency(n.freq, n.id + ' ' + n.type, FrequencyType.navaid), Formatter.frequency(n.freq) + ' ' + n.id + ' ' + n.type ))
     navaidFrequencies.value = navaids;
-    const groupList = formatAtcGroups(airport, (e) => {
-        e['label'] = formatFrequency(e) + ' ' + e.use;
-        const maxLength = 70;
-        if(e.label.length > maxLength) e.label = e.label.substring(0,maxLength) + '...'
-    })
-    atcGroups.value = groupList;
+    const groupList = AtcGroup.parse(airport)
+    // console.log('[LookupDialog.onAirport]', groupList)
+    // atcGroups.value = groupList.map(g => {return new LookupAtcGroup(g)});
+    atcGroups.value = groupList.map(g => new LookupAtcGroup(g));
+    // console.log('[LookupDialog.onAirport]', atcGroups.value)
 }
 
-function onAirportInput() {
-    // refreshAirportList()
-}
-
-function refreshAirportList(newAirports) {
+function refreshAirportList(newAirports:Airport[]) {
     // keep airports that have frequencies
     airports.value =  newAirports.filter(a => a.freq.length > 0);
     // console.log('[LookupDialog.refreshAirportList]', JSON.stringify(airports.value))
