@@ -52,10 +52,9 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { Airport } from '../../model/Airport'
-import { Frequency } from '../../model/Frequency'
+import { Frequency, FrequencyType } from '../../model/Frequency'
 
 import FrequencyBox from '../shared/FrequencyBox.vue'
-import { FrequencyType } from '../../model/FrequencyType'
 
 const noFreq = Frequency.noFreq()
 const freqClearance = ref(noFreq)
