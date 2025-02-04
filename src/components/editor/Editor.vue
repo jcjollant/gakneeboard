@@ -26,19 +26,19 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { EditorAction } from '@/assets/EditorAction'
+import { EditorAction } from '../../assets/EditorAction'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
-import { useToaster } from '@/assets/Toaster'
-import { PageType } from '@/assets/PageType'
+import { useToaster } from '../../assets/Toaster'
+import { PageType } from '../../assets/PageType'
 // import { Template } from '@/assets/Templates'
-import { pageDataBlank, readPageFromClipboard } from '@/assets/sheetData'
-import { duplicate } from '@/assets/data'
+import { pageDataBlank, readPageFromClipboard } from '../../assets/sheetData'
+import { duplicate } from '../../assets/data'
 
 import Button from 'primevue/button'
 import Overlay from './Overlay.vue'
 import VerticalActionBar from './VerticalActionBar.vue'
-import { LocalStore } from '@/lib/LocalStore'
+import { LocalStore } from '../../lib/LocalStore'
 
 const emits = defineEmits(['discard','save','offset'])
 const confirm = useConfirm()
@@ -103,7 +103,7 @@ function onAction(action:EditorAction) {
 
 // Pages are manipulated via editor buttons
 async function onEditorAction(ea:EditorAction) {
-  // console.log('[App.onEditorAction]', JSON.stringify(ea))
+  // console.log('[Editor.onEditorAction]', ea)
   let updateOffset = false;
 
   if(!model.value) return;
@@ -191,10 +191,17 @@ async function onEditorAction(ea:EditorAction) {
     if(tileFrom === undefined || tileTo === undefined) return;
 
     const temp = duplicate(model.value.data[ea.offset].data[tileFrom])
+    // console.log('[Editor.onEditorAction]', temp, model.value.data[ea.offset].data[tileTo], tileFrom, tileTo)
     model.value.data[ea.offset].data[tileFrom] = model.value.data[ea.offset].data[tileTo]
-    model.value.data[ea.offset].data[tileFrom].id = tileFrom
     model.value.data[ea.offset].data[tileTo] = temp
+    // refresh ids
+    model.value.data[ea.offset].data[tileFrom].id = tileFrom
     model.value.data[ea.offset].data[tileTo].id = tileTo
+    // reset span and hide
+    model.value.data[ea.offset].data[tileFrom]['span2'] = false
+    model.value.data[ea.offset].data[tileFrom]['hide'] = false
+    model.value.data[ea.offset].data[tileTo]['span2'] = false
+    model.value.data[ea.offset].data[tileTo]['hide'] = false
 
   } else {
     reportError('[App.onEditorAction] unknown action ' + ea)
@@ -213,6 +220,7 @@ function pasteTile(params:any) {
 }
 
 function swapTiles(params:any) {
+  // console.log('[Editor.swapTiles]', params)
   onAction(EditorAction.swapTiles(params.offset, params))  
 }
 

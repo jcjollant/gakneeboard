@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import Button from 'primevue/button'
-import { PageType } from '@/assets/PageType';
+import { PageType } from '../../assets/PageType';
 
 const blue = ref(false)
 const emits = defineEmits(['copy','paste','swap'])
