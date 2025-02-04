@@ -27,3 +27,8 @@ export enum DisplayModeAtis {
     CloudClearance = 'cloudCLear',
 }
 
+export enum DisplayModeRadios {
+    FreqList = '',
+    LostComms = 'nordo',
+    ServiceVolumes = 'sv',
+}
