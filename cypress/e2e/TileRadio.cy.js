@@ -16,6 +16,7 @@ describe('Radios Tile', () => {
       for(let index=0; index<radioFlow.length; index++) {
         cy.get(`.freqList > :nth-child(${index+1})`).contains(radioFlow[index].freq)
         cy.get(`.freqList > :nth-child(${index+1})`).contains(radioFlow[index].name)
+        cy.get(`.freqList > :nth-child(${index+1}) > .freqMedium`).should('have.class',radioFlow[index].class)
       }
     })
 
@@ -84,7 +85,7 @@ describe('Radios Tile', () => {
     // close lookup
     cy.get('.p-dialog-header-icon').click()
     // Test textarea content
-    cy.get('.p-inputtextarea').should('have.value','124.700,KRNT CTAF\n110.600,PAE VOR/DME\n119.200,SEATTLE-TACOMA APPROACH CONTROL')
+    cy.get('.p-inputtextarea').should('have.value','124.700,KRNT CTAF,CTAF\n110.600,PAE VOR/DME,Navaid\n119.200,SEATTLE-TACOMA APPROACH CONTROL,TRACON')
 
     // switch left tile to radio so it doesnt merge
     replaceTile(1,4,TileTypeLabel.radios)
@@ -128,8 +129,9 @@ describe('Radios Tile', () => {
         // console.log('>>>>', template)
         expect(template.data[1].data[5].data['mode']).to.equal('nordo')
       })
+  })
 
-
+  it('merges', () => {
 
   })
 
