@@ -12,7 +12,7 @@ import { isSameTypeAndMode } from '../../assets/sheetData'
 
 import Tile from './Tile.vue'
 import { TileType } from '../../model/TileType'
-import { DisplayModeAtis, DisplayModeNotes } from '../../model/DisplayMode'
+import { DisplayModeAtis, DisplayModeNotes, DisplayModeRadios } from '../../model/DisplayMode'
 
 const emits = defineEmits(['update'])
 const props = defineProps({
@@ -45,7 +45,10 @@ function loadProps(props) {
     // we merge two tiles if they are side by side and are blanks notes tiles
     const leftTile = tiles.value[index];
     const rightTile = tiles.value[index+1];
-    if(isSameTypeAndMode(leftTile, rightTile, TileType.notes, DisplayModeNotes.Blank) || isSameTypeAndMode(leftTile, rightTile, TileType.atis, DisplayModeAtis.FullATIS)) {
+    if(isSameTypeAndMode(leftTile, rightTile, TileType.notes, DisplayModeNotes.Blank) 
+      || isSameTypeAndMode(leftTile, rightTile, TileType.atis, DisplayModeAtis.FullATIS)
+      || isSameTypeAndMode(leftTile, rightTile, TileType.radios, DisplayModeRadios.FreqList)
+      ) {
       tiles.value[index]['span2'] = true
       tiles.value[index + 1]['hide'] = true
     } else { 

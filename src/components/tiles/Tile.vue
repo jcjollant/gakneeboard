@@ -10,7 +10,7 @@
     </div>
     <Airport v-else-if="tile.name==TileType.airport" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" />
-    <Atis v-else-if="tile.name==TileType.atis" :params="tile.data" :span2="tile.span2"
+    <AtisTile v-else-if="tile.name==TileType.atis" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate"/>
     <ChecklistTile v-else-if="tile.name==TileType.checklist" :params="tile.data" 
         @replace="onReplace" @update="onUpdate"/>
@@ -22,7 +22,7 @@
     <NavlogTile v-else-if="tile.name==TileType.navlog" @replace="onReplace" />
     <NotesTile v-else-if="tile.name==TileType.notes" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate" />
-    <RadioTile v-else-if="tile.name==TileType.radios" :params="tile.data" 
+    <RadioTile v-else-if="tile.name==TileType.radios" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate" />
     <SunLight v-else-if="tile.name==TileType.sunlight" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" />
@@ -34,7 +34,7 @@ import { TileType } from '../../model/TileType'
 
 import Header from '../shared/Header.vue';
 import Airport from '../airport/Airport.vue';
-import Atis from '../atis/Atis.vue'
+import AtisTile from '../atis/AtisTile.vue'
 import ChecklistTile from '../checklist/ChecklistTile.vue';
 import IfrTile from '../../components/clearance/IfrTile.vue';
 import Dummy from './Dummy.vue';
