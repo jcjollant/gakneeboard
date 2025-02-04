@@ -1,8 +1,13 @@
-## 02/03/2025 5060 5061
+## 02/03/2025 5060 5061 5062
 1) 5060
 * Full Atis is now able to merge
 2) 5061
 * Fixed truncatd Q in radio box
+3) 5062
+* Frequency box is showing a different color and Icon for each Frequency type
+* Radio Tile is able to merge to side by side Frequency lists
+* Fixed radio would not swap without data
+* Fixed swap on merged tiles
 ## 02/02/2025 5052
 * Display mode is consistent accross all tiles
 * Approach tile with preselected frequencies
