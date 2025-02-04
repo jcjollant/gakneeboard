@@ -3,14 +3,14 @@ import { Template } from './Templates'
 import { TileType } from '../model/TileType'
 
 const demoRadioData = [
-  {'mhz':116.8,'name':'SEA VOR'},
-  {'mhz':113.4,'name':'OLM VOR'},
-  {'mhz':124.7,'name':'RNT TWR'},
-  {'mhz':126.95,'name':'RNT ATIS'},
-  {'mhz':123.0,'name':'S43 CTAF'},
-  {'mhz':128.65,'name':'PAE ATIS'},
-  {'mhz':120.2,'name':'PAE TWR 34R'},
-  {'mhz':132.95,'name':'PAE TWR 34L'}
+  {mhz:116.8,name:'SEA VOR',type:FrequencyType.navaid},
+  {mhz:113.4,name:'OLM VOR',type:FrequencyType.navaid},
+  {mhz:124.7,name:'KRNT CTAF', type:FrequencyType.ctaf},
+  {mhz:126.95,name:'KRNT ATIS',type:FrequencyType.weather},
+  {mhz:123.0,name:'S43 CTAF',type:FrequencyType.ctaf},
+  {mhz:128.65,name:'KPAE',type:FrequencyType.weather},
+  {mhz:120.2,name:'PAE TWR 34R', type:FrequencyType.tower},
+  {mhz:132.95,'name':'PAE TWR 34L', type:FrequencyType.tower}
 ]
 
 export class SheetName {
@@ -27,6 +27,7 @@ export class SheetName {
 }
 
 import { duplicate } from './data'
+import { FrequencyType } from '../model/Frequency'
 
 // used to check if a sheet name is already taken by defaults
 const defaultNames = [SheetName.default, SheetName.tiles, SheetName.checklist, SheetName.reset]
@@ -50,7 +51,7 @@ const page0DemoDefault = {
     data:[
       {id:0,name:"airport","data":{"code":"KBFI","rwy":"14L-32R","rwyOrientation":"magnetic","corners":["weather","twr","field","tpa"]}},
       {id:1,name:"airport","data":{"code":"KSFF","rwy":"04L-22R","rwyOrientation":"vertical","corners":["weather","twr","field","tpa"],"pattern":2}},
-      {id:2,name:"radios","data":[{"mhz":"116.8","name":"SEA VOR"},{"mhz":"124.7","name":"OLM VOR"},{"mhz":"124.7","name":"RNT TWR"},{"mhz":"126.95","name":"RNT ATIS"},{"mhz":"123","name":"S43 CTAF"},{"mhz":"128.65","name":"PAE ATIS"},{"mhz":"120.2","name":"PAE TWR 34R"},{"mhz":"132.95","name":"PAE TWR 34L"}]},
+      {id:2,name:"radios","data":demoRadioData},
       {id:3,name:"notes","data":{}},
       {id:4,name:"atis","data":{}},
       {id:5,name:"clearance","data":{mode:'dep',airport:'kbfi'}}
