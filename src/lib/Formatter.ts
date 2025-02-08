@@ -36,8 +36,8 @@ export class Formatter {
         if(typeof freq === "number") {
             if(freq > 0) output = Number(freq).toFixed(3)
         }
-        else if((freq.mhz) || (freq.freq)) {
-            const value = freq.mhz ? freq.mhz : (freq.freq ? freq.freq : freq);
+        else if((freq['mhz']) || (freq['freq'])) {
+            const value = freq['mhz'] ? freq['mhz'] : (freq['freq'] ? freq['freq'] : freq);
             output = Number(value).toFixed(3)
         }
         // console.log('[Formatter.frequency] output', output)
