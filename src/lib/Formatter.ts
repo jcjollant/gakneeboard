@@ -33,6 +33,7 @@ export class Formatter {
     static frequency(freq:any):string {
         // console.log('[Formatter.frequency]', typeof freq, JSON.stringify(freq))
         let output = Formatter.noFrequency
+        if(freq == null || freq == undefined) return output;
         if(typeof freq === "number") {
             if(freq > 0) output = Number(freq).toFixed(3)
         }
