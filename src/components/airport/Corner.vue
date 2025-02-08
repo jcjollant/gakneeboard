@@ -23,10 +23,10 @@
                 </Fieldset>
                 <Fieldset legend="Airport Frequencies">
                     <div class="freqList">
-                        <div v-for="freq in frequencies" class="ctItem" >
-                            <RadioButton v-model="selectedCornerType" :inputId="freq.id" :value="freq.id" 
-                                @change="onChange(freq.id)"/>
-                            <label :for="freq.id" class="ml-2">{{ freq.label  }}</label>
+                        <div v-for="(cf) in frequencies" class="ctItem" >
+                            <RadioButton v-model="selectedCornerType" :inputId="cf.id" :value="cf.id" 
+                                @change="onChange(cf.id)"/>
+                            <label :for="cf.id" class="ml-2">{{ cf.label  }}</label>
                         </div>
                     </div>
                 </Fieldset>
@@ -67,11 +67,14 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 
 import { ref, onMounted, watch } from 'vue';
 import { getFreqCtaf, getFreqWeather, getFreqGround, getFrequency, getNavaid } from '../../assets/data';
 import { AtcGroup } from '../../model/AtcGroup';
+import { Formatter } from '../../lib/Formatter';
+import { Frequency } from '../../model/Frequency';
+import { Airport, Runway } from '../../model/Airport';
 
 import Button from 'primevue/button'
 import Fieldset from 'primevue/fieldset'
@@ -80,24 +83,23 @@ import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
 import OverlayPanel from 'primevue/overlaypanel'
 import RadioButton from 'primevue/radiobutton'
-import { Formatter } from '../../lib/Formatter';
 
 
 const emits = defineEmits(['update'])
 
 const label = ref('')
 const value = ref('')
-const labelUnder = ref('')
+const labelUnder = ref(false)
 
 const props = defineProps({
-    airport: { type: Object, default: null},
+    airport: { type: Airport, default: null},
     data: { type: Object, default: null},
     runway: { type: Object, default: null},
     flip: { type: Boolean, default: false}
 })
 
-let airport = null
-let runway = null
+let airport:Airport = new Airport()
+let runway:Runway = Runway.noRunway()
 let cornerId = -1
 const selectedCornerType = ref('weather')
 const cornerTypes = ref([
@@ -109,25 +111,35 @@ const cornerTypes = ref([
 const customLabel = ref('')
 const customValue = ref('')
 
-const frequencies = ref([])
-const navaids = ref([])
-const atcGroups = ref([])
+class CornerValue {
+    id:string;
+    label:string;
+    constructor(id:string, label:string) {
+        this.id = id;
+        this.label = label;
+    }
+}
+
+const frequencies = ref<CornerValue[]>([])
+const navaids = ref<CornerValue[]>([])
+const atcGroups = ref<CornerAtcGroup[]>([])
 
 class CornerAtc {
-    id;
-    label;
-    mhz;
-    constructor(atc) {
+    id:string;
+    label:string;
+    value:CornerValue
+    mhz:number;
+    constructor(atc:Frequency) {
         this.id = '#A' + atc.mhz;
-        this.label = atc.name
+        this.label = atc.name;
         this.mhz = atc.mhz;
     }
 }
 
 class CornerAtcGroup {
-    name;
-    atcs;
-    constructor(group) {
+    name:string;
+    atcs:CornerAtc[];
+    constructor(group:AtcGroup) {
         this.name = group.name;
         this.atcs = group.atcs.map( atc => new CornerAtc(atc))
     }
@@ -138,31 +150,28 @@ function formatNavaid(navaid) {
     return navaid.to.toFixed(0) + '°'
 }
 
-function loadProps(newProps) {
+function loadProps(newProps:any) {
     // console.log( '[Corner.loadProps]', JSON.stringify(newProps))
     if( newProps == undefined || newProps.airport == null || newProps.data == null) {
         unknownValues()
         labelUnder.value = true
         frequencies.value = []
     } else {
-        airport = newProps.airport;
-        runway = newProps.runway
+        airport = Airport.copy( newProps.airport);
+        runway = Runway.copy(newProps.runway)
         const field = newProps.data.field
-        if(airport.freq) {
+        if(airport.isValid()) {
             // build a frequency list with '#F' prefix
-            const freqList = airport.freq.map( f => {
-                return { id:'#F'+f.name, label: Formatter.frequency(f.mhz) + ' : ' + f.name}
-            })
-            if( runway && 'freq' in runway) freqList.push({id:'twr',label:'Selected Runway'})
+            const freqList = airport.freq.map( f => new CornerValue('#F' + f.name, Formatter.frequency(f.mhz) + ' : ' + f.name))
+            // add a bogus frequency for selected runway
+
+            if( runway && 'freq' in runway) freqList.push( new CornerValue('#Ftwr','Selected Runway'))
             frequencies.value = freqList
         }
 
         if( airport.navaids) {
             // build a navaid list with '#N' prefix
-            const navaidList = airport.navaids.map( n => {
-                // console.log('[Corner.loadProps]', JSON.stringify(n))
-                return { id: '#N'+n.id, label: Formatter.frequency(n) + ' : ' + n.id + ' ('+n.type+')'}
-            })
+            const navaidList = airport.navaids.map( n => new CornerValue('#N'+n.id, Formatter.frequency(n) + ' : ' + n.id + ' ('+n.type+')'))
             navaids.value = navaidList
         }
 
@@ -188,6 +197,7 @@ onMounted(() => {
     loadProps(props)
 })
 
+// turn the selection into the actual field
 function showField( field) {
     // console.log('[Corner.showField]', field, typeof field)
     if( field.length > 2 && field[0] == '#') { 
@@ -207,7 +217,8 @@ function showField( field) {
             // ATC use the '#A' prefix
             const freq = Number(field.substring(2))
             value.value = freq.toFixed(3)
-            label.value = airport.atc.find( a => a.mhz == freq).name
+            const atc = airport.atc.find( a => a.mhz == freq)
+            label.value = atc ? atc.name : '?' 
         } else {
             unknownValues()
         }
@@ -227,12 +238,13 @@ function showField( field) {
     } else {
         switch( field) {
             case 'weather':
-                const weather = getFreqWeather(airport.freq)
-                label.value = weather?.name
-                value.value = Formatter.frequency(weather)
+                const weather =  airport.getFreqWeather()
+                // console.log('[Corner.showField]', weather)
+                label.value = weather ? weather.name : ''
+                value.value = weather ? Formatter.frequency(weather.mhz) : '?'
                 break
             case 'twr':
-                if( runway && 'freq' in runway) {
+                if( runway.freq > 0) {
                     // console.log('[Corner.showField]', JSON.stringify(runway.freq))
                     value.value = runway.freq.toFixed(3)
                     label.value = 'RWY ' + runway.name
@@ -264,7 +276,7 @@ function showField( field) {
                 break;
             case 'rwyinfo':
                 value.value = runway.length + 'x' + runway.width
-                label.value = runway.surface.cond + '/' + runway.surface.type
+                label.value = runway.surface ? (runway.surface.cond + '/' + runway.surface.type) : '?'
                 break;
             case 'blank':
                 value.value = '.'
@@ -294,58 +306,58 @@ watch( props, () => {
 </script>
 
 <style scoped>
-    .atcSmall {
-        font-size: 0.9rem;
-    }
-    .label {
-        padding: 0;
-        font-size:9px;
-        width:120px;
-        height: 10px;
-        overflow: hidden;
-    }
+.atcSmall {
+    font-size: 0.9rem;
+}
+.label {
+    padding: 0;
+    font-size:9px;
+    width:120px;
+    height: 10px;
+    overflow: hidden;
+}
 
-    .ctList {
-        display: grid;
-        grid-template-columns: auto auto auto;
-        gap: 1rem;
-    }
-    .ctItem {
-        display: flex;
-        align-items: center;
-    }
-    .ctAtc {
-        grid-column: 1 / span 3;
-    }
-    .ctCustom {
-        display: flex;
-        align-items: center;
-        grid-column: 1 / span 2;
-    }
-    .customGroup {
-      width: 12rem;
-    }   
+.ctList {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    gap: 1rem;
+}
+.ctItem {
+    display: flex;
+    align-items: center;
+}
+.ctAtc {
+    grid-column: 1 / span 3;
+}
+.ctCustom {
+    display: flex;
+    align-items: center;
+    grid-column: 1 / span 2;
+}
+.customGroup {
+    width: 12rem;
+}   
 .doneBtn{
     text-align: right;
 }
-    .faded {
-        opacity: 0.3;
-    }
-    .freqList, .navList, .standardList, .atcList {
-        display: flex;
-        flex-flow: column;
-        gap: 0.5rem
-    }
-    :deep(.p-fieldset-legend) {
-        border: none;
-        background: none;
-    }
-    :deep(.p-fieldset-content) {
-        padding: 0;
-    }
-    :deep(.p-input-group-addon) {
-        padding: 0;
-        min-width: 0;
-    }
+.faded {
+    opacity: 0.3;
+}
+.freqList, .navList, .standardList, .atcList {
+    display: flex;
+    flex-flow: column;
+    gap: 0.5rem
+}
+:deep(.p-fieldset-legend) {
+    border: none;
+    background: none;
+}
+:deep(.p-fieldset-content) {
+    padding: 0;
+}
+:deep(.p-input-group-addon) {
+    padding: 0;
+    min-width: 0;
+}
 
 </style>
