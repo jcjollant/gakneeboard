@@ -11,7 +11,7 @@ export class UserUrl {
     static checklistGuide:string = 'https://gakneeboard.wordpress.com/2024/08/06/checklist-syntax-guide/'
     static fuelBugTileGuide:string = 'https://gakneeboard.wordpress.com/2024/07/30/fuel-bug-tile-guide/'
     static printGuide:string = 'https://gakneeboard.wordpress.com/print-guide/'
-    static radioFlowTileGuide:string = 'https://gakneeboard.wordpress.com/2024/08/03/radio-flow-tile-guide/'
+    static radioTileGuide:string = 'https://gakneeboard.wordpress.com/radio-tile-guide/'
     static sunlightTileGuide:string = 'https://gakneeboard.wordpress.com/2024/08/10/sunlight-tile-guide/'
 
     // Youtube
