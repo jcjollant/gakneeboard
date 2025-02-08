@@ -1,4 +1,4 @@
-import { placeHolderSubtitle, visitSkipBanner, newTemplate } from './shared'
+import { placeHolderSubtitle, visitSkipBanner, newTemplate, replacePage, pageNameNavlog } from './shared'
 
 function checkBlankState() {
     cy.get(':nth-child(1) > .headerTitle').contains("NavLog")
@@ -329,17 +329,17 @@ describe('navlog Page', () => {
     visitSkipBanner()
     newTemplate()
     // set both pages to Navlog
-    cy.get('.page0 > .list > [aria-label="NavLog"]').click()
-    cy.get('.page1 > .list > [aria-label="NavLog"]').click()
+    replacePage(0, pageNameNavlog)
+    replacePage(1, pageNameNavlog)
 
     // configure page two as a continuer
-    cy.get('.page1 > :nth-child(1) > .headerTitle > div').click()
+    cy.get('.page1 .headerTitle').click()
     cy.get('.choiceInactive').click()
     cy.get('.continueHeader').contains('This page will show the overflow')
     cy.get('[aria-label="Apply"]').click()
 
     // Add entries to the first page
-    cy.get('.page0 > :nth-child(1) > .headerTitle').click()
+    cy.get('.page0 .headerTitle').click()
     cy.get('.createAirportFrom > .p-inputgroup > .p-inputtext').type('KRNT', {delay:0})
     cy.get('.createAirportTo > .p-inputgroup > .p-inputtext').type('KSFF', {delay:0})
     const altitudes = [...Array(4).fill(2500), ...Array(8).fill(4500), ...Array(7).fill(4500) , ...Array(4).fill(4500)]

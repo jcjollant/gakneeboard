@@ -111,9 +111,11 @@ export function newTemplate() {
 }
 
 export function replacePage(pageNum, newPage=undefined) {
-    cy.get(`.page${pageNum} .replaceButton`).click({force:true})
-    cy.get('.p-confirm-dialog-accept').click()
-    cy.get('.contentPage > .headerTitle').contains('Page Selection')
+    if( Cypress.$(`.page${pageNum} .replaceButton`).length) {
+        cy.get(`.page${pageNum} .replaceButton`).click({force:true})
+        cy.get('.p-confirm-dialog-accept').click()
+        cy.get('.contentPage > .headerTitle').contains('Page Selection')
+    }
     if(newPage) cy.get(`.page${pageNum} [aria-label="${newPage}"]`).click()
 }
 
