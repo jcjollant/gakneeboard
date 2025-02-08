@@ -120,7 +120,21 @@ const templateDemoChecklist = new Template('Checklist Demo', 'A C172 preflight C
   [page0DemoChecklist,page1DemoChecklist,page2DemoChecklist])
 
 // Skyhawk
-const page0DemoSkyhawk = { type:PageType.tiles, data:[{"id":0,"name":"airport","data":{"code":"0S9","rwy":"09-27","rwyOrientation":"magnetic","corners":["weather","twr","field","tpa"]}},{"id":1,"name":"atis","data":{"mode":"compact"}},{"id":2,"name":"radios","data":[{"mhz":"127.750","name":"KBFI ATIS"},{"mhz":"118.300","name":"KBFI TWR"},{"mhz":"119.025","name":"0S9 AWOS-3P"},{"mhz":"123.000","name":"0S9 CTAF"},{"mhz":"128.650","name":"KPAE ATIS"},{"mhz":"120.200","name":"KPAE TWR"},{"mhz":"122.900","name":"LK WA CTAF"},{"mhz":"118.200","name":"CHINOOK A MOA"}]},{"id":3,"name":"checklist","data":{"name":"Route / Alt","items":[{"c":"0S9","r":"4,500"},{"c":"JANNE","r":"2,500"},{"c":"SEKIE","r":"2,000"},{"c":"KRNT TPA","r":"1,000"},{"s":"","t":"blank"},{"s":"Alternate"},{"c":"KBFI TPA","r":"1,022"}],"theme":"blue"}},{"id":4,"name":"airport","data":{"code":"KRNT","rwy":"16-34","rwyOrientation":"vertical","corners":["weather","twr","field","tpa"]}},{"id":5,"name":"notes","data":{}}]}
+const page0DemoSkyhawk = { type:PageType.tiles, data:[{"id":0,"name":"airport","data":{"code":"0S9","rwy":"09-27","rwyOrientation":"magnetic","corners":["weather","twr","field","tpa"]}},
+  {"id":1,"name":"atis","data":{"mode":"compact"}},
+  {"id":2,"name":"radios","data":[
+    {mhz:127.750,name:'KBFI ATIS', type:FrequencyType.weather},
+    {mhz:118.300,name:'KBFI TWR', type:FrequencyType.tower},
+    {mhz:119.025,name:'0S9 AWOS-3P', type:FrequencyType.weather},
+    {mhz:123.000,name:'0S9 CTAF', type:FrequencyType.ctaf},
+    {mhz:128.650,name:'KPAE ATIS', type:FrequencyType.weather},
+    {mhz:120.200,name:'KPAE TWR', type: FrequencyType.tower},
+    {mhz:122.900,name:'LK WA CTAF', type: FrequencyType.ctaf},
+    {mhz:118.200,name:'CHINOOK A MOA'}
+    ]},
+  {"id":3,"name":"checklist","data":{"name":"Route / Alt","items":[{"c":"0S9","r":"4,500"},{"c":"JANNE","r":"2,500"},{"c":"SEKIE","r":"2,000"},{"c":"KRNT TPA","r":"1,000"},{"s":"","t":"blank"},{"s":"Alternate"},{"c":"KBFI TPA","r":"1,022"}],"theme":"blue"}},
+  {"id":4,"name":"airport","data":{"code":"KRNT","rwy":"16-34","rwyOrientation":"vertical","corners":["weather","twr","field","tpa"]}},
+  {"id":5,"name":"notes","data":{}}]}
 const page1DemoSkyhawk = { type:PageType.tiles, data:[{"id":0,"name":"checklist","data":{"name":"Limits","items":[{"c":"Vne","r":"163"},{"c":"Va @ 2,550/2,200","r":"105/98"},{"c":"Vno","r":"129"},{"c":"Vfe 10/20","r":"110/85"},{"c":"Vg","r":"68"},{"c":"Vs0/1","r":"40/48"},{"c":"Max XWind","r":"15kts"},{"c":"Landing","r":" 1,300ft"},{"c":"TOW","r":"2,550"},{"s":"","t":"blank"}],"theme":"purple"}},{"id":1,"name":"airport","data":{"code":"KBFI","rwy":"14L-32R","rwyOrientation":"vertical","corners":["weather","twr","field","tpa"]}},{"id":2,"name":"radios","data":{"mode":"nordo","list":[]}},{"id":3,"name":"sunlight","data":{"from":"0S9","to":"0S9"}},{"id":4,"name":"atis","data":{"mode":"categories"}},{"id":5,"name":"atis","data":{"mode":"cloudClear"}}]}
 const templateDemoSkyhawk = new Template('C172 VFR','Skyhawk VFR Reference Template', false,
   [page0DemoSkyhawk,page1DemoSkyhawk])
