@@ -50,7 +50,7 @@ export class Runway {
     length: number;
     width: number;
     ends: RunwayEnd[];
-    surface: RunwaySurface;
+    surface: RunwaySurface|undefined;
     freq: number;
     public static rightPattern:string = 'R';
     public static leftPattern:string = 'L';
@@ -62,7 +62,10 @@ export class Runway {
         const ends:string[]  = name.split('-')
         this.ends = []
         this.ends.push( ...ends.map( (end) =>  new RunwayEnd(end, parseInt(end)*10) ) ); 
+        this.freq = 0;
+        this.surface = undefined;
     }
+
     public getEnd(name:string):RunwayEnd|undefined {
         return this.ends.find((end) => end.name === name)
     }
@@ -107,6 +110,21 @@ export class Runway {
 
     public setSurface(type:string, condition:string) {
         this.surface = new RunwaySurface(type, condition)
+    }
+
+
+    static copy(from:any):Runway {
+        if(!from) return Runway.noRunway()
+
+        const runway:Runway = new Runway(from.name, from.length, from.width)
+        runway.ends = from.ends.map((end:any) => new RunwayEnd(end.name, end.mag))
+        runway.surface = new RunwaySurface(from.surface.type, from.surface.cond)
+        runway.freq = from.freq
+        return runway
+    }
+
+    static noRunway(): Runway {
+        return new Runway('', 0, 0);
     }
 
     static isValidEndName(name:string):boolean {
@@ -185,6 +203,7 @@ export class Airport {
     code: string;
     name: string;
     elev: number;
+    tpa: number|undefined;
     freq: Frequency[];
     rwys: Runway[];
     custom: boolean;
@@ -201,6 +220,7 @@ export class Airport {
         this.code = code;
         this.name = name;
         this.elev = elevation;
+        this.tpa = undefined;
         this.freq = [];
         this.rwys = [];
         this.custom = false;
@@ -217,6 +237,7 @@ export class Airport {
     // copy constructor
     static copy(airport:any) {
         const newAirport = new Airport(airport.code, airport.name, airport.elev)
+        newAirport.tpa = airport.tpa
         newAirport.freq = airport.freq
         newAirport.rwys = airport.rwys
         newAirport.custom = airport.custom
@@ -291,6 +312,10 @@ export class Airport {
         const patterns = ['ATIS','ASOS','AWOS','Weather']
         // test wether freq.name contains any of the patterns
         return this.freq.find((freq) => (patterns.some(p => freq.name.includes(p))))
+    }
+
+    isValid():boolean {
+        return Airport.isValidCode(this.code) && Airport.isValidVersion(this.version) && this.rwys.length > 0;
     }
 
     setEffectiveDate(date:string) {
