@@ -22,3 +22,9 @@ Run Cypress tests
  * One Page + Normal + Portrait
  * One Page + Flipped + Portrait
 * Load Default Checklist
+
+
+## Nice tricls
+Test if element exist without crashing
+    if( Cypress.$(`.page${pageNum} .replaceButton`).length)
+
