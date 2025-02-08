@@ -92,7 +92,7 @@ const value = ref('')
 const labelUnder = ref(false)
 
 const props = defineProps({
-    airport: { type: Airport, default: null},
+    airport: { type: Object, default: null},
     data: { type: Object, default: null},
     runway: { type: Object, default: null},
     flip: { type: Boolean, default: false}
@@ -250,11 +250,11 @@ function showField( field) {
                     label.value = 'RWY ' + runway.name
                 } else {
                     // assign mhz or '-' if the frequency is undefined
-                    let freq = getFrequency(airport.freq, 'TWR')
+                    let freq = airport.getFreqTower()
                     if( freq) {
                         label.value = 'TWR'
                     } else {
-                        freq = getFreqCtaf(airport.freq)
+                        freq = airport.getFreqCtaf()
                         label.value = 'CTAF'
                     }
                     value.value = Formatter.frequency(freq)
