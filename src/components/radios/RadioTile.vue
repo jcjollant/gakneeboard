@@ -16,7 +16,7 @@
                         <Button icon="pi pi-search" title="Frequency Lookup" link
                             @click="onLookup" class="lookupBtn"></Button>
                     </div>
-                    <ActionBar @apply="onApply" @cancel="onCancel" :help="UserUrl.radioFlowTileGuide" />
+                    <ActionBar @apply="onApply" @cancel="onCancel" :help="UserUrl.radioTileGuide" />
                 </div>
                 <div v-else class="clickable" @click="onEditMode">
                     <PlaceHolder v-if="frequencies.length==0" title="No Radios" subtitle="Click Here to Add Frequencies" />
