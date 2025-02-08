@@ -57,7 +57,7 @@ const templates = ref([])
 const toast = useToast()
 
 onMounted( () => {
-    // console.log('[Home.onMounted]')
+    // console.log('[Home.onMounted] templates', currentUser.templates.length)
     templates.value = currentUser.templates
     // console.log('[Home.onMounted] template length', templates.value.length)
     currentUser.addListener(userUpdate);
@@ -68,17 +68,9 @@ onMounted( () => {
 })
 
 onUnmounted( () => {
+    // console.log('[Home.onUnmounted]')
     currentUser.removeListener(userUpdate)
 })
-
-// function checkThumbnails() {
-//     for(const t of currentUser?.templates) {
-//         if(!LocalStore.thumbnailGet(t.id)) {
-//             toast.add(getToastWarning('Missing Thumbnails', 'Open Templates to recreate thumbnails', 5000))
-//             return;
-//         }
-//     }
-// }
 
 function onDemoSelection(name) {
     const templateData = getTemplateDataFromName(name)
@@ -103,7 +95,7 @@ function onTemplateSelection(index) {
 }
 
 function userUpdate() {
-    // console.log('[Home.userUpdate]')
+    console.log('[Home.userUpdate]')
     templates.value = currentUser.templates
     // console.log('[Home.userUpdate] template length', templates.value.length)
 }
