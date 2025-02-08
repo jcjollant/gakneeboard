@@ -45,7 +45,7 @@ export class CurrentUser {
     }
 
     notify() {
-      // console.log('[CurrentUser.update] notifying listeners', this.listeners.length)
+      // console.log('[CurrentUser.update] notifying listeners', this.listeners.length, this.templates.length)
       for(const listener of this.listeners) {
         listener(this)
       }
@@ -62,7 +62,7 @@ export class CurrentUser {
     removeTemplate(id:number) {
       // console.log('[CurrentUser.removeTemplate]', id, this.templates.length)
       // no need to resort, just remove the entry
-      this.templates = this.templates.filter((t) => t.id !== id);
+      this.templates = this.templates.filter((t) => t.id != id);
       // console.log('[CurrentUser.removeTemplate]', this.templates.length)
       this.notify()
     }
@@ -116,5 +116,6 @@ export class CurrentUser {
         this.templates[index] = templateNoData;
       }
       this.sortTemplates()
+      this.notify()
     }
 }
