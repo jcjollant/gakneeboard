@@ -28,6 +28,10 @@ Save files in c:\src\kneeboard.ga\data
 Refresh currentEffectiveDate in backend/adip/Adip.ts
 Refresh currentAsOf in test/constants.ts
 
+## Testing with Stripe
+.\stripe.exe listen --forward-to locashost:3000/webhook
+Call http://localhost:3000/checkout with user and product
+
 ## Authentication
 ### Apple
 * https://developer.apple.com/account/resources/identifiers/list/serviceId

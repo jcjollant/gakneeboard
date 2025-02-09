@@ -1,6 +1,7 @@
 import { sql } from '@vercel/postgres';
 import { User } from '../models/User'
 import { Dao } from './Dao';
+import { AccountType } from '../models/AccountType';
 
 export class UserDao extends Dao {
     static modelVersion:number = 1;
@@ -71,4 +72,11 @@ export class UserDao extends Dao {
             resolve( user)
         })
     }
+
+    static async updateType(userId: number, accountType: AccountType):Promise<boolean> {
+        // console.log( '[UserDao.updateType] ' + userId + ' to ' + accountType)
+        const result = await sql`UPDATE users SET account_type=${accountType} WHERE id=${userId}`
+        return result.rowCount == 1;
+    }
+
 }

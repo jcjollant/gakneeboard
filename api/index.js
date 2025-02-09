@@ -3,6 +3,7 @@ import cors from "cors";
 import multer from "multer"
 // const cors = require('cors');
 import { GApi, GApiError } from '../backend/GApi'
+import { Stripe } from '../backend/Stripe'
 import { UserTools } from '../backend/UserTools'
 import { Maintenance } from '../backend/Maintenance'
 import { NavlogTools } from "../backend/NavlogTools";
@@ -10,6 +11,7 @@ const port = 3000
 const app = express();
 
 app.use(cors())
+app.use('/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json()) // for parsing application/json
 
 // console.log("Dev Mode")
@@ -115,6 +117,15 @@ app.post('/authenticate', async(req,res) => {
         res.send(user)
     }).catch( (e) => {
         catchError(res, e, 'POST /authenticate')
+    })
+})
+
+app.post('/checkout', async (req,res) => {
+    const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+    await Stripe.checkout(payload.user, payload.product, payload.source).then( (url) => {
+        res.send({url: url})
+    }).catch( (e) => {
+        catchError(res, e, 'POST /checkout')
     })
 })
 
@@ -308,6 +319,18 @@ app.get('/sunlight/:from/:to/:dateFrom/:dateTo?', async (req, res) => {
         console.log(e)
         catchError(res, e, 'GET /sunlight/:from/:to/:date')
     }        
+})
+
+/**
+ * This is called by Stripe upon subscription event
+ */
+app.post('/webhook', async (req, res) => {
+    Stripe.webhook(req).then(() => {
+        res.send()
+    }).catch( (e) => {
+        console.log(e)
+        res.status(400).send()
+    })
 })
 
 if(process.env.__VERCEL_DEV_RUNNING != "1") {
