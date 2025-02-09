@@ -3,10 +3,12 @@ import Template from '../views/Template.vue';
 import Home from '../views/Home.vue';
 import PricingPlans from '../views/PricingPlans.vue';
 import Print from '../views/Print.vue';
+import ThankYou from '../views/ThankYou.vue';
 
 const routes = [
     { path: '/', name: 'Home', component: Home },
     { path: '/plans', name: 'Plans', component: PricingPlans },
+    { path: '/thankyou', name: 'Thank you', component: ThankYou },
     { path: '/print', name: 'Print', component: Print },
     { path: '/template/:id', name: 'Template', component: Template }
 ]

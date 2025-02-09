@@ -33,7 +33,7 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { currentUser, routeToLocalTemplate } from '../assets/data';
 import { useRouter } from 'vue-router';
 import { getTemplateDataFromName, SheetName } from '../assets/sheetData';
-import { useToast } from 'primevue/usetoast';
+import { useToast } from 'primevue/useToast';
 import { getToastError } from '../assets/toast';
 import Menu from '../components/menu/Menu.vue';
 import PlaceHolder from '../components/shared/PlaceHolder.vue';

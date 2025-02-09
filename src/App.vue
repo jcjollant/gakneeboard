@@ -123,8 +123,6 @@ function onClosePopup(remember) {
 .application {
   display: flex;
   flex-flow: column;
-  height: 100%;
-  width: 100%;
 }
 .feedbackButton {
   position: fixed;

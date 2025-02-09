@@ -48,67 +48,89 @@
         </div>
 
         <div class="plan-footer">
-          <button :class="['subscribe-button', { 'primary': plan.popular }]" @click="onPlan(plan)">
+          <button :class="['subscribe-button', { 'primary': plan.popular }]" @click="onPlan(plan.code)">
             {{ plan.price === "0" ? "Get Started" : "Subscribe Now" }}
           </button>
         </div>
       </div>
     </div>
-    <div class="pricing-footer">(*) Content not backed up in the cloud. Consider saving your creations.</div>
+    <div class="pricing-footer">(*) Local pages are not saved in the cloud. Content will be lost upon cleaning browser cache.</div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router';
+import { Checkout } from '../assets/Checkout';
+import { currentUser } from '../assets/data';
+import { useToast } from 'primevue/useToast'
+import { useToaster } from '../assets/Toaster';
 import Menu from '../components/menu/Menu.vue';
 
 const plans = ref([
   {
-    name: "Free",
+    name: "Flight Simmer",
     price: "0",
     description: "Every penny counts",
     features: {
-      "Local Pages (*)": "10",
-      "Saved Kneeboard Pages": "5",
+      "Local Pages (*)": "Unlimited",
       "Checklist": "Single",
-      "Versioning": false,
+      "Saved Kneeboard Pages": false,
+      "Checklist Versioning": false,
       "Charts": false,
       "Exports": false
     },
-    popular: false
+    popular: false,
+    code: 'fs1'
   },
   {
-    name: "Standard",
+    name: "Private Pilot",
     price: "4.99",
     description: "Perfect for most Pilots",
     features: {
       "Local Pages (*)": "Unlimited",
-      "Saved Kneeboard Pages": "20",
       "Checklist": "Single, Double",
-      "Versioning": true,
-      "Charts": true,
+      "Saved Kneeboard Pages": "20",
+      "Checklist Versioning": true,
+      "Charts": false,
       "Exports": false
     },
-    popular: true
+    popular: true,
+    code: 'pp1'
   },
   {
-    name: "Pro",
+    name: "Instrument Pilot",
     price: "9.99",
     description: "For power users",
     features: {
       "Local Pages (*)": "Unlimited",
       "Saved Kneeboard Pages": "50 pages",
       "Checklist": "Single, Double, Triple",
-      "Versioning": true,
+      "Checklist Versioning": true,
       "Charts": true,
       "Exports": true
     },
-    popular: false
+    popular: false,
+    code: 'ip1'
   }
 ])
+const router = useRouter()
+const toaster = useToaster(useToast())
 
-function onPlan(plan) {
-  console.log('[PricingPlans.onPlan]',plan.name)
+function onPlan(code:string) {
+  // console.log('[PricingPlans.onPlan]',code)
+  if(code == 'fs1') {
+    router.push('/')
+  } else {
+    toaster.info('Calling Tower', 'Stand By...')
+    Checkout.plan(code, currentUser).then( (url:string) => {
+      // console.log('[PricingPlans.onPlan]',url)
+      window.location.href = url
+    }).catch( (err:any) => {
+      console.error(err)
+    })
+  }
+
 }
 </script>
 

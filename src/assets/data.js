@@ -1,7 +1,5 @@
 export const version = 5064
 
-const apiRootUrl = GApiUrl.root
-
 import axios from 'axios'
 import { Airport } from '../model/Airport.ts'
 import { Backend } from './Backend.ts'
@@ -33,7 +31,7 @@ function airportCurrent( airport) {
 // Payload should look like {source:'google',token:'some.token'}
 export async function authenticationRequest( payload) {
   return new Promise( (resolve, reject) => {
-    const url = apiRootUrl + 'authenticate'
+    const url = GApiUrl.root + 'authenticate'
     axios.post(url, payload, contentTypeJson)
       .then( response => {
         // remove unknown airports because some may be due to unauhtenticated user
@@ -186,7 +184,7 @@ export async function getAirport( codeParam, group = false) {
  */
 export async function getBackend() {
   backend.promise = new Promise( (resolve) => {
-    getUrlWithUser(apiRootUrl)
+    getUrlWithUser(GApiUrl.root)
       .then( response => {
         // console.log('[data.getBackend]', JSON.stringify(response.data))
         if( !response || !response.data) {
@@ -257,7 +255,7 @@ export function getFreqWeather(freqList) {
  */
 export async function getMaintenance(code) {
   return new Promise( (resolve, reject) => {
-    const url = apiRootUrl + 'maintenance/' + code
+    const url = GApiUrl.root + 'maintenance/' + code
     axios.get(url).then( response => {
         // console.log('[data.getMaintenance]', JSON.stringify(response.data))
         if( typeof response.data === 'object' && 'sha256' in response.data) {
@@ -299,7 +297,7 @@ export async function getSunlight( from, to=null, date=null, night=false) {
     return sunlightCache[params]
   }
 
-  let url = apiRootUrl + 'sunlight/' + params
+  let url = GApiUrl.root + 'sunlight/' + params
   return axios.get( url)
     .then( response => {
       sunlightCache[params] = response.data
@@ -316,7 +314,7 @@ function getSunlightDate(date) {
 }
 
 export async function postPrint(options) {
-  const url = apiRootUrl + 'print'
+  const url = GApiUrl.root + 'print'
   return axios.post(url, options, contentTypeJson)
     .then( response => {
       return response.data
@@ -339,7 +337,7 @@ export function reportError(message) {
  */
 async function requestAllAirports( codes) {
   // console.log( 'perform group request for ' + codes.length)
-  const url = apiRootUrl + 'airports/' + codes.join('-');
+  const url = GApiUrl.root + 'airports/' + codes.join('-');
   await getUrlWithUser(url)
     .then( response => {
         // console.log( JSON.stringify(response.data))
@@ -370,7 +368,7 @@ async function requestOneAirport( code) {
   // console.log( '[data.requestOneAirport]', code)
   let airport = null
 
-  const url = apiRootUrl + 'airport/' + code;
+  const url = GApiUrl.root + 'airport/' + code;
   await getUrlWithUser(url)
     .then( response => {
         // console.log( '[data.requestOneAirport] received', JSON.stringify(response.data))
@@ -401,7 +399,7 @@ export function routeToLocalTemplate(router, template) {
  */
 export async function sendFeedback(text,contactMe=true) {
   // console.log( '[data] feedback ' + JSON.stringify(data))
-  const url = apiRootUrl + 'feedback'
+  const url = GApiUrl.root + 'feedback'
   const payload = {version:version,feedback:text}
   if( contactMe) {
     payload.user = currentUser.sha256;
@@ -432,7 +430,7 @@ async function waitForAirportData( code) {
 }
 
 export async function saveCustomAirport(airport) {
-  const url = apiRootUrl + 'airport'
+  const url = GApiUrl.root + 'airport'
   const payload = {user:currentUser.sha256, airport:airport}
   await axios.post( url, payload, contentType)
     .then( response => {
