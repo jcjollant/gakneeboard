@@ -12,6 +12,7 @@ const app = express();
 
 app.use(cors())
 app.use('/webhook', express.raw({ type: 'application/json' }));
+app.use('/authenticate', express.json());
 app.use(express.json()) // for parsing application/json
 
 // console.log("Dev Mode")
