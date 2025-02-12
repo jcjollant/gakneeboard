@@ -6,6 +6,7 @@ import { jcHash, jcUserId, jcToken, jcName, jcEmail } from './constants'
 import { UserDao } from '../backend/dao/UserDao';
 import { UserMiniView } from '../backend/models/UserMiniView';
 import { exitCode } from 'process';
+import { AccountType } from '../backend/models/AccountType';
 
 process.env.POSTGRES_URL=postgresUrl
 
@@ -36,6 +37,7 @@ describe( 'User', () => {
         expect(u.email).toBe('')
         expect(u.name).toBe('')
         expect(u.maxTemplates).toBe(User.defaultMaxTemplates)
+        expect(u.accountType).toBe(AccountType.simmer)
     })    
 
     test('setters', () => {
@@ -56,13 +58,14 @@ describe( 'User', () => {
         const email = 'paul@example.com'
         const maxTemplates = 12
         const data:string = JSON.stringify( {name:name,source:source,email:email,maxTemplates:maxTemplates})
-        const user:User = User.fromJson(1,'sha',data)
+        const user:User = User.fromJson(1,'sha',data,AccountType.beta)
         expect(user.id).toBe(1)
         expect(user.sha256).toBe('sha')
         expect(user.name).toBe(name)
         expect(user.source).toBe(source)
         expect(user.email).toBe(email)
         expect(user.maxTemplates).toBe(maxTemplates)
+        expect(user.accountType).toBe(AccountType.beta)
     })
 })
 
