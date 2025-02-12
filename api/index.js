@@ -3,7 +3,7 @@ import cors from "cors";
 import multer from "multer"
 // const cors = require('cors');
 import { GApi, GApiError } from '../backend/GApi'
-import { Stripe } from '../backend/Stripe'
+// import { Stripe } from '../backend/Stripe'
 import { UserTools } from '../backend/UserTools'
 import { Maintenance } from '../backend/Maintenance'
 import { NavlogTools } from "../backend/NavlogTools";
@@ -120,14 +120,14 @@ app.post('/authenticate', async(req,res) => {
     })
 })
 
-app.post('/checkout', async (req,res) => {
-    const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
-    await Stripe.checkout(payload.user, payload.product, payload.source).then( (url) => {
-        res.send({url: url})
-    }).catch( (e) => {
-        catchError(res, e, 'POST /checkout')
-    })
-})
+// app.post('/checkout', async (req,res) => {
+//     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+//     await Stripe.checkout(payload.user, payload.product, payload.source).then( (url) => {
+//         res.send({url: url})
+//     }).catch( (e) => {
+//         catchError(res, e, 'POST /checkout')
+//     })
+// })
 
 /**
  * Get airport diagram PDF
