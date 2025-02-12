@@ -1,4 +1,5 @@
 import { createHash } from 'crypto'
+import { AccountType } from './AccountType';
 
 export class User {
     id:number;
@@ -7,6 +8,7 @@ export class User {
     source:string;
     email:string;
     maxTemplates:number;
+    accountType:AccountType;
 
     public static defaultMaxTemplates:number = 5;
 
@@ -17,6 +19,7 @@ export class User {
         this.source = '';
         this.email = '';
         this.maxTemplates = User.defaultMaxTemplates;
+        this.accountType = AccountType.simmer;
     }
 
 
@@ -29,13 +32,15 @@ export class User {
     }
  
     // creates a user from it's data representation
-    public static fromJson(id:number, sha256:string, rawData:string):User {
+    public static fromJson(id:number, sha256:string, rawData:string, accountType:AccountType):User {
+        // console.log('[User.fromJson]', id, sha256, accountType)
         const user = new User(id, sha256)
         const data = JSON.parse(rawData)
         if(data.source) user.setSource(data.source)
         if(data.email) user.setEmail(data.email)
         if(data.name) user.setName(data.name)
         if(data.maxTemplates) user.setMaxTemplates(data.maxTemplates)
+        user.setAccountType(accountType)
 
         return user
     }
@@ -55,4 +60,7 @@ export class User {
     public setName( newName:string) {
         this.name = newName;
     }    
+    public setAccountType( newType:AccountType) {
+        this.accountType = newType;
+    }
 }
