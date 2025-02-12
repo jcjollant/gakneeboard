@@ -19,7 +19,7 @@ export const jcSource = 'google'
 export const samplePublicationCode = '8Q'
 
 export const currentAsOf = 20250123;
-export const currentAirportModelVersion = 8
+export const currentAirportModelVersion = 9
 export const krntAtcs =  [
     {mhz:119.2, useCount:6, name:'SEATTLE-TACOMA APPROACH CONTROL'},
     {mhz:120.1, useCount:4, name:'SEATTLE-TACOMA APPROACH CONTROL'},
