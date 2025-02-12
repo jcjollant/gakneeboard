@@ -39,10 +39,10 @@ function getIcon():Array<string> {
     // console.log("[FrequencyBox.getIcon]", props.freq?.type)
     let icon:string|undefined = undefined
     switch(props.freq?.type) {
-        case FrequencyType.ctaf: icon = 'walkie-talkie'; break;
+        case FrequencyType.ctaf: icon = 'plane'; break;
         case FrequencyType.navaid: icon = 'tower-cell'; break;
         case FrequencyType.tower: icon = 'tower-observation'; break;
-        case FrequencyType.clearance: icon = 'plane-circle-check';
+        case FrequencyType.clearance: icon = 'truck-fast'; break;
         case FrequencyType.tracon: icon = 'route'; break;
         case FrequencyType.weather: icon = 'cloud-sun-rain'; break;
     }

@@ -37,11 +37,12 @@ export class Frequency {
     }
 
     static typeFromString(s:string):FrequencyType {
+        console.log('[Frequency.typeFromString] ->' + s + '<-' )
         if(!s) return FrequencyType.unknown
 
         switch(s.toLowerCase()) {
             case 'clearance':
-            case 'CD/P':
+            case 'cd/p':
             case FrequencyType.clearance: 
                 return FrequencyType.clearance;
             case 'ctaf': 
