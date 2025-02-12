@@ -1,3 +1,5 @@
+## 02/11/2025 5070
+* New Icons for Clearance and CTAF
 ## 02/07/2025 5064
 * Updated radio tile help link
 ## 02/03/2025 5060 5061 5062
