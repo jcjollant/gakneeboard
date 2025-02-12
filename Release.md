@@ -1,3 +1,5 @@
+## 02/11/2025 5070
+* Added account type to User model
 ## 02/01/2025 5050
 * Filtering frequencies below 118
 * Added notes to frequencies
