@@ -1,6 +1,7 @@
 import { duplicate } from "./data";
 import { LocalStore } from "../lib/LocalStore";
 import { User } from "../model/User";
+import { AccountType } from "../model/AccounType";
 
 export class CurrentUser {
     loggedIn:boolean
@@ -9,7 +10,7 @@ export class CurrentUser {
     templates:any[]
     maxTemplateCount:number;
     listeners:{(user: CurrentUser):void}[];
-
+    accountType:AccountType;
 
     constructor() {
       // console.log('[CurrentUser.constructor] constructor called')
@@ -18,6 +19,8 @@ export class CurrentUser {
       this.name = "";
       this.templates = [];
       this.maxTemplateCount = 0;
+      this.accountType = AccountType.unknown
+
       this.listeners = [];
     }
 
@@ -87,6 +90,8 @@ export class CurrentUser {
       if(data) {
           this.sha256 = data.sha256;
           this.name = data.name;
+          this.accountType = data.accountType;
+          
           this.templates = data.templates ? data.templates : [];
           this.sortTemplates()
           this.maxTemplateCount = Number(data.maxTemp ? data.maxTemp : 0);
