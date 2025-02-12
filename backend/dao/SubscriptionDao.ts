@@ -12,7 +12,7 @@ export class SubscriptionDao {
      * @returns 
      */
     public static async update(subscriptionId:string, customerId:string, planId:string|undefined, userId:number|undefined):Promise<Subscription> {
-        console.log('[SubsriptionDao.update] subscriptionId', subscriptionId, 'customerId', customerId, 'planId', planId, 'userId', userId)
+        // console.log('[SubsriptionDao.update] subscriptionId', subscriptionId, 'customerId', customerId, 'planId', planId, 'userId', userId)
         return new Promise<Subscription>(async (resolve, reject) => {
             if(!planId && !userId) reject( 'Need either plan id or user id provided')
 

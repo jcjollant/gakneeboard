@@ -66,7 +66,7 @@ export class Stripe {
                 let subscriptionId:string;
                 switch (event.type) {
                     case 'checkout.session.completed':
-                        console.log('[Stripe.webhook] event', event.type)
+                        // console.log('[Stripe.webhook] event', event.type)
                         // console.log('[Stripe.webhook] checkout.session.completed', JSON.stringify(event))
                         // correlate Stripe customer and our user Id
                         const userId = event.data.object.metadata.gakUserId;
@@ -77,7 +77,7 @@ export class Stripe {
                         })
                         break;
                     case 'customer.subscription.created':
-                        console.log('[Stripe.webhook] event', event.type)
+                        // console.log('[Stripe.webhook] event', event.type)
                         subscriptionId = event.data.object.id;
                         customerId = event.data.object.customer;
                         planId = event.data.object.plan.id;
@@ -96,7 +96,7 @@ export class Stripe {
                     //     // console.log('[Stripe.webhook] customer.subscription.updated', subscriptionId, customerId, planId)
                     //     break
                     case 'customer.subscription.deleted':
-                        console.log('[Stripe.webhook] event', event.type)
+                        // console.log('[Stripe.webhook] event', event.type)
                         const customerSubscriptionDeleted = event.data.object
                         break
                     default:
