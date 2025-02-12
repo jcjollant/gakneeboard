@@ -324,14 +324,14 @@ app.get('/sunlight/:from/:to/:dateFrom/:dateTo?', async (req, res) => {
 /**
  * This is called by Stripe upon subscription event
  */
-app.post('/webhook', async (req, res) => {
-    Stripe.webhook(req).then(() => {
-        res.send()
-    }).catch( (e) => {
-        console.log(e)
-        res.status(400).send()
-    })
-})
+// app.post('/webhook', async (req, res) => {
+//     Stripe.webhook(req).then(() => {
+//         res.send()
+//     }).catch( (e) => {
+//         console.log(e)
+//         res.status(400).send()
+//     })
+// })
 
 if(process.env.__VERCEL_DEV_RUNNING != "1") {
     app.listen(port, () => console.log("[index] Server ready on port " + port));
