@@ -14,10 +14,13 @@
     </Dialog>
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" 
       @authentication="onAuthentication" />
-    <div class="session">
-        <FAButton v-if="loggedIn" :label="currentUser.name" title="Account Details" :menu="true" class="signout"
+    <div class="session" v-if="loggedIn">
+      <AccountTypeTag :type="currentUser.accountType" />
+      <FAButton v-if="loggedIn" :label="currentUser.name" title="Account Details" :menu="true" class="signout"
           @click="onAccountDetails"></FAButton>
-        <FAButton v-else label="Sign In" icon="fa-user" title="Sign In to enable custom data" :menu="true"
+    </div>
+    <div class="session" v-else>
+        <FAButton label="Sign In" icon="fa-user" title="Sign In to enable custom data" :menu="true"
           @click="showSignIn=true"></FAButton>
     </div>
 </template>
@@ -27,12 +30,13 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { currentUser } from '../../assets/data';
 import { useConfirm } from 'primevue/useconfirm';
 import { useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
+import { useToast } from 'primevue/useToast';
 import { useToaster } from '../../assets/Toaster';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import FAButton from '../shared/FAButton.vue';
 import SignIn from '../signin/SignIn.vue';
+import AccountTypeTag from './AccountTypeTag.vue';
 
 const confirm = useConfirm()
 const pagesCount = ref(0)
@@ -119,7 +123,10 @@ function onUserUpdate(currentUser:any) {
   text-align: right;
 }
 .session {
-    background-color: lightgrey;
+  display: flex;  
+  align-items: center;
+  gap: 5px;
+  background-color: lightgrey;
 }
 .signout {
     padding: 0px 10px;
