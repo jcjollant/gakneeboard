@@ -111,11 +111,11 @@
             <div class="classCDLow">
                 <div class="above">1,000ft</div>
                 <div class="at">
-                    <div>3 sm</div>
+                    <div class="left">3 sm</div>
                     <font-awesome-icon icon="fa-solid fa-cloud" />
-                    <div>2,000ft</div>
+                    <div class="right">2,000ft</div>
                 </div>
-                <div class="above">500ft</div>
+                <div class="below">500ft</div>
             </div>
             <div class="classGMid req" title="1sm visibility, 1,000ft above, 500ft below, 2,000ft horizontal">1:152</div>
             <div class="classGLow req" title="1sm visibility and Clear of Clouds">1:cc<span class="altMax" title="Below 1,200ft AGL">1k2 AGL</span></div>
