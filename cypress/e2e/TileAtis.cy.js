@@ -56,6 +56,11 @@ describe('ATIS Tile', () => {
     for(let index=0; index < expectedClearances.length; index++) {
       cy.get('.page0 .tile4').contains(expectedClearances[index])
     }
+    const expectedFontSize = '12.8px' // 0.8 * 16
+    const testFontSize = ['.left', '.right', '.above', '.below']
+    for(let test of testFontSize) {
+      cy.get(`.classCDLow ${test}`).should('have.css', 'font-size', expectedFontSize)
+    }  
 
     // Two Full ATIS side by side should merge when both are notes
     replaceTile(0,5,TileTypeLabel.atis)
