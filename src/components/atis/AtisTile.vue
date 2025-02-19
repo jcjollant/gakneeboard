@@ -492,7 +492,7 @@ function onHeaderClick() {
     width: 100%;
     padding: 2px 4px;
 }
-.at {
+.windEx .at {
     display: flex;
     font-size: 15px;
     font-weight: bolder;
