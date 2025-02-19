@@ -1,3 +1,8 @@
+## 02/18/2025
+* Fixed Cloud Clearance layout
+* Fixed compact ATIS layout
+* Removed logs on frequency type
+* Removed logs on user update
 ## 02/11/2025 5070
 * New Icons for Clearance and CTAF
 ## 02/07/2025 5064
