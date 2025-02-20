@@ -113,16 +113,16 @@ onMounted(() => {
     opacity: 0.4;
 }
 .ctaf {
-    color: #990099;
+    color: var(--text-ctaf);
 }
 .navaid {
-    color: #006666;
+    color: var(--text-navaid);
 }
 .tower, .tracon {
-    color: #000088;
+    color: var(--text-atc);
 }
 .weather {
-    color: #666600;
+    color: var(--text-weather);
 }
 
 </style>
