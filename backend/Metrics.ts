@@ -34,6 +34,8 @@ enum Key {
     airportsValid = 'airports-valid',
     airportsCurrent = 'airports-current',
     exports = 'exports',
+    export7 = 'exports-7d',
+    export28 = 'exports-28d',
     feedbacks = 'feedbacks',
     pageApproach = 'approachPageCount',
     pageDiagram = 'diagramPageCount',
@@ -46,6 +48,8 @@ enum Key {
     pageTiles = 'tilePageCount',
     pagesTotal = 'totalPageCount',
     prints = 'prints',
+    print7 = 'prints-7d',
+    print28 = 'prints-28d',
     sessions = 'sessions',
     sessions7 = 'sessions-7d',
     sessions14 = 'sessions-14d',
@@ -89,12 +93,13 @@ export class Metrics {
     }
 
     static async usage():Promise<Metric[]> {
-        const counts = await UsageDao.countByType()
-        const usageMetrics = counts.map( (count) => new Metric(Metrics.usageTypeToKey(count.type), count.count))
-
-        usageMetrics.push( new Metric(Key.sessions7, await UsageDao.countSessionsSince(7)))
-        usageMetrics.push( new Metric(Key.sessions14, await UsageDao.countSessionsSince(14)))
-        usageMetrics.push( new Metric(Key.sessions28, await UsageDao.countSessionsSince(28)))
+        const usageMetrics:Metric[] = []
+        usageMetrics.push( new Metric(Key.export7, await UsageDao.countTypeByUserSince(UsageType.Export, 7)))
+        usageMetrics.push( new Metric(Key.export28, await UsageDao.countTypeByUserSince(UsageType.Export, 28)))
+        usageMetrics.push( new Metric(Key.print7, await UsageDao.countTypeSince(UsageType.Print, 7)))
+        usageMetrics.push( new Metric(Key.print28, await UsageDao.countTypeSince(UsageType.Print, 28)))
+        usageMetrics.push( new Metric(Key.sessions7, await UsageDao.countTypeByUserSince(UsageType.Session, 7)))
+        usageMetrics.push( new Metric(Key.sessions28, await UsageDao.countTypeByUserSince(UsageType.Session, 28)))
         
         return usageMetrics
     }

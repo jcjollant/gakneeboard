@@ -18,11 +18,11 @@ process.env.POSTGRES_URL=postgresUrl;
 //===================
 // Show Usage metrics
 //===================
-// import { Metrics } from "../backend/Metrics";
-// Metrics.usage().then(metrics => {
-//     for(const metric of metrics)
-//         console.log(metric.name, metric.value)
-// })
+import { Metrics } from "../backend/Metrics";
+Metrics.usage().then(metrics => {
+    for(const metric of metrics)
+        console.log(metric.name, metric.value)
+})
 
 //============
 // Users Check
@@ -33,19 +33,19 @@ process.env.POSTGRES_URL=postgresUrl;
 
 //============
 // HealthCheck
-import { HealthCheck, Check } from "../backend/HealthChecks";
-HealthCheck.perform(false).then(checks => {
-    const reset = "\x1b[0m"
-    let color = "\x1b[32m"
-    for(const check of checks) {
-        if(check.status == Check.SUCCESS) {
-            color = "\x1b[32m"
-        } else {
-            color = "\x1b[31m"
-        }
-        console.log(check.name, color+'['+check.status+']'+reset, check.msg)
-    }
-})
+// import { HealthCheck, Check } from "../backend/HealthChecks";
+// HealthCheck.perform(false).then(checks => {
+//     const reset = "\x1b[0m"
+//     let color = "\x1b[32m"
+//     for(const check of checks) {
+//         if(check.status == Check.SUCCESS) {
+//             color = "\x1b[32m"
+//         } else {
+//             color = "\x1b[31m"
+//         }
+//         console.log(check.name, color+'['+check.status+']'+reset, check.msg)
+//     }
+// })
 
 //=================
 // Template Details

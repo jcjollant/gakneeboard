@@ -52,10 +52,25 @@ export class UsageDao extends Dao {
      * @param days 
      * @returns 
      */
-    public static async countSessionsSince(days:number) {
+    public static async countTypeSince(type:string, days:number) {
         return new Promise<number>(async (resolve, reject) => {
             const client = await db.connect()
-            client.query(`SELECT user_id FROM usage WHERE user_id NOTNULL AND usage_type='session' AND create_time > current_date - ${days} GROUP BY user_id`)
+            client.query(`SELECT COUNT(*) FROM usage WHERE usage_type='${type}' AND create_time > current_date - ${days} GROUP BY user_id`)
+            // client.query("SELECT user_id FROM usage WHERE user_id NOTNULL AND usage_type='session' AND create_time > current_date - " + days + " GROUP BY user_id")
+                .then( res => {
+                    // resolve with the returned count
+                    if(res.rows.length == 0) resolve(0)
+                    else resolve(Number(res.rows[0].count))
+                    client.release()
+                })
+                .catch( err => reject(err))
+        })
+    }
+
+    public static async countTypeByUserSince(type:string, days:number) {
+        return new Promise<number>(async (resolve, reject) => {
+            const client = await db.connect()
+            client.query(`SELECT user_id FROM usage WHERE user_id NOTNULL AND usage_type='${type}' AND create_time > current_date - ${days} GROUP BY user_id`)
             // client.query("SELECT user_id FROM usage WHERE user_id NOTNULL AND usage_type='session' AND create_time > current_date - " + days + " GROUP BY user_id")
                 .then( res => {
                     resolve(Number(res.rows.length))
