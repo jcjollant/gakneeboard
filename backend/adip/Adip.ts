@@ -12,8 +12,8 @@ const maxNavaids:number = 10
 
 export class Adip {
     static basicAuth:string = 'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP'
-    // static currentEffectiveDate: string = "2024-11-28T00:00:00"
-    static currentEffectiveDate: string = "2025-01-23T00:00:00"
+    // static currentEffectiveDate: string = "2025-01-23T00:00:00"
+    static currentEffectiveDate:string = "2025-02-20T00:00:00"
 
     /**
      * Fetch airport details from Adip then parse it into an Airport object
