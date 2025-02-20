@@ -79,8 +79,8 @@ onMounted(() => {
     height: 53px;
 }
 .freqSmall {
-    padding: 5px;
-    font-size: 14px;
+    padding: 5px 3px;
+    font-size: 16px;
 }
 .freqMedium {
     line-height: 32px;
