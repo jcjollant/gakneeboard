@@ -89,13 +89,13 @@ export class Frequency {
         }
     }
 
-    static noFreq() {
-        return new Frequency(0, '')
+    static noFreq(name='',type=FrequencyType.unknown) {
+        return new Frequency(0, name, type)
     }
 
     static fromType(mhz:number|undefined, type:FrequencyType):Frequency {
         let name:string = Frequency.typeToString(type);
-        return new Frequency(mhz ? mhz : 0, name, type)
+        return mhz ? new Frequency(mhz, name, type) : Frequency.noFreq(name, type)
     }
 
 }
