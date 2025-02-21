@@ -1,4 +1,10 @@
-## 02/18/2025
+# User Experience updates
+## 5081
+* Bigger fonts for small Frequences box used in Departure and Approach mode of IFR tile
+
+## 02/21/2025 5081
+* Airport Tile merge mode
+## 02/18/2025 5080
 * Fixed Cloud Clearance layout
 * Fixed compact ATIS layout
 * Removed logs on frequency type
