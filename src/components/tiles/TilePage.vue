@@ -8,7 +8,7 @@
 
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { isSameTypeAndMode } from '../../assets/sheetData'
+import { isSameAirportAndRunway, isSameTypeAndMode } from '../../assets/sheetData'
 
 import Tile from './Tile.vue'
 import { TileType } from '../../model/TileType'
@@ -48,6 +48,7 @@ function loadProps(props) {
     if(isSameTypeAndMode(leftTile, rightTile, TileType.notes, DisplayModeNotes.Blank) 
       || isSameTypeAndMode(leftTile, rightTile, TileType.atis, DisplayModeAtis.FullATIS)
       || isSameTypeAndMode(leftTile, rightTile, TileType.radios, DisplayModeRadios.FreqList)
+      || isSameAirportAndRunway(leftTile, rightTile)
       ) {
       tiles.value[index]['span2'] = true
       tiles.value[index + 1]['hide'] = true
@@ -89,6 +90,6 @@ function onUpdate(newTileData) {
 }
 .span-2 {
   grid-column: span 2;
-  width: unset;
+  width: var(--tile-width-expanded);
 }
 </style>

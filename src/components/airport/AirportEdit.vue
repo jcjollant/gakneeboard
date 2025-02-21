@@ -1,13 +1,11 @@
 <template>
     <div class="content">
-        <CustomAirport v-model:visible="showCustomAirport" :airport="customAirport" :user="currentUser"
-                        @close="showCustomAirport=false" @updated="onCustomUpdated" />
         <div class="settings">
             <AirportInput :code="airportCode" :auto="true"
                 @valid="loadAirportData" @invalid="onInvalidAirport" />
             <ProgressSpinner v-if="loading" class="spinner" ></ProgressSpinner>
             <div v-else-if="validAirport" class="rwyChoices">
-                <div class="miniHeader">Runway</div>
+                <div class="miniHeader">Runway:</div>
                 <div class="rwySelector">
                     <Button :label="rwy.name" class="sign" :severity="rwy.name == selectedRwy ? 'primary' : 'secondary'"
                         v-for="rwy in rwyList" 
@@ -15,6 +13,8 @@
                     <Button label="ALL" class="sign" v-if="rwyList.length > 0"  :severity="selectedRwy == 'all' ? 'primary' : 'secondary'"
                             @click="selectRunway('all')"></Button>
                 </div>
+                <div class="miniHeader">Traffic Pattern:</div>
+                <OneChoice v-if="validAirport" v-model="pattern" :choices="patternChoices" style="line-height: 9px;" />
                 <div class="rwyOrientation">
                     <div class="miniHeader" >Orientation</div>
                     <OneChoice v-if="validAirport" v-model="rwyOrientation" :choices="orientations" style="line-height: 9px;" />
@@ -36,12 +36,33 @@ import ProgressSpinner from 'primevue/progressspinner';
 
 import ActionBar from '../shared/ActionBar.vue'
 import AirportInput from '../shared/AirportInput.vue'
-import CustomAirport from './CustomAirport.vue';
 import OneChoice from '../shared/OneChoice.vue'
 import { UserUrl } from '@/lib/UserUrl.ts';
 
+let airport = null
 const emits = defineEmits(['close','selection'])
 const orientations = [{label:'Vertical',value:'v'},{label:'Magnetic',value:'m'}]
+const patternChoices = [
+    {label:'TB',value:0, title:'Both runways with 45° entries'},
+    {label:'T', value:1, title:'Top Runway, 45° entry'},
+    {label:'T+',value:2, title:'Top Runway, Midfield'},
+    {label:'B', value:3, title:'Bottom Runway, 45° entry'},
+    {label:'B+',value:4, title:'Bottom Runway, Midfield'},
+    {label:'-', value:5, title:'None'},
+]
+const pattern = ref(patternChoices[0])
+const loading = ref(false)
+const rwyList = ref([])
+const airportCode = ref('')
+const airportName = ref('')
+const showCancel = ref(false)
+const canApply = ref(false)
+const canCreate = ref(false)
+const validAirport = ref(false)
+const rwyOrientation = ref(orientations[0])
+const selectedRwy = ref(null)
+const showCustomAirport = ref(false)
+
 
 /**
  * Props management (defineProps, loadProps, onMounted, watch)
@@ -50,6 +71,7 @@ const orientations = [{label:'Vertical',value:'v'},{label:'Magnetic',value:'m'}]
     airport: { type: Object, default: null},
     rwyName: { type: String, default: null},
     rwyOrientation: { type: String, default: 'vertical'},
+    tp: { type: Number, default: 0},
 })
 
 function loadProps(props) {
@@ -72,12 +94,8 @@ function loadProps(props) {
 
         rwyOrientation.value = orientations[(props.rwyOrientation == 'magnetic' ? 1 : 0)]
         // console.log( 'AirportEdit loadProps ' + props.rwyOrientation)
-
-        if('custom' in airport && airport.custom) {
-            customAirport.value = airport;
-            canEdit.value = true
-        }
     }
+    pattern.value = patternChoices.find( p => p.value == props.tp);
 }
 
 onMounted(() => {
@@ -91,22 +109,6 @@ watch( props, async() => {
     loadProps(props)
 })
 
-
-let airport = null
-const loading = ref(false)
-const rwyList = ref([])
-const airportCode = ref('')
-const airportName = ref('')
-const showCancel = ref(false)
-const canApply = ref(false)
-const canCreate = ref(false)
-const canEdit = ref(false)
-const validAirport = ref(false)
-const rwyOrientation = ref(orientations[0])
-const selectedRwy = ref(null)
-const showCustomAirport = ref(false)
-const customAirport = ref(null)
-const currentUser = ref(null)
 
 function loadAirport( code) {
     // console.log('[AirportEdit.loadAirport]', code)
@@ -136,13 +138,6 @@ function loadAirportData(newAirport) {
     } else {
         canApply.value = false
     }
-    if( 'custom' in airport && airport.custom) {
-        customAirport.value = newAirport
-        canEdit.value = true
-    } else {
-        customAirport.value = null
-        canEdit.value = false
-    }
     canCreate.value = false
     showCancel.value = true
 }
@@ -151,7 +146,7 @@ function loadAirportData(newAirport) {
 function onApply() {
     // update settings with orientation
     const orientation = rwyOrientation.value.value == 'v' ? 'vertical' : 'magnetic'
-    emits('selection', airport, selectedRwy.value, orientation)
+    emits('selection', airport, selectedRwy.value, orientation, pattern.value.value)
 }
 
 function onCancel() {
@@ -168,19 +163,6 @@ function onCustomUpdated(code, airportData) {
     loadAirport(code)
 }
 
-// function onCustomCreate() {
-//     // console.log('[AirportEdit.onCustomCreate]')
-//     const newAirport = new Airport( airportCode.value, "", 0)
-//     newAirport.custom = true
-//     // console.log('[AirportEdit.onCustomCreate] newAirport', JSON.stringify(newAirport))
-//     customAirport.value = newAirport;
-//     showCustomAirportDialog()
-// }
-
-// function onCustomEdit() {
-//     showCustomAirportDialog();
-// }
-
 function onInvalidAirport(code) {
     // console.log('[AirportEdit.onInvalidAirport]', code)
     rwyList.value = [];
@@ -188,8 +170,6 @@ function onInvalidAirport(code) {
     validAirport.value = false
     canApply.value = false
     canCreate.value = false // Airport.isValidCode(code)
-    canEdit.value = false
-
 }
 
 // A runway has been selected from the list
@@ -216,13 +196,9 @@ function showAirport() {
     padding: 5px
 }
 .rwySelector {
-    display:grid;
-    grid-template-columns: auto auto auto;
-    /* display: flex;
-    justify-content: center; */
+    display:flex;
     gap: 2px 5px;
-    overflow: auto;
-    height: 4.5rem;
+    flex-wrap: wrap;
 }
 
 .sign {
@@ -267,5 +243,8 @@ function showAirport() {
 }
 .spinner {
     height: 1.5rem;
+}
+.content {
+    width: 100%;
 }
 </style>

@@ -1,11 +1,11 @@
 
 <template>
     <div class="tile">
-        <Header :title="title" :showReplace="mode=='edit'" :displayMode="false"
+        <Header :title="title" :showReplace="editMode" :displayMode="false"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <AirportEdit v-if="mode=='edit'" :airport="airportData" :rwyName="runwayName" :rwyOrientation="rwyOrientation"
+        <AirportEdit v-if="editMode" :airport="airportData" :rwyName="runwayName" :rwyOrientation="rwyOrientation" :tp="patternMode"
             @close="onHeaderClick" @selection="onSettingsUpdate" />
-        <div v-else-if="mode=='list'" class="content" >
+        <div v-else-if="mode=='list'" class="tileContent" >
             <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
             <div class="runwayList">
                 <div class="runwayListRow">
@@ -29,20 +29,28 @@
                 <CornerStatic :label="weatherType" :value="weatherFreq" position="bottom"/>
             </div>
         </div>
-        <div class="content" v-else=""> <!-- Normal mode -->
+        <div class="tileContent" v-else=""> <!-- Normal mode -->
             <div v-if="airportCode">
                 <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
                 <div v-if="unknownRunway" class="unknownRwy">Unknown Runway</div>
-                <Runway v-else :runway="selectedRunway" :pattern="patternMode" :orientation="rwyOrientation"
-                    @update="onPatternUpdate" />
-                <Corner class="corner top left" :airport="airportData" :data="corner0" :runway="selectedRunway" 
-                    @update="onCornerUpdate" />
-                <Corner class="corner top right" :airport="airportData" :data="corner1"  :runway="selectedRunway" 
-                    @update="onCornerUpdate"/>
-                <Corner class="corner bottom left" :airport="airportData" :data="corner2"  :runway="selectedRunway" :flip="true"  
-                    @update="onCornerUpdate"/>
-                <Corner class="corner bottom right" :airport="airportData" :data="corner3"  :runway="selectedRunway" :flip="true"  
-                    @update="onCornerUpdate"/>
+                <Runway v-else :runway="selectedRunway" :pattern="patternMode" :orientation="rwyOrientation" class="clickable"
+                    @click="onHeaderClick" />
+                <div v-if="expanded" class="top left cornerColumn">
+                    <Corner v-for="index in [0,4,6,2]" :airport="airportData" :data="corners[index]" :runway="selectedRunway" :big="true" :class="['corner'+index]"
+                        @update="onCornerUpdate(index, $event)" />
+                </div>
+                <div v-if="expanded" class="top right cornerColumn">
+                    <Corner v-for="index in [1,5,7,3]" :airport="airportData" :data="corners[index]" :runway="selectedRunway" :big="true" :class="['corner'+index]"
+                        @update="onCornerUpdate(index, $event)" />
+                </div>
+                <Corner v-if="!expanded" class="corner top left" :airport="airportData" :data="corners[0]" :runway="selectedRunway" :flip="true"
+                    @update="onCornerUpdate(0, $event)" />
+                <Corner v-if="!expanded" class="corner top right" :airport="airportData" :data="corners[1]"  :runway="selectedRunway" :flip="true"
+                    @update="onCornerUpdate(1, $event)"/>
+                <Corner v-if="!expanded"  class="corner bottom left" :airport="airportData" :data="corners[2]"  :runway="selectedRunway"
+                    @update="onCornerUpdate(2, $event)"/>
+                <Corner v-if="!expanded"  class="corner bottom right" :airport="airportData" :data="corners[3]"  :runway="selectedRunway"
+                    @update="onCornerUpdate(3, $event)"/>
             </div>
             <PlaceHolder v-else title="No Airport" />
         </div>
@@ -62,20 +70,45 @@ import PlaceHolder from '@/components/shared/PlaceHolder.vue'
 import Runway from './Runway.vue'
 
 const emits = defineEmits(['replace','update'])
+const expanded = ref(false)
+const editMode = ref(false)
+const mode = ref('')
+const title = ref('')
+const weatherFreq = ref('')
+const weatherType = ref()
+const elevation = ref()
+const tpa = ref()
+const airportCode = ref('') // used during edit mode
+const rwyList = ref([]) // used during runway selection
+const allEndings = ref([]) // used when displaying all runways
 
-var previousMode = '';
+const selectedRunway = ref(null)
+const airportData = ref()
+const patternMode = ref(0)
+const runwayName = ref('')
+const rwyOrientation = ref('')
+
+const defaultCornerFields = ['weather','twr','field','tpa','#FCD/P','gnd','?Custom?Custom','#FUNICOM']
+const defaultRwyOrientation = 'vertical'
+const defaultPatternMode = 0
+const defaultTitle = 'Airport'
+const corners = ref(defaultCornerFields)
+const unknownRunway = ref(false)
+
+
 var state = {}
 
 //-----------------------------------------------------
 // Props Management
 const props = defineProps({
     params: { type: Object, default: null}, // expects {'code':'ICAO','rwy':'XX-YY'}
+    span2: {type: Boolean, default: false},
 })
 
 // load props can happen on initial load or when settings are changed
 // 1) Airport Code 2) Selected Runway 3) patternMode 4) Corners and 5) Runway orientation
 function loadProps(newProps) {
-    // console.log('Airport loadProps ' + JSON.stringify(newProps))
+    // console.log('[AirportTile.loadProps] ' + JSON.stringify(newProps))
     state = newProps.params;
     if( !state) {
         console.log( 'Airport cannot load params ' + JSON.stringify(state))
@@ -86,7 +119,7 @@ function loadProps(newProps) {
     // Force edit mode if we don't have an airport yet
     if( !code) {
         title.value = defaultTitle
-        mode.value = 'edit'
+        editMode.value = true
         return
     }
 
@@ -105,13 +138,14 @@ function loadProps(newProps) {
     // #4 Restore corner fields
     let cornerFields = state.corners
     if( !cornerFields) {
-        // console.log('Airport loading default cornerFields')
+        // console.log('AirportTile loading default cornerFields')
         cornerFields = defaultCornerFields;
     } 
     cornerFields.forEach( (field, index) => {
-        corners[index].value = {'id':index,'field':field}
+        // console.log('[AirportTile.loadProps]', index)
+        corners.value[index] = field
     })
-    // console.log('Airport loaded corners ' + JSON.stringify(corners))
+    // console.log('AirportTile loaded corners ' + JSON.stringify(corners))
 
     // #5 Rwy orientation
     if('rwyOrientation' in state && state.rwyOrientation) {
@@ -129,15 +163,19 @@ function loadProps(newProps) {
             // is there a follow up request?
             if(airport && airport.promise) {
                 airport.promise.then((outcome) => {
-                    // console.log( '[Airport.loadProps] outcome', JSON.stringify(outcome))
+                    // console.log( '[AirportTile.loadProps] outcome', JSON.stringify(outcome))
                     // if data was not current, load new version
                     if(!outcome.current && outcome.airport){
-                        // console.log( '[Airport.loadProps] data was not current', JSON.stringify(outcome))
+                        // console.log( '[AirportTile.loadProps] data was not current', JSON.stringify(outcome))
                         onNewAirport(outcome.airport)
                     }
                 })
             }
         })
+
+    // Are we in expanded mode?
+    expanded.value = newProps.span2
+    // console.log('[AirportTile.loadProps]', expanded.value)
 }
 
 onMounted(() => {
@@ -156,33 +194,6 @@ watch( props, async() => {
 //--------------------------
 
 
-const mode = ref('')
-const title = ref('')
-const weatherFreq = ref('')
-const weatherType = ref()
-const elevation = ref()
-const tpa = ref()
-const airportCode = ref('') // used during edit mode
-const rwyList = ref([]) // used during runway selection
-const allEndings = ref([]) // used when displaying all runways
-
-const selectedRunway = ref(null)
-const airportData = ref()
-const patternMode = ref(0)
-const runwayName = ref('')
-const rwyOrientation = ref('')
-
-const corner0 = ref({'id':0,'field':'weather'})
-const corner1 = ref({'id':1,'field':'twr'})
-const corner2 = ref({'id':2,'field':'field'})
-const corner3 = ref({'id':3,'field':'tpa'})
-const defaultCornerFields = ['weather','twr','field','tpa']
-const defaultRwyOrientation = 'vertical'
-const defaultPatternMode = 0
-const defaultTitle = 'Airport'
-const corners = [corner0,corner1,corner2,corner3]
-const unknownRunway = ref(false)
-
 function getEnding(rwy, endIndex, freq) {
     // console.log('getEnding ' + JSON.stringify(rwy) + ' / ' + ending)
     const output = {}
@@ -199,7 +210,7 @@ function getEnding(rwy, endIndex, freq) {
             output['freq'] = freq ? freq.mhz : '-'
         }
     } catch( error) {
-        console.log('[Airport.getEnding]', error)
+        console.log('[AirportTile.getEnding]', error)
     }
 
     return output
@@ -210,9 +221,9 @@ function getEndings(rwys, freq) {
     if( !rwys) return output;
     
     rwys.forEach((rwy) => {
-        // console.log('[Airport.getEndings]', JSON.stringify(rwy))
+        // console.log('[AirportTile.getEndings]', JSON.stringify(rwy))
         if( rwy.ends.length == 2) {
-            // console.log('[Airport.getEndings]', JSON.stringify(rwy.ends))
+            // console.log('[AirportTile.getEndings]', JSON.stringify(rwy.ends))
             output.push( getEnding(rwy,0,freq))
             output.push( getEnding(rwy,1,freq))
         }
@@ -230,11 +241,12 @@ function getTpClass(end) {
  * An update has happened in a corner, memorize the value and bubble it up
  * @param {*} data 
  */
-function onCornerUpdate( data) {
+function onCornerUpdate( index, field) {
     // console.log( 'onCornerUpdate ' + JSON.stringify(data))
-    if( data && 'id' in data && 'field' in data) {
-        corners[data.id].value.field = data.field
-        updateWidget();
+    if( field) {
+        // update the source data
+        corners.value[index] = field
+        updateData();
     } else {
         console.log('Missing data from corner update')
     }
@@ -242,20 +254,20 @@ function onCornerUpdate( data) {
 
 // Toggle between edit mode and current mode
 function onHeaderClick() {
-    if( mode.value == '' || mode.value =='list') {
-        previousMode = mode.value;
-        title.value = defaultTitle
-        mode.value = 'edit'
-    } else if( airportData.value){
-        const airport = airportData.value
-        // when switching back to normal mode, adjust variables affected by edit
-        rwyList.value = airport.rwy
-        airportCode.value = airport.code
-        mode.value = previousMode;
-        title.value = airport.name
+    if(editMode.value) {
+        editMode.value = false
+        if( airportData.value){
+            const airport = airportData.value
+            // when switching back to normal mode, adjust variables affected by edit
+            rwyList.value = airport.rwy
+            airportCode.value = airport.code
+            editMode.value = false
+            title.value = airport.name
+        }    
     } else {
-        mode.value = ''
-    }    
+        title.value = defaultTitle
+        editMode.value = true
+    }  
 }    
 
 // consider new airport and its data
@@ -277,25 +289,28 @@ function onNewAirport(airport) {
         // console.log('No data came out of get airport ' + code)
         // Switch to edit mode
         title.value = 'Airport ?'
-        mode.value = 'edit'
+        editMode.value = true
     }
 }
 
 function onPatternUpdate(newPatternMode) {
-    // console.log('Airport onPatternUpdate ' + newPatternMode)
+    // console.log('[AirportTile.onPatternUpdate]', newPatternMode)
     state.pattern = newPatternMode
     
     // patternMode.value = newPatternMode
-    updateWidget();
+    updateData();
 }
 
 // Settings have been updated in edit mode
-function onSettingsUpdate( newAirport, newRunway, newOrientation) {
-    // console.log( '[Airport.onSettingsUpdate] airport', JSON.stringify(newAirport))
-    // console.log( '[Airport.onSettingsUpdate] newRunway', JSON.stringify(newRunway))
-    // console.log( '[Airport.onSettingsUpdate] newOrientation', JSON.stringify(newOrientation))
+function onSettingsUpdate( newAirport, newRunway, newOrientation, newPatternMode) {
+    // console.log( '[AirportTile.onSettingsUpdate] airport', JSON.stringify(newAirport))
+    // console.log( '[AirportTile.onSettingsUpdate] newRunway', JSON.stringify(newRunway))
+    // console.log( '[AirportTile.onSettingsUpdate] newOrientation', JSON.stringify(newOrientation))
+    editMode.value = false
     props.params.code = newAirport.code;
     airportData.value = newAirport;
+    state.pattern = newPatternMode
+    patternMode.value = newPatternMode;
     showAirport( newAirport)
 
     props.params.rwy = newRunway
@@ -308,15 +323,15 @@ function onSettingsUpdate( newAirport, newRunway, newOrientation) {
         showRunway(newRunway)
     }
 
-    updateWidget()
+    updateData()
 }
 
 function showAirport( airport) {
-    // console.log( "[Airport.showAirport] Showing airport ", JSON.stringify(airport))
+    // console.log( "[AirportTile.showAirport] Showing airport ", JSON.stringify(airport))
     if( airport == null) {
         // if airport data is missing, we switch to edit mode
         console.log( 'Airport data missing')
-        mode.value = 'edit';
+        editMode.value = true
         return
     }
     airportData.value = airport;
@@ -339,7 +354,7 @@ function showAirport( airport) {
 function showRunway(name) {
     // console.log( 'Airport showRunway ' + name)
     const rwyData = airportData.value.rwys.find((rwy) => rwy.name == name)
-    // console.log( '[Airport.showRunway]', JSON.stringify(rwyData))
+    // console.log( '[AirportTile.showRunway]', JSON.stringify(rwyData))
     if( rwyData) {
         selectedRunway.value = rwyData
         runwayName.value = name
@@ -351,9 +366,9 @@ function showRunway(name) {
 }
 
 // invoked whenever we want to save the current state
-function updateWidget() {
+function updateData() {
     if( corners) { 
-        state['corners'] = corners.map( corner => corner.value.field)
+        state['corners'] = corners.value
     }
     // console.log( 'Airport widget updated with ' + JSON.stringify(airportParam));
     emits('update', state);
@@ -361,9 +376,10 @@ function updateWidget() {
 
 </script>
 <style scoped>
-    .content {
+    .tileContent {
         position: relative;
         overflow: hidden;
+        width: 100%;
     }
     .corner {
         position: absolute; /* Absolute positioning within container */
@@ -452,4 +468,14 @@ function updateWidget() {
         display: grid;
         grid-template-columns: auto auto auto;
     }
+    .cornerColumn {
+        position: absolute;
+        display: flex;
+        flex-flow: column;
+        padding: 5px;
+        background-color: lightgrey;
+        justify-content: space-between;
+        height: 100%;
+    }
+
 </style>

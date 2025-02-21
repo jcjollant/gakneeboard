@@ -8,7 +8,7 @@
                 @click="onReplace(tile.tile)"/>
         </div>
     </div>
-    <AirportTile v-else-if="tile.name==TileType.airport" :params="tile.data" 
+    <AirportTile v-else-if="tile.name==TileType.airport" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate" />
     <AtisTile v-else-if="tile.name==TileType.atis" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate"/>
