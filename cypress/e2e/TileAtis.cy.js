@@ -1,4 +1,4 @@
-import { titleAtis, visitSkipBanner, loadDemo, TileTypeLabel, displaySelection, replaceTile } from './shared'
+import { titleAtis, visitSkipBanner, loadDemo, TileTypeLabel, displaySelection, replaceTile, checkTileSpan, checkTileVisible } from './shared'
 
 const labelFullATIS = "Full Size ATIS"
 const labelCloudCleance = "Cloud Clearance"
@@ -62,11 +62,11 @@ describe('ATIS Tile', () => {
       cy.get(`.classCDLow ${test}`).should('have.css', 'font-size', expectedFontSize)
     }  
 
-    // Two Full ATIS side by side should merge when both are notes
+    // Two Full ATIS side by side should merge when both are Full
     replaceTile(0,5,TileTypeLabel.atis)
-    // 4 is cloud clearance, 5 is Full
-    cy.get('.page0 > .tile4').should('not.have.class','span-2')
-    cy.get('.page0 > .tile5').should('not.have.css', 'display', 'none')
+    // 4 is cloud clearance, 5 is Full. They should not merge
+    checkTileSpan(0, 4, false)
+    checkTileVisible(0, 5, true)
     displaySelection(0, 5, labelCloudCleance)
 
 
@@ -74,28 +74,28 @@ describe('ATIS Tile', () => {
     displaySelection(0, 4, labelFullATIS)
     displaySelection(0, 5, labelFullATIS)
     // now they should merge
-    cy.get('.page0 > .tile4').should('have.class','span-2')
-    cy.get('.page0 > .tile5').should('have.css', 'display', 'none')
+    checkTileSpan(0, 4, true)
+    checkTileVisible(0, 5, false)
 
     // Switch both to Compact
     displaySelection(0, 4, labelCompact)
     displaySelection(0, 5, labelCompact)
     // They should not merge
-    cy.get('.page0 > .tile4').should('not.have.class','span-2')
-    cy.get('.page0 > .tile5').should('not.have.css', 'display', 'none')
+    checkTileSpan(0, 4, false)
+    checkTileVisible(0, 5, true)
 
     // Switch both to full, starting witg 5
     displaySelection(0, 5, labelFullATIS)
     displaySelection(0, 4, labelFullATIS)
     // now they should merge
-    cy.get('.page0 > .tile4').should('have.class','span-2')
-    cy.get('.page0 > .tile5').should('have.css', 'display', 'none')
+    checkTileSpan(0, 4, true)
+    checkTileVisible(0, 5, false)
 
 
     // Replace tile 5 with radios => Should not merge
     replaceTile(0,4,TileTypeLabel.radios)
-    cy.get('.page0 > .tile4').should('not.have.class','span-2')
-    cy.get('.page0 > .tile5').should('not.have.css', 'display', 'none')
+    checkTileSpan(0, 4, false)
+    checkTileVisible(0, 5, true)
   })
 
 })
