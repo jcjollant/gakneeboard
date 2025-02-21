@@ -10,6 +10,7 @@ export const maintenanceLogin = '12b39a0daff8fc144fc678663395f6ce5706c778a259167
 export const maintenanceTest ='4d51414ceb16fe67ec67ef5194a76036fc54b59846c9e8da52841717fe4b6247'
 
 export const atisTitle = 'ATIS @'
+export const bellinghamTitle = 'Bellingham Intl'
 export const boeingTitle = 'Boeing Fld/king County Intl'
 export const clearanceTitle = 'Clearance @'
 export const departTitle = 'Depart @'
@@ -46,6 +47,22 @@ export const expectedDemos = [
     {i:6, l:'Holds Practice', t:'Full sheet of Holds and Compasses',c:['pageTiles','pageTiles']},
     {i:7, l:'IFR Flight', t:'Full sheet of Holds and Compasses',c:['pageStrips','pageStrips']},
 ]
+
+
+export function checkCorner(page, tile, classe, label, value) {
+    cy.get(`.page${page} > .tile${tile} > .tileContent ${classe} .label`).contains(label)
+    cy.get(`.page${page} > .tile${tile} > .tileContent ${classe} .value`).contains(value)
+}
+
+export function checkTileSpan(page, tile, spanned=true) {
+    const condition = spanned ? 'have.class' : 'not.have.class'
+    cy.get(`.page${page} > .tile${tile}`).should(condition,'span-2')
+}
+
+export function checkTileVisible(page, tile, visible=true) {
+    const condition = visible ? 'not.have.css' : 'have.css'
+    cy.get(`.page${page} > .tile${tile}`).should(condition, 'display', 'none')
+}
 
 export function demoChecklistOnPage(index) {
     cy.get(`.page${index}`).should('have.class','pageChecklist')
@@ -111,10 +128,12 @@ export function newTemplate() {
 }
 
 export function replacePage(pageNum, newPage=undefined) {
-    if( Cypress.$(`.page${pageNum} .replaceButton`).length) {
+    try {
         cy.get(`.page${pageNum} .replaceButton`).click({force:true})
         cy.get('.p-confirm-dialog-accept').click()
         cy.get('.contentPage > .headerTitle').contains('Page Selection')
+    } catch(e) {
+        // doesn't matter if it's not there
     }
     if(newPage) cy.get(`.page${pageNum} [aria-label="${newPage}"]`).click()
 }
