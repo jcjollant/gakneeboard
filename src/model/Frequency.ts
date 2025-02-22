@@ -37,11 +37,12 @@ export class Frequency {
     }
 
     static typeFromString(s:string):FrequencyType {
+        // console.log('[Frequency.typeFromString] ->' + s + '<-' )
         if(!s) return FrequencyType.unknown
 
-        switch(s.toLowerCase()) {
+        switch(s.toLowerCase().split('-')[0]) {
             case 'clearance':
-            case 'CD/P':
+            case 'cd/p':
             case FrequencyType.clearance: 
                 return FrequencyType.clearance;
             case 'ctaf': 
@@ -88,13 +89,13 @@ export class Frequency {
         }
     }
 
-    static noFreq() {
-        return new Frequency(0, '')
+    static noFreq(name='',type=FrequencyType.unknown) {
+        return new Frequency(0, name, type)
     }
 
     static fromType(mhz:number|undefined, type:FrequencyType):Frequency {
         let name:string = Frequency.typeToString(type);
-        return new Frequency(mhz ? mhz : 0, name, type)
+        return mhz ? new Frequency(mhz, name, type) : Frequency.noFreq(name, type)
     }
 
 }

@@ -9,13 +9,13 @@ import {
     faFileExport,
     faGasPump, faGear, faHeadset, faImage, faJetFighter,
     faLink, faListCheck,
-    faPenToSquare, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, faPrint,
+    faPenToSquare, faPlane, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, faPrint,
     faQuestion,
     faRoadCircleCheck,
     faRotateLeft,
     faRoute,
     faSave, faScrewdriverWrench, faStarOfLife, faSun,
-    faTowerCell, faTowerObservation, faTrash, 
+    faTowerCell, faTowerObservation, faTrash, faTruckFast,
     faUser,
     faVideo, faWalkieTalkie, faXmark
 } from '@fortawesome/free-solid-svg-icons';
@@ -39,11 +39,11 @@ library.add(
     faFacebookF, faFileExport, faGoogle, 
     faGasPump, faGear, faHeadset, faImage, faJetFighter, 
     faLink, faListCheck, 
-    faPenToSquare, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, faPrint, 
+    faPenToSquare, faPlane, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, faPrint, 
     faQuestion, 
     faRoadCircleCheck, faRotateLeft, faRoute, 
     faSave, faScrewdriverWrench, faStarOfLife, faSun, 
-    faTowerCell, faTowerObservation, faTrash, 
+    faTowerCell, faTowerObservation, faTrash, faTruckFast,
     faUser,
     faVideo, faWalkieTalkie, faXmark)
 

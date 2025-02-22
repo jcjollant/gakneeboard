@@ -1,5 +1,5 @@
 <template>
-    <div class="container clickable" @click="onClick">
+    <div class="container runway">
         <canvas ref="myCanvas"></canvas>
         <div class="label">{{ label }}</div>
     </div>
@@ -7,9 +7,6 @@
 
 <script setup>
 import {onMounted,ref,watch} from 'vue'
-
-const emits = defineEmits(['update'])
-
 
 const props = defineProps({
     runway: { type: Object, default: null},
@@ -50,13 +47,6 @@ const rightTpPattern = [10,5,2,5]
 function getAngle( orientation) {
     if(orientation < 0) orientation += 360;
     return orientation % 360;
-}
-
-function onClick() {
-    // Save setting
-    patternMode = (patternMode + 1) % 5
-    setNewPatternMode( patternMode)
-    emits('update', patternMode)
 }
 
 function setNewPatternMode( value) {

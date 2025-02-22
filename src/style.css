@@ -32,9 +32,14 @@
   --page-height: 800px;
   --page-content: calc(var(--page-height) - var(--header-height) - 1px);
   --pages-gap: 50px;
+  --text-atc: #000088;
+  --text-ctaf: #990099;
+  --text-navaid: #006666;
+  --text-weather: #666600;
   --tile-content-height: 240px;
   --tile-height: 265px;
   --tile-width: 249px;
+  --tile-width-expanded: calc( var(--page-width) - 2px);
 }
 
 .clickable {

@@ -1,13 +1,9 @@
 <template>
     <div>
         <div @click="toggleSelection" class="clickable" :class="{faded: value=='.'}">
-            <div v-if="labelUnder">
-                <div>{{value}}</div>
+            <div :class="{'big':displayMode==DisplayMode.big,'small':displayMode!=DisplayMode.big,'flipped':displayMode==DisplayMode.flipped}">
                 <div class="label">{{label}}</div>
-            </div>
-            <div v-else>
-                <div class="label">{{label}}</div>
-                <div>{{value}}</div>
+                <div class="value">{{value}}</div>
             </div>
         </div>
         <OverlayPanel ref="op">
@@ -84,23 +80,37 @@ import InputText from 'primevue/inputtext'
 import OverlayPanel from 'primevue/overlaypanel'
 import RadioButton from 'primevue/radiobutton'
 
+class CornerValue {
+    id:string;
+    label:string;
+    constructor(id:string, label:string) {
+        this.id = id;
+        this.label = label;
+    }
+}
+
+enum DisplayMode {
+    small, 
+    flipped, 
+    big
+}
 
 const emits = defineEmits(['update'])
 
+let airport:Airport = new Airport()
+const displayMode = ref(DisplayMode.small)
 const label = ref('')
+let runway:Runway = Runway.noRunway()
 const value = ref('')
-const labelUnder = ref(false)
 
 const props = defineProps({
     airport: { type: Object, default: null},
-    data: { type: Object, default: null},
+    data: { type: String, default: null},
     runway: { type: Object, default: null},
-    flip: { type: Boolean, default: false}
+    flip: { type: Boolean, default: false},
+    big: { type: Boolean, default: false},
 })
 
-let airport:Airport = new Airport()
-let runway:Runway = Runway.noRunway()
-let cornerId = -1
 const selectedCornerType = ref('weather')
 const cornerTypes = ref([
     { name: 'Field Elevation', key: 'field' },
@@ -110,15 +120,6 @@ const cornerTypes = ref([
 ]);
 const customLabel = ref('')
 const customValue = ref('')
-
-class CornerValue {
-    id:string;
-    label:string;
-    constructor(id:string, label:string) {
-        this.id = id;
-        this.label = label;
-    }
-}
 
 const frequencies = ref<CornerValue[]>([])
 const navaids = ref<CornerValue[]>([])
@@ -145,6 +146,17 @@ class CornerAtcGroup {
     }
 }
 
+onMounted(() => {
+    loadProps(props)
+})
+
+watch( props, () => {
+    // console.log( '[Corner.watch] props changed', JSON.stringify(props))
+    loadProps(props)
+})
+
+
+
 function formatNavaid(navaid) {
     if(!navaid || !navaid.to) return '-'
     return navaid.to.toFixed(0) + '°'
@@ -152,14 +164,18 @@ function formatNavaid(navaid) {
 
 function loadProps(newProps:any) {
     // console.log( '[Corner.loadProps]', JSON.stringify(newProps))
-    if( newProps == undefined || newProps.airport == null || newProps.data == null) {
+    if(newProps == undefined) {
+        displayMode.value = DisplayMode.small
         unknownValues()
-        labelUnder.value = true
+        return
+    } 
+    
+    // calculate frequencies
+    if( newProps.airport == null) {
         frequencies.value = []
     } else {
         airport = Airport.copy( newProps.airport);
         runway = Runway.copy(newProps.runway)
-        const field = newProps.data.field
         if(airport.isValid()) {
             // build a frequency list with '#F' prefix
             const freqList = airport.freq.map( f => new CornerValue('#F' + f.name, Formatter.frequency(f.mhz) + ' : ' + f.name))
@@ -179,28 +195,44 @@ function loadProps(newProps:any) {
             const groupList = AtcGroup.parse(airport)
             atcGroups.value = groupList.map( g => new CornerAtcGroup(g))
         }
+    }
 
-        showField(field)
-        labelUnder.value = !newProps.flip
-        cornerId = newProps.data.id
-        selectedCornerType.value = field
+    // display values
+    if( newProps.data == undefined || newProps.airport == null) {
+        // console.log('[Corner.loadProps] no data')
+        unknownValues()
+    } else {
+        showField(newProps.data)
+        selectedCornerType.value = newProps.data
+    }
+
+
+    // console.log( '[Corner.loadProps] big', newProps.big)
+    if(newProps.big) {
+        displayMode.value = DisplayMode.big
+    } else if(newProps.flip) {
+        displayMode.value = DisplayMode.flipped
+    } else {
+        displayMode.value = DisplayMode.small
     }
 }
 
-function onChange(field) {
+function onChange(field:string) {
     // console.log('[Corner.onChange] ' + JSON.stringify(field))
     showField(field)
-    emits('update', {'id':cornerId,'field':field})
+    emits('update', field)
 }
 
-onMounted(() => {
-    loadProps(props)
-})
 
 // turn the selection into the actual field
-function showField( field) {
+// @return true if the field is a frequency
+function showField( field:string) {
     // console.log('[Corner.showField]', field, typeof field)
     if( field.length > 2 && field[0] == '#') { 
+        // Special fields start with # then one letter code
+        // #F -> Frequency
+        // #N -> Navaid
+        // #A -> ATC
         if(field[1] == 'F' && airport.freq) {
             // RadioFrequencies use the '#F' prefix
             const freqName = field.substring(2)
@@ -262,7 +294,7 @@ function showField( field) {
                 break
             case 'field':
                 value.value = Math.round(airport.elev).toString()
-                label.value = 'Elev'
+                label.value = 'Elevation';
                 break
             case 'tpa':
                 const tpa = airport.tpa ? airport.tpa : airport.elev + 1000;
@@ -270,8 +302,8 @@ function showField( field) {
                 label.value = 'TPA'
                 break
             case 'gnd':
-                const ground = getFreqGround(airport.freq)
-                value.value = ground ? ground.mhz : '-'
+                const ground =  airport.getFreqGround()
+                value.value = Formatter.frequency(ground)
                 label.value = 'GND'
                 break;
             case 'rwyinfo':
@@ -290,7 +322,7 @@ function showField( field) {
 
 const op = ref()
 function toggleSelection(event) {
-    // console.log( 'Toggle Overlay')
+    // console.log( '[Corner.toggleSelection]', event)
     op.value.toggle(event)
 }
 
@@ -299,24 +331,30 @@ function unknownValues() {
     value.value = '-'
 }
 
-watch( props, () => {
-    loadProps(props)
-})
-
 </script>
 
 <style scoped>
+.label {
+    padding: 0;
+    width:110px;
+    overflow: hidden;
+}
+.small .label {
+    font-size:9px;
+    height: 10px;
+}
+.big .label {
+    font-size:15px;
+    height: 17px;
+    text-align: left;
+}
+.big .value {
+    font-size: 20px;
+    text-align: right;
+}
 .atcSmall {
     font-size: 0.9rem;
 }
-.label {
-    padding: 0;
-    font-size:9px;
-    width:120px;
-    height: 10px;
-    overflow: hidden;
-}
-
 .ctList {
     display: grid;
     grid-template-columns: auto auto auto;
@@ -359,5 +397,16 @@ watch( props, () => {
     padding: 0;
     min-width: 0;
 }
-
+.flipped {
+    display: flex;
+    flex-flow: column-reverse;
+}
+.big {
+    border-radius: 5px;
+    padding: 5px;
+    border: 1px solid black;
+    width: 120px;
+    height: 53px;
+    background-color: white;
+}
 </style>

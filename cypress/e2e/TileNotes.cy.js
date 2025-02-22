@@ -1,4 +1,4 @@
-import { loadDemo, notesTitle, visitSkipBanner, replaceTile, TileTypeLabel, displaySelection } from './shared'
+import { loadDemo, notesTitle, visitSkipBanner, replaceTile, TileTypeLabel, displaySelection, checkTileSpan, checkTileVisible } from './shared'
 
 const labelBlank = "Blank"
 const labelCRAFT = "C R A F T"
@@ -36,22 +36,22 @@ describe('Notes Tile', () => {
     // Two notes side by side should merge when both are notes
     replaceTile(0,2,TileTypeLabel.notes)
     // 2 is blank, 3 is grid
-    cy.get('.page0 > .tile2').should('not.have.class','span-2')
-    cy.get('.page0 > .tile3').should('not.have.css', 'display', 'none')
+    checkTileSpan(0,2,false)
+    checkTileVisible(0,3, true)
     // Switch 3 back to blank
     displaySelection(0, 3, labelBlank)
     // now they should merge
-    cy.get('.page0 > .tile2').should('have.class','span-2')
-    cy.get('.page0 > .tile3').should('have.css', 'display', 'none')
+    checkTileSpan(0, 2, true)
+    checkTileVisible(0, 3, false)
     // Switch 2 to compass
     displaySelection(0, 2, labelCompass)
     // They should not merge
-    cy.get('.page0 > .tile2').should('not.have.class','span-2')
-    cy.get('.page0 > .tile3').should('not.have.css', 'display', 'none')
+    checkTileSpan(0, 2, false)
+    checkTileVisible(0, 3, true)
 
     replaceTile(0,2,TileTypeLabel.radios)
-    cy.get('.page0 > .tile2').should('not.have.class','span-2')
-    cy.get('.page0 > .tile3').should('not.have.css', 'display', 'none')
+    checkTileSpan(0, 2, false)
+    checkTileVisible(0, 3, true)
   })
 
 })

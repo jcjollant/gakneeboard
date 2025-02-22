@@ -8,7 +8,7 @@
                 @click="onReplace(tile.tile)"/>
         </div>
     </div>
-    <Airport v-else-if="tile.name==TileType.airport" :params="tile.data" 
+    <AirportTile v-else-if="tile.name==TileType.airport" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate" />
     <AtisTile v-else-if="tile.name==TileType.atis" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate"/>
@@ -33,7 +33,7 @@ import {onMounted, ref, watch} from 'vue';
 import { TileType } from '../../model/TileType'
 
 import Header from '../shared/Header.vue';
-import Airport from '../airport/Airport.vue';
+import AirportTile from '../airport/AirportTile.vue';
 import AtisTile from '../atis/AtisTile.vue'
 import ChecklistTile from '../checklist/ChecklistTile.vue';
 import IfrTile from '../../components/clearance/IfrTile.vue';

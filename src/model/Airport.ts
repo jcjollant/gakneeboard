@@ -1,6 +1,8 @@
+import { Frequency, FrequencyType } from "./Frequency";
+
 const modelVersion:number = 9;
 
-class Frequency {
+class AirportFrequency {
     name: string;
     mhz: number;
     constructor(name:string, frequency:number) {
@@ -204,7 +206,7 @@ export class Airport {
     name: string;
     elev: number;
     tpa: number|undefined;
-    freq: Frequency[];
+    freq: AirportFrequency[];
     rwys: Runway[];
     custom: boolean;
     version:number;
@@ -262,7 +264,7 @@ export class Airport {
     }
     
     addFrequency(name:string, mhz:number) {
-        this.freq.push(new Frequency(name,mhz));
+        this.freq.push(new AirportFrequency(name,mhz));
     }
 
     /**
@@ -281,8 +283,14 @@ export class Airport {
         this.rwys.push(...runways);
     }
 
+    // returns a number
     getFreq(name:string):number|undefined {
         return this.freq.find((freq) => freq.name == name)?.mhz
+    }
+
+    // retuns a Frequency
+    getFrequency(name:string):AirportFrequency|undefined {
+        return this.freq.find((freq) => freq.name == name)
     }
 
     getFreqClearance():number|undefined {
@@ -293,8 +301,13 @@ export class Airport {
         return this.getFreq('CTAF');
     }
 
-    getFreqGround():number|undefined {
-        return this.getFreq('GND')
+    getFreqGround():Frequency {
+        const af = this.getFrequency('GND');
+        const name = Frequency.typeToString(FrequencyType.ground);
+        if( af) {
+            return new Frequency(af.mhz, name, FrequencyType.ground)
+        }
+        return  Frequency.noFreq(name, FrequencyType.ground)
     }
 
     getFreqTower():number|undefined {
@@ -308,7 +321,7 @@ export class Airport {
         return list.sort( (f1,f2) => f2.mhz - f1.mhz)[0].mhz;
     }
 
-    getFreqWeather() {
+    getFreqWeather():AirportFrequency|undefined {
         const patterns = ['ATIS','ASOS','AWOS','Weather']
         // test wether freq.name contains any of the patterns
         return this.freq.find((freq) => (patterns.some(p => freq.name.includes(p))))

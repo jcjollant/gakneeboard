@@ -95,7 +95,7 @@ function onTemplateSelection(index) {
 }
 
 function userUpdate() {
-    console.log('[Home.userUpdate]')
+    // console.log('[Home.userUpdate]')
     templates.value = currentUser.templates
     // console.log('[Home.userUpdate] template length', templates.value.length)
 }

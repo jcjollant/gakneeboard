@@ -39,10 +39,10 @@ function getIcon():Array<string> {
     // console.log("[FrequencyBox.getIcon]", props.freq?.type)
     let icon:string|undefined = undefined
     switch(props.freq?.type) {
-        case FrequencyType.ctaf: icon = 'walkie-talkie'; break;
+        case FrequencyType.ctaf: icon = 'plane'; break;
         case FrequencyType.navaid: icon = 'tower-cell'; break;
         case FrequencyType.tower: icon = 'tower-observation'; break;
-        case FrequencyType.clearance: icon = 'plane-circle-check';
+        case FrequencyType.clearance: icon = 'truck-fast'; break;
         case FrequencyType.tracon: icon = 'route'; break;
         case FrequencyType.weather: icon = 'cloud-sun-rain'; break;
     }
@@ -79,8 +79,8 @@ onMounted(() => {
     height: 53px;
 }
 .freqSmall {
-    padding: 5px;
-    font-size: 14px;
+    padding: 5px 3px;
+    font-size: 16px;
 }
 .freqMedium {
     line-height: 32px;
@@ -113,16 +113,16 @@ onMounted(() => {
     opacity: 0.4;
 }
 .ctaf {
-    color: #990099;
+    color: var(--text-ctaf);
 }
 .navaid {
-    color: #006666;
+    color: var(--text-navaid);
 }
 .tower, .tracon {
-    color: #000088;
+    color: var(--text-atc);
 }
 .weather {
-    color: #666600;
+    color: var(--text-weather);
 }
 
 </style>

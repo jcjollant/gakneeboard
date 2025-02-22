@@ -1,4 +1,4 @@
-import { atisTitle, boeingTitle, clearanceTitle, departTitle, loadDemo, maintenanceMode, newTemplate, rentonTitle, visitSkipBanner } from './shared'
+import { bellinghamTitle, boeingTitle, checkCorner, checkTileSpan, checkTileVisible, loadDemo, maintenanceMode, rentonTitle, visitSkipBanner } from './shared'
 
 describe('Tiles', () => {
   it('Airport Tile', () => {
@@ -7,33 +7,39 @@ describe('Tiles', () => {
     loadDemo('Tiles')
 
     // Renton and Boeing fields
-    const expectedValues = []
-    expectedValues.push({tile:'Renton Muni','label0':'ATIS','value0':'126.950','label1':'TWR','value1':'124.700','label2':'Elev','value2':'32','label3':'TPA',value3:'1250',watermark:'KRNT','dimensions':'5382x200'})
-    expectedValues.push({'tile':boeingTitle,'label0':'ATIS','value0':'127.750','label1':'RWY 14L-32R','value1':'118.300','label2':'Elev','value2':'22','label3':'TPA','value3':'1022','watermark':'KBFI','dimensions':'3709x100'})
-    for(let index = 0; index < 2; index++) {
+    const expectedValues = [
+      {tile:rentonTitle,'label0':'ATIS','value0':'126.950','label1':'TWR','value1':'124.700','label2':'Elev','value2':'32','label3':'TPA',value3:'1250',watermark:'KRNT','dimensions':'5382x200'},
+      {tile:boeingTitle,'label0':'ATIS','value0':'127.750','label1':'RWY 14L-32R','value1':'118.300','label2':'Elev','value2':'22','label3':'TPA','value3':'1022','watermark':'KBFI','dimensions':'3709x100'},
+    ]
+    for(let index = 0; index < expectedValues.length; index++) {
       const value = expectedValues[index]
-      const child = index + 1
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .headerTitle`).contains(value.tile)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .top.left > .clickable > :nth-child(1) > :nth-child(1)`).contains(value.value0)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .top.left > .clickable > :nth-child(1) > .label`).contains(value.label0)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .top.right > .clickable > :nth-child(1) > :nth-child(1)`).contains(value.value1)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .top.right > .clickable > :nth-child(1) > .label`).contains(value.label1)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .bottom.left > .clickable > :nth-child(1) > :nth-child(2)`).contains(value.value2)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .bottom.left > .clickable > :nth-child(1) > .label`).contains(value.label2)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .bottom.right > .clickable > :nth-child(1) > :nth-child(2)`).contains(value.value3)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .bottom.right > .clickable > :nth-child(1) > .label`).contains(value.label3)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .container > .label`).contains(value.dimensions)
-      cy.get(`:nth-child(1) > :nth-child(${child}) > .content > :nth-child(1) > .airportCode`).contains(value.watermark)
+      cy.get(`.page0 > .tile${index} > .headerTitle`).contains(value.tile)
+      cy.get(`.page0 > .tile${index} > .tileContent .top.left > .clickable`)
+      checkCorner(0, index, '.top.left', value.label0, value.value0)
+
+      cy.get(`.page0 > .tile${index} > .tileContent .top.right > .clickable`)
+      checkCorner(0, index, '.top.right', value.label1, value.value1)
+
+      cy.get(`.page0 > .tile${index} > .tileContent .bottom.left > .clickable`)
+      checkCorner(0, index, '.bottom.left', value.label2, value.value2)
+
+      cy.get(`.page0 > .tile${index} > .tileContent .bottom.right > .clickable`)
+      checkCorner(0, index, '.bottom.right', value.label3, value.value3)
+
+      cy.get(`.page0 > .tile${index} > .tileContent .container .label`).contains(value.dimensions)
+      cy.get(`.page0 > .tile${index} > .tileContent .airportCode`).contains(value.watermark)
     }
+
     // Switch runway and check frequency is being updated accordingly
     cy.get('.page0 > .tile1 > .headerTitle > .titleText').click()
     cy.get('[aria-label="14R-32L"]').click()
     cy.get('[aria-label="Apply"]').click()
-    cy.get(':nth-child(2) > .content > :nth-child(1) > .top.right > .clickable > :nth-child(1) > :nth-child(1)').contains('120.600')
-    cy.get(':nth-child(2) > .content > :nth-child(1) > .top.right > .clickable > :nth-child(1) > .label').contains('RWY 14R-32L')
+    cy.get(`.page0 > .tile1 > .tileContent .top.right .value`).contains('120.600')
+    cy.get(`.page0 > .tile1 > .tileContent .top.right .label`).contains('RWY 14R-32L')
+
     // Check Corners have all exected data
-    // Open the bottom right corner to get the corner selection window
-    cy.get(':nth-child(1) > :nth-child(1) > .content > :nth-child(1) > .bottom.right').click()
+    // Open Renton bottom right corner to get the corner selection window
+    cy.get(`.page0 > .tile0 > .tileContent .bottom.right`).click()
     // standard fields
     const expectedStandardFields = ['Field Elevation', 'Traffic Pattern Altitude', 'Runway Information', 'Nothing']
     for(let index = 0; index < expectedStandardFields.length; index++) {
@@ -61,24 +67,20 @@ describe('Tiles', () => {
     // wait for the reply
     cy.intercept({
       method: 'GET',
-      url: 'https://ga-api-seven.vercel.app/airport/**',
+      url: '**/airport/**',
     }).as('getOneAirport');
     cy.wait('@getOneAirport').its('response.statusCode').should('equal', 200)
     // Name should be shown in AirportInput
-    cy.get('.page0 > :nth-child(3) > .content > .settings > .airportCode > .airportName').contains('Bellingham Intl')
+    cy.get('.page0 > :nth-child(3) > .content > .settings > .airportCode > .airportName').contains(bellinghamTitle)
     cy.get('.page0 > :nth-child(3) > .content > .actionBar > [aria-label="Apply"]').click()
     // Check for bellingham fields
-    const kbliValues = {tile:'Bellingham Intl',label0:'ATIS',value0:'134.450',label1:'TWR',value1:'124.900',label2:'Elev',value2:'171',label3:'TPA',value3:'1201',watermark:'KBLI',dimensions:'6700x150'}
-    cy.get('.page0 > :nth-child(3) > .headerTitle > div').contains(kbliValues.tile)
-    cy.get(':nth-child(3) > .content > :nth-child(1) > .top.left > .clickable > :nth-child(1) > .label').contains(kbliValues.label0)
-    cy.get(':nth-child(3) > .content > :nth-child(1) > .top.left > .clickable > :nth-child(1) > :nth-child(1)').contains(kbliValues.value0)
-    cy.get(':nth-child(3) > .content > :nth-child(1) > .top.right > .clickable > :nth-child(1) > .label').contains(kbliValues.label1)
-    cy.get(':nth-child(3) > .content > :nth-child(1) > .top.right > .clickable > :nth-child(1) > :nth-child(1)').contains(kbliValues.value1)
-    cy.get(':nth-child(3) > .content > :nth-child(1) > .bottom.left > .clickable > :nth-child(1) > .label').contains(kbliValues.label2)
-    cy.get(':nth-child(3) > .content > :nth-child(1) > .bottom.left > .clickable > :nth-child(1) > :nth-child(2)').contains(kbliValues.value2)
-    cy.get(':nth-child(3) > .content > :nth-child(1) > .bottom.right > .clickable > :nth-child(1) > .label').contains(kbliValues.label3)
-    cy.get(':nth-child(3) > .content > :nth-child(1) > .bottom.right > .clickable > :nth-child(1) > :nth-child(2)').contains(kbliValues.value3)
-    cy.get(':nth-child(3) > .content > :nth-child(1) > .container > .label').contains(kbliValues.dimensions)
+    const kbliValues = {tile:bellinghamTitle, label0:'ATIS',value0:'134.450',label1:'TWR',value1:'124.900',label2:'Elev',value2:'171',label3:'TPA',value3:'1201',watermark:'KBLI',dimensions:'6700x150'}
+    cy.get('.page0 > .tile2 > .headerTitle').contains(kbliValues.tile)
+    checkCorner(0,2, '.top.left', kbliValues.label0, kbliValues.value0)
+    checkCorner(0,2, '.top.right', kbliValues.label1, kbliValues.value1)
+    checkCorner(0,2, '.bottom.left', kbliValues.label2, kbliValues.value2)
+    checkCorner(0,2, '.bottom.right', kbliValues.label3, kbliValues.value3)
+    cy.get(`.page0 > .tile2 > .tileContent .container .label`).contains(kbliValues.dimensions)
 
     // Test All Runways mode with KAWO Arlington
     cy.get('.runwayList > :nth-child(1) > :nth-child(1)').contains('Rwy')
@@ -110,8 +112,54 @@ describe('Tiles', () => {
     // We should see the placeholder
     // cy.get('.page0 > :nth-child(3) > :nth-child(2) > .placeHolder').contains('No Airport')
     // cy.get('.page0 > :nth-child(3) > :nth-child(2) > .placeHolder').contains(placeHolderSubtitle)
+  })
 
+  it('Merges', () => {
+    visitSkipBanner()
+    // Load default demo
+    loadDemo()
 
+    // by default tiles are not merged
+    checkTileSpan(0, 0, false)
+    checkTileVisible(0, 1, true)
+
+    // change tiles 1 Match tile 0
+    cy.get('.tile1 .runway').click()
+    cy.get('.p-inputtext').type('{selectAll}KBFI')
+    cy.get('[aria-label="14L-32R"]').click()
+    cy.get('[aria-label="Apply"]').click()
+    checkTileSpan(0, 0, true)
+    checkTileVisible(0, 1, false)
+
+    // check tile has 8 large Corners
+    cy.get('.top.left.cornerColumn').children().should('have.length', 4)
+    cy.get('.top.right.cornerColumn').children().should('have.length', 4)
+
+    const expectedCorners = [
+      {label:'ATIS',value:'127.750'},
+      {label:'RWY 14L-32R',value:'118.300'},
+      {label:'Elevation',value:'22'},
+      {label:'TPA',value:'1022'},
+      {label:'CD/P',value:'132.400'},
+      {label:'GND',value:'121.900'},
+      {label:'Custom',value:'Custom'},
+      {label:'UNICOM',value:'122.950'},
+    ]
+    for(let index = 0; index < expectedCorners.length; index++) {
+      cy.get(`.corner${index}`).contains(expectedCorners[index].label)
+      cy.get(`.corner${index}`).contains(expectedCorners[index].value)
+
+    }
+
+    // We can change values of corner boxes
+    for(let index = 0; index < 8; index++) {
+      cy.get(`.corner${index}`).click()
+      // pick elevation
+      cy.get('.standardList > :nth-child(1) > :nth-child(1)').click()
+      cy.get('.p-button').click()
+      cy.get(`.corner${index}`).contains('Elevation')
+      cy.get(`.corner${index}`).contains('22')
+    }
   })
 
 })

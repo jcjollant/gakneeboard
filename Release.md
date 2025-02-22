@@ -1,3 +1,18 @@
+# User Experience updates
+
+## 02/21/2025 
+1) 5081
+* Airport Tile merge mode
+2) 5082
+* Updated airport Tile guide
+* Bigger fonts for small Frequences box used in Departure and Approach mode of IFR tile
+## 02/18/2025 5080
+* Fixed Cloud Clearance layout
+* Fixed compact ATIS layout
+* Removed logs on frequency type
+* Removed logs on user update
+## 02/11/2025 5070
+* New Icons for Clearance and CTAF
 ## 02/07/2025 5064
 * Updated radio tile help link
 ## 02/03/2025 5060 5061 5062
