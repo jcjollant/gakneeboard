@@ -21,7 +21,7 @@
                 </div>
             </div>
         </div>
-        <ActionBar :video="UserUrl.airportTileVideo"
+        <ActionBar :video="UserUrl.airportTileVideo" :help="UserUrl.airportTileGuide"
             :canApply="canApply" :showCancel="showCancel"
             @apply="onApply" @cancel="onCancel"  />
     </div>
