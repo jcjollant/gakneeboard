@@ -8,6 +8,7 @@ import { UserDao } from "./dao/UserDao";
 import { TemplateDao } from "./TemplateDao";
 import { User } from "./models/User";
 
+require('dotenv').config();
 
 export class Check {
     name:string;
@@ -82,6 +83,21 @@ export class HealthCheck {
 
     }
 
+    static async environmentVariables():Promise<Check> {
+        const checks:Check[] = []
+        const envVars:string[] = ['STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET', 'STRIPE_PP1_PRICE', 'STRIPE_IP1_PRICE']
+
+        const check:Check = new Check("Environment Variables")
+        for(const envVar of envVars) {
+            if( !(envVar in process.env)) {
+                check.fail("EnvVar missing " + envVar)
+                return check;
+            }
+        }
+        check.pass( 'Found ' + envVars.length + ' variables')
+        return check
+    }
+
     // static async feedbackCheck():Promise<Check> {
     //     const check:Check = new Check('feedback')
     //     const feedbackCount:number = await FeedbackDao.count()
@@ -115,6 +131,7 @@ export class HealthCheck {
     public static async perform(email:boolean=true):Promise<Check[]> {
         return Promise.all([
                 HealthCheck.effectiveDateCheck(), 
+                HealthCheck.environmentVariables(),
                 HealthCheck.usersCheck(),
                 // HealthCheck.feedbackCheck(),
                 // HealthCheck.sheetsCheck(),
