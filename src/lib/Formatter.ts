@@ -1,9 +1,21 @@
+import { AccountType } from "../model/AccounType"
+
 export class Formatter {
     static noFuel:string = '-.-'
     static noTime:string = '--:--'
     public static noFrequency:string = '-.-'
     static noHeading:string = '---'
     static noSpeed:string = '--'
+
+    static accountType(at:AccountType):string {
+        switch(at) {
+            case AccountType.beta: return 'Beta'; break;
+            case AccountType.private: return 'Private Pilot'; break
+            case AccountType.instrument: return 'Instrument Pilot'; break;
+            case AccountType.simmer: return 'Flight Simmer';
+            default: return '?';
+        }
+    }
 
     static altitude(alt:any) {
         // console.log('[format.formatAltitude]', typeof alt, alt)
