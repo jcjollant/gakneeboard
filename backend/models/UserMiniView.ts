@@ -1,4 +1,5 @@
 import { TemplateDao } from '../TemplateDao';
+import { Business } from '../business/Business';
 import { UserDao } from '../dao/UserDao';
 import { AccountType } from './AccountType';
 import { Template as Template } from './Template';
@@ -7,6 +8,7 @@ import { User } from './User'
 export class UserMiniView {
     sha256: string;
     name: string;
+    maxPages: number;
     maxTemp: number;
     templates: Template[];
     accountType: AccountType;
@@ -14,6 +16,7 @@ export class UserMiniView {
     constructor(user:User, templates:Template[]) {
         this.sha256 = user.sha256;
         this.name = user.name;
+        this.maxPages = Business.maxPagesFromAccountType(user.accountType)
         this.maxTemp = user.maxTemplates;
         this.templates = templates;
         this.accountType = user.accountType;
