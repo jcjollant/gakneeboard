@@ -98,7 +98,9 @@ export function maintenanceMode() {
     cy.get('.maintenanceButton').click()
     
     // type code in maintenance window
-    cy.get('.p-dialog-content .p-inputtext:not([disabled])').type(maintenanceLogin,{delay:0})
+    cy.wait(500)
+    cy.get('.p-dialog-content .p-inputtext:not([disabled])')
+    cy.get('.p-dialog-content .p-inputtext').type(maintenanceLogin,{delay:0})
 
     // submit
     cy.intercept({method: 'GET',url: '**/maintenance/**',}).as('getMaintenance')
