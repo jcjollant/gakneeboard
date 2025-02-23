@@ -2,9 +2,9 @@
 import {describe, expect, test} from '@jest/globals';
 import { Airport, versionInvalid } from "../backend/models/Airport.ts"; 
 import { AirportDao } from '../backend/AirportDao.ts'
-import { postgresUrl, jcUserId } from './constants.ts';
+import { jcUserId } from './constants.ts';
 
-process.env.POSTGRES_URL=postgresUrl
+require('dotenv').config();
 
 describe('Custom Airports', () => {
     const customCode:string = 'TEST'

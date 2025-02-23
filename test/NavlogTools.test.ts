@@ -1,9 +1,8 @@
 import {describe, expect, test} from '@jest/globals';
 import fs from 'fs'
 import { NavlogTools } from '../backend/NavlogTools'
-import { postgresUrl } from './constants';
 
-process.env.POSTGRES_URL=postgresUrl
+require('dotenv').config();
 
 describe('navlog Tools', () => {
     test ('constructor', () => {

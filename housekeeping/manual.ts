@@ -1,11 +1,11 @@
 import { sql } from '@vercel/postgres'
 import { GApi } from "../backend/GApi"
 import { Adip } from "../backend/adip/Adip"
-import { postgresUrl } from "../test/constants"
 import { Airport } from "../backend/models/Airport"
 import { AirportDao } from '../backend/AirportDao'
 
-process.env.POSTGRES_URL=postgresUrl
+require('dotenv').config();
+
 
 async function checkEffectiveDates() {
     const result = await sql`SELECT data,id FROM Airports WHERE creatorId IS NULL`

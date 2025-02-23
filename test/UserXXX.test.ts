@@ -1,14 +1,13 @@
 import {describe, expect, test} from '@jest/globals';
 import { User } from '../backend/models/User'
 import { UserTools } from '../backend/UserTools'
-import { jcMaxTemplates, jcSource, postgresUrl } from './constants'
+import { jcMaxTemplates, jcSource } from './constants'
 import { jcHash, jcUserId, jcToken, jcName, jcEmail } from './constants'
 import { UserDao } from '../backend/dao/UserDao';
 import { UserMiniView } from '../backend/models/UserMiniView';
-import { exitCode } from 'process';
 import { AccountType } from '../backend/models/AccountType';
 
-process.env.POSTGRES_URL=postgresUrl
+require('dotenv').config();
 
 const jc = { 'source':UserTools.google,'email':jcEmail}
 

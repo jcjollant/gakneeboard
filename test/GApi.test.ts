@@ -1,11 +1,11 @@
 import { describe, expect, test} from '@jest/globals';
 import { GApi, GApiError } from '../backend/GApi'
 import { jcHash, jcUserId, jcToken, jcName } from './constants'
-import { currentAsOf, postgresUrl } from './constants';
+import { currentAsOf } from './constants';
 import { UserMiniView } from '../backend/models/UserMiniView';
 import { UserTools } from '../backend/UserTools';
 
-process.env.POSTGRES_URL=postgresUrl
+require('dotenv').config();
 
 
 describe( 'GApi Tests', () => {

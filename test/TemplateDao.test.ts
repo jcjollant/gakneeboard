@@ -2,9 +2,9 @@
 import { describe, expect, test} from '@jest/globals';
 import { Template } from '../backend/models/Template.ts'
 import { TemplateDao } from '../backend/TemplateDao.ts'
-import { postgresUrl, jcUserId, asUserId, jcTestTemplateName, jcTestTemplateData, jcTestTemplateId, jcMaxTemplates } from './constants.ts';
+import { jcUserId, asUserId, jcTestTemplateName, jcTestTemplateData, jcTestTemplateId, jcMaxTemplates } from './constants.ts';
 
-process.env.POSTGRES_URL=postgresUrl
+require('dotenv').config();
 
 describe('Custom Templates', () => {
     test('read Custom', async () => {

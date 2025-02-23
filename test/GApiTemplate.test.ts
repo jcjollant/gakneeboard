@@ -1,13 +1,11 @@
 import { describe, expect, test} from '@jest/globals';
 import { GApi, GApiError } from '../backend/GApi'
-import { jcHash, jcUserId, jcTestTemplateData, jcToken, jcName, jcTestTemplateName, jcTestTemplateId, jcTestTemplateDescription } from './constants'
-import { currentAsOf, postgresUrl } from './constants';
+import { jcHash, jcUserId, jcTestTemplateData, jcTestTemplateName, jcTestTemplateId, jcTestTemplateDescription } from './constants'
 import { Template } from '../backend/models/Template'
 import { template } from '@babel/core';
 import { PublishedTemplate } from '../backend/models/PublishedTemplate';
 
-process.env.POSTGRES_URL=postgresUrl
-
+require('dotenv').config();
 
 describe( 'GApi Tests', () => {
 

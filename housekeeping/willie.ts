@@ -1,8 +1,7 @@
 
-import { postgresUrl } from '../test/constants'
 import { HealthCheck } from '../backend/HealthChecks'
 
-process.env.POSTGRES_URL=postgresUrl
+require('dotenv').config();
 
 console.log('!Argh!');
 

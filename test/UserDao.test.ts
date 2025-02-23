@@ -1,11 +1,11 @@
 
 import { describe, expect, test} from '@jest/globals';
 import { UserDao } from '../backend/dao/UserDao.ts'
-import { postgresUrl, jcUserId, jcHash, jcEmail, jcName, jcSource, jcMaxTemplates } from './constants.ts';
+import { jcUserId, jcHash, jcEmail, jcName, jcSource, jcMaxTemplates } from './constants.ts';
 import { AccountType } from '../backend/models/AccountType.ts';
 import { User } from '../backend/models/User.ts';
 
-process.env.POSTGRES_URL=postgresUrl
+require('dotenv').config();
 
 describe('UserDao', () => {
     test('Count', async () => {
@@ -37,7 +37,7 @@ describe('UserDao', () => {
         const maxTemplates = 12
         const customerId = 'someCustomerId'
         const data:string = JSON.stringify( {name:name,source:source,email:email,maxTemplates:maxTemplates})
-        const row = {id:1, sha256:'sha', data:data, accountType:AccountType.beta, customerId: customerId}
+        const row = {id:1, sha256:'sha', data:data, account_type:AccountType.beta, customer_id: customerId}
         const user:User = UserDao.parseRow(row)
         expect(user.id).toBe(1)
         expect(user.sha256).toBe('sha')

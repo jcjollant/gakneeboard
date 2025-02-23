@@ -1,7 +1,6 @@
-import { postgresUrl } from '../test/constants'
-import { Metric, Metrics } from '../backend/Metrics'
+import { Metrics } from '../backend/Metrics'
 
-process.env.POSTGRES_URL=postgresUrl
+require('dotenv').config();
 
 console.log('Hello Sir');
 

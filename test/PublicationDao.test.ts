@@ -2,9 +2,7 @@ import {describe, expect, test} from '@jest/globals';
 
 import { PublicationDao } from '../backend/PublicationDao'
 
-import { postgresUrl } from './constants.ts';
-
-process.env.POSTGRES_URL=postgresUrl
+require('dotenv').config();
 
 
 describe('Publication', () => {

@@ -1,5 +1,4 @@
-import { postgresUrl } from "../test/constants"
-process.env.POSTGRES_URL=postgresUrl;
+require('dotenv').config();
 
 //================
 // Airport metrics
