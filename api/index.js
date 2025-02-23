@@ -1,9 +1,9 @@
-const express =require( "express")
+const express = require( "express")
 import cors from "cors";
 import multer from "multer"
 // const cors = require('cors');
 import { GApi, GApiError } from '../backend/GApi'
-// import { Stripe } from '../backend/Stripe'
+import { StripeClient } from '../backend/business/Stripe'
 import { UserTools } from '../backend/UserTools'
 import { Maintenance } from '../backend/Maintenance'
 import { NavlogTools } from "../backend/NavlogTools";
@@ -11,7 +11,7 @@ const port = 3000
 const app = express();
 
 app.use(cors())
-app.use('/webhook', express.raw({ type: 'application/json' }));
+app.use('/stripe/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json()) // for parsing application/json
 
 // console.log("Dev Mode")
@@ -119,15 +119,6 @@ app.post('/authenticate', async(req,res) => {
         catchError(res, e, 'POST /authenticate')
     })
 })
-
-// app.post('/checkout', async (req,res) => {
-//     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
-//     await Stripe.checkout(payload.user, payload.product, payload.source).then( (url) => {
-//         res.send({url: url})
-//     }).catch( (e) => {
-//         catchError(res, e, 'POST /checkout')
-//     })
-// })
 
 /**
  * Get airport diagram PDF
@@ -251,6 +242,37 @@ app.get('/publications', async (req, res) => {
 })
 
 /**
+ * Payments management
+ */
+app.post('/stripe/checkout', async (req,res) => {
+    const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+    let promise = null;
+    if(payload.product === 'manage') {
+        promise = StripeClient.instance.manage(payload.user, payload.source)
+    } else {
+        promise = StripeClient.instance.checkout(payload.user, payload.product, payload.source)
+    }
+    await promise.then( (url) => {
+        res.send({url: url})
+    }).catch( (e) => {
+        catchError(res, e, 'POST /checkout')
+    })
+})
+
+/**
+ * This is called by Stripe upon subscription event
+ */
+app.post('/stripe/webhook', async (req, res) => {
+    await StripeClient.instance.webhook(req).then(() => {
+        res.send()
+    }).catch( (e) => {
+        console.log(e)
+        res.status(400).send()
+    })
+})
+
+
+/**
  * Get a specific template
  */
 app.get('/template/:id', async (req, res) => {
@@ -320,18 +342,6 @@ app.get('/sunlight/:from/:to/:dateFrom/:dateTo?', async (req, res) => {
         catchError(res, e, 'GET /sunlight/:from/:to/:date')
     }        
 })
-
-/**
- * This is called by Stripe upon subscription event
- */
-// app.post('/webhook', async (req, res) => {
-//     Stripe.webhook(req).then(() => {
-//         res.send()
-//     }).catch( (e) => {
-//         console.log(e)
-//         res.status(400).send()
-//     })
-// })
 
 if(process.env.__VERCEL_DEV_RUNNING != "1") {
     app.listen(port, () => console.log("[index] Server ready on port " + port));
