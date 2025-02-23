@@ -13,9 +13,7 @@
         :key="plan.name" 
         :class="['plan-card', { 'popular': plan.popular, 'unpopular' : !plan.popular }]"
       >
-        <div v-if="plan.popular" class="popular-badge">
-          Most Popular
-        </div>
+        <div v-if="plan.popular" class="popular-badge">Most Popular</div>
         
         <div class="plan-header">
           <h3>{{ plan.name }}</h3>
@@ -49,7 +47,7 @@
 
         <div class="plan-footer">
           <button :class="['subscribe-button', { 'primary': plan.popular }]" @click="onPlan(plan.code)">
-            {{ plan.price === "0" ? "Get Started" : "Subscribe Now" }}
+            {{ plan.code === currentPricing ? 'Keep your plan' : "Select new plan" }}
           </button>
         </div>
       </div>
@@ -59,13 +57,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router';
-import { Checkout } from '../assets/Checkout';
+import { Checkout, Pricing } from '../assets/Checkout';
 import { currentUser } from '../assets/data';
-import { useToast } from 'primevue/useToast'
+import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../assets/Toaster';
+
 import Menu from '../components/menu/Menu.vue';
+
+const currentPricing = ref(Pricing.simmer)
+const toaster = useToaster(useToast())
 
 const plans = ref([
   {
@@ -81,7 +83,7 @@ const plans = ref([
       "Exports": false
     },
     popular: false,
-    code: 'fs1'
+    code: Pricing.simmer
   },
   {
     name: "Private Pilot",
@@ -96,7 +98,7 @@ const plans = ref([
       "Exports": false
     },
     popular: true,
-    code: 'pp1'
+    code: Pricing.private
   },
   {
     name: "Instrument Pilot",
@@ -111,15 +113,27 @@ const plans = ref([
       "Exports": true
     },
     popular: false,
-    code: 'ip1'
+    code: Pricing.instrument
   }
 ])
 const router = useRouter()
-const toaster = useToaster(useToast())
+
+onMounted( () => {
+  console.log('[PricingPlans.onMounted]')
+  // console.log(currentUser)
+  currentUser.addListener( onUserUpdate)
+  currentPricing.value = Checkout.pricingFromAccountType( currentUser.accountType)
+})
+
+onUnmounted( () => {
+  currentUser.removeListener( onUserUpdate)
+})
 
 function onPlan(code:string) {
   // console.log('[PricingPlans.onPlan]',code)
-  if(code == 'fs1') {
+
+  if( code == currentPricing.value) {
+    // There is no change in type, just go back to the home page
     router.push('/')
   } else {
     toaster.info('Calling Tower', 'Stand By...')
@@ -130,8 +144,13 @@ function onPlan(code:string) {
       console.error(err)
     })
   }
-
 }
+
+function onUserUpdate(user:any) {
+  // console.log('[PricingPlans.onUserUpdate]', user)
+  currentPricing.value = Checkout.pricingFromAccountType( user.accountType)
+}
+
 </script>
 
 <style scoped>
@@ -184,17 +203,28 @@ function onPlan(code:string) {
   position: relative;
 }
 
-.plan-card.popular {
-  border: 2px solid #3B82F6;
+.plan-card.yours {
+  border: 2px solid darkgrey;
 }
 
+.plan-card.popular {
+  border: 2px solid orange;
+}
 .plan-card.unpopular {
     padding-top: 1.70rem;
 }
 
 .popular-badge {
-  background-color: #3B82F6;
-  color: white;
+  background-color: orange;
+  color: black;
+  text-align: center;
+  padding: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.yours-badge {
+  background-color: darkgrey;
+  color: black;
   text-align: center;
   padding: 0.25rem;
   font-size: 0.875rem;
@@ -289,11 +319,14 @@ function onPlan(code:string) {
 }
 
 .subscribe-button.primary {
+  /* background-color: darkorange;
+  color: black; */
   background-color: #3B82F6;
   color: white;
 }
 
 .subscribe-button.primary:hover {
   background-color: #2563EB;
+  color: white;
 }
 </style>
