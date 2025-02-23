@@ -39,7 +39,7 @@
   --tile-content-height: 240px;
   --tile-height: 265px;
   --tile-width: 249px;
-  --tile-width-expanded: calc( var(--page-width) - 2px);
+  --tile-width-expanded: var(--page-width);
 }
 
 .clickable {
