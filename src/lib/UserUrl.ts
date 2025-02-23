@@ -16,7 +16,7 @@ export class UserUrl {
 
     // Youtube
     static navlogVideo:string = 'https://www.youtube.com/playlist?list=PLS4A2hmRgOclcjE4THa034Lgq0THbewUX'
-    static airportTileVideo:string='https://youtu.be/MmahnI5fiS4'
+    static airportTileVideo:string='https://youtu.be/YEpkj70KH80'
     static editorVideo:string = 'https://youtu.be/v9C5Eyr_A3E'
     static ffExportVideo:string = 'https://youtu.be/BNRY8u1hNmo'
     static noteTilesVideo:string = 'https://youtu.be/nqgDI-CpFUU'
