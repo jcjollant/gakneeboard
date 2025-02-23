@@ -1,7 +1,10 @@
 # User Experience updates
 
-## 02/23/2025 5090
+## 02/23/2025 
+1) 5090
 * Added account management features
+2) 5091
+* Preventing to empty airports to merge
 ## 02/21/2025 
 1) 5081
 * Airport Tile merge mode

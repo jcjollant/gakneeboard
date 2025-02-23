@@ -346,7 +346,8 @@ export function getTemplateDummy() {
 export function isSameAirportAndRunway(tile1, tile2) {
   if(!tile1 || !tile2) return false;
   if(tile1.name != TileType.airport || tile2.name != TileType.airport) return false;
-  if(tile1.data.code != tile2.data.code) return false;
+  // do airport codes match?
+  if(tile1.data.code != tile2.data.code || !tile1.data.code || !tile2.data.code) return false;
   if(tile1.data.rwy != tile2.data.rwy) return false;
   return true;
 
