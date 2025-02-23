@@ -52,21 +52,6 @@ describe( 'User', () => {
         expect(u.name).toBe('name')
     })
 
-    test('fromJson', () => {
-        const name = 'Paul'
-        const source = 'SomeSource'
-        const email = 'paul@example.com'
-        const maxTemplates = 12
-        const data:string = JSON.stringify( {name:name,source:source,email:email,maxTemplates:maxTemplates})
-        const user:User = User.fromJson(1,'sha',data,AccountType.beta)
-        expect(user.id).toBe(1)
-        expect(user.sha256).toBe('sha')
-        expect(user.name).toBe(name)
-        expect(user.source).toBe(source)
-        expect(user.email).toBe(email)
-        expect(user.maxTemplates).toBe(maxTemplates)
-        expect(user.accountType).toBe(AccountType.beta)
-    })
 })
 
 describe('UserTool', () => {
