@@ -36,9 +36,9 @@ export class SubscriptionDao {
                     reject('Subscription not found')
                 }
                 await sql`UPDATE subscriptions SET ended_at=${endedAt} WHERE id=${subscriptionId}`
-                const sub = SubscriptionDao.subscriptionFromRow(result.rows[0]);
-                sub.setEnededAt(endedAt ? endedAt : 0)
-                resolve( sub)
+                const subscription = SubscriptionDao.parseRow(result.rows[0]);
+                subscription.setEnededAt(endedAt ? endedAt : 0)
+                resolve( subscription)
             } catch(e) {
                 reject(e)
             }
@@ -46,7 +46,7 @@ export class SubscriptionDao {
     }
 
     // create a Subscription from a result row (*)
-    private static subscriptionFromRow(row:any):Subscription {
+    public static parseRow(row:any):Subscription {
         return new Subscription(row.id, row.customer_id, row.plan_id, row.period_end, row.ended_at)
     }
 
