@@ -7,7 +7,8 @@ export class CurrentUser {
     loggedIn:boolean
     sha256:string;
     name:string;
-    templates:any[]
+    templates:any[];
+    maxPageCount:number;
     maxTemplateCount:number;
     listeners:{(user: CurrentUser):void}[];
     accountType:AccountType;
@@ -18,6 +19,7 @@ export class CurrentUser {
       this.sha256 = "";
       this.name = "";
       this.templates = [];
+      this.maxPageCount = 0;
       this.maxTemplateCount = 0;
       this.accountType = AccountType.unknown
 
@@ -94,6 +96,7 @@ export class CurrentUser {
           
           this.templates = data.templates ? data.templates : [];
           this.sortTemplates()
+          this.maxPageCount = Number(data.maxPages ? data.maxPages : 0);
           this.maxTemplateCount = Number(data.maxTemp ? data.maxTemp : 0);
           localStorage.setItem(LocalStore.user, JSON.stringify(data))
 

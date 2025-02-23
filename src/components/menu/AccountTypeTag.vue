@@ -4,7 +4,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { AccountType } from '../../model/AccounType';
+import { AccountType, parseAccountType } from '../../model/AccounType';
+import { Formatter } from '../../lib/Formatter';
 
 const props = defineProps({
     type: { type: String, default: null},
@@ -14,9 +15,7 @@ const accountType = ref('')
 
 onMounted( () => {
     console.log(props.type)
-    switch(props.type) {
-        case AccountType.instrument: accountType.value = 'Instrument'; break;
-    }
+    accountType.value = Formatter.accountType( parseAccountType( props.type))
 })
 
 </script>
