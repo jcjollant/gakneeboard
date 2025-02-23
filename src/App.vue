@@ -10,7 +10,7 @@
         <router-view ></router-view>
     </div>
     <div class="session">
-      <Session v-if="route.name!='Print'" />
+      <Session v-if="route.name!=RouterNames.Print && route.name!=RouterNames.ThankYou" />
     </div>
     <MenuButton v-if="route.name!='Print'" icon="comments" class="feedbackButton" label="Give Feedback"
       @click="showFeedback=true" />
@@ -39,6 +39,7 @@ import Popup from '@/components/dialog/Popup.vue'
 import MenuButton from '@/components/menu/MenuButton.vue';
 import Session from '@/components/menu/Session.vue'
 import Toast from 'primevue/toast'
+import { RouterNames } from './router';
 
 const route = useRoute()
 const router = useRouter()
@@ -136,9 +137,8 @@ function onClosePopup(remember) {
 }
 .session {
   position: fixed;
-  right: 5px;
+  right: 10px;
   top: 3px;
-  min-width: 100px;
 }
 .versionDialog {
   position: fixed;
