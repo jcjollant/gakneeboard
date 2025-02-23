@@ -207,7 +207,7 @@ export async function getBackend() {
         }
       })
       .catch( error => {
-        reportError( '[data.getBackend] error' + error)
+        reportError( '[data.getBackend] ' + error)
         resolve(null)
       })
   })
