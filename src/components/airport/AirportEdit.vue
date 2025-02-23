@@ -13,12 +13,12 @@
                     <Button label="ALL" class="sign" v-if="rwyList.length > 0"  :severity="selectedRwy == 'all' ? 'primary' : 'secondary'"
                             @click="selectRunway('all')"></Button>
                 </div>
-                <div class="miniHeader">Traffic Pattern:</div>
-                <OneChoice v-if="validAirport" v-model="pattern" :choices="patternChoices" style="line-height: 9px;" />
                 <div class="rwyOrientation">
                     <div class="miniHeader" >Orientation</div>
                     <OneChoice v-if="validAirport" v-model="rwyOrientation" :choices="orientations" style="line-height: 9px;" />
                 </div>
+                <div class="miniHeader">Traffic Pattern:</div>
+                <OneChoice v-if="validAirport" v-model="pattern" :choices="patternChoices" style="line-height: 9px;" />
             </div>
         </div>
         <ActionBar :video="UserUrl.airportTileVideo" :help="UserUrl.airportTileGuide"
