@@ -4,6 +4,7 @@ export enum EmailType {
     Metrics = 0,
     Housekeeping = 1,
     Feedback = 2,
+    AccountType = 3,
 }
 
 export class Email {
@@ -19,18 +20,27 @@ export class Email {
 
         let identity = '?'
         let subject = '?'
+        // choose email subject and sender identity 
         switch(type) {
             case EmailType.Metrics: 
+                // Waylon Smithers is looking after metrics
                 subject = 'Metrics'; 
                 identity = 'Waylon';
                 break;
             case EmailType.Housekeeping:
+                // Groundskeeper Willie keeps the place clean
                 subject = 'Housekeeping';
                 identity = 'Willie';
                 break;
             case EmailType.Feedback: 
+                // Ned Flanders reports on neighbors activity
                 subject = 'Feedback'; 
                 identity = 'Ned';
+                break;
+            case EmailType.AccountType:
+                // Apu Nahasapeemapetilon watches the store
+                subject = 'Account Type';
+                identity = 'Apu';
                 break;
         }
 

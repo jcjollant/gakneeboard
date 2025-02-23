@@ -5,6 +5,7 @@ import { AccountType } from '../models/AccountType'
 import { Subscription } from '../models/Subscription'
 import { Stripe } from 'stripe'
 import e from 'express'
+import { Email, EmailType } from '../Email'
 
 const planUrl = '/plans'
 // const pp1Price = 'price_1Qg0c7G89XrbqGAIJQAwl2HW'
@@ -117,7 +118,7 @@ export class StripeClient {
                 if(!req.body) throw new Error('Stripe request body not found');
                 // console.log('[Stripe.webhook]', req.body)
                 event = this.stripe.webhooks.constructEvent(String(req.body), sig, endpointSecret)
-                console.log('[Stripe.webhook]', JSON.stringify(event.type), now)
+                // console.log('[Stripe.webhook]', JSON.stringify(event.type), now)
  
                 if(event.type == SUB_UPDATE || event.type == SUB_DELETE) {
                     const subscriptionId = event.data.object.id;
@@ -138,7 +139,7 @@ export class StripeClient {
                 reject(err)
             }
 
-            console.log('[Stripe.webhook] resolve', now)
+            // console.log('[Stripe.webhook] resolve', now)
             resolve();
         })
     }
@@ -174,7 +175,11 @@ export class StripeClient {
         let success = false;
         await UserDao.getUserFromCustomerId(customerId).then( async (user) => {
             if(user.accountType != newAccountType) {
-                await UserDao.updateType(user.id, newAccountType)
+                await UserDao.updateType(user.id, newAccountType).then( async () => {
+                    const message = 'user ' + user.id + ' updated to ' + newAccountType
+                    console.log('[Stripe.updateAccountType]', message)
+                    await Email.send(message,EmailType.AccountType)
+                })
             }
             success = true
         }).catch( (err) => {
