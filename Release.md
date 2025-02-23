@@ -5,6 +5,9 @@
 * Added account management features
 2) 5091
 * Preventing to empty airports to merge
+3) 5092
+* refreshed airport tile vide
+* Fixed merged tiles too short
 ## 02/21/2025 
 1) 5081
 * Airport Tile merge mode
