@@ -15,7 +15,7 @@ export class UserDao extends Dao {
             const result = await sql`SELECT id,sha256,data FROM users`;
             const users:User[] = []
             for(const row of result.rows) {
-                users.push(User.fromJson(row.id, row.sha256, row.data, row.accountType))
+                users.push(UserDao.parseRow(row))
             }
             resolve(users)
         })
@@ -37,11 +37,34 @@ export class UserDao extends Dao {
         return result.rows[0].id
     }
 
+    public static getUserFromCustomerId(customerId:string):Promise<User> {
+        return new Promise<User>(async (resolve, reject) => {
+            const result = await sql`SELECT * FROM users WHERE customer_id=${customerId}`;
+            if( result.rowCount != 1) reject('Unexpected user count ' + result.rowCount)
+            resolve(UserDao.parseRow(result.rows[0]))
+        })
+    }
+
     // builds a user using the sha256 as a key
     public static async getUserFromHash(sha256:string):Promise<User | undefined> {
-        const result = await sql`SELECT id,data,account_type FROM users WHERE sha256=${sha256}`;
+        const result = await sql`SELECT * FROM users WHERE sha256=${sha256}`;
         if( result.rowCount == 0) return undefined
-        return User.fromJson(result.rows[0].id, sha256, result.rows[0].data, result.rows[0].account_type)
+        return UserDao.parseRow(result.rows[0])
+    }
+
+    // creates a user from it's data representation
+    public static parseRow(row:any):User {
+        // console.log('[UserDao.parseRow]', id, sha256, accountType)
+        const user = new User(Number(row.id), row.sha256)
+        const data = JSON.parse(row.data)
+        if(data.source) user.setSource(data.source)
+        if(data.email) user.setEmail(data.email)
+        if(data.name) user.setName(data.name)
+        if(data.maxTemplates) user.setMaxTemplates(data.maxTemplates)
+        user.setAccountType(row.account_type)
+        user.setCustomerId(row.customer_id)
+
+        return user
     }
 
     /**
@@ -75,10 +98,28 @@ export class UserDao extends Dao {
         })
     }
 
-    static async updateType(userId: number, accountType: AccountType):Promise<boolean> {
-        // console.log( '[UserDao.updateType] ' + userId + ' to ' + accountType)
-        const result = await sql`UPDATE users SET account_type=${accountType} WHERE id=${userId}`
+    // Update and existing user with a new customer_id
+    static async updateCustomerId(user:User):Promise<boolean> {
+        console.log( '[UserDao.updateCustomerId] ' + user.id + ' to ' + user.customerId)
+        const result = await sql`UPDATE users SET customer_id=${user.customerId} WHERE id=${user.id}`
         return result.rowCount == 1;
+    }
+
+    // Update and existing user with a new account_type
+    static async updateType(userId:number, accountType: AccountType):Promise<boolean> {
+        if(!userId) {
+            console.log('[UserDao] invalid user id')
+            return false;
+        }
+
+        const result = await sql`UPDATE users SET account_type=${accountType} WHERE id=${userId}`
+        const success = result.rowCount == 1;
+
+        if(!success) {
+            console.log( '[UserDao.updateType] ' + userId + ' to: ' + accountType + ' success: ' + success)
+        }
+
+        return success
     }
 
 }

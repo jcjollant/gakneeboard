@@ -9,6 +9,7 @@ export class User {
     email:string;
     maxTemplates:number;
     accountType:AccountType;
+    customerId:string|undefined;
 
     public static defaultMaxTemplates:number = 5;
 
@@ -20,6 +21,7 @@ export class User {
         this.email = '';
         this.maxTemplates = User.defaultMaxTemplates;
         this.accountType = AccountType.simmer;
+        this.customerId = undefined;
     }
 
 
@@ -31,20 +33,6 @@ export class User {
         return createHash('sha256').update(JSON.stringify(input)).digest('hex')
     }
  
-    // creates a user from it's data representation
-    public static fromJson(id:number, sha256:string, rawData:string, accountType:AccountType):User {
-        // console.log('[User.fromJson]', id, sha256, accountType)
-        const user = new User(id, sha256)
-        const data = JSON.parse(rawData)
-        if(data.source) user.setSource(data.source)
-        if(data.email) user.setEmail(data.email)
-        if(data.name) user.setName(data.name)
-        if(data.maxTemplates) user.setMaxTemplates(data.maxTemplates)
-        user.setAccountType(accountType)
-
-        return user
-    }
-
     public setEmail(email:string) {
         this.email = email;
     }
@@ -60,7 +48,12 @@ export class User {
     public setName( newName:string) {
         this.name = newName;
     }    
+
     public setAccountType( newType:AccountType) {
         this.accountType = newType;
+    }
+    
+    public setCustomerId(customer_id: string) {
+        this.customerId = customer_id;
     }
 }
