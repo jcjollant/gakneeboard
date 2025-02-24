@@ -8,6 +8,10 @@
 3) 5092
 * refreshed airport tile vide
 * Fixed merged tiles too short
+4) 5093
+* Configurable TP headings
+* Fixed IP Price
+* Fixed Airport Diagram not loading bug
 ## 02/21/2025 
 1) 5081
 * Airport Tile merge mode
