@@ -102,7 +102,7 @@ const plans = ref([
   },
   {
     name: "Instrument Pilot",
-    price: "9.99",
+    price: "8.99",
     description: "For power users",
     features: {
       "Local Pages (*)": "Unlimited",
@@ -119,7 +119,7 @@ const plans = ref([
 const router = useRouter()
 
 onMounted( () => {
-  console.log('[PricingPlans.onMounted]')
+  // console.log('[PricingPlans.onMounted]')
   // console.log(currentUser)
   currentUser.addListener( onUserUpdate)
   currentPricing.value = Checkout.pricingFromAccountType( currentUser.accountType)
