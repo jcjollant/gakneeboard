@@ -34,17 +34,20 @@ function onChoice(choice) {
     cursor: pointer;
     width: fit-content;
 }
+
 .choice {
     padding: 7px 14px;
 }
+
 .choiceInactive:hover {
     background-color: #eee;
 }
+
 .choiceActive {
     background-color: #b4c6e7;
 }
+
 .thinPad {
-    font-size: 14px;
     padding: 3px 7px;
 }
 </style>
