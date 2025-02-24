@@ -11,8 +11,24 @@ import {onMounted,ref,watch} from 'vue'
 const props = defineProps({
     runway: { type: Object, default: null},
     pattern : { type: Number, default: 0},
-    orientation : { type: String, default : null}
+    orientation : { type: String, default : null},
+    headings : { type: Boolean, default: true},
 })
+
+let patternMode = 0
+let showHeadings = false
+let showNorthMidField = false
+let showNorthTp = true
+let showSouthMidField = false
+let showSouthTp = true
+let magneticOrientation = false
+
+const myCanvas = ref()
+const label = ref('')
+const rightTpColor = '#FF9999'
+const leftTpColor = '#9999FF'
+const leftTpPattern = [10,5]
+const rightTpPattern = [10,5,2,5]
 
 onMounted(() => {    
     loadProps(props)
@@ -26,23 +42,9 @@ watch( props, async() => {
 function loadProps( props) {
     // console.log( 'RunwayView loadProps ' + JSON.stringify(props))
     magneticOrientation = (props.orientation && props.orientation == 'magnetic')
+    showHeadings = props.headings
     setNewPatternMode(props.pattern)
 }
-
-let patternMode = 0
-let showNorthMidField = false
-let showNorthTp = true
-let showSouthMidField = false
-let showSouthTp = true
-let magneticOrientation = false;
-
-const myCanvas = ref()
-const label = ref('')
-const rightTpColor = '#FF9999'
-const leftTpColor = '#9999FF'
-const leftTpPattern = [10,5]
-const rightTpPattern = [10,5,2,5]
-
 
 function getAngle( orientation) {
     if(orientation < 0) orientation += 360;
@@ -51,7 +53,7 @@ function getAngle( orientation) {
 
 function setNewPatternMode( value) {
     // console.log('RunwayView setNewPatternMode ' + value)
-    patternMode = value;
+    patternMode = value
     showNorthMidField = (patternMode == 4)
     showNorthTp = (patternMode == 0 || patternMode == 3 || patternMode == 4)
     showSouthMidField = (patternMode == 2)
@@ -167,7 +169,7 @@ function show(runway) {
             // 45 entry
             ctx.lineTo( -tpDownwindDist * 2, -tpDownwindDist);
             // 45 entry label
-            ctx.fillText( getAngle(northEnd.mag - 225)+'°', -tpDownwindDist * 2.5, -tpDownwindDist - 10);
+            if(showHeadings) ctx.fillText( getAngle(northEnd.mag - 225)+'°', -tpDownwindDist * 2.5, -tpDownwindDist - 10);
             if(showNorthMidField) {
                 const startingAngle = - Math.PI / 4
                 const endingAngle = Math.PI / 2
@@ -175,13 +177,13 @@ function show(runway) {
                 ctx.arc( centerX, centerY, radius, startingAngle, endingAngle, true);
                 ctx.lineTo( 2 * tpDownwindDist, 0)
                 // mid field entry
-                ctx.fillText( getAngle(northEnd.mag - 90)+'°', tpDownwindDist * 2.5, 0);
+                if(showHeadings) ctx.fillText( getAngle(northEnd.mag - 90)+'°', tpDownwindDist * 2.5, 0);
             }
         } else {
             ctx.lineTo( tpDownwindDist, tpBaseDist);
             ctx.lineTo( tpDownwindDist, 0);
             ctx.lineTo( tpDownwindDist * 2, -tpDownwindDist);
-            ctx.fillText( getAngle(northEnd.mag - 135)+'°', tpDownwindDist * 2.5, -tpDownwindDist - 10);
+            if(showHeadings) ctx.fillText( getAngle(northEnd.mag - 135)+'°', tpDownwindDist * 2.5, -tpDownwindDist - 10);
             if(showNorthMidField) {
                 const startingAngle = - 3 * Math.PI / 4
                 const endingAngle = Math.PI / 2
@@ -189,7 +191,7 @@ function show(runway) {
                 ctx.arc( centerX, centerY, radius, startingAngle, endingAngle, false);
                 ctx.lineTo( -2 * tpDownwindDist, 0)
                 // mid field entry
-                ctx.fillText( getAngle(northEnd.mag + 90)+'°', -tpDownwindDist * 2.5, 0);
+                if(showHeadings) ctx.fillText( getAngle(northEnd.mag + 90)+'°', -tpDownwindDist * 2.5, 0);
             }
         }
         ctx.stroke();
@@ -219,7 +221,7 @@ function show(runway) {
             ctx.lineTo( tpDownwindDist, -tpBaseDist);
             ctx.lineTo( tpDownwindDist, 0);
             ctx.lineTo( tpDownwindDist * 2, tpDownwindDist);
-            ctx.fillText( getAngle(southEnd.mag - 225)+'°', tpDownwindDist * 2.5, tpDownwindDist + 20);
+            if(showHeadings) ctx.fillText( getAngle(southEnd.mag - 225)+'°', tpDownwindDist * 2.5, tpDownwindDist + 20);
             if(showSouthMidField) {
                 const startingAngle = 3 * Math.PI / 4
                 const endingAngle = -Math.PI / 2
@@ -227,13 +229,13 @@ function show(runway) {
                 ctx.arc( centerX, centerY, radius, startingAngle, endingAngle, true);
                 ctx.lineTo( -2 * tpDownwindDist, 0)
                 // mid field entry
-                ctx.fillText( getAngle(northEnd.mag + 90)+'°', -tpDownwindDist * 2.5, 0);
+                if(showHeadings) ctx.fillText( getAngle(northEnd.mag + 90)+'°', -tpDownwindDist * 2.5, 0);
             }
         } else {
             ctx.lineTo( -tpDownwindDist, -tpBaseDist);
             ctx.lineTo( -tpDownwindDist, 0);
             ctx.lineTo( -tpDownwindDist * 2, tpDownwindDist);
-            ctx.fillText( getAngle(southEnd.mag - 135)+'°', -tpDownwindDist * 2.5, tpDownwindDist + 20);
+            if(showHeadings) ctx.fillText( getAngle(southEnd.mag - 135)+'°', -tpDownwindDist * 2.5, tpDownwindDist + 20);
             if(showSouthMidField) {
                 const startingAngle = Math.PI / 4
                 const endingAngle = -Math.PI / 2
@@ -241,7 +243,7 @@ function show(runway) {
                 ctx.arc( centerX, centerY, radius, startingAngle, endingAngle, false);
                 ctx.lineTo( 2 * tpDownwindDist, 0)
                 // mid field entry
-                ctx.fillText( getAngle(northEnd.mag - 90)+'°', tpDownwindDist * 2.5, 0);
+                if(showHeadings) ctx.fillText( getAngle(northEnd.mag - 90)+'°', tpDownwindDist * 2.5, 0);
             }
         }
         ctx.stroke()

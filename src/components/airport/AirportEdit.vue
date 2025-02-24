@@ -5,7 +5,7 @@
                 @valid="loadAirportData" @invalid="onInvalidAirport" />
             <ProgressSpinner v-if="loading" class="spinner" ></ProgressSpinner>
             <div v-else-if="validAirport" class="rwyChoices">
-                <div class="miniHeader">Runway:</div>
+                <div class="miniSection">Runway</div>
                 <div class="rwySelector">
                     <Button :label="rwy.name" class="sign" :severity="rwy.name == selectedRwy ? 'primary' : 'secondary'"
                         v-for="rwy in rwyList" 
@@ -15,10 +15,14 @@
                 </div>
                 <div class="rwyOrientation">
                     <div class="miniHeader" >Orientation</div>
-                    <OneChoice v-if="validAirport" v-model="rwyOrientation" :choices="orientations" style="line-height: 9px;" />
+                    <OneChoice v-if="validAirport" v-model="rwyOrientation" :choices="orientations" style="line-height: 9px;" class="ocOrientation" />
                 </div>
-                <div class="miniHeader">Traffic Pattern:</div>
-                <OneChoice v-if="validAirport" v-model="pattern" :choices="patternChoices" style="line-height: 9px;" />
+                <div class="miniSection">Traffic Pattern</div>
+                <OneChoice v-if="validAirport" v-model="pattern" :choices="patternChoices" :thinpad="true" class="ocTP" />
+                <div class="rwyOrientation">
+                    <div class="miniHeader" >Heading</div>
+                    <OneChoice v-if="validAirport" v-model="showHeadings" :choices="headings" style="line-height: 9px;" class="ocHeadings" />
+                </div>
             </div>
         </div>
         <ActionBar :video="UserUrl.airportTileVideo" :help="UserUrl.airportTileGuide"
@@ -42,13 +46,14 @@ import { UserUrl } from '@/lib/UserUrl.ts';
 let airport = null
 const emits = defineEmits(['close','selection'])
 const orientations = [{label:'Vertical',value:'v'},{label:'Magnetic',value:'m'}]
+const headings = [{label:'Show',value:'show'},{label:'Hide',value:'hide'}]
 const patternChoices = [
-    {label:'TB',value:0, title:'Both runways with 45° entries'},
-    {label:'T', value:1, title:'Top Runway, 45° entry'},
-    {label:'T+',value:2, title:'Top Runway, Midfield'},
-    {label:'B', value:3, title:'Bottom Runway, 45° entry'},
-    {label:'B+',value:4, title:'Bottom Runway, Midfield'},
-    {label:'-', value:5, title:'None'},
+    {label:'T+B',value:0, title:'Both runways with 45° entries'},
+    {label:'T/45', value:1, title:'Top Runway, 45° entry'},
+    {label:'T/M',value:2, title:'Top Runway, Midfield'},
+    {label:'B/45', value:3, title:'Bottom Runway, 45° entry'},
+    {label:'B/M',value:4, title:'Bottom Runway, Midfield'},
+    {label:'None', value:5, title:'None'},
 ]
 const pattern = ref(patternChoices[0])
 const loading = ref(false)
@@ -62,16 +67,17 @@ const validAirport = ref(false)
 const rwyOrientation = ref(orientations[0])
 const selectedRwy = ref(null)
 const showCustomAirport = ref(false)
-
+const showHeadings = ref(headings[0])
 
 /**
  * Props management (defineProps, loadProps, onMounted, watch)
  */
- const props = defineProps({
+const props = defineProps({
     airport: { type: Object, default: null},
     rwyName: { type: String, default: null},
     rwyOrientation: { type: String, default: 'vertical'},
     tp: { type: Number, default: 0},
+    showHeadings: { type: Boolean, default: true},
 })
 
 function loadProps(props) {
@@ -94,6 +100,9 @@ function loadProps(props) {
 
         rwyOrientation.value = orientations[(props.rwyOrientation == 'magnetic' ? 1 : 0)]
         // console.log( 'AirportEdit loadProps ' + props.rwyOrientation)
+
+        // restore show headings
+        showHeadings.value = headings[(props.showHeadings ? 0 : 1)]
     }
     pattern.value = patternChoices.find( p => p.value == props.tp);
 }
@@ -146,7 +155,8 @@ function loadAirportData(newAirport) {
 function onApply() {
     // update settings with orientation
     const orientation = rwyOrientation.value.value == 'v' ? 'vertical' : 'magnetic'
-    emits('selection', airport, selectedRwy.value, orientation, pattern.value.value)
+    const showHeadingsValue = showHeadings.value.value == 'show'
+    emits('selection', airport, selectedRwy.value, orientation, pattern.value.value, showHeadingsValue)
 }
 
 function onCancel() {
@@ -210,6 +220,13 @@ function showAirport() {
 .miniHeader {
     margin-top:5px;
     text-align: left;
+}
+.miniSection {
+    display: flex;
+    font-weight: bold;
+    padding-top: 5px;
+    justify-content: center;
+    border-top: 1px dotted darkgrey;
 }
 .runway {
     background: red;

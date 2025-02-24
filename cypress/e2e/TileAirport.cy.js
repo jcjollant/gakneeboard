@@ -162,4 +162,57 @@ describe('Tiles', () => {
     }
   })
 
+  it('Settings', () => {
+    visitSkipBanner()
+    loadDemo()
+    // wait for the reply
+    cy.intercept({
+      method: 'GET',
+      url: '**/airports/**',
+    }).as('getAirports');
+    cy.wait('@getAirports').its('response.statusCode').should('equal', 200)
+
+    // switch to settings
+    cy.get('.page0 > .tile0 > .headerTitle').click()
+    // Check default values
+    cy.get('.ocOrientation > .choice1').should('have.class', 'choiceActive')
+    cy.get('.ocTP > .choice0').should('have.class', 'choiceActive')
+    cy.get('.ocHeadings > .choice0').should('have.class', 'choiceActive')
+    // Select different values
+    cy.get('.ocOrientation > .choice0').click()
+    cy.get('.ocTP > .choice1').click()
+    cy.get('.ocHeadings > .choice1').click()
+    // Apply settings
+    cy.get('[aria-label="Apply"]').click()
+
+    // test locastorage is reflecting that list
+    cy.getLocalStorage('template')
+      .then(t => {
+        const template = JSON.parse(t)
+        expect(template.data[0].data[0].data.rwyOrientation).to.equal('vertical')
+        expect(template.data[0].data[0].data.pattern).to.equal(1)
+        expect(template.data[0].data[0].data.headings).to.equal(false)
+      })
+
+    // reopen settings to make sure evenrything is memorized
+    cy.get('.page0 > .tile0 > .headerTitle').click()
+    cy.get('.ocTP > .choice1').should('have.class', 'choiceActive')
+    cy.get('.ocHeadings > .choice1').should('have.class', 'choiceActive')
+    // Change Pattern and headings
+    cy.get('.ocOrientation > .choice1').click()
+    cy.get('.ocTP > .choice2').click()
+    cy.get('.ocHeadings > .choice0').click()
+    // Apply settings
+    cy.get('[aria-label="Apply"]').click()
+
+    // test locastorage is reflecting that list
+    cy.getLocalStorage('template')
+      .then(t => {
+        const template = JSON.parse(t)
+        expect(template.data[0].data[0].data.rwyOrientation).to.equal('magnetic')
+        expect(template.data[0].data[0].data.pattern).to.equal(2)
+        expect(template.data[0].data[0].data.headings).to.equal(true)
+      })
+
+  })
 })

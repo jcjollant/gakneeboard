@@ -3,7 +3,7 @@
     <div class="tile">
         <Header :title="title" :showReplace="editMode" :displayMode="false"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <AirportEdit v-if="editMode" :airport="airportData" :rwyName="runwayName" :rwyOrientation="rwyOrientation" :tp="patternMode"
+        <AirportEdit v-if="editMode" :airport="airportData" :rwyName="runwayName" :rwyOrientation="rwyOrientation" :tp="patternMode" :showHeadings="showHeadings"
             @close="onHeaderClick" @selection="onSettingsUpdate" />
         <div v-else-if="mode=='list'" class="tileContent" >
             <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
@@ -33,7 +33,7 @@
             <div v-if="airportCode">
                 <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
                 <div v-if="unknownRunway" class="unknownRwy">Unknown Runway</div>
-                <Runway v-else :runway="selectedRunway" :pattern="patternMode" :orientation="rwyOrientation" class="clickable"
+                <Runway v-else :runway="selectedRunway" :pattern="patternMode" :orientation="rwyOrientation" :headings="showHeadings" class="clickable"
                     @click="onHeaderClick" />
                 <div v-if="expanded" class="top left cornerColumn">
                     <Corner v-for="index in [0,4,6,2]" :airport="airportData" :data="corners[index]" :runway="selectedRunway" :big="true" :class="['corner'+index]"
@@ -87,6 +87,7 @@ const airportData = ref()
 const patternMode = ref(0)
 const runwayName = ref('')
 const rwyOrientation = ref('')
+const showHeadings = ref(true)
 
 const defaultCornerFields = ['weather','twr','field','tpa','#FCD/P','gnd','?Custom?Custom','#FUNICOM']
 const defaultRwyOrientation = 'vertical'
@@ -134,6 +135,15 @@ function loadProps(newProps) {
     } else {
         patternMode.value = defaultPatternMode
     }
+
+    // #3.5 Show headings
+    if('headings' in state) {
+        showHeadings.value = state.headings
+    } else {
+        showHeadings.value = true
+    }
+
+
 
     // #4 Restore corner fields
     let cornerFields = state.corners
@@ -293,24 +303,19 @@ function onNewAirport(airport) {
     }
 }
 
-function onPatternUpdate(newPatternMode) {
-    // console.log('[AirportTile.onPatternUpdate]', newPatternMode)
-    state.pattern = newPatternMode
-    
-    // patternMode.value = newPatternMode
-    updateData();
-}
-
 // Settings have been updated in edit mode
-function onSettingsUpdate( newAirport, newRunway, newOrientation, newPatternMode) {
+function onSettingsUpdate( newAirport, newRunway, newOrientation, newPatternMode, newShowHeadings) {
     // console.log( '[AirportTile.onSettingsUpdate] airport', JSON.stringify(newAirport))
     // console.log( '[AirportTile.onSettingsUpdate] newRunway', JSON.stringify(newRunway))
     // console.log( '[AirportTile.onSettingsUpdate] newOrientation', JSON.stringify(newOrientation))
+    // console.log( '[AirportTile.onSettingsUpdate] newShowHeading', newShowHeadings)
     editMode.value = false
     props.params.code = newAirport.code;
     airportData.value = newAirport;
     state.pattern = newPatternMode
     patternMode.value = newPatternMode;
+    showHeadings.value = newShowHeadings
+    state.headings = newShowHeadings
     showAirport( newAirport)
 
     props.params.rwy = newRunway
