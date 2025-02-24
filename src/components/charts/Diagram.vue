@@ -7,20 +7,20 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { DiagramData } from '@/lib/DiagramData';
+import { DiagramData } from '../../lib/DiagramData';
 import { getDocument } from 'pdfjs-dist'
 
 const placeHolderText = ref('')
 const pdfCanvas = ref(null)
-const pdfFile = ref(null)
+const pdfFile = ref('')
 
 // Props Management
 const props = defineProps({
-    pdf: { type: String, default: null },
+    pdf: { type: String, required: true },
 })
 
 function loadProps(newProps) {
-    // console.log('[ApproachPlate.loadProps] props', newProps);
+    // console.log('[Diagram.loadProps] props', newProps);
     pdfFile.value = newProps.pdf;
     loadPdf();
 }
@@ -30,6 +30,12 @@ onMounted(async () => {
         loadProps(props);
     })
 })
+
+// watch(props, (newProps) => {
+//     console.log('[Diagram.onWatch] props changed', newProps);
+//     loadProps(newProps);
+// })
+
 // End of props management
 
 const initPDF = async () => {

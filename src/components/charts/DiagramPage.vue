@@ -12,8 +12,8 @@
                 <div class="known">
                     <div class="section pickNewAirport">Pick New Airport</div>
                     <AirportInput label="Airport Code" :page="true" v-model="airport"/>
-                    <div v-if="airport">
-                        <FAButton v-if="airport['diag']" label="Show Diagram" icon="road-circle-check" class="showDiagram"
+                    <div v-if="airport.isValid()">
+                        <FAButton v-if="airport.diagram" label="Show Diagram" icon="road-circle-check" class="showDiagram"
                             @click="onSelection(airport)"/>
                         <div v-else class="notfound">(No Associated Airport Diagram for {{ airport.code }})</div>
                     </div>
@@ -27,7 +27,7 @@
             </div>
         </div>
         <div v-else class="viewMode">
-            <ApproachPlate :pdf="selectedPdf" />
+            <Diagram :pdf="selectedPdf" />
         </div>
     </div>
 </template>
@@ -35,13 +35,15 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import AirportInput from '../shared/AirportInput.vue';
-import ApproachPlate from './Diagram.vue';
+import Diagram from './Diagram.vue';
 import FAButton from '../shared/FAButton.vue';
 import Header from '../shared/Header.vue';
-import { getAirport, sessionAirports } from '@/assets/data';
-import { UserUrl } from '@/lib/UserUrl';
+import { getAirport, sessionAirports } from '../../assets/data';
+import { UserUrl } from '../../lib/UserUrl';
+import { Airport } from '../../model/Airport';
 
-const airport = ref(null)
+const noAirport = new Airport()
+const airport = ref(noAirport)
 const editMode = ref(false)
 const emits = defineEmits(['replace','update'])
 const knownAirports = ref(<any>[])
@@ -57,8 +59,9 @@ function loadProps(newProps:any) {
     // console.log('[DiagramPage.loadProps]', JSON.stringify(newProps))
     if (newProps.data && newProps.data.airport) {
         getAirport(newProps.data.airport, true).then( a => {
-            airport.value = a;
-            selectedPdf.value = a['diag']
+            // console.log('[DiagramPage.loadProps]', JSON.stringify(a))
+            airport.value = Airport.copy(a);
+            selectedPdf.value = airport.value.diagram ? airport.value.diagram : ''
         })
         // fetch airport with that code
     } else {
@@ -71,19 +74,24 @@ onMounted(() => {
     loadProps(props)
 })
 
+// watch(airport, () => {
+//     console.log('[DiagramPage.watch] airport', airport.value)
+// })
+
 watch(props, () => {
     loadProps(props)
 })
 // End of props management
 
 
-function onSelection(newAirport:any) {
+function onSelection(newAirport:Airport) {
     // console.log('[DiagramPage.onSelection]', newAirport)
-    if(!newAirport || !newAirport.code || !newAirport.diag) return;
-    selectedPdf.value = newAirport['diag']
+    if(!newAirport || !newAirport.code || !newAirport.diagram) return;
+    selectedPdf.value = newAirport.diagram
+    // console.log('[DiagramPage.onSelection]', selectedPdf.value)
     editMode.value = false
     // save data
-    emits('update', {airport:newAirport['code']})
+    emits('update', {airport:newAirport.code})
 }
 
 function refreshAirportList(airports:any[]) {

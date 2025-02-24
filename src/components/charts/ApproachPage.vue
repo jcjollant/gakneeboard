@@ -9,7 +9,7 @@
                     <div>Selected Approach</div>
                     <a :href="UserUrl.dtpp + selectedPdf" target="_blank">{{ airport['iap'][selectedIndex]['name'] }}</a>
                 </div>
-                <div v-if="airport" class="list">
+                <div v-if="airport.isValid()" class="list">
                     <FAButton v-for="(iap,index) in airport['iap']" :label="iap['name']" icon="plane-arrival"
                         @click="onSelection(index)"/>
                 </div>
@@ -21,19 +21,20 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
+import { getAirport } from '../../assets/data';
+import { UserUrl } from '../../lib/UserUrl';
+import { Airport } from '../../model/Airport';
 import AirportInput from '../shared/AirportInput.vue';
 import ApproachPlate from './Diagram.vue';
 import Header from '../shared/Header.vue';
 import FAButton from '../shared/FAButton.vue';
-import { getAirport } from '@/assets/data';
-import { UserUrl } from '@/lib/UserUrl';
 
-const pngOutput = ref(null)
 const emits = defineEmits(['replace','update'])
 const editMode = ref(true)
-const airport = ref(null)
+const noAirport = new Airport()
+const airport = ref(noAirport)
 const selectedPdf = ref('')
 const selectedIndex = ref(0)
 const title = ref('Instrument Approach')
@@ -44,7 +45,7 @@ const props = defineProps({
     data: { type: Object, default: null },
 })
 
-function loadProps(newProps) {
+function loadProps(newProps:any) {
     // console.log('[ApporachPage.loadProps]', JSON.stringify(newProps))
     if (newProps.data && newProps.data.airport) {
         const pdfIndex = newProps.data.pdf ?? 0
@@ -71,8 +72,8 @@ watch(props, () => {
 
 
 // when button is pressed, show the selection and memorize new data
-function onSelection(index) {
-    if( showApproach(index) && airport.value) {
+async function onSelection(index:number) {
+    if( await showApproach(index) && airport.value) {
         // we are memorizing the index so the selection remains relevant across data cycles
         selectedIndex.value = index
         emits('update', {airport:airport.value['code'],pdf:index})
@@ -80,7 +81,7 @@ function onSelection(index) {
 }
 
 // Loads the approach plate into the UI and leaves edit mode
-async function showApproach(index) {
+async function showApproach(index:number) {
     if(!airport.value) return false;
     try {
         title.value = airport.value['code'] + ' Instrument Approach';

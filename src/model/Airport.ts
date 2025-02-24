@@ -248,7 +248,7 @@ export class Airport {
         newAirport.asof = airport.asof;
         newAirport.iap = airport.iap.map((chart:any) => Chart.copy(chart))
         newAirport.dep = airport.iap.map((chart:any) => Chart.copy(chart))
-        newAirport.diagram = airport.diagram
+        newAirport.diagram = airport.diagram ? airport.diagram : airport.diag
         newAirport.navaids = airport.navaids.map((navaid:any) => Navaid.copy(navaid))
         newAirport.atc = airport.atc.map((atc:any) => Atc.copy(atc))
         
