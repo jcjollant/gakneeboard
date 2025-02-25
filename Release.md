@@ -1,3 +1,5 @@
+## 02/24/2025 5091
+* Added Annual prices
 ## 02/23/2025 5090
 * Payments backend
 ## 02/21/2025 5081
