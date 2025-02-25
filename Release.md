@@ -1,5 +1,8 @@
 # User Experience updates
 
+## 02/24/2025 5094
+* Updated pricing plans 
+* Added Annual pricing
 ## 02/23/2025 
 1) 5090
 * Added account management features

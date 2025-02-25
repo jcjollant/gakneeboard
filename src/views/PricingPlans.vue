@@ -5,8 +5,10 @@
     <div class="pricing-header">
       <h2>Simple, Transparent Pricing</h2>
       <p>Choose the plan that's right for you</p>
+      <EitherOr v-model="monthly" either="Monthly" or="Anually" />
     </div>
     
+
     <div class="pricing-grid">
       <div 
         v-for="plan in plans" 
@@ -18,9 +20,12 @@
         <div class="plan-header">
           <h3>{{ plan.name }}</h3>
           <div class="price">
-            <span class="amount">${{ plan.price }}</span>
+            <span class="amount">${{ monthly ? plan.monthly :plan.annual }}</span>
             <span class="period">/month</span>
           </div>
+          <p v-if="!plan.monthly" class="description">We've been there</p>
+          <p v-else-if="monthly" class="description">Lowest commitment</p>
+          <p v-else class="description">Charged ${{ plan.annual * 12 }}/year</p>
           <p class="description">{{ plan.description }}</p>
         </div>
 
@@ -46,13 +51,12 @@
         </div>
 
         <div class="plan-footer">
-          <button :class="['subscribe-button', { 'primary': plan.popular }]" @click="onPlan(plan.code)">
-            {{ plan.code === currentPricing ? 'Keep your plan' : "Select new plan" }}
+          <button :class="['subscribe-button', { 'primary': plan.popular }]" @click="onPlan(monthly?plan.code.monthly:plan.code.annual)">
+            Select Plan
           </button>
         </div>
       </div>
     </div>
-    <div class="pricing-footer">(*) Local pages are not saved in the cloud. Content will be lost upon cleaning browser cache.</div>
   </div>
 </template>
 
@@ -65,74 +69,68 @@ import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../assets/Toaster';
 
 import Menu from '../components/menu/Menu.vue';
+import EitherOr from '../components/shared/EitherOr.vue';
+import { AccountType } from '../model/AccounType';
 
-const currentPricing = ref(Pricing.simmer)
 const toaster = useToaster(useToast())
+const monthly = ref(true)
 
 const plans = ref([
   {
     name: "Flight Simmer",
-    price: "0",
+    monthly: 0,
+    annual: 0,
     description: "Every penny counts",
     features: {
-      "Local Pages (*)": "Unlimited",
-      "Checklist": "Single",
-      "Saved Kneeboard Pages": false,
-      "Checklist Versioning": false,
-      "Charts": false,
+      "1 Template of 2 pages": true,
+      "1 Tiles page": true,
+      "2 Airport tiles": true,
+      "Airport Diagrams": false,
+      "Instrument Approaches": false,
       "Exports": false
     },
     popular: false,
-    code: Pricing.simmer
+    code: {monthly: Pricing.simmer, annual: Pricing.simmer}
   },
   {
     name: "Private Pilot",
-    price: "4.99",
+    monthly: 4.99,
+    annual: 3.99,
     description: "Perfect for most Pilots",
     features: {
-      "Local Pages (*)": "Unlimited",
-      "Checklist": "Single, Double",
-      "Saved Kneeboard Pages": "20",
-      "Checklist Versioning": true,
-      "Charts": false,
+      "10 Templates of 5 pages": true,
+      "3 Tiles page per template": true,
+      "Unlimited Tiles": true,
+      "Airport Diagrams": true,
+      "Instrument Approaches": false,
       "Exports": false
     },
     popular: true,
-    code: Pricing.private
+    code: {monthly: Pricing.privateMonthly, annual: Pricing.privateAnnual}
   },
   {
     name: "Instrument Pilot",
-    price: "8.99",
+    monthly: 8.99,
+    annual: 7.99,
     description: "For power users",
     features: {
-      "Local Pages (*)": "Unlimited",
-      "Saved Kneeboard Pages": "50 pages",
-      "Checklist": "Single, Double, Triple",
-      "Checklist Versioning": true,
-      "Charts": true,
+      "25 Templates of 10 pages": true,
+      "Any Pages": true,
+      "Unlimited Tiles": true,
+      "Airport Diagrams": true,
+      "Instrument Approaches": true,
       "Exports": true
     },
     popular: false,
-    code: Pricing.instrument
+    code: {monthly: Pricing.instrumentMonthly, annual: Pricing.instrumentAnnual}
   }
 ])
 const router = useRouter()
 
-onMounted( () => {
-  // console.log('[PricingPlans.onMounted]')
-  // console.log(currentUser)
-  currentUser.addListener( onUserUpdate)
-  currentPricing.value = Checkout.pricingFromAccountType( currentUser.accountType)
-})
-
-onUnmounted( () => {
-  currentUser.removeListener( onUserUpdate)
-})
-
-function onPlan(code:string) {
+function onPlan(code:Pricing) {
   // console.log('[PricingPlans.onPlan]',code)
 
-  if( code == currentPricing.value) {
+  if( Checkout.accountTypeFromPricing(code) == AccountType.simmer) {
     // There is no change in type, just go back to the home page
     router.push('/')
   } else {
@@ -144,11 +142,6 @@ function onPlan(code:string) {
       console.error(err)
     })
   }
-}
-
-function onUserUpdate(user:any) {
-  // console.log('[PricingPlans.onUserUpdate]', user)
-  currentPricing.value = Checkout.pricingFromAccountType( user.accountType)
 }
 
 </script>
