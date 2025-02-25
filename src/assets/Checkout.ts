@@ -5,21 +5,26 @@ import { AccountType } from '../model/AccounType'
 
 export class Pricing {
     static simmer = 'fs1';
-    static private = 'pp1';
-    static instrument = 'ip1';
+    static privateMonthly = 'pp1';
+    static privateAnnual = 'pp2';
+    static instrumentMonthly = 'ip1';
+    static instrumentAnnual = 'ip2';
 }
 
 export class Checkout {
 
-    static pricingFromAccountType(accountType: AccountType): string {
-        switch( accountType) {
-            case AccountType.private: 
-                return Pricing.private;
-            case AccountType.instrument: 
-                return Pricing.instrument;
+    static accountTypeFromPricing(pricing:Pricing): AccountType {
+        switch(pricing) {
+            case Pricing.privateMonthly:
+            case Pricing.privateAnnual:
+                return AccountType.private;
+            case Pricing.instrumentMonthly:
+            case Pricing.instrumentAnnual:
+                return AccountType.instrument;
+            case Pricing.simmer:
+                return AccountType.simmer;
             default:
-            case AccountType.simmer: 
-                return Pricing.simmer;
+                return AccountType.unknown;
         }
     }
 
@@ -28,7 +33,7 @@ export class Checkout {
     }
 
 
-    static async plan(code:string, user:CurrentUser):Promise<string> {
+    static async plan(code:Pricing, user:CurrentUser):Promise<string> {
         return new Promise<string>(async (resolve, reject) => {
             const url = GApiUrl.root + 'stripe/checkout'
             const payload = {user:user.sha256, product:code, source:window.location.href}
