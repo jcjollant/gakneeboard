@@ -2,15 +2,15 @@ import 'dotenv/config'
 import { UserDao } from '../dao/UserDao'
 import { SubscriptionDao } from '../dao/SubscriptionDao'
 import { AccountType } from '../models/AccountType'
-import { Subscription } from '../models/Subscription'
 import { Stripe } from 'stripe'
-import e from 'express'
 import { Email, EmailType } from '../Email'
 
 const planUrl = '/plans'
 // const pp1Price = 'price_1Qg0c7G89XrbqGAIJQAwl2HW'
 const pp1Price = process.env.STRIPE_PP1_PRICE;
+const pp2Price = process.env.STRIPE_PP2_PRICE;
 const ip1Price = process.env.STRIPE_IP1_PRICE;
+const ip2Price = process.env.STRIPE_IP2_PRICE;
 const ff1Price = 'free';
 const SUB_UPDATE = 'customer.subscription.updated';
 const SUB_DELETE = 'customer.subscription.deleted';
@@ -146,18 +146,25 @@ export class StripeClient {
 
     accountTypeFromPrice(planId: string) {
         switch(planId) {
-            case pp1Price: return AccountType.private;
-            case ip1Price: return AccountType.instrument;
+            case pp1Price: 
+            case pp2Price: 
+                return AccountType.private;
+            case ip1Price: 
+            case ip2Price: 
+                return AccountType.instrument;
             case ff1Price: return AccountType.simmer;
             default: return AccountType.unknown;
         }
     }
  
     priceIdFromProduct(product:string):string {
+        console.log('[Stripe.priceIdFromProduct]', product)
         let price:string|undefined
         switch(product.toLowerCase()) {
             case 'pp1': price = pp1Price; break;
+            case 'pp2': price = pp2Price; break;
             case 'ip1': price = ip1Price; break;
+            case 'ip2': price = ip2Price; break;
             case 'ff1': price = ff1Price; break;
             default: throw new Error('Product not found');
         }
