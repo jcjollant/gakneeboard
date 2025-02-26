@@ -1,5 +1,7 @@
 # User Experience updates
 
+## 02/25/2025 5095
+* Fixed diagram bug on unknown airports
 ## 02/24/2025 5094
 * Updated pricing plans 
 * Added Annual pricing
