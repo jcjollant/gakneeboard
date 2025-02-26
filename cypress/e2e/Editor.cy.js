@@ -1,11 +1,12 @@
 import { visitAndCloseBanner, feltsTitle, boeingTitle, radioTitle, notesTitle, atisTitle, clearanceTitle, loadDemo, visitSkipBanner, environment,
  demoChecklistOnPage, demoTilesOnPage, 
- departureTitle} from './shared'
+ departureTitle,
+ selectionTitle} from './shared'
 
-function deletePage(index) {
-    cy.get('.editorPage' + index + ' > .editorBottom > .p-button-warning').click()
+function deletePage(index, force=false) {w
+    cy.get('.editorPage' + index + ' > .editorBottom > .p-button-warning').click({force:force})
     cy.get('.p-confirm-dialog-message').contains('delete page ' + (index + 1))
-    cy.get('.p-confirm-dialog-accept').click()
+    cy.get('.p-confirm-dialog-accept').click({force:force})
 }
 
 function reloadDemoWithEditor() {
@@ -32,7 +33,7 @@ describe('Editor', () => {
     cy.get('.editorPage0 > .editorBottom > [aria-label="Copy"]').click()
     // Toast Should say Page 1 
     // <div class="p-toast-message-text" data-pc-section="text"><span class="p-toast-summary" data-pc-section="summary">Page 1 copied to clipboard</span><div class="p-toast-detail" data-pc-section="detail"></div></div>
-    cy.get('.p-toast-message-text').contains('Page 1 copied to clipboard')
+    expectToast('Page 1 copied to clipboard')
     cy.get('.editorPage1 > .editorBottom > [aria-label="Paste"]').click()
 
     cy.get('.page0 > :nth-child(6) > .headerTitle').contains(departureTitle)
@@ -88,9 +89,8 @@ describe('Editor', () => {
   })
 
   it('Editor', () => {
-    visitSkipBanner()
-
     cy.viewport('macbook-16')
+    visitSkipBanner()
     // enable editor
     reloadDemoWithEditor()
 
@@ -126,15 +126,15 @@ describe('Editor', () => {
 
     // reset left
     cy.get('.editorPage0 > .editorBottom > [aria-label="Replace"]').click()
-    cy.get('.page0').contains('Page Selection')
-    cy.get('.page1').contains('Page Selection').should('not.exist')
+    cy.get('.page0').contains(selectionTitle)
+    cy.get('.page1').contains(selectionTitle).should('not.exist')
 
     reloadDemoWithEditor();
 
     // reset right
     cy.get('.editorPage1 > .editorBottom > [aria-label="Replace"]').click()
-    cy.get('.page0').contains('Page Selection').should('not.exist')
-    cy.get('.page1').contains('Page Selection')
+    cy.get('.page0').contains(selectionTitle).should('not.exist')
+    cy.get('.page1').contains(selectionTitle)
 
     // reload demo
     reloadDemoWithEditor()
@@ -142,8 +142,9 @@ describe('Editor', () => {
     // Copy left to right and confirm
     cy.get('#editorCopyToRight').click()
     cy.get('.p-confirm-dialog-accept').click()
-    cy.get('.page0 > :nth-child(6) > .headerTitle').contains(departureTitle)
-    cy.get('.page1 > :nth-child(6) > .headerTitle').contains(departureTitle)
+    // both papges should have departure in the bottom right corner
+    cy.get('.page0 > .tile5 > .headerTitle').contains(departureTitle)
+    cy.get('.page1 > .tile5 > .headerTitle').contains(departureTitle)
     // swap something on the left should not affect right
     cy.get('.editorPage0 .btnSwap12').click()
     cy.get('.page0 > :nth-child(1) > .headerTitle').contains(feltsTitle)
@@ -156,24 +157,24 @@ describe('Editor', () => {
 
     // Add a page in first position
     cy.get('#editorInsert').click()
-    // New page should have be blanks
-    cy.get('.page0').contains('Page Selection')
+    // New page should be selection
+    cy.get('.page0').contains(selectionTitle)
     // delete new page
-    deletePage(0)
+    deletePage(0,true)
     // Tiles page should be back at that position
     demoTilesOnPage(0)
 
     // Insert page in the middle
     cy.get('.editorPage0 > .verticalBar > #editorInsert').click()
-    cy.get('.page1').contains('Page Selection')
-    deletePage(1)
+    cy.get('.page1').contains(selectionTitle)
+    deletePage(1, true)
     cy.get('.page1').contains('Flight')
 
     // Insert page last
     cy.get('.editorPage1 > .verticalBar > #editorInsert').click()
     // Offset next should be there
     cy.get('#offsetNext').click()
-    cy.get('.page2').contains('Page Selection')
+    cy.get('.page2').contains(selectionTitle)
     deletePage(2)
 
     // Copy left to right and confirm
@@ -186,7 +187,7 @@ describe('Editor', () => {
     // As user I cannot delete the last two pages of a template
     deletePage(1)
     // toast should say no more pages
-    cy.get('.p-toast-message-text').contains('Last two pages cannot be deleted')
+    expectToast('Last two pages cannot be deleted')
     // Page 1 should still be there
     cy.get('.page1').contains('Flight')
 
@@ -194,9 +195,8 @@ describe('Editor', () => {
     reloadDemoWithEditor()
     // Insert page in the middle and delete it
     cy.get('.editorPage0 > .verticalBar > #editorInsert').click()
-    cy.get('.page1').contains('Page Selection')
-    cy.get('.editorPage1 .btnDelete').click()
-    cy.get('.p-confirm-dialog-accept').click()
+    cy.get('.page1').contains(selectionTitle)
+    deletePage(1, true)
 
     // we should be back to default demo
     cy.get('.page0').contains(feltsTitle)
@@ -207,7 +207,7 @@ describe('Editor', () => {
     // Insert page in first position and save
     cy.get('.editorPage0 > .verticalBar > #editorInsert').click()
     cy.get('.page0').contains(feltsTitle)
-    cy.get('.page1').contains('Page Selection')
+    cy.get('.page1').contains(selectionTitle)
     cy.get('.page2').contains('Flight')
 
     // make sure this is reflected in local storage

@@ -7,7 +7,10 @@ describe('Authenticated User', () => {
 
     // Authenticate
     cy.wait('@getBackend').its('response.statusCode').should('equal', 200)
+    cy.get('.p-dialog-content').should('not.exist');
     maintenanceMode()
+    // wait for toast to disapear
+    cy.get('.p-toast-message-content').should('not.exist');
 
     cy.intercept({method: 'GET',url: '**/airports/**',}).as('getAirports');
     cy.intercept({method: 'GET',url: '**/template/**',}).as('getTemplate');
@@ -25,6 +28,7 @@ describe('Authenticated User', () => {
     cy.get('.templateSection > .templateList > :nth-child(3)').click()
     cy.wait('@getTemplate').its('response.statusCode').should('equal', 200)
     cy.wait('@getAirports').its('response.statusCode').should('equal', 200)
+    cy.get('.p-dialog-content').should('not.exist');
     cy.get('.tile0 > .headerTitle').contains(kenmoreTitle)
 
     // go back to home page
@@ -73,8 +77,7 @@ describe('Authenticated User', () => {
     // that deleted template should NOT be in the home page
     totalTemplates--;
     // cy.get('.logo').click()
-    cy.visit(environment)
-    cy.wait(200)
+    visitSkipBanner()
     cy.get('.templateSection > .templateList').children().should('have.length', totalTemplates)
 
 
@@ -85,7 +88,7 @@ describe('Authenticated User', () => {
     cy.get('.p-dialog-header').contains('Account Details')
     cy.get('.templatesCount').contains('1 / 5')
     cy.get('.pagesCount').contains('2')
-    cy.get('.accountType').contains('Beta')
+    cy.get('.accountType').contains('Flight Simmer')
     // Stay signed in
     cy.get('[aria-label="Stay In Pattern"]').click()
 

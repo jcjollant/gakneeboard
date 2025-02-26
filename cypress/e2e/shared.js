@@ -154,3 +154,8 @@ export function displaySelection(pageNum, tileNum, mode=undefined) {
     if( mode) cy.get(`[aria-label="${mode}"]`).click()
 
 }
+
+export function expectToast(message) {
+    cy.get('.p-toast-message-content').contains(message)
+    cy.get('.p-toast-icon-close').click()
+}

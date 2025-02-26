@@ -14,4 +14,15 @@ describe('Airport', () => {
         expect(gndFrequency?.mhz).toBe(121.800)
         expect(gndFrequency?.type).toBe(FrequencyType.ground)
     })
+
+    test('diagram', () => {
+        const expected = "2502/00142AD.PDF"
+        const airport = Airport.copy(kpae)
+        expect(airport.diagram).toBe(expected)
+    })
+
+    test('Invalid', () => {
+        const invalid = new Airport();
+        expect(invalid.isValid()).toBe(false) 
+    })
 })

@@ -1,4 +1,4 @@
-import { visitSkipBanner, newTemplate } from './shared'
+import { visitSkipBanner, newTemplate, expectToast } from './shared'
 
 function enterCode(page, code) {
     cy.get(`.page${page} .p-inputtext`).type('{selectall}').type(code, {delay:0})
@@ -31,6 +31,10 @@ describe('Diagram Page', () => {
     // Test Bogus code => airport should not allow toggle
     enterCode(0, 'KJC')
     cy.wait(250)
+    // should get a warning toast
+    expectToast('KJC may not be valid')
+
+
     cy.get('.page0 > .headerTitle').click()
     // Should still be in edit mode
     testEditMode(0,true)

@@ -1,4 +1,4 @@
-import { placeHolderSubtitle, visitSkipBanner, newTemplate, replacePage, pageNameNavlog } from './shared'
+import { placeHolderSubtitle, visitSkipBanner, newTemplate, replacePage, pageNameNavlog, expectToast } from './shared'
 
 function checkBlankState() {
     cy.get(':nth-child(1) > .headerTitle').contains("NavLog")
@@ -300,7 +300,7 @@ describe('navlog Page', () => {
     // Apply
     cy.wait(200)
     cy.get('[aria-label="Apply"]').click()
-    cy.get('.p-toast-message-content').contains('Bingo Fuel')
+    expectToast('Bingo Fuel')
 
     // enter initial fuel, reserve and cruise values
     cy.get('.varInitialFuel > .p-inputtext').type(53, {delay:0})
@@ -329,8 +329,8 @@ describe('navlog Page', () => {
     visitSkipBanner()
     newTemplate()
     // set both pages to Navlog
-    replacePage(0, pageNameNavlog)
-    replacePage(1, pageNameNavlog)
+    cy.get(`.page0 [aria-label="${pageNameNavlog}"]`).click()
+    cy.get(`.page1 [aria-label="${pageNameNavlog}"]`).click()
 
     // configure page two as a continuer
     cy.get('.page1 .headerTitle').click()
