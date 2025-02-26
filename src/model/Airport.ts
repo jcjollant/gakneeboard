@@ -238,6 +238,8 @@ export class Airport {
 
     // copy constructor
     static copy(airport:any) {
+        if(airport instanceof Airport) return airport;
+
         const newAirport = new Airport(airport.code, airport.name, airport.elev)
         newAirport.tpa = airport.tpa
         newAirport.freq = airport.freq

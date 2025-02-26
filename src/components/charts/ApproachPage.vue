@@ -5,7 +5,7 @@
         <div v-if="editMode">
             <div class="editMode">
                 <AirportInput label="Airport Code" :page="true" v-model="airport"/>
-                <div v-if="selectedPdf && airport" class="currentSelection">
+                <div v-if="selectedPdf && airport.isValid()" class="currentSelection">
                     <div>Selected Approach</div>
                     <a :href="UserUrl.dtpp + selectedPdf" target="_blank">{{ airport['iap'][selectedIndex]['name'] }}</a>
                 </div>
@@ -50,8 +50,8 @@ function loadProps(newProps:any) {
     if (newProps.data && newProps.data.airport) {
         const pdfIndex = newProps.data.pdf ?? 0
         getAirport(newProps.data.airport, true).then( a => {
-            // console.log('[ApproachPage.loadProps] got airport', JSON.stringify(a))
-            airport.value = a;
+            // console.log('[ApproachPage.loadProps] got airport', a)
+            airport.value = Airport.copy(a);
             selectedIndex.value = pdfIndex
             showApproach(pdfIndex)
         })
@@ -82,6 +82,7 @@ async function onSelection(index:number) {
 
 // Loads the approach plate into the UI and leaves edit mode
 async function showApproach(index:number) {
+    // console.log('[ApproachPage.showApproach]', index)
     if(!airport.value) return false;
     try {
         title.value = airport.value['code'] + ' Instrument Approach';

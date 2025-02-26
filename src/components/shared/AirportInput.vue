@@ -35,6 +35,7 @@ const props = defineProps({
     expanded: {type: Boolean, default: false},
 })
 const noAirport:string[] = []
+const invalidAirport:Airport = new Airport()
 const airports = ref(noAirport)
 const code = ref()
 const model = defineModel()
@@ -43,7 +44,7 @@ const valid = ref(false)
 let pendingCode:string|undefined = undefined // used during the short delay between code update and actual request
 
 function loadProps(props:any) {
-    // console.log('[AirportInput.loadProps]')
+    // console.log('[AirportInput.loadProps]', props)
     if(model.value) {
         const airport = model.value;
         code.value = airport['code']
@@ -71,9 +72,10 @@ watch( props, async() => {
 function fetchAirport() {
     // console.log('[AirportInput.fetchAirport]', code.value)
     getAirport( code.value)
-        .then( airport => {
-            // console.log('[AirportInput.fetchAirport] received', JSON.stringify(airport))
-            if( airport && airport.version != -1) {
+        .then( a => {
+            // console.log('[AirportInput.fetchAirport] received', a)
+            const airport = Airport.copy(a)
+            if( airport.isValid()) {
                 name.value = airport.name
                 code.value = airport.code
                 valid.value = true
@@ -82,7 +84,7 @@ function fetchAirport() {
             } else { // airport is unknown
                 valid.value = false
                 name.value = "Unknown"
-                model.value = null
+                model.value = invalidAirport
                 emits('invalid', code.value)
             }
         })

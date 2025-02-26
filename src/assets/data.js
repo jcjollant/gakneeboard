@@ -172,8 +172,7 @@ export async function getAirport( codeParam, group = false) {
     }
 
     // save this data in local storage
-    // console.log('[data.getAirport] saving to localStorage', code)
-    LocalStore.airportAdd(code,airport)
+    if(airport && airport.version != -1) LocalStore.airportAdd(code,airport)
 
     return airport
 }
