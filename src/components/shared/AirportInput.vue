@@ -21,6 +21,8 @@ import { Airport } from '../../model/Airport.ts'
 import { getAirport } from '../../assets/data'
 import { LocalStore } from '../../lib/LocalStore'
 import { sessionAirports } from '../../assets/data'
+import { useToast } from 'primevue/usetoast'
+import { useToaster } from '../../assets/Toaster'
 
 import InputText from 'primevue/inputtext'
 import InputGroup from 'primevue/inputgroup'
@@ -42,6 +44,7 @@ const model = defineModel()
 const name = ref('')
 const valid = ref(false)
 let pendingCode:string|undefined = undefined // used during the short delay between code update and actual request
+const toaster = useToaster( useToast())
 
 function loadProps(props:any) {
     // console.log('[AirportInput.loadProps]', props)
@@ -82,6 +85,7 @@ function fetchAirport() {
                 model.value = airport
                 emits('valid', airport)
             } else { // airport is unknown
+                toaster.warning( 'Invalid Airport', code.value + ' may not be valid');
                 valid.value = false
                 name.value = "Unknown"
                 model.value = invalidAirport
