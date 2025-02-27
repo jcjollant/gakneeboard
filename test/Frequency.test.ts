@@ -3,7 +3,7 @@ import { Frequency, FrequencyType } from '../src/model/Frequency';
 
 describe('Frequency', () => {
     test( 'typeFromString', () => {
-        const expectedWeather = ['AWOS', 'AWOS-3', 'AWOS-3PT', 'atis', 'ATIS', 'asos', 'ASOS-3']
+        const expectedWeather = ['AWOS', 'AWOS-1', 'AWOS-2', 'AWOS-3', 'AWOS-4', 'AWOS-3P', 'AWOS-3PT', 'AWOS-3T', 'atis', 'ATIS', 'asos', 'ASOS-3', 'D-ATIS']
         for( const weather of expectedWeather) {
             expect(Frequency.typeFromString(weather)).toBe(FrequencyType.weather)
         }

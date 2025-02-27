@@ -39,8 +39,9 @@ export class Frequency {
     static typeFromString(s:string):FrequencyType {
         // console.log('[Frequency.typeFromString] ->' + s + '<-' )
         if(!s) return FrequencyType.unknown
+        const lowerCaseFreq = s.toLowerCase()
 
-        switch(s.toLowerCase().split('-')[0]) {
+        switch(lowerCaseFreq) {
             case 'clearance':
             case 'cd/p':
             case FrequencyType.clearance: 
@@ -53,9 +54,8 @@ export class Frequency {
             case 'navaid':
             case FrequencyType.navaid: 
                 return FrequencyType.navaid;
-            case 'atis':
-            case 'asos':
-            case 'awos':
+            case 'atis': case 'd-atis':
+            case 'asos': case 'awos': 
             case 'weather':
             case FrequencyType.weather: 
                 return FrequencyType.weather;
@@ -71,6 +71,9 @@ export class Frequency {
             case FrequencyType.ground: 
                 return FrequencyType.ground;
             default: 
+                if(lowerCaseFreq.startsWith('awos') || lowerCaseFreq.startsWith('asos')) {
+                    return FrequencyType.weather;
+                }
                 return FrequencyType.unknown;
         }
     }
