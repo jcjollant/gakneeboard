@@ -1,4 +1,4 @@
-export const version = 5095
+export const version = 5096
 
 import axios from 'axios'
 import { Airport } from '../model/Airport.ts'

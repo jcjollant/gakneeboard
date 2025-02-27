@@ -1,5 +1,6 @@
 # User Experience updates
-
+## 02/27/2025 5096
+* Added large mode to Radio Tile
 ## 02/25/2025 5095
 * Fixed diagram bug on unknown airports
 ## 02/24/2025 5094
