@@ -2,7 +2,7 @@
     <div class="tileContent approach">
         <div class="row bb">
             <div v-if="airportMode" class="airportFreq">
-                <FrequencyBox :freq="freqWeather"  :small="true"/>
+                <FrequencyBox :freq="freqWeather"/>
             </div>
             <div v-else class="atis tileBoxLabel br">ATIS</div>
             <div class="iloc tileBoxLabel br">ILOC</div>
@@ -10,21 +10,21 @@
         </div>
         <div class="row bb">
             <div v-if="airportMode" class="airportFreq">
-                <FrequencyBox :freq="freqAtc" :small="true"/>
+                <FrequencyBox :freq="freqAtc"/>
             </div>
             <div v-else class="atc tileBoxLabel br">TRACON</div>
             <div class="fixes tileBoxLabel br">IAF</div>
         </div>
         <div class="row bb">
             <div v-if="airportMode" class="airportFreq">
-                <FrequencyBox :freq="freqTower" :small="true"/>
+                <FrequencyBox :freq="freqTower"/>
             </div>
             <div v-else class="twr tileBoxLabel br">Tower / CTAF</div>
             <div class="min tileBoxLabel">Minimum</div>
         </div>
         <div class="row">
             <div v-if="airportMode" class="airportFreq">
-                <FrequencyBox :freq="freqGround" :small="true"/>
+                <FrequencyBox :freq="freqGround"/>
             </div>
             <div v-else class="gnd tileBoxLabel br">Ground</div>
             <div class="missed tileBoxLabel">Missed<span class="climb">&#8593;</span></div>

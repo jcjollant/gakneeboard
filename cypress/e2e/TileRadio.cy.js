@@ -14,9 +14,9 @@ describe('Radios Tile', () => {
     // Check all fields are present in Radio flow
     cy.fixture('radioFlow').then((radioFlow) => {
       for(let index=0; index<radioFlow.length; index++) {
-        cy.get(`.freqList > :nth-child(${index+1})`).contains(radioFlow[index].freq)
-        cy.get(`.freqList > :nth-child(${index+1})`).contains(radioFlow[index].name)
-        cy.get(`.freqList > :nth-child(${index+1}) > .freqMedium`).should('have.class',radioFlow[index].class)
+        cy.get(`.freq${index}`).contains(radioFlow[index].freq)
+        cy.get(`.freq${index}`).contains(radioFlow[index].name)
+        cy.get(`.freq${index} > .freq`).should('have.class',radioFlow[index].class)
       }
     })
 
@@ -131,8 +131,23 @@ describe('Radios Tile', () => {
       })
   })
 
-  it('merges', () => {
+  it( 'Is Responsive', () => {
+    visitSkipBanner()
+    loadDemo()
+    // remove all content
+    cy.get('.page0 .tile2 .freqList').click()
+    cy.get('.p-inputtextarea').type('{selectall}{backspace}')
 
+    for(let count = 0; count < 15; count++) {
+      if(count) cy.get('.page0 .tile2 .freqList').click()
+      // add one frequency
+      cy.get('.p-inputtextarea').type('\n124.700,KRNT CTAF,CTAF\n', {delay:0})
+      cy.get('[aria-label="Apply"]').click()
+      // test size
+      if( count < 4) cy.get('.freq0').should('have.class','large')
+      else if( count < 8) cy.get('.freq0').should('have.class','medium')
+      else cy.get('.freq0').should('have.class','small')
+    }
   })
 
   it('Service Volumes', () => {
@@ -151,6 +166,7 @@ describe('Radios Tile', () => {
       {label:'(VL)', src:'/tiles/vorsv-vl.png'}, 
       {label:'(VH)', src:'/tiles/vorsv-vh.png'},
     ]
+
     cy.get('.page1 .tile5 .volumeChoice').children().should('have.length', expectedVolumes.length)
     for(let index = 0; index < expectedVolumes.length; index++) {
       const volume = expectedVolumes[index]

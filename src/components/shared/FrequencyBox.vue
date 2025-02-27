@@ -1,8 +1,8 @@
 <template>
-    <div class="frequencyBox" :class="small?'fbSmall':'fbMedium'" :title="getTitle(freq)">
-        <div class="name" :class="small?'nameSmall':'nameMedium'">{{freq.name}}</div>
-        <div :class="[small?'freqSmall':'freqMedium',getClass(freq)]">{{ freq.mhz ? Formatter.frequency(freq.mhz) : '' }}</div>
-        <font-awesome-icon v-if="!small && iconClass.length" :icon="iconClass" class="freqType"/>
+    <div class="frequencyBox" :class="[size]" :title="getTitle(freq)">
+        <div class="name" :class="[size]">{{freq.name}}</div>
+        <div class="freq" :class="[size,getClass(freq)]">{{ freq.mhz ? Formatter.frequency(freq.mhz) : '' }}</div>
+        <font-awesome-icon v-if="size!='small' && iconClass.length" :icon="iconClass" class="freqType" :class="[size]"/>
     </div>
 </template>
 
@@ -16,7 +16,7 @@ const iconClass = ref<string[]>([])
 
 const props = defineProps({
     freq: { type: Frequency, default: null},
-    small: { type: Boolean, default: false},
+    size: { type: String, default: 'small'},
 })
 
 function getClass(frequency:Frequency) {
@@ -57,6 +57,7 @@ function getTitle(frequency:Frequency) {
 }
 
 onMounted(() => {
+    // console.log('[FrequencyBox]', props)
     iconClass.value = getIcon()
 })
 
@@ -72,45 +73,60 @@ onMounted(() => {
     flex: 1 1 0px;
     position: relative
 }
-.fbSmall {
+.frequencyBox.small {
     height: 42px;
 }
-.fbMedium {
+.frequencyBox.medium, .frequencyBox.large {
     height: 53px;
 }
-.freqSmall {
+.freq {
+    text-align: right;
+}
+.freq.small {
     padding: 5px 3px;
     font-size: 16px;
 }
-.freqMedium {
+.freq.medium {
     line-height: 32px;
     font-size: 20px;
     padding-left: 10px;
     padding-right: 5px;
-    text-align: right;
+}
+.freq.large{
+    font-size: 28px;
+    padding-right: 10px;
 }
 .name {
     text-align: left;
     overflow: hidden;
-    /* border:1px solid red; */
 }
 
-.nameSmall {
+.name.small {
     height: 12px;
     font-size: 10px;
     padding-left: 2px;
 }
-.nameMedium {
+.name.medium {
     height: 20px;
     padding-left: 5px;
     font-size: 16px;
 }
+.name.large {
+    height: 20px;
+    padding-left: 40px;
+    font-size: 16px;
+}
+
 .freqType {
     position: absolute;
     width: 15px;
     left: 5px;
     bottom: 8px;
     opacity: 0.4;
+}
+.freqType.large {
+    width: 30px;
+    height: 30px;
 }
 .ctaf {
     color: var(--text-ctaf);

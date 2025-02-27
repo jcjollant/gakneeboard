@@ -2,7 +2,7 @@
     <div class="tileContent departure">
         <div class="row bb">
             <div v-if="airportMode" class="airportFreq preWeather">
-                <FrequencyBox :freq="freqWeather"  :small="true"/>
+                <FrequencyBox :freq="freqWeather"/>
             </div>
             <div v-else class="atis tileBoxLabel br">Weather</div>
             <div class="boxRoute box">
@@ -12,7 +12,7 @@
         </div>
         <div class="row bb">
             <div v-if="airportMode" class="airportFreq preAtc">
-                <FrequencyBox :freq="freqClearance" :small="true"/>
+                <FrequencyBox :freq="freqClearance"/>
             </div>
             <div v-else class="atc tileBoxLabel br">Clearance</div>
             <div class="boxAltitudes box br">
@@ -26,7 +26,7 @@
         </div>
         <div class="row bb">
             <div v-if="airportMode" class="airportFreq preGround">
-                <FrequencyBox :freq="freqGround" :small="true"/>
+                <FrequencyBox :freq="freqGround"/>
             </div>
             <div v-else class="gnd tileBoxLabel br">Ground</div>
             <div class="boxTransponder box br">
@@ -39,7 +39,7 @@
         </div>
         <div class="row">
             <div v-if="airportMode" class="airportFreq preTower">
-                <FrequencyBox :freq="freqTower" :small="true"/>
+                <FrequencyBox :freq="freqTower"/>
             </div>
             <div v-else class="twr tileBoxLabel br">Tower / CTAF</div>
             <div class="boxNotes box">

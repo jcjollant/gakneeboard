@@ -20,8 +20,8 @@
                 </div>
                 <div v-else class="clickable" @click="onEditMode">
                     <PlaceHolder v-if="frequencies.length==0" title="No Radios" subtitle="Click Here to Add Frequencies" />
-                    <div v-else class="freqList" :class="{small:isSmall()}" >
-                        <FrequencyBox v-for="freq in frequencies" :freq="freq" :small="isSmall()" />
+                    <div v-else class="freqList" :class="[boxColumns()]" >
+                        <FrequencyBox v-for="(freq,index) in frequencies" :freq="freq" :size="boxSize()" :class="['freq'+index]" />
                     </div>
                 </div>
             </div>
@@ -59,7 +59,6 @@ const frequencies = ref(noFreq)
 let listBeforeEdit:Frequency[] = []
 const listEditMode = ref(false) // toggle list into edit mode
 const lookupTime = ref(0)
-const maxFreqCountLarge = 8
 const maxFreqCount = 15
 const modesList = ref([
     {label:'Frequencies', value:DisplayModeRadios.FreqList},
@@ -90,6 +89,31 @@ watch( serviceVolume, () => {
     emitUpdate()
 })
 
+function boxColumns() {
+    if( expanded.value) {
+        if(frequencies.value.length <= 8) return 'two';
+        if(frequencies.value.length <= 16) return 'four';
+        return 'six';
+    } else {
+        if(frequencies.value.length <= 4) return 'one';
+        if(frequencies.value.length <= 8) return 'two';
+        return 'three';
+    }
+}
+function boxSize() {
+    if( expanded.value) {
+        if(frequencies.value.length <= 8) return 'large';
+        if(frequencies.value.length <= 16) return 'medium';
+        return 'small';
+    } else {
+        if(frequencies.value.length <= 4) return 'large';
+        if(frequencies.value.length <= 8) return 'medium';
+        return 'small';
+    }
+    return boxColumns() ? 'small' : 'large'
+}
+
+
 function emitUpdate() {
     emits('update',{'mode':displayMode.value,'list':frequencies.value,'sv':serviceVolume});
 }
@@ -101,11 +125,6 @@ function getTitle() {
         case DisplayModeRadios.ServiceVolumes: return 'VOR Service Volumes';
         default: return 'Radios';
     }
-}
-
-function isSmall() {
-    // console.log('[RadioTile.isSmall]', frequencies.value.length, expanded.value)
-    return frequencies.value.length > maxFreqCountLarge * (expanded.value ? 2 : 1)
 }
 
 function loadData(data:any) {
@@ -227,14 +246,22 @@ function updateTextarea() {
 }
 .freqList {
     padding: 5px;
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
     gap: 5px;
     overflow: hidden;
+    grid-template-columns: 1fr 1fr;
 }
-.freqList.small {
-    display: flex;
-    flex-wrap: wrap;
+.freqList.one {
+    grid-template-columns: 1fr;
+}
+.freqList.three {
+    grid-template-columns: repeat(3, 1fr);
+}
+.freqList.four {
+    grid-template-columns: repeat(4, 1fr);
+}
+.freqList.six {
+    grid-template-columns: repeat(6, 1fr);
 }
 .br {
     border-right: 1px dashed darkgrey;
