@@ -25,7 +25,7 @@ const test = ref(false)
 
 onMounted(() => {
     test.value = GApiUrl.root.indexOf('localhost') > -1
-    console.log('menu mounted')
+    // console.log('[Menu.onMounted]')
 })
 
 </script>
