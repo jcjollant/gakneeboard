@@ -11,5 +11,9 @@ describe('Frequency', () => {
         for( const tower of expectedTower) {
             expect(Frequency.typeFromString(tower)).toBe(FrequencyType.tower)
         }
+        const expectedGround = ['GND', 'unicom', 'Ground']
+        for( const ground of expectedGround) {
+            expect(Frequency.typeFromString(ground)).toBe(FrequencyType.ground)
+        }
     })
 })

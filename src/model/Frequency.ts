@@ -68,6 +68,7 @@ export class Frequency {
                 return FrequencyType.tower;
             case 'ground':
             case 'gnd':
+            case 'unicom':
             case FrequencyType.ground: 
                 return FrequencyType.ground;
             default: 
