@@ -5,7 +5,7 @@
     <div class="pricing-header">
       <h2>Simple, Transparent Pricing</h2>
       <p>Choose the plan that's right for you</p>
-      <EitherOr v-model="monthly" either="Monthly" or="Anually" />
+      <!-- <EitherOr v-model="monthly" either="Monthly" or="Anually" /> -->
     </div>
     
 
@@ -15,17 +15,15 @@
         :key="plan.name" 
         :class="['plan-card', { 'popular': plan.popular, 'unpopular' : !plan.popular }]"
       >
-        <div v-if="plan.popular" class="popular-badge">Most Popular</div>
+        <div v-if="plan.popular" class="popular-badge">The One You Want</div>
         
         <div class="plan-header">
           <h3>{{ plan.name }}</h3>
           <div class="price">
-            <span class="amount">${{ monthly ? plan.monthly :plan.annual }}</span>
+            <span class="amount">${{ plan.monthly}}</span>
             <span class="period">/month</span>
           </div>
-          <p v-if="!plan.monthly" class="description">We've been there</p>
-          <p v-else-if="monthly" class="description">Lowest commitment</p>
-          <p v-else class="description">Charged ${{ plan.annual * 12 }}/year</p>
+          <p class="description">{{ plan.subtitle }}</p>
           <p class="description">{{ plan.description }}</p>
         </div>
 
@@ -51,9 +49,10 @@
         </div>
 
         <div class="plan-footer">
-          <button :class="['subscribe-button', { 'primary': plan.popular }]" @click="onPlan(monthly?plan.code.monthly:plan.code.annual)">
+          <button v-if="plan.active" :class="['subscribe-button', 'primary']" @click="onPlan(monthly?plan.code.monthly:plan.code.annual)">
             Select Plan
           </button>
+          <div v-else>Comming Soon</div>
         </div>
       </div>
     </div>
@@ -61,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router';
 import { Checkout, Pricing } from '../assets/Checkout';
 import { currentUser } from '../assets/data';
@@ -69,59 +68,77 @@ import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../assets/Toaster';
 
 import Menu from '../components/menu/Menu.vue';
-import EitherOr from '../components/shared/EitherOr.vue';
 import { AccountType } from '../model/AccounType';
 
 const toaster = useToaster(useToast())
 const monthly = ref(true)
 
 const plans = ref([
-  {
+{
     name: "Flight Simmer",
     monthly: 0,
     annual: 0,
+    subtitle: "We've been there",
     description: "Every penny counts",
     features: {
-      "1 Template of 2 pages": true,
+      "2 Templates of 2 pages": true,
       "1 Tiles page": true,
       "2 Airport tiles": true,
       "Airport Diagrams": false,
       "Instrument Approaches": false,
-      "Exports": false
     },
     popular: false,
+    active: true,
     code: {monthly: Pricing.simmer, annual: Pricing.simmer}
   },
   {
     name: "Private Pilot",
     monthly: 4.99,
     annual: 3.99,
+    subtitle: "Lowest Commitment",
     description: "Perfect for most Pilots",
     features: {
       "10 Templates of 5 pages": true,
       "3 Tiles page per template": true,
       "Unlimited Tiles": true,
       "Airport Diagrams": true,
-      "Instrument Approaches": false,
-      "Exports": false
+      "Instrument Approaches": true,
     },
-    popular: true,
+    popular: false,
+    active: true,
     code: {monthly: Pricing.privateMonthly, annual: Pricing.privateAnnual}
   },
+  // {
+  //   name: "Instrument Pilot",
+  //   monthly: 8.99,
+  //   annual: 7.99,
+  //   description: "For power users",
+  //   features: {
+  //     "25 Templates of 10 pages": true,
+  //     "Any Pages": true,
+  //     "Unlimited Tiles": true,
+  //     "Airport Diagrams": true,
+  //     "Instrument Approaches": true,
+  //     "Exports": true
+  //   },
+  //   popular: false,
+  //   code: {monthly: Pricing.instrumentMonthly, annual: Pricing.instrumentAnnual}
+  // },
   {
-    name: "Instrument Pilot",
-    monthly: 8.99,
-    annual: 7.99,
-    description: "For power users",
+    name: "The Beta Deal",
+    monthly: 3.99,
+    annual: 47.88,
+    subtitle: "Charged $47.88/year",
+    description: "Limited Time Deal",
     features: {
-      "25 Templates of 10 pages": true,
+      "10 Templates of 10 pages": true,
       "Any Pages": true,
       "Unlimited Tiles": true,
       "Airport Diagrams": true,
       "Instrument Approaches": true,
-      "Exports": true
     },
-    popular: false,
+    popular: true,
+    active: false,
     code: {monthly: Pricing.instrumentMonthly, annual: Pricing.instrumentAnnual}
   }
 ])
@@ -153,7 +170,7 @@ function onPlan(code:Pricing) {
 
 .pricing-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 5rem;
 }
 
 .pricing-header h2 {
