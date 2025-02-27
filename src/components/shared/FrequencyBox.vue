@@ -29,6 +29,7 @@ function getClass(frequency:Frequency) {
         case FrequencyType.clearance: 
         case FrequencyType.tracon:  css = 'tracon'; break;
         case FrequencyType.weather: css = 'weather'; break;
+        case FrequencyType.ground: css = 'ground'; break;
         default: css = '';
     }
     return css
@@ -39,10 +40,11 @@ function getIcon():Array<string> {
     // console.log("[FrequencyBox.getIcon]", props.freq?.type)
     let icon:string|undefined = undefined
     switch(props.freq?.type) {
+        case FrequencyType.clearance: icon = 'truck-fast'; break;
         case FrequencyType.ctaf: icon = 'plane'; break;
+        case FrequencyType.ground: icon = 'building'; break;
         case FrequencyType.navaid: icon = 'tower-cell'; break;
         case FrequencyType.tower: icon = 'tower-observation'; break;
-        case FrequencyType.clearance: icon = 'truck-fast'; break;
         case FrequencyType.tracon: icon = 'route'; break;
         case FrequencyType.weather: icon = 'cloud-sun-rain'; break;
     }
