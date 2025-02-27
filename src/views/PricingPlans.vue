@@ -15,7 +15,7 @@
         :key="plan.name" 
         :class="['plan-card', { 'popular': plan.popular, 'unpopular' : !plan.popular }]"
       >
-        <div v-if="plan.popular" class="popular-badge">The One You Want</div>
+        <div v-if="plan.popular" class="popular-badge">Best Value</div>
         
         <div class="plan-header">
           <h3>{{ plan.name }}</h3>
