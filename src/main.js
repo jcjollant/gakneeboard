@@ -2,7 +2,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faFacebookF, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import {
     faArrowDown, faArrowUp,
-    faBan, faBars, faBorderAll,
+    faBan, faBars, faBorderAll, faBuilding,
     faCamera, faCheck, faChevronRight, faCircleInfo, faCloud, faCloudSunRain, faComments,
     faDisplay,
     faEject,
@@ -32,7 +32,7 @@ import './style.css';
 
 library.add( 
     faArrowDown, faArrowUp,
-    faBan, faBars, faBorderAll, 
+    faBan, faBars, faBorderAll, faBuilding,
     faCamera, faCheck, faChevronRight, faCircleInfo, faCloud, faCloudSunRain, faComments, 
     faDisplay,
     faEject,
