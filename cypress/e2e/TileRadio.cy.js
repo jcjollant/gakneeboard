@@ -80,12 +80,22 @@ describe('Radios Tile', () => {
 
     // add few frequencies
     cy.get('[aria-label="124.700 CTAF"]').click()
+    cy.get('[aria-label="122.950 UNICOM"]').click()
+    cy.get('[aria-label="121.600 GND"]').click()
     cy.get('[aria-label="110.600 PAE VOR/DME"]').click()
     cy.get('[aria-label="119.200 Apch Dep(017-079 SEA RWY 34),Apch Dep(028-160 SEA RWY 16),BELL..."]').click()
     // close lookup
     cy.get('.p-dialog-header-icon').click()
     // Test textarea content
-    cy.get('.p-inputtextarea').should('have.value','124.700,KRNT CTAF,CTAF\n110.600,PAE VOR/DME,Navaid\n119.200,SEATTLE-TACOMA APPROACH CONTROL,TRACON')
+    cy.get('.p-inputtextarea').should('have.value','124.700,KRNT CTAF,CTAF\n122.950,KRNT UNICOM,Ground\n121.600,KRNT GND,Ground\n110.600,PAE VOR/DME,Navaid\n119.200,SEATTLE-TACOMA APPROACH CONTROL,TRACON')
+
+    // Apply and check classes
+    cy.get('[aria-label="Apply"]').click()
+    cy.get('.freq0 > .freq').should('have.class','ctaf')
+    cy.get('.freq1 > .freq').should('have.class','ground')
+    cy.get('.freq2 > .freq').should('have.class','ground')
+    cy.get('.freq3 > .freq').should('have.class','navaid')
+    cy.get('.freq4 > .freq').should('have.class','tracon')
 
     // switch left tile to radio so it doesnt merge
     replaceTile(1,4,TileTypeLabel.radios)
