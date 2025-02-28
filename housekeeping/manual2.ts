@@ -32,19 +32,19 @@ require('dotenv').config();
 
 //============
 // HealthCheck
-import { HealthCheck, Check } from "../backend/HealthChecks";
-HealthCheck.perform(false).then(checks => {
-    const reset = "\x1b[0m"
-    let color = "\x1b[32m"
-    for(const check of checks) {
-        if(check.status == Check.SUCCESS) {
-            color = "\x1b[32m"
-        } else {
-            color = "\x1b[31m"
-        }
-        console.log(check.name, color+'['+check.status+']'+reset, check.msg)
-    }
-})
+// import { HealthCheck, Check } from "../backend/HealthChecks";
+// HealthCheck.perform(false).then(checks => {
+//     const reset = "\x1b[0m"
+//     let color = "\x1b[32m"
+//     for(const check of checks) {
+//         if(check.status == Check.SUCCESS) {
+//             color = "\x1b[32m"
+//         } else {
+//             color = "\x1b[31m"
+//         }
+//         console.log(check.name, color+'['+check.status+']'+reset, check.msg)
+//     }
+// })
 
 //=================
 // Template Details
@@ -58,11 +58,11 @@ HealthCheck.perform(false).then(checks => {
 
 //====================
 // Page count per user
-// import { Metrics } from "../backend/Metrics";
-// Metrics.pagePerUser().then( output => {
-//     console.log(output)
-//     console.log(JSON.stringify(output))
-// })
+import { Metrics } from "../backend/Metrics";
+Metrics.pagePerUser().then( output => {
+    console.log(output)
+    console.log(JSON.stringify(output))
+})
 
 //====================
 // User Categories
