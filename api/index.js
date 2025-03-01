@@ -207,8 +207,8 @@ app.get('/maintenance/:code', async (req, res) => {
 
 app.get('/publication/:code', async (req, res) => {
     try {
-        let sheet = await GApi.publicationGet(req.params.code);
-        res.send(sheet)
+        let template = await GApi.publicationGet(req.params.code);
+        res.send(template)
     } catch( e) {
         catchError(res, e, 'GET /publication/:code')
     }
@@ -305,7 +305,9 @@ app.get('/templates', async (req, res) => {
 
 // Template update
 app.post('/template', async (req, res) => {
+    // console.log('[index.post/template]', typeof req.body)
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+    // console.log("[index] POST template payload " + JSON.stringify(payload))
     GApi.templateSave(payload.user, payload.sheet).then( (template) => {
         // console.log('[index.post/sheet]', JSON.stringify(sheet))
         res.send(template)
