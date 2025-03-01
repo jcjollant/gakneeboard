@@ -2,22 +2,32 @@
 import { describe, expect, test} from '@jest/globals';
 import { Template } from '../backend/models/Template.ts'
 import { TemplateDao } from '../backend/TemplateDao.ts'
-import { jcUserId, asUserId, jcTestTemplateName, jcTestTemplateData, jcTestTemplateId, jcMaxTemplates } from './constants.ts';
+import { jcUserId, jcTestTemplateName, jcTestTemplateData, jcMaxTemplates, jcHash2 } from './constants.ts';
+import { UserDao } from '../backend/dao/UserDao.ts';
+import { sql } from '@vercel/postgres';
 
 require('dotenv').config();
 
+async function wipeTemplates() {
+    expect(process.env.SAFE_TO_DELETE_TEMPLATES).toBe('yes')
+    await sql`TRUNCATE sheets`
+}
+
 describe('Custom Templates', () => {
     test('read Custom', async () => {
+        wipeTemplates();
+
+        const jcUserId2 = await UserDao.getIdFromHash(jcHash2)
+        expect(jcUserId2).toBeDefined()
+        if(!jcUserId2) return;
+
+        // create two templates with the same name and different data
         const t1:Template = new Template(0, jcTestTemplateName, jcTestTemplateData)
-        // const TemplateData2:any = [
-        // {type:'tiles', data:[{"id":0,"name":"airport","data":{"code":"krnt","rwy":"16-34"}},{"id":1,"name":"atis","data":{}},{"id":2,"name":"airport","data":{"code":"KBFI","rwy":"14L-32R","rwyOrientation":"vertical","corners":["weather","twr","field","tpa"]}},{"id":3,"name":"airport","data":{"code":"0W0","rwy":"18W-36W","rwyOrientation":"vertical","corners":["weather","twr","field","tpa"]}},{"id":4,"name":"notes","data":{}},{"id":5,"name":"atis","data":{}}]},
-        // {type:'tiles', data:[{"id":0,"name":"airport","data":{"code":"ktta","rwy":"03-21","pattern":2}},{"id":1,"name":"airport","data":{"code":"kawo","rwy":"all"}},{"id":2,"name":"airport","data":{"code":"s43","rwy":"15R-33L","rwyOrientation":"magnetic"}},{"id":3,"name":"fuel"},{"id":4,"name":"notes","data":{}},{"id":5,"name":"radios","data":[{"target":"NAV1","freq":"116.8","name":"SEA VOR"},{"target":"NAV2","freq":"124.7","name":"OLM VOR"},{"target":"COM1","freq":"124.7","name":"RNT TWR"},{"target":"COM2","freq":"126.95","name":"RNT ATIS"},{"target":"COM1","freq":"123.0","name":"S43 CTAF"},{"target":"COM2","freq":"128.65","name":"PAE ATIS"},{"target":"COM1","freq":"120.2","name":"PAE TWR 34R"},{"target":"COM1","freq":"132.95","name":"PAE TWR 34L"}]}]}
-        // ]
         const TemplateData2:any = [
             {type:'selection', data:{}},
             {type:'selection', data:{}}
             ]
-            const t2:Template = new Template(0, jcTestTemplateName, TemplateData2)
+        const t2:Template = new Template(0, jcTestTemplateName, TemplateData2)
      
         // Test creation with same name should keep same Id
         const returnTemplate:Template = await TemplateDao.createOrUpdate( t1, jcUserId)
@@ -32,8 +42,12 @@ describe('Custom Templates', () => {
         // Test read by Id
 
         // Test find by name for same name and other user
-        const TemplateAsId:number|undefined = await TemplateDao.findByName(jcTestTemplateName, asUserId)
-        expect(TemplateAsId).toBeDefined()
+        const TemplateAsId:number|undefined = await TemplateDao.findByName(jcTestTemplateName, jcUserId2)
+        expect(TemplateAsId).toBeUndefined()
+
+        // Create second template with userId2
+        const templateId2:number|undefined = await TemplateDao.findByName(jcTestTemplateName, jcUserId2)
+        expect(templateId2).not.toBe(templateId)
 
         // Modify data with only name and check only data has changed
         const returnTemplate2:Template = await TemplateDao.createOrUpdate( t2, jcUserId)
@@ -95,7 +109,7 @@ describe('Custom Templates', () => {
 
     test('getListForUser and readById', async () => {
         // refresh jcTestPage
-        const template = new Template( jcTestTemplateId, jcTestTemplateName, jcTestTemplateData)
+        const template = new Template( 0, jcTestTemplateName, jcTestTemplateData)
         // console.log(JSON.stringify(Template))
         await TemplateDao.createOrUpdate( template, jcUserId).then(t => {
             expect(t.id).toBeDefined()
@@ -107,19 +121,20 @@ describe('Custom Templates', () => {
             console.log('Failed to update test Template ' + e)
             expect(false).toBeTruthy()
         })
+
         await TemplateDao.getOverviewListForUser(jcUserId).then( async (templates:any) => {
             expect(templates.length).toBeGreaterThan(0)
-            const Template0 = templates[0]
-            expect(Template0.id).toBeDefined()
-            expect(Template0.name).toBeDefined()
-            expect(Template0.publish).toBeDefined()
-            expect(Template0.data).toHaveLength(0)
+            const template0 = templates[0]
+            expect(template0.id).toBeDefined()
+            expect(template0.name).toBeDefined()
+            expect(template0.publish).toBeDefined()
+            expect(template0.data).toHaveLength(0)
 
             // check page 0 is legible through readById
-            await TemplateDao.readById(Template0.id, jcUserId).then((t:Template|undefined) => {
+            await TemplateDao.readById(template0.id, jcUserId).then((t:Template|undefined) => {
                 expect(t).toBeDefined()
-                expect(t?.id).toBe(Template0.id)
-                expect(t?.name).toBe(Template0.name)
+                expect(t?.id).toBe(template0.id)
+                expect(t?.name).toBe(template0.name)
                 expect(t?.publish).toBeDefined();
                 expect(t?.data).toHaveLength(2)
             }).catch( err => {
@@ -149,22 +164,29 @@ describe('Custom Templates', () => {
             })
     })
 
-    test('Count', async () => {
-        expect(await TemplateDao.count()).toBeGreaterThan(8)
-    })
-
     test('Count by User', async() => {
+
+        wipeTemplates()
+
+        const jcUserId2=await UserDao.getIdFromHash(jcHash2)
+        expect(jcUserId2).toBeDefined()
+        if(!jcUserId2) return;
+        let expectedCount:number = 0
+        let expectedCountJc:number = 0
+        await TemplateDao.createOrUpdate(new Template(0, 'Test1', jcTestTemplateData), jcUserId)
+        expectedCount++;
+        expectedCountJc++;
+        await TemplateDao.createOrUpdate(new Template(0, 'Test2', jcTestTemplateData), jcUserId)
+        expectedCount++;
+        expectedCountJc++;
+        await TemplateDao.createOrUpdate(new Template(0, 'Test3', jcTestTemplateData), jcUserId2)
+        expectedCount++;
+
+        expect(await TemplateDao.count()).toBe(expectedCount)
+
         const counts:[number,number][] = await TemplateDao.countByUser()
         // we should see values
-        expect(counts.length).toBeGreaterThan(0)
-        // user id 1 should have at least 10 template and no more than jcMaxTempaltes
-        const user1Counts = counts.find( (c:any) => c[0] === 1)
-        if(user1Counts === undefined) {
-            expect(false).toBe(true)
-            return
-        }
-        expect(user1Counts[1]).toBeGreaterThan(10)
-        expect(user1Counts[1]).toBeLessThanOrEqual(jcMaxTemplates)
+        expect(counts).toStrictEqual([[jcUserId,expectedCountJc],[jcUserId2,expectedCount-expectedCountJc]])
     })
 
 });

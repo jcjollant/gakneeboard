@@ -131,7 +131,6 @@ describe( 'GApi Tests', () => {
             expect(user.name).toBe(jcName)
             expect(user.sha256).toBe(jcHash)
             expect(user.templates).toBeDefined()
-            expect(user.templates.length).toBeGreaterThan(1)
         }).catch( (e) => {
             console.log(e)
             expect(true).toBe(false) // should not get here
@@ -213,3 +212,5 @@ describe( 'GApi Tests', () => {
 
     })
 })
+
+

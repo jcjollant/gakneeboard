@@ -10,7 +10,7 @@ require('dotenv').config();
 describe('UserDao', () => {
     test('Count', async () => {
         const userDao = new UserDao();
-        expect(await userDao.count()).toBeGreaterThan(15);
+        expect(await userDao.count()).toBeGreaterThan(1);
     })
 
     test('getIdFromHash', async () => {

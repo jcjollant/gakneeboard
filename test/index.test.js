@@ -1,32 +1,34 @@
 const axios = require('axios')
 
-import { jcHash, jcHash2, currentAirportModelVersion, currentAsOf, jcTestTemplateId, samplePublicationCode } from './constants.ts'
+import { jcHash, jcHash2, currentAirportModelVersion, currentAsOf, samplePublicationCode, jcTestTemplateData } from './constants.ts'
 import { version } from '../backend/constants.js'
 import { Maintenance } from '../backend/Maintenance.ts'
+import { Template } from '../backend/models/Template.ts'
 
 const apiRootUrl = 'http://localhost:3000/'
 
 describe('index', () => {
     test('root', async () => {
-        await axios.get( apiRootUrl)
-            .then(res => {
-                // console.log(res.data)
-                expect(res.data).toBeDefined();
-                expect(res.data.version).toBe(version)
-                expect(res.data.aced).toBe(currentAsOf)
-                expect(res.data.camv).toBe(currentAirportModelVersion)
-            })
-
-        await axios.get( apiRootUrl + '?user=' + jcHash)
-            .then(res => {
-                expect(res.data).toBeDefined();
-                expect(res.data.version).toBe(version)
-                expect(res.data.aced).toBe(currentAsOf)
-                expect(res.data.camv).toBe(currentAirportModelVersion)
-                expect(res.data.user).toBeDefined();
-                expect(res.data.user.sha256).toBeDefined();
-                expect(res.data.user.sha256).toBe(jcHash);
-            })
+        await Promise.all([
+            axios.get( apiRootUrl)
+                .then(res => {
+                    // console.log(res.data)
+                    expect(res.data).toBeDefined();
+                    expect(res.data.version).toBe(version)
+                    expect(res.data.aced).toBe(currentAsOf)
+                    expect(res.data.camv).toBe(currentAirportModelVersion)
+                }),
+            axios.get( apiRootUrl + '?user=' + jcHash)
+                .then(res => {
+                    expect(res.data).toBeDefined();
+                    expect(res.data.version).toBe(version)
+                    expect(res.data.aced).toBe(currentAsOf)
+                    expect(res.data.camv).toBe(currentAirportModelVersion)
+                    expect(res.data.user).toBeDefined();
+                    expect(res.data.user.sha256).toBeDefined();
+                    expect(res.data.user.sha256).toBe(jcHash);
+                })
+            ])
     })
     
     test('Multiple airports query', async () => {
@@ -99,29 +101,49 @@ describe('index', () => {
     })
 
     test('Templates and publications', async () => {
-        await axios.get( apiRootUrl + 'template/' + jcTestTemplateId + '?user=' + jcHash)
-            .then( (res) => {
-                expect(res.data).toBeDefined();
-            })
-        .catch( (e) => {
-            console.log(e)
-            expect(true).toBe(false)
-        })
-        await axios.get( apiRootUrl + 'templates')
-            .then( (res) => {
-                expect(res.data).toBeDefined();
-            })
-        .catch( () => {
-            expect(true).toBe(false)
-        })
+        // Create template for use JC
+        const templateName = 'Test Template ' + Date.now();
+        const newTemplate = new Template(0,templateName, jcTestTemplateData)
+        newTemplate.publish = true;
+        await axios.post(apiRootUrl + 'template/', {user: jcHash, sheet:newTemplate}, { headers: {'Content-Type':'application/json'} }).then( async (res) => {
+            // return code should be 200
+            expect(res.status).toBe(200);
+            expect(res.data).toBeDefined();
+            // console.log(res.data)
+            expect(res.data.id).toBeDefined();
+            const templateId = res.data.id;
+            const publicationCode = res.data.code;
 
-        await axios.get( apiRootUrl + 'publication/' + samplePublicationCode)
-            .then( (res) => {
-                expect(res.data).toBeDefined();
-            })
-        .catch( () => {
-            expect(true).toBe(false)
+            await Promise.all( [
+                axios.get( apiRootUrl + 'template/' + templateId + '?user=' + jcHash)
+                    .then( (res) => {
+                        expect(res.data).toBeDefined();
+                    })
+                .catch( (e) => {
+                    console.log(e)
+                    expect(true).toBe(false)
+                }),
+                axios.get( apiRootUrl + 'templates')
+                    .then( (res) => {
+                        expect(res.data).toBeDefined();
+                    })
+                .catch( (e) => {
+                    console.log(e)
+                    expect(true).toBe(false)
+                }),
+                axios.get( apiRootUrl + 'publication/' + publicationCode)
+                    .then( (res) => {
+                        expect(res.data).toBeDefined();
+                        expect(res.data.id).toBe(templateId);
+                    })
+                .catch( (e) => {
+                    console.log(e)
+                    expect(true).toBe(false)
+                })
+            ])
+
+
         })
-    })
+    }, 10000)
 })
 
