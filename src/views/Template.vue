@@ -192,6 +192,11 @@ function onDelete() {
 }
 
 function onEditor() {
+  if( !currentUser.loggedIn) {
+    toaster.warning('Squawk and Ident','Please sign in to use the editor')
+    return
+  }
+
   showEditor.value = !showEditor.value;
 }
 
@@ -237,6 +242,10 @@ function onPageUpdate(index, pageData) {
 
 
 function onPrint() {
+  if( !currentUser.loggedIn) {
+    toaster.warning('Squawk and Ident','Please sign in before printing')
+    return
+  }
   saveTemplateToLocalStore()
   // put local in the history so Print comes back to the correct template in progress
   router.push('/template/local').then(() =>{
