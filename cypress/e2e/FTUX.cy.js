@@ -1,4 +1,4 @@
-import { boeingTitle, demoChecklistOnPage, demoTilesOnPage, environment, expectedDemos, loadDemo, rentonTitle, selectionTitle, visitAndCloseBanner, visitSkipBanner } from './shared.js'
+import { boeingTitle, demoChecklistOnPage, demoTilesOnPage, environment, expectedDemos, expectToast, loadDemo, rentonTitle, selectionTitle, visitAndCloseBanner, visitSkipBanner } from './shared.js'
 
 describe('First Time User Experience', () => {
 
@@ -96,10 +96,6 @@ describe('First Time User Experience', () => {
         // Customize with Notes page on the left
         cy.get('.page0 > .list > [aria-label="Notes"]').click()
 
-        // As a new User I cannot save a template without signing in
-        cy.get('#btnSave').click()
-        cy.get('.p-toast-detail').contains('Please sign in to use custom templates')
-
         // As a new User I can rename a template
         const newName = 'NewName'
         cy.get('#btnSettings').click()
@@ -107,5 +103,18 @@ describe('First Time User Experience', () => {
         cy.get('.pageDescription > .p-inputtext').type('NewDescription',{delay:0})
         cy.get('[aria-label="Save"]').click()
         cy.get('.templateName').contains(newName);
+    })
+
+    it.only('Features Require Signin', () => {
+        visitSkipBanner()
+        loadDemo('Default')
+
+        // As a new User I cannot save a template without signing in
+        cy.get('#btnSave').click()
+        expectToast('Please sign in to use custom templates')
+        cy.get('#btnPrint').click()
+        expectToast('Please sign in before printing')
+        cy.get('#btnEditor').click()
+        expectToast('Please sign in to use the editor')
     })
 })
