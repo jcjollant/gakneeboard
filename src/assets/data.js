@@ -59,7 +59,7 @@ export function duplicate(source) {
 export async function getUrlWithUser(url) {
   // console.log('[data.getUrlWithUser]', JSON.stringify(currentUser))
   if( currentUser.loggedIn) {
-    return axios.get(url,{params:{user:currentUser.sha256}})
+    return axios.get(url,{ headers: {'user': currentUser.sha256 }})
   } else {
     return axios.get(url)
   }
@@ -272,7 +272,6 @@ export function getNavaid(navaidList, id) {
   return navaidList.find( n => n.id == id)
 }
 
-
 /**
  * Get sunlight data
  * @param {*} from 
@@ -314,7 +313,8 @@ function getSunlightDate(date) {
 
 export async function postPrint(options) {
   const url = GApiUrl.root + 'print'
-  return axios.post(url, options, contentTypeJson)
+  const config = { headers: {'Content-Type':'application/json', 'user': currentUser.sha256 }}
+  return axios.post(url, options, config)
     .then( response => {
       return response.data
     })
