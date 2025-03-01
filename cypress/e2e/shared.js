@@ -158,4 +158,5 @@ export function displaySelection(pageNum, tileNum, mode=undefined) {
 export function expectToast(message) {
     cy.get('.p-toast-message-content').contains(message)
     cy.get('.p-toast-icon-close').click()
+    cy.get('.p-toast-icon-close').should('not.exist')
 }
