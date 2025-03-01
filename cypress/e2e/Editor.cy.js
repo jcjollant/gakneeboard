@@ -1,9 +1,7 @@
-import { visitAndCloseBanner, feltsTitle, boeingTitle, radioTitle, notesTitle, atisTitle, clearanceTitle, loadDemo, visitSkipBanner, environment,
- demoChecklistOnPage, demoTilesOnPage, 
- departureTitle,
- selectionTitle} from './shared'
+import { feltsTitle, boeingTitle, radioTitle, notesTitle, atisTitle, loadDemo, visitSkipBanner, environment,
+ demoChecklistOnPage, demoTilesOnPage, departureTitle,expectToast, selectionTitle} from './shared'
 
-function deletePage(index, force=false) {w
+function deletePage(index, force=false) {
     cy.get('.editorPage' + index + ' > .editorBottom > .p-button-warning').click({force:force})
     cy.get('.p-confirm-dialog-message').contains('delete page ' + (index + 1))
     cy.get('.p-confirm-dialog-accept').click({force:force})

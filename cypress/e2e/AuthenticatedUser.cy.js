@@ -2,7 +2,7 @@ import { maintenanceMode, visitSkipBanner, environment, kenmoreTitle, selectionT
 
 describe('Authenticated User', () => {
   it('Sign in and Load Page', async () => {
-    cy.intercept({method: 'GET',url: 'https://ga-api-seven.vercel.app/',}).as('getBackend')
+    cy.intercept({method: 'GET',url: '**/'}).as('getBackend')
     visitSkipBanner()
 
     // Authenticate
