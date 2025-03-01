@@ -253,8 +253,9 @@ export class GApi {
             camv: AirportView.currentVersion,
         }
         // Enrich with user data if possible
-        if( req && req.query && req.query.user) {
-            const user:User|undefined = await UserDao.getUserFromHash(req.query.user)
+        const sha = UserTools.userShaFromRequest(req)
+        if( sha) {
+            const user:User|undefined = await UserDao.getUserFromHash(sha)
             // console.log('[userTools.userMiniFromRequest] user ' + JSON.stringify(user))
             if( user) {
                 const userMini = await UserTools.userMini(user)

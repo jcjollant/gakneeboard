@@ -122,17 +122,22 @@ export class UserTools {
      * @returns Matching user id or undefined if not found
      */
     public static async userIdFromRequest(req:any):Promise<number|undefined> {
-        console.log('[UserTools.userIdFromRequest] ', JSON.stringify(req.headers), JSON.stringify(req.query))
+        // console.log('[UserTools.userIdFromRequest] ', JSON.stringify(req.headers), JSON.stringify(req.query))
+        const sha = UserTools.userShaFromRequest(req)
+        // console.log('[UserTools.userIdFromRequest] sha ', sha)
+        // use sha if we have it
+        if( !sha) return undefined
+        return UserDao.getIdFromHash(sha)
+    }
+
+    public static userShaFromRequest(req:any):string|undefined {
         if( req == undefined) return undefined;
 
-        let sha = undefined
         if(req.query && req.query.user) {
-            sha = req.query.user
-        } else  {
-            sha = req.headers['user']
+            return String(req.query.user)
+        } else if(req.headers && req.headers['user']) {
+            return String(req.headers['user'])
         }
-        console.log('[UserTools.userIdFromRequest] sha ', sha)
-        // use sha if we have it
-        return sha && UserDao.getIdFromHash(sha)
+        return undefined
     }
 }
