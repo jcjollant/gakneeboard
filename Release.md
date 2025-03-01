@@ -1,4 +1,6 @@
 # User Experience updates
+## 02/28/2025 5097
+* User is captured on prints
 ## 02/27/2025 5096
 * Added large mode to Radio Tile
 * Unicom is now ground
