@@ -1,4 +1,7 @@
 # User Experience updates
+## 03/01/2025 5098
+* Sign in is required to print and use the editor
+* New Pricing plans In the plans page
 ## 02/28/2025 5097
 * User is captured on prints
 ## 02/27/2025 5096
