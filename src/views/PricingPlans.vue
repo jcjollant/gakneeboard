@@ -101,7 +101,7 @@ const plans = ref([
       "Airport Data Update": true,
     },
     popular: false,
-    active: true,
+    active: false,
     code: Pricing.hobbs
   },
   // {
@@ -132,7 +132,7 @@ const plans = ref([
       "Airport Data Update": true,
     },
     popular: true,
-    active: true,
+    active: false,
     code: Pricing.betaDeal
   }
 ])
