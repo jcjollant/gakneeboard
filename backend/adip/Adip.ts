@@ -3,6 +3,7 @@ import { Airport } from '../models/Airport'
 import { Chart } from '../models/Chart'
 import { Atc } from '../models/Atc'
 import { Frequency } from '../models/Frequency'
+import { Ils } from '../models/Ils'
 import { Navaid } from '../models/Navaid'
 import { Runway, RunwaySurface, RunwayEnd, PatternDirection } from '../models/Runway'
 import axios from 'axios'
@@ -294,6 +295,12 @@ export class Adip {
                     end.setMagneticOrientation(orientation)
                     const tp:PatternDirection = Adip.parseTrafficPattern(rwyEnd)
                     end.setTrafficPattern(tp)
+                    // look for localizers
+                    const ils = Adip.parseIls(rwyEnd, end.name)
+                    if(ils) {
+                        airport.addFrequency('LOC ' + ils.id + ' ' + ils.rwyName, ils.locFreq)
+                    }
+
                 }
                 return runway
             }) 
@@ -373,6 +380,17 @@ export class Adip {
         if( index == -1) return ''
         return freq.substring(index + 2);
     } 
+
+    static parseIls(rwyEnd: any, rwyName:string=''):Ils|undefined {
+        if(!rwyEnd || !rwyEnd.ils) return undefined
+        try {
+            return new Ils(rwyEnd.ils.identifier, rwyEnd.ils.localizer.frequency, rwyName)
+        } catch(e) {
+            console.log('[Adip.parseIls]', e)
+            return undefined;
+        }
+    }
+
     static parseTrafficPattern( end:any):PatternDirection {
         if( !end) throw new Error("Invalid end for traffic pattern")
         if( end.rightHandTrafficFlag && end.rightHandTrafficFlag == 'YES') return PatternDirection.Right

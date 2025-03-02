@@ -179,7 +179,12 @@ describe('Adip', () => {
         expect(airport.rwys).toHaveLength(2)
         expect(airport.rwys[0].freq).toBeDefined()
         expect(airport.rwys[1].freq).toBeDefined()
-        expect(airport.freq).toHaveLength(6)
+        const expectedFreq = [{"mhz": 122.95, "name": "UNICOM", "notes": ""}, {"mhz": 127.75, "name": "ATIS", "notes": ""}, {"mhz": 132.4, "name": "CD/P", "notes": ""}, {"mhz": 121.9, "name": "GND", "notes": ""}, {"mhz": 118.3, "name": "TWR", "notes": "RWY 14L/32R"}, {"mhz": 120.6, "name": "TWR", "notes": "RWY 14R/32L & ALL IFR"}, {"mhz": 110.9, "name": "LOC I-BFI 14R", "notes": ""}, {"mhz": 110.9, "name": "LOC I-CHJ 32L", "notes": ""}]
+        for(let index = 0 ; index < expectedFreq.length; index++) {
+            expect(airport.freq[index].mhz).toBe(expectedFreq[index].mhz)
+            expect(airport.freq[index].name).toBe(expectedFreq[index].name)
+            expect(airport.freq[index].notes).toBe(expectedFreq[index].notes)
+        }
     })
 
     test('KDZJ fields', () => {
@@ -240,7 +245,7 @@ describe('Adip', () => {
         expect(krnt.dep).toHaveLength(2)
     })
 
-    test('Tower Frequencies', () => {
+    test('KPAE Frequencies', () => {
         const kpae = Adip.parseAirport(kpaeData);
 
         // We should see frequency notes
@@ -252,6 +257,7 @@ describe('Adip', () => {
             ['GND',121.8,''],
             ['TWR',120.2,'RWY 16L/34R'],
             ['TWR',132.95,'RWY 16R/34L'],
+            ['LOC I-PAE 16R',109.3,''],
             ]
         expect(kpae.freq).toHaveLength(allFreq.length)
         // Test all frequencies
