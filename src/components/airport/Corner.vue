@@ -26,7 +26,7 @@
                         </div>
                     </div>
                 </Fieldset>
-                <Fieldset legend="Navaids">
+                <Fieldset legend="Navaids Frequency and Bearing">
                     <div class="navList">
                         <template v-for="navaid in navaids">
                             <div>{{ navaid.name }}</div>
