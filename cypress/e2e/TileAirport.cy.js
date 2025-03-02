@@ -37,30 +37,6 @@ describe('Tiles', () => {
     cy.get(`.page0 > .tile1 > .tileContent .top.right .value`).contains('120.600')
     cy.get(`.page0 > .tile1 > .tileContent .top.right .label`).contains('RWY 14R-32L')
 
-    // Check Corners have all exected data
-    // Open Renton bottom right corner to get the corner selection window
-    cy.get(`.page0 > .tile0 > .tileContent .bottom.right`).click()
-    // standard fields
-    const expectedStandardFields = ['Field Elevation', 'Traffic Pattern Altitude', 'Runway Information', 'Nothing']
-    for(let index = 0; index < expectedStandardFields.length; index++) {
-      cy.get(`.standardList > :nth-child(${index+1})`).contains(expectedStandardFields[index])
-    }
-    // Radios
-    const expectedRadios = ['124.700 : CTAF', '122.950 : UNICOM', '126.950 : ATIS', '121.600 : GND', '124.700 : TWR']
-    for(let index = 0; index < expectedRadios.length; index++) {
-      cy.get(`.freqList > :nth-child(${index+1})`).contains(expectedRadios[index])
-    }
-    const expectedNavaids = ['116.800 : SEA (VORTAC)', '110.600 : PAE (VOR/DME)', '113.400 : OLM (VORTAC)', '117.200 : CVV (VOR/DME)']
-    for(let index = 0; index < expectedNavaids.length; index++) {
-      cy.get(`.navList > :nth-child(${index+1})`).contains(expectedNavaids[index])
-    }
-    const expectedAtcs = ['119.200 : Apch', '120.100 : Apch', '120.400 : Apch', '123.900 : Approach', '125.600 : OLYMPIA', '125.900 : Apch', '126.500 : Apch', '128.500 : Apch']
-    for(let index = 0; index < expectedAtcs.length; index++) {
-      cy.get(`.atcList > :nth-child(${index+1})`).contains(expectedAtcs[index])
-    }
-    // close overlaypanel
-    cy.get('[aria-label="Done"]').click()
-
     // Enter a new airport code and check it's data is loading
     cy.get('.page0 > .tile2 > .headerTitle > .titleText').click()
     cy.get('.page0 > :nth-child(3) > .content > .settings > .airportCode > .p-inputgroup > .p-inputtext').clear().type('KBLI')
@@ -70,6 +46,7 @@ describe('Tiles', () => {
       url: '**/airport/**',
     }).as('getOneAirport');
     cy.wait('@getOneAirport').its('response.statusCode').should('equal', 200)
+
     // Name should be shown in AirportInput
     cy.get('.page0 > :nth-child(3) > .content > .settings > .airportCode > .airportName').contains(bellinghamTitle)
     cy.get('.page0 > :nth-child(3) > .content > .actionBar > [aria-label="Apply"]').click()
@@ -108,10 +85,93 @@ describe('Tiles', () => {
     cy.get('[aria-label="Airport"]').click()
     // we should be in edit mode
     cy.get('.p-inputtext')
+  })
 
-    // We should see the placeholder
-    // cy.get('.page0 > :nth-child(3) > :nth-child(2) > .placeHolder').contains('No Airport')
-    // cy.get('.page0 > :nth-child(3) > :nth-child(2) > .placeHolder').contains(placeHolderSubtitle)
+  it('Configure Corners', () => {
+    visitSkipBanner()
+    loadDemo('Tiles')
+
+    // Check Corners have all expected data
+    // Open Renton bottom right corner to get the corner selection window
+    cy.get(`.page0 > .tile0 > .tileContent .bottom.right`).click()
+    // standard fields
+    const expectedStandardFields = [
+      {name:'Field Elevation',label:'Elevation',value:'32'}, 
+      {name:'Traffic Pattern Altitude',label:'TPA',value:'1250'}, 
+      {name:'Runway Information',label:'(G) Good/ASPH-CONC',value:'5382x200'}, 
+      {name:'Nothing',label:'',value:''}, 
+    ]
+    for(let index = 0; index < expectedStandardFields.length; index++) {
+      const field = expectedStandardFields[index]
+      cy.get(`.standardList > :nth-child(${index+1})`).contains(field.name)
+      cy.get(`.standardList > :nth-child(${index+1})`).click()
+      if(field.label != '') cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .label').contains(field.label)
+      if(field.value != '') cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .value').contains(field.value)
+    }
+    // Radios
+    const expectedRadios = [
+      {name:'124.700 : CTAF',label:'CTAF',value:'124.700'}, 
+      {name:'122.950 : UNICOM',label:'UNICOM',value:'122.950'}, 
+      {name:'126.950 : ATIS',label:'ATIS',value:'126.950'}, 
+      {name:'121.600 : GND',label:'GND',value:'121.600'}, 
+      {name:'124.700 : TWR',label:'TWR',value:'124.700'}, 
+      {name:'Selected Runway',label:'twr',value:'-.-'}, 
+    ]
+    for(let index = 0; index < expectedRadios.length; index++) {
+      const field = expectedRadios[index]
+      cy.get(`.freqList > :nth-child(${index+1}) > .ml-2`).contains(field.name)
+      cy.get(`.freqList > :nth-child(${index+1}) > .ml-2`).click()
+      cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .label').contains(field.label)
+      cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .value').contains(field.value)
+    }
+    const expectedNavaids = [
+      'SEA (VORTAC)', '116.800', '48°', 
+      'PAE (VOR/DME)', '110.600', '174°',
+      'OLM (VORTAC)', '113.400', '42°',
+      'CVV (VOR/DME)', '117.200', '155°']
+    const expectedNaaidsOutcomes = [
+      {label1:'SEA', value1:'116.800', label2:'SEA Radial', value2:'48°'},
+      {label1:'PAE', value1:'110.600', label2:'PAE Radial', value2:'174°'},
+      {label1:'OLM', value1:'113.400', label2:'OLM Radial', value2:'42°'},
+      {label1:'CVV', value1:'117.200', label2:'CVV Radial', value2:'155°'},
+    ]
+    for(let index = 0; index < expectedNavaids.length; index++) {
+      cy.get(`.navList > :nth-child(${index+1})`).contains(expectedNavaids[index])
+      if(index % 3 == 0) {
+        const field2 = expectedNaaidsOutcomes[index/3]
+        cy.get(`.navList > :nth-child(${index+2}) > .ml-2`).click()
+        cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .label').contains(field2.label1)
+        cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .value').contains(field2.value1)
+        cy.get(`.navList > :nth-child(${index+3}) > .ml-2`).click()
+        cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .label').contains(field2.label2)
+        cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .value').contains(field2.value2)
+      }
+    }
+    const expectedAtcs = [
+      {name:'119.200 : Apch',     label:'SEATTLE-TACOMA', value:'119.200'},
+      {name:'120.100 : Apch',     label:'SEATTLE-TACOMA', value:'120.100'}, 
+      {name:'120.400 : Apch',     label:'SEATTLE-TACOMA', value:'120.400'}, 
+      {name:'123.900 : Approach', label:'SEATTLE-TACOMA', value:'123.900'}, 
+      {name:'125.600 : OLYMPIA',  label:'SEATTLE-TACOMA', value:'125.600'}, 
+      {name:'125.900 : Apch',     label:'SEATTLE-TACOMA', value:'125.900'}, 
+      {name:'126.500 : Apch',     label:'SEATTLE-TACOMA', value:'126.500'}, 
+      {name:'128.500 : Apch',     label:'SEATTLE-TACOMA', value:'128.500'}, 
+      ]
+    for(let index = 0; index < expectedAtcs.length; index++) {
+      const field = expectedAtcs[index]
+      cy.get(`.atcList > :nth-child(${index+1}) > .ml-2`).contains(field.name)
+      cy.get(`.atcList > :nth-child(${index+1}) > .ml-2`).click()
+      cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .label').contains(field.label)
+      cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .value').contains(field.value)
+    }
+    // Test custom value
+    const customLabel = 'CustLabel';
+    const customValue = 'CustValue';
+    cy.get('[placeholder="label"]').type(customLabel)
+    cy.get('[placeholder="value"]').type(customValue)
+    cy.get('.ctCustom > label.ml-2').click()
+    cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .label').contains(customLabel)
+    cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .value').contains(customValue)
   })
 
   it('Merges', () => {
@@ -213,6 +273,5 @@ describe('Tiles', () => {
         expect(template.data[0].data[0].data.pattern).to.equal(2)
         expect(template.data[0].data[0].data.headings).to.equal(true)
       })
-
   })
 })

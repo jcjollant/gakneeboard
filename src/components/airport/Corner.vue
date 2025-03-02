@@ -28,11 +28,19 @@
                 </Fieldset>
                 <Fieldset legend="Navaids">
                     <div class="navList">
-                        <div v-for="navaid in navaids" class="ctItem" >
-                            <RadioButton v-model="selectedCornerType" :inputId="navaid.id" :value="navaid.id" 
-                                @change="onChange(navaid.id)"/>
-                            <label :for="navaid.id" class="ml-2">{{ navaid.label  }}</label>
-                        </div>
+                        <template v-for="navaid in navaids">
+                            <div>{{ navaid.name }}</div>
+                            <div>
+                                <RadioButton v-model="selectedCornerType" :inputId="navaid.id1" :value="navaid.id1" 
+                                    @change="onChange(navaid.id1)"/>
+                                <label :for="navaid.id1" class="ml-2">{{ navaid.freq  }}</label>
+                            </div>
+                            <div>
+                                <RadioButton v-model="selectedCornerType" :inputId="navaid.id2" :value="navaid.id2" 
+                                    @change="onChange(navaid.id2)"/>
+                                <label :for="navaid.id2" class="ml-2">{{ navaid.radial  }}</label>
+                            </div>
+                        </template>
                     </div>
                 </Fieldset>
                 <Fieldset :legend="group.name" class="ctAtc" v-for="group in atcGroups">
@@ -66,7 +74,7 @@
 <script setup lang="ts">
 
 import { ref, onMounted, watch } from 'vue';
-import { getFreqCtaf, getFreqWeather, getFreqGround, getFrequency, getNavaid } from '../../assets/data';
+import { getFrequency, getNavaid } from '../../assets/data';
 import { AtcGroup } from '../../model/AtcGroup';
 import { Formatter } from '../../lib/Formatter';
 import { Frequency } from '../../model/Frequency';
@@ -122,7 +130,7 @@ const customLabel = ref('')
 const customValue = ref('')
 
 const frequencies = ref<CornerValue[]>([])
-const navaids = ref<CornerValue[]>([])
+const navaids = ref<NavaidValue[]>([])
 const atcGroups = ref<CornerAtcGroup[]>([])
 
 class CornerAtc {
@@ -146,6 +154,21 @@ class CornerAtcGroup {
     }
 }
 
+class NavaidValue {
+    name:string;
+    freq:string;
+    id1:string;
+    id2:string;
+    radial:string;
+    constructor(name:string, freq:string, id1:string, id2:string, radial:string) {
+        this.name = name;
+        this.freq = freq;
+        this.id1 = id1;
+        this.id2 = id2;
+        this.radial = radial;
+    }
+}
+
 onMounted(() => {
     loadProps(props)
 })
@@ -154,8 +177,6 @@ watch( props, () => {
     // console.log( '[Corner.watch] props changed', JSON.stringify(props))
     loadProps(props)
 })
-
-
 
 function formatNavaid(navaid) {
     if(!navaid || !navaid.to) return '-'
@@ -187,7 +208,7 @@ function loadProps(newProps:any) {
 
         if( airport.navaids) {
             // build a navaid list with '#N' prefix
-            const navaidList = airport.navaids.map( n => new CornerValue('#N'+n.id, Formatter.frequency(n) + ' : ' + n.id + ' ('+n.type+')'))
+            const navaidList = airport.navaids.map( n => new NavaidValue(n.id + ' ('+n.type+')', Formatter.frequency(n), '#N'+n.id, '#R'+n.id, formatNavaid(n)))
             navaids.value = navaidList
         }
 
@@ -218,7 +239,7 @@ function loadProps(newProps:any) {
 }
 
 function onChange(field:string) {
-    // console.log('[Corner.onChange] ' + JSON.stringify(field))
+    console.log('[Corner.onChange] ' + JSON.stringify(field))
     showField(field)
     emits('update', field)
 }
@@ -232,6 +253,7 @@ function showField( field:string) {
         // Special fields start with # then one letter code
         // #F -> Frequency
         // #N -> Navaid
+        // #R -> Radial
         // #A -> ATC
         if(field[1] == 'F' && airport.freq) {
             // RadioFrequencies use the '#F' prefix
@@ -241,6 +263,12 @@ function showField( field:string) {
             label.value = freqName
         } else if( field[1] == 'N' && airport.navaids) {
             // Navaids use the '#N' prefix
+            const navaidName = field.substring(2)
+            // console.log('[Corner.showField]', freqName)
+            value.value = Formatter.frequency( getNavaid( airport.navaids, navaidName))
+            label.value = navaidName
+        } else if( field[1] == 'R' && airport.navaids) {
+            // Navaid Radial use the '#R' prefix
             const navaidName = field.substring(2)
             // console.log('[Corner.showField]', freqName)
             value.value = formatNavaid( getNavaid( airport.navaids, navaidName))
@@ -364,6 +392,12 @@ function unknownValues() {
     display: flex;
     align-items: center;
 }
+.ctItemNavaid {
+    display: grid;
+    grid-template-rows: auto auto auto;
+    gap: 5px;
+}
+
 .ctAtc {
     grid-column: 1 / span 3;
 }
@@ -381,7 +415,7 @@ function unknownValues() {
 .faded {
     opacity: 0.3;
 }
-.freqList, .navList, .standardList, .atcList {
+.freqList, .standardList, .atcList {
     display: flex;
     flex-flow: column;
     gap: 0.5rem
@@ -408,5 +442,12 @@ function unknownValues() {
     width: 120px;
     height: 53px;
     background-color: white;
+}
+
+.navList {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    width: fit-content;
 }
 </style>
