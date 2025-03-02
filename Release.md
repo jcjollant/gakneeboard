@@ -1,4 +1,6 @@
 # User Experience updates
+## 03/02/2025 5100
+* Navaid frequency in Airport Tile corner
 ## 03/01/2025 5098
 * Sign in is required to print and use the editor
 * New Pricing plans In the plans page
