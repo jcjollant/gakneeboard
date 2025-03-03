@@ -4,6 +4,7 @@ import { UserDao } from '../backend/dao/UserDao.ts'
 import { jcUserId, jcHash, jcEmail, jcName, jcSource, jcMaxTemplates } from './constants.ts';
 import { AccountType } from '../backend/models/AccountType.ts';
 import { User } from '../backend/models/User.ts';
+import { newTestUser } from './common.ts'
 
 require('dotenv').config();
 
@@ -63,5 +64,29 @@ describe('UserDao', () => {
             })
         })
     })
+
+    test('Save', async () => {
+        const existingUser:User = new User(jcUserId, jcHash)
+        // Saving an existing user without overwrite should fail
+        const userDao = new UserDao()
+        await expect(userDao.save(existingUser)).rejects.toEqual('Cannot save existing user without overwrite')
+
+        const newUser = newTestUser()
+        await userDao.save(newUser).then( (user:User) => {
+            expect(user.id).toBeGreaterThan(0)
+            expect(user.email).toBe(newUser.email)
+            expect(user.sha256).toBe(newUser.sha256)
+
+            // overwritte this user
+            const userId = user.id
+            const newName = 'NewName'
+            user.setName(newName);
+            userDao.save(user, true).then( (user:User) => {
+                expect(user.id).toBe(userId)
+                expect(user.name).toBe(newName)
+            })
+        })
+    })
+
 });
 

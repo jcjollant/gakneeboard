@@ -2,22 +2,10 @@ import { describe, expect, test} from '@jest/globals';
 import { GApi, GApiError } from '../backend/GApi'
 import { jcHash, jcUserId, jcTestTemplateData, jcTestTemplateName, jcTestTemplateDescription } from './constants'
 import { Template } from '../backend/models/Template'
-import { template } from '@babel/core';
 import { PublishedTemplate } from '../backend/models/PublishedTemplate';
 import { TemplateDao } from '../backend/TemplateDao';
-import { sql } from '@vercel/postgres';
-import exp from 'constants';
 
 require('dotenv').config();
-
-async function safeTruncate() {
-    expect(process.env.SAFE_TO_DELETE_TEMPLATES).toBe('yes')
-    await Promise.all([
-        sql`TRUNCATE sheets`,
-        sql`UPDATE publications SET sheetid=NULL`
-    ])
-
-}
 
 describe( 'GApi Tests', () => {
 
@@ -50,8 +38,6 @@ describe( 'GApi Tests', () => {
         const tempName = 'Temporary Name ' + Date()
         const tempDesc = 'Temporary Description'
         const tempVer = 12;
-
-        safeTruncate()
 
         const templateIn = new Template( 0, tempName, jcTestTemplateData, tempDesc, tempVer, true)
         // Save it

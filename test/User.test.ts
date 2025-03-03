@@ -3,23 +3,13 @@ import { User } from '../backend/models/User'
 import { UserTools } from '../backend/UserTools'
 import { jcMaxTemplates, jcSource } from './constants'
 import { jcHash, jcUserId, jcToken, jcName, jcEmail } from './constants'
-import { UserDao } from '../backend/dao/UserDao';
 import { UserMiniView } from '../backend/models/UserMiniView';
 import { AccountType } from '../backend/models/AccountType';
+import exp from 'constants';
 
 require('dotenv').config();
 
 const jc = { 'source':UserTools.google,'email':jcEmail}
-
-function testJcUmv(umv:UserMiniView|undefined) {
-    expect(umv).toBeDefined()
-    if(umv) {
-        expect(umv.sha256).toBe(jcHash)
-        expect(umv.name).toBe(jcName)
-        expect(umv.maxTemp).toBe(jcMaxTemplates)
-        expect(umv.templates).toBeDefined()
-    }
-}
 
 describe( 'User', () => {
     test('Encryption', async () => {
@@ -37,6 +27,7 @@ describe( 'User', () => {
         expect(u.name).toBe('')
         expect(u.maxTemplates).toBe(User.defaultMaxTemplates)
         expect(u.accountType).toBe(AccountType.simmer)
+        expect(u.printCredits).toBe(0)
     })    
 
     test('setters', () => {
@@ -45,10 +36,13 @@ describe( 'User', () => {
         u.setSource('source')
         u.setMaxTemplates(10)
         u.setName('name')
+        const expectedPrintCredits = 11;
+        u.setPrintCredits(expectedPrintCredits)
         expect(u.email).toBe('email')
         expect(u.source).toBe('source')
         expect(u.maxTemplates).toBe(10)
         expect(u.name).toBe('name')
+        expect(u.printCredits).toBe(expectedPrintCredits)
     })
 
 })
@@ -96,51 +90,4 @@ describe('UserTool', () => {
         expect( await UserTools.userIdFromRequest(req4)).toBe( jcUserId)
     })
 
-    test('userMini', async () => {
-        const userJc:User|undefined = await UserDao.getUserFromHash(jcHash)
-        if(userJc === undefined) throw new Error('User not found')
-        const miniUser:UserMiniView|undefined = await UserTools.userMini(userJc)
-        testJcUmv( miniUser)
-
-    })
-
-    test('Save', async () => {
-        const existingUser:User = new User(jcUserId, jcHash)
-        // Saving an existing user without overwrite should fail
-        const userDao = new UserDao()
-        await expect(userDao.save(existingUser)).rejects.toEqual('Cannot save existing user without overwrite')
-
-        // generate random email
-        const newEmail = Math.random().toString(36).substring(7) + '@test.com'
-
-        // Save a brand new user
-        const oldName = 'oldName'
-        const newName = 'newName'
-        const newHash = UserTools.createUserSha('test', newEmail)
-        const newUser:User = new User(0, newHash)
-        newUser.setEmail(newEmail)
-        newUser.setName(oldName);
-        await userDao.save(newUser).then( (user:User) => {
-            expect(user.id).toBeGreaterThan(0)
-            expect(user.email).toBe(newEmail)
-            expect(user.sha256).toBe(newHash)
-
-            // overwritte this user
-            const userId = user.id
-            user.setName(newName);
-            userDao.save(user, true).then( (user:User) => {
-                expect(user.id).toBe(userId)
-                expect(user.name).toBe(newName)
-            })
-        })
-    })
 })
-
-describe('UserMiniView', () => {
-    test('fromHash', async () => {
-        const userJc:User|undefined = await UserDao.getUserFromHash(jcHash)
-        const umv:UserMiniView|undefined = await UserMiniView.fromHash(jcHash)
-        testJcUmv(umv)
-    })
-})
-

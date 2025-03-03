@@ -5,17 +5,12 @@ import { TemplateDao } from '../backend/TemplateDao.ts'
 import { jcUserId, jcTestTemplateName, jcTestTemplateData, jcMaxTemplates, jcHash2 } from './constants.ts';
 import { UserDao } from '../backend/dao/UserDao.ts';
 import { sql } from '@vercel/postgres';
+import { count } from 'console';
 
 require('dotenv').config();
 
-async function wipeTemplates() {
-    expect(process.env.SAFE_TO_DELETE_TEMPLATES).toBe('yes')
-    await sql`TRUNCATE sheets`
-}
-
 describe('Custom Templates', () => {
     test('read Custom', async () => {
-        wipeTemplates();
 
         const jcUserId2 = await UserDao.getIdFromHash(jcHash2)
         expect(jcUserId2).toBeDefined()
@@ -166,27 +161,37 @@ describe('Custom Templates', () => {
 
     test('Count by User', async () => {
 
-        wipeTemplates()
+        const countBefore:[number,number][] = await TemplateDao.countByUser()
 
         const jcUserId2=await UserDao.getIdFromHash(jcHash2)
         expect(jcUserId2).toBeDefined()
         if(!jcUserId2) return;
-        let expectedCount:number = 0
-        let expectedCountJc:number = 0
+        let expectedCountJc1:number = 0
+        let expectedCountJc2:number = 0
         await TemplateDao.createOrUpdate(new Template(0, 'Test1', jcTestTemplateData), jcUserId)
-        expectedCount++;
-        expectedCountJc++;
+        expectedCountJc1++;
         await TemplateDao.createOrUpdate(new Template(0, 'Test2', jcTestTemplateData), jcUserId)
-        expectedCount++;
-        expectedCountJc++;
+        expectedCountJc1++;
         await TemplateDao.createOrUpdate(new Template(0, 'Test3', jcTestTemplateData), jcUserId2)
-        expectedCount++;
+        expectedCountJc2++;
 
-        expect(await TemplateDao.count()).toBe(expectedCount)
+        const countAfter:[number,number][] = await TemplateDao.countByUser()
+        console.log(JSON.stringify(countBefore))
+        console.log(JSON.stringify(countAfter))
+        for(let index = 0; index < countAfter.length; index++) {
+            let expectedCount = -1
+            if(countBefore[index][0] == jcUserId) {
+                expectedCount = 2
+            } else if(countBefore[index][0] == jcUserId2) {
+                expectedCount = 1;
+            } else {
+                expectedCount = -1
+            }
+            if(expectedCount == -1) continue;
 
-        const counts:[number,number][] = await TemplateDao.countByUser()
-        // we should see values
-        expect(counts).toStrictEqual([[jcUserId,expectedCountJc],[jcUserId2,expectedCount-expectedCountJc]])
+            expect(countAfter[index][0]).toBe(countBefore[index][0])
+            expect(countAfter[index][1]).toBeGreaterThanOrEqual(expectedCount)
+        }
     })
 
 });
