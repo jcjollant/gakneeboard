@@ -10,6 +10,7 @@ export class User {
     maxTemplates:number;
     accountType:AccountType;
     customerId:string|undefined;
+    printCredits:number
 
     public static defaultMaxTemplates:number = 5;
 
@@ -22,6 +23,7 @@ export class User {
         this.maxTemplates = User.defaultMaxTemplates;
         this.accountType = AccountType.simmer;
         this.customerId = undefined;
+        this.printCredits = 0;
     }
 
 
@@ -56,4 +58,9 @@ export class User {
     public setCustomerId(customer_id: string) {
         this.customerId = customer_id;
     }
+
+    public setPrintCredits(count:number) {
+        this.printCredits  = count;
+    }
+
 }
