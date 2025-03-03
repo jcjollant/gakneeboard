@@ -5,7 +5,7 @@ import { AccountType } from '../models/AccountType';
 
 export class UserDao extends Dao<User> {
     protected tableName: string = 'users';
-    static modelVersion:number = 2;
+    modelVersion:number = 2;
 
     public async addPrints(user:User, count: number):Promise<User> {
         return new Promise<User>(async (resolve, reject) => {
@@ -88,26 +88,25 @@ export class UserDao extends Dao<User> {
      * @throws Error if sha256 is missing
      */
 
-    public static async save(user:User, overwrite:boolean=false):Promise<User> {
+    public async save(user:User, overwrite:boolean=false):Promise<User> {
         // console.log( '[UserDao.save]  ' + JSON.stringify(user))
         return new Promise<User>(async (resolve, reject) => {
-            if( !user.sha256) throw new Error('sha256 missing')
+            if( !user.sha256) return reject('sha256 missing')
 
             // Do we know this user?
-            const result = await sql`SELECT id from Users WHERE sha256 = ${user.sha256}`;
+            const result = await this.db.query(`SELECT id from ${this.tableName} WHERE sha256 = '${user.sha256}'`);
             // console.log( '[UserDao.save] match count ' + result.rowCount)
             if(result.rowCount == 0) {
                 // console.log( '[UserDao.save] adding ' + user.sha256)
-                const insert = await sql`INSERT INTO Users (sha256,data,version,account_type) VALUES (${user.sha256},${JSON.stringify(user)},${this.modelVersion},${user.accountType}) RETURNING id`
+                const insert = await this.db.query(`INSERT INTO ${this.tableName} (sha256,data,version,account_type) VALUES ('${user.sha256}','${JSON.stringify(user)}',${this.modelVersion},'${user.accountType}') RETURNING id`)
                 user.id = insert.rows[0].id
                 // console.log( '[UserDao.save] ' + user.sha256)
-            } else if( overwrite){ // this user is known
+            } else if( overwrite){ // this user is known but we can override
                 // console.log( '[UserDao.save] known user ' + user.sha256)
                 user.id = result.rows[0].id
-                await sql`UPDATE Users SET data = ${JSON.stringify(user)}, version=${this.modelVersion}, account_type=${user.accountType} WHERE id = ${user.id}`
+                await this.db.query(`UPDATE ${this.tableName} SET data = '${JSON.stringify(user)}', version=${this.modelVersion}, account_type='${user.accountType}' WHERE id = ${user.id}`)
             } else {
-                reject('Cannot save existing user without overwrite')
-                return
+                return reject('Cannot save existing user without overwrite')
             }
             resolve( user)
         })

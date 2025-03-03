@@ -105,14 +105,40 @@ describe('UserTool', () => {
     })
 
     test('Save', async () => {
-        const input:User = new User(jcUserId, jcHash)
+        const existingUser:User = new User(jcUserId, jcHash)
         // Saving an existing user without overwrite should fail
-        await expect(UserDao.save(input)).rejects.toEqual('Cannot save existing user without overwrite')
+        const userDao = new UserDao()
+        await expect(userDao.save(existingUser)).rejects.toEqual('Cannot save existing user without overwrite')
+
+        // generate random email
+        const newEmail = Math.random().toString(36).substring(7) + '@test.com'
+
+        // Save a brand new user
+        const oldName = 'oldName'
+        const newName = 'newName'
+        const newHash = UserTools.createUserSha('test', newEmail)
+        const newUser:User = new User(0, newHash)
+        newUser.setEmail(newEmail)
+        newUser.setName(oldName);
+        await userDao.save(newUser).then( (user:User) => {
+            expect(user.id).toBeGreaterThan(0)
+            expect(user.email).toBe(newEmail)
+            expect(user.sha256).toBe(newHash)
+
+            // overwritte this user
+            const userId = user.id
+            user.setName(newName);
+            userDao.save(user, true).then( (user:User) => {
+                expect(user.id).toBe(userId)
+                expect(user.name).toBe(newName)
+            })
+        })
     })
 })
 
 describe('UserMiniView', () => {
     test('fromHash', async () => {
+        const userJc:User|undefined = await UserDao.getUserFromHash(jcHash)
         const umv:UserMiniView|undefined = await UserMiniView.fromHash(jcHash)
         testJcUmv(umv)
     })

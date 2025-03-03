@@ -29,7 +29,8 @@ export class UserTools {
         if(dbUser) return dbUser;
         
         // new user => creation
-        return await UserDao.save(user);
+        const userDao = new UserDao()
+        return await userDao.save(user);
     }
     
     static createUserSha(source:string, email:string) {
