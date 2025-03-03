@@ -1,5 +1,9 @@
-## 03/02/2025 5100
+## 03/02/2025
+1) 5100
 * Added ILS Loc to airport frequencies
+2) 5101
+* Returning Page Credits in user view
+* Enabled new pricings
 ## 02/28/2025 5093
 * Reading user from header or param
 ## 02/27/2025 5092
