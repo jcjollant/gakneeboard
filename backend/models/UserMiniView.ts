@@ -8,10 +8,11 @@ import { User } from './User'
 export class UserMiniView {
     sha256: string;
     name: string;
-    maxPages: number;
-    maxTemp: number;
+    maxPages: number; // max pages per template
+    maxTemp: number; // mex templates
     templates: Template[];
     accountType: AccountType;
+    printCredits: number;
 
     constructor(user:User, templates:Template[]) {
         this.sha256 = user.sha256;
@@ -20,6 +21,7 @@ export class UserMiniView {
         this.maxTemp = user.maxTemplates;
         this.templates = templates;
         this.accountType = user.accountType;
+        this.printCredits = user.printCredits;
     }
 
     static fromHash(hash: string):Promise<UserMiniView|undefined> {
