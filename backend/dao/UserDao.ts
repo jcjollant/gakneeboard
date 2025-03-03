@@ -3,19 +3,31 @@ import { User } from '../models/User'
 import { Dao } from './Dao';
 import { AccountType } from '../models/AccountType';
 
-export class UserDao extends Dao {
+export class UserDao extends Dao<User> {
+    protected tableName: string = 'users';
     static modelVersion:number = 2;
 
-    constructor() {
-        super('users')
+    public async addPrints(user:User, count: number):Promise<User> {
+        return new Promise<User>(async (resolve, reject) => {
+            // console.log('[UserDao.addPrints]', query)
+            try {
+                const query = `UPDATE ${this.tableName} SET print_credit = print_credit + ${count} WHERE id = ${user.id} RETURNING *`;
+                const res = await this.db.query(query)
+                resolve( this.parseRow(res.rows[0]) )
+            } catch (err) {
+                console.log('[UserDao.addPrints] error ' + err)
+                reject(err)
+            }
+        })
     }
 
     public getAll():Promise<User[]> {
+        const dao = new UserDao()
         return new Promise( async (resolve, reject) => {
             const result = await sql`SELECT id,sha256,data FROM users`;
             const users:User[] = []
             for(const row of result.rows) {
-                users.push(UserDao.parseRow(row))
+                users.push(dao.parseRow(row))
             }
             resolve(users)
         })
@@ -37,23 +49,25 @@ export class UserDao extends Dao {
         return result.rows[0].id
     }
 
-    public static getUserFromCustomerId(customerId:string):Promise<User> {
+    public getUserFromCustomerId(customerId:string):Promise<User> {
+        const dao = new UserDao()
         return new Promise<User>(async (resolve, reject) => {
-            const result = await sql`SELECT * FROM users WHERE customer_id=${customerId}`;
-            if( result.rowCount != 1) reject('Unexpected user count ' + result.rowCount)
-            resolve(UserDao.parseRow(result.rows[0]))
+            const result = await this.db.query(`SELECT * FROM ${this.tableName} WHERE customer_id='${customerId}'`);
+            if( result.rowCount != 1) return reject('Unexpected user count ' + result.rowCount + ' customer_id' + customerId)
+            resolve(dao.parseRow(result.rows[0]))
         })
     }
 
     // builds a user using the sha256 as a key
     public static async getUserFromHash(sha256:string):Promise<User | undefined> {
+        const dao = new UserDao()
         const result = await sql`SELECT * FROM users WHERE sha256=${sha256}`;
         if( result.rowCount == 0) return undefined
-        return UserDao.parseRow(result.rows[0])
+        return dao.parseRow(result.rows[0])
     }
 
     // creates a user from it's data representation
-    public static parseRow(row:any):User {
+    public parseRow(row:any):User {
         // console.log('[UserDao.parseRow]', id, sha256, accountType)
         const user = new User(Number(row.id), row.sha256)
         const data = JSON.parse(row.data)
@@ -63,6 +77,7 @@ export class UserDao extends Dao {
         if(data.maxTemplates) user.setMaxTemplates(data.maxTemplates)
         user.setAccountType(row.account_type)
         user.setCustomerId(row.customer_id)
+        user.setPrintCredits(row.print_credit || 0)
 
         return user
     }
@@ -106,20 +121,20 @@ export class UserDao extends Dao {
     }
 
     // Update and existing user with a new account_type
-    static async updateType(userId:number, accountType: AccountType):Promise<boolean> {
-        if(!userId) {
-            console.log('[UserDao] invalid user id')
-            return false;
-        }
-
-        const result = await sql`UPDATE users SET account_type=${accountType} WHERE id=${userId}`
-        const success = result.rowCount == 1;
-
-        if(!success) {
-            console.log( '[UserDao.updateType] ' + userId + ' to: ' + accountType + ' success: ' + success)
-        }
-
-        return success
+    public updateType(userId:number, accountType: AccountType):Promise<void> {
+        return new Promise<void>(async (resolve, reject) => {
+            try {
+                const result = await sql`UPDATE users SET account_type=${accountType} WHERE id=${userId}`
+                if(result.rowCount == 1) {
+                    resolve()
+                } else {
+                    reject('Matching users ' + result.rowCount)
+                }
+            } catch(err) {
+                console.log( '[UserDao.updateType] ' + userId + ' to: ' + accountType + ' failed ' + err)
+                reject(err)
+            }
+        })
     }
 
 }
