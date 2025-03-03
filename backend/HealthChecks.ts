@@ -85,7 +85,7 @@ export class HealthCheck {
 
     static async environmentVariables():Promise<Check> {
         const checks:Check[] = []
-        const envVars:string[] = ['STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET', 'STRIPE_PP1_PRICE', 'STRIPE_IP1_PRICE']
+        const envVars:string[] = ['STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET', 'STRIPE_HH1_PRICE', 'STRIPE_BD1_PRICE']
 
         const check:Check = new Check("Environment Variables")
         for(const envVar of envVars) {
@@ -132,9 +132,6 @@ export class HealthCheck {
         return Promise.all([
                 HealthCheck.effectiveDateCheck(), 
                 HealthCheck.environmentVariables(),
-                HealthCheck.usersCheck(),
-                // HealthCheck.feedbackCheck(),
-                // HealthCheck.sheetsCheck(),
                 HealthCheck.airportDuplicatesCheck(),
                 HealthCheck.availablePublicationsCheck()
             ]).then( async allChecks => {
@@ -154,32 +151,4 @@ export class HealthCheck {
         })
     
     }
-
-    /**
-     * Look for unhealthy user accounts such as maxed out templates
-     * @returns 
-     */
-    static async usersCheck():Promise<Check> {
-        const check:Check = new Check('users')
-        const templatesByUser = await TemplateDao.countByUser()
-        // what is the max number of templates per user
-        const users = await new UserDao().getAll();
-        const usersCount:number = users.length
-
-        // which users are at of over the maximum?
-        const maxedOut = templatesByUser.map( ([userId, count]) => {
-            const user:User|undefined = users.find( (user:User) => user.id == userId)
-            if(!user) return [userId, count, 0]
-            // Use default to maxtemplate if none is provided
-            if(!user.maxTemplates) return [userId, count, User.defaultMaxTemplates]
-            return [userId, count, user.maxTemplates]
-        }).filter( ([userId,count,max]) => count >= max)
-
-        if( maxedOut.length > 0) {
-            check.fail("Found " + maxedOut.length + " users with maxed out templates")
-        } else {
-            check.pass( "We have " + usersCount + " healthy users")
-        }
-        return check
-    }   
 }
