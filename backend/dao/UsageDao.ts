@@ -12,10 +12,7 @@ export class UsageByType {
     count:number = 0
 }
 
-export class UsageDao extends Dao {
-    constructor() {
-        super('usage')
-    }
+export class UsageDao {
 
     public static async create(type:UsageType, userId:number|undefined=undefined, data:string|undefined=undefined):Promise<Boolean> {
         // const dao = new UsageDao()
