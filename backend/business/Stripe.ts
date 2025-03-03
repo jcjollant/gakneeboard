@@ -4,16 +4,21 @@ import { SubscriptionDao } from '../dao/SubscriptionDao'
 import { AccountType } from '../models/AccountType'
 import { Stripe } from 'stripe'
 import { Email, EmailType } from '../Email'
+import { Business } from './Business'
+import { sql } from '@vercel/postgres'
 
 const planUrl = '/plans'
 // const pp1Price = 'price_1Qg0c7G89XrbqGAIJQAwl2HW'
-const pp1Price = process.env.STRIPE_PP1_PRICE;
-const pp2Price = process.env.STRIPE_PP2_PRICE;
-const ip1Price = process.env.STRIPE_IP1_PRICE;
-const ip2Price = process.env.STRIPE_IP2_PRICE;
+// const pp1Price = process.env.STRIPE_PP1_PRICE;
+// const pp2Price = process.env.STRIPE_PP2_PRICE;
+// const ip1Price = process.env.STRIPE_IP1_PRICE;
+// const ip2Price = process.env.STRIPE_IP2_PRICE;
+const hh1Price = process.env.STRIPE_HH1_PRICE;
+const bd1Price = process.env.STRIPE_BD1_PRICE;
 const ff1Price = 'free';
 const SUB_UPDATE = 'customer.subscription.updated';
 const SUB_DELETE = 'customer.subscription.deleted';
+const CHECKOUT_COMPLETE = 'checkout.session.completed'
 
 export class StripeClient {
     private static _instance: StripeClient;
@@ -53,7 +58,7 @@ export class StripeClient {
                     await UserDao.updateCustomerId(user)
                 }
 
-                const priceId = this.priceIdFromProduct(product)
+                const price = this.priceFromProduct(product)
                 const successUrl = source.replace(planUrl,'/thankyou')
                 const cancelUrl = source.replace(planUrl,'/')
                 // const eventId = PaymentEventDao.create(userId, priceId)
@@ -61,15 +66,15 @@ export class StripeClient {
                 const session = await this.stripe.checkout.sessions.create({
                     line_items: [
                         {
-                            price : priceId, 
+                            price : price.id, 
                             quantity: 1,
                         }
                     ],
                     customer: user.customerId,
-                    mode: 'subscription',
+                    mode: price.subscription ? 'subscription' : 'payment',
                     success_url: successUrl,
                     cancel_url: cancelUrl,
-                    allow_promotion_codes: true,
+                    allow_promotion_codes: false,
                 })
                 // return url if it's not null
                 if(!session.url) throw new Error('Session url is null')
@@ -128,11 +133,29 @@ export class StripeClient {
                     const cancelAt = event.data.object.cancel_at;
                     const endedAt = event.data.object.ended_at
                     if(event.type == SUB_DELETE) {
-                        await SubscriptionDao.updateEndedAt(subscriptionId,endedAt)
+                        await Business.subscriptionStop(subscriptionId, customerId)
                     } else {
-                        await SubscriptionDao.update(subscriptionId, customerId, planId, periodEnd, cancelAt)
+                        const accountType = this.accountTypeFromPrice(planId)
+                        await Business.subscriptionUpdate(subscriptionId, customerId, planId, accountType, periodEnd, cancelAt, endedAt)
                     }
-                    await this.updateAccountType(customerId, planId, endedAt)
+                } else if(event.type == CHECKOUT_COMPLETE) {
+                    // console.log('[Stripe.webhook]', JSON.stringify(event.data))
+                    sql`INSERT INTO stripe_events (type, stripe_id, data) VALUES (${event.type}, ${event.data.object.id}, ${JSON.stringify(event.data.object)})`
+                    // console.log('[Stripe.webhook]', JSON.stringify(event.type), now)
+                    if(!event.data.object.subscription) { // not a subscription
+                        // console.log('[Stripe.webhook] non subscription checkout complete', event.data.object.id)
+                        const sessionId = event.data.object.id;
+                        const customerId = String(event.data.object.customer);
+                        await this.stripe.checkout.sessions.listLineItems(sessionId).then( async (li)=> {
+                            const priceId = li.data[0].price?.id
+                            console.log('[Stripe.webhook] priceId', priceId)
+                            if( priceId == hh1Price) {
+                                await Business.purchasePrints(customerId)
+                            } else {
+                                console.log('[Stripe.webhook] unexpected priceId', priceId)
+                            }
+                        })
+                    }
                 }
             } catch(err) {
                 console.log('[Stripe.webhook] ' + err)
@@ -146,52 +169,43 @@ export class StripeClient {
 
     accountTypeFromPrice(planId: string) {
         switch(planId) {
-            case pp1Price: 
-            case pp2Price: 
-                return AccountType.private;
-            case ip1Price: 
-            case ip2Price: 
-                return AccountType.instrument;
+            // case pp1Price: 
+            // case pp2Price: 
+            //     return AccountType.private;
+            // case ip1Price: 
+            // case ip2Price: 
+            //     return AccountType.instrument;
+            case bd1Price: return AccountType.beta;
+            case hh1Price: return AccountType.hobbs;
             case ff1Price: return AccountType.simmer;
             default: return AccountType.unknown;
         }
     }
  
-    priceIdFromProduct(product:string):string {
-        console.log('[Stripe.priceIdFromProduct]', product)
+    priceFromProduct(product:string):Price {
+        // console.log('[Stripe.priceIdFromProduct]', product)
         let price:string|undefined
         switch(product.toLowerCase()) {
-            case 'pp1': price = pp1Price; break;
-            case 'pp2': price = pp2Price; break;
-            case 'ip1': price = ip1Price; break;
-            case 'ip2': price = ip2Price; break;
-            case 'ff1': price = ff1Price; break;
+            // case 'pp1': price = pp1Price; break;
+            // case 'pp2': price = pp2Price; break;
+            // case 'ip1': price = ip1Price; break;
+            // case 'ip2': price = ip2Price; break;
+            // case 'ff1': return new Price( ff1Price, true);
+            case 'hh1': 
+                return new Price( hh1Price, false);
+            case 'bd1': 
+                return new Price( bd1Price, true);
             default: throw new Error('Product not found');
         }
-        if(!price) throw new Error('Price not found');
-        return price;
     }
+}
 
-
-    async updateAccountType(customerId:string,planId:string,endedAt:number|null):Promise<boolean> {
-        if(!customerId) return false;
-
-        // determine account type from end data and plan
-        const newAccountType = endedAt ? AccountType.simmer : this.accountTypeFromPrice(planId);
-
-        let success = false;
-        await UserDao.getUserFromCustomerId(customerId).then( async (user) => {
-            if(user.accountType != newAccountType) {
-                await UserDao.updateType(user.id, newAccountType).then( async () => {
-                    const message = 'user ' + user.id + ' updated to ' + newAccountType
-                    console.log('[Stripe.updateAccountType]', message)
-                    await Email.send(message,EmailType.AccountType)
-                })
-            }
-            success = true
-        }).catch( (err) => {
-            console.log('[Stripe.updateAccountType] failed ' + err)
-        })
-        return success;
+class Price {
+    id:string;
+    subscription:boolean;
+    constructor(priceId:string|undefined, subscription:boolean) {
+        if(!priceId) throw new Error('Price id missing');
+        this.id = priceId;
+        this.subscription = subscription;
     }
 }
