@@ -18,6 +18,11 @@ cd housekeeping
 ts-node .\willie.ts
 ts-node .\waylon.ts
 ```
+
+## Testing Stripe client
+With Stripe client
+C:\src>stripe listen --forward-to localhost:3000/stripe/webhook
+
 ## Manual Data backup
 Open pgAdmin 4
 Select Table
