@@ -4,7 +4,7 @@ export enum EmailType {
     Metrics = 0,
     Housekeeping = 1,
     Feedback = 2,
-    AccountType = 3,
+    Purchase = 3,
 }
 
 export class Email {
@@ -37,7 +37,7 @@ export class Email {
                 subject = 'Feedback'; 
                 identity = 'Ned';
                 break;
-            case EmailType.AccountType:
+            case EmailType.Purchase:
                 // Apu Nahasapeemapetilon watches the store
                 subject = 'Account Type';
                 identity = 'Apu';
