@@ -1,21 +1,41 @@
-import { sql } from "@vercel/postgres";
+import { sql, VercelPool } from "@vercel/postgres";
 
-export class Dao {
-    protected table:string = ''
-    constructor(table: string) {
-        this.table = table
-        // console.log('[Dao.constructor]', this.table)
+export abstract class Dao<T> {
+    protected abstract tableName:string;
+    protected db:VercelPool;
+
+    constructor() {
+        this.db = sql;
     }
 
-    public async count():Promise<number> {
+    public count():Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
-            const query = "SELECT COUNT(*) FROM " + this.table;
+            const query = `SELECT COUNT(*) FROM ${this.tableName}`;
             // console.log('[Dao.count]', query)
-            sql.query(query)
-                .then( res => {
-                    resolve(Number(res.rows[0].count))
-                })
-                .catch( err => reject(err))
+            try {
+                const res = await this.db.query(query)
+                resolve( Number(res.rows[0]?.count || 0))
+            } catch (err) {
+                console.log('[Dao.count] error ' + err)
+                reject(err)
+            }
         })
     }
+
+    public get(id:number):Promise<T> {
+        return new Promise<T>(async (resolve, reject) => {
+            const query = `SELECT * FROM ${this.tableName} WHERE id = ${id}`;
+            // console.log('[Dao.get]', query)
+            try {
+                const res = await this.db.query(query)
+                resolve( this.parseRow(res.rows[0]) )
+            } catch (err) {
+                console.log('[Dao.get] error ' + err)
+                reject(err)
+            }
+        })
+    }
+
+    // Return a new instance of the child class
+    public abstract parseRow(row:any):T;
 }
