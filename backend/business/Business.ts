@@ -19,10 +19,10 @@ export class Business {
         }
     }
     
-    static async purchasePrints(customerId:string, count:number):Promise<User> {
+    static async purchasePrints(customerId:string):Promise<User> {
         return new Promise( async (resolve, reject) => {
+            const count = 25
             if(!customerId) return reject('Customer Id is required');
-            if(!count) return reject('Count is required');
 
             const userDao = new UserDao()
             userDao.getUserFromCustomerId(customerId).then( async (user) => {
@@ -46,9 +46,9 @@ export class Business {
         await Business.updateAccountType(customerId, AccountType.simmer)
     }
 
-    static async subscriptionUpdate(subscriptionId: string, customerId: string, planId:string, newAccountType: AccountType, periodEnd: number, cancelAt: number | null) {
+    static async subscriptionUpdate(subscriptionId: string, customerId: string, planId:string, newAccountType: AccountType, periodEnd: number, cancelAt: number | null, endedAt:number|null) {
         // console.log('[Business.subscriptionUpdate]', customerId, subscriptionId, planId, newAccountType, periodEnd, cancelAt)
-        await SubscriptionDao.update(subscriptionId, customerId, planId, periodEnd, cancelAt)
+        await SubscriptionDao.update(subscriptionId, customerId, planId, periodEnd, cancelAt, endedAt)
         await Business.updateAccountType(customerId, newAccountType)
     }
 
