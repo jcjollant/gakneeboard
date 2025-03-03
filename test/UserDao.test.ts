@@ -14,13 +14,13 @@ describe('UserDao', () => {
     })
 
     test('getIdFromHash', async () => {
-        UserDao.getIdFromHash(jcHash).then(id => {
+        await UserDao.getIdFromHash(jcHash).then(id => {
             expect(id).toEqual(jcUserId)
         })
     })
 
     test('getUserFromHash', async () => {
-        UserDao.getUserFromHash(jcHash).then(user => {
+        await UserDao.getUserFromHash(jcHash).then(user => {
             expect(user?.id).toEqual(jcUserId)
             expect(user?.sha256).toEqual(jcHash)
             expect(user?.name).toEqual(jcName)
@@ -37,8 +37,10 @@ describe('UserDao', () => {
         const maxTemplates = 12
         const customerId = 'someCustomerId'
         const data:string = JSON.stringify( {name:name,source:source,email:email,maxTemplates:maxTemplates})
-        const row = {id:1, sha256:'sha', data:data, account_type:AccountType.beta, customer_id: customerId}
-        const user:User = UserDao.parseRow(row)
+        const printCredits = 100
+        const row = {id:1, sha256:'sha', data:data, account_type:AccountType.beta, customer_id: customerId, print_credit: printCredits}
+        const userDao = new UserDao();
+        const user:User = userDao.parseRow(row)
         expect(user.id).toBe(1)
         expect(user.sha256).toBe('sha')
         expect(user.name).toBe(name)
@@ -47,7 +49,19 @@ describe('UserDao', () => {
         expect(user.maxTemplates).toBe(maxTemplates)
         expect(user.accountType).toBe(AccountType.beta)
         expect(user.customerId).toBe(customerId)
+        expect(user.printCredits).toBe(printCredits)
     })
 
+    test('Add Prints', async () => {
+        const userDao = new UserDao();
+        const addedCredits = 10;
+        await userDao.get(jcUserId).then( async (jc) => {
+            const initialPrintCredits = jc.printCredits;
+            expect(jc.id).toBe(jcUserId)
+            await userDao.addPrints(jc, addedCredits).then( async (jc) => {
+                expect(jc.printCredits).toBe(initialPrintCredits+addedCredits)
+            })
+        })
+    })
 });
 

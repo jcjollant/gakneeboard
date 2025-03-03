@@ -19,7 +19,7 @@ describe('SubscriptionDao', () => {
             period_end: now.getTime() / 1000,
             ended_at: null
         }
-        const subscription = SubscriptionDao.parseRow(row)
+        const subscription = new SubscriptionDao().parseRow(row)
         expect(subscription.id).toBe(subId);
         expect(subscription.customerId).toBe(someCustomerId);
         expect(subscription.planId).toBe(somePlanId);

@@ -164,7 +164,7 @@ describe('Custom Templates', () => {
             })
     })
 
-    test('Count by User', async() => {
+    test('Count by User', async () => {
 
         wipeTemplates()
 
