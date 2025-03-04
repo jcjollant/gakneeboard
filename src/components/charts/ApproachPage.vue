@@ -2,17 +2,15 @@
     <div class="contentPage approachPage">
         <Header :title="title" :page="true" :displayMode="false"
             @replace="emits('replace')" @click="toggleEditMode"></Header>
-        <div v-if="editMode">
-            <div class="editMode">
-                <AirportInput label="Airport Code" :page="true" v-model="airport"/>
-                <div v-if="selectedPdf && airport.isValid()" class="currentSelection">
-                    <div>Selected Approach</div>
-                    <a :href="UserUrl.dtpp + selectedPdf" target="_blank">{{ airport['iap'][selectedIndex]['name'] }}</a>
-                </div>
-                <div v-if="airport.isValid()" class="list">
-                    <FAButton v-for="(iap,index) in airport['iap']" :label="iap['name']" icon="plane-arrival"
-                        @click="onSelection(index)"/>
-                </div>
+        <div v-if="editMode" class="editMode">
+            <AirportInput label="Airport Code" :page="true" v-model="airport"/>
+            <div v-if="selectedPdf && airport.isValid()" class="currentSelection">
+                <div>Selected Approach</div>
+                <a :href="UserUrl.dtpp + selectedPdf" target="_blank">{{ airport['iap'][selectedIndex]['name'] }}</a>
+            </div>
+            <div v-if="airport.isValid()" class="list">
+                <FAButton v-for="(iap,index) in airport['iap']" :label="iap['name']" icon="plane-arrival"
+                    @click="onSelection(index)"/>
             </div>
         </div>
         <div v-else class="viewMode">
@@ -121,14 +119,18 @@ function toggleEditMode() {
     text-align: left;
 }
 .editMode {
-    padding: 5px;
+    display: flex;
+    flex-flow: column;
+    padding: 10px;
+    gap: 10px;
+    height: var(--page-content);
 }
 .list {
     display: flex;
     flex-flow: column;
-    padding: 10px;
     gap:10px;
-    padding-top: 20px;
+    height: 100%;
+    overflow: auto;
 }
 .viewMode {
     width: calc(var(--page-width)-1);
