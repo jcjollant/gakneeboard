@@ -1,3 +1,5 @@
+## 03/03/2025 5102
+* Adjusted metrics
 ## 03/02/2025
 1) 5100
 * Added ILS Loc to airport frequencies
