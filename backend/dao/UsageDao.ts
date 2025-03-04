@@ -1,5 +1,6 @@
-import { db, sql } from "@vercel/postgres";
+import { db, sql, VercelPoolClient } from "@vercel/postgres";
 import { Dao } from "./Dao";
+import { Usage } from "../models/Usage";
 
 export enum UsageType {
     Export = 'export',
@@ -12,7 +13,9 @@ export class UsageByType {
     count:number = 0
 }
 
-export class UsageDao {
+export class UsageDao extends Dao<Usage> {
+    protected tableName: string = 'usage';
+
 
     public static async create(type:UsageType, userId:number|undefined=undefined, data:string|undefined=undefined):Promise<Boolean> {
         // const dao = new UsageDao()
@@ -29,9 +32,9 @@ export class UsageDao {
         })
     }
 
-    public static async countByType():Promise<UsageByType[]> {
+    public async countByType():Promise<UsageByType[]> {
         return new Promise<UsageByType[]>(async (resolve, reject) => {
-            sql`SELECT usage_type,COUNT(*) FROM usage GROUP BY usage_type`
+            this.db.query(`SELECT ${this.tableName}, COUNT(*) FROM usage GROUP BY usage_type`)
                 .then( res => {
                     const output:UsageByType[] = []
                     for( const row of res.rows) {
@@ -49,31 +52,46 @@ export class UsageDao {
      * @param days 
      * @returns 
      */
-    public static async countTypeSince(type:string, days:number) {
+    public async countTypeSince(type:string, days:number) {
         return new Promise<number>(async (resolve, reject) => {
-            const client = await db.connect()
-            client.query(`SELECT COUNT(*) FROM usage WHERE usage_type='${type}' AND create_time > current_date - ${days} GROUP BY user_id`)
+            this.db.query(`SELECT COUNT(*) FROM ${this.tableName} WHERE usage_type='${type}' AND create_time > (current_date - ${days})`)
             // client.query("SELECT user_id FROM usage WHERE user_id NOTNULL AND usage_type='session' AND create_time > current_date - " + days + " GROUP BY user_id")
                 .then( res => {
                     // resolve with the returned count
                     if(res.rows.length == 0) resolve(0)
                     else resolve(Number(res.rows[0].count))
-                    client.release()
                 })
                 .catch( err => reject(err))
         })
     }
 
-    public static async countTypeByUserSince(type:string, days:number) {
+    public async countTypeByUserSince(type:string, days:number):Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
-            const client = await db.connect()
-            client.query(`SELECT user_id FROM usage WHERE user_id NOTNULL AND usage_type='${type}' AND create_time > current_date - ${days} GROUP BY user_id`)
+            this.db.query(`SELECT user_id FROM ${this.tableName} WHERE user_id NOTNULL AND usage_type='${type}' AND create_time > current_date - ${days} GROUP BY user_id`)
             // client.query("SELECT user_id FROM usage WHERE user_id NOTNULL AND usage_type='session' AND create_time > current_date - " + days + " GROUP BY user_id")
                 .then( res => {
                     resolve(Number(res.rows.length))
-                    client.release()
                 })
                 .catch( err => reject(err))
         })
     }
+
+    public async getTypeSince(type:string, days:number):Promise<Usage[]> {
+        return new Promise<Usage[]>(async (resolve, reject) => {
+            this.db.query(`SELECT * FROM usage WHERE usage_type='${type}' AND create_time > current_date - ${days}`)
+                .then( res => {
+                    const output = res.rows.map( this.parseRow)
+                    resolve(output)
+                })
+                .catch( err => reject(err))
+        })
+    }
+
+    public parseRow(row:any):Usage {
+        // console.log('[UserDao.parseRow]', id, sha256, accountType)
+        const usage = new Usage(row.user_id, row.data, row.usage_type)
+
+        return usage
+    }
+
 }
