@@ -1,4 +1,4 @@
-import { sql } from  "@vercel/postgres";
+import { db, sql } from  "@vercel/postgres";
 import { Adip } from "./Adip";
 
 export class AdipDao {
@@ -10,6 +10,13 @@ export class AdipDao {
 
     public static async count():Promise<number> {
         const result = await sql`SELECT count(*) FROM Adip`;
+        return Number(result.rows[0].count)
+    }
+
+    public static async countSince(days:number):Promise<number> {
+        const client = await db.connect()
+        const result = await client.query(`SELECT count(*) FROM adip WHERE create_time > (current_date - ${days})`);
+        client.release()
         return Number(result.rows[0].count)
     }
 
