@@ -1,4 +1,4 @@
-import { feltsTitle, boeingTitle, radioTitle, notesTitle, atisTitle, loadDemo, visitSkipBanner, environment,
+import { feltsTitle, boeingTitle, radioTitle, notesTitle, atisTitle, loadDemo, maintenanceMode, visitSkipBanner, environment,
  demoChecklistOnPage, demoTilesOnPage, departureTitle,expectToast, selectionTitle} from './shared'
 
 function deletePage(index, force=false) {
@@ -23,6 +23,7 @@ describe('Editor', () => {
   it('Copy/Paste', () => {
     visitSkipBanner()
     cy.viewport('macbook-16')
+    maintenanceMode()
 
     // reload demo
     reloadDemoWithEditor()
@@ -89,6 +90,8 @@ describe('Editor', () => {
   it('Editor', () => {
     cy.viewport('macbook-16')
     visitSkipBanner()
+    maintenanceMode()
+
     // enable editor
     reloadDemoWithEditor()
 
@@ -222,6 +225,7 @@ describe('Editor', () => {
   it('Swaps', () => {
     visitSkipBanner()
     cy.viewport('macbook-16')
+    maintenanceMode()
 
     // reload demo
     reloadDemoWithEditor()

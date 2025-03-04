@@ -19,22 +19,22 @@ describe('Approach Page', () => {
 
     // by default, we should be in edit mode
     cy.get('.page0 > .headerTitle').contains('Instrument Approach')
-    cy.get('.page0 > :nth-child(2) > .editMode > .airportCode')
+    cy.get('.page0  .editMode > .airportCode')
     cy.get('.page1 > .headerTitle').contains('Instrument Approach')
-    cy.get('.page1 > :nth-child(2) > .editMode > .airportCode')
+    cy.get('.page1  .editMode > .airportCode')
 
     // we should not be able to exit edit mode until we have a valid airport
     cy.get('.page0 > .headerTitle').click()
-    cy.get('.page0 > :nth-child(2) > .editMode > .airportCode')
+    cy.get('.page0  .editMode > .airportCode')
 
 
     // Bogus airport should not allow toggle
-    cy.get('.page0 > :nth-child(2) > .editMode > .airportCode > .p-inputgroup > .p-inputtext').type('{selectall}').type('KJC')
+    cy.get('.page0 .editMode > .airportCode > .p-inputgroup > .p-inputtext').type('{selectall}').type('KJC')
     cy.get('.page0 > .headerTitle').click()
-    cy.get('.page0 > :nth-child(2) > .editMode > .airportCode')
+    cy.get('.page0 .editMode > .airportCode')
 
     // Valid airport should show all approaches
-    cy.get('.page0 > :nth-child(2) > .editMode > .airportCode > .p-inputgroup > .p-inputtext').type('{selectall}').type('KRNT')
+    cy.get('.page0 .editMode > .airportCode > .p-inputgroup > .p-inputtext').type('{selectall}').type('KRNT')
     cy.intercept({
       method: 'GET',
       url: '**/05396RY16.PDF',
