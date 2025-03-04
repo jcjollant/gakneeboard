@@ -21,7 +21,7 @@
           <h3>{{ plan.name }}</h3>
           <div class="price">
             <span class="amount">${{ plan.price}}</span>
-            <span class="period" v-if="plan.annual">/month</span>
+            <span class="period" v-if="plan.monthly">/month</span>
           </div>
           <p class="description">{{ plan.subtitle }}</p>
           <p class="description">{{ plan.description }}</p>
@@ -56,7 +56,7 @@
         </div>
       </div>
     </div>
-    <div></div>
+    <div>(*) Manual Refill 20 page $5 comming Soon</div>
   </div>
 </template>
 
@@ -79,36 +79,53 @@ const plans = ref([
     name: "Flight Simmer",
     subtitle: "We've been there",
     price: 0,
-    annual: false,
+    monthly: false,
     description: "Every penny counts",
     features: {
-      "Prints: 5 pages": true,
-      "2 Templates": true,
+      "Prints: 2 pages": true,
+      "Auto Refill: Weekly (*)": true,
+      "2 Templates x 2 Pages": true,
       "Airport Data Update": false,
     },
     popular: false,
     active: true,
     code: Pricing.simmer
   },
+  // {
+  //   name: "Hobbs Hugger",
+  //   price: 5,
+  //   monthly: false,
+  //   subtitle: "No Commitment!",
+  //   description: "Best for infrequent use",
+  //   features: {
+  //     "Prints: 25 pages": true,
+  //     "5 Templates": true,
+  //     "Airport Data Update": true,
+  //   },
+  //   popular: false,
+  //   active: true,
+  //   code: Pricing.hobbs
+  // },
   {
-    name: "Hobbs Hugger",
-    price: 5,
-    annual: false,
-    subtitle: "No Commitment!",
-    description: "Best for infrequent use",
+    name: "Private Pilot",
+    price: 2.99,
+    monthly: true,
+    subtitle: "Low Commitment",
+    description: "Best for Regular users",
     features: {
-      "Prints: 25 pages": true,
-      "5 Templates": true,
+      "Prints: 20 pages": true,
+      "Auto Refill: Monthly (*)": true,
+      "5 Templates x 2 Pages": true,
       "Airport Data Update": true,
     },
     popular: false,
-    active: true,
+    active: false,
     code: Pricing.hobbs
   },
   // {
   //   name: "Instrument Pilot",
   //   monthly: 8.99,
-  //   annual: 7.99,
+  //   monthly: 7.99,
   //   description: "For power users",
   //   features: {
   //     "25 Templates of 10 pages": true,
@@ -123,17 +140,18 @@ const plans = ref([
   // },
   {
     name: "The Beta Deal",
-    price: 3.99,
-    annual: true,
-    subtitle: "Charged $47.88/year",
+    price: 3.49,
+    monthly: true,
+    subtitle: "Charged $41.88/year",
     description: "Limited Time Deal",
     features: {
       "Prints: Unlimited": true,
-      "10 Templates": true,
+      "Auto Refill: Unlimited": true,
+      "10 Templates x 5 Pages": true,
       "Airport Data Update": true,
     },
     popular: true,
-    active: true,
+    active: false,
     code: Pricing.betaDeal
   }
 ])
