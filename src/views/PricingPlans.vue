@@ -1,6 +1,6 @@
 <!-- PricingPlans.vue -->
 <template>
-        <Menu></Menu>
+  <Menu></Menu>
   <div class="pricing-container">
     <div class="pricing-header">
       <h2>Simple, Transparent Pricing</h2>
@@ -56,6 +56,7 @@
         </div>
       </div>
     </div>
+    <div></div>
   </div>
 </template>
 
@@ -81,8 +82,8 @@ const plans = ref([
     annual: false,
     description: "Every penny counts",
     features: {
-      "Prints: 2 pages/week": true,
-      "2 Templates of 2 pages": true,
+      "Prints: 5 pages": true,
+      "2 Templates": true,
       "Airport Data Update": false,
     },
     popular: false,
@@ -96,12 +97,12 @@ const plans = ref([
     subtitle: "No Commitment!",
     description: "Best for infrequent use",
     features: {
-      "Print Credit: 25 pages": true,
-      "5 Templates of 2 pages": true,
+      "Prints: 25 pages": true,
+      "5 Templates": true,
       "Airport Data Update": true,
     },
     popular: false,
-    active: false,
+    active: true,
     code: Pricing.hobbs
   },
   // {
@@ -127,12 +128,12 @@ const plans = ref([
     subtitle: "Charged $47.88/year",
     description: "Limited Time Deal",
     features: {
-      "Print Credit: Unlimited": true,
-      "10 Templates of 10 pages": true,
+      "Prints: Unlimited": true,
+      "10 Templates": true,
       "Airport Data Update": true,
     },
     popular: true,
-    active: false,
+    active: true,
     code: Pricing.betaDeal
   }
 ])
@@ -200,7 +201,7 @@ function onPlan(code:Pricing) {
 }
 
 .plan-card {
-  border: 1px solid #E5E7EB;
+  border: 1px solid lightgrey;
   border-radius: 0.5rem;
   display: flex;
   flex-direction: column;
