@@ -1,4 +1,8 @@
 # User Experience updates
+## 03/03/2025 5101
+* Print settings recommendations
+* Approaches Improved management of long lists
+* Added print credits to Account Details
 ## 03/02/2025 5100
 * Navaid frequency in Airport Tile corner
 ## 03/01/2025 5098
