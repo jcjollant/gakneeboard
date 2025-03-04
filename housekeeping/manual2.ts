@@ -17,11 +17,14 @@ require('dotenv').config();
 //===================
 // Show Usage metrics
 //===================
-// import { Metrics } from "../backend/Metrics";
+import { Metrics } from "../backend/Metrics";
 // Metrics.usage().then(metrics => {
 //     for(const metric of metrics)
 //         console.log(metric.name, metric.value)
 // })
+Metrics.adip().then(metric => {
+    console.log(metric.name, metric.value)
+})
 
 //============
 // Users Check
@@ -58,11 +61,11 @@ require('dotenv').config();
 
 //====================
 // Page count per user
-import { Metrics } from "../backend/Metrics";
-Metrics.pagePerUser().then( output => {
-    console.log(output)
-    console.log(JSON.stringify(output))
-})
+// import { Metrics } from "../backend/Metrics";
+// Metrics.pagePerUser().then( output => {
+//     console.log(output)
+//     console.log(JSON.stringify(output))
+// })
 
 //====================
 // User Categories
