@@ -63,6 +63,7 @@ import LoadingPage from '../components/page/LoadingPage.vue'
 import Page from '../components/page/Page.vue'
 import TemplateExport from '../components/templates/TemplateExport.vue'
 import TemplateSettings from '../components/templates/TemplateSettings.vue'
+import { RouterNames } from '../router/index.js'
 
 const activeTemplate = ref(null)
 let cssPageGap = -1
@@ -110,6 +111,21 @@ onMounted(() =>{
   window.addEventListener('resize', updateOffsets)
   updateOffsets()
   // window.addEventListener('afterprint', afterPrint)
+  window.onbeforeprint = () => {
+    if(route.name != RouterNames.Print) {
+      confirm.require({
+          message: "Please use the \"Print\" button to access print settings and layout selection.",
+          header: "Print Template",
+          rejectLabel: 'Do Not Print',
+          acceptLabel: "Open Print Template",
+          accept: () => {
+            router.push('/print')
+          }
+        })
+
+      console.log('[Template.onBeforePrint]')
+    }
+  }
 })
 
 onUnmounted(() => {
