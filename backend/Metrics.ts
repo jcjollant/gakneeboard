@@ -1,4 +1,4 @@
-import { sql } from  "@vercel/postgres";
+import { db, sql } from  "@vercel/postgres";
 import { UserDao } from "./dao/UserDao"
 import { FeedbackDao } from "./FeedbackDao"
 import { AirportDao } from "./AirportDao";
@@ -30,6 +30,7 @@ export class Metric {
 
 enum Key {
     adip = 'adip',
+    adip28 = 'adip-28d',
     airportsTotal = 'airports-total',
     airportsValid = 'airports-valid',
     airportsCurrent = 'airports-current',
@@ -50,6 +51,8 @@ enum Key {
     prints = 'prints',
     print7 = 'prints-7d',
     print28 = 'prints-28d',
+    printUser7 = 'printUsers-7d',
+    printUser28 = 'printUsers-28d',
     sessions = 'sessions',
     sessions7 = 'sessions-7d',
     sessions14 = 'sessions-14d',
@@ -79,8 +82,8 @@ enum Key {
 export class Metrics {
 
     static async adip():Promise<Metric> {
-        const adipCount = await AdipDao.count()
-        return new Metric(Key.adip, adipCount)
+        const adipCount = await AdipDao.countSince(28)
+        return new Metric(Key.adip28, adipCount)
     }
 
     static async airports():Promise<Metric[]> {
@@ -94,13 +97,16 @@ export class Metrics {
 
     static async usage():Promise<Metric[]> {
         const usageMetrics:Metric[] = []
-        usageMetrics.push( new Metric(Key.export7, await UsageDao.countTypeByUserSince(UsageType.Export, 7)))
-        usageMetrics.push( new Metric(Key.export28, await UsageDao.countTypeByUserSince(UsageType.Export, 28)))
-        usageMetrics.push( new Metric(Key.print7, await UsageDao.countTypeSince(UsageType.Print, 7)))
-        usageMetrics.push( new Metric(Key.print28, await UsageDao.countTypeSince(UsageType.Print, 28)))
-        usageMetrics.push( new Metric(Key.sessions7, await UsageDao.countTypeByUserSince(UsageType.Session, 7)))
-        usageMetrics.push( new Metric(Key.sessions28, await UsageDao.countTypeByUserSince(UsageType.Session, 28)))
-        
+        const usageDao = new UsageDao();
+        usageMetrics.push( new Metric(Key.export7, await usageDao.countTypeByUserSince(UsageType.Export, 7)))
+        usageMetrics.push( new Metric(Key.export28, await usageDao.countTypeByUserSince(UsageType.Export, 28)))
+        usageMetrics.push( new Metric(Key.print7, await usageDao.countTypeSince(UsageType.Print, 7)))
+        usageMetrics.push( new Metric(Key.print28, await usageDao.countTypeSince(UsageType.Print, 28)))
+        usageMetrics.push( new Metric(Key.printUser7, await usageDao.countTypeByUserSince(UsageType.Print, 7)))
+        usageMetrics.push( new Metric(Key.printUser28, await usageDao.countTypeByUserSince(UsageType.Print, 28)))
+        usageMetrics.push( new Metric(Key.sessions7, await usageDao.countTypeByUserSince(UsageType.Session, 7)))
+        usageMetrics.push( new Metric(Key.sessions28, await usageDao.countTypeByUserSince(UsageType.Session, 28)))
+
         return usageMetrics
     }
 
