@@ -9,7 +9,7 @@ export class Formatter {
 
     static accountType(at:AccountType):string {
         switch(at) {
-            case AccountType.beta: return 'Beta'; break;
+            case AccountType.beta: return 'Beta Deal'; break;
             case AccountType.private: return 'Private Pilot'; break
             case AccountType.instrument: return 'Instrument Pilot'; break;
             case AccountType.simmer: return 'Flight Simmer';
