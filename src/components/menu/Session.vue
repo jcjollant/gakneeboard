@@ -9,7 +9,8 @@
               <UpdateButton @click="onUpdateAccount" :manage="manage"/>
             </div>
             <div class="key">Templates</div><div class="value templatesCount">{{currentUser.templates.length}} / {{ currentUser.maxTemplateCount }}</div>
-            <div class="key">Pages</div><div class="value pagesCount">{{pagesCount}} / {{ currentUser.maxPageCount }}</div>
+            <div class="key">Pages Per Template</div><div class="value pagesCount">{{ currentUser.maxPageCount }}</div>
+            <div class="key">Print Credit</div><div class="value pagesCount">{{ currentUser.printCredits }}</div>
         </div>
         <div class="actions">
           <Button link label="Sign Out" class="btnSignOut" @click="onSignOut"></Button>

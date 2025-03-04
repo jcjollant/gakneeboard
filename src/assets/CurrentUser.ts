@@ -12,6 +12,7 @@ export class CurrentUser {
     maxTemplateCount:number;
     listeners:{(user: CurrentUser):void}[];
     accountType:AccountType;
+    printCredits:number;
 
     constructor() {
       // console.log('[CurrentUser.constructor] constructor called')
@@ -22,6 +23,7 @@ export class CurrentUser {
       this.maxPageCount = 0;
       this.maxTemplateCount = 0;
       this.accountType = AccountType.unknown
+      this.printCredits = 0;
 
       this.listeners = [];
     }
@@ -98,6 +100,9 @@ export class CurrentUser {
           this.sortTemplates()
           this.maxPageCount = Number(data.maxPages ? data.maxPages : 0);
           this.maxTemplateCount = Number(data.maxTemp ? data.maxTemp : 0);
+          this.printCredits = Number(data.printCredits ? data.printCredits : 0)
+
+          // save new user data
           localStorage.setItem(LocalStore.user, JSON.stringify(data))
 
           // notify listeners
