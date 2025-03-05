@@ -2,7 +2,8 @@
     <div class="tile" ref="thisTile">
         <Header :title="getTitle()" :left="!displaySelection && displayMode==DisplayModeAtis.FullATIS && !expanded"
             @replace="emits('replace')" @display="displaySelection=!displaySelection"></Header>
-        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList"  @selection="changeMode" />
+        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList" :expandable="!expanded"
+            @selection="changeMode" @expand="onExpand" />
         <div v-else-if="displayMode==DisplayModeAtis.FullATIS && expanded" class="tileContent">
             <div v-for="n in 4" class="expanded" :class="{'bb': n < 4}">
                 <div class="infoEx br">
@@ -132,20 +133,20 @@ import { ref,onMounted, watch } from 'vue'
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../shared/Header.vue';
 import NoSettings from '../shared/NoSettings.vue'
-import { DisplayModeAtis } from '../../model/DisplayMode';
+import { DisplayModeAtis, DisplayModeChoice } from '../../model/DisplayMode';
 
 // Enum with display modes
 
-const emits = defineEmits(['replace','update'])
+const emits = defineEmits(['replace','update','expand'])
 const defaultMode = DisplayModeAtis.FullATIS
 const displayMode = ref(defaultMode)
 const displaySelection = ref(false)
 const expanded = ref(false)
 const modesList = ref([
-    {label:'Full Size ATIS', value:DisplayModeAtis.FullATIS},
-    {label:'Compact ATIS (x4)', value:DisplayModeAtis.CompactATIS},
-    {label:'Flight Categories', value:DisplayModeAtis.Categories},
-    {label:'Cloud Clearance', value:DisplayModeAtis.CloudClearance}
+    new DisplayModeChoice('Full Size ATIS', DisplayModeAtis.FullATIS, true),
+    new DisplayModeChoice('Compact ATIS (x4)', DisplayModeAtis.CompactATIS),
+    new DisplayModeChoice('Flight Categories', DisplayModeAtis.Categories),
+    new DisplayModeChoice('Cloud Clearance', DisplayModeAtis.CloudClearance),
 ])
 const props = defineProps({
     params: { type: Object, default: null}, // expects {'mode':'compact'}
@@ -205,6 +206,12 @@ function getTitle() {
         default: return 'ATIS @';
     }
 }
+
+function onExpand() {
+    changeMode(DisplayModeAtis.FullATIS)
+    emits('expand')
+}
+
 
 function onHeaderClick() {
     displaySelection.value = ! displaySelection.value

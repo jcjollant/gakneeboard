@@ -2,18 +2,20 @@
     <div class="tiles pageTiles">
         <Tile v-for="(tile,index) in tiles" v-show="!tile.hide" 
           :tile="tile" :class="[{'span-2':tile.span2},`tile${index}`]" 
-          @update="onUpdate" />
+          @update="onUpdate" @expand="onExpand(index, $event)" />
     </div>
 </template>
 
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import { isSameAirportAndRunway, isSameTypeAndMode } from '../../assets/sheetData'
-
-import Tile from './Tile.vue'
 import { TileType } from '../../model/TileType'
 import { DisplayModeAtis, DisplayModeNotes, DisplayModeRadios } from '../../model/DisplayMode'
+import { useConfirm } from "primevue/useconfirm";
 
+import Tile from './Tile.vue'
+
+const confirm = useConfirm()
 const emits = defineEmits(['update'])
 const props = defineProps({
     data: { type: Object, default: null},
@@ -71,6 +73,24 @@ watch( props, async() => {
 
 // end of props management
 
+
+function onExpand(index) {
+  // console.log('[TilePage.onExpand]', index)
+  const message = "This will overwrite tile to the " + ((index % 2) ? 'left' : 'right');
+  confirm.require({
+      message: message,
+      header: "Replace Tile",
+      rejectLabel: 'Do Not Replace',
+      acceptLabel: 'Yes, Replace',
+      accept: () => {
+        // console.log('[TilePage.onExpand] Replace')
+        const to = (index % 2) ? index - 1 : index + 1;
+        const from = JSON.parse( JSON.stringify(tiles.value[index]))
+        tiles.value[to] = from;
+        emits('update', tiles.value)
+      }
+    })
+}
 
 function onUpdate(newTileData) {
   // console.log('[TilePage.onUpdate]', newTileData)

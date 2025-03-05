@@ -3,7 +3,8 @@
         <Header :title="displaySelection ? 'Notes Tile Mode' : 'Notes'"
             :stealth="!displaySelection && displayMode==DisplayModeNotes.Blank" :showReplace="displaySelection"
             @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
-        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" @selection="changeDisplayMode" />
+        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" :expandable
+            @selection="changeDisplayMode" @expand="onExpand" />
         <div v-else-if="displayMode==DisplayModeNotes.Blank" class="tileContent">
             <div class="blank">&nbsp;</div>
         </div>
@@ -17,8 +18,7 @@
 
 <script setup lang="ts">
 import { onMounted, watch, ref } from 'vue'
-import { UserUrl } from '../../lib/UserUrl';
-import { DisplayModeNotes } from '../../model/DisplayMode'; 
+import { DisplayModeChoice, DisplayModeNotes } from '../../model/DisplayMode'; 
 
 import CompassContent from './CompassContent.vue';
 import CraftContent from '../clearance/CraftContent.vue';
@@ -28,23 +28,26 @@ import Header from '../shared/Header.vue';
 // Enum with display modes
 
 const displayMode = ref(DisplayModeNotes.Blank)
-const emits = defineEmits(['replace','update'])
+const emits = defineEmits(['replace','update','expand'])
 const displaySelection = ref(false)
 const displayModes = [
-    {label:'Blank',value:DisplayModeNotes.Blank},
-    {label:'C R A F T',value:DisplayModeNotes.Craft},
-    {label:'Compass',value:DisplayModeNotes.Compass},
-    {label:'Grid',value:DisplayModeNotes.Grid},
+    new DisplayModeChoice('Blank', DisplayModeNotes.Blank, true),
+    new DisplayModeChoice('C R A F T',DisplayModeNotes.Craft),
+    new DisplayModeChoice('Compass',DisplayModeNotes.Compass),
+    new DisplayModeChoice('Grid',DisplayModeNotes.Grid),
 ]
 // Props management
 const props = defineProps({
     params: { type: Object, default: null},
+    span2: { type: Boolean, default: false}
 })
+const expandable = ref(true)
 
 function loadProps(props:any) {
     // console.log('[NotesTile.loadProps] ' + JSON.stringify(props))
     // restore display mode without update
     changeDisplayMode(props?.params?.mode,false)
+    expandable.value = !props?.span2;
 }
 
 onMounted(() => {   
@@ -74,9 +77,11 @@ function changeDisplayMode(newMode:DisplayModeNotes,update=true) {
     if(update) emits('update', params)
 }
 
-function onVideo() {
-    window.open( UserUrl.noteTilesVideo, '_blank');
+function onExpand() {
+    changeDisplayMode(DisplayModeNotes.Blank)
+    emits('expand')
 }
+
 </script>
 
 <style scoped>

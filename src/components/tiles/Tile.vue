@@ -11,7 +11,7 @@
     <AirportTile v-else-if="tile.name==TileType.airport" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate" />
     <AtisTile v-else-if="tile.name==TileType.atis" :params="tile.data" :span2="tile.span2"
-        @replace="onReplace" @update="onUpdate"/>
+        @replace="onReplace" @update="onUpdate" @expand="emits('expand')"/>
     <ChecklistTile v-else-if="tile.name==TileType.checklist" :params="tile.data" 
         @replace="onReplace" @update="onUpdate"/>
     <IfrTile v-else-if="tile.name==TileType.clearance" :params="tile.data"
@@ -21,7 +21,7 @@
         @replace="onReplace" @update="onUpdate"/>
     <NavlogTile v-else-if="tile.name==TileType.navlog" @replace="onReplace" />
     <NotesTile v-else-if="tile.name==TileType.notes" :params="tile.data" :span2="tile.span2"
-        @replace="onReplace" @update="onUpdate" />
+        @replace="onReplace" @update="onUpdate" @expand="emits('expand')" />
     <RadioTile v-else-if="tile.name==TileType.radios" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate" />
     <SunLight v-else-if="tile.name==TileType.sunlight" :params="tile.data" 
@@ -45,7 +45,7 @@ import FAButton from '../shared/FAButton.vue'
 import NavlogTile from '../navlog/NavlogTile.vue';
 import NotesTile from '../notes/NotesTile.vue';
 
-const emits = defineEmits(['update'])
+const emits = defineEmits(['update','expand'])
 
 const props = defineProps({
     tile: { type: Object, default: null},
