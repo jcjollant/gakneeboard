@@ -1,4 +1,6 @@
 # User Experience updates
+## 03/04/2025 5102
+* Notes and Atis tiles have a convenient "expand" button to merge tile with it's neighbor
 ## 03/03/2025 5101
 * Print settings recommendations
 * Approaches Improved management of long lists
