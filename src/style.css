@@ -15,6 +15,10 @@
 
 :root {
   --bg: #2196F3;
+  
+  --bg-secondary: #607D8B;
+  --bg-secondary-hover: #587583;
+  
   --bg-hover: #0D89EC;
   --bg-public: #689F38;
   --bg-strip: #eef;

@@ -1,6 +1,12 @@
 export class DisplayModeChoice {
     label:string;
     value:string;
+    expandable:boolean;
+    constructor(label:string, value:string, expandable:boolean = false) {
+        this.label = label;
+        this.value = value;
+        this.expandable = expandable;
+    }
 }
 
 export enum DisplayModeNotes {
