@@ -59,6 +59,10 @@ export function checkTileSpan(page, tile, spanned=true) {
     cy.get(`.page${page} > .tile${tile}`).should(condition,'span-2')
 }
 
+export function checkTileTitle(page, tile, title) {
+    cy.get(`.page${page} > .tile${tile} > .headerTitle`).contains(title)
+}
+
 export function checkTileVisible(page, tile, visible=true) {
     const condition = visible ? 'not.have.css' : 'have.css'
     cy.get(`.page${page} > .tile${tile}`).should(condition, 'display', 'none')
@@ -70,15 +74,13 @@ export function demoChecklistOnPage(index) {
     cy.get(`.page${index} .list0 > :nth-child(19)`).contains('Engine FIRE')
 }
 
-export function demoTilesOnPage(index) {
+export function demoTilesOnPage(page) {
     cy.get(`.page${index}`).should('have.class','pageTiles')
 
-    cy.get(`.page${index} > :nth-child(1) > .headerTitle`).contains(boeingTitle)
-    cy.get(`.page${index} > :nth-child(2) > .headerTitle`).contains(feltsTitle)
-    cy.get(`.page${index} > :nth-child(3) > .headerTitle`).contains(radioTitle)
-    cy.get(`.page${index} > :nth-child(4) > .headerTitle`).contains(notesTitle)
-    cy.get(`.page${index} > :nth-child(5) > .headerTitle`).contains(atisTitle)
-    cy.get(`.page${index} > :nth-child(6) > .headerTitle`).contains(departTitle)
+    const expectedTitles = [boeingTitle, feltsTitle, radioTitle, notesTitle, atisTitle, departTitle]
+    for(let index = 0; index < 6; index++) {
+        checkTileTitle(page, index, expectedTitles[index])
+    }
 }
 
 export function visitAndCloseBanner() {
