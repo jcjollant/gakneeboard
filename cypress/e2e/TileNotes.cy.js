@@ -1,4 +1,4 @@
-import { loadDemo, notesTitle, visitSkipBanner, replaceTile, TileTypeLabel, displaySelection, checkTileSpan, checkTileVisible } from './shared'
+import { loadDemo, notesTitle, visitSkipBanner, replaceTile, TileTypeLabel, displaySelection, checkTileSpan, checkTileVisible, checkTileTitle, radioTitle } from './shared'
 
 const labelBlank = "Blank"
 const labelCRAFT = "C R A F T"
@@ -52,6 +52,32 @@ describe('Notes Tile', () => {
     replaceTile(0,2,TileTypeLabel.radios)
     checkTileSpan(0, 2, false)
     checkTileVisible(0, 3, true)
+  })
+
+  it('Merge Button', () => {
+    visitSkipBanner()
+    loadDemo()
+
+    // First attempt with cancel
+    displaySelection(0, 3)
+    cy.get('.tile3 .expandable').click()
+    cy.get('.p-confirm-dialog-reject').click()
+    checkTileTitle(0,2,radioTitle)
+
+    // second attempt with confirm
+    displaySelection(0, 3)
+    cy.get('.tile3 .expandable').click()
+    cy.get('.p-confirm-dialog-accept').click()
+    checkTileTitle(0,2,notesTitle)
+
+    // confirm template has been saved with proper values
+    cy.getLocalStorage('template')
+      .then(t => {
+        const template = JSON.parse(t)
+        // console.log('>>>>', template)
+        expect(template.data[0].data[2].name).to.equal('notes')
+        expect(template.data[0].data[3].name).to.equal('notes')
+      })
   })
 
 })

@@ -1,4 +1,4 @@
-import { titleAtis, visitSkipBanner, loadDemo, TileTypeLabel, displaySelection, replaceTile, checkTileSpan, checkTileVisible } from './shared'
+import { titleAtis, visitSkipBanner, loadDemo, TileTypeLabel, displaySelection, replaceTile, checkTileSpan, checkTileVisible, checkTileTitle, departTitle, atisTitle } from './shared'
 
 const labelFullATIS = "Full Size ATIS"
 const labelCloudCleance = "Cloud Clearance"
@@ -98,4 +98,29 @@ describe('ATIS Tile', () => {
     checkTileVisible(0, 5, true)
   })
 
+  it('Merge Button', () => {
+    visitSkipBanner()
+    loadDemo()
+
+    // First attempt with cancel
+    displaySelection(0, 4)
+    cy.get('.tile4 .expandable').click()
+    cy.get('.p-confirm-dialog-reject').click()
+    checkTileTitle(0,5,departTitle)
+
+    // second attempt with confirm
+    displaySelection(0, 4)
+    cy.get('.tile4 .expandable').click()
+    cy.get('.p-confirm-dialog-accept').click()
+    checkTileTitle(0,5,atisTitle)
+
+    // confirm template has been saved with proper values
+    cy.getLocalStorage('template')
+      .then(t => {
+        const template = JSON.parse(t)
+        // console.log('>>>>', template)
+        expect(template.data[0].data[4].name).to.equal('atis')
+        expect(template.data[0].data[5].name).to.equal('atis')
+      })
+  })
 })
