@@ -262,11 +262,14 @@ function onPrint() {
     toaster.warning('Squawk and Ident','Please sign in before printing')
     return
   }
-  saveTemplateToLocalStore()
-  // put local in the history so Print comes back to the correct template in progress
-  router.push('/template/local').then(() =>{
-    router.push('/print')
-  })
+
+  if( activeTemplate.value?.modified) {
+    toaster.warning('Line up and Wait', 'Please save your template before printing')
+    return
+  }
+
+  // go to print mode
+  router.push('/print')
 }
 
 async function onSave() {
