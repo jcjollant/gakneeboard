@@ -79,6 +79,7 @@ watch(props, () => {
     display: grid;
     grid-template-columns: 70% auto;
     line-height: 23px;
+    height: 22px;
 }
 
 .normal {
