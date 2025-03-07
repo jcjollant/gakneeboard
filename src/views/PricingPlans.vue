@@ -56,7 +56,7 @@
         </div>
       </div>
     </div>
-    <div>(*) Manual Refill 20 page $5 comming Soon</div>
+    <div>(*) Optional 10 additional prints $5</div>
   </div>
 </template>
 
@@ -77,13 +77,12 @@ const monthly = ref(true)
 const plans = ref([
 {
     name: "Flight Simmer",
-    subtitle: "We've been there",
+    subtitle: "Just Free",
     price: 0,
     monthly: false,
-    description: "Every penny counts",
+    description: "Best to Try it out",
     features: {
-      "Prints: 2 pages": true,
-      "Auto Refill: Weekly (*)": true,
+      "Prints Per Month: 4(*)": true,
       "2 Templates x 2 Pages": true,
       "Airport Data Update": false,
     },
@@ -110,11 +109,10 @@ const plans = ref([
     name: "Private Pilot",
     price: 2.99,
     monthly: true,
-    subtitle: "Low Commitment",
-    description: "Best for Regular users",
+    subtitle: "No Commitment",
+    description: "Best for Occasional Use",
     features: {
-      "Prints: 20 pages": true,
-      "Auto Refill: Monthly (*)": true,
+      "Prints Per Month: 8(*)": true,
       "5 Templates x 2 Pages": true,
       "Airport Data Update": true,
     },
@@ -143,10 +141,9 @@ const plans = ref([
     price: 3.49,
     monthly: true,
     subtitle: "Charged $41.88/year",
-    description: "Limited Time Deal",
+    description: "Best for Regular Use",
     features: {
-      "Prints: Unlimited": true,
-      "Auto Refill: Unlimited": true,
+      "Prints Per Month: Unlimited": true,
       "10 Templates x 5 Pages": true,
       "Airport Data Update": true,
     },
