@@ -75,7 +75,7 @@ export function demoChecklistOnPage(index) {
 }
 
 export function demoTilesOnPage(page) {
-    cy.get(`.page${index}`).should('have.class','pageTiles')
+    cy.get(`.page${page}`).should('have.class','pageTiles')
 
     const expectedTitles = [boeingTitle, feltsTitle, radioTitle, notesTitle, atisTitle, departTitle]
     for(let index = 0; index < 6; index++) {
