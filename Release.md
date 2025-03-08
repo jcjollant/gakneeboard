@@ -1,4 +1,9 @@
 # User Experience updates
+## 03/08/2025 5103
+* Force save before printing
+* Lines alignment in Checklist fix
+* Plan Update
+* Google Analytics
 ## 03/04/2025 5102
 * Notes and Atis tiles have a convenient "expand" button to merge tile with it's neighbor
 ## 03/03/2025 5101
