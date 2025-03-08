@@ -17,7 +17,7 @@ const routes = [
     { path: '/', name: RouterNames.Home, component: Home },
     { path: '/plans', name: RouterNames.Plans, component: PricingPlans },
     { path: '/thankyou', name: RouterNames.ThankYou, component: ThankYou },
-    { path: '/print', name: RouterNames.Print, component: Print },
+    { path: '/print/:id', name: RouterNames.Print, component: Print },
     { path: '/template/:id', name: RouterNames.Template, component: Template }
 ]
 
