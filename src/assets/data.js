@@ -311,10 +311,11 @@ function getSunlightDate(date) {
   return date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate()
 }
 
-export async function postPrint(options) {
+export async function postPrint(id, options) {
   const url = GApiUrl.root + 'print'
   const config = { headers: {'Content-Type':'application/json', 'user': currentUser.sha256 }}
-  return axios.post(url, options, config)
+  const payload = { template: Number(id), options: options}
+  return axios.post(url, payload, config)
     .then( response => {
       return response.data
     })
