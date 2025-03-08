@@ -263,13 +263,14 @@ function onPrint() {
     return
   }
 
-  if( !activeTemplate.value || !activeTemplate.value.id || activeTemplate.value.modified) {
+  if( activeTemplate.value && activeTemplate.value.id && activeTemplate.value.modified) {
     toaster.warning('Line up and Wait', 'Please save your template before printing')
     return
   }
 
   // go to print mode
-  router.push('/print/' + activeTemplate.value.id)
+  const printTemplateId = activeTemplate.value?.id || 0
+  router.push('/print/' + printTemplateId)
 }
 
 async function onSave() {
