@@ -25,7 +25,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
 import { LocalStore } from '../lib/LocalStore';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { postPrint } from '../assets/data.js';
 import Page from '../components/page/Page.vue';
 import PrintOptions from '../components/print/PrintOptions.vue';
@@ -34,6 +34,7 @@ const pages = ref([])
 const printFlipMode = ref(false)
 const printSingles = ref(false)
 const template = ref(null)
+const route = useRoute()
 const router = useRouter()
 const showOptions = ref(true)
 let printing = false
@@ -74,7 +75,7 @@ function onPrint(options) {
 //   printFlipMode.value = options.flipBackPage;
 //   printSingles.value = (options.pagePerSheet == 1)
 
-  postPrint(template.value.id, options)
+  postPrint(route.params.id, options)
 
   // print window content after a short timeout to let flipmode kickin
   setTimeout( async () => {
