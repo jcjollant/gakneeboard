@@ -12,6 +12,7 @@ describe('Navigation', () => {
     cy.get('#btnPrint').click()
     // check title
     cy.get('.p-dialog-header').contains('Print')
+    cy.url().should('include','/print/0')
     // Check Page options
     cy.get('.pageOptions').contains('Pages per sheet')
     cy.get('.pageOptions').contains('Back Page Orientation')
@@ -21,6 +22,7 @@ describe('Navigation', () => {
     cy.get('[aria-label="Flipped"]')
     // click do not print
     cy.get('.actionDialog > .p-button-link').click()
+    cy.url().should('include','/template/local')
   })
 
 })
