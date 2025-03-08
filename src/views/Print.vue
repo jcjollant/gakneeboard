@@ -74,7 +74,7 @@ function onPrint(options) {
 //   printFlipMode.value = options.flipBackPage;
 //   printSingles.value = (options.pagePerSheet == 1)
 
-  postPrint(options)
+  postPrint(template.value.id, options)
 
   // print window content after a short timeout to let flipmode kickin
   setTimeout( async () => {
