@@ -5,7 +5,7 @@ import { AccountType } from '../model/AccounType'
 
 export class Pricing {
     static simmer = 'fs1';
-    // static privateMonthly = 'pp1';
+    static privatePilot = 'pp1';
     // static privateAnnual = 'pp2';
     // static instrumentMonthly = 'ip1';
     // static instrumentAnnual = 'ip2';
