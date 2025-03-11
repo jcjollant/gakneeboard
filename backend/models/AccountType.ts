@@ -1,8 +1,8 @@
 export enum AccountType {
     beta = 'beta', 
-    // private = 'pp', 
+    private = 'pp', 
     // instrument = 'ip',
-    hobbs = 'hob',
+    // hobbs = 'hob',
     simmer='sim',
     unknown = "?"
 }
