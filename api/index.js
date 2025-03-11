@@ -333,7 +333,12 @@ app.delete('/template/:id', async (req, res) => {
             res.send(template.name + ' deleted')
         })
     } catch( e) {
-        catchError(res, e, 'DELETE /template/:id')
+        if(e instanceof GApiError && e.status === 404) {
+            res.sendStatus(e.status)
+            return
+        } else {
+            catchError(res, e, 'DELETE /template/:id')
+        }
     }
     // console.log( "[index] DELETE sheet " + req.params.id
 })
