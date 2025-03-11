@@ -6,13 +6,10 @@ import { Stripe } from 'stripe'
 import { Email, EmailType } from '../Email'
 import { Business } from './Business'
 import { sql } from '@vercel/postgres'
+import { Ticket } from '../Ticket'
 
 const planUrl = '/plans'
-// const pp1Price = 'price_1Qg0c7G89XrbqGAIJQAwl2HW'
-// const pp1Price = process.env.STRIPE_PP1_PRICE;
-// const pp2Price = process.env.STRIPE_PP2_PRICE;
-// const ip1Price = process.env.STRIPE_IP1_PRICE;
-// const ip2Price = process.env.STRIPE_IP2_PRICE;
+const pp1Price = process.env.STRIPE_PP1_PRICE;
 const hh1Price = process.env.STRIPE_HH1_PRICE;
 const bd1Price = process.env.STRIPE_BD1_PRICE;
 const ff1Price = 'free';
@@ -80,7 +77,7 @@ export class StripeClient {
                 if(!session.url) throw new Error('Session url is null')
                 resolve(session.url)
             } catch (err) {
-                console.log('[Stripe.checkout] error ' + err)
+                Ticket.create(3, '[Stripe.checkout] error ' + err)
                 reject(err)
             }
         })
@@ -128,19 +125,24 @@ export class StripeClient {
                 if(event.type == SUB_UPDATE || event.type == SUB_DELETE) {
                     const subscriptionId = event.data.object.id;
                     const customerId = String(event.data.object.customer);
-                    const planId = event.data.object.plan.id;
+                    const priceId = event.data.object.items.data[0].plan.id;
                     const periodEnd = event.data.object.current_period_end;
                     const cancelAt = event.data.object.cancel_at;
                     const endedAt = event.data.object.ended_at
+                    const userDao = new UserDao()
                     if(event.type == SUB_DELETE) {
-                        await Business.subscriptionStop(subscriptionId, customerId)
+                        await Business.subscriptionStop(subscriptionId, customerId, userDao)
                     } else {
-                        const accountType = this.accountTypeFromPrice(planId)
-                        await Business.subscriptionUpdate(subscriptionId, customerId, planId, accountType, periodEnd, cancelAt, endedAt)
+                        const subscriptionDao = new SubscriptionDao()
+                        const accountType = this.accountTypeFromPrice(priceId)
+                        await Business.subscriptionUpdate(subscriptionId, customerId, priceId, accountType, periodEnd, cancelAt, endedAt, userDao, subscriptionDao)
                     }
+                    await sql`INSERT INTO stripe_events (type, stripe_id, data) VALUES (${event.type}, ${subscriptionId}, ${JSON.stringify(event.data.object)})`
                 } else if(event.type == CHECKOUT_COMPLETE) {
                     // console.log('[Stripe.webhook]', JSON.stringify(event.data))
-                    sql`INSERT INTO stripe_events (type, stripe_id, data) VALUES (${event.type}, ${event.data.object.id}, ${JSON.stringify(event.data.object)})`
+                    // Record event into stripe_events table
+                    const stripeId = event.data.object.id;
+                    await sql`INSERT INTO stripe_events (type, stripe_id, data) VALUES (${event.type}, ${stripeId}, ${JSON.stringify(event.data.object)})`
                     // console.log('[Stripe.webhook]', JSON.stringify(event.type), now)
                     if(!event.data.object.subscription) { // not a subscription
                         // console.log('[Stripe.webhook] non subscription checkout complete', event.data.object.id)
@@ -150,7 +152,11 @@ export class StripeClient {
                             const priceId = li.data[0].price?.id
                             console.log('[Stripe.webhook] priceId', priceId)
                             if( priceId == hh1Price) {
-                                await Business.purchasePrints(customerId)
+                                const printCount = Business.PRINT_PER_PURCHASE
+                                const userDao = new UserDao()
+                                await Business.printPurchase(customerId, printCount, userDao).catch( (err) => {
+                                    Ticket.create( 2, `Customer ${customerId}, Failed to purchase ${printCount} prints. Stripe ${stripeId}`)
+                                })
                             } else {
                                 console.log('[Stripe.webhook] unexpected priceId', priceId)
                             }
@@ -158,7 +164,7 @@ export class StripeClient {
                     }
                 }
             } catch(err) {
-                console.log('[Stripe.webhook] ' + err)
+                Ticket.create(2, '[Stripe.webhook] ' + err)
                 reject(err)
             }
 
@@ -169,14 +175,8 @@ export class StripeClient {
 
     accountTypeFromPrice(planId: string) {
         switch(planId) {
-            // case pp1Price: 
-            // case pp2Price: 
-            //     return AccountType.private;
-            // case ip1Price: 
-            // case ip2Price: 
-            //     return AccountType.instrument;
             case bd1Price: return AccountType.beta;
-            case hh1Price: return AccountType.hobbs;
+            case pp1Price: return AccountType.private;
             case ff1Price: return AccountType.simmer;
             default: return AccountType.unknown;
         }
@@ -186,16 +186,10 @@ export class StripeClient {
         // console.log('[Stripe.priceIdFromProduct]', product)
         let price:string|undefined
         switch(product.toLowerCase()) {
-            // case 'pp1': price = pp1Price; break;
-            // case 'pp2': price = pp2Price; break;
-            // case 'ip1': price = ip1Price; break;
-            // case 'ip2': price = ip2Price; break;
-            // case 'ff1': return new Price( ff1Price, true);
-            case 'hh1': 
-                return new Price( hh1Price, false);
-            case 'bd1': 
-                return new Price( bd1Price, true);
-            default: throw new Error('Product not found');
+            case 'pp1': return new Price( pp1Price, true);
+            case 'hh1': return new Price( hh1Price, false);
+            case 'bd1': return new Price( bd1Price, true);
+            default: throw new Error('Product not found : ' + product);
         }
     }
 }
