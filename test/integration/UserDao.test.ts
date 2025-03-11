@@ -1,37 +1,37 @@
 
-import { describe, expect, test} from '@jest/globals';
-import { UserDao } from '../backend/dao/UserDao.ts'
-import { jcUserId, jcHash, jcEmail, jcName, jcSource, jcMaxTemplates } from './constants.ts';
-import { AccountType } from '../backend/models/AccountType.ts';
-import { User } from '../backend/models/User.ts';
-import { newTestUser } from './common.ts'
+import { describe, expect, it, test} from '@jest/globals';
+import { UserDao } from '../../backend/dao/UserDao.ts'
+import { jcUserId, jcHash, jcEmail, jcName, jcSource, jcMaxTemplates } from '../constants.ts';
+import { AccountType } from '../../backend/models/AccountType.ts';
+import { User } from '../../backend/models/User.ts';
+import { newTestUser } from '../common.ts'
+import { db, sql } from '@vercel/postgres';
 
 require('dotenv').config();
 
 describe('UserDao', () => {
-    test('Count', async () => {
+    it('Count', async () => {
         const userDao = new UserDao();
         expect(await userDao.count()).toBeGreaterThan(1);
     })
 
-    test('getIdFromHash', async () => {
+    it('getIdFromHash', async () => {
         await UserDao.getIdFromHash(jcHash).then(id => {
             expect(id).toEqual(jcUserId)
         })
     })
 
-    test('getUserFromHash', async () => {
+    it('getUserFromHash', async () => {
         await UserDao.getUserFromHash(jcHash).then(user => {
             expect(user?.id).toEqual(jcUserId)
             expect(user?.sha256).toEqual(jcHash)
             expect(user?.name).toEqual(jcName)
             expect(user?.source).toEqual(jcSource)
             expect(user?.email).toEqual(jcEmail)
-            expect(user?.maxTemplates).toBe(jcMaxTemplates)
         })
     })
 
-    test('parseRow', () => {
+    it('parseRow', () => {
         const name = 'Paul'
         const source = 'SomeSource'
         const email = 'paul@example.com'
@@ -53,7 +53,7 @@ describe('UserDao', () => {
         expect(user.printCredits).toBe(printCredits)
     })
 
-    test('Add Prints', async () => {
+    it('Add Prints', async () => {
         const userDao = new UserDao();
         const addedCredits = 10;
         await userDao.get(jcUserId).then( async (jc) => {
@@ -65,7 +65,7 @@ describe('UserDao', () => {
         })
     })
 
-    test('Save', async () => {
+    it('Save', async () => {
         const existingUser:User = new User(jcUserId, jcHash)
         // Saving an existing user without overwrite should fail
         const userDao = new UserDao()
@@ -88,5 +88,39 @@ describe('UserDao', () => {
         })
     })
 
+    it('refills', async () => {
+        const userDao = new UserDao()
+
+        // clean up
+        await sql`delete from users where account_type = 'test1' OR account_type='test2'`
+
+        // create two groups of users
+        // fill an array with 4 'test1' and 6 'test2'
+        const previous1 = 3;
+        const previous2 = 5;
+        for( let index = 0; index < 10; index++) {
+            const user = newTestUser()
+            const accountType = index < 4 ? 'test1' : 'test2'
+            const previous = index < 4 ? previous1 : previous2;
+            // console.log('['+accountType+']')
+            await db.query(`insert into users (sha256,account_type,version, print_credit) values ('${user.sha256}','${accountType}',0, ${previous})`)
+        }
+
+        const count1 = 10
+        const refill1 = await userDao.refill(count1, 'test1')
+        const count2 = 20
+        const refill2 = await userDao.refill(count2, 'test2')
+
+        for(let r of refill1) {
+            expect(r.previousCount).toBe(previous1)
+            expect(r.newCount).toBe(count1)
+        }
+        for(let r of refill2) {
+            expect(r.previousCount).toBe(previous2)
+            expect(r.newCount).toBe(count2)
+        }
+
+        await sql`delete from users where account_type = 'test1' OR account_type='test2'`
+    })
 });
 

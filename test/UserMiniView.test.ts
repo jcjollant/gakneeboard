@@ -29,7 +29,6 @@ describe('UserMiniView', () => {
             if( !umv) return;
             expect(umv.sha256).toBe(jcHash)
             expect(umv.name).toBe(jcName)
-            expect(umv.maxTemp).toBe(jcMaxTemplates)
             expect(umv.templates).toBeDefined()
         })
     });

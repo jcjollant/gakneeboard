@@ -4,6 +4,7 @@ import { User } from "../backend/models/User"
 import { UserTools } from "../backend/UserTools"
 import { Subscription } from '../backend/models/Subscription'
 import { SubscriptionDao } from '../backend/dao/SubscriptionDao'
+import { Refill } from '../backend/models/Refill'
 
 export function getMockUserDao(user:User):UserDao {
     const mockUserDao = new UserDao() as jest.Mocked<UserDao>;
@@ -11,7 +12,8 @@ export function getMockUserDao(user:User):UserDao {
     jest.spyOn(mockUserDao, 'getFromCustomerId').mockResolvedValue(user);
     jest.spyOn(mockUserDao, 'addPrints').mockResolvedValue(user);
     jest.spyOn(mockUserDao, 'updateType').mockResolvedValue();
-    jest.spyOn(mockUserDao, 'refill').mockResolvedValue(0);
+    const refills = [1,2,3,4].map(i => new Refill(i, i, 5))
+    jest.spyOn(mockUserDao, 'refill').mockResolvedValue(refills);
 
     return mockUserDao
 }

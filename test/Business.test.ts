@@ -6,6 +6,7 @@ import { getMockBrandNewSubscription, getMockSubscriptionDao, getMockUserDao, ne
 import { Email } from '../backend/Email';
 import { SubscriptionDao } from '../backend/dao/SubscriptionDao';
 import { Subscription } from '../backend/models/Subscription';
+import { mock } from 'node:test';
 
 // Mock the dependencies
 jest.mock('../backend/dao/UserDao');
@@ -294,11 +295,35 @@ describe('Business', () => {
     })
 
     describe('printRefills', () => {
-        it('refill all accounts', async () => {
+        it('refill all accounts on the first day of the month', async () => {
+            jest.useFakeTimers().setSystemTime(new Date('2023-01-02'));
+            expect(new Date().getDate()).toBe(1)
+
             const mockUserDao = getMockUserDao(newTestUser())
-            await Business.printRefills(mockUserDao).then( () => {
-                expect(mockUserDao.refill).toHaveBeenCalledTimes(2)
-            })
+
+            const refills = await Business.printRefills(mockUserDao)
+
+            expect(mockUserDao.refill).toHaveBeenCalledTimes(2)
+            expect(refills).toHaveLength(8)
+        })
+
+        it('doesn\'t do anything on the second day of the month', async () => {
+            jest.useFakeTimers().setSystemTime(new Date('2023-01-03'));
+            expect(new Date().getDate()).not.toBe(1)
+
+            const refills = await Business.printRefills(testUserDao)
+            expect(refills).toHaveLength(0)
+        })
+
+        it('can be forced on second day of the month', async () => {
+            jest.useFakeTimers().setSystemTime(new Date('2023-01-03'));
+            expect(new Date().getDate()).not.toBe(1)
+            const mockUserDao = getMockUserDao(testUser)
+
+            const refills = await Business.printRefills(mockUserDao, true)
+
+            expect(mockUserDao.refill).toHaveBeenCalledTimes(2)
+            expect(refills).toHaveLength(8)
         })
     })
 });
