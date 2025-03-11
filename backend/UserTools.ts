@@ -131,6 +131,11 @@ export class UserTools {
         return UserDao.getIdFromHash(sha)
     }
 
+    /**
+     * extract the user hash from the request header or headers
+     * @param req 
+     * @returns 
+     */
     public static userShaFromRequest(req:any):string|undefined {
         if( req == undefined) return undefined;
 
