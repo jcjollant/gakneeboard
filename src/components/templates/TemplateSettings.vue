@@ -10,6 +10,10 @@
           <InputGroupAddon>Description</InputGroupAddon>
           <InputText v-model="templateDesc"/>
         </InputGroup>
+        <InputGroup>
+          <InputGroupAddon>Version</InputGroupAddon>
+          <InputText v-model="templateVersion" :disabled="true"  class="templateVersion"/>
+        </InputGroup>
         <TemplateSharing v-model="publish" :template="template" />
         <div>
         </div>
@@ -36,6 +40,7 @@ const emits = defineEmits(["close","save"]);
 const publish = ref(false)
 const templateName = ref('')
 const templateDesc = ref('')
+const templateVersion = ref(0)
 const template = ref(null)
 
 //-----------------
@@ -53,6 +58,7 @@ function loadProps(props) {
   if(props.template) {
     templateName.value = props.template.name
     templateDesc.value = props.template.desc
+    templateVersion.value = props.template.ver
     publish.value = props.template.publish
   } 
 }
@@ -74,6 +80,7 @@ function onButtonSave () {
   const settings = {
     name: templateName.value,
     desc: templateDesc.value,
+    ver: templateVersion.value,
     publish: publish.value,
   }
   emits('save',settings)
