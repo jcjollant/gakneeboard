@@ -2,6 +2,7 @@ import { sql } from '@vercel/postgres';
 import { User } from '../models/User'
 import { Dao } from './Dao';
 import { AccountType } from '../models/AccountType';
+import { Refill } from '../models/Refill';
 
 export class UserDao extends Dao<User> {
     protected tableName: string = 'users';
@@ -35,12 +36,12 @@ export class UserDao extends Dao<User> {
 
     /**
      * Fetches a user by sha256 and return its Id
-     * @param sha256 User sha256
+     * @param userSha User sha256
      * @returns User Id
      */
-    public static async getIdFromHash(sha256:string):Promise<number | undefined> {
+    public static async getIdFromHash(userSha:string):Promise<number | undefined> {
         // console.log( '[UserDao] find user with sha256 ' + sha256)
-        const result = await sql`SELECT id FROM users WHERE sha256=${sha256}`;
+        const result = await sql`SELECT id FROM users WHERE sha256=${userSha}`;
         // console.log( '[UserDao] found ' + result.rowCount + ' entries')
     
         if( result.rowCount == 0) return undefined
@@ -49,7 +50,13 @@ export class UserDao extends Dao<User> {
         return result.rows[0].id
     }
 
-    public getUserFromCustomerId(customerId:string):Promise<User> {
+    public async getFromHash(userSha: string): Promise<User|undefined> {
+        const result = await sql`SELECT * FROM users WHERE sha256=${userSha}`;
+        if( result.rowCount == 0) return undefined
+        return this.parseRow(result.rows[0])
+    }
+
+    public getFromCustomerId(customerId:string):Promise<User> {
         const dao = new UserDao()
         return new Promise<User>(async (resolve, reject) => {
             const result = await this.db.query(`SELECT * FROM ${this.tableName} WHERE customer_id='${customerId}'`);
@@ -61,9 +68,7 @@ export class UserDao extends Dao<User> {
     // builds a user using the sha256 as a key
     public static async getUserFromHash(sha256:string):Promise<User | undefined> {
         const dao = new UserDao()
-        const result = await sql`SELECT * FROM users WHERE sha256=${sha256}`;
-        if( result.rowCount == 0) return undefined
-        return dao.parseRow(result.rows[0])
+        return dao.getFromHash(sha256)
     }
 
     // creates a user from it's data representation
@@ -80,6 +85,22 @@ export class UserDao extends Dao<User> {
         user.setPrintCredits(row.print_credit || 0)
 
         return user
+    }
+
+    /**
+     * Refill print credits for a given account type
+     * @param count Number of credits to add
+     * @param accountType Account type to refill
+     * @returns List of refills
+     */ 
+    public async refill(count:number, accountType:string):Promise<Refill[]> {
+        const r1 = await sql`SELECT id,print_credit FROM users WHERE account_type=${accountType} AND print_credit < ${count}`
+        if( r1.rowCount == 0) return [] // no users to refill
+
+        const r2 = await sql`UPDATE users SET print_credit=${count} WHERE account_type=${accountType} AND print_credit < ${count}`
+        const refills:Refill[] = r1.rows.map( r => new Refill(r.id, r.print_credit, count))
+
+        return refills
     }
 
     /**
@@ -119,18 +140,35 @@ export class UserDao extends Dao<User> {
         return result.rowCount == 1;
     }
 
-    // Update and existing user with a new account_type
-    public updateType(userId:number, accountType: AccountType):Promise<void> {
+    public updatePrintCredit(user:User):Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
-                const result = await sql`UPDATE users SET account_type=${accountType} WHERE id=${userId}`
+                if(user.printCredits < 0) throw new Error('Negative print credit')
+                const result = await sql`UPDATE users SET print_credit=${user.printCredits} WHERE id=${user.id}`
                 if(result.rowCount == 1) {
                     resolve()
                 } else {
                     reject('Matching users ' + result.rowCount)
                 }
             } catch(err) {
-                console.log( '[UserDao.updateType] ' + userId + ' to: ' + accountType + ' failed ' + err)
+                console.log( '[UserDao.updatePrintCredit] ' + user.id + ' to ' + user.printCredits + ' failed ' + err)
+                reject(err)
+            }
+        })
+    }
+
+    // Update and existing user with a new account_type
+    public updateType(user:User):Promise<void> {
+        return new Promise<void>(async (resolve, reject) => {
+            try {
+                const result = await sql`UPDATE users SET account_type=${user.accountType} WHERE id=${user.id}`
+                if(result.rowCount == 1) {
+                    resolve()
+                } else {
+                    reject('Matching users ' + result.rowCount)
+                }
+            } catch(err) {
+                console.log( '[UserDao.updateType] ' + user.id + ' to: ' + user.accountType + ' failed ' + err)
                 reject(err)
             }
         })
