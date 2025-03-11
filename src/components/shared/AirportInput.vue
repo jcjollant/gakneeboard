@@ -4,8 +4,10 @@
             <InputGroupAddon :class="{page:page}">{{label}}</InputGroupAddon>
             <InputText v-model="code" @input="onCodeUpdate"/>
         </InputGroup>
-        <span v-if="name" class="airportName" :class="{valid: valid, page:page}" 
-            @click="name=''" title="Click to pick a recent airport">{{ name }}</span>
+        <div v-if="name" class="nameGroup">
+            <span class="airportName" :class="{valid: valid, page:page}">{{ name }}</span>
+            <span v-if="!expanded" class="recentAirport"  @click="name=''" title="Show Recent Airports">...</span>
+        </div>
         <div v-else-if="!expanded" class="recentAirportList">
             <div v-for="a in airports" class="recentAirport" @click="onRecentAirport(a)">{{ a }}</div>
         </div>
@@ -151,7 +153,6 @@ function refreshAirportList(newAirports) {
     line-height: 22px;
     height: 22px;
     font-size: 0.7rem;
-    cursor: pointer;
 }
 .airportName.page {
     font-size: 0.9rem;
@@ -199,5 +200,10 @@ function refreshAirportList(newAirports) {
 }
 :deep(.p-inputtext) {
     padding: 5px;
+}
+.nameGroup {
+    display: flex;
+    justify-content: space-between;
+    height: 22px;
 }
 </style>
