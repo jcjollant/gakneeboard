@@ -3,6 +3,7 @@ import { contentTypeJson, getUrlWithUser, currentUser } from './data.js'
 import { isDefaultName } from './sheetData.js'
 import { GApiUrl } from '../lib/GApiUrl.js'
 import { PageType } from './PageType.js'
+import { Template } from './Templates.js'
 
 export class ExportOutput {
     filename:string;
@@ -128,19 +129,24 @@ export class TemplateData {
      * @param id 
      * @returns 
      */
-    static get(id:number):any {
+    static get(id:number):Promise<Template|undefined> {
         const url = GApiUrl.template(id)
-        return getUrlWithUser(url).then( response => {
-            // console.log('[data.sheetGetById]', JSON.stringify(response))
-            const template = response.data;
-            template.data = TemplateData.normalize(template.data)
-            return template;
-        }).catch( error => {
-            if(error.response.status != 404) {
-                reportError( '[Templates.get] error ' + error.response.status + ' ' + error.response.statusText)
-            }
-            return null
+        return new Promise( async (resolve, reject) => {
+            await getUrlWithUser(url).then( response => {
+                // console.log('[data.sheetGetById]', JSON.stringify(response))
+                const template = new Template(response.data.name, response.data.description, response.data.publish, response.data.data, response.data.ver)
+                template.id = response.data.id
+                resolve( template);
+            }).catch( error => {
+                if(error.response && error.response.status == 404) {
+                    resolve(undefined)
+                } else {
+                    console.log( error)
+                    reject(error)
+                }
+            })
         })
+        
     }
 
     /**
