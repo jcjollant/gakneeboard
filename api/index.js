@@ -7,6 +7,7 @@ import { StripeClient } from '../backend/business/Stripe'
 import { UserTools } from '../backend/UserTools'
 import { Maintenance } from '../backend/Maintenance'
 import { NavlogTools } from "../backend/NavlogTools";
+import { Ticket } from "../backend/Ticket";
 const port = 3000
 const app = express();
 
@@ -215,14 +216,14 @@ app.get('/publication/:code', async (req, res) => {
 })
 
 app.post('/print', async (req, res) => {
-    const payload = (typeof req.body !== 'string' ? JSON.stringify(req.body) : req.body);
-    const userId = await UserTools.userIdFromRequest(req)
-    await GApi.printSave(userId,payload).then( () => {
-        // console.log('[index.post/sheet]', JSON.stringify(sheet))
-        res.send()
-    }).catch( (e) => {
+    try {
+        const payload = (typeof req.body !== 'string' ? JSON.stringify(req.body) : req.body);
+        const userSha = UserTools.userShaFromRequest(req)
+        const success = await GApi.printRequest(userSha,payload)
+        res.sendStatus( success ? 200 : 402)
+    } catch( err) {
         catchError(res, e, 'POST /print')
-    })
+    }
 })
 
 
@@ -283,8 +284,12 @@ app.get('/template/:id', async (req, res) => {
             throw new GApiError(401, 'Unauthorized')
         }
         // console.log( "[index] GET template " + req.params.id + " userId " + userId
-        let sheet = await GApi.templateGet(req.params.id, userId);
-        res.send(sheet)
+        let template = await GApi.templateGet(req.params.id, userId);
+        if(template) {
+            res.send(template)
+        } else {
+            res.sendStatus(404)
+        }
     } catch( e) {
         catchError(res, e, 'GET /template/:id')
     }
@@ -296,8 +301,8 @@ app.get('/template/:id', async (req, res) => {
 app.get('/templates', async (req, res) => {
     const userId = await UserTools.userIdFromRequest(req)
     try {
-        const sheets = await GApi.templateGetList(userId);
-        res.send(sheets)
+        const templates = await GApi.templateGetList(userId);
+        res.send(templates)
     } catch( e) {
         catchError(res, e, 'GET /templates')
     }
@@ -335,8 +340,7 @@ app.delete('/template/:id', async (req, res) => {
 
 app.get('/sunlight/:from/:to/:dateFrom/:dateTo?', async (req, res) => {
     try {
-        GApi.getSunlight(req.params.from, req.params.to, req.params.dateFrom, req.params.dateTo)
-        .then( sunlight => {
+        await GApi.getSunlight(req.params.from, req.params.to, req.params.dateFrom, req.params.dateTo).then( sunlight => {
             res.send(sunlight)
         })
     } catch(e) {
@@ -359,8 +363,10 @@ function catchError(res, e, msg) {
     // console.log( "[index] " + msg + " error " + JSON.stringify(e))
     if( e instanceof GApiError) {
         res.status(e.status).send(e.message)
+        Ticket.create(4, e.message)
     } else {
         res.status(500).send(e)
+        Ticket.create(4, e)
     }
 }
 
