@@ -1,10 +1,12 @@
 export class Template {
+    id:number;
     name:string
     desc:string
     publish:boolean
     data:any
     ver:number
     constructor(name:string, description:string, publish:boolean=false, data:any=[], version:number=0) {
+        this.id = 0
         this.name = name
         this.desc = description
         this.publish = publish
