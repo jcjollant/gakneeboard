@@ -95,6 +95,8 @@ onMounted(() =>{
           // restore last template
           loadTemplate(LocalStore.getTemplate())
         }
+      }).catch( (err) => {
+          toaster.error( 'Load Template','Could not reach server')
       })
     } else { 
       // no template id => load local template
