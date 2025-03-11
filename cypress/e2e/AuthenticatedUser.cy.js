@@ -1,4 +1,4 @@
-import { maintenanceMode, visitSkipBanner, environment, kenmoreTitle, selectionTitle } from './shared'
+import { maintenanceMode, visitSkipBanner, environment, kenmoreTitle, selectionTitle, expectToast } from './shared'
 
 describe('Authenticated User', () => {
   it('Sign in and Load Page', async () => {

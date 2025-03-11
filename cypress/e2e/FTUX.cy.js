@@ -101,11 +101,15 @@ describe('First Time User Experience', () => {
         cy.get('#btnSettings').click()
         cy.get('.pageName > .p-inputtext').type( '{selectAll}'+newName,{delay:0})
         cy.get('.pageDescription > .p-inputtext').type('NewDescription',{delay:0})
+        // Should have a version number at 0
+        cy.get('.templateVersion').should('have.value', '0')
+
+        // Save details
         cy.get('[aria-label="Save"]').click()
         cy.get('.templateName').contains(newName);
     })
 
-    it.only('Features Require Signin', () => {
+    it('Features Require Signin', () => {
         visitSkipBanner()
         loadDemo('Default')
 
