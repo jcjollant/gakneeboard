@@ -1,5 +1,34 @@
+import { jest } from '@jest/globals'
+import { UserDao } from "../backend/dao/UserDao"
 import { User } from "../backend/models/User"
 import { UserTools } from "../backend/UserTools"
+import { Subscription } from '../backend/models/Subscription'
+import { SubscriptionDao } from '../backend/dao/SubscriptionDao'
+
+export function getMockUserDao(user:User):UserDao {
+    const mockUserDao = new UserDao() as jest.Mocked<UserDao>;
+    jest.spyOn(mockUserDao, 'updatePrintCredit').mockResolvedValue()
+    jest.spyOn(mockUserDao, 'getFromCustomerId').mockResolvedValue(user);
+    jest.spyOn(mockUserDao, 'addPrints').mockResolvedValue(user);
+    jest.spyOn(mockUserDao, 'updateType').mockResolvedValue();
+    jest.spyOn(mockUserDao, 'refill').mockResolvedValue(0);
+
+    return mockUserDao
+}
+
+export function getMockSubscriptionDao(sub:Subscription):SubscriptionDao {
+    const mockSubscriptionDao = new SubscriptionDao() as jest.Mocked<SubscriptionDao>;
+    jest.spyOn(mockSubscriptionDao, 'update').mockResolvedValue(sub);
+
+    return mockSubscriptionDao
+}
+
+export function getMockBrandNewSubscription():Subscription {
+    const mockSubscription = new Subscription('sub-id','customer-id', 'price-id') as jest.Mocked<Subscription>;
+    jest.spyOn(mockSubscription, 'isBrandNew').mockReturnValue(true);
+
+    return mockSubscription;
+}
 
 export function newTestUser():User {
     const userName = Math.random().toString(36).substring(5)
