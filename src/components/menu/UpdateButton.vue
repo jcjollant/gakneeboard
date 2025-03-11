@@ -9,7 +9,8 @@
 const props = defineProps({
     manage: {
         type: Boolean,
-        required: false
+        required: false,
+        default: false
     }
 })
 </script>
@@ -17,8 +18,8 @@ const props = defineProps({
 <style scoped>
 .updateButton {
     cursor: pointer;
-    color: black;
-    background-color: orange;
+    color: white;
+    background-color: var(--bg);
     border-radius: 3px;
     justify-content: center;
     align-items: center;
