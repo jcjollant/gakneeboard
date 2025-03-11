@@ -118,7 +118,7 @@ const plans = ref([
     },
     popular: false,
     active: false,
-    code: Pricing.hobbs
+    code: Pricing.privatePilot
   },
   // {
   //   name: "Instrument Pilot",
