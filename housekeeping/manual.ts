@@ -1,153 +1,109 @@
-import { sql } from '@vercel/postgres'
-import { GApi } from "../backend/GApi"
-import { Adip } from "../backend/adip/Adip"
-import { Airport } from "../backend/models/Airport"
-import { AirportDao } from '../backend/AirportDao'
-
 require('dotenv').config();
 
-
-async function checkEffectiveDates() {
-    const result = await sql`SELECT data,id FROM Airports WHERE creatorId IS NULL`
-    const effectiveDates:any = {}
-    for(const row of result.rows) {
-        const data = JSON.parse(row['data']);
-        if( 'effectiveDate' in data) {
-            if( data.effectiveDate in effectiveDates) {
-                effectiveDates[data.effectiveDate]++
-            } else {
-                effectiveDates[data.effectiveDate] = 1
-            }
-        } else {
-            console.log( "No effective date for " + row['id'])
-        }
-    }
-    console.log( JSON.stringify(effectiveDates))
-}
-
-async function refreshAirport(code:string,id:number) {
-    console.log( "refreshing " + code + ' at id ' + id)
-    const airport:Airport|undefined = await Adip.fetchAirport(code);
-    if(airport) { // adip saves the day, persist this airport in postrgres
-        console.log( "[gapi] found " + code + ' in ADIP');
-        // console.log( '[gapi] ' + JSON.stringify(airport));
-        await AirportDao.updateAirport(id,airport);
-        console.log( 'upgraded ' + code + ' at id ' + id)
-    } else {
-        console.log( "Upgrade failed for " + code);
-    }
-
-}
-
-async function refreshAllAirports() {
-    const result = await sql`SELECT Code,Id FROM Airports WHERE creatorId IS NULL`
-
-    console.log( "Matching airports " + result.rowCount)
-
-    while( result.rows.length > 0) {
-        await new Promise(r => setTimeout(r, Math.random() * 3000 + 1000));
-        const row = result.rows.pop()
-        refreshAirport(row?.code, row?.id)
-    }
-}
-
-async function upgradeVersion() {
-    const minVersion = Airport.currentVersion;
-    // const result = await sql`SELECT Code,Id FROM Airports WHERE version < ${minVersion} LIMIT 10`
-    const result = await sql`SELECT Code,Id FROM Airports WHERE version < ${minVersion}`
-
-    console.log( "Matching airports " + result.rowCount)
-
-    while( result.rows.length > 0) {
-        await new Promise(r => setTimeout(r, Math.random() * 3000 + 1000));
-        const row = result.rows.pop()
-        refreshAirport(row?.code, row?.id)
-    }
-
-    // result.rows.forEach( async (row) => {
-    //     // wait random time between 1 and 3 seconds
-    //     await new Promise(r => setTimeout(r, Math.random() * 3000 + 2000));
-    //     refreshAirport(row.code, row.id)
-    // })
-}
-
-async function findMilitaryFrequencies() {
-    const result = await sql`SELECT * FROM Airports`
-    const candidate = result.rows.filter( row => {
-        const airport = JSON.parse(row.data);
-        let gndIsMilitary = GApi.isMilitary( airport.gnd)
-        let weatherIsMilitary = GApi.isMilitary( airport.weather.freq)
-        const isMilitary = gndIsMilitary || weatherIsMilitary
-        if( isMilitary) {
-            console.log( "Military " + row.code + " gnd " + gndIsMilitary + " weather " + weatherIsMilitary)
-        }
-        return  isMilitary
-    })
-    
-    candidate.forEach( async row => {
-        console.log( "Found military " + row.code)
-        await refreshAirport(row.code, row.id)
-    })
-    console.log( "Total military " + candidate.length)
-}
-
-async function distilUnknowns() {
-    const result = await sql`SELECT * FROM unknowns LIMIT 30 WHERE code <> "ORD"`
-    const codes = result.rows.map( row => row.code)
-
-    console.log( '[distilUnknowns] considering', JSON.stringify(codes))
-
-    while( codes.length > 0) {
-        await new Promise(r => setTimeout(r, Math.random() * 3000 + 1000));
-        const code = codes.pop()
-        console.log('[distilUnknowns] processing', code)
-        await GApi.getAirportList([code]);
-        await sql`DELETE FROM unknowns WHERE Code = ${code}`
-    }
-
-}
-
-async function createPublicationCodes() {
-    // create a list all possible 2 alphanumeric character codes
-    const codes:string[] = Array.from({length: 36*36}, (_, i) => i.toString(36).toUpperCase().padStart(2, '0'))
-    // randomize the list
-    codes.sort( () => Math.random() - 0.5)
-    // const list = code.join
-    // sql`INSERT INTO publicationCodes (code) VALUES ${JSON.stringify(codes)}`
-    // console.log( JSON.stringify(codes))
-    // insert every code from codes in the database
-    for( const code of codes) {
-        await sql`INSERT INTO publications (code) VALUES (${code})`
-        console.log( "Inserted " + code)
-    }
-
-}
-
-// const output = []
-// result.rows.forEach( row => {
-//     // console.log( "found on DB entry " + JSON.stringify(row))
-//     const airport = JSON.parse(row.data);
-//     output.push(airport)
+//================
+// Airport metrics
+// import { Metrics } from "../backend/Metrics";
+// Metrics.airports().then(metrics => {
+//     for(const metric of metrics)
+//         console.log(metric.name, metric.value)
 // })
 
-// return output
+//================================
+// Show a list of current airports
+// import { Adip } from "../backend/adip/Adip";
+// import { AirportDao } from "../backend/AirportDao";
+// AirportDao.readCurrent(Adip.currentEffectiveDate).then(list => console.log(list.map(a => a.code).join(',')))
 
-// upgradeVersion()
-// refreshAllAirports()
-// refreshAirport("KRNT",48)
-
-// findMilitaryFrequencies()
-// checkEffectiveDates()
-// distilUnknowns()
-// createPublicationCodes()
-
-// Metrics.perform(false, false).then(dataString => {
-//     console.log( dataString)
+//===================
+// Show Usage metrics
+//===================
+// import { Metrics } from "../backend/Metrics";
+// Metrics.usage().then(metrics => {
+//     for(const metric of metrics)
+//         console.log(metric.name, metric.value)
 // })
-
-
-// test metrics sessions
-// Metrics.sessions().then(metric => {
+// Metrics.adip().then(metric => {
 //     console.log(metric.name, metric.value)
 // })
 
+//============
+// Users Check
+// import { HealthCheck } from "../backend/HealthChecks";
+// HealthCheck.usersCheck() .then( check => {
+//     console.log(check.name, check.status, check.msg)
+// })
+
+//============
+// HealthCheck
+// import { HealthCheck, Check } from "../backend/HealthChecks";
+// HealthCheck.perform(false).then(checks => {
+//     const reset = "\x1b[0m"
+//     let color = "\x1b[32m"
+//     for(const check of checks) {
+//         if(check.status == Check.SUCCESS) {
+//             color = "\x1b[32m"
+//         } else {
+//             color = "\x1b[31m"
+//         }
+//         console.log(check.name, color+'['+check.status+']'+reset, check.msg)
+//     }
+// })
+
+//=================
+// Template Details
+//=================
+// import { Metrics } from "../backend/Metrics";
+// Metrics.templateDetails().then(metrics => {
+//     for(const metric of metrics)
+//         console.log(metric.name, metric.value)
+// })
+
+
+//====================
+// Page count per user
+// import { Metrics } from "../backend/Metrics";
+// Metrics.pagePerUser().then( output => {
+//     console.log(output)
+//     console.log(JSON.stringify(output))
+// })
+
+//====================
+// User Categories
+// import { Metrics } from "../backend/Metrics";
+// Metrics.usersPerAccountCategory().then( metrics => {
+//     for(const metric of metrics)
+//         console.log(metric.name, metric.value)
+// })
+
+//====================
+// Refresh pages count
+// import { TemplateDao } from "../backend/TemplateDao";
+// const templateIds = [294, 142, 141, 404, 452, 282, 455, 450, 453, 457, 456, 297, 403, 410, 328, 106, 107, 233, 108, 174, 113, 296, 302, 305, 342, 114, 175, 348, 350, 351, 154, 116, 118, 120, 121, 119, 6, 124, 125, 129, 41, 130, 48, 193, 45, 67, 162, 117, 246, 134, 242, 269, 275, 285, 110, 381, 268, 379, 388, 383, 105, 298, 308, 360, 362, 361, 373, 374, 375, 347, 377, 340, 382, 384, 389, 354, 406, 402, 396, 392, 398, 407, 399, 400, 395, 405, 397, 401, 138];
+// // refresh every page in templateIds and and wait 500ms
+// const refresh = async () => {
+//     for(const templateId of templateIds) {
+//         TemplateDao.refreshPagesCount(templateId).then( output => {
+//             console.log("New Page Count for template", templateId, output)
+//         })
+//         await new Promise(resolve => setTimeout(resolve, 500));
+//     }
+// }
+// refresh().then(() => console.log("Done"))
+
+// new Dao('prints').count().then( r => console.log(r))
+// Adip.fetchAirport('OG14').then(airport => console.log(JSON.stringify(airport)));
+// (async () => {
+//     const metric = await HouseKeeping.performAdipCleanup();
+//     console.log(metric.name, metric.value)
+// })
+
+
+// load local file source.fmd into ArrayBuffer
+// var fs = require('fs');
+// fs.readFile('source.fmd', function(err:any, data:any) {
+//     if (err) throw err;
+//     FmdWriter.decode(data.buffer).then(text => console.log(text))
+// });
+
+import { Maintenance } from "../backend/Maintenance";
+Maintenance.willie(false, false)
