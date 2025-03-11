@@ -1,3 +1,5 @@
+## 03/10/2025 5110
+* Progress with metering
 ## 03/03/2025 5102
 * Adjusted metrics
 ## 03/02/2025
