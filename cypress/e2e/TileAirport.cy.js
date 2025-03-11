@@ -48,7 +48,7 @@ describe('Tiles', () => {
     cy.wait('@getOneAirport').its('response.statusCode').should('equal', 200)
 
     // Name should be shown in AirportInput
-    cy.get('.page0 > :nth-child(3) > .content > .settings > .airportCode > .airportName').contains(bellinghamTitle)
+    cy.get('.page0 > .tile2 .settings > .airportCode .airportName').contains(bellinghamTitle)
     cy.get('.page0 > :nth-child(3) > .content > .actionBar > [aria-label="Apply"]').click()
     // Check for bellingham fields
     const kbliValues = {tile:bellinghamTitle, label0:'ATIS',value0:'134.450',label1:'TWR',value1:'124.900',label2:'Elev',value2:'171',label3:'TPA',value3:'1201',watermark:'KBLI',dimensions:'6700x150'}
