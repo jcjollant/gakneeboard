@@ -1,4 +1,8 @@
 # User Experience updates
+## 03/11/2025 5110
+* Version number is showing up in template details
+* Removed google analytics from dev
+* Added button to enable recent airport list
 ## 03/08/2025 5103
 * Force save before printing
 * Lines alignment in Checklist fix
