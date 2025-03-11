@@ -85,7 +85,12 @@ export class HealthCheck {
 
     static async environmentVariables():Promise<Check> {
         const checks:Check[] = []
-        const envVars:string[] = ['STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET', 'STRIPE_HH1_PRICE', 'STRIPE_BD1_PRICE']
+        const envVars:string[] = [
+            'STRIPE_SECRET_KEY', 
+            'STRIPE_WEBHOOK_SECRET', 
+            'STRIPE_HH1_PRICE', 
+            'STRIPE_PP1_PRICE', 
+            'STRIPE_BD1_PRICE']
 
         const check:Check = new Check("Environment Variables")
         for(const envVar of envVars) {
@@ -116,39 +121,14 @@ export class HealthCheck {
         return check
     }
 
-    /**
-     * Sends an email with the outcome of all checks
-     * This methods requires a password that seems to expire ona regular bas
-     * @param data 
-     * @param failedChecks 
-     * @returns 
-     */
-    static async sendMail(data:any, failedChecks:number) {
-        const message = 'Found ' + failedChecks + ' fail(s)\n\n' + data;
-        await Email.send(message, EmailType.Housekeeping)
-    }
-
-    public static async perform(email:boolean=true):Promise<Check[]> {
+    public static async perform():Promise<Check[]> {
         return Promise.all([
                 HealthCheck.effectiveDateCheck(), 
                 HealthCheck.environmentVariables(),
                 HealthCheck.airportDuplicatesCheck(),
                 HealthCheck.availablePublicationsCheck()
             ]).then( async allChecks => {
-            const failedChecks:number = allChecks.filter((check) => check.status === Check.FAIL).length
-            const data:string = JSON.stringify(allChecks)
-
-            // console.log( '[HealthCheck.perform]', data, 'failures', failedChecks)
-            await sql`INSERT INTO health_checks (data,failures) VALUES (${data},${failedChecks})`;
-    
-            // console.log( '[HealthCheck.perform] sending email')
-            if(email) {
-                await HealthCheck.sendMail( data, failedChecks)
-            } else {
-                console.log('Skipping email')
-            }
-            return allChecks
-        })
-    
+               return allChecks
+            })
     }
 }
