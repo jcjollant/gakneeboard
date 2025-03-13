@@ -3,7 +3,7 @@ import { contentTypeJson, getUrlWithUser, currentUser } from './data.js'
 import { isDefaultName } from './sheetData.js'
 import { GApiUrl } from '../lib/GApiUrl.js'
 import { PageType } from './PageType.js'
-import { Template } from './Templates.js'
+import { Template } from '../model/Template.js'
 
 export class ExportOutput {
     filename:string;
@@ -14,6 +14,14 @@ export class ExportOutput {
     }
 }
 
+export class TemplateStatus {
+    code:number;
+    template:Template;
+    constructor(code:number, template:Template) {
+        this.code = code
+        this.template = template
+    }
+}
 
 export class TemplateData {
     /**
@@ -129,17 +137,17 @@ export class TemplateData {
      * @param id 
      * @returns 
      */
-    static get(id:number):Promise<Template|undefined> {
+    static async get(id:number):Promise<Template> {
         const url = GApiUrl.template(id)
         return new Promise( async (resolve, reject) => {
-            await getUrlWithUser(url).then( response => {
+            getUrlWithUser(url).then( response => {
                 // console.log('[data.sheetGetById]', JSON.stringify(response))
                 const template = new Template(response.data.name, response.data.description, response.data.publish, response.data.data, response.data.ver)
                 template.id = response.data.id
                 resolve( template);
             }).catch( error => {
                 if(error.response && error.response.status == 404) {
-                    resolve(undefined)
+                    resolve(new Template('', ''))
                 } else {
                     console.log( error)
                     reject(error)
@@ -154,25 +162,28 @@ export class TemplateData {
     * @param {*} template 
     * @returns Created template on success or null on failure
     */
-    static save(template:any):any {
-        const url = GApiUrl.template()
-        if( !currentUser.loggedIn) {
-            throw new Error('Cannot save template without user')
-        }
-        if( isDefaultName(template.name)) {
-            throw new Error('Template name conflicts with defaults')
-        }
-        const payload = {user:currentUser.sha256, sheet:template}
-        return axios.post(url, payload, contentTypeJson)
-            .then( response => {
-                // console.log('[Templates.save]', JSON.stringify(response))
-                const updatedTemplate = response.data
-                currentUser.updateTemplate(updatedTemplate)
-                return updatedTemplate
-            })
-            .catch( error => {
-                reportError('[Templates.save] error ' + JSON.stringify(error))
-                return null
+    static async save(template:Template):Promise<TemplateStatus> {
+        return new Promise( async (resolve, reject) => {
+            const url = GApiUrl.template()
+            if( !currentUser.loggedIn) {
+                return reject('Cannot save template without user')
+            }
+            if( isDefaultName(template.name)) {
+                return reject('Template name conflicts with defaults')
+            }
+            const payload = {user:currentUser.sha256, template:template}
+            axios.post(url, payload, contentTypeJson)
+                .then( response => {
+                    // console.log('[TemplateData.save]', response.status)
+                    // console.log('[Templates.save]', JSON.stringify(response))
+                    const updatedTemplate = Template.parse(response.data)
+                    currentUser.updateTemplate(updatedTemplate)
+                    resolve( new TemplateStatus(response.status, updatedTemplate))
+                })
+                .catch( error => {
+                    reportError('[Templates.save] error ' + JSON.stringify(error))
+                    reject('TempateData.save : ' + error)
+                })
             })
     }
 }
