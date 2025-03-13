@@ -1,6 +1,6 @@
 import { setTextRange } from "typescript";
-import { Template } from "../models/Template"
 import { FmdChecklist } from "./FmdChecklist"
+import { TemplateView } from "../models/TemplateView";
 import crypto from 'crypto'
 
 enum KeyUsage {
@@ -13,7 +13,7 @@ export class FmdWriter {
   static CIPHER_TYPE = 'AES-CBC';
   static CIPHER_KEY = Buffer.from('81e06e41a93f3848', 'ascii');
 
-  public static async encodeTemplate(template:Template):Promise<ArrayBuffer> {
+  public static async encodeTemplate(template:TemplateView):Promise<ArrayBuffer> {
     const checklist:FmdChecklist = FmdChecklist.fromTemplate(template)
     // console.log('[FmdWriter.encodeTemplate] checklist', JSON.stringify(checklist))
     return FmdWriter.encode(checklist)

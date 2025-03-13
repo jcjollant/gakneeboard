@@ -1,4 +1,5 @@
-import { PageType, Template, Tile } from "../models/Template"
+import { PageType, Tile } from "../models/Template"
+import { TemplateView } from "../models/TemplateView"
 
 export enum AceType {
     WARNING = 0x77, // w
@@ -89,7 +90,7 @@ export class AceChecklist {
         this.groups = []
     }
 
-    static fromTemplate(template:Template):AceChecklist {
+    static fromTemplate(template:TemplateView):AceChecklist {
         if(!template) return new AceChecklist()
 
         // checklist is named after the template

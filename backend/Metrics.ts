@@ -1,17 +1,17 @@
-import { db, sql } from  "@vercel/postgres";
-import { UserDao } from "./dao/UserDao"
-import { FeedbackDao } from "./FeedbackDao"
-import { AirportDao } from "./AirportDao";
-import { PublicationDao } from './PublicationDao'
-import { TemplateDao } from "./TemplateDao";
-import { Template } from "./models/Template";
-import { AdipDao } from "./adip/AdipDao";
-import { PageType } from './TemplateTools'
-import { UsageDao, UsageType } from "./dao/UsageDao";
-import { UserTools } from './UserTools' 
-import { Email, EmailType } from "./Email";
 import { Adip } from "./adip/Adip";
+import { AdipDao } from "./adip/AdipDao";
+import { AirportDao } from "./AirportDao";
+import { db, sql } from  "@vercel/postgres";
+import { Email, EmailType } from "./Email";
+import { FeedbackDao } from "./FeedbackDao"
+import { PageType } from './TemplateTools'
+import { PublicationDao } from './PublicationDao'
+import { UsageDao, UsageType } from "./dao/UsageDao";
+import { TemplateDao } from "./TemplateDao";
+import { TemplateView } from "./models/TemplateView";
+import { UserDao } from "./dao/UserDao"
 import { UserTemplateData } from "./models/UserTemplateData";
+import { UserTools } from './UserTools' 
 import { UserUsage } from "./models/UserUsage";
 
 export class Metric {
@@ -160,7 +160,7 @@ export class Metrics {
     }
 
     static async templateDetails():Promise<Metric[]> {
-        const templates:Template[] = await TemplateDao.getAllTemplateData()
+        const templates:TemplateView[] = await TemplateDao.getAllTemplateData()
 
         // build a list of all metrics
         const metricsKeys:Key[] = [Key.pagesTotal, Key.pageTiles, Key.pageChecklist, Key.pageStrip, Key.pageCover, Key.pageSelection, Key.pageNavlog, Key.pageNotes, Key.pageApproach, Key.pageDiagram,

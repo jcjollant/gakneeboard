@@ -1,4 +1,4 @@
-import { PageType, Template, Tile } from "../models/Template";
+import { PageType, TemplateView, Tile } from "../models/Template";
 
 
 export class TemplateChecklistItem {
@@ -72,7 +72,7 @@ export class TemplateChecklist {
 
 
     // this format unifies all checklists from a template between checklist page and tiles
-    static fromTemplate(template:Template):TemplateChecklist[] {
+    static fromTemplate(template:TemplateView):TemplateChecklist[] {
         const output:TemplateChecklist[] = []
         
         const checklists:any[] = []

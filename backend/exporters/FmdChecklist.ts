@@ -1,5 +1,6 @@
-import { PageType, Template } from "../models/Template";
+import { PageType } from "../models/Template";
 import { TemplateChecklist, TemplateChecklistItem, TemplateChecklistSection } from "./TemplateChecklist";
+import { TemplateView } from "../models/TemplateView";
 
 // Fmd Hierarchy Checklist : Groups[] > GroupList[] > ItemList[] > Items
 // Template Hierachy : Checklists[] > Section[] > Items
@@ -93,7 +94,7 @@ export class FmdChecklist {
         this.groups = []
     }
 
-    static fromTemplate(template:Template):FmdChecklist {
+    static fromTemplate(template:TemplateView):FmdChecklist {
         const output = new FmdChecklist(template.name, template.desc??'')
 
         // extract Template Checklists from source template

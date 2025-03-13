@@ -1,7 +1,7 @@
-import { Template } from './models/Template';
 import { User } from './models/User'
 import { UserMiniView } from './models/UserMiniView';
 import { TemplateDao } from './TemplateDao';
+import { TemplateView } from './models/TemplateView';
 import { UserDao } from './dao/UserDao'
 
 export class UserTools {
@@ -111,7 +111,7 @@ export class UserTools {
      */
     public static async userMini(user:User):Promise<UserMiniView|undefined> {
         if(!user) return undefined
-        const templates:Template[] = await TemplateDao.getOverviewListForUser(user.id)
+        const templates:TemplateView[] = await TemplateDao.getOverviewListForUser(user.id)
         const userMini:UserMiniView = new UserMiniView(user, templates)
         // console.log('[userTools.userMiniFromRequest] userMini ' + JSON.stringify(userMini))
         return userMini

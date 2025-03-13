@@ -2,7 +2,7 @@ import { TemplateDao } from '../TemplateDao';
 import { Business } from '../business/Business';
 import { UserDao } from '../dao/UserDao';
 import { AccountType } from './AccountType';
-import { Template as Template } from './Template';
+import { TemplateView as TemplateView } from './Template';
 import { User } from './User'
 
 export class UserMiniView {
@@ -10,11 +10,11 @@ export class UserMiniView {
     name: string;
     maxPages: number; // max pages per template
     maxTemp: number; // mex templates
-    templates: Template[];
+    templates: TemplateView[];
     accountType: AccountType;
     printCredits: number;
 
-    constructor(user:User, templates:Template[]) {
+    constructor(user:User, templates:TemplateView[]) {
         this.sha256 = user.sha256;
         this.name = user.name;
         this.maxPages = Business.maxPagesFromAccountType(user.accountType)

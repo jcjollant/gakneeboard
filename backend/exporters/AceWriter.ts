@@ -1,6 +1,6 @@
 import { Crc32 } from "../Crc32";
 import { AceChecklist, AceType } from "./AceChecklist";
-import { Template } from "../models/Template";
+import { TemplateView } from "../models/TemplateView";
 
 export class AceWriter {
     static FILE_START = Uint8Array.from([0xf0, 0xf0, 0xf0, 0xf0, 0x0, 0x1]);
@@ -23,7 +23,7 @@ export class AceWriter {
         return AceWriter.encode(checklist)
     }
 
-    public static async encodeTemplate(template:Template):Promise<ArrayBuffer> {
+    public static async encodeTemplate(template:TemplateView):Promise<ArrayBuffer> {
         const checklist:AceChecklist = AceChecklist.fromTemplate(template)
         return AceWriter.encode(checklist)
     }
