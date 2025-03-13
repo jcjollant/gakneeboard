@@ -43,19 +43,20 @@
   </div>
 </template>
 
-<script setup>
-import html2canvas from 'html2canvas'
-import { useConfirm } from 'primevue/useconfirm'
-import { useToast } from 'primevue/usetoast'
-import { onMounted, onUnmounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+<script setup lang="ts">
 import { currentUser } from '../assets/data.js'
-import { getTemplateDemoTiles } from '../assets/sheetData.js'
-import { TemplateData } from '../assets/TemplateData.ts'
-import { useToaster } from '../assets/Toaster.ts'
 import { LocalStore } from '../lib/LocalStore.ts'
+import { onMounted, onUnmounted, ref } from 'vue'
+import { TemplateData } from '../assets/TemplateData.ts'
+import { RouterNames } from '../router/index.js'
+import { Template, TemplatePage } from '../model/Template'
+import { useConfirm } from 'primevue/useconfirm'
+import { useRoute, useRouter } from 'vue-router'
+import { useToast } from 'primevue/usetoast'
+import { useToaster } from '../assets/Toaster.ts'
 
 // Components
+import html2canvas from 'html2canvas'
 import Editor from '../components/editor/Editor.vue'
 import Menu from '../components/menu/Menu.vue'
 import MenuButton from '../components/menu/MenuButton.vue'
@@ -63,9 +64,10 @@ import LoadingPage from '../components/page/LoadingPage.vue'
 import Page from '../components/page/Page.vue'
 import TemplateExport from '../components/templates/TemplateExport.vue'
 import TemplateSettings from '../components/templates/TemplateSettings.vue'
-import { RouterNames } from '../router/index.js'
+import { DemoData } from '../assets/DemoData.ts'
 
-const activeTemplate = ref(null)
+const noTemplate = Template.noTemplate()
+const activeTemplate = ref(noTemplate)
 let cssPageGap = -1
 let cssPageWidth = -1
 const emits = defineEmits(['about','template'])
@@ -79,15 +81,17 @@ const showExport = ref(false)
 const showSettings = ref(false)
 const singlePage = ref(false)
 let templateBeforeEdit = null;
+const templateModified = ref(false)
 const toaster = useToaster(useToast())
 
 onMounted(() =>{
   // console.log('[Template.onMounted]')
   try {
-    if(route.params.id && route.params.id > 0) {
-      activeTemplate.value = null;
-      TemplateData.get(route.params.id).then( template => {
-        if(template) {
+    const templateId = Number(route.params.id) || 0
+    if(templateId) {
+      activeTemplate.value = noTemplate;
+      TemplateData.get(templateId).then( template => {
+        if(template.id) {
           loadTemplate(template, true)
           emits('template',template)
         } else {
@@ -105,7 +109,7 @@ onMounted(() =>{
   } catch(e) {
     console.log('[Template.onMounted] failed loading template ' + e)
     // revert to demo tiles
-    loadTemplate(getTemplateDemoTiles(), true)
+    loadTemplate(DemoData.tiles(), true)
   }
 
 
@@ -142,17 +146,17 @@ function getTemplateName() {
   } else {
     name = activeTemplate.value.name
   } 
-  if( activeTemplate.value?.modified) name += '*'
+  if( templateModified.value) name += '*'
   return name;
 }
 
 // update all widgets with provided data
-function loadTemplate(template=null,saveToLocalStorage=false) {
+function loadTemplate(template:Template,saveToLocalStorage:boolean=false) {
   // console.log( '[Template.loadTemplate]', typeof data, JSON.stringify(sheet))
 
   // if we don't know what to show, we load a copy of the demo page
-  if( !template) {
-    template = getTemplateDemoTiles();
+  if( template.invalid()) {
+    template = DemoData.tiles();
   }
 
   // make sure data is at the latest format
@@ -179,7 +183,7 @@ function loadTemplate(template=null,saveToLocalStorage=false) {
       if(template.id > 0 && LocalStore.thumbnailGet(template.id) == null) {
         updateThumbnail(template.id)
       }
-      resolve(true)
+      resolve()
     })
   }, 1000)
 }
@@ -247,11 +251,12 @@ function onOffset(newOffset) {
   updateOffsets()
 }
 
-function onPageUpdate(index, pageData) {
+function onPageUpdate(index:number, pageData) {
   // console.log('[Template.onPageUpdate] index', pageData.index)
-  activeTemplate.value.modified = true
+  templateModified.value = true
+
   // save template data for that pages
-  activeTemplate.value.data[index] = {data:pageData.data,type:pageData.type}
+  activeTemplate.value.data[index] = new TemplatePage(pageData.type, pageData.name, pageData.data)
   // Only update templates for changes pertaining to the first page and while a template is not new
   // console.log('[Template.onPageUpdate]', route.params.id)
   // save template locally
@@ -265,7 +270,7 @@ function onPrint() {
     return
   }
 
-  if( activeTemplate.value && activeTemplate.value.id && activeTemplate.value.modified) {
+  if( templateModified.value) {
     toaster.warning('Line up and Wait', 'Please save your template before printing')
     return
   }
@@ -285,20 +290,24 @@ async function onSave() {
   try {
       // retrieve data from active template
       toaster.info( 'Say Request', 'Saving template ' + activeTemplate.value.name)
-      await TemplateData.save(activeTemplate.value).then(t => {
+      TemplateData.save(activeTemplate.value).then(ts => {
         // console.log('[Template.onSave]', activeTemplate.value.id, JSON.stringify(t))
+        const t = ts.template
         let message = 'Template "' + t.name + '" saved';
         if(t.publish && t.code) {
           message += '\nShare code is ' + t.code
         }
         toaster.success( 'Clear', message)
+        if(ts.code == 202) {
+          toaster.warning('Max Templates', 'You have reached your template maximum. Please consider upgrading promptly', 6000)
+        }
         // update version number
         activeTemplate.value.ver = t.ver
         // update code
         activeTemplate.value.code = t.code
 
         // mark the template as not modified anymore
-        activeTemplate.value.modified = false
+        templateModified.value = false
 
         // did we just get an id?
         if(!activeTemplate.value.id) {
@@ -322,7 +331,7 @@ function onSettings(settings) {
     activeTemplate.value.desc = settings.desc
     activeTemplate.value.publish = settings.publish
     // We consider the template as modified if it's a cloud template
-    activeTemplate.value.modified = activeTemplate.value.id > 0
+    templateModified.value = activeTemplate.value.id > 0
     saveTemplateToLocalStore()
     // save template if relevant
     if(currentUser.loggedIn && activeTemplate.value.id ) onSave()
@@ -361,33 +370,31 @@ function updateOffsets() {
   // console.log('[Template.updateOffset] offsetLast', maxOffset)
 }
 
-function updateThumbnail(index) {
+function updateThumbnail(index:number) {
   // console.log('[Template.updateThumbnail]', activeTemplate.value?.id)
-  if( activeTemplate.value) {
-    // Capture page 0 into an image
-    html2canvas(document.querySelector(".page0")).then(canvas => {
-      // scale image to fit the thummbnail
-      const scaledCanvas = document.createElement('canvas')
-      const scaleFactor = 200 / canvas.width;
-      scaledCanvas.width = canvas.width * scaleFactor
-      scaledCanvas.height = canvas.height * scaleFactor
-      const scaledCtx = scaledCanvas.getContext('2d')
-      scaledCtx.scale(scaleFactor, scaleFactor)
-      scaledCtx.drawImage(canvas, 0, 0)
-      const scaledImg = scaledCanvas.toDataURL('image/png')
+  if(activeTemplate.value.invalid()) return;
+  const element:HTMLElement|null = document.querySelector(".page0")
+  if(element == null) return;
 
-      // actually save image
-      LocalStore.thumbnailSave(index, scaledImg)
+  // Capture page 0 into an image
+  html2canvas(element).then(canvas => {
+    // scale image to fit the thummbnail
+    const scaledCanvas = document.createElement('canvas')
+    const scaleFactor = 200 / canvas.width;
+    scaledCanvas.width = canvas.width * scaleFactor
+    scaledCanvas.height = canvas.height * scaleFactor
+    const scaledCtx = scaledCanvas.getContext('2d')
+    if(scaledCtx == null) return
+    scaledCtx.scale(scaleFactor, scaleFactor)
+    scaledCtx.drawImage(canvas, 0, 0)
+    const scaledImg = scaledCanvas.toDataURL('image/png')
 
-      // trigger image download
-      // const link = document.createElement('a')
-      // link.download = 'thumbnail.png'
-      // link.href = scaledImg
-      // link.click()
+    // actually save image
+    LocalStore.thumbnailSave(index, scaledImg)
 
-      // console.log( '[Template.updateThumbnail] done', index, scaledImg.length)
-    }).catch((e) => console.log('[Template.updateThumbnail] failed', e))
-  }
+    // console.log( '[Template.updateThumbnail] done', index, scaledImg.length)
+  }).catch((e) => console.log('[Template.updateThumbnail] failed', e))
+
 }
 </script>
 
