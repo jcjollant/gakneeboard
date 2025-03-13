@@ -17,7 +17,7 @@ import { PublishedTemplate } from './models/PublishedTemplate'
 import { Sunlight } from './models/Sunlight'
 import { Template } from './models/Template'
 import { TemplateDao } from './TemplateDao'
-import { TemplateView } from './models/TemplateVIew.js'
+import { TemplateView } from './models/TemplateView.js'
 import { User } from './models/User'
 import { UserMiniView } from './models/UserMiniView'
 
