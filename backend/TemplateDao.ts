@@ -3,6 +3,7 @@ import { Template } from "./models/Template";
 import { UserTemplateData } from "./models/UserTemplateData";
 import { Dao } from "./dao/Dao";
 import { TemplateView } from "./models/TemplateView";
+import { template } from "@babel/core";
 
 export class TemplateDao extends Dao<Template> {
     protected tableName: string = 'sheets';
@@ -45,14 +46,21 @@ export class TemplateDao extends Dao<Template> {
     }
 
     /**
-     * Delete a sheet for a given user
-     * @param templateId 
-     * @param userId 
+     * Delete a specific template for a given user
+     * @param templateId Template id
+     * @param userId Template owner
+     * @return Deleted template Id or 0 if no match where found
      */
     public static async delete(templateId:number, userId:number):Promise<number> {
-        sql`
+        const result = await sql`
             DELETE FROM sheets WHERE id=${templateId} AND user_id=${userId};
         `
+        if( result.rowCount == 0) {
+            return 0
+        }
+        // Free up associated publications
+        sql`UPDATE publications SET sheetid=NULL WHERE sheetid=${templateId}`
+
         return templateId
     }
 
@@ -82,10 +90,10 @@ export class TemplateDao extends Dao<Template> {
     // }
 
     /**
-     * Gets a list of pages for a given user. The list is returned as an array of 
-     * objects without data nor version
+     * Gets a list of pages for a given user. The list is returned as an array of objects without data nor version
+     * A joint is performed with the publications table to get the publication status
      * @param userId 
-     * @returns list of found sheets
+     * @returns list of found sheets which could be empty
      */
     public static async getOverviewListForUser(userId:number):Promise<TemplateView[]> {
         // console.log('[SheetDao.getListForUser] user', userId)
