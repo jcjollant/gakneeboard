@@ -1,12 +1,17 @@
 import { describe, expect, it, jest, test} from '@jest/globals';
-import { GApi, GApiError } from '../backend/GApi'
+import { GApi, GApiError, TemplateStatus } from '../backend/GApi'
 import { jcHash, jcUserId, jcTestTemplateData, jcTestTemplateName, jcTestTemplateDescription } from './constants'
-import { Template } from '../backend/models/Template'
-import { PublishedTemplate } from '../backend/models/PublishedTemplate';
 import { TemplateDao } from '../backend/TemplateDao';
 import { PublicationDao } from '../backend/PublicationDao';
 import { Publication } from '../backend/models/Publication';
 import { UserDao } from '../backend/dao/UserDao';
+import { TemplateView } from '../backend/models/TemplateVIew';
+import { Template } from '../backend/models/Template';
+import { User } from '../backend/models/User';
+import { newTestUser } from './common';
+import { sourceMapsEnabled } from 'process';
+import { Business } from '../backend/business/Business';
+import { AccountType } from '../backend/models/AccountType';
 import exp from 'constants';
 
 require('dotenv').config();
@@ -22,7 +27,7 @@ describe( 'GApi Tests', () => {
 
         it('succeed with proper template', async () => {
             const templateId = 22
-            const template = new Template( templateId, jcTestTemplateName, jcTestTemplateData)
+            const template = new TemplateView( templateId, jcTestTemplateName, jcTestTemplateData)
             jest.spyOn(TemplateDao, 'readById').mockResolvedValue(template);
             jest.spyOn(TemplateDao, 'delete').mockResolvedValue(1);
 
@@ -43,7 +48,7 @@ describe( 'GApi Tests', () => {
         })
 
         it('Returns template with publication status', async () => {
-            const template = new Template(0, jcTestTemplateName, jcTestTemplateData)
+            const template = new TemplateView(0, jcTestTemplateName, jcTestTemplateData)
             jest.spyOn(TemplateDao, 'readById').mockResolvedValue(template);
             jest.spyOn(PublicationDao, 'findByTemplate').mockResolvedValue(undefined);
 
@@ -72,62 +77,147 @@ describe( 'GApi Tests', () => {
 
     describe('templateSave', () => {
         it('dodges invalid user', async () => {
-            jest.spyOn(TemplateDao, 'getOverviewListForUser').mockResolvedValue([]);
-            jest.spyOn(UserDao, 'getIdFromHash').mockResolvedValue(undefined)
-            const template = new Template(0, jcTestTemplateName, jcTestTemplateData)
+            jest.clearAllMocks()
+            jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(undefined)
+            const template = new TemplateView(0, jcTestTemplateName, jcTestTemplateData)
 
-            await expect(GApi.templateSave(jcHash, template)).rejects.toBeInstanceOf(GApiError)
+            await expect(GApi.templateSave(jcHash, template)).rejects.toEqual(new GApiError(400, "Invalid user"))
 
-            expect(UserDao.getIdFromHash).toBeCalledWith(jcHash)
+            expect(UserDao.getUserFromHash).toBeCalledWith(jcHash)
+        })
+
+        it('blocks maxed out users', async () => {
+            jest.clearAllMocks()
+            const simUserId = 55
+            const simUser = newTestUser(simUserId)
+            simUser.accountType = AccountType.simmer
+            simUser.maxTemplates = 30
+
+            jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(simUser)
+
+            // User already has max templates
+            jest.spyOn(TemplateDao, 'countForUser').mockResolvedValue(Business.MAX_TEMPLATE_SIMMER)
+
+            const tv = new TemplateView(0, jcTestTemplateName, jcTestTemplateData)
+
+            await expect(GApi.templateSave(simUser.sha256, tv)).rejects.toEqual(new GApiError(402, "Cannot create a new Template while over maximum for account type"))
+
+            expect(TemplateDao.countForUser).toBeCalledWith(simUserId)
+            expect(UserDao.getUserFromHash).toBeCalledWith(simUser.sha256)
+
+        })
+
+        it('Gives grace to maxed out updates', async () => {
+            jest.clearAllMocks()
+            const simUserId = 55
+            const simUser = newTestUser(simUserId)
+            simUser.accountType = AccountType.simmer
+            const templateId = 66
+            const publicTemplate = new Template(templateId, jcUserId, jcTestTemplateData, jcTestTemplateName, jcTestTemplateDescription, 0, 0)
+
+            jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(simUser)
+            jest.spyOn(TemplateDao, 'createOrUpdate').mockResolvedValue(publicTemplate)
+            // User already has max templates
+            jest.spyOn(TemplateDao, 'countForUser').mockResolvedValue(Business.MAX_TEMPLATE_SIMMER)
+            jest.spyOn(PublicationDao, 'unpublish').mockResolvedValue()
+
+            const tv = new TemplateView(1, jcTestTemplateName, jcTestTemplateData)
+
+            await GApi.templateSave(simUser.sha256, tv).then( ts => {
+                expect(ts.code).toBe(202)
+            })
+
         })
 
         it('finds publication code', async () => {
+            jest.clearAllMocks()
             const templateId = 33;
-            const publicTemplate = new Template(templateId, jcTestTemplateName, jcTestTemplateData)
-            publicTemplate.publish = true
+            const publicTemplateView = new TemplateView(templateId, jcTestTemplateName, jcTestTemplateData)
+            const publicTemplate = new Template(templateId, jcUserId, jcTestTemplateData, jcTestTemplateName, jcTestTemplateDescription, 0, 0)
+            publicTemplateView.publish = true
             const publicationCode = 'ZZ'
-            const publication = new Publication(0, publicationCode, publicTemplate.id, true)
+            const publication = new Publication(0, publicationCode, publicTemplateView.id, true)
 
-            jest.spyOn(UserDao, 'getIdFromHash').mockResolvedValue(jcUserId)
+            const userJc = new User(jcUserId, jcHash)
+            jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(userJc)
             jest.spyOn(TemplateDao, 'createOrUpdate').mockResolvedValue(publicTemplate)
             jest.spyOn(PublicationDao, 'publish').mockResolvedValue(publication)
 
-            const t = await GApi.templateSave(jcHash, publicTemplate)
+            const ts = await GApi.templateSave(jcHash, publicTemplateView)
+            const t = ts.template
 
             expect(t.code).toBe(publicationCode)
             expect(t.publish).toBeTruthy()
-            expect(t.id).toBe(publicTemplate.id)
-            expect(TemplateDao.createOrUpdate).lastCalledWith(publicTemplate, jcUserId)
-            expect(PublicationDao.publish).lastCalledWith(publicTemplate.id)
+            expect(t.id).toBe(publicTemplateView.id)
+            expect(TemplateDao.createOrUpdate).lastCalledWith(publicTemplateView, jcUserId)
+            expect(PublicationDao.publish).lastCalledWith(publicTemplateView.id)
         })
 
         it('sends error if publication failed', async () => {
+            jest.clearAllMocks()
 
             const templateId = 33;
-            const publicTemplate = new Template(templateId, jcTestTemplateName, jcTestTemplateData)
-            publicTemplate.publish = true
+            const publicTemplateView = new TemplateView(templateId, jcTestTemplateName, jcTestTemplateData)
+            const publicTemplate = new Template(templateId, jcUserId, jcTestTemplateData, jcTestTemplateName, jcTestTemplateDescription, 0, 0)
+            publicTemplateView.publish = true
 
-            jest.spyOn(UserDao, 'getIdFromHash').mockResolvedValue(jcUserId)
+            const userJc = new User(jcUserId, jcHash)
+
+            jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(userJc)
             jest.spyOn(TemplateDao, 'createOrUpdate').mockResolvedValue(publicTemplate)
             jest.spyOn(PublicationDao, 'publish').mockResolvedValue(undefined)
 
             // if publication fails, it should throw an error
-            await expect(GApi.templateSave(jcHash, publicTemplate)).rejects.toBeInstanceOf(GApiError)
+            await expect(GApi.templateSave(jcHash, publicTemplateView)).rejects.toBeInstanceOf(GApiError)
         })
 
-        it('works with unpublished templates', async() =>{
-            const templateId = 44;
-            const privateTemplate = new Template(templateId, jcTestTemplateName, jcTestTemplateData, '', 1, false)
+        it('works with unpublished templates', async() => {
+            jest.clearAllMocks()
 
-            jest.spyOn(UserDao, 'getIdFromHash').mockResolvedValue(jcUserId)
+            const templateId = 44;
+            const privateTemplateView = new TemplateView(templateId, jcTestTemplateName, jcTestTemplateData, '', 1, false)
+            const privateTemplate = new Template(templateId, jcUserId, jcTestTemplateData, jcTestTemplateName, jcTestTemplateDescription, 0, 0)
+
+            const userJc = new User(jcUserId, jcHash)
+
+            jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(userJc)
             jest.spyOn(TemplateDao, 'createOrUpdate').mockResolvedValue(privateTemplate)
             jest.spyOn(PublicationDao, 'publish').mockResolvedValue(undefined)
+            jest.spyOn(TemplateDao, 'countForUser').mockResolvedValue(1) // starting count
 
-            const t = await GApi.templateSave(jcHash, privateTemplate)
+            const ts = await GApi.templateSave(jcHash, privateTemplateView)
 
+            expect(ts.code).toBe(200) // because we had 1
+            const t = ts.template
             expect(t.code).toBeUndefined()
             expect(t.publish).toBeFalsy()
             expect(t.id).toBe(templateId)
+        })
+
+        it('Can unpublish a previously published template', async () => {
+            jest.clearAllMocks()
+
+            const templateId = 11;
+            const templateView = new TemplateView( templateId, 'name', {}, '', 1, false)
+            expect(templateView.publish).toBeFalsy()
+            const template = new Template(templateId, jcUserId, jcTestTemplateData, jcTestTemplateName, jcTestTemplateDescription, 0, 0)
+
+            const userJc = new User(jcUserId, jcHash)
+            jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(userJc)
+            jest.spyOn(TemplateDao, 'createOrUpdate').mockResolvedValue(template)
+            jest.spyOn(PublicationDao, 'publish').mockResolvedValue(undefined)
+            jest.spyOn(PublicationDao, 'unpublish').mockResolvedValue()
+            jest.spyOn(TemplateDao, 'countForUser').mockResolvedValue(1) // starting count
+
+            const ts = await GApi.templateSave(jcHash, templateView)
+
+            expect(ts.code).toBe(200)
+            expect(ts.template.publish).toBeFalsy()
+            expect(ts.template.code).toBeUndefined()
+
+            expect(PublicationDao.publish).toBeCalledTimes(0)
+            expect(PublicationDao.unpublish).toBeCalledTimes(1)
+            expect(PublicationDao.unpublish).lastCalledWith(templateView.id)
         })
     })
 
