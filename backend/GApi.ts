@@ -1,24 +1,25 @@
 import axios from 'axios'
 import { Adip } from '../backend/adip/Adip'
 import { AirportDao } from './AirportDao'
+import { Business } from './business/Business'
+import { Email, EmailType } from './Email'
 import { Exporter } from './Exporter'
-import { PublicationDao } from './PublicationDao'
-import { TemplateDao } from './TemplateDao'
 import { UserTools } from './UserTools'
 import { version } from './constants.js'
 import { UsageDao, UsageType } from './dao/UsageDao'
 import { UserDao } from './dao/UserDao'
 import { Airport, versionInvalid } from './models/Airport'
 import { AirportView } from './models/AirportView'
+import { FeedbackDao } from './FeedbackDao'
 import { Publication } from './models/Publication'
+import { PublicationDao } from './PublicationDao'
 import { PublishedTemplate } from './models/PublishedTemplate'
 import { Sunlight } from './models/Sunlight'
 import { Template } from './models/Template'
+import { TemplateDao } from './TemplateDao'
+import { TemplateView } from './models/TemplateVIew.js'
 import { User } from './models/User'
 import { UserMiniView } from './models/UserMiniView'
-import { FeedbackDao } from './FeedbackDao'
-import { Email, EmailType } from './Email'
-import { Business } from './business/Business'
 
 // Google API key
 
@@ -31,12 +32,21 @@ export class GApiError {
     }
 }
 
+export class TemplateStatus {
+  code:number; // HttpsStatusCode
+  template:TemplateView;
+  constructor(code:number, template:TemplateView) {
+    this.code = code
+    this.template = template
+  }
+}
+
 export class GApi {
 
     public static async authenticate(body:any):Promise<UserMiniView> {
         try {
             const user:User = await UserTools.authenticate(body);
-            const templates:Template[] = await TemplateDao.getOverviewListForUser(user.id);
+            const templates:TemplateView[] = await TemplateDao.getOverviewListForUser(user.id);
             const output:UserMiniView = new UserMiniView(user, templates);
             return output;
         } catch(e) {
@@ -71,7 +81,7 @@ export class GApi {
         const userId:number|undefined = await UserDao.getIdFromHash(userSha256)
         if( !userId) throw new GApiError(400, "Invalid User");
         // Fetch template for user
-        const template:Template|undefined = await TemplateDao.readById(templateId, userId)
+        const template:TemplateView|undefined = await TemplateDao.readById(templateId, userId)
         if( !template) throw new GApiError(400, "Invalid Template");
 
         const exportData = {format:format}
@@ -335,7 +345,7 @@ export class GApi {
         }
     }
 
-    public static async publicationGet(code:string):Promise<Template|undefined> {
+    public static async publicationGet(code:string):Promise<TemplateView|undefined> {
         const pub:Publication|undefined = await PublicationDao.findByCode(code)
         if(!pub || !pub.templateId) throw new GApiError(404, 'Publication not found');
         return TemplateDao.readById(pub.templateId)
@@ -355,7 +365,7 @@ export class GApi {
      */
     public static async templateDelete(templateId:number, userId:number):Promise<string> {
         return new Promise<string>( async (resolve, reject) => {
-            const template:Template|undefined = await TemplateDao.readById(templateId, userId)
+            const template:TemplateView|undefined = await TemplateDao.readById(templateId, userId)
             // console.log( '[gapi.sheetDelete] ' + sheetId + ' -> ' + output)
             if( template) {
                 await TemplateDao.delete(templateId, userId)
@@ -372,8 +382,8 @@ export class GApi {
      * @returns 
      * @throws 404 if not found
      */
-    public static async templateGet(templateId:number,userId:number):Promise<Template|undefined> {
-        const template:Template|undefined = await TemplateDao.readById(templateId, userId)
+    public static async templateGet(templateId:number,userId:number):Promise<TemplateView|undefined> {
+        const template:TemplateView|undefined = await TemplateDao.readById(templateId, userId)
         // console.log( '[gapi.sheetGet] ' + sheetId + ' -> ' + output)
         if( !template) return undefined;
         // is this published?
@@ -383,40 +393,59 @@ export class GApi {
         return template;
     }
 
-    public static async templateGetList(userId:number):Promise<Template[]> {
-        const templates:Template[] = await TemplateDao.getOverviewListForUser(userId)
+    public static async templateGetList(userId:number):Promise<TemplateView[]> {
+        const templates:TemplateView[] = await TemplateDao.getOverviewListForUser(userId)
         return templates
     }
 
     /**
      * Save a new template in DB or update it if it's existing
-     * @param userSha256 
-     * @param name 
-     * @param data 
-     * @returns Template name
+     * Customers can always save at or below the limit without warnings
+     * Customers cannot create new templates if they are already at or above the limit
+     * For new templates, we have a two steps lock down, which will happen gradually
+     * Step 1) Customer can save existing templates above the limit
+     * Step 2) Customers cannot save existing templates until they are above the limit
+     * @param userSha256 User reference
+     * @param templateView Whatever needs tob e saved
+     * @returns A Template status should be 200 if everything goes fine, 202 if user is within tolerance or 402 if user is over limit
      * @throws
      */
-    public static async templateSave(userSha256:string, template:Template):Promise<Template> {
-        return new Promise<Template>( async (resolve, reject) => {
-            const userId:number|undefined = await UserDao.getIdFromHash(userSha256)
+    public static async templateSave(userSha256:string, templateView:TemplateView):Promise<TemplateStatus> {
+        return new Promise( async (resolve, reject) => {
+            const user = await UserDao.getUserFromHash(userSha256)
             // update record
-            if( !userId) return reject( new GApiError( 400, "Invalid user"));
+            if( !user) return reject( new GApiError( 400, "Invalid user"));
 
-            const newTemplate:Template = await TemplateDao.createOrUpdate(template, userId)
-            if(template.publish) {
+            const templateCountForUser = await TemplateDao.countForUser(user.id)
+
+            // Max limit control
+            const maxedOut = templateCountForUser >= Business.maxPages( user)
+            // We don't allow new templates if you are already maxed out
+            if(templateView.id == 0 && maxedOut) {
+                return reject( new GApiError( 402, "Cannot create a new Template while over maximum for account type"))
+            }
+
+            const template:Template = await TemplateDao.createOrUpdate(templateView, user.id)
+            // populate id for new templates
+            if( templateView.id == 0) templateView.id = template.id;
+
+            // Should we check publication?
+            if(templateView.publish) {
                 // we need to create a new publication
-                const newPublication = await PublicationDao.publish(newTemplate.id)
+                const newPublication = await PublicationDao.publish(template.id)
                 // console.log('[GApi.templateSave] publication', JSON.stringify(newPublication)); 
                 if(!newPublication) return reject( new GApiError(500, "Publication failed"));
-                newTemplate.code = newPublication.code;
+                templateView.code = newPublication.code;
             } else {
-                // we need to unpublish that template
-                await PublicationDao.unpublish(newTemplate.id)
-                newTemplate.code = undefined;
+                // we may need to unpublish that template
+                await PublicationDao.unpublish(templateView.id)
+                templateView.code = undefined;
             }
-            // otherwise, template publication status is current
-            // console.log('[GApi.templateSave]', JSON.stringify(newSheet)); 
-            resolve( newTemplate);
+
+            // Status code will depend on template count
+            // During the grace period, we allow update on maxed out but return 202
+            // Otherwize we just return 200 and basta
+            return resolve( new TemplateStatus( maxedOut ? 202 : 200, templateView));
         })
 
     }
