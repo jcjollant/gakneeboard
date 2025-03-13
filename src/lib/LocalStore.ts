@@ -1,5 +1,6 @@
 import { Airport } from '../model/Airport'
 import { User } from "../model/User"
+import { Template } from "../model/Template"
 
 export class LocalStore {
     static airportPrefix:string = 'airport-'
@@ -174,13 +175,13 @@ export class LocalStore {
     }
 
     // Load active sheet from localstorage
-    static getTemplate() {
+    static getTemplate():Template {
         let stringData = localStorage.getItem(LocalStore.template)
         // Vanilla scenario
-        if( stringData) return JSON.parse(stringData)
+        if( stringData) return Template.parse(JSON.parse(stringData))
 
         // Nothing worked
-        return null;
+        return Template.noTemplate();
     }
 
     // return active user
@@ -271,7 +272,7 @@ export class LocalStore {
         return localStorage.getItem(LocalStore.thumbnailPrefix + id)
     }
 
-    static thumbnailSave( id:string, data:any) {
+    static thumbnailSave( id:number, data:any) {
         localStorage.setItem(LocalStore.thumbnailPrefix + id, data)
     }
 
