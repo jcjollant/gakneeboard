@@ -308,14 +308,14 @@ app.get('/templates', async (req, res) => {
     }
 })
 
-// Template update
+// Template save
 app.post('/template', async (req, res) => {
     // console.log('[index.post/template]', typeof req.body)
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
     // console.log("[index] POST template payload " + JSON.stringify(payload))
-    GApi.templateSave(payload.user, payload.sheet).then( (template) => {
+    GApi.templateSave(payload.user, payload.template).then( (status) => {
         // console.log('[index.post/sheet]', JSON.stringify(sheet))
-        res.send(template)
+        res.status(status.code).send(status.template)
     }).catch( (e) => {
         catchError(res, e, 'POST /template')
     })
