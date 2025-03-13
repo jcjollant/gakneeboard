@@ -43,7 +43,7 @@ export class Template {
     }
 
     static fromView(templateView: TemplateView, userId:number):Template {
-        throw new Template( templateView.id, userId, templateView.data, templateView.name, templateView.desc, templateView.ver, templateView.pages);
+        return new Template( templateView.id, userId, templateView.data, templateView.name, templateView.desc, templateView.ver, templateView.pages);
     }
 }
 
