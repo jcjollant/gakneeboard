@@ -26,7 +26,7 @@ describe('Template', () => {
             expect(t.pages).toEqual(pages)
         })
 
-        it.only('Works with minimum parameters', () => {
+        it('Works with minimum parameters', () => {
             const templateId = 1
             const userId = 2
 
