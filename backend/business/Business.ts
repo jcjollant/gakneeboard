@@ -9,6 +9,9 @@ export class Business {
     static PRINT_PER_PURCHASE: number = 10;
     static PRINT_CREDIT_SIMMER: number = 4;
     static PRINT_CREDIT_PRIVATE:number = 10;
+    static MAX_TEMPLATE_SIMMER: number = 2;
+    static MAX_TEMPLATE_PRIVATE: number = 5;
+    static MAX_TEMPLATE_BETA: number = 10;
 
     private static calculatePrintCredits(user:User):number {
         let credit = 0;
@@ -20,12 +23,15 @@ export class Business {
         return Math.max( user.printCredits, credit)
     }
 
+    static maxPages(user:User):number {
+        return this.maxPagesFromAccountType(user.accountType)
+    }
 
     static maxPagesFromAccountType(accountType:AccountType):number {
         switch(accountType) {
-            case AccountType.private: return 5;
-            case AccountType.beta:    return 10;
-            case AccountType.simmer:  return 2;
+            case AccountType.private: return this.MAX_TEMPLATE_PRIVATE;
+            case AccountType.beta:    return this.MAX_TEMPLATE_BETA;
+            case AccountType.simmer:  return this.MAX_TEMPLATE_SIMMER;
             default:
                 return 0;
         }
