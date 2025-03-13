@@ -32,7 +32,7 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 import { currentUser, routeToLocalTemplate } from '../assets/data';
 import { useRouter } from 'vue-router';
-import { getTemplateDataFromName, SheetName } from '../assets/sheetData';
+import { getTemplateBlank, getTemplateDataFromName, SheetName } from '../assets/sheetData';
 import { useToast } from 'primevue/usetoast';
 import { getToastError } from '../assets/toast';
 import Menu from '../components/menu/Menu.vue';
@@ -83,7 +83,7 @@ function onDemoSelection(name) {
 }
 
 function onNewTemplate() {
-    const templateData = getTemplateDataFromName(SheetName.new)
+    const templateData = getTemplateBlank()
     templateData.name = 'New Template'
 
     // Save demo data to localstore
