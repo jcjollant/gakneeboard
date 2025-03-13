@@ -1,4 +1,4 @@
-import { Publication } from "./Publication";
+import { TemplateView } from "./TemplateView"
 
 export class PageType {
   static selection = 'selection'
@@ -23,39 +23,27 @@ export class Tile {
 
 export class Template {
     id:number;
-    name:string;
+    userId:number;
     data:any;
-    publish:boolean;
-    code:string|undefined;
-    desc:string|undefined;
-    ver:number;
+    name:string;
+    version:number;
+    description:string|undefined;
+    creationDate:Date|undefined;
     pages:number;
 
-    constructor( 
-            id:number, name:string, dataParam:any, description:string|undefined=undefined, 
-            version:number=0, publish:boolean|undefined=false, code:string|undefined=undefined, pages:number=0) {
+    constructor(id:number, userId:number, data:any, name:string, description:string|undefined, version:number, page:number, creationDate:Date|undefined=undefined) {
         this.id = id;
+        this.userId = userId;
+        this.data = data;
         this.name = name;
-        this.desc = description ? description : undefined;
-        // whatever is passed, we want data to be an object
-        if( typeof dataParam == 'string') {
-            this.data = JSON.parse(dataParam);
-        } else {
-            this.data = dataParam;
-        }
-        this.ver = version;
-        this.publish = publish ?? false; // false if undefined
-        this.code = code;
-        this.pages = pages
+        this.version = version;
+        this.description = description;
+        this.creationDate = creationDate;
+        this.pages = page;
     }
 
-    setPublication(pub: Publication|undefined) {
-        if(pub) {
-            this.code = pub.code;
-            this.publish = pub.active;
-        } else {
-            this.code = undefined;
-            this.publish = false;
-        }
+    static fromView(templateView: TemplateView, userId:number):Template {
+        throw new Template( templateView.id, userId, templateView.data, templateView.name, templateView.desc, templateView.ver, templateView.pages);
     }
 }
+
