@@ -178,6 +178,8 @@ describe('Custom Templates', () => {
                 TemplateDao.delete(t1.id, user.id),
                 TemplateDao.delete(t2.id, user.id),
                 TemplateDao.delete(t3.id, user.id)])
+
+            userDao.end()
         })
     })
 

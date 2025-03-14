@@ -5,7 +5,7 @@ import { TemplateDao } from '../backend/TemplateDao';
 import { PublicationDao } from '../backend/PublicationDao';
 import { Publication } from '../backend/models/Publication';
 import { UserDao } from '../backend/dao/UserDao';
-import { TemplateView } from '../backend/models/TemplateVIew';
+import { TemplateView } from '../backend/models/TemplateView';
 import { Template } from '../backend/models/Template';
 import { User } from '../backend/models/User';
 import { newTestUser } from './common';
@@ -76,14 +76,23 @@ describe( 'GApi Tests', () => {
     })
 
     describe('templateSave', () => {
-        it('dodges invalid user', async () => {
+        it('dodges invalid and unknown user', async () => {
             jest.clearAllMocks()
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(undefined)
             const template = new TemplateView(0, jcTestTemplateName, jcTestTemplateData)
 
             await expect(GApi.templateSave(jcHash, template)).rejects.toEqual(new GApiError(400, "Invalid user"))
-
             expect(UserDao.getUserFromHash).toBeCalledWith(jcHash)
+
+            await expect(GApi.templateSave(null as unknown as string, template)).rejects.toEqual(new GApiError(400, "Invalid user"))
+        })
+
+        it('dodges invalid tempalte', async () => {
+            jest.clearAllMocks()
+            const simUser = newTestUser()
+            jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(simUser)
+
+            await expect(GApi.templateSave(simUser.sha256, null as unknown as TemplateView)).rejects.toEqual(new GApiError(400, "Invalid template"))
         })
 
         it('blocks maxed out users', async () => {

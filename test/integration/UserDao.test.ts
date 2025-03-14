@@ -1,17 +1,27 @@
 
-import { describe, expect, it, test} from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, it} from '@jest/globals';
 import { UserDao } from '../../backend/dao/UserDao.ts'
 import { jcUserId, jcHash, jcEmail, jcName, jcSource, jcMaxTemplates } from '../constants.ts';
 import { AccountType } from '../../backend/models/AccountType.ts';
 import { User } from '../../backend/models/User.ts';
 import { newTestUser } from '../common.ts'
 import { db, sql } from '@vercel/postgres';
+import { after } from 'node:test';
 
 require('dotenv').config();
 
 describe('UserDao', () => {
+    let userDao:UserDao;
+    
+    beforeAll(async () => {
+        userDao = new UserDao();
+    })
+
+    afterAll(async () => {
+        userDao.end()
+    })
+
     it('Count', async () => {
-        const userDao = new UserDao();
         expect(await userDao.count()).toBeGreaterThan(1);
     })
 
@@ -54,7 +64,7 @@ describe('UserDao', () => {
     })
 
     it('Add Prints', async () => {
-        const userDao = new UserDao();
+        // const userDao = new UserDao();
         const addedCredits = 10;
         await userDao.get(jcUserId).then( async (jc) => {
             const initialPrintCredits = jc.printCredits;
@@ -68,7 +78,7 @@ describe('UserDao', () => {
     it('Save', async () => {
         const existingUser:User = new User(jcUserId, jcHash)
         // Saving an existing user without overwrite should fail
-        const userDao = new UserDao()
+        // const userDao = new UserDao()
         await expect(userDao.save(existingUser)).rejects.toEqual('Cannot save existing user without overwrite')
 
         const newUser = newTestUser()
@@ -89,8 +99,6 @@ describe('UserDao', () => {
     })
 
     it('refills', async () => {
-        const userDao = new UserDao()
-
         // clean up
         await sql`delete from users where account_type = 'test1' OR account_type='test2'`
 
