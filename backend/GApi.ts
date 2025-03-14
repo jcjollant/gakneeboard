@@ -426,8 +426,10 @@ export class GApi {
             }
 
             const template:Template = await TemplateDao.createOrUpdate(templateView, user.id)
-            // populate id for new templates
-            if( templateView.id == 0) templateView.id = template.id;
+
+            // propgate id and version
+            templateView.id = template.id;
+            templateView.ver = template.version;
 
             // Should we check publication?
             if(templateView.publish) {
