@@ -85,7 +85,10 @@ export class CurrentUser {
 
     sortTemplates() {
       if(this.templates && this.templates.length > 1) {
-        this.templates.sort((a, b) => a.name.localeCompare(b.name));
+        this.templates.sort((a, b) => {
+          if(a.name) return a.name.localeCompare(b.name)
+          return 0
+        });
       }
     }
 
