@@ -19,6 +19,7 @@ export abstract class Dao<T> {
                 console.log('[Dao.count] error ' + err)
                 reject(err)
             }
+            this.db.end()
         })
     }
 
@@ -33,6 +34,7 @@ export abstract class Dao<T> {
                 console.log('[Dao.get] error ' + err)
                 reject(err)
             }
+            this.db.end()
         })
     }
 

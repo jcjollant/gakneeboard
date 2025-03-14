@@ -127,8 +127,10 @@ export class UserDao extends Dao<User> {
                 user.id = result.rows[0].id
                 await this.db.query(`UPDATE ${this.tableName} SET data = '${JSON.stringify(user)}', version=${this.modelVersion}, account_type='${user.accountType}' WHERE id = ${user.id}`)
             } else {
+                this.db.end()
                 return reject('Cannot save existing user without overwrite')
             }
+            this.db.end()
             resolve( user)
         })
     }
