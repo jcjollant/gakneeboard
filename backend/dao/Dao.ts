@@ -8,6 +8,10 @@ export abstract class Dao<T> {
         this.db = sql;
     }
 
+    public end() {
+        this.db.end();
+    }
+
     public count():Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
             const query = `SELECT COUNT(*) FROM ${this.tableName}`;
@@ -19,7 +23,6 @@ export abstract class Dao<T> {
                 console.log('[Dao.count] error ' + err)
                 reject(err)
             }
-            this.db.end()
         })
     }
 
@@ -34,7 +37,6 @@ export abstract class Dao<T> {
                 console.log('[Dao.get] error ' + err)
                 reject(err)
             }
-            this.db.end()
         })
     }
 
