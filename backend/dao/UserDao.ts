@@ -1,8 +1,8 @@
 import { sql } from '@vercel/postgres';
 import { User } from '../models/User'
 import { Dao } from './Dao';
-import { AccountType } from '../models/AccountType';
 import { Refill } from '../models/Refill';
+import { Ticket } from '../Ticket';
 
 export class UserDao extends Dao<User> {
     protected tableName: string = 'users';
@@ -75,11 +75,19 @@ export class UserDao extends Dao<User> {
     public parseRow(row:any):User {
         // console.log('[UserDao.parseRow]', id, sha256, accountType)
         const user = new User(Number(row.id), row.sha256)
-        const data = JSON.parse(row.data)
-        if(data.source) user.setSource(data.source)
-        if(data.email) user.setEmail(data.email)
-        if(data.name) user.setName(data.name)
-        if(data.maxTemplates) user.setMaxTemplates(data.maxTemplates)
+        try {
+            const data = JSON.parse(row.data)
+            if(data?.source) user.setSource(data.source)
+            if(data?.email) user.setEmail(data.email)
+            if(data?.name) user.setName(data.name)
+            if(data?.maxTemplates) user.setMaxTemplates(data.maxTemplates)
+        } catch (err) {
+            Ticket.create(3, '[UserDao.parseRow] error parsing data ' + err)
+            user.setSource('?')
+            user.setEmail('?')
+            user.setName('?')
+            user.maxTemplates = 0
+        }
         user.setAccountType(row.account_type)
         user.setCustomerId(row.customer_id)
         user.setPrintCredits(row.print_credit || 0)
@@ -127,10 +135,8 @@ export class UserDao extends Dao<User> {
                 user.id = result.rows[0].id
                 await this.db.query(`UPDATE ${this.tableName} SET data = '${JSON.stringify(user)}', version=${this.modelVersion}, account_type='${user.accountType}' WHERE id = ${user.id}`)
             } else {
-                this.db.end()
                 return reject('Cannot save existing user without overwrite')
             }
-            this.db.end()
             resolve( user)
         })
     }
