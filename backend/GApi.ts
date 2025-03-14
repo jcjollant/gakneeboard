@@ -310,6 +310,7 @@ export class GApi {
         if( !airport || !airport.location) return undefined
         const dateString:string = Math.trunc(date / 10000) + '-' + Math.trunc(date / 100 % 100) + '-' + (date % 100)
         const url:string = 'https://api.sunrisesunset.io/json?lat=' + airport.location.lat + '&lng=' + airport.location.lon + '&date=' + dateString;
+        // console.log('[GApi.getSunriseData]', url)
         let data:any|undefined = undefined
         await axios.get(url).then( response => {
             // console.log('[GApi.getSunriseData]', JSON.stringify(response.data))
@@ -415,6 +416,7 @@ export class GApi {
             const user = await UserDao.getUserFromHash(userSha256)
             // update record
             if( !user) return reject( new GApiError( 400, "Invalid user"));
+            if( !templateView) return reject( new GApiError(400, 'Invalid template'))
 
             const templateCountForUser = await TemplateDao.countForUser(user.id)
 
