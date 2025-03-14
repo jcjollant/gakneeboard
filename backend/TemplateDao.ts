@@ -32,7 +32,7 @@ export class TemplateDao extends Dao<Template> {
             `
             // we should update something
             if( result.rowCount == 0) {
-                throw new Error("Invalid template id")
+                throw new Error("Invalid template or user id")
             }
         } else { // new Tempalte creation
             const result = await sql`
