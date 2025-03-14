@@ -1,3 +1,5 @@
+import { PageType } from "../assets/PageType";
+
 export class Template {
     id:number;
     name:string
@@ -29,12 +31,20 @@ export class Template {
         return template.name;
     }
 
-    public invalid():boolean {
-        return this.name == '' && this.desc == '' && this.id == 0 && this.data.length == 0 && this.ver == 0
+    public isInvalid():boolean {
+        return this.name == '' && this.desc == '' && this.id == 0 && this.ver == 0
     }
     
+    public isValid():boolean {
+        return !this.isInvalid()
+    }
+
     static noTemplate(): Template {
-        return new Template('', '');
+        const template = new Template('', '')
+        const loadingPage =  new TemplatePage()
+        template.data = [loadingPage,loadingPage]
+
+        return template;
     }
 
     static parse(data:any):Template {
@@ -50,7 +60,7 @@ export class TemplatePage {
     name:string
     data:any
 
-    constructor(type:string, name:string, data:any) {
+    constructor(type:string=PageType.loading, name:string='', data:any={}) {
         this.type = type
         this.name = name
         this.data = data
