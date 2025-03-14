@@ -21,7 +21,7 @@
           @click="showExport=true"/>
         <MenuButton id="btnSettings" icon="gear" title="Template Name and Description" label="Settings"
           @click="showSettings=true"/>
-        <MenuButton id="btnDelete" icon="trash" title="Delete Template" label="Delete" :danger="true"
+        <MenuButton id="btnDelete" icon="trash" title="Delete Template" label="Delete" :danger="true" :disabled="activeTemplate.isInvalid()"
           @click="onDelete"/>
       </div>
       <i class="pi pi-chevron-circle-left offsetButton" :class="{'noShow':(offset == 0)}"
@@ -45,11 +45,12 @@
 
 <script setup lang="ts">
 import { currentUser } from '../assets/data.js'
+import { DemoData } from '../assets/DemoData.ts'
 import { LocalStore } from '../lib/LocalStore.ts'
 import { onMounted, onUnmounted, ref } from 'vue'
-import { TemplateData } from '../assets/TemplateData.ts'
 import { RouterNames } from '../router/index.js'
 import { Template, TemplatePage } from '../model/Template'
+import { TemplateData } from '../assets/TemplateData.ts'
 import { useConfirm } from 'primevue/useconfirm'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
@@ -64,7 +65,6 @@ import LoadingPage from '../components/page/LoadingPage.vue'
 import Page from '../components/page/Page.vue'
 import TemplateExport from '../components/templates/TemplateExport.vue'
 import TemplateSettings from '../components/templates/TemplateSettings.vue'
-import { DemoData } from '../assets/DemoData.ts'
 
 const noTemplate = Template.noTemplate()
 const activeTemplate = ref(noTemplate)
@@ -80,7 +80,6 @@ const showEditor = ref(false)
 const showExport = ref(false)
 const showSettings = ref(false)
 const singlePage = ref(false)
-let templateBeforeEdit = null;
 const templateModified = ref(false)
 const toaster = useToaster(useToast())
 
@@ -155,7 +154,7 @@ function loadTemplate(template:Template,saveToLocalStorage:boolean=false) {
   // console.log( '[Template.loadTemplate]', typeof data, JSON.stringify(sheet))
 
   // if we don't know what to show, we load a copy of the demo page
-  if( template.invalid()) {
+  if( template.isInvalid()) {
     template = DemoData.tiles();
   }
 
@@ -189,6 +188,8 @@ function loadTemplate(template:Template,saveToLocalStorage:boolean=false) {
 }
 
 function onDelete() {
+  if(activeTemplate.value.isInvalid()) return;
+
   // if the template is new there is nothing to delete
   if(!activeTemplate.value.id) {
     router.push('/')
@@ -289,7 +290,7 @@ async function onSave() {
   setTimeout( () => updateThumbnail(activeTemplate.value.id), 1000)
   try {
       // retrieve data from active template
-      toaster.info( 'Say Request', 'Saving template ' + activeTemplate.value.name)
+      toaster.info( 'Say Request', 'Saving template ' + activeTemplate.value.name, 4000)
       TemplateData.save(activeTemplate.value).then(ts => {
         // console.log('[Template.onSave]', activeTemplate.value.id, JSON.stringify(t))
         const t = ts.template
@@ -314,9 +315,11 @@ async function onSave() {
           activeTemplate.value.id = t.id
           router.push('/template/' + t.id)
         }
+      }).catch( e => {
+        toaster.error( 'Could not save', e, 6000)
       })
   } catch( e) {
-    console.log('[Menu.onTemplateSave]', e)
+    // console.log('[Menu.onTemplateSave]', e)
     toaster.error('Save Template','Could not save template "' + activeTemplate.value?.name + '"')
   }  
 }
@@ -372,7 +375,7 @@ function updateOffsets() {
 
 function updateThumbnail(index:number) {
   // console.log('[Template.updateThumbnail]', activeTemplate.value?.id)
-  if(activeTemplate.value.invalid()) return;
+  if(activeTemplate.value.isInvalid()) return;
   const element:HTMLElement|null = document.querySelector(".page0")
   if(element == null) return;
 
