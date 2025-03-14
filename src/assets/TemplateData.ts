@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { contentTypeJson, getUrlWithUser, currentUser } from './data.js'
+import { contentTypeJson, getUrlWithUser, currentUser, reportError } from './data.js'
 import { isDefaultName } from './sheetData.js'
 import { GApiUrl } from '../lib/GApiUrl.js'
 import { PageType } from './PageType.js'
@@ -171,7 +171,7 @@ export class TemplateData {
             if( isDefaultName(template.name)) {
                 return reject('Template name conflicts with defaults')
             }
-            const payload = {user:currentUser.sha256, template:template}
+            const payload = {user:currentUser.sha256, sheet:template}
             axios.post(url, payload, contentTypeJson)
                 .then( response => {
                     // console.log('[TemplateData.save]', response.status)
@@ -181,8 +181,13 @@ export class TemplateData {
                     resolve( new TemplateStatus(response.status, updatedTemplate))
                 })
                 .catch( error => {
-                    reportError('[Templates.save] error ' + JSON.stringify(error))
-                    reject('TempateData.save : ' + error)
+                    // is this a 402?
+                    if(error.response && error.response.status == 402) {
+                        reject('Maximum templates overshot. Consider upgrading or deleting templates')
+                    } else {
+                        reportError('[TemplateData.save] error ' + error)
+                        reject(error)
+                    }
                 })
             })
     }
