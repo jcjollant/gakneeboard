@@ -25,14 +25,9 @@ export class Maintenance {
     }
 
     async perform():Promise<any> {
-        return new Promise<any>((res,rej) => {
+        return new Promise<any>( async (res,rej) => {
             if(this.code == Maintenance.codeHousekeeping) { // This is Willie
-            Maintenance.willie()
-                HealthCheck.perform().then( (result) => {
-                    res(result)
-                }).catch(e => {
-                    rej(e)
-                })
+                 Maintenance.willie().then( () => res('OK'))
             } else if(this.code == Maintenance.codeLogin) { 
                 const hash =  "357c3920bbfc6eefef7e014ca49ef12c78bb875c0826efe90194c9978303a8d3"
                 UserMiniView.fromHash(hash).then( (umv:UserMiniView|undefined) => {
