@@ -1,3 +1,8 @@
+## 3/15/2025 5120 5130
+1) 5120
+* Over template logic
+2) 5130
+* Added templates to email string
 ## 03/10/2025 5110
 * Progress with metering
 ## 03/03/2025 5102
