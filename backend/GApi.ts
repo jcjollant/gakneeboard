@@ -271,7 +271,7 @@ export class GApi {
             if( user) {
                 const userMini = await UserTools.userMini(user)
                 output['user'] = userMini
-                await UsageDao.create(UsageType.Session,user.id)
+                UsageDao.create(UsageType.Session,user.id)
             }
         }
         // console.log('[GApi.getSession]', JSON.stringify(output))    
