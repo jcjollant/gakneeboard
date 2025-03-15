@@ -28,7 +28,7 @@ export class Metric {
     }
 }
 
-enum Key {
+export enum MetricKey {
     adip = 'adip',
     adip28 = 'adip-28d',
     airportsTotal = 'airports-total',
@@ -81,40 +81,40 @@ enum Key {
 
 export class Metrics {
 
-    static async adip():Promise<Metric> {
+    static async adip():Promise<Metric[]> {
         const adipCount = await AdipDao.countSince(28)
-        return new Metric(Key.adip28, adipCount)
+        return [new Metric(MetricKey.adip28, adipCount)]
     }
 
     static async airports():Promise<Metric[]> {
         const all = await AirportDao.count()
         const output:Metric[] = []
-        output.push( new Metric(Key.airportsTotal, await AirportDao.count()))
-        output.push( new Metric(Key.airportsValid, await AirportDao.countValid()))
-        output.push( new Metric(Key.airportsCurrent, (await AirportDao.readCurrent(Adip.currentEffectiveDate)).length))
+        output.push( new Metric(MetricKey.airportsTotal, await AirportDao.count()))
+        output.push( new Metric(MetricKey.airportsValid, await AirportDao.countValid()))
+        output.push( new Metric(MetricKey.airportsCurrent, (await AirportDao.readCurrent(Adip.currentEffectiveDate)).length))
         return output
     }
 
     static async usage():Promise<Metric[]> {
         const usageMetrics:Metric[] = []
         const usageDao = new UsageDao();
-        usageMetrics.push( new Metric(Key.export7, await usageDao.countTypeByUserSince(UsageType.Export, 7)))
-        usageMetrics.push( new Metric(Key.export28, await usageDao.countTypeByUserSince(UsageType.Export, 28)))
-        usageMetrics.push( new Metric(Key.print7, await usageDao.countTypeSince(UsageType.Print, 7)))
-        usageMetrics.push( new Metric(Key.print28, await usageDao.countTypeSince(UsageType.Print, 28)))
-        usageMetrics.push( new Metric(Key.printUser7, await usageDao.countTypeByUserSince(UsageType.Print, 7)))
-        usageMetrics.push( new Metric(Key.printUser28, await usageDao.countTypeByUserSince(UsageType.Print, 28)))
-        usageMetrics.push( new Metric(Key.sessions7, await usageDao.countTypeByUserSince(UsageType.Session, 7)))
-        usageMetrics.push( new Metric(Key.sessions28, await usageDao.countTypeByUserSince(UsageType.Session, 28)))
+        usageMetrics.push( new Metric(MetricKey.export7, await usageDao.countTypeByUserSince(UsageType.Export, 7)))
+        usageMetrics.push( new Metric(MetricKey.export28, await usageDao.countTypeByUserSince(UsageType.Export, 28)))
+        usageMetrics.push( new Metric(MetricKey.print7, await usageDao.countTypeSince(UsageType.Print, 7)))
+        usageMetrics.push( new Metric(MetricKey.print28, await usageDao.countTypeSince(UsageType.Print, 28)))
+        usageMetrics.push( new Metric(MetricKey.printUser7, await usageDao.countTypeByUserSince(UsageType.Print, 7)))
+        usageMetrics.push( new Metric(MetricKey.printUser28, await usageDao.countTypeByUserSince(UsageType.Print, 28)))
+        usageMetrics.push( new Metric(MetricKey.sessions7, await usageDao.countTypeByUserSince(UsageType.Session, 7)))
+        usageMetrics.push( new Metric(MetricKey.sessions28, await usageDao.countTypeByUserSince(UsageType.Session, 28)))
 
         return usageMetrics
     }
 
     static usageTypeToKey(type:UsageType):string {
         switch(type) {
-            case UsageType.Export: return Key.exports
-            case UsageType.Print: return Key.prints
-            case UsageType.Session: return Key.sessions
+            case UsageType.Export: return MetricKey.exports
+            case UsageType.Print: return MetricKey.prints
+            case UsageType.Session: return MetricKey.sessions
         }
         // return '?'
     }
@@ -125,13 +125,13 @@ export class Metrics {
         const allMetrics:Metric[] = []
 
         const allUsers = await userDao.getAll()
-        allMetrics.push(new Metric(Key.users, allUsers.length))
+        allMetrics.push(new Metric(MetricKey.users, allUsers.length))
         // split by source
-        const googleUsers = new Metric(Key.usersGoogle)
+        const googleUsers = new Metric(MetricKey.usersGoogle)
         allMetrics.push(googleUsers)
-        const appleUsers = new Metric(Key.usersApple)
+        const appleUsers = new Metric(MetricKey.usersApple)
         allMetrics.push(appleUsers)
-        const facebookUsers = new Metric(Key.usersFacebook)
+        const facebookUsers = new Metric(MetricKey.usersFacebook)
         allMetrics.push(facebookUsers)
 
         for(const user of allUsers) {
@@ -149,22 +149,23 @@ export class Metrics {
         return allMetrics
     }
 
-    static async feedbacks():Promise<Metric> {
+    static async feedbacks():Promise<Metric[]> {
         const feedbackCount:number = await FeedbackDao.count()
-        return new Metric(Key.feedbacks, feedbackCount)
+        return [new Metric(MetricKey.feedbacks, feedbackCount)]
     }
 
-    static async templates():Promise<Metric> {
-        const templateCount:number = await TemplateDao.count()
-        return new Metric(Key.templates, templateCount)
+    static async templates():Promise<Metric[]> {
+        const templateDao = new TemplateDao();
+        const templateCount:number = await templateDao.count()
+        return [new Metric(MetricKey.templates, templateCount)]
     }
 
     static async templateDetails():Promise<Metric[]> {
         const templates:TemplateView[] = await TemplateDao.getAllTemplateData()
 
         // build a list of all metrics
-        const metricsKeys:Key[] = [Key.pagesTotal, Key.pageTiles, Key.pageChecklist, Key.pageStrip, Key.pageCover, Key.pageSelection, Key.pageNavlog, Key.pageNotes, Key.pageApproach, Key.pageDiagram,
-            Key.tilesTotal, Key.tileAirport, Key.tileAtis, Key.tileChecklist, Key.tileClearance, Key.tileFuel, Key.tileNavlog, Key.tileNotes, Key.tileRadios, Key.tileSunlight, Key.templatesStale]
+        const metricsKeys:MetricKey[] = [MetricKey.pagesTotal, MetricKey.pageTiles, MetricKey.pageChecklist, MetricKey.pageStrip, MetricKey.pageCover, MetricKey.pageSelection, MetricKey.pageNavlog, MetricKey.pageNotes, MetricKey.pageApproach, MetricKey.pageDiagram,
+            MetricKey.tilesTotal, MetricKey.tileAirport, MetricKey.tileAtis, MetricKey.tileChecklist, MetricKey.tileClearance, MetricKey.tileFuel, MetricKey.tileNavlog, MetricKey.tileNotes, MetricKey.tileRadios, MetricKey.tileSunlight, MetricKey.templatesStale]
         // populate the dictionary with metrics
         const ml:{[key:string]:Metric} = {}
         for(const key of metricsKeys) ml[key] = new Metric(key)
@@ -172,61 +173,61 @@ export class Metrics {
         for(let template of templates) {
             for(let page of template.data) {
                 if(page.type == PageType.tiles) {
-                    ml[Key.pageTiles].addOne()
+                    ml[MetricKey.pageTiles].addOne()
                     for(let tile of page.data) {
-                        ml[Key.tilesTotal].addOne()
+                        ml[MetricKey.tilesTotal].addOne()
                         if(tile.name == 'airport') {
-                            ml[Key.tileAirport].addOne()
+                            ml[MetricKey.tileAirport].addOne()
                         } else if(tile.name == 'atis') {
-                            ml[Key.tileAtis].addOne()
+                            ml[MetricKey.tileAtis].addOne()
                         } else if(tile.name == 'checklist') {
-                            ml[Key.tileChecklist].addOne()
+                            ml[MetricKey.tileChecklist].addOne()
                         } else if(tile.name == 'clearance') {
-                            ml[Key.tileClearance].addOne()
+                            ml[MetricKey.tileClearance].addOne()
                         } else if(tile.name == 'fuel') {
-                            ml[Key.tileFuel].addOne()
+                            ml[MetricKey.tileFuel].addOne()
                         } else if(tile.name == 'navlog') {
-                            ml[Key.tileNavlog].addOne()
+                            ml[MetricKey.tileNavlog].addOne()
                         } else if(tile.name == 'notes') {
-                            ml[Key.tileNotes].addOne()
+                            ml[MetricKey.tileNotes].addOne()
                         } else if(tile.name == 'radios') {
-                            ml[Key.tileRadios].addOne()
+                            ml[MetricKey.tileRadios].addOne()
                         } else if(tile.name == 'sunlight') {
-                            ml[Key.tileSunlight].addOne()
+                            ml[MetricKey.tileSunlight].addOne()
                         }
                     }
                 } else if(page.type == PageType.checklist) {
-                    ml[Key.pageChecklist].addOne()
+                    ml[MetricKey.pageChecklist].addOne()
                 } else if(page.type == PageType.strips) {
-                    ml[Key.pageStrip].addOne()
+                    ml[MetricKey.pageStrip].addOne()
                 } else if(page.type == PageType.cover) {
-                    ml[Key.pageCover].addOne()
+                    ml[MetricKey.pageCover].addOne()
                 } else if(page.type == PageType.selection) {
-                    ml[Key.pageSelection].addOne()
+                    ml[MetricKey.pageSelection].addOne()
                 } else if(page.type == PageType.navLog) {
-                    ml[Key.pageNavlog].addOne()
+                    ml[MetricKey.pageNavlog].addOne()
                 } else if(page.type == PageType.notes) {
-                    ml[Key.pageNotes].addOne()
+                    ml[MetricKey.pageNotes].addOne()
                 } else if(page.type == PageType.approach) {
-                    ml[Key.pageApproach].addOne()
+                    ml[MetricKey.pageApproach].addOne()
                 } else if(page.type == PageType.diagram) {
-                    ml[Key.pageDiagram].addOne()
+                    ml[MetricKey.pageDiagram].addOne()
                 } else {
                     continue
                 }
-                ml[Key.pagesTotal].addOne()
+                ml[MetricKey.pagesTotal].addOne()
             }
             // we assume that 12 data means stale
             if(template.data.length == 12) {
-                ml[Key.templatesStale].addOne()
+                ml[MetricKey.templatesStale].addOne()
             }
         }
         return metricsKeys.map( (mk:string) => ml[mk])
     }
 
-    static async publicationsCheck():Promise<Metric> {
+    static async publicationsCheck():Promise<Metric[]> {
         const publicationCount = await PublicationDao.count()
-        return new Metric('publications', publicationCount)
+        return [new Metric('publications', publicationCount)]
     }
 
     /**
@@ -257,10 +258,10 @@ export class Metrics {
     static async usersPerAccountCategory():Promise<Metric[]> {
         const output = new Promise<Metric[]>( (resolve, reject) => {
             Metrics.pagePerUser().then(  async usage => {
-                const cat0 = new Metric(Key.userCat0)
-                const cat1 = new Metric(Key.userCat1)
-                const cat5 = new Metric(Key.userCat5)
-                const cat20 = new Metric(Key.userCat20)
+                const cat0 = new Metric(MetricKey.userCat0)
+                const cat1 = new Metric(MetricKey.userCat1)
+                const cat5 = new Metric(MetricKey.userCat5)
+                const cat20 = new Metric(MetricKey.userCat20)
                 // reduce UserUsage map to individual metric
                 usage.forEach( (value:UserUsage, key:number) => {
                     if(value.pages == 0) {
@@ -283,8 +284,9 @@ export class Metrics {
         return output
     }
 
-    public static async perform(commit:boolean=true, sendMail:boolean=true):Promise<String> {
-        return Promise.all([
+    public static async perform(commit:boolean=true, sendMail:boolean=true):Promise<Metric[]> {
+        // return everything into one array
+        const output = (await Promise.all([
                 Metrics.users(),
                 Metrics.feedbacks(),
                 Metrics.templateDetails(),
@@ -294,35 +296,11 @@ export class Metrics {
                 Metrics.templates(),
                 Metrics.airports(), 
                 Metrics.adip()
-            ]).then( async allMetrics => {
-            const data:any = {}
-            for(const metric of allMetrics) {
-                // if we received an array, flatten it
-                if( Array.isArray(metric)) {
-                    for(const m of metric) {
-                        data[m.name] = m.value
-                    }
-                } else {
-                    data[metric.name] = metric.value
-                }
-            }
-            const dataString:string = JSON.stringify(data)
-
-            if(commit) {
-                await sql`INSERT INTO metrics (data) VALUES (${dataString})`;
-            } else {
-                console.log( '[Metrics.perform] skipping commit')
-            }
-            if(sendMail) {
-                console.log( '[Metrics.perform] sending email')
-                const emailString = 'users=' + data[Key.users] + ', feedbacks=' + data[Key.feedbacks] + ', pages=' + data[Key.pagesTotal] + '\n'
-                await Metrics.sendMail( emailString + dataString)
-            } else {
-                console.log( '[Metrics.perform] skipping email')
-            }
-            return dataString
-        })
-    
+            ])).reduce( (all,one) => {
+                all.push(...one)
+                return all
+            }, [])
+        return output
     }
     
 }
