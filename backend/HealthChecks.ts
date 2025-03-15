@@ -122,13 +122,11 @@ export class HealthCheck {
     }
 
     public static async perform():Promise<Check[]> {
-        return Promise.all([
+        return await Promise.all([
                 HealthCheck.effectiveDateCheck(), 
                 HealthCheck.environmentVariables(),
                 HealthCheck.airportDuplicatesCheck(),
                 HealthCheck.availablePublicationsCheck()
-            ]).then( async allChecks => {
-               return allChecks
-            })
+            ])
     }
 }
