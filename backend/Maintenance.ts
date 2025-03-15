@@ -1,5 +1,5 @@
 import { Check, HealthCheck } from './HealthChecks'
-import { Metrics } from '../backend/Metrics'
+import { Metrics, MetricKey } from '../backend/Metrics'
 import { UserMiniView } from './models/UserMiniView';
 import { Business } from './business/Business';
 import { sql } from '@vercel/postgres';
@@ -27,7 +27,7 @@ export class Maintenance {
     async perform():Promise<any> {
         return new Promise<any>( async (res,rej) => {
             if(this.code == Maintenance.codeHousekeeping) { // This is Willie
-                 Maintenance.willie().then( () => res('OK'))
+                Maintenance.willie().catch(rej)
             } else if(this.code == Maintenance.codeLogin) { 
                 const hash =  "357c3920bbfc6eefef7e014ca49ef12c78bb875c0826efe90194c9978303a8d3"
                 UserMiniView.fromHash(hash).then( (umv:UserMiniView|undefined) => {
@@ -40,11 +40,7 @@ export class Maintenance {
                     rej(e)
                 })
             } else if(this.code == Maintenance.codeMetrics) { // This is Waylon
-                Metrics.perform().then( () =>{
-                    res( 'OK' )
-                }).catch(e => {
-                    rej(e)
-                })
+                Maintenance.waylon().catch(rej)
             } else if(this.code == Maintenance.codeTest) {
                 res( 'OK' )
             } else {
@@ -53,6 +49,44 @@ export class Maintenance {
         })
     }
 
+    /**
+     * Waylon performs metring
+     */
+     static async waylon(sendEmail:boolean=true, commit:boolean=true) {
+        Metrics.perform(false, false).then( async metrics => {
+            const data:any = {}
+            for(const metric of metrics) {
+                // if we received an array, flatten it
+                if( Array.isArray(metric)) {
+                    for(const m of metric) {
+                        data[m.name] = m.value
+                    }
+                } else {
+                    data[metric.name] = metric.value
+                }
+            }
+            const dataString:string = JSON.stringify(data)
+            const emailString = ['users=' + data[MetricKey.users],
+                'feedbacks=' + data[MetricKey.feedbacks] ,
+                'templates=' + data[MetricKey.templates] ,
+                'pages=' + data[MetricKey.pagesTotal]].join(', ') + '\n'
+            if(sendEmail) {
+                // console.log('[Maintenance.waylon] sending email')
+                await Email.send( emailString + dataString, EmailType.Metrics)
+            } else {
+                console.log('[Maintenance.waylon] skipping email\n' + emailString + dataString)
+            }
+            if(commit) {
+                await sql`INSERT INTO metrics (data) VALUES (${dataString})`;
+            } else {
+                console.log('[Maintenance.waylon] skipping commit')
+            }
+        })
+    }
+
+    /**
+     * Willie perform chechs and routine maintenance
+     */
     static async willie(sendEmail:boolean=true, persistRecord:boolean=true) {
         let failedChecks:number = 0
         let messages:string[] = []
@@ -68,7 +102,7 @@ export class Maintenance {
                     await sql`INSERT INTO health_checks (data,failures) VALUES (${data},${failedChecks})`
                 }
             }).catch(e => {
-                return e
+                throw e
             }),
             Business.printRefills(new UserDao()).then( r => {
                 messages.push('Refilled ' + r.length + ' users')
