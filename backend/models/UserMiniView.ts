@@ -2,7 +2,7 @@ import { TemplateDao } from '../TemplateDao';
 import { Business } from '../business/Business';
 import { UserDao } from '../dao/UserDao';
 import { AccountType } from './AccountType';
-import { TemplateView as TemplateView } from './Template';
+import { TemplateView } from './TemplateView';
 import { User } from './User'
 
 export class UserMiniView {
