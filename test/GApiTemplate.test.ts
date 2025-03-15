@@ -158,7 +158,8 @@ describe( 'GApi Tests', () => {
             expect(t.code).toBe(publicationCode)
             expect(t.publish).toBeTruthy()
             expect(t.id).toBe(publicTemplateView.id)
-            expect(TemplateDao.createOrUpdate).lastCalledWith(publicTemplateView, jcUserId)
+
+            expect(TemplateDao.createOrUpdate).lastCalledWith(t, jcUserId)
             expect(PublicationDao.publish).lastCalledWith(publicTemplateView.id)
         })
 

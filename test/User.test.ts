@@ -1,11 +1,12 @@
 import {describe, expect, test} from '@jest/globals';
 import { User } from '../backend/models/User'
 import { UserTools } from '../backend/UserTools'
-import { jcMaxTemplates, jcSource } from './constants'
+import { jcSource } from './constants'
 import { jcHash, jcUserId, jcToken, jcName, jcEmail } from './constants'
 import { UserMiniView } from '../backend/models/UserMiniView';
 import { AccountType } from '../backend/models/AccountType';
 import exp from 'constants';
+import { Business } from '../backend/business/Business';
 
 require('dotenv').config();
 
@@ -25,7 +26,7 @@ describe( 'User', () => {
         expect(u.source).toBe('')
         expect(u.email).toBe('')
         expect(u.name).toBe('')
-        expect(u.maxTemplates).toBe(User.defaultMaxTemplates)
+        expect(u.maxTemplates).toBe(Business.MAX_TEMPLATE_SIMMER)
         expect(u.accountType).toBe(AccountType.simmer)
         expect(u.printCredits).toBe(0)
     })    
