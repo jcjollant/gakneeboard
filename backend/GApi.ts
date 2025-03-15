@@ -17,7 +17,7 @@ import { PublishedTemplate } from './models/PublishedTemplate'
 import { Sunlight } from './models/Sunlight'
 import { Template } from './models/Template'
 import { TemplateDao } from './TemplateDao'
-import { TemplateView } from './models/TemplateView.js'
+import { TemplateView } from './models/TemplateView'
 import { User } from './models/User'
 import { UserMiniView } from './models/UserMiniView'
 
@@ -411,14 +411,21 @@ export class GApi {
      * @returns A Template status should be 200 if everything goes fine, 202 if user is within tolerance or 402 if user is over limit
      * @throws
      */
-    public static async templateSave(userSha256:string, templateView:TemplateView):Promise<TemplateStatus> {
+    public static async templateSave(userSha256:string, sheet:any):Promise<TemplateStatus> {
         return new Promise( async (resolve, reject) => {
+            // Check templateView is valid
+            if( !sheet) {
+                // console.log('[GApi.templateSave]', JSON.stringify(sheet))
+                return reject( new GApiError(400, 'Invalid template'))
+            }
+            const templateView:TemplateView = TemplateView.parse(sheet)
+
             const user = await UserDao.getUserFromHash(userSha256)
-            // update record
+            // check user is in good shape
             if( !user) return reject( new GApiError( 400, "Invalid user"));
-            if( !templateView) return reject( new GApiError(400, 'Invalid template'))
 
             const templateCountForUser = await TemplateDao.countForUser(user.id)
+            // console.log('[GApi.templateSave]', templateCountForUser, user.accountType)
 
             // Max limit control
             const maxedOut = templateCountForUser >= Business.maxPages( user)

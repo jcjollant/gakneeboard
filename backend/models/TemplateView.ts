@@ -37,4 +37,7 @@ export class TemplateView {
             this.publish = false;
         }
     }
+    static parse(sheet: any): TemplateView {
+        return new TemplateView(sheet.id, sheet.name, sheet.data, sheet.description, sheet.version, sheet.publish, sheet.code);
+    }
 }

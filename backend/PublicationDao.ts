@@ -84,6 +84,7 @@ export class PublicationDao {
     public static async findByTemplate(templateId:number):Promise<Publication|undefined> {
         let result = await sql`SELECT id,code,active FROM publications WHERE sheetid = ${templateId} AND active`
         if( result.rowCount == 0) return undefined;
-        return new Publication(result.rows[0]['id'], result.rows[0]['code'], templateId, result.rows[0]['active'])
+        const row = result.rows[0];
+        return new Publication(row['id'], row['code'], templateId, row['active'])
     }
 }

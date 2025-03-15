@@ -1,5 +1,6 @@
 import { createHash } from 'crypto'
 import { AccountType } from './AccountType';
+import { Business } from '../business/Business';
 
 export class User {
     id:number;
@@ -12,15 +13,13 @@ export class User {
     customerId:string|undefined;
     printCredits:number
 
-    public static defaultMaxTemplates:number = 5;
-
     constructor( id:number, sha256:string) {
         this.id = id;
         this.sha256 = sha256;
         this.name = '';
         this.source = '';
         this.email = '';
-        this.maxTemplates = User.defaultMaxTemplates;
+        this.maxTemplates = Business.MAX_TEMPLATE_SIMMER;
         this.accountType = AccountType.simmer;
         this.customerId = undefined;
         this.printCredits = 0;
