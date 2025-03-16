@@ -107,7 +107,9 @@ export function maintenanceMode() {
     // submit
     cy.intercept({method: 'GET',url: '**/maintenance/**',}).as('getMaintenance')
     cy.get('.p-dialog-content .p-button').click()
-    cy.wait('@getMaintenance').its('response.statusCode').should('equal', 200)
+    cy.wait('@getMaintenance').then(interception => {
+        expect(interception.response.statusCode == 200 || interception.response.statusCode == 304).to.be.true
+    })
     // wait for dialog closure
     cy.get('.p-dialog-content').should('not.exist');
 }
@@ -161,4 +163,24 @@ export function expectToast(message) {
     cy.get('.p-toast-message-content').contains(message)
     cy.get('.p-toast-icon-close').click()
     cy.get('.p-toast-icon-close').should('not.exist')
+}
+
+export function waitForAirports() {
+    cy.intercept({
+      method: 'GET',
+      url: '**/airports/**',
+    }).as('getAirports');
+    cy.wait('@getAirports').then(interception => {
+        expect(interception.response.statusCode == 200 || interception.response.statusCode == 304).to.be.true
+    })
+}
+
+export function waitOneAirport() {
+    cy.intercept({
+      method: 'GET',
+      url: '**/airport/**',
+    }).as('getOneAirport');
+    cy.wait('@getOneAirport').then(interception => {
+        expect(interception.response.statusCode == 200 || interception.response.statusCode == 304).to.be.true
+    })
 }

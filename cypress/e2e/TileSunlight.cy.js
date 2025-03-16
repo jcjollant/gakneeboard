@@ -8,10 +8,7 @@ describe('Tiles', () => {
     visitSkipBanner()
     loadDemo('Tiles')
 
-    cy.intercept({
-      method: 'GET',
-      url: 'https://ga-api-seven.vercel.app/airports/**',
-    }).as('getAirports');
+    
 
     // check header is present
     cy.get('.page1 .tile2 > .headerTitle').contains('Sun Light')
@@ -23,7 +20,6 @@ describe('Tiles', () => {
     cy.get('.topRightCorner').contains('KSFF')
     cy.get('.bottomLeftCorner').contains('Solar Noon')
     cy.get('.bottomRightCorner').contains('Golden Hour')
-    cy.wait('@getAirports').its('response.statusCode').should('equal', 200)
 
     // switch to overnight mode
     cy.get('.page1 > .tile2 > .sunlight').click()

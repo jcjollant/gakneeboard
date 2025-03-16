@@ -103,6 +103,8 @@ describe('First Time User Experience', () => {
         cy.get('.pageDescription > .p-inputtext').type('NewDescription',{delay:0})
         // Should have a version number at 0
         cy.get('.templateVersion').should('have.value', '0')
+        // Should have a version number at 0
+        cy.get('.templateId').should('have.value', '0')
 
         // Save details
         cy.get('[aria-label="Save"]').click()

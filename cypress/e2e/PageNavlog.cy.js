@@ -1,4 +1,4 @@
-import { placeHolderSubtitle, visitSkipBanner, newTemplate, replacePage, pageNameNavlog, expectToast } from './shared'
+import { placeHolderSubtitle, visitSkipBanner, newTemplate, replacePage, pageNameNavlog, expectToast, waitOneAirport } from './shared'
 
 function checkBlankState() {
     cy.get(':nth-child(1) > .headerTitle').contains("NavLog")
@@ -46,7 +46,9 @@ describe('navlog Page', () => {
 
     // create a navlog w/o altitudes
     cy.get('.createAirportFrom > .p-inputgroup > .p-inputtext').type('KRNT', {delay:0})
+    waitOneAirport()
     cy.get('.createAirportTo > .p-inputgroup > .p-inputtext').type('KBLI', {delay:0})
+    waitOneAirport()
     cy.get('.createButton > .p-button').click()
 
     // All variable fields should show

@@ -1,10 +1,12 @@
-import { bellinghamTitle, boeingTitle, checkCorner, checkTileSpan, checkTileVisible, loadDemo, maintenanceMode, rentonTitle, visitSkipBanner } from './shared'
+import { bellinghamTitle, boeingTitle, checkCorner, checkTileSpan, checkTileVisible, loadDemo, maintenanceMode, rentonTitle, visitSkipBanner, waitForAirports, waitOneAirport } from './shared'
 
 describe('Tiles', () => {
   it('Airport Tile', () => {
     visitSkipBanner()
     maintenanceMode()
     loadDemo('Tiles')
+
+    waitForAirports()
 
     // Renton and Boeing fields
     const expectedValues = [
@@ -41,11 +43,7 @@ describe('Tiles', () => {
     cy.get('.page0 > .tile2 > .headerTitle > .titleText').click()
     cy.get('.page0 > :nth-child(3) > .content > .settings > .airportCode > .p-inputgroup > .p-inputtext').clear().type('KBLI')
     // wait for the reply
-    cy.intercept({
-      method: 'GET',
-      url: '**/airport/**',
-    }).as('getOneAirport');
-    cy.wait('@getOneAirport').its('response.statusCode').should('equal', 200)
+    waitOneAirport()
 
     // Name should be shown in AirportInput
     cy.get('.page0 > .tile2 .settings > .airportCode .airportName').contains(bellinghamTitle)
@@ -225,12 +223,8 @@ describe('Tiles', () => {
   it('Settings', () => {
     visitSkipBanner()
     loadDemo()
-    // wait for the reply
-    cy.intercept({
-      method: 'GET',
-      url: '**/airports/**',
-    }).as('getAirports');
-    cy.wait('@getAirports').its('response.statusCode').should('equal', 200)
+
+    waitForAirports()
 
     // switch to settings
     cy.get('.page0 > .tile0 > .headerTitle').click()

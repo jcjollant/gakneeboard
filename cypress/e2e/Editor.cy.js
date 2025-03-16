@@ -25,7 +25,7 @@ function reloadDemoWithEditor(wait=false) {
 }
 
 describe('Editor', () => {
-  it.only('Copy/Paste', () => {
+  it('Copy/Paste', () => {
     visitSkipBanner()
     cy.viewport('macbook-16')
     maintenanceMode()
@@ -119,7 +119,7 @@ describe('Editor', () => {
     maintenanceMode()
 
     // enable editor
-    reloadDemoWithEditor()
+    reloadDemoWithEditor(true)
 
     // check size makes sense
     const expectedHeight = 800
