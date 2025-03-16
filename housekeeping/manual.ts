@@ -61,11 +61,11 @@ require('dotenv').config();
 
 //====================
 // Page count per user
-// import { Metrics } from "../backend/Metrics";
-// Metrics.pagePerUser().then( output => {
-//     console.log(output)
-//     console.log(JSON.stringify(output))
-// })
+import { Metrics } from "../backend/Metrics";
+Metrics.pagePerUser().then( output => {
+    console.log(output)
+    console.log(JSON.stringify(output))
+})
 
 //====================
 // User Categories
@@ -90,6 +90,8 @@ require('dotenv').config();
 //     FmdWriter.decode(data.buffer).then(text => console.log(text))
 // });
 
-import { Maintenance } from "../backend/Maintenance";
+// import { Maintenance } from "../backend/Maintenance";
 // Maintenance.willie(false, false)
-Maintenance.waylon(false, false)
+
+// import { Maintenance } from "../backend/Maintenance";
+// Maintenance.waylon(false, false)
