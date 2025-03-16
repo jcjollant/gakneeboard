@@ -1,4 +1,4 @@
-import {describe, expect, test} from '@jest/globals';
+import {describe, expect} from '@jest/globals';
 import { Formatter } from '../src/lib/Formatter';
 import { AccountType } from '../src/model/AccounType';
 
