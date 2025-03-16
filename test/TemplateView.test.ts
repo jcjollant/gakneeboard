@@ -16,7 +16,7 @@ describe('Sheet class', () => {
         expect(t.code).toBeUndefined()
         expect(t.desc).toBeUndefined()
         expect(t.ver).toBe(0)
-        expect(t.pages).toBe(0)
+        expect(t.pages).toBe(jcTestTemplateData.length)
 
         const id2 = 2
         const name2 = ''

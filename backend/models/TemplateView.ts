@@ -25,7 +25,8 @@ export class TemplateView {
         this.ver = version;
         this.publish = publish ?? false; // false if undefined
         this.code = code;
-        this.pages = pages
+        // Calculate pages it it's not provided
+        this.pages = pages ? pages : (this.data.length ? this.data.length : 0);
     }
 
     setPublication(pub: Publication|undefined) {

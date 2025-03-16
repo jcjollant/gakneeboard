@@ -20,6 +20,7 @@ import { TemplateDao } from './TemplateDao'
 import { TemplateView } from './models/TemplateView'
 import { User } from './models/User'
 import { UserMiniView } from './models/UserMiniView'
+import { put } from '@vercel/blob'
 
 // Google API key
 
@@ -215,14 +216,27 @@ export class GApi {
      * @returns PNG data base64 encoded
      */
     public static async getAeronavPdf(cycle:string, fileName:string):Promise<string|undefined> {
-        const url = `https://aeronav.faa.gov/d-tpp/${cycle}/${fileName}`
-        const pdfResponse = await fetch(url)
-        if(!pdfResponse.ok) {
-            console.log('[GApi.getAeronavPdf] fetch failed', url, pdfResponse.status)
-            return undefined
+        const urlBlob = `https://ghbo54azo9h84agk.public.blob.vercel-storage.com/aeronav.faa.gov/d-tpp/${cycle}/${fileName}`
+        const responseBlob = await fetch(urlBlob)
+        let pdfBuffer:Buffer;
+        if(responseBlob.ok) {
+            pdfBuffer =  Buffer.from(await responseBlob.arrayBuffer())
+            console.log('[GApi.getAeronavPdf] blob hit')
+        } else {
+            const urlAeronav = `https://aeronav.faa.gov/d-tpp/${cycle}/${fileName}`
+            const responseAeronav = await fetch(urlAeronav)
+            if(responseAeronav.ok) {
+                const blobFileName = urlAeronav.substring('https://'.length)
+                pdfBuffer =  Buffer.from(await responseAeronav.arrayBuffer())
+                await put(blobFileName, pdfBuffer, {access: 'public'}).then( (pbr) => {
+                    console.log('[GApi.getAeronav] saved to blob', pbr.url, pbr.downloadUrl)
+                })
+            } else {
+                console.log('[GApi.getAeronavPdf] fetch failed', urlAeronav, responseBlob.status)
+                return undefined
+            }
         }
         // console.log('[GApi.getAeronavPdf] url', url, 'status', pdfResponse.status)
-        const pdfBuffer = Buffer.from(await pdfResponse.arrayBuffer())
         // console.log('[GApi.getAeronavPdf] pdfBuffer', pdfBuffer.byteLength)
         return pdfBuffer.toString('base64')
     }

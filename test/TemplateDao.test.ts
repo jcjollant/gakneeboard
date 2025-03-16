@@ -47,6 +47,7 @@ describe('Custom Templates', () => {
  
             const t1 = await TemplateDao.createOrUpdate(tv1, jcUserId)
             expect(t1.id).toBeGreaterThan(0)
+            expect(t1.pages).toBe(2)
 
             const r = await TemplateDao.delete(t1.id, jcUserId)
             expect(r).toBe(t1.id)        
