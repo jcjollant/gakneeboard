@@ -1,25 +1,41 @@
+import { Static } from "vue";
+
 export class ChecklistItem {
     challenge:string;
     response:string;
     section:string;
-    type:string;
+    type:ItemType;
 
-    constructor(challenge:string='', response:string='', section:string='', type:string='') {
+    constructor(challenge:string='', response:string='', section:string='', type:ItemType=ItemType.undefined) {
         this.challenge = challenge || '';
         this.response = response || '';
         this.section = section || '';
-        this.type = type || '';
+        this.type = type || ItemType.undefined;
+    }
+    static alternate() {
+        return new ChecklistItem('', '', '', ItemType.alternate)
     }
     static blank() {
-        return new ChecklistItem('', '', '', 'blank')
+        return new ChecklistItem('', '', '', ItemType.blank)
     }
-    static section(name:string, type:string='') {
+    static section(name:string, type:ItemType=ItemType.undefined) {
         return new ChecklistItem('', '', name, type)
     }
 }
 
+export enum ItemType {
+    blank = 'blank',
+    alternate = 'alt',
+    emergent = 'emer',
+    strong = 'strong',
+    undefined = '',
+}
+
 export class Checklist {
     items:ChecklistItem[];
+
+    static EMERGENT = 'emer'
+    static STRONG = 'strong'
 
     constructor() {
         this.items = []
@@ -39,11 +55,12 @@ export class Checklist {
             let challenge:string;
             let response:string;
             [challenge, response] = line.split('##')
-            if( !response) { // there is no separator
-                // blank line
-                if( !challenge || !challenge.length) return ChecklistItem.blank()
-                // Full line with only challenge
-                return new ChecklistItem(challenge)
+            console.log('[Checklist.parseEditor] challenge', challenge, 'response', response)
+
+            // blank line
+            if( (!response || !response.length) && (!challenge || !challenge.length)) { // there is no separator
+                if(line == '##') return ChecklistItem.alternate()
+                return ChecklistItem.blank()
             }
             // No challenge
             if (challenge.length == 0) {
@@ -54,19 +71,29 @@ export class Checklist {
                 // Test if it's emergent
                 if( response.length > 1) {
                     // emergency and strong background
-                    if( response[0] == '!') return ChecklistItem.section(response.substring(1), 'emer')
-                    if( response[0] == '*') return ChecklistItem.section(response.substring(1), 'strong')
+                    if( response[0] == '!') return ChecklistItem.section(response.substring(1), ItemType.emergent)
+                    if( response[0] == '*') return ChecklistItem.section(response.substring(1), ItemType.strong)
                 }
                 // section [##Section]
                 return ChecklistItem.section(response)
             }
 
             if(challenge[0] == '!') {
-                return new ChecklistItem(challenge.substring(1), response, '', 'emer')
+                return new ChecklistItem(challenge.substring(1), response, '', ItemType.emergent)
             }
             // normal entry
             return new ChecklistItem(challenge, response)
         })
+    }
+
+    static parseItemType(source:string):ItemType {
+        switch(source) {
+            case 'alt': return ItemType.alternate
+            case 'emer': return ItemType.emergent
+            case 'strong': return ItemType.strong
+            case 'blank': return ItemType.blank
+            default: return ItemType.undefined
+        }
     }
 
     parseParams(paramItems:any) {
@@ -74,7 +101,7 @@ export class Checklist {
         if(!paramItems) return [];
         // turn params into ChecklistItems
         this.items = paramItems.map( (item:any) => {
-            return new ChecklistItem(item.c, item.r, item.s, item.t)
+            return new ChecklistItem(item.c, item.r, item.s, Checklist.parseItemType(item.t))
         })
     }
 
@@ -84,13 +111,14 @@ export class Checklist {
 
         // translate items into text
         const list = this.items.map(item => {
-            if(item.type == 'blank') return ''
+            if(item.type == ItemType.blank) return ''
+            if(item.type == ItemType.alternate) return '##'
             if(item.section.length > 0) {
-                if( item.type == 'emer') return '##!' + item.section;
-                if( item.type == 'strong') return '##*' + item.section;
+                if( item.type == ItemType.emergent) return '##!' + item.section;
+                if( item.type == ItemType.strong) return '##*' + item.section;
                 return '##' + item.section;
             }
-            const challenge = item.type == 'emer' ? '!' + item.challenge : item.challenge
+            const challenge = item.type == ItemType.emergent ? '!' + item.challenge : item.challenge
             if(item.response.length > 0) return challenge + '##' + item.response
             return challenge
         })
@@ -103,7 +131,7 @@ export class Checklist {
             if(item.challenge != '') output['c'] = item.challenge
             if(item.response != '') output['r'] = item.response
             if(item.section != '') output['s'] = item.section
-            if(item.type != '') output['t'] = item.type
+            if(item.type != ItemType.undefined) output['t'] = item.type
             return output
         })
     }
