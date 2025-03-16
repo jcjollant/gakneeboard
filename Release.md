@@ -1,4 +1,14 @@
 # User Experience updates
+## 03/15/2025 5120
+* delete button is disabled while loading template
+* Template overshot toast
+* Popup save template before exporting
+* Fixed pasting onto a merge tile in editor
+* Editor is saving local template for editor actions
+* Checklist Important items
+* Customizable word in notes tile
+* Pricing Plans enabled
+* template Id displayed in settings
 ## 03/11/2025 5110
 * Version number is showing up in template details
 * Removed google analytics from dev
