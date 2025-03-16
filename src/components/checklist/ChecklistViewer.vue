@@ -2,50 +2,56 @@
     <div>
         <div v-if="items.length > 0" v-for="(item, index) in items" 
             class="item">
-            <div v-if="'s' in item" class="section"
-                :class="getClassSection(item)">{{ item.s }}</div>
-            <div v-else :class="getClassChallenge(item,index)">{{ item.c }}</div>
-            <div v-if="'r' in item" :class="getClassResponse(item,index)">{{ item.r }}</div>
+            <div v-if="item.section.length" class="section"
+                :class="getClassSection(item)">{{ item.section }}</div>
+            <div v-else :class="getClassChallenge(item,index)">{{ item.challenge }}</div>
+            <div v-if="item.response.length" :class="getClassResponse(item,index)">{{ item.response }}</div>
         </div>
         <PlaceHolder v-else title="No Items" />
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 
 import { onMounted, ref, watch } from 'vue'
+import { Checklist, ChecklistItem } from '../../model/Checklist'
 
 import PlaceHolder from '../shared/PlaceHolder.vue';
 
 const props = defineProps({
-    items: { type: Object, default: [] },
+    list: { type: Checklist, required: true },
     theme: { type: String, default: 'theme-yellow'},
     size: { type: Number, default: 1 },
 })
 
 const theme = ref('theme-yellow')
 const size = ref(1)
-const items = ref([])
+const items = ref<ChecklistItem[]>([])
 
 // Use theme only when item is strong or line is event and theme is not blank
-function getClassSection(item) {
-    if( item.t=='strong') return theme.value+'-strong'
-    else if( item.t=='emer') return 'emergent'
-    else if( item.t=='blank') return ''
+function getClassSection(item:ChecklistItem) {
+    if( item.type=='strong') return theme.value+'-strong'
+    else if( item.type=='emer') return 'emergent'
+    else if( item.type=='blank') return ''
     return 'normal'
 }
 
-function getClassChallenge(item, index) {
+function getClassChallenge(item:ChecklistItem, index:number) {
     const output = ['challenge'];
     if(size.value > 1) output.push('size' + size.value)
-    if(!('r' in item)) output.push('spanned')
-    if(index%2) output.push(theme.value)
+    if(item.response == '') output.push('spanned')
+    if(item.type=='emer') output.push('important')
+    // Every other item has the theme
+    if(index%2 && item.type!='blank') output.push(theme.value)
+
     return output
 }
 
-function getClassResponse(item, index) {
+function getClassResponse(item:ChecklistItem, index:number) {
     const output = ['response']
     if(size.value > 1) output.push('size' + size.value)
+    if(item.type=='emer') output.push('important')
+    // Every other item has the theme
     if(index%2) output.push(theme.value)
     return output
 }
@@ -55,7 +61,7 @@ function loadProps(newProps) {
     if(!newProps) return;
     theme.value = newProps.theme;
     size.value = newProps.size;
-    items.value = newProps.items;
+    items.value = newProps.list?.items;
 }
 
 onMounted(() => {
@@ -73,6 +79,10 @@ watch(props, () => {
     text-align: left;
     padding-left: 10px;
     height: 23px;
+}
+
+.challenge.important, .response.important {
+    color: red;
 }
 
 .item {
