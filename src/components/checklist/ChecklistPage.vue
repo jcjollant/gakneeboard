@@ -149,7 +149,7 @@ function onApply() {
         newData[key] = page.value.lists[index].toParams()
     }
     newData['theme'] = theme.value.replace('theme-', '')
-    console.log('[ChecklistPage.onApply] newData', newData)
+    // console.log('[ChecklistPage.onApply] newData', newData)
 
     editMode.value = false
 
