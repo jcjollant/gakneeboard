@@ -2,7 +2,7 @@
     <div class="tile">
         <Header :title="title" :displayMode="false"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <div v-if="mode=='edit'" class="settings">
+        <div v-if="editMode" class="settings">
             <div class="oneLine">
                 <InputGroup>
                     <InputGroupAddon class="checklistNameAddon">Name</InputGroupAddon>
@@ -16,14 +16,14 @@
             <ActionBar @apply="onApply" @cancel="onCancel" :help="UserUrl.checklistGuide" />
         </div>
         <div v-else class="checklistMain" @click="onHeaderClick">
-            <ChecklistViewer :items="items" :theme="theme" :size="2" />
+            <ChecklistViewer :list="checklist" :theme="theme" :size="2" />
         </div>
     </div>
 </template>
 
 <script setup>
+import { Checklist } from '../../model/Checklist'
 import { onMounted, ref, watch } from 'vue'
-import { itemsFromList, listFromItems } from '@/assets/checklist'
 import { UserUrl } from '@/lib/UserUrl'
 
 import ActionBar from '../shared/ActionBar.vue'
@@ -36,7 +36,15 @@ import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
 
+const editMode = ref(false)
 const emits = defineEmits(['replace','update'])
+const title = ref('Checklist')
+const checklist = ref(new Checklist())
+const textData = ref('')
+const theme = ref('theme-blue')
+let nameBeforeEdit = 'Checklist'
+let themeBeforeEdit = 'theme-yellow'
+
 
 //-----------------------
 // Props management
@@ -47,8 +55,13 @@ const props = defineProps({
 function loadProps(newProps) {
     // console.log('[ChecklistTile.loadProps]', JSON.stringify(newProps))
     if (newProps.params) {
-        items.value = newProps.params.items;
-        if (newProps.params.name) title.value = newProps.params.name
+        // load params into checlist
+        checklist.value.parseParams( newProps.params.items);
+        // checklist name
+        if (newProps.params.name) {
+            title.value = newProps.params.name
+        }
+        // checklist theme
         if( 'theme' in newProps.params) {
             theme.value = 'theme-' + newProps.params.theme
         }
@@ -68,46 +81,37 @@ watch(props, () => {
 // End of props management
 //------------------------
 
-const title = ref('Checklist')
-const mode = ref('')
-const items = ref([])
-const textData = ref('')
-const theme = ref('theme-blue')
-let nameBeforeEdit = 'Checklist'
-let themeBeforeEdit = 'theme-yellow'
-
 function onApply() {
     // console.log('[ChecklistTile.onApply] not implemented')
     // turn textData into a list of items
-    const newItems = itemsFromList(textData.value)
+    checklist.value.parseEditor(textData.value)
     // console.log('[CheclistPage.onApply]', JSON.stringify(items))
-    const newParams = { name: title.value, items: newItems }
+    const newParams = { name: title.value, items: checklist.value.toParams() }
     if( theme.value.startsWith('theme-')) {
         newParams['theme'] = theme.value.substring(6)
     }
-    items.value = newItems;
     // go back to normal mode
-    mode.value = ''
+    editMode.value = false
     // notify parent of data change
     emits('update', newParams)
 }
 
 function onCancel() {
     // console.log('[ChecklistTile.onCancel] not implemented')
-    mode.value = ''
+    editMode.value = false
     title.value = nameBeforeEdit;
     theme.value = themeBeforeEdit;
 }
 
 function onHeaderClick() {
     // console.log('[ChecklistTile.onHeaderClick] not implemented')
-    if( mode.value == '') {
+    if( !editMode.value) {
         nameBeforeEdit = title.value;
         themeBeforeEdit = theme.value;
-        textData.value = listFromItems(items.value)
-        mode.value = 'edit'
+        textData.value = checklist.value.toEditor()
+        editMode.value = true
     } else {
-        mode.value = ''
+        editMode.value = false
     }
 }
 
