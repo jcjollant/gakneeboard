@@ -24,15 +24,15 @@ export class Maintenance {
         return Maintenance.allCodes.includes(this.code)
     }
 
-    async perform():Promise<any> {
-        return new Promise<any>( async (res,rej) => {
+    async perform():Promise<string> {
+        return new Promise<string>( async (res,rej) => {
             if(this.code == Maintenance.codeHousekeeping) { // This is Willie
-                Maintenance.willie().catch(rej)
+                Maintenance.willie().then(res).catch(rej)
             } else if(this.code == Maintenance.codeLogin) { 
                 const hash =  "357c3920bbfc6eefef7e014ca49ef12c78bb875c0826efe90194c9978303a8d3"
                 UserMiniView.fromHash(hash).then( (umv:UserMiniView|undefined) => {
                     if(umv) {
-                        res(umv)
+                        res(JSON.stringify(umv))
                     } else {
                         rej('Invalid User')
                     }
@@ -40,7 +40,7 @@ export class Maintenance {
                     rej(e)
                 })
             } else if(this.code == Maintenance.codeMetrics) { // This is Waylon
-                Maintenance.waylon().catch(rej)
+                Maintenance.waylon().then(res).catch(rej)
             } else if(this.code == Maintenance.codeTest) {
                 res( 'OK' )
             } else {
@@ -52,8 +52,8 @@ export class Maintenance {
     /**
      * Waylon performs metring
      */
-     static async waylon(sendEmail:boolean=true, commit:boolean=true) {
-        Metrics.perform(false, false).then( async metrics => {
+     static async waylon(sendEmail:boolean=true, commit:boolean=true):Promise<string> {
+        return Metrics.perform(false, false).then( async metrics => {
             const data:any = {}
             for(const metric of metrics) {
                 // if we received an array, flatten it
@@ -74,20 +74,21 @@ export class Maintenance {
                 // console.log('[Maintenance.waylon] sending email')
                 await Email.send( emailString + dataString, EmailType.Metrics)
             } else {
-                console.log('[Maintenance.waylon] skipping email\n' + emailString + dataString)
+                console.log('[Maintenance.waylon] skipping email')
             }
             if(commit) {
                 await sql`INSERT INTO metrics (data) VALUES (${dataString})`;
             } else {
                 console.log('[Maintenance.waylon] skipping commit')
             }
+            return dataString
         })
     }
 
     /**
      * Willie perform chechs and routine maintenance
      */
-    static async willie(sendEmail:boolean=true, persistRecord:boolean=true) {
+    static async willie(sendEmail:boolean=true, persistRecord:boolean=true):Promise<string> {
         let failedChecks:number = 0
         let messages:string[] = []
         await Promise.all([
@@ -109,10 +110,12 @@ export class Maintenance {
             })])
 
         // cook email with business
+        const output = messages.join('\n\n')
         if(sendEmail) {
-            await Email.send(messages.join('\n\n'), EmailType.Housekeeping)
+            await Email.send(output, EmailType.Housekeeping)
         } else {
-            console.log('[Maintenance.willie] not sending email \n' + messages.join('\n\n'))
+            console.log('[Maintenance.willie] not sending email \n' + output)
         }
+        return output
     }
 }
