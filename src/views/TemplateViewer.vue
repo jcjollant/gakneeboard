@@ -2,11 +2,11 @@
   <div class="main">
     <Menu :name="getTemplateName()"></Menu>
     <TemplateExport v-model:visible="showExport" :template="activeTemplate"
-      @close="showExport=false" @export="onExport" />
+      @close="showExport=false" @export="onExported" />
     <TemplateSettings v-model:visible="showSettings" :template="activeTemplate"
       @close="showSettings=false" @save="onSettings" />
     <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
-      @offset="onOffset" />
+      @offset="onOffset" @update="onPageUpdate" />
     <div class="pageGroup" :class="{'editor':showEditor}" >
       <div class="templateMenu">
         <MenuButton id="btnPrint" icon="print" title="Print Template" label="Print"
@@ -18,7 +18,7 @@
           :class="{'editorButtonActive':showEditor}" class="editorButton" 
           @click="onEditor"/>
         <MenuButton id="btnExport" icon="file-export" title="Export Template to Various Formats" label="Export"
-          @click="showExport=true"/>
+          @click="onExport"/>
         <MenuButton id="btnSettings" icon="gear" title="Template Name and Description" label="Settings"
           @click="showSettings=true"/>
         <MenuButton id="btnDelete" icon="trash" title="Delete Template" label="Delete" :danger="true" :disabled="activeTemplate.isInvalid()"
@@ -223,25 +223,33 @@ function onEditor() {
   showEditor.value = !showEditor.value;
 }
 
-function onExport(format) {
+function onExport() {
+  if(activeTemplate.value.id == 0) {
+    toaster.warning('Line up and Wait','Please save your template before exporting')
+    return
+  }
+  showExport.value=true  
+}
+
+function onExported(format:any) {
   showExport.value = false;
   toaster.info( 'Exporting', activeTemplate.value.name)
   TemplateData.export(activeTemplate.value, format).then( eo => {
     // create file link in browser's memory
-    // console.log('[Teamplate.onExport] blob', eo.blob.size)
+    // console.log('[Teamplate.onExported] blob', eo.blob.size)
     const link = document.createElement('a')
     link.href = URL.createObjectURL(eo.blob)
     link.download = eo.filename
     link.click()
     URL.revokeObjectURL(link.href)
   }).catch( e => {
-    console.log('[Menu.onExportExport] failed ' + e)
+    console.log('[Menu.onExportExported] failed ' + e)
     toaster.error( 'Export Error', e.message)
   })  
 }
 
 // Validate and assign new offset value
-function onOffset(newOffset) {
+function onOffset(newOffset:number) {
   // console.log('[Template.onOffset]', newOffset, offsetLast.value)
   if(newOffset < 0 || newOffset > offsetLast.value){
     console.log('[Template.onOffset] invalid offset', newOffset)
@@ -252,12 +260,12 @@ function onOffset(newOffset) {
   updateOffsets()
 }
 
-function onPageUpdate(index:number, pageData) {
-  // console.log('[Template.onPageUpdate] index', pageData.index)
+function onPageUpdate(index:number, pageData:TemplatePage) {
+  // console.log('[Template.onPageUpdate] index', pageData)
   templateModified.value = true
 
   // save template data for that pages
-  activeTemplate.value.data[index] = new TemplatePage(pageData.type, pageData.name, pageData.data)
+  activeTemplate.value.data[index] = pageData
   // Only update templates for changes pertaining to the first page and while a template is not new
   // console.log('[Template.onPageUpdate]', route.params.id)
   // save template locally
