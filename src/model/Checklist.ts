@@ -55,7 +55,7 @@ export class Checklist {
             let challenge:string;
             let response:string;
             [challenge, response] = line.split('##')
-            console.log('[Checklist.parseEditor] challenge', challenge, 'response', response)
+            // console.log('[Checklist.parseEditor] challenge', challenge, 'response', response)
 
             // blank line
             if( (!response || !response.length) && (!challenge || !challenge.length)) { // there is no separator
