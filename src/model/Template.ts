@@ -60,6 +60,8 @@ export class TemplatePage {
     name:string
     data:any
 
+    static SELECTION = new TemplatePage(PageType.selection, '', {})
+
     constructor(type:string=PageType.loading, name:string='', data:any={}) {
         this.type = type
         this.name = name
