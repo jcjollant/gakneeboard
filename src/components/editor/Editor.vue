@@ -132,7 +132,7 @@ async function onEditorAction(ea:EditorAction) {
     }
     // remove page from active template
     model.value.data.splice(ea.offset, 1)
-    updatedPages.push(ea.offset)
+    // updatedPages.push(ea.offset)
     updateOffset = true
 
   } else if(ea.action == EditorAction.INSERT_PAGE) {
@@ -146,6 +146,7 @@ async function onEditorAction(ea:EditorAction) {
       // insert blank page at position
       model.value.data.splice(ea.offset, 0, TemplatePage.SELECTION)
     }
+    updatedPages.push(ea.offset)
     updateOffset = true;
 
   } else if(ea.action == EditorAction.PASTE_PAGE) {
