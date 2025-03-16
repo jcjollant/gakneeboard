@@ -51,7 +51,8 @@ export class AceList {
             }
             const challenge = 'c' in item ? item.c : 's' in item ? item.s : ' '
             const response = 'r' in item ? item.r : undefined
-            const type = 's' in item ? (emergent ? AceType.WARNING : AceType.PLAIN) : 'r' in item ? AceType.RESPONSE : AceType.CHALLENGE
+            // const type = 's' in item ? (emergent ? AceType.WARNING : AceType.PLAIN) : 'r' in item ? AceType.RESPONSE : AceType.CHALLENGE
+            const type = emergent ? AceType.WARNING : ('s' in item ? AceType.PLAIN : ('r' in item ? AceType.RESPONSE : AceType.CHALLENGE))
             const identation = 's' in item ? AceIdent.CENTER : AceIdent.LEFT
             return new AceItem(challenge, response, type, identation)
         })
