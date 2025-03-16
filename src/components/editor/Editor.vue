@@ -32,20 +32,19 @@ import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../../assets/Toaster'
 import { PageType } from '../../assets/PageType'
 // import { Template } from '@/assets/Templates'
-import { pageDataBlank, readPageFromClipboard } from '../../assets/sheetData'
+import { readPageFromClipboard } from '../../assets/sheetData'
 import { duplicate } from '../../assets/data'
 
 import Button from 'primevue/button'
 import Overlay from './Overlay.vue'
 import VerticalActionBar from './VerticalActionBar.vue'
-import { LocalStore } from '../../lib/LocalStore'
+import { Template, TemplatePage } from '../../model/Template'
 
-const emits = defineEmits(['discard','save','offset'])
+const emits = defineEmits(['update','offset'])
 const confirm = useConfirm()
-const model = defineModel({type:Object})
+const model = defineModel({type:Template})
 const modified = ref(false)
 const offset = ref(0)
-const sheets = ref([])
 const toaster = useToaster(useToast())
 
 //---------------------
@@ -53,12 +52,6 @@ const toaster = useToaster(useToast())
 const props = defineProps({
   offset: {type: Number, default: 0},
 })
-
-// We are getting out (post confirmation or without change)
-function discard() {
-  modified.value = false
-  emits('discard')
-}
 
 function loadProps( props:any) {
   // console.log('Menu loadProps', JSON.stringify(props))
@@ -103,12 +96,15 @@ function onAction(action:EditorAction) {
 
 // Pages are manipulated via editor buttons
 async function onEditorAction(ea:EditorAction) {
-  // console.log('[Editor.onEditorAction]', ea)
+  // console.log('[Editor.onEditorAction]', ea, model.value)
   let updateOffset = false;
+  const updatedPages:number[] = []
 
+  // if we dont have a template, we can leave
   if(!model.value) return;
 
   if(ea.action == EditorAction.COPY_PAGE_TO_CLIPBOARD) {
+
     const pageData = model.value.data[ea.offset]
     // grab data and show toast
     navigator.clipboard.writeText(JSON.stringify(pageData));
@@ -125,6 +121,7 @@ async function onEditorAction(ea:EditorAction) {
   } else if(ea.action == EditorAction.DUPLICATE_PAGE) {
 
     model.value.data[ea.offsetTo] = duplicate(model.value.data[ea.offset])
+    updatedPages.push(ea.offsetTo)
 
   } else if(ea.action == EditorAction.DELETE_PAGE) {
 
@@ -135,32 +132,36 @@ async function onEditorAction(ea:EditorAction) {
     }
     // remove page from active template
     model.value.data.splice(ea.offset, 1)
+    updatedPages.push(ea.offset)
     updateOffset = true
 
   } else if(ea.action == EditorAction.INSERT_PAGE) {
+
     // validate offset
     if( isNaN(ea.offset) || ea.offset < 0) return;
     if( ea.offset >= model.value.data.length) {
       // append blank page to last position
-      model.value.data.push( pageDataBlank)
+      model.value.data.push( TemplatePage.SELECTION)
     } else {
       // insert blank page at position
-      model.value.data.splice(ea.offset, 0, pageDataBlank)
+      model.value.data.splice(ea.offset, 0, TemplatePage.SELECTION)
     }
     updateOffset = true;
 
   } else if(ea.action == EditorAction.PASTE_PAGE) {
 
     readPageFromClipboard().then( page => {
-      if(model.value)
+      if(model.value) {
         model.value.data[ea.offset] = page;
+        updatedPages.push(ea.offset)
+      }
     }).catch( e => {
         toaster.error('Editor', 'Cannot Paste ' + e)
     }) 
 
   } else if(ea.action == EditorAction.PASTE_TILE) {
     
-    readPageFromClipboard().then( page => {
+    await readPageFromClipboard().then( page => {
       if( !('sourceTile' in page)) throw new Error('No source tile found in clipboard')
       if(model.value) {
         if( isNaN(ea.offset) || isNaN(ea.offsetTo)) return;
@@ -168,19 +169,24 @@ async function onEditorAction(ea:EditorAction) {
         // console.log('[App.onEditorAction] pasteTile', ea.offset, ea.offsetTo, page.sourceTile, page)
         model.value.data[ea.offset].data[ea.offsetTo] = page.data[page.sourceTile];
         model.value.data[ea.offset].data[ea.offsetTo].id = ea.offsetTo;
+        updatedPages.push(ea.offset)
       }
     }).catch( e => {
         toaster.error('Editor','Cannot Paste Tile' + e)
     }) 
 
   } else if(ea.action == EditorAction.RESET_PAGE) {
-    model.value.data[ea.offset] = duplicate(pageDataBlank)
+
+    model.value.data[ea.offset] = duplicate(TemplatePage.SELECTION)
+    updatedPages.push(ea.offset)
 
   } else if(ea.action == EditorAction.SWAP_PAGE) {
 
     const swap = duplicate(model.value.data[ea.offset])
     model.value.data[ea.offset] = model.value.data[ea.offset + 1]
     model.value.data[ea.offset + 1] = swap;
+    updatedPages.push(ea.offset)
+    updatedPages.push(ea.offset + 1)
 
   } else if(ea.action == EditorAction.SWAP_TILES) {
 
@@ -202,6 +208,7 @@ async function onEditorAction(ea:EditorAction) {
     model.value.data[ea.offset].data[tileFrom]['hide'] = false
     model.value.data[ea.offset].data[tileTo]['span2'] = false
     model.value.data[ea.offset].data[tileTo]['hide'] = false
+    updatedPages.push(ea.offset)
 
   } else {
     reportError('[App.onEditorAction] unknown action ' + ea)
@@ -211,8 +218,13 @@ async function onEditorAction(ea:EditorAction) {
     // trigger offset event so parent is up to speed
     emits('offset', offset.value)
   }
+  // console.log('[Editor.editoAction] ', updatedPages)
+  for( const index of updatedPages) {
+    // console.log('[Editor.editoAction] updatePage', ea.action, index)
+    emits('update', index, model.value.data[index]) 
+  }
   modified.value = true
-  LocalStore.saveTemplate(model.value)
+  // LocalStore.saveTemplate(model.value)
 }
 
 function pasteTile(params:any) {
