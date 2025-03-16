@@ -5,7 +5,7 @@
             @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" :expandable
             @selection="changeDisplayMode" @expand="onExpand" />
-        <div v-if="editMode" class="edit">
+        <div v-else-if="editMode" class="edit">
             <div class="paddedEdit">
                 <InputGroup>
                     <InputGroupAddon>Word</InputGroupAddon>

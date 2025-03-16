@@ -1,5 +1,6 @@
 # User Experience updates
-## 03/15/2025 5120
+## 03/15/2025 5120 5121
+1) 5120
 * delete button is disabled while loading template
 * Template overshot toast
 * Popup save template before exporting
@@ -9,6 +10,8 @@
 * Customizable word in notes tile
 * Pricing Plans enabled
 * template Id displayed in settings
+2) 5121 
+* Notes Tile : Fixed Edit mode overlap
 ## 03/11/2025 5110
 * Version number is showing up in template details
 * Removed google analytics from dev
