@@ -56,6 +56,7 @@ function loadProps(props) {
       tiles.value[index + 1]['hide'] = true
     } else { 
       // force next tile hide to false so during tile selection, the next tile is displayed event if it was hidden before the selection
+      tiles.value[index]['span2'] = false
       tiles.value[index + 1]['hide'] = false
     }
   }
@@ -67,7 +68,7 @@ onMounted(() => {
 })
 
 watch( props, async() => {
-    // console.log("Airport props changed " + JSON.stringify(props));
+    // console.log("[TilePage.watch]" + JSON.stringify(props));
     loadProps(props)
 })
 
