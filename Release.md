@@ -12,6 +12,8 @@
 * template Id displayed in settings
 2) 5121 
 * Notes Tile : Fixed Edit mode overlap
+3) 5122
+* Alternate mode
 ## 03/11/2025 5110
 * Version number is showing up in template details
 * Removed google analytics from dev
