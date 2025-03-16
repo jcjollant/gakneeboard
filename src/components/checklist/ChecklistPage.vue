@@ -1,45 +1,38 @@
 <template>
     <div class="contentPage pageChecklist">
-        <Header :title="title" :showReplace="mode=='edit'" :page="true"
+        <Header :title="page.name" :showReplace="editMode" :page="true"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <div v-if="mode == 'edit'" class="settings">
+        <div v-if="editMode" class="settings">
             <InputGroup>
                 <InputGroupAddon class="checklistNameAddon">Name</InputGroupAddon>
-                <InputText v-model="title" />
+                <InputText v-model="page.name" />
             </InputGroup>
             <div class="columnsChoice">
                 <div>Columns</div>
                 <OneChoice v-model="columns" :choices="[colSingle, colDouble, colTriple]"/>
             </div>
             <div class="columns">
-                <Textarea v-model="textData" :placeholder="getPlaceHolder()"
-                    class="editList textArea1" :class="'text' + columns.value" ></Textarea>
-                <Textarea v-if="columns.value > 1" v-model="textData2" 
-                    class="editList textArea2" :class="'text' + columns.value"></Textarea>
-                <Textarea v-if="columns.value > 2" v-model="textData3" 
-                    class="editList textArea3" :class="'text' + columns.value"></Textarea>
+                <Textarea v-for="(checklist, index) in [0,1,2]" v-model="textData[index]" v-show="index < columns.value"
+                    :PlaceHolder="index == 0 ? getPlaceHolder() : ''"
+                    :class="['editList', 'textArea' + (index+1), 'text' + columns.value]"></Textarea>
             </div>
             <ThemeSelector @change="onThemeChange" :theme="theme" />
             <ActionBar @cancel="onCancel" @apply="onApply" :help="UserUrl.checklistGuide" />
         </div>
         <div v-else class="viewMode">
             <div class="columns">
-                <ChecklistViewer class="list list0"
-                    :items="data?.items" :theme="theme" :size="columns.value" />
-                <ChecklistViewer v-if="columns.value > 1" class="list list1"
-                    :items="data?.items2" :theme="theme" :size="columns.value" />
-                <ChecklistViewer v-if="columns.value > 2" class="list list2"
-                    :items="data?.items3" :theme="theme" :size="columns.value" />
+                <ChecklistViewer v-for="(checklist,index) in page.lists" :list="checklist" :theme="theme"
+                    :size="columns.value" :class="['list','list'+index]" />
             </div>
             <div v-if="version > 0" class="version">v{{version}}</div>
         </div>
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { itemsFromList, listFromItems } from '@/assets/checklist'
-import { UserUrl } from '@/lib/UserUrl'
+import { ChecklistPage } from '../../model/ChecklistPage'
+import { UserUrl } from '../../lib/UserUrl'
 
 import ActionBar from '../shared/ActionBar.vue'
 import ChecklistViewer from './ChecklistViewer.vue'
@@ -51,50 +44,71 @@ import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
 import OneChoice from '../shared/OneChoice.vue'
+import { Checklist } from '../../model/Checklist'
 
-const colSingle = {label:'One', value:1}
-const colDouble = {label:'Two', value:2}
-const colTriple = {label:'Three', value:3}
-const columns = ref(colSingle)
-const data = ref(null)
+class Column {
+    label: string
+    value: number
+    constructor(label: string, value: number) {
+        this.label = label
+        this.value = value
+    }
+}
+const colSingle = new Column('One', 1)
+const colDouble = new Column('Two', 2)
+const colTriple = new Column('Three', 3)
+const columns = ref<Column>(colSingle)
+const editMode = ref(false)
 const emits = defineEmits(['replace','update'])
 let nameBeforeEdit = ''
-const mode = ref('')
+const page = ref<ChecklistPage>(new ChecklistPage())
 const props = defineProps({
     data: { type: Object, default: null },
     version: { type: Number, default: 0 }
 })
-const title = ref('Checklist')
-const textData = ref('')
-const textData2 = ref('')
-const textData3 = ref('')
+const textData = ref(['','',''])
+// const textData = ref('')
+// const textData2 = ref('')
+// const textData3 = ref('')
 const theme = ref('theme-yellow')
 let themeBeforeEdit = 'theme-yellow'
 const version = ref(props.version)
 
 // Props management
-function loadProps(newProps) {
+function loadProps(newProps:any) {
     // console.log('[ChecklistPage.loadProps]', JSON.stringify(newProps))
+    const newPage = new ChecklistPage()
     if (newProps.data) {
-        data.value = newProps.data;
-        if (newProps.data.name) title.value = newProps.data.name
-        // restore view mode
-        if('items3' in newProps.data) {
-            columns.value = colTriple
-        } else if ('items2' in newProps.data) {
-            columns.value = colDouble
+        if(newProps.data.name) {
+            newPage.name = newProps.data.name
+        } else {
+            editMode.value = true
+        }
+
+        newPage.addListFromParams(newProps.data.items)
+
+        if('items2' in newProps.data) {
+            newPage.addListFromParams(newProps.data.items2)
+            if('items3' in newProps.data) {
+                newPage.addListFromParams(newProps.data.items3)
+                columns.value = colTriple
+            } else {
+                columns.value = colDouble
+            }
         } else {
             columns.value = colSingle
         }
+        // console.log('[ChecklistPage.loadProps] columns', columns.value)
+        // console.log('[ChecklistPage.loadProps] newPage', newPage)
+
         // Restore theme
         if( 'theme' in newProps.data) {
             theme.value = 'theme-' + newProps.data.theme
         } else {
             theme.value = 'theme-yellow'
         }
-    } else {
-        data.value = null
     }
+    page.value = newPage
     version.value = newProps.version
 }
 
@@ -123,44 +137,40 @@ Create sections using '##Section Name':
 
 function onApply() {
     // turn textData into a list of items
-    const items = itemsFromList(textData.value)
-    // console.log('[CheclistPage.onApply]', JSON.stringify(items))
-    const newData = { name: title.value, items: items }
-    // Collect data from different textArea
-    if (columns.value.value > 1) {
-        const items2 = itemsFromList(textData2.value)
-        newData['items2'] = items2;
-        // console.log('[ChecklistPage.onApply] items2', JSON.stringify(items2))
+    const newData = { name: page.value.name}
+
+    page.value.removeAllLists()
+    for(let index = 0; index < columns.value.value; index++) {
+        const checklist = new Checklist()
+        checklist.parseEditor(textData.value[index])
+        page.value.addList(checklist)
+        
+        const key = 'items' + (index == 0 ? '' : index + 1)
+        newData[key] = page.value.lists[index].toParams()
     }
-    if(columns.value.value > 2) {
-        const items3 = itemsFromList(textData3.value)
-        newData['items3'] = items3;
-        // console.log('[ChecklistPage.onApply] items3', JSON.stringify(items3))
-    }
-    // save theme
-    if( theme.value.startsWith('theme-')) {
-        newData['theme'] = theme.value.substring(6)
-    }
-    data.value = newData;
-    mode.value = ''
+    newData['theme'] = theme.value.replace('theme-', '')
+    console.log('[ChecklistPage.onApply] newData', newData)
+
+    editMode.value = false
+
     emits('update', newData)
 }
 
 function onCancel() {
-    mode.value = ''
-    title.value = nameBeforeEdit;
+    editMode.value = false
+    page.value.name = nameBeforeEdit;
     theme.value = themeBeforeEdit;
 }
 
 function onHeaderClick() {
-    if (mode.value == '' && data.value) {
-        textData.value = listFromItems(data.value.items)
-        textData2.value = listFromItems(data.value.items2)
-        textData3.value = listFromItems(data.value.items3)
-        nameBeforeEdit = title.value
-        themeBeforeEdit = theme.value
-        mode.value = 'edit'
+    if(editMode.value) return;
+
+    for(let index = 0; index < page.value.lists.length; index++) {
+        textData.value[index] = page.value.lists[index].toEditor()
     }
+    nameBeforeEdit = page.value.name
+    themeBeforeEdit = theme.value
+    editMode.value = true
 }
 
 function onThemeChange(newTheme) {
