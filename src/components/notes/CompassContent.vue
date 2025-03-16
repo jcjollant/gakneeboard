@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { Formatter } from '@/lib/Formatter';
+import { Formatter } from '../../lib/Formatter';
 
 const myCanvas = ref()
 
