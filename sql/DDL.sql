@@ -73,3 +73,7 @@ CREATE TABLE users(
     PRIMARY KEY(id)
 );
 CREATE UNIQUE INDEX users_sha256_key ON users USING btree ("sha256");
+
+
+## 3/25/2025 Dev[x] Prod[x]
+CREATE UNIQUE INDEX ON users (sha256)
