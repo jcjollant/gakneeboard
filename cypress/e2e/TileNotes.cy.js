@@ -34,7 +34,7 @@ describe('Notes Tile', () => {
       .then(t => {
         const template = JSON.parse(t)
         // console.log('>>>>', template)
-        expect(template.data[0].data[3].data.mode).to.equal('')
+        expect(template.data[0].data[3].data.mode === undefined).to.equal(true)
       })
 
     displaySelection(0, 3, labelWORD)
@@ -139,6 +139,56 @@ describe('Notes Tile', () => {
         expect(template.data[0].data[3].data.mode).to.equal('word')
         expect(template.data[0].data[3].data.word).to.equal('PTAC')
       })
-})
+  })
+
+  it('Can memorize compass', () => {
+    visitSkipBanner()
+    loadDemo()
+
+    checkTileTitle(0, 3, notesTitle)
+
+    // switch to compass mode
+    displaySelection(0, 3,  labelCompass)
+
+    // Make sure the value has been saved in the template
+    cy.getLocalStorage('template')
+      .then(t => {
+        const template = JSON.parse(t)
+        // console.log('>>>>', template)
+        expect(template.data[0].data[3].data.mode).to.equal('compass')
+        expect(template.data[0].data[3].data.comp).not.to.equal('false')
+      })
+
+    // change settings 
+    cy.get('.modeCompass > .tileContent').click()
+    cy.get('.miniSection').contains('Compass Mode')
+    cy.get('.selected').contains('Heading')
+    cy.get('.choiceEither').contains('Heading')
+    cy.get('.choiceOr').contains('Hold')
+    cy.get('.choiceOr').click()
+    cy.get('.selected').contains('Hold')
+    // cancel and come back
+    cy.get('.p-button-link').click()
+    cy.get('.modeCompass > .tileContent').click()
+    // Headoign should still be selectied
+    cy.get('.selected').contains('Heading')
+    cy.getLocalStorage('template')
+      .then(t => {
+        const template = JSON.parse(t)
+        // console.log('>>>>', template)
+        expect(template.data[0].data[3].data.mode).to.equal('compass')
+        expect(template.data[0].data[3].data.comp).not.to.equal('false')
+      })
+    // Now select Hold and 
+    cy.get('.choiceOr').click()
+    cy.get('[aria-label="Apply"]').click()
+    cy.getLocalStorage('template')
+      .then(t => {
+        const template = JSON.parse(t)
+        // console.log('>>>>', template)
+        expect(template.data[0].data[3].data.mode).to.equal('compass')
+        expect(template.data[0].data[3].data.comp).to.equal(false)
+      })
+  })
 
 })
