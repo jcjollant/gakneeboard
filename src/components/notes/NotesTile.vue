@@ -100,6 +100,7 @@ function changeDisplayMode(newMode:DisplayModeNotes,update=true) {
 
     displayMode.value = newMode
     displaySelection.value = false;
+    editMode.value = false
 
     if(update) emitUpdate()
 }
