@@ -1,17 +1,21 @@
 <template>
-    <div class="eitheror">
-        <span class="text" :class="{'selected':model}">Monthly</span>
-        <div class="casing" @click="toggle">
-            <div class="ball transform transition-transform duration-300 translate-x-6" :class="{'right':!model}"></div>
+    <div class="eitheror" >
+        <span class="text choiceEither" :class="{'selected':model,'small':small}" @click="model=true">{{either}}</span>
+        <div class="casing" :class="{'small':small}" @click="toggle">
+            <div class="ball transform transition-transform duration-300 translate-x-6" :class="{'right':!model, 'small':small}"></div>
         </div>
-        <span class="text" :class="{'selected':!model}">Annual</span>
+        <span class="text choiceOr" :class="{'selected':!model,'small':small}" @click="model=false">{{or}}</span>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 
 const model = defineModel()
+const props = defineProps({
+    either: {type: String, required: true},
+    or: {type: String, required: true},
+    small: {type: Boolean, default: true}
+})
 
 function toggle() {
     model.value = !model.value
@@ -21,9 +25,14 @@ function toggle() {
 
 <style scoped>
 .eitheror {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    /* justify-content: center;*/
+    align-items: center; 
+}
+.eitheror.small {
+    font-size: 0.7rem;
+    gap: 0.5rem;
 }
 .casing {
     display: flex;
@@ -35,6 +44,11 @@ function toggle() {
     background-color: lightgrey;
     /* box-shadow: 2px 2px rgba(0, 0, 0, 0.2) inset; */
 }
+.casing.small {
+    width: 3rem;
+    height: 1.5rem;
+    padding: 0.2rem;
+}
 .ball {
     width: 1.5rem;
     height: 1.5rem;
@@ -44,6 +58,10 @@ function toggle() {
     /* transition-duration: 0.5s; */
     box-shadow: 2px 2px rgba(0, 0, 0, 0.2);
 }
+.ball.small {
+    width: 1rem;
+    height: 1rem;
+}
 .right {
     transform: translateX(1.5rem); 
     /* translate: 1.5rem; */
@@ -52,8 +70,15 @@ function toggle() {
     font-size: .875rem;
     line-height: 1.25rem;
     padding: 0 1rem;
+    cursor: pointer;
+}
+.text.small{
+    font-size: 0.8rem;
+    line-height: 1rem;
+    /* padding: 0 1rem; */
 }
 .selected {
     font-weight: 600;    
 }
+
 </style>

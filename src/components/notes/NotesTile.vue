@@ -6,11 +6,15 @@
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" :expandable
             @selection="changeDisplayMode" @expand="onExpand" />
         <div v-else-if="editMode" class="edit">
-            <div class="paddedEdit">
+            <div class="paddedEdit" v-show="displayMode==DisplayModeNotes.Word">
                 <InputGroup>
                     <InputGroupAddon>Word</InputGroupAddon>
                     <InputText v-model="word" class="editWord"/>
                 </InputGroup>
+            </div>
+            <div class="paddedEdit" v-show="displayMode==DisplayModeNotes.Compass">
+                <div class="miniSection">Compass Mode</div>
+                <EitherOr v-model="compassHeading" either="Heading" or="Hold"/>
             </div>
             <ActionBar @apply="onEditApply" @cancel="onEditCancel" />
         </div>
@@ -20,9 +24,10 @@
         <div v-else-if="displayMode==DisplayModeNotes.Grid" class="modeGrid tileContent">
             <div v-for="i in [1,2,3,4,5,6,7,8,9,10,11,12]">&nbsp;</div>
         </div>
-        <CompassContent v-else-if="displayMode==DisplayModeNotes.Compass" />
+        <CompassContent v-else-if="displayMode==DisplayModeNotes.Compass" :heading="compassHeading" class="clickable"
+            @click="onEditMode"/>
         <WordContent v-else-if="displayMode==DisplayModeNotes.Word"  :word="word"
-             @letterclick="onLetterClick" />
+             @letterclick="onEditMode" />
     </div>
 </template>
 
@@ -38,9 +43,12 @@ import ActionBar from '../shared/ActionBar.vue';
 
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../shared/Header.vue';
+import EitherOr from '../shared/EitherOr.vue';
 
 // Enum with display modes
 
+const compassHeading = ref(true)
+let compassHeadingBeforeEdit = true
 const displayMode = ref(DisplayModeNotes.Blank)
 const emits = defineEmits(['replace','update','expand'])
 const displaySelection = ref(false)
@@ -65,14 +73,10 @@ function loadProps(props:any) {
     // restore display mode without update
     changeDisplayMode(props?.params?.mode,false)
     // Restore custom word
-    if(props?.params?.word) word.value = props.params.word
+    word.value = props?.params?.word ?? 'CRAFT'
+    compassHeading.value = props?.params?.comp ?? true
 
     expandable.value = !props?.span2;
-}
-
-function onLetterClick(letter:string) {
-    wordBeforeEdit = word.value
-    editMode.value = true;
 }
 
 onMounted(() => {   
@@ -101,18 +105,31 @@ function changeDisplayMode(newMode:DisplayModeNotes,update=true) {
 }
 
 function emitUpdate() {
-    emits('update', {mode:displayMode.value, word:word.value})
+    // save non default data
+    const data = {}
+    if(displayMode.value != DisplayModeNotes.Blank) data['mode'] = displayMode.value
+    if(word.value.length) data['word'] = word.value
+    if(compassHeading.value != true) data['comp'] = compassHeading.value
+
+    emits('update', data)
 }
 
 function onEditApply() {
-    console.log('NotesTiles.onEditApply]', word.value)
+    // console.log('NotesTiles.onEditApply]', word.value)
     editMode.value = false;
     emitUpdate()
 }
 
 function onEditCancel() {
     word.value = wordBeforeEdit
+    compassHeading.value = compassHeadingBeforeEdit
     editMode.value = false;
+}
+
+function onEditMode() {
+    compassHeadingBeforeEdit = compassHeading.value
+    wordBeforeEdit = word.value
+    editMode.value = true
 }
 
 function onExpand() {
@@ -157,6 +174,14 @@ function onExpand() {
 
 .paddedEdit {
     padding: 10px;
+}
+
+.miniSection {
+    font-size: 0.7rem;
+    display: flex;
+    font-weight: bold;
+    padding-bottom: 10px;
+    justify-content: center;
 }
 
 </style>
