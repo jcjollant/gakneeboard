@@ -1,4 +1,3 @@
-import { version } from "vue";
 import { PageType } from "../assets/PageType";
 
 export class Template {
