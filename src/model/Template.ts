@@ -1,3 +1,4 @@
+import { version } from "vue";
 import { PageType } from "../assets/PageType";
 
 export class Template {
@@ -51,6 +52,7 @@ export class Template {
         const template = new Template(data.name, data.desc, data.publish, data.data, data.ver)
         template.id = data.id
         template.code = data.code
+        template.ver =  data?.ver ?? template.ver
         return template
     }
 }
