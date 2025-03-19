@@ -1,4 +1,4 @@
-import { describe, expect, test} from '@jest/globals';
+import { describe, expect, it, test} from '@jest/globals';
 import { Publication } from '../backend/models/Publication.ts'
 import { jcTestTemplateData } from './constants.ts';
 import { TemplateView } from '../backend/models/TemplateView.ts';
@@ -54,5 +54,24 @@ describe('Sheet class', () => {
         expect(t.publish).toBeFalsy()
         expect(t.code).toBeUndefined()
 
+    })
+    it('can parse', () => {
+        const sheetId = 12
+        const name = "name"
+        const data = jcTestTemplateData
+        const description = "Some Description"
+        const version = 28
+        const code = "AB"
+        const sheet  = {id:sheetId, name:name, data:data, description:description, ver:version, publish:false, code:code}
+
+        const parsed = TemplateView.parse(sheet)
+        expect(parsed).toBeDefined()
+        expect(parsed.id).toBe(sheetId)
+        expect(parsed.name).toBe(name)
+        expect(parsed.data).toBe(data)
+        expect(parsed.desc).toBe(description)
+        expect(parsed.ver).toBe(version)
+        expect(parsed.publish).toBeFalsy()
+        expect(parsed.code).toBe(code)  
     })
 })
