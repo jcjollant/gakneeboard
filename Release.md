@@ -1,4 +1,7 @@
 # User Experience updates
+## 03/18/2025 5123
+* Notes tile Holds mode
+* USer can print unsaved template
 ## 03/15/2025 5120 5121
 1) 5120
 * delete button is disabled while loading template
