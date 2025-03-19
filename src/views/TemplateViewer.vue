@@ -11,7 +11,7 @@
       <div class="templateMenu">
         <MenuButton id="btnPrint" icon="print" title="Print Template" label="Print"
           @click="onPrint"/>
-        <MenuButton id="btnSave" icon="save" title="Save Template to the Cloud" label="Save"
+        <MenuButton id="btnSave" icon="save" title="Save Template to the Cloud" label="Save"  :disabled="activeTemplate.isInvalid()"
           @click="onSave"/>
         <MenuButton id="btnEditor"
           icon="screwdriver-wrench" title="Toggle Edit Tools" label="Editor Tools" :active="showEditor"
@@ -140,7 +140,7 @@ onUnmounted(() => {
 
 function getTemplateName() {
   let name = ''
-  if( !activeTemplate.value || !activeTemplate.value.name) {
+  if( !activeTemplate.value.name) {
     name = 'New Template'
   } else {
     name = activeTemplate.value.name
@@ -279,10 +279,10 @@ function onPrint() {
     return
   }
 
-  if( templateModified.value) {
-    toaster.warning('Line up and Wait', 'Please save your template before printing')
-    return
-  }
+  // if( templateModified.value) {
+  //   toaster.warning('Line up and Wait', 'Please save your template before printing')
+  //   return
+  // }
 
   // go to print mode
   const printTemplateId = activeTemplate.value?.id || 0
@@ -290,6 +290,8 @@ function onPrint() {
 }
 
 async function onSave() {
+  if( activeTemplate.value.isInvalid()) return;
+
   if( !currentUser.loggedIn) {
     toaster.warning('Squawk and Ident','Please sign in to use custom templates')
     return
@@ -356,7 +358,7 @@ function saveTemplateToLocalStore() {
 
 function updateOffsets() {
   // console.log('[Template.onResize]', window.innerWidth)
-  if(!activeTemplate.value) return;
+  if(activeTemplate.value.isInvalid()) return;
 
   if( cssPageGap == -1) {
     const elt = getComputedStyle(document.body)
