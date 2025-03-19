@@ -39,6 +39,6 @@ export class TemplateView {
         }
     }
     static parse(sheet: any): TemplateView {
-        return new TemplateView(sheet.id, sheet.name, sheet.data, sheet.description, sheet.version, sheet.publish, sheet.code);
+        return new TemplateView(sheet.id, sheet.name, sheet.data, sheet.description, sheet.ver, sheet.publish, sheet.code);
     }
 }
