@@ -69,11 +69,11 @@ function toggle() {
 .text{
     font-size: .875rem;
     line-height: 1.25rem;
-    padding: 0 1rem;
+    padding: 0 0.5rem;
     cursor: pointer;
 }
 .text.small{
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     line-height: 1rem;
     /* padding: 0 1rem; */
 }
