@@ -25,6 +25,13 @@
                 <!-- list all demos -->
             </div>
         </div>
+        <!-- <div class="section demoSection">
+            <div class="header">POH Normal Procedures</div>
+            <div class="templateList">
+                <TemplateSelector v-for="(p,index) in poh" :template="p.template" :demo="true" :src="'/thumbnails/'+p.src" :class="'poh'+index"
+                    @selection="onPohSelection(d.code)" />
+            </div>
+        </div> -->
     </div>
 </template>
 
@@ -50,6 +57,9 @@ const demos = ref([
     {name: SheetName.holds, src: 'holds.png', template: {name:'Holds Practice',desc:'Full sheet of Holds and Compasses'}},
     {name: SheetName.ifrflight, src: 'strips.png', template: {name:'IFR Flight',desc:'Strips for IFR flights notekeeping'}},
 ])
+// const poh = ref([
+//     {code: 'AA', src: 'C172SGFC700.png', template: {name:'C172S GFC700',desc:'CESSNA MODEL 172S NAV III GFC 700 AFCS'}},
+// ])
 const localTemplate = ref({name:'Local',desc:'Resume your last session'})
 const newTemplate = ref({name:'New',desc:'Create a new template'})
 const router = useRouter()
