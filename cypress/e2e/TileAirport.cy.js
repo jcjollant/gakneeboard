@@ -229,13 +229,13 @@ describe('Tiles', () => {
     // switch to settings
     cy.get('.page0 > .tile0 > .headerTitle').click()
     // Check default values
-    cy.get('.ocOrientation > .choice1').should('have.class', 'choiceActive')
+    cy.get('.eoOrientation .choiceOr').should('have.class', 'selected')
     cy.get('.ocTP > .choice0').should('have.class', 'choiceActive')
-    cy.get('.ocHeadings > .choice0').should('have.class', 'choiceActive')
+    cy.get('.eoHeadings > .choiceEither').should('have.class', 'selected')
     // Select different values
-    cy.get('.ocOrientation > .choice0').click()
+    cy.get('.eoOrientation > .choiceEither').click()
     cy.get('.ocTP > .choice1').click()
-    cy.get('.ocHeadings > .choice1').click()
+    cy.get('.eoHeadings > .choiceOr').click()
     // Apply settings
     cy.get('[aria-label="Apply"]').click()
 
@@ -251,11 +251,11 @@ describe('Tiles', () => {
     // reopen settings to make sure evenrything is memorized
     cy.get('.page0 > .tile0 > .headerTitle').click()
     cy.get('.ocTP > .choice1').should('have.class', 'choiceActive')
-    cy.get('.ocHeadings > .choice1').should('have.class', 'choiceActive')
+    cy.get('.eoHeadings > .choiceOr').should('have.class', 'selected')
     // Change Pattern and headings
-    cy.get('.ocOrientation > .choice1').click()
+    cy.get('.eoOrientation > .choiceOr').click()
     cy.get('.ocTP > .choice2').click()
-    cy.get('.ocHeadings > .choice0').click()
+    cy.get('.eoHeadings > .choiceEither').click()
     // Apply settings
     cy.get('[aria-label="Apply"]').click()
 
