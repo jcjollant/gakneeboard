@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { DiagramData } from '../../lib/DiagramData';
 import { getDocument } from 'pdfjs-dist'
 
@@ -31,10 +31,10 @@ onMounted(async () => {
     })
 })
 
-// watch(props, (newProps) => {
-//     console.log('[Diagram.onWatch] props changed', newProps);
-//     loadProps(newProps);
-// })
+watch(props, (newProps) => {
+    // console.log('[Diagram.onWatch] props changed', newProps);
+    loadProps(newProps);
+})
 
 // End of props management
 
