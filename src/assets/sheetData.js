@@ -35,18 +35,6 @@ const pageDataBlankChecklist = {type:PageType.checklist, data:{}}
 // Template Blank has two blank pages
 const templateBlank = new Template('Blank','', false, [TemplatePage.SELECTION,TemplatePage.SELECTION])
 
-const page0DemoHold = new TemplatePage(PageType.tiles, "Holds Demo",
-  [
-    {id:0, name:TileType.clearance, data: { mode: "hold"}},
-    {id:1, name:TileType.notes, data: { mode: "compass"}},
-    {id:2, name:TileType.clearance, data: { mode: "hold"}},
-    {id:3, name:TileType.notes, data: { mode: "compass"}},
-    {id:4, name:TileType.clearance, data: { mode: "hold"}},
-    {id:5, name:TileType.notes, data: { mode: "compass"}},
-  ]
-)
-const templateDemoHolds = new Template('Holds Demo', 'Two sheets of Holds and Compass', false, Array(4).fill(page0DemoHold))
-
 // Skyhawk
 const page0DemoSkyhawk = { type:PageType.tiles, data:[{"id":0,"name":"airport","data":{"code":"0S9","rwy":"09-27","rwyOrientation":"magnetic","corners":["weather","twr","field","tpa"]}},
   {"id":1,"name":"atis","data":{"mode":"compact"}},
@@ -227,7 +215,7 @@ export function getTemplateDataFromName(name) {
   } else if( name == SheetName.charts) { 
     return duplicate(templateDemoCharts)
   } else if( name == SheetName.holds) { 
-    return duplicate(templateDemoHolds)
+    return DemoData.holds()
   } else if( name == SheetName.ifrflight) { 
     return duplicate(templateDemoIFRFlight)
   } else {
