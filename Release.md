@@ -1,4 +1,7 @@
 # User Experience updates
+## 03/21/2025 5124
+* Upodated Holds demo with Hold compass mode
+* Airport Edit using EitherOr
 ## 03/18/2025 5123
 * Notes tile Holds mode
 * USer can print unsaved template
