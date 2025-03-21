@@ -14,14 +14,12 @@
                             @click="selectRunway('all')"></Button>
                 </div>
                 <div class="rwyOrientation">
-                    <div class="miniHeader" >Orientation</div>
-                    <OneChoice v-if="validAirport" v-model="rwyOrientation" :choices="orientations" style="line-height: 9px;" class="ocOrientation" />
+                    <EitherOr v-if="validAirport" v-model="verticalOrientation" either="Vertical" or="Magnetic" class="eoOrientation" />
                 </div>
                 <div class="miniSection">Traffic Pattern</div>
                 <OneChoice v-if="validAirport" v-model="pattern" :choices="patternChoices" :thinpad="true" class="ocTP" />
                 <div class="rwyOrientation">
-                    <div class="miniHeader" >Heading</div>
-                    <OneChoice v-if="validAirport" v-model="showHeadings" :choices="headings" style="line-height: 9px;" class="ocHeadings" />
+                    <EitherOr v-if="validAirport" v-model="showHeadings" either="Show Hdg" or="Hide Hdg" class="eoHeadings" />
                 </div>
             </div>
         </div>
@@ -42,11 +40,10 @@ import ActionBar from '../shared/ActionBar.vue'
 import AirportInput from '../shared/AirportInput.vue'
 import OneChoice from '../shared/OneChoice.vue'
 import { UserUrl } from '@/lib/UserUrl.ts';
+import EitherOr from '../shared/EitherOr.vue';
 
 let airport = null
 const emits = defineEmits(['close','selection'])
-const orientations = [{label:'Vertical',value:'v'},{label:'Magnetic',value:'m'}]
-const headings = [{label:'Show',value:'show'},{label:'Hide',value:'hide'}]
 const patternChoices = [
     {label:'T+B',value:0, title:'Both runways with 45° entries'},
     {label:'T/45', value:1, title:'Top Runway, 45° entry'},
@@ -64,10 +61,10 @@ const showCancel = ref(false)
 const canApply = ref(false)
 const canCreate = ref(false)
 const validAirport = ref(false)
-const rwyOrientation = ref(orientations[0])
+const verticalOrientation = ref(true)
 const selectedRwy = ref(null)
 const showCustomAirport = ref(false)
-const showHeadings = ref(headings[0])
+const showHeadings = ref(true)
 
 /**
  * Props management (defineProps, loadProps, onMounted, watch)
@@ -98,11 +95,12 @@ function loadProps(props) {
             selectedRwy.value = airport.rwys[0].name
         }
 
-        rwyOrientation.value = orientations[(props.rwyOrientation == 'magnetic' ? 1 : 0)]
+        // rwyOrientation.value = orientations[(props.rwyOrientation == 'magnetic' ? 1 : 0)]
+        verticalOrientation.value = (props.rwyOrientation == 'vertical')    
         // console.log( 'AirportEdit loadProps ' + props.rwyOrientation)
 
         // restore show headings
-        showHeadings.value = headings[(props.showHeadings ? 0 : 1)]
+        showHeadings.value = props.showHeadings
     }
     pattern.value = patternChoices.find( p => p.value == props.tp);
 }
@@ -154,8 +152,8 @@ function loadAirportData(newAirport) {
 // settings are applied
 function onApply() {
     // update settings with orientation
-    const orientation = rwyOrientation.value.value == 'v' ? 'vertical' : 'magnetic'
-    const showHeadingsValue = showHeadings.value.value == 'show'
+    const orientation = verticalOrientation.value ? 'vertical' : 'magnetic'
+    const showHeadingsValue = showHeadings.value
     emits('selection', airport, selectedRwy.value, orientation, pattern.value.value, showHeadingsValue)
 }
 
@@ -241,6 +239,7 @@ function showAirport() {
     display: flex;
     justify-content: flex-start;
     gap: 5px;
+    justify-content: center;
 }
 
 .rwyOrientation .p-button {
