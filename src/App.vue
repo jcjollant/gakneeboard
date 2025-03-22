@@ -23,7 +23,6 @@
 
 <script setup>
 import { onBeforeMount, onMounted, ref } from 'vue';
-import { inject } from "@vercel/analytics"
 import { backend, getBackend, currentUser, routeToLocalTemplate, version } from '@/assets/data';
 import { LocalStore } from '@/lib/LocalStore';
 import { TemplateData } from '@/assets/TemplateData';
@@ -101,9 +100,6 @@ onMounted( () => {
       }
     }
     showMaintenance.value = false;
-
-    // Analytics
-    inject();
 })
 
 function onCloseHowDoesItWork() {

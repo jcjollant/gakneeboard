@@ -13,7 +13,6 @@
     "@fortawesome/free-brands-svg-icons": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/vue-fontawesome": "^3.0.8",
-    "@vercel/analytics": "^1.2.2",
     "@vitejs/plugin-basic-ssl": "^1.1.0",
     "axios": "^1.6.8",
     "html2canvas": "^1.4.1",
