@@ -5,7 +5,7 @@ import { Business } from './business/Business'
 import { Email, EmailType } from './Email'
 import { Exporter } from './Exporter'
 import { UserTools } from './UserTools'
-import { version } from './constants.js'
+import { version } from './constants'
 import { UsageDao, UsageType } from './dao/UsageDao'
 import { UserDao } from './dao/UserDao'
 import { Airport, versionInvalid } from './models/Airport'
@@ -20,6 +20,7 @@ import { TemplateDao } from './TemplateDao'
 import { TemplateView } from './models/TemplateView'
 import { User } from './models/User'
 import { UserMiniView } from './models/UserMiniView'
+import { AirportSketch } from './AirportSketch'
 
 // Google API key
 
@@ -186,7 +187,7 @@ export class GApi {
         return output
     }
 
-    public static async getAirportView(codeParam:string, userId: any=undefined):Promise<AirportView|undefined> {
+    public static async getAirportView(codeParam:string, userId: any=undefined):Promise<AirportView> {
         if( !Airport.isValidCode(codeParam)) throw new GApiError(400, "Invalid Airport Code");
         const list = await GApi.getAirportViewList([codeParam], userId)
         return list[0]
@@ -197,59 +198,29 @@ export class GApi {
      * @param {*} airportCodes A list of airport codes
      * @returns a list of corresponding airport data, which may be undefined
     */
-    public static async getAirportViewList(airportCodes:string[],userId=undefined):Promise<(AirportView|undefined)[]> {
+    public static async getAirportViewList(airportCodes:string[],userId=undefined):Promise<AirportView[]> {
         // console.log('[GApi.getAirportViewList] codes', JSON.stringify(airportCodes), 'user', userId)
         const airports:([string,Airport|undefined])[] = await GApi.getAirportList(airportCodes, userId)
         // console.log('[GApi.getAirportViewList]', JSON.stringify(airports))
 
-        return airports.map( ([code,airport]) => {
+        const missingSketches:{a:Airport,v:AirportView}[] = []
+        const output = airports.map( ([code,airport]) => {
             // console.log('[GApi.getAirportViewList]', code, airport)
-            return airport ? new AirportView(airport) : AirportView.getUndefined(code)
+            const view = airport ? new AirportView(airport) : AirportView.getUndefined(code)
+            if(view.isValid() && !view.sketch) {
+                missingSketches.push( {a:airport, v:view})
+            }
+            return view
         })
-    }
 
-    /**
-     * Download PDF from aeronav
-     * @param cycle a 6 characters string such as '202411'
-     * @param fileName PDF file name
-     * @returns PNG data base64 encoded
-     */
-    public static async getAeronavPdf(cycle:string, fileName:string):Promise<string|undefined> {
-        const url = `https://aeronav.faa.gov/d-tpp/${cycle}/${fileName}`
-        const pdfResponse = await fetch(url)
-        if(!pdfResponse.ok) {
-            console.log('[GApi.getAeronavPdf] fetch failed', url, pdfResponse.status)
-            return undefined
+        // resolve missing sketches
+        for( const ms of missingSketches) {
+            ms.v.sketch = await AirportSketch.get(ms.a)
         }
-        // console.log('[GApi.getAeronavPdf] url', url, 'status', pdfResponse.status)
-        const pdfBuffer = Buffer.from(await pdfResponse.arrayBuffer())
-        // console.log('[GApi.getAeronavPdf] pdfBuffer', pdfBuffer.byteLength)
-        return pdfBuffer.toString('base64')
 
-        // const urlBlob = `https://ghbo54azo9h84agk.public.blob.vercel-storage.com/aeronav.faa.gov/d-tpp/${cycle}/${fileName}`
-        // const responseBlob = await fetch(urlBlob)
-        // let pdfBuffer:Buffer;
-        // if(responseBlob.ok) {
-        //     pdfBuffer =  Buffer.from(await responseBlob.arrayBuffer())
-        //     console.log('[GApi.getAeronavPdf] blob hit')
-        // } else {
-        //     const urlAeronav = `https://aeronav.faa.gov/d-tpp/${cycle}/${fileName}`
-        //     const responseAeronav = await fetch(urlAeronav)
-        //     if(responseAeronav.ok) {
-        //         const blobFileName = urlAeronav.substring('https://'.length)
-        //         pdfBuffer =  Buffer.from(await responseAeronav.arrayBuffer())
-        //         await put(blobFileName, pdfBuffer, {access: 'public'}).then( (pbr) => {
-        //             console.log('[GApi.getAeronav] saved to blob', pbr.url, pbr.downloadUrl)
-        //         })
-        //     } else {
-        //         console.log('[GApi.getAeronavPdf] fetch failed', urlAeronav, responseBlob.status)
-        //         return undefined
-        //     }
-        // }
-        // // console.log('[GApi.getAeronavPdf] url', url, 'status', pdfResponse.status)
-        // // console.log('[GApi.getAeronavPdf] pdfBuffer', pdfBuffer.byteLength)
-        // return pdfBuffer.toString('base64')
+        return output
     }
+
 
     /**
      * Turn code into an ICAO code
