@@ -25,7 +25,7 @@ export class UserDao extends Dao<User> {
     public getAll():Promise<User[]> {
         const dao = new UserDao()
         return new Promise( async (resolve, reject) => {
-            const result = await sql`SELECT id,sha256,data FROM users`;
+            const result = await sql`SELECT id,sha256,data,create_time FROM users`;
             const users:User[] = []
             for(const row of result.rows) {
                 users.push(dao.parseRow(row))
@@ -91,6 +91,7 @@ export class UserDao extends Dao<User> {
         user.setAccountType(row.account_type)
         user.setCustomerId(row.customer_id)
         user.setPrintCredits(row.print_credit || 0)
+        user.setCreateDate(row.create_time)
 
         return user
     }
