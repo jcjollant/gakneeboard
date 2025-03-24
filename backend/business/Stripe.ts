@@ -7,6 +7,7 @@ import { Email, EmailType } from '../Email'
 import { Business } from './Business'
 import { sql } from '@vercel/postgres'
 import { Ticket } from '../Ticket'
+import { Request } from "express"
 
 const planUrl = '/plans'
 const pp1Price = process.env.STRIPE_PP1_PRICE;
