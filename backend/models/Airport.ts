@@ -26,6 +26,7 @@ export class Airport {
     iap: Chart[];
     dep: Chart[];
     diagram: string|undefined;
+    sketch: string|undefined;
 
     constructor(code:string, name:string, elevation:number) {
         this.id = undefined;

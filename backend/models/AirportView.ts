@@ -6,7 +6,7 @@ import { Navaid } from './Navaid'
 import { Runway } from './Runway'
 
 export class AirportView {
-    public static currentVersion:number = 9;
+    public static currentVersion:number = 10;
     public static invalidVersion:number = -1;
     code: string;
     name: string;
@@ -22,6 +22,7 @@ export class AirportView {
     iap: Chart[];
     dep: Chart[];
     diag: string|undefined;
+    sketch:string|undefined;
 
     constructor(airport:Airport|undefined) {
         if(airport) {
@@ -48,6 +49,7 @@ export class AirportView {
         this.iap = (airport && airport.iap) ? airport.iap : []
         this.dep = (airport && airport.dep) ? airport.dep : []
         this.diag = (airport && airport.diagram) ? airport.diagram : undefined
+        this.sketch = (airport && airport.sketch) ? airport.sketch : undefined
     }
 
     public static formatAsOf(date:string):number {
@@ -71,5 +73,8 @@ export class AirportView {
         view.code = code;
         return view
     }
-     
+
+    isValid():boolean {
+        return this.version != AirportView.invalidVersion;
+    }
 }
