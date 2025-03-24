@@ -12,6 +12,7 @@ export class User {
     accountType:AccountType;
     customerId:string|undefined;
     printCredits:number
+    createDate:Date|undefined;
 
     constructor( id:number, sha256:string) {
         this.id = id;
@@ -23,6 +24,7 @@ export class User {
         this.accountType = AccountType.simmer;
         this.customerId = undefined;
         this.printCredits = 0;
+        this.createDate = undefined;
     }
 
 
@@ -62,4 +64,7 @@ export class User {
         this.printCredits  = count;
     }
 
+    public setCreateDate(date:Date|undefined) {
+        this.createDate = date;
+    }
 }
