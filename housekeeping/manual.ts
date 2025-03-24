@@ -62,7 +62,7 @@ require('dotenv').config();
 //====================
 // Page count per user
 import { Metrics } from "../backend/Metrics";
-Metrics.pagePerUser().then( output => {
+Metrics.users().then( output => {
     console.log(output)
     console.log(JSON.stringify(output))
 })
