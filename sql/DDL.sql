@@ -75,5 +75,9 @@ CREATE TABLE users(
 CREATE UNIQUE INDEX users_sha256_key ON users USING btree ("sha256");
 
 
-## 3/25/2025 Dev[x] Prod[x]
+## 03/22/2025 Dev
+## 03/23/2025 Prod
+ALTER TABLE airports ADD COLUMN sketch varchar(255);
+
+## 03/15/2025 Dev[x] Prod[x]
 CREATE UNIQUE INDEX ON users (sha256)
