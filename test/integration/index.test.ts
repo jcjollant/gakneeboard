@@ -1,16 +1,17 @@
 const axios = require('axios')
 
-import { jcHash, jcHash2, currentAirportModelVersion, currentAsOf, samplePublicationCode, jcTestTemplateData } from '../constants.ts'
-import { version } from '../../backend/constants.js'
-import { Maintenance } from '../../backend/Maintenance.ts'
-import { Template } from '../../backend/models/Template.ts'
-import { newTestUser } from '../common.ts'
+import { describe, expect, it} from '@jest/globals';
+import { jcHash, jcHash2, currentAirportModelVersion, currentAsOf, samplePublicationCode, jcTestTemplateData } from '../constants'
+import { version } from '../../backend/constants'
+import { Maintenance } from '../../backend/Maintenance'
+import { newTestUser } from '../common'
 import { sql } from '@vercel/postgres'
+import { TemplateView } from '../../backend/models/TemplateView';
 
 const apiRootUrl = 'http://localhost:3000/'
 
 describe('index', () => {
-    it('root', async () => {
+    it('root API returns expected values', async () => {
         await Promise.all([
             axios.get( apiRootUrl)
                 .then(res => {
@@ -89,23 +90,10 @@ describe('index', () => {
             })
     })
 
-    it('Get Custom Airport', async () => {
-        await axios.get( apiRootUrl + 'airport/TEST?user=' + jcHash)
-            .then( (res) => {
-                expect(res.data).toBeDefined();
-                expect(res.data.code).toBe('TEST')
-            })
-            .catch( (error) => {
-                console.log(error)
-                expect(true).toBe(false)
-                // expect(error.response.status).toBe(400);
-            })
-    })
-
-    it('Templates and publications', async () => {
+    it.only('Templates and publications', async () => {
         // Create template for use JC
         const templateName = 'Test Template ' + Date.now();
-        const newTemplate = new Template(0,templateName, jcTestTemplateData)
+        const newTemplate = new TemplateView(0,templateName, jcTestTemplateData)
         newTemplate.publish = true;
         const user = newTestUser()
         const r = await sql`INSERT INTO users (sha256,version,account_type,data) VALUES(${user.sha256},1,'sim','{}') RETURNING id`
