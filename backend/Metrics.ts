@@ -38,6 +38,7 @@ export enum MetricKey {
     export7 = 'exports-7d',
     export28 = 'exports-28d',
     feedbacks = 'feedbacks',
+    onboard28 = 'onboard-28d',
     pageApproach = 'approachPageCount',
     pageDiagram = 'diagramPageCount',
     pageChecklist = 'checklistPageCount',
@@ -133,6 +134,10 @@ export class Metrics {
         allMetrics.push(appleUsers)
         const facebookUsers = new Metric(MetricKey.usersFacebook)
         allMetrics.push(facebookUsers)
+        const onboarded28 = new Metric(MetricKey.onboard28)
+        allMetrics.push(onboarded28)
+
+        const now = Date.now()
 
         for(const user of allUsers) {
             if(user.source == UserTools.google) {
@@ -142,7 +147,14 @@ export class Metrics {
             } else if( user.source == UserTools.facebook) {
                 facebookUsers.addOne()
             } else {
-                console.log('Unknown source for user ', user.id)
+                // console.log('Unknown source for user ', user.id)
+            }
+
+            if( user.createDate) {
+                // console.log('dates', now, user.createDate.getTime())
+                const dateDiff = (now - user.createDate.getTime()) / (1000 * 60 * 60 * 24)
+                // console.log('dateDiff', dateDiff)
+                if(dateDiff <= 28) onboarded28.addOne()
             }
         }
 
