@@ -5,14 +5,13 @@ import axios from "axios";
 import { Charts } from "./Charts";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.min.mjs";
 import { Canvas, createCanvas } from "canvas";
-import fs from 'node:fs/promises';
 
 export class AirportSketch {
   static doesNotExist = "dne";
 
   static async get(airport: Airport): Promise<string> {
     console.log("[AirportSketch.get] invoked for", airport.code);
-    
+
     if (airport.iap.length < 1) {
         await AirportSketch.notFound(airport.code);
         return AirportSketch.doesNotExist;
