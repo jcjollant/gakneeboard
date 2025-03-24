@@ -1,8 +1,8 @@
 import { QueryResult, sql } from  "@vercel/postgres";
 import { Airport, versionInvalid } from "./models/Airport";
+import { PutBlobResult } from "@vercel/blob";
 
 export class AirportDao {
-    
     public static async count():Promise<number> {
         const result = await sql`SELECT count(*) FROM Airports`;
         return Number(result.rows[0].count)
@@ -110,9 +110,9 @@ export class AirportDao {
 
         let result:QueryResult;
         if( creatorId) {
-            result = await sql`SELECT id,code,data,creatorId,version FROM airports WHERE Code = ANY (${list}) AND (creatorId =${creatorId} OR creatorId IS NULL) ORDER BY creatorId`;
+            result = await sql`SELECT id,code,data,creatorId,version,sketch FROM airports WHERE Code = ANY (${list}) AND (creatorId =${creatorId} OR creatorId IS NULL) ORDER BY creatorId`;
         } else { // do not include creatorId
-            result = await sql`SELECT id, code,data,creatorId,version FROM airports WHERE Code = ANY (${list}) AND creatorId is NULL`;
+            result = await sql`SELECT id, code,data,creatorId,version,sketch FROM airports WHERE Code = ANY (${list}) AND creatorId is NULL`;
         }
         // console.log( '[AirportDoa.readList] found', result.rowCount, 'entries for', JSON.stringify(list))
     
@@ -126,31 +126,12 @@ export class AirportDao {
                 airport.custom = ( creatorId ? (creatorId == row.creatorid) : false)
                 airport.id = row.id;
                 airport.version = row.version;
+                airport.sketch = row.sketch;
                 return [row.code,airport];
             } else {
                 return [row.code,AirportDao.undefinedAirport(row.code)]
             }
         })
-
-        // const output:Airport[] = []
-
-        // list.forEach( (code:string) => {
-        //     // did we find that code in DB ?
-        //     const found = result.rows.find( row => row.code == code)
-        //     if( found) {
-        //         const airport:Airport = JSON.parse(found.data);
-        //         // Do we need to salvage the code?
-        //         if(!airport.code) airport.code = code;
-        //         // console.log('[AirportDao.readList] found.creatorId', found.creatorId)
-        //         // It's a custom airport if creatorId matches
-        //         airport.custom = ( creatorId ? (creatorId == found.creatorid) : false)
-        //         airport.id = found.id;
-        //         airport.version = found.version;
-        //         output.push(airport)
-        //     }
-        // })
-        // // console.log('[AirportDao.readList] returning', output.length, 'records')
-        // return output
     }
 
     static undefinedAirport(code:string):Airport {
@@ -158,6 +139,12 @@ export class AirportDao {
         airport.version = versionInvalid;
         return airport
     }
+
+    static async updateSketch(code: string, url: string) {
+        if(!code) throw new Error('Invalid code')
+        return sql`UPDATE Airports SET sketch=${url} WHERE code=${code}`;
+    }
+    
 
     static async updateAirport(id:number, airport:Airport) {
         const data:string = JSON.stringify(airport)
