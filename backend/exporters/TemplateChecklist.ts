@@ -1,4 +1,5 @@
-import { PageType, TemplateView, Tile } from "../models/Template";
+import { PageType, Tile } from "../models/Template";
+import { TemplateView } from "../models/TemplateView";
 
 
 export class TemplateChecklistItem {
