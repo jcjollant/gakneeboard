@@ -1,14 +1,16 @@
-const express = require( "express")
+import express, { Request, Response, NextFunction } from "express"
 import cors from "cors";
 import multer from "multer"
-// const cors = require('cors');
 import { GApi, GApiError } from '../backend/GApi'
 import { StripeClient } from '../backend/business/Stripe'
 import { UserTools } from '../backend/UserTools'
 import { Maintenance } from '../backend/Maintenance'
 import { NavlogTools } from "../backend/NavlogTools";
 import { Ticket } from "../backend/Ticket";
-const port = 3000
+import { Charts } from "../backend/Charts";
+import { AirportSketch } from "../backend/AirportSketch";
+
+const port:number = 3000
 const app = express();
 
 app.use(cors())
@@ -16,7 +18,7 @@ app.use('/stripe/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json()) // for parsing application/json
 
 // console.log("Dev Mode")
-// app.use((req, res, next) => {
+// app.use((req:Request, res:Response, next) => {
 //     const showHeaders = false;
 //     let before = Date.now();
 //     let thisRequest = before % 100;
@@ -37,7 +39,7 @@ app.use(express.json()) // for parsing application/json
 //     next();
 // });
 
-app.get("/", async (req, res) => {
+app.get("/", async (req:Request, res:Response) => {
     const output = await GApi.getSession(req)
     res.send(output)
 });
@@ -45,9 +47,13 @@ app.get("/", async (req, res) => {
 /**
  * Create a new custom airport
  */
+interface AirportPayload {
+    user: string;
+    airport: any; // Replace with proper airport type
+} 
 app.post("/airport", async (req,res) => {
-    console.log('[index.post.airport]', typeof req.body)
-    const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+    // console.log('[index.post.airport]', typeof req.body)
+    const payload:AirportPayload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
     // console.log("[index] POST airport payload " + JSON.stringify(payload))
     if( !payload.user || !payload.airport ) {
         res.status(400).send('Invalid request')
@@ -64,46 +70,44 @@ app.get("/airport/:id", async (req,res) => {
     const userId = await UserTools.userIdFromRequest(req)
     // console.log( "[index.get.airport]", req.params.id, userId);
 
-    GApi.getAirportView(req.params.id, userId)
-        .then( (airport) => {
-            //console.log("[index] Returning airport " + JSON.stringify(airport));
-            res.send(airport)
-        }).catch( (e) => {
-            catchError(res, e, 'GET /airport/:id')
-        })
+    try {
+        const output = await GApi.getAirportView(req.params.id, userId)
+        res.send(output)
+    } catch( e) {
+        catchError(res, e, 'GET /airport')
+    }
 })
 
 /**
  * Get a list of airports represented as AirportView
  */
-app.get('/airports/:list', async (req, res) => {
+app.get('/airports/:list', async (req:Request, res:Response) => {
 
     const userId = await UserTools.userIdFromRequest(req)
     // console.log( "[index] /airports/", req.params.list, "userId", userId);
-    const airports = await GApi.getAirportViewList(req.params.list.split('-'),userId);
+    const output = await GApi.getAirportViewList(req.params.list.split('-'),userId);
     // console.log( "[index] Returning airports " + JSON.stringify(airports));
-    res.send(airports)
+    res.send(output)
 })
 
 /**
  * Get approach plate PDF
  */
-app.get('/approach/plate/:cycle/:fileName', async (req, res) => {
+app.get('/approach/plate/:cycle/:fileName', async (req:Request, res:Response) => {
     // console.log('[index] /test')
     try {
-        const cycle = req.params.cycle
-        const fileName = req.params.fileName
-        GApi.getAeronavPdf(cycle,fileName).then(image => {
+        const fullName = req.params.cycle + '/' + req.params.fileName
+        Charts.getAeronavPdf(fullName).then(pdfBuffer => {
             // console.log('[index] approach length', image.length)
             res.set({
                 'Content-Type': 'application/pdf',
                 'Content-Disposition': 'inline',
                 'Cache-Control': 'no-cache'
             })
-            res.send(image)
+            res.send(pdfBuffer.toString('base64'))
         });
     } catch( e) {
-        console.log('[index] /approach error' + e)
+        console.log('[index] GET /approach error' + e)
         catchError(res, e, 'GET /approach')
     }
 })
@@ -124,19 +128,18 @@ app.post('/authenticate', async(req,res) => {
 /**
  * Get airport diagram PDF
  */
-app.get('/diagram/:cycle/:fileName', async (req, res) => {
+app.get('/diagram/:cycle/:fileName', async (req:Request, res:Response) => {
     // console.log('[index] /test')
     try {
-        const cycle = req.params.cycle
-        const fileName = req.params.fileName
-        GApi.getAeronavPdf(cycle,fileName).then(image => {
+        const fullName = req.params.cycle + '/' + req.params.fileName
+        Charts.getAeronavPdf(fullName).then(pdfBuffer => {
             // console.log('[index] approach length', image.length)
             res.set({
                 'Content-Type': 'application/pdf',
                 'Content-Disposition': 'inline',
                 'Cache-Control': 'no-cache'
             })
-            res.send(image)
+            res.send(pdfBuffer.toString('base64'))
         });
     } catch( e) {
         console.log('[index] GET /diagram error' + e)
@@ -147,10 +150,12 @@ app.get('/diagram/:cycle/:fileName', async (req, res) => {
 
 
 // Trigger download of a template export in various formats
-app.get('/export/template/:id/:format', async(req,res) => {
+app.get('/export/template/:id/:format', async(req:Request,res:Response) => {
     // console.log('[index.get/export/template/', req.params.id, req.params.format, req.query.user)
     try {
-        await GApi.exportTemplate(req.params.id, req.query?.user, req.params.format).then( (e) => {
+        if(!req.query.user) throw new Error('user is required')
+        const user:string = req.query.user as string
+        await GApi.exportTemplate(Number(req.params.id), user, req.params.format).then( (e) => {
             res.attachment(e.fileName)
             const arrayBuffer = e.arrayBuffer
             res.header('Access-Control-Expose-Headers', 'Content-Disposition');
@@ -192,7 +197,7 @@ app.post('/fp2nl', upload.single('file'), async (req,res) => {
     }
 });
 
-app.get('/maintenance/:code', async (req, res) => {
+app.get('/maintenance/:code', async (req:Request, res:Response) => {
     const maintenance = new Maintenance(req.params.code)
     if(maintenance.isValidCode() === false) {
         // console.log('[index] Invalid maintenance code')
@@ -206,7 +211,7 @@ app.get('/maintenance/:code', async (req, res) => {
     })
 })
 
-app.get('/publication/:code', async (req, res) => {
+app.get('/publication/:code', async (req:Request, res:Response) => {
     try {
         let template = await GApi.publicationGet(req.params.code);
         res.send(template)
@@ -215,20 +220,20 @@ app.get('/publication/:code', async (req, res) => {
     }
 })
 
-app.post('/print', async (req, res) => {
+app.post('/print', async (req:Request, res:Response) => {
     try {
         const payload = (typeof req.body !== 'string' ? JSON.stringify(req.body) : req.body);
         const userSha = UserTools.userShaFromRequest(req)
         const success = await GApi.printRequest(userSha,payload)
         res.sendStatus( success ? 200 : 402)
     } catch( err) {
-        catchError(res, e, 'POST /print')
+        catchError(res, err, 'POST /print')
     }
 })
 
 
 // Get a list of publications
-app.get('/publications', async (req, res) => {
+app.get('/publications', async (req:Request, res:Response) => {
     // Require authenticated user
     const userId = await UserTools.userIdFromRequest(req)
     try {
@@ -241,6 +246,30 @@ app.get('/publications', async (req, res) => {
         catchError(res, e, 'GET /publications')
     }
 })
+
+
+// app.post('/sketch', upload.single('image'), async (req:Request, res:Response) => {
+//     if (!req.file) {
+//         return res.status(400).send('No image file uploaded.');
+//     }
+
+//     try {
+//         res.send(await AirportSketch.save(req.file))
+//     } catch( e) {
+//         catchError(res, e, 'POST /sketch')
+//     }
+// })
+
+// app.post('/sketchnotfound/', async (req:Request, res:Response) => {
+//     console.log('[index] POST /sketchnotfound', req.body)
+//     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+//     try {
+//         res.send(await AirportSketch.notFound(payload.code))
+//     } catch( e) {
+//         catchError(res, e, 'POST /sketch')
+//     }
+// })
+
 
 /**
  * Payments management
@@ -263,7 +292,7 @@ app.post('/stripe/checkout', async (req,res) => {
 /**
  * This is called by Stripe upon subscription event
  */
-app.post('/stripe/webhook', async (req, res) => {
+app.post('/stripe/webhook', async (req:Request, res:Response) => {
     await StripeClient.instance.webhook(req).then(() => {
         res.send()
     }).catch( (e) => {
@@ -276,7 +305,7 @@ app.post('/stripe/webhook', async (req, res) => {
 /**
  * Get a specific template
  */
-app.get('/template/:id', async (req, res) => {
+app.get('/template/:id', async (req:Request, res:Response) => {
     const userId = await UserTools.userIdFromRequest(req)
     try {
         // console.log( "[index] GET template " + req.params.id + " userId " + userId);
@@ -284,7 +313,7 @@ app.get('/template/:id', async (req, res) => {
             throw new GApiError(401, 'Unauthorized')
         }
         // console.log( "[index] GET template " + req.params.id + " userId " + userId
-        let template = await GApi.templateGet(req.params.id, userId);
+        let template = await GApi.templateGet(Number(req.params.id), userId);
         if(template) {
             res.send(template)
         } else {
@@ -298,7 +327,7 @@ app.get('/template/:id', async (req, res) => {
 /**
  * Builds a template list for the current user
  */
-app.get('/templates', async (req, res) => {
+app.get('/templates', async (req:Request, res:Response) => {
     const userId = await UserTools.userIdFromRequest(req)
     try {
         const templates = await GApi.templateGetList(userId);
@@ -309,7 +338,7 @@ app.get('/templates', async (req, res) => {
 })
 
 // Template save
-app.post('/template', async (req, res) => {
+app.post('/template', async (req:Request, res:Response) => {
     // console.log('[index.post/template]', typeof req.body)
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
     // console.log("[index] POST template payload " + JSON.stringify(payload))
@@ -322,15 +351,15 @@ app.post('/template', async (req, res) => {
 })
 
 // Delete a specific template
-app.delete('/template/:id', async (req, res) => {
+app.delete('/template/:id', async (req:Request, res:Response) => {
     const templateId = req.params.id
     const userId = await UserTools.userIdFromRequest(req)
     try {
         if( !templateId || !userId) { 
             throw new GApiError(400, 'Invalid request')
         }
-        await GApi.templateDelete(templateId, userId).then( (template) => {
-            res.send(template.name + ' deleted')
+        await GApi.templateDelete(Number(templateId), userId).then( (template) => {
+            res.send(template + ' deleted')
         })
     } catch( e) {
         if(e instanceof GApiError && e.status === 404) {
@@ -343,9 +372,11 @@ app.delete('/template/:id', async (req, res) => {
     // console.log( "[index] DELETE sheet " + req.params.id
 })
 
-app.get('/sunlight/:from/:to/:dateFrom/:dateTo?', async (req, res) => {
+app.get('/sunlight/:from/:to/:dateFrom/:dateTo?', async (req:Request, res:Response) => {
     try {
-        await GApi.getSunlight(req.params.from, req.params.to, req.params.dateFrom, req.params.dateTo).then( sunlight => {
+        const dateFrom:number|undefined = req.params.dateFrom ? Number(req.params.dateFrom) : undefined
+        const dateTo:number|undefined = req.params.dateTo ? Number(req.params.dateTo) : undefined
+        await GApi.getSunlight(req.params.from, req.params.to, dateFrom, dateTo).then( sunlight => {
             res.send(sunlight)
         })
     } catch(e) {
