@@ -12,7 +12,7 @@ export class AirportSketch {
   static async get(airport: Airport): Promise<string> {
     console.log("[AirportSketch.get] invoked for", airport.code);
 
-    if (airport.iap.length < 1) {
+    if (!airport.iap || airport.iap.length < 1) {
         await AirportSketch.notFound(airport.code);
         return AirportSketch.doesNotExist;
     }
