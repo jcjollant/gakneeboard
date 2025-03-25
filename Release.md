@@ -1,4 +1,7 @@
 # User Experience updates
+## 03/24/2025 5130
+* Airport Tile + Display Modes and Diagram
+* Airport Edit simplified for List and Diagram
 ## 03/21/2025 5124
 * Upodated Holds demo with Hold compass mode
 * Airport Edit using EitherOr
