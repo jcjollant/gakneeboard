@@ -181,7 +181,7 @@ watch( props, async() => {
 // End of Props management
 
 
-function changeMode(newMode) {
+function changeMode(newMode:DisplayModeAtis) {
     // console.log('[Atis.changeMode]', newMode)
     displayMode.value = newMode
     displaySelection.value = false;
@@ -191,7 +191,7 @@ function changeMode(newMode) {
 
 function cycleMode() {
     if(displayMode.value == '') {
-        changeMode('compact')
+        changeMode(DisplayModeAtis.CompactATIS)
     } else {
         changeMode(defaultMode)
     }
