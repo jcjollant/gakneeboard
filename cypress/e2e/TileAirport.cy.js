@@ -1,4 +1,4 @@
-import { bellinghamTitle, boeingTitle, checkCorner, checkTileSpan, checkTileVisible, loadDemo, maintenanceMode, rentonTitle, visitSkipBanner, waitForAirports, waitOneAirport } from './shared'
+import { bellinghamTitle, boeingTitle, checkCorner, checkTileSpan, checkTileVisible, displaySelection, loadDemo, maintenanceMode, rentonTitle, visitSkipBanner, waitForAirports, waitOneAirport } from './shared'
 
 describe('Tiles', () => {
   it('Airport Tile', () => {
@@ -47,14 +47,14 @@ describe('Tiles', () => {
 
     // Name should be shown in AirportInput
     cy.get('.page0 > .tile2 .settings > .airportCode .airportName').contains(bellinghamTitle)
-    cy.get('.page0 > :nth-child(3) > .content > .actionBar > [aria-label="Apply"]').click()
+    cy.get('.page0 .tile2 .actionBar [aria-label="Apply"]').click()
     // Check for bellingham fields
     const kbliValues = {tile:bellinghamTitle, label0:'ATIS',value0:'134.450',label1:'TWR',value1:'124.900',label2:'Elev',value2:'171',label3:'TPA',value3:'1201',watermark:'KBLI',dimensions:'6700x150'}
     cy.get('.page0 > .tile2 > .headerTitle').contains(kbliValues.tile)
-    checkCorner(0,2, '.top.left', kbliValues.label0, kbliValues.value0)
-    checkCorner(0,2, '.top.right', kbliValues.label1, kbliValues.value1)
-    checkCorner(0,2, '.bottom.left', kbliValues.label2, kbliValues.value2)
-    checkCorner(0,2, '.bottom.right', kbliValues.label3, kbliValues.value3)
+    checkCorner( 0, 2, '.top.left', kbliValues.label0, kbliValues.value0)
+    checkCorner( 0, 2, '.top.right', kbliValues.label1, kbliValues.value1)
+    checkCorner( 0, 2, '.bottom.left', kbliValues.label2, kbliValues.value2)
+    checkCorner( 0, 2, '.bottom.right', kbliValues.label3, kbliValues.value3)
     cy.get(`.page0 > .tile2 > .tileContent .container .label`).contains(kbliValues.dimensions)
 
     // Test All Runways mode with KAWO Arlington
@@ -268,4 +268,39 @@ describe('Tiles', () => {
         expect(template.data[0].data[0].data.headings).to.equal(true)
       })
   })
+
+  it('Display mode', () => {
+    visitSkipBanner()
+    loadDemo()
+
+    waitForAirports()
+
+    // should default to runway mode
+    cy.get('.page0 .tile0 canvas').should('exist')
+    cy.get('.page0 .tile0 .runwayList').should('not.exist')
+    cy.get('.page0 .tile0 .rwySketch').should('not.exist')
+    displaySelection(0, 0, 'Runway List')
+    cy.get('.page0 .tile0 canvas').should('not.exist')
+    cy.get('.page0 .tile0 .runwayList').should('exist')
+    cy.get('.page0 .tile0 .rwySketch').should('not.exist')
+
+    cy.getLocalStorage('template')
+      .then(t => {
+        const template = JSON.parse(t)
+        expect(template.data[0].data[0].data.mode).to.equal('list')
+      })
+
+
+    displaySelection(0, 0, 'Airport Diagram')
+    cy.get('.page0 .tile0 canvas').should('not.exist')
+    cy.get('.page0 .tile0 .runwayList').should('not.exist')
+    cy.get('.page0 .tile0 .rwySketch').should('exist')
+
+    cy.getLocalStorage('template')
+      .then(t => {
+        const template = JSON.parse(t)
+        expect(template.data[0].data[0].data.mode).to.equal('diag')
+      })
+  })
+
 })

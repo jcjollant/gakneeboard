@@ -119,7 +119,8 @@ describe('navlog Page', () => {
     cy.get('.createAirportFrom > .p-inputgroup > .p-inputtext').type('KRNT', {delay:0})
     cy.get('.createAirportTo > .p-inputgroup > .p-inputtext').type('KSFF', {delay:0})
     cy.get('.createAltitudes > .p-inputtext').type("2500 2500 4500 4500 7500 7500 5500", {delay:0})
-    cy.wait(500) // give it time to pull data
+    cy.get('.createAirportFrom > .nameGroup').contains('Renton Muni')
+    cy.get('.createAirportTo > .nameGroup').contains('Felts Fld')
     // Click create
     cy.get('.createButton > .p-button').click()
 
@@ -346,7 +347,8 @@ describe('navlog Page', () => {
     cy.get('.createAirportTo > .p-inputgroup > .p-inputtext').type('KSFF', {delay:0})
     const altitudes = [...Array(4).fill(2500), ...Array(8).fill(4500), ...Array(7).fill(4500) , ...Array(4).fill(4500)]
     cy.get('.createAltitudes > .p-inputtext').type(altitudes.join(' '), {delay:0})
-    cy.wait(500) // give it time to pull data
+    cy.get('.createAirportFrom > .nameGroup').contains('Renton Muni')
+    cy.get('.createAirportTo > .nameGroup').contains('Felts Fld')
     // Click create
     cy.get('.createButton > .p-button').click()
     // Enter variables
