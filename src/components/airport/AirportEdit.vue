@@ -1,17 +1,17 @@
 <template>
     <div class="content">
         <div class="settings">
-            <AirportInput :code="airportCode" :auto="true"
+            <AirportInput :code="airportCode" :auto="true" :expanded="displayMode!=DisplayModeAirport.OneRunway"
                 @valid="loadAirportData" @invalid="onInvalidAirport" />
             <ProgressSpinner v-if="loading" class="spinner" ></ProgressSpinner>
-            <div v-else-if="validAirport" class="rwyChoices">
+            <div v-else-if="validAirport && displayMode==DisplayModeAirport.OneRunway" class="rwyChoices">
                 <div class="miniSection">Runway</div>
                 <div class="rwySelector">
                     <Button :label="rwy.name" class="sign" :severity="rwy.name == selectedRwy ? 'primary' : 'secondary'"
                         v-for="rwy in rwyList" 
                         @click="selectRunway(rwy.name)"></Button>
-                    <Button label="ALL" class="sign" v-if="rwyList.length > 0"  :severity="selectedRwy == 'all' ? 'primary' : 'secondary'"
-                            @click="selectRunway('all')"></Button>
+                    <!-- <Button label="ALL" class="sign" v-if="rwyList.length > 0"  :severity="selectedRwy == 'all' ? 'primary' : 'secondary'"
+                            @click="selectRunway('all')"></Button> -->
                 </div>
                 <div class="rwyOrientation">
                     <EitherOr v-if="validAirport" v-model="verticalOrientation" either="Vertical" or="Magnetic" class="eoOrientation" />
@@ -41,8 +41,11 @@ import AirportInput from '../shared/AirportInput.vue'
 import OneChoice from '../shared/OneChoice.vue'
 import { UserUrl } from '@/lib/UserUrl.ts';
 import EitherOr from '../shared/EitherOr.vue';
+import { DisplayModeAirport } from '../../model/DisplayMode';
 
 let airport = null
+const airportCode = ref('')
+const airportName = ref('')
 const emits = defineEmits(['close','selection'])
 const patternChoices = [
     {label:'T+B',value:0, title:'Both runways with 45° entries'},
@@ -52,11 +55,17 @@ const patternChoices = [
     {label:'B/M',value:4, title:'Bottom Runway, Midfield'},
     {label:'None', value:5, title:'None'},
 ]
-const pattern = ref(patternChoices[0])
 const loading = ref(false)
+const pattern = ref(patternChoices[0])
+const props = defineProps({
+    displayMode: { type: DisplayModeAirport, required: true},
+    airport: { type: Object, default: null},
+    rwyName: { type: String, default: null},
+    rwyOrientation: { type: String, default: 'vertical'},
+    tp: { type: Number, default: 0},
+    showHeadings: { type: Boolean, default: true},
+})
 const rwyList = ref([])
-const airportCode = ref('')
-const airportName = ref('')
 const showCancel = ref(false)
 const canApply = ref(false)
 const canCreate = ref(false)
@@ -69,13 +78,6 @@ const showHeadings = ref(true)
 /**
  * Props management (defineProps, loadProps, onMounted, watch)
  */
-const props = defineProps({
-    airport: { type: Object, default: null},
-    rwyName: { type: String, default: null},
-    rwyOrientation: { type: String, default: 'vertical'},
-    tp: { type: Number, default: 0},
-    showHeadings: { type: Boolean, default: true},
-})
 
 function loadProps(props) {
     // console.log('[AirportEdit.loadProps] ' + JSON.stringify(props))
@@ -123,6 +125,7 @@ function loadAirport( code) {
     airportName.value = '...'
     data.getAirport( code)
         .then( newAirport => {
+            // console.log("[AirportEdit.loadAirport] newAirport", newAirport)
             loading.value = false;
             if( newAirport && newAirport.version != -1) {
                 loadAirportData(newAirport)
@@ -207,6 +210,7 @@ function showAirport() {
     display:flex;
     gap: 2px 5px;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .sign {
