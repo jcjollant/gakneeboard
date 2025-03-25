@@ -1,11 +1,13 @@
 
 <template>
     <div class="tile">
-        <Header :title="title" :showReplace="editMode" :displayMode="false"
-            @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <AirportEdit v-if="editMode" :airport="airportData" :rwyName="runwayName" :rwyOrientation="rwyOrientation" :tp="patternMode" :showHeadings="showHeadings"
+        <Header :title="title" :showReplace="editMode"
+            @replace="emits('replace')" @display="displaySelection=!displaySelection" @title="onHeaderClick"></Header>
+        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList" :expandable="!expanded"
+            @selection="changeMode" />
+        <AirportEdit v-else-if="editMode" :displayMode="displayMode" :airport="airportData" :rwyName="runwayName" :rwyOrientation="rwyOrientation" :tp="patternMode" :showHeadings="showHeadings"
             @close="onHeaderClick" @selection="onSettingsUpdate" />
-        <div v-else-if="mode=='list'" class="tileContent" >
+        <div v-else-if="displayMode==DisplayModeAirport.RunwayList" class="tileContent clickable"  @click="onHeaderClick">
             <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
             <div class="runwayList">
                 <div class="runwayListRow">
@@ -29,12 +31,18 @@
                 <CornerStatic :label="weatherType" :value="weatherFreq" position="bottom"/>
             </div>
         </div>
-        <div class="tileContent" v-else=""> <!-- Normal mode -->
+        <div class="tileContent" v-else> <!-- One Runway or sketch -->
             <div v-if="airportCode">
-                <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
-                <div v-if="unknownRunway" class="unknownRwy">Unknown Runway</div>
-                <Runway v-else :runway="selectedRunway" :pattern="patternMode" :orientation="rwyOrientation" :headings="showHeadings" class="clickable"
-                    @click="onHeaderClick" />
+                <div v-if="displayMode==DisplayModeAirport.Diagram" class="rwySketch clickable" @click="onHeaderClick">
+                    <PlaceHolder v-if="!rwySketch || rwySketch=='dne'" title="No Diagram" subtitle="Consider sending feedback" />
+                    <img v-else class="rwySketch" :src="rwySketch" />
+                </div>
+                <div v-else>
+                    <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
+                    <div v-if="unknownRunway" class="unknownRwy">Unknown Runway</div>
+                    <Runway v-else :runway="selectedRunway" :pattern="patternMode" :orientation="rwyOrientation" :headings="showHeadings" class="clickable"
+                        @click="onHeaderClick"/>
+                </div>
                 <div v-if="expanded" class="top left cornerColumn">
                     <Corner v-for="index in [0,4,6,2]" :airport="airportData" :data="corners[index]" :runway="selectedRunway" :big="true" :class="['corner'+index]"
                         @update="onCornerUpdate(index, $event)" />
@@ -61,18 +69,27 @@
 import {ref, onMounted, watch} from 'vue';
 import { getAirport, getFreqCtaf, getFreqWeather} from '../../assets/data.js'
 import { Formatter } from '../../lib/Formatter.ts'
+import { DisplayModeAirport, DisplayModeChoice } from '../../model/DisplayMode';
 
 import AirportEdit from './AirportEdit.vue';
 import Corner from './Corner.vue';
 import CornerStatic from '@/components/shared/CornerStatic.vue';
-import Header from '@/components/shared/Header.vue'
-import PlaceHolder from '@/components/shared/PlaceHolder.vue'
+import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
+import Header from '../../components/shared/Header.vue'
+import PlaceHolder from '../../components/shared/PlaceHolder.vue'
 import Runway from './Runway.vue'
 
+const defaultMode = DisplayModeAirport.OneRunway
+const displayMode = ref(defaultMode)
+const displaySelection = ref(false)
 const emits = defineEmits(['replace','update'])
 const expanded = ref(false)
 const editMode = ref(false)
-const mode = ref('')
+const modesList = ref([
+    new DisplayModeChoice('Runway Sketch', DisplayModeAirport.OneRunway, false),
+    new DisplayModeChoice('Runway List', DisplayModeAirport.RunwayList),
+    new DisplayModeChoice('Airport Diagram', DisplayModeAirport.Diagram),
+])
 const title = ref('')
 const weatherFreq = ref('')
 const weatherType = ref()
@@ -80,6 +97,7 @@ const elevation = ref()
 const tpa = ref()
 const airportCode = ref('') // used during edit mode
 const rwyList = ref([]) // used during runway selection
+const rwySketch = ref('')
 const allEndings = ref([]) // used when displaying all runways
 
 const selectedRunway = ref(null)
@@ -115,6 +133,7 @@ function loadProps(newProps) {
         console.log( 'Airport cannot load params ' + JSON.stringify(state))
         return
     }
+
     // console.log('Airport loadProps ' + JSON.stringify(newProps))
     const code = state.code
     // Force edit mode if we don't have an airport yet
@@ -125,25 +144,13 @@ function loadProps(newProps) {
     }
 
     // #2 Runway
-    if( 'rwy' in state && state.rwy) {
-        runwayName.value = state.rwy
-    }
+    runwayName.value = state?.rwy ?? ''
 
     // #3 Pattern mode
-    if('pattern' in state) {
-        patternMode.value = state.pattern
-    } else {
-        patternMode.value = defaultPatternMode
-    }
+    patternMode.value = state?.pattern ?? defaultPatternMode
 
     // #3.5 Show headings
-    if('headings' in state) {
-        showHeadings.value = state.headings
-    } else {
-        showHeadings.value = true
-    }
-
-
+    showHeadings.value = state?.headings ?? true;
 
     // #4 Restore corner fields
     let cornerFields = state.corners
@@ -158,11 +165,10 @@ function loadProps(newProps) {
     // console.log('AirportTile loaded corners ' + JSON.stringify(corners))
 
     // #5 Rwy orientation
-    if('rwyOrientation' in state && state.rwyOrientation) {
-        rwyOrientation.value = state.rwyOrientation;
-    } else {
-        rwyOrientation.value = defaultRwyOrientation;
-    }
+    rwyOrientation.value = state?.rwyOrientation ?? defaultRwyOrientation;
+
+    // #6 display mode
+    displayMode.value = state?.mode ?? defaultMode
 
     // load data for this airport
     title.value = "Loading " + code + '...'
@@ -170,17 +176,17 @@ function loadProps(newProps) {
         .then(airport => {
             // Refresh with that data to get immediate visuals
             onNewAirport(airport)
+
             // is there a follow up request?
-            if(airport && airport.promise) {
-                airport.promise.then((outcome) => {
-                    // console.log( '[AirportTile.loadProps] outcome', JSON.stringify(outcome))
-                    // if data was not current, load new version
-                    if(!outcome.current && outcome.airport){
-                        // console.log( '[AirportTile.loadProps] data was not current', JSON.stringify(outcome))
-                        onNewAirport(outcome.airport)
-                    }
-                })
-            }
+            if(!airport || !airport.promise) return;
+            airport.promise.then((outcome) => {
+                // console.log( '[AirportTile.loadProps] outcome', JSON.stringify(outcome))
+                // if data was not current, load new version
+                if(!outcome.current && outcome.airport){
+                    // console.log( '[AirportTile.loadProps] data was not current', JSON.stringify(outcome))
+                    onNewAirport(outcome.airport)
+                }
+            })
         })
 
     // Are we in expanded mode?
@@ -196,12 +202,26 @@ onMounted(() => {
 
 watch( props, async() => {
     // console.log("Airport props changed " + JSON.stringify(props));
-    mode.value = ''
     loadProps(props)
 })
 
 // End of props management
 //--------------------------
+
+function changeMode(newMode) {
+    // console.log('[AirportTile.changeMode]', newMode, editMode.value)
+    displaySelection.value = false;
+    displayMode.value = newMode
+    // Edit mode is only needed when there is no airport
+    editMode.value = !airportData.value
+
+    // remove expanded in list mode
+    if( expanded.value && newMode == DisplayModeAirport.RunwayList) expanded.value = false;
+
+    state.mode = newMode
+
+    updateData()
+}
 
 
 function getEnding(rwy, endIndex, freq) {
@@ -264,12 +284,12 @@ function onCornerUpdate( index, field) {
 
 // Toggle between edit mode and current mode
 function onHeaderClick() {
+    if(displaySelection.value) return;
+
     if(editMode.value) {
         editMode.value = false
         if( airportData.value){
             const airport = airportData.value
-            // when switching back to normal mode, adjust variables affected by edit
-            rwyList.value = airport.rwy
             airportCode.value = airport.code
             editMode.value = false
             title.value = airport.name
@@ -283,17 +303,10 @@ function onHeaderClick() {
 // consider new airport and its data
 function onNewAirport(airport) {
     if( airport && 'rwys' in airport) {
+        rwyList.value = airport.rwys
         showAirport(airport)
-        if( 'rwy' in state) {
-            if( state.rwy == 'all') {
-                mode.value = 'list'
-            } else {
-                mode.value = ''
-                showRunway(state.rwy);
-            }
-        } else { // default to first runway
-            mode.value = ''
-            showRunway(airport.rwys[0].name)
+        if(displayMode.value == DisplayModeAirport.OneRunway) {
+            showRunway( state.rwy ?? airport.rwys[0].name)            
         }
     } else { // no data for this airport
         // console.log('No data came out of get airport ' + code)
@@ -320,13 +333,7 @@ function onSettingsUpdate( newAirport, newRunway, newOrientation, newPatternMode
 
     props.params.rwy = newRunway
     props.params.rwyOrientation = newOrientation
-    if( newRunway == 'all') {
-        // console.log('Airport onSettingsUpdate swithcing to list')
-        mode.value = 'list';
-    } else {
-        mode.value = '';
-        showRunway(newRunway)
-    }
+    showRunway(newRunway)
 
     updateData()
 }
@@ -335,13 +342,12 @@ function showAirport( airport) {
     // console.log( "[AirportTile.showAirport] Showing airport ", JSON.stringify(airport))
     if( airport == null) {
         // if airport data is missing, we switch to edit mode
-        console.log( 'Airport data missing')
+        // console.log( 'Airport data missing')
         editMode.value = true
         return
     }
     airportData.value = airport;
     airportCode.value = airport.code
-    rwyList.value = airport.rwys;
     allEndings.value = getEndings(airport.rwys, getFreqCtaf(airport.freq));
     
     // title.value = airport.code + ":" + airport.name
@@ -353,6 +359,7 @@ function showAirport( airport) {
     // If traffic is runway specific, it will be overriden by showRunway
     elevation.value = Math.round(airport.elev).toString()
     tpa.value = Math.round(airport.elev + 1000).toString()
+    rwySketch.value = airport.sketch
 }
 
 // Show a runway from its name in the airport
@@ -381,106 +388,111 @@ function updateData() {
 
 </script>
 <style scoped>
-    .tileContent {
-        position: relative;
-        overflow: hidden;
-        width: 100%;
-    }
-    .corner {
-        position: absolute; /* Absolute positioning within container */
-        padding: 5px; /* Adjust padding for better visibility */
-    }
-    .label {
-        padding: 0;
-        font-size:9px;
-    }
-    .deleteButton {
-        position: absolute;
-        font-size: 8px;
-        bottom: 2px;
-        right: 2px;
-    }
-    .top {
-        top: 0;
-    }
-    .bottom {
-        bottom: 0;
-    }
-    .patternLeft {
-        color: darkblue;
-    }
-    .patternRight {
-        color: darkred;
-    }
-    .left{
-        left: 0;
-        text-align: left;
-    }
-    .right {
-        right: 0;
-        text-align: right; /* Align text to the right */
-    }
-    .runwayList {
-        background: transparent;
-        width:240px;
-        height:10.5rem;
-        overflow: auto;
-        /* overflow-y: scroll; */
-        /* z-index: 1; */
-        position: relative;
-        /* top: -200px; */
-    }
-    .runwayListItem {
-        text-align: center;
-        font-size: 14px;
-        padding: 2px 4px;
-    }
-    .runwayListItemRunway{
-        font-size: 14px;
-        padding: 2px 4px;
-        font-weight: 600;
-    }
-    .airportCode {
-        font-weight: 900;
-        font-size: 4rem;
-        line-height: 240px;
-        opacity: 0.10;
-        position: absolute;
-        top: 0;
-        width:100%;
-        height: 100%;
-        text-align: center;
-        vertical-align: middle;
-        z-index: 0;
-    }
-    .shortAirportCode {
-        font-size: 6rem;
-    }
-    .runwayListRow {
-        display: grid;
-        grid-template-columns: 40% 20% 40%;
-    }
-    .runwayListHeader {
-        font-size: 10px;
-    }
-    .unknownRwy{
-        line-height: 13rem;
-    }
-    .footer {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        display: grid;
-        grid-template-columns: auto auto auto;
-    }
-    .cornerColumn {
-        position: absolute;
-        display: flex;
-        flex-flow: column;
-        padding: 5px;
-        background-color: lightgrey;
-        justify-content: space-between;
-        height: 100%;
-    }
+.tileContent {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+.corner {
+    position: absolute; /* Absolute positioning within container */
+    padding: 5px; /* Adjust padding for better visibility */
+    background-color: rgba(255,255,255,0.5);
+}
+.label {
+    padding: 0;
+    font-size:9px;
+}
+.deleteButton {
+    position: absolute;
+    font-size: 8px;
+    bottom: 2px;
+    right: 2px;
+}
+.top {
+    top: 0;
+}
+.bottom {
+    bottom: 0;
+}
+.patternLeft {
+    color: darkblue;
+}
+.patternRight {
+    color: darkred;
+}
+.left{
+    left: 0;
+    text-align: left;
+}
+.right {
+    right: 0;
+    text-align: right; /* Align text to the right */
+}
+.runwayList {
+    background: transparent;
+    width:240px;
+    height:10.5rem;
+    overflow: auto;
+    /* overflow-y: scroll; */
+    /* z-index: 1; */
+    position: relative;
+    /* top: -200px; */
+}
+.runwayListItem {
+    text-align: center;
+    font-size: 14px;
+    padding: 2px 4px;
+}
+.runwayListItemRunway{
+    font-size: 14px;
+    padding: 2px 4px;
+    font-weight: 600;
+}
+.airportCode {
+    font-weight: 900;
+    font-size: 4rem;
+    line-height: 240px;
+    opacity: 0.10;
+    position: absolute;
+    top: 0;
+    width:100%;
+    height: 100%;
+    text-align: center;
+    vertical-align: middle;
+    z-index: 0;
+    cursor: pointer;
+}
+.shortAirportCode {
+    font-size: 6rem;
+}
+.runwayListRow {
+    display: grid;
+    grid-template-columns: 40% 20% 40%;
+}
+.runwayListHeader {
+    font-size: 10px;
+}
+.unknownRwy{
+    line-height: 13rem;
+}
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto auto auto;
+}
+.cornerColumn {
+    position: absolute;
+    display: flex;
+    flex-flow: column;
+    padding: 5px;
+    background-color: lightgrey;
+    justify-content: space-between;
+    height: 100%;
+}
 
+.rwySketch {
+    height: var(--tile-content-height);
+}
 </style>
