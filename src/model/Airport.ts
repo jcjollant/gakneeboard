@@ -1,6 +1,6 @@
 import { Frequency, FrequencyType } from "./Frequency";
 
-const modelVersion:number = 9;
+const modelVersion:number = 10;
 
 class AirportFrequency {
     name: string;
@@ -202,6 +202,7 @@ export class Atc {
 export class Airport {
     // copy constructor
     static currentVersion:number = modelVersion;
+    static invalidVersion:number = -1;
     code: string;
     name: string;
     elev: number;
@@ -217,6 +218,7 @@ export class Airport {
     diagram:string|undefined;
     navaids:Navaid[];
     atc:Atc[];
+    sketch:string;
 
     constructor(code:string='', name:string='', elevation:number=0) {
         this.code = code;
@@ -234,11 +236,13 @@ export class Airport {
         this.diagram = undefined;
         this.navaids = [];
         this.atc = [];
+        this.sketch = ''
     }
 
     // copy constructor
     static copy(airport:any) {
         if(airport instanceof Airport) return airport;
+        if(!airport) return new Airport();
 
         const newAirport = new Airport(airport.code, airport.name, airport.elev)
         newAirport.tpa = airport.tpa
@@ -253,7 +257,8 @@ export class Airport {
         newAirport.diagram = airport.diagram ? airport.diagram : airport.diag
         newAirport.navaids = airport.navaids.map((navaid:any) => Navaid.copy(navaid))
         newAirport.atc = airport.atc.map((atc:any) => Atc.copy(atc))
-        
+        newAirport.sketch = airport.sketch
+
         return newAirport
     }
 
@@ -262,7 +267,7 @@ export class Airport {
     }
 
     public static isValidVersion(version:number):boolean {
-        return version == Airport.currentVersion
+        return version != Airport.invalidVersion
     }
     
     addFrequency(name:string, mhz:number) {
