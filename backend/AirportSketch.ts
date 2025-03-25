@@ -3,7 +3,7 @@ import { AirportDao } from "./AirportDao";
 import { Airport } from "./models/Airport";
 import axios from "axios";
 import { Charts } from "./Charts";
-import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.min.mjs";
+// import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.min.mjs";
 import { Canvas, createCanvas } from "canvas";
 
 export class AirportSketch {
@@ -68,6 +68,7 @@ export class AirportSketch {
 
   static async pdfFirstPageToPng(pdfBuffer: Buffer): Promise<Buffer> {
     try {
+      const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.min.mjs");
       pdfjsLib.GlobalWorkerOptions.workerSrc = "pdfjs-dist/legacy/build/pdf.worker.mjs";
       const scale = 300 / 72;
       const compression = 5; // Default compression level
@@ -75,6 +76,7 @@ export class AirportSketch {
       // Load the PDF from buffer
       const pdf = await pdfjsLib.getDocument({
         data: new Uint8Array(pdfBuffer),
+        standardFontDataUrl: "node_modules/pdfjs-dist/standard_fonts/",
       }).promise;
 
       // Get the page
