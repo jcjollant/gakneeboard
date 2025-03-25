@@ -1,6 +1,6 @@
 <template>
     <div class="headerTitle" :class="{ clickable: clickable, left: left, stealth:stealth}">
-        <div class="titleText">{{ title }}</div>
+        <div class="titleText" @click="emits('title')">{{ title }}</div>
         <div v-if="displayMode" title="Change tile mode" class="displayButton headerButton" 
             @click="emits('display')">
             <font-awesome-icon :icon="['fas','fa-display']" />
@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import { onMounted,ref, watch } from 'vue';
 
-const emits = defineEmits(['display','replace'])
+const emits = defineEmits(['display','replace','title'])
 
 const props = defineProps({
     clickable: { type: Boolean, default:true},
