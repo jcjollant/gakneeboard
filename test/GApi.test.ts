@@ -1,9 +1,10 @@
-import { describe, expect, test} from '@jest/globals';
+import { describe, expect, jest, test} from '@jest/globals';
 import { GApi, GApiError } from '../backend/GApi'
 import { jcHash, jcUserId, jcToken, jcName } from './constants'
 import { currentAsOf } from './constants';
 import { UserMiniView } from '../backend/models/UserMiniView';
 import { UserTools } from '../backend/UserTools';
+import { AirportSketch } from '../backend/AirportSketch';
 
 require('dotenv').config();
 
@@ -21,6 +22,7 @@ describe( 'GApi Tests', () => {
 
     test('Getting multiple Airports', async () => {
         let list = ['rnt','jfk']
+        jest.spyOn(AirportSketch,'get').mockResolvedValue(AirportSketch.doesNotExist)
         let airports = await GApi.getAirportViewList(list)
         // console.log(airports)
         expect(airports.length).toBe(list.length)
@@ -32,6 +34,7 @@ describe( 'GApi Tests', () => {
         let list2 = ['jc','pae','jcj']
         // console.log(await AirportDao.readList(list2.map( code => code.toUpperCase())))
         // console.log( await GApi.getAirportList(list2))
+        jest.spyOn(AirportSketch,'get').mockResolvedValue(AirportSketch.doesNotExist)
         airports = await GApi.getAirportViewList(list2)
         // console.log(airports)
         expect(airports).toHaveLength(list2.length)
@@ -48,6 +51,7 @@ describe( 'GApi Tests', () => {
 
     test('Invalid airports list', async() =>{
         let list = ['nt','fk']
+        jest.spyOn(AirportSketch,'get').mockResolvedValue(AirportSketch.doesNotExist)
         let airports = await GApi.getAirportViewList(list)
         // console.log(airports)
         expect(airports).toHaveLength(2)
@@ -118,6 +122,7 @@ describe( 'GApi Tests', () => {
     })
 
     test('Get Custom airport', async () => {
+        jest.spyOn(AirportSketch,'get').mockResolvedValue(AirportSketch.doesNotExist)
         const airport = await GApi.getAirportView("TEST", jcUserId)
         // console.log(airport)
         expect(airport).toBeDefined()

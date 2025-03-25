@@ -90,7 +90,7 @@ describe('index', () => {
             })
     })
 
-    it.only('Templates and publications', async () => {
+    it('Templates and publications', async () => {
         // Create template for use JC
         const templateName = 'Test Template ' + Date.now();
         const newTemplate = new TemplateView(0,templateName, jcTestTemplateData)

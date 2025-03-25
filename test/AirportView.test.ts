@@ -1,6 +1,6 @@
 
 
-import {describe, expect, test} from '@jest/globals';
+import {describe, expect, it, test} from '@jest/globals';
 import { Adip } from '../backend/adip/Adip';
 import { Airport } from '../backend/models/Airport';
 import { AirportView } from '../backend/models/AirportView';
@@ -25,26 +25,29 @@ function checkAtc(airport:AirportView,expectedAtcs:any) {
     }
 }
 
-
+function testUndefined(undefinedView:AirportView, code:string) {
+    expect(undefinedView).toBeDefined()
+    expect(undefinedView.code).toBe(code)
+    expect(undefinedView.asof).toBe(0)
+    expect(undefinedView.version).toBe(AirportView.invalidVersion)
+    expect(undefinedView.isValid()).toBeFalsy()
+    expect(undefinedView.sketch).toBeUndefined()
+    expect(undefinedView.freq).toHaveLength(0)
+    expect(undefinedView.rwys).toHaveLength(0)
+    expect(undefinedView.navaids).toHaveLength(0)
+    expect(undefinedView.atc).toHaveLength(0)
+}
 
 describe( 'Airport View', () => {
-    test( 'Undefined constructor', () => {
+    it( 'Creates AirportView from Undefined', () => {
         const undefinedView = new AirportView(undefined)
-        expect(undefinedView).toBeDefined()
-        expect(undefinedView.asof).toBe(0)
+        testUndefined(undefinedView,'')
     })
 
-    test('undefined view', () => {
+    it('Creates undefined view for code', () => {
         const airportCode = 'code'
         const undefinedView = AirportView.getUndefined(airportCode)
-        expect(undefinedView).toBeDefined()
-        expect(undefinedView.code).toBe(airportCode)
-        expect(undefinedView.asof).toBe(0)
-        expect(undefinedView.freq).toHaveLength(0)
-        expect(undefinedView.rwys).toHaveLength(0)
-        expect(undefinedView.navaids).toHaveLength(0)
-        expect(undefinedView.atc).toHaveLength(0)
-        expect(undefinedView.version).toBe(-1)
+        testUndefined(undefinedView, airportCode)
     })
 
     test('Defined view', () => {
@@ -64,6 +67,7 @@ describe( 'Airport View', () => {
         expect(view.atc).toHaveLength(0)
         expect(view.iap).toHaveLength(0)
         expect(view.dep).toHaveLength(0)
+        expect(view.sketch).toBeUndefined()
     })
 
     test('Boeing View', () => {
@@ -80,6 +84,7 @@ describe( 'Airport View', () => {
             }
         }
         expect(view.asof).toBe(20240711)
+        expect(view.sketch).toBeUndefined()
     })
 
     test('Renton view', () => {

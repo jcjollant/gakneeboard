@@ -1,10 +1,10 @@
 
 import { afterAll, beforeAll, describe, expect, it} from '@jest/globals';
-import { UserDao } from '../../backend/dao/UserDao.ts'
-import { jcUserId, jcHash, jcEmail, jcName, jcSource, jcMaxTemplates } from '../constants.ts';
-import { AccountType } from '../../backend/models/AccountType.ts';
-import { User } from '../../backend/models/User.ts';
-import { newTestUser } from '../common.ts'
+import { UserDao } from '../../backend/dao/UserDao'
+import { jcUserId, jcHash, jcEmail, jcName, jcSource, jcMaxTemplates } from '../constants';
+import { AccountType } from '../../backend/models/AccountType';
+import { User } from '../../backend/models/User';
+import { newTestUser } from '../common'
 import { db, sql } from '@vercel/postgres';
 import { after } from 'node:test';
 
@@ -47,9 +47,10 @@ describe('UserDao', () => {
         const email = 'paul@example.com'
         const maxTemplates = 12
         const customerId = 'someCustomerId'
+        const createDate = '2025-03-10 06:19:07.69087'
         const data:string = JSON.stringify( {name:name,source:source,email:email,maxTemplates:maxTemplates})
         const printCredits = 100
-        const row = {id:1, sha256:'sha', data:data, account_type:AccountType.beta, customer_id: customerId, print_credit: printCredits}
+        const row = {id:1, sha256:'sha', data:data, account_type:AccountType.beta, customer_id: customerId, print_credit: printCredits, create_time:createDate}
         const userDao = new UserDao();
         const user:User = userDao.parseRow(row)
         expect(user.id).toBe(1)
@@ -61,6 +62,7 @@ describe('UserDao', () => {
         expect(user.accountType).toBe(AccountType.beta)
         expect(user.customerId).toBe(customerId)
         expect(user.printCredits).toBe(printCredits)
+        expect(user.createDate).toBe(createDate)
     })
 
     it('Add Prints', async () => {
@@ -129,6 +131,16 @@ describe('UserDao', () => {
         }
 
         await sql`delete from users where account_type = 'test1' OR account_type='test2'`
+    })
+
+    it('getAll', async () => {
+        userDao.getAll().then( (users) => {
+            expect(users.length).toBeGreaterThan(1)
+            // some non zero Id
+            expect(users[0].id).toBeGreaterThan(0)
+            // We should have some date
+            expect(users[0].createDate).toBeDefined()
+        })
     })
 });
 
