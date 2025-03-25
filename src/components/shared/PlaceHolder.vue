@@ -37,7 +37,7 @@ onMounted(() => {
     flex-direction: column;
     font-weight: 600;
     font-size: x-large;
-    opacity: .3;
+    opacity: .4;
     height: 200px;
     width: 100%;
 }
