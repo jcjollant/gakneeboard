@@ -69,7 +69,7 @@ export class AirportSketch {
   static async pdfFirstPageToPng(pdfBuffer: Buffer): Promise<Buffer> {
     try {
       const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.min.mjs");
-      pdfjsLib.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/legacy/build/pdf.worker.mjs");
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdfjs-dist/legacy/build/pdf.worker.min.mjs';
       const scale = 300 / 72;
       const compression = 5; // Default compression level
 
