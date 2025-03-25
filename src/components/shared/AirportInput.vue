@@ -80,6 +80,7 @@ function fetchAirport() {
         .then( a => {
             // console.log('[AirportInput.fetchAirport] received', a)
             const airport = Airport.copy(a)
+            // console.log('[AirportInput.fetchAirport] copied', airport)
             if( airport.isValid()) {
                 name.value = airport.name
                 code.value = airport.code
