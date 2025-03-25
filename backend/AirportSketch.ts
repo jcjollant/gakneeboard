@@ -74,8 +74,9 @@ export class AirportSketch {
       // const value = new URL(`//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`).toString();
       // const value = new URL(`//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`).toString();
       // const value = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
-      const value = '';
+      // const value = '';
       // const value = 'pdf.worker.min.mjs'
+      const value = './pdf.worker.min.mjs'
       console.log('[AirportSketch.pdfFirstPageToPng] worker', value);
       pdfjsLib.GlobalWorkerOptions.workerSrc = value
       const scale = 300 / 72;
