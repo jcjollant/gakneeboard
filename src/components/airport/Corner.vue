@@ -364,7 +364,7 @@ function unknownValues() {
 <style scoped>
 .label {
     padding: 0;
-    width:110px;
+    max-width:110px;
     overflow: hidden;
 }
 .small .label {
