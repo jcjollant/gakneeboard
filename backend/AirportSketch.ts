@@ -70,13 +70,16 @@ export class AirportSketch {
       const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.min.mjs");
       // Works in dev
       // const value = 'pdfjs-dist/legacy/build/pdf.worker.min.mjs'
+      // works when copied to public
+      // const value = './pdf.worker.min.mjs'
       // const value = '//mozilla.github.io/pdf.js/build/pdf.worker.mjs'
       // const value = new URL(`//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`).toString();
       // const value = new URL(`//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`).toString();
       // const value = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
       // const value = '';
       // const value = 'pdf.worker.min.mjs'
-      const value = './pdf.worker.min.mjs'
+      const value = '//ga-api-seven.vercel.app/pdf.worker.min.mjs'
+      // const value = workerPath
       console.log('[AirportSketch.pdfFirstPageToPng] worker', value);
       pdfjsLib.GlobalWorkerOptions.workerSrc = value
       const scale = 300 / 72;

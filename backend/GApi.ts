@@ -207,9 +207,9 @@ export class GApi {
         const output = airports.map( ([code,airport]) => {
             // console.log('[GApi.getAirportViewList]', code, airport)
             const view = airport ? new AirportView(airport) : AirportView.getUndefined(code)
-            if(view.isValid() && !view.sketch) {
-                missingSketches.push( {a:airport, v:view})
-            }
+            // if(view.isValid() && !view.sketch) {
+            //     missingSketches.push( {a:airport, v:view})
+            // }
             return view
         })
 
