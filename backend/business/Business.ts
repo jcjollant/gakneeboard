@@ -23,11 +23,11 @@ export class Business {
         return Math.max( user.printCredits, credit)
     }
 
-    static maxPages(user:User):number {
-        return this.maxPagesFromAccountType(user.accountType)
+    static maxTemplates(user:User):number {
+        return this.maxTemplatesFromAccountType(user.accountType)
     }
 
-    static maxPagesFromAccountType(accountType:AccountType):number {
+    static maxTemplatesFromAccountType(accountType:AccountType):number {
         switch(accountType) {
             case AccountType.private: return this.MAX_TEMPLATE_PRIVATE;
             case AccountType.beta:    return this.MAX_TEMPLATE_BETA;
