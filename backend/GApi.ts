@@ -20,7 +20,6 @@ import { TemplateDao } from './TemplateDao'
 import { TemplateView } from './models/TemplateView'
 import { User } from './models/User'
 import { UserMiniView } from './models/UserMiniView'
-import { AirportSketch } from './AirportSketch'
 
 // Google API key
 
@@ -396,8 +395,7 @@ export class GApi {
 
     /**
      * Save a new template in DB or update it if it's existing
-     * Customers can always save at or below the limit without warnings
-     * Customers cannot create new templates if they are already at or above the limit
+     * Customers cannot save or create new templates if they are already at or above the limit
      * For new templates, we have a two steps lock down, which will happen gradually
      * Step 1) Customer can save existing templates above the limit
      * Step 2) Customers cannot save existing templates until they are above the limit
@@ -423,10 +421,16 @@ export class GApi {
             // console.log('[GApi.templateSave]', templateCountForUser, user.accountType)
 
             // Max limit control
-            const maxedOut = templateCountForUser >= Business.maxPages( user)
-            // We don't allow new templates if you are already maxed out
-            if(templateView.id == 0 && maxedOut) {
-                return reject( new GApiError( 402, "Cannot create a new Template while over maximum for account type"))
+            const maxTemplates = Business.maxTemplates(user)
+            const canCreate = templateCountForUser < Business.maxTemplates( user)
+            const canSave = templateCountForUser <= Business.maxTemplates( user)
+            // We don't allow anything if you are above max 
+            if(templateCountForUser > maxTemplates) {
+                return reject( new GApiError( 402, "Maximum templates exceeded"))
+            }
+            // We don't allow creation if you are at max
+            if(templateView.id == 0 && templateCountForUser == maxTemplates) {
+                return reject( new GApiError( 402, "Maximum templates reached"))
             }
 
             const template:Template = await TemplateDao.createOrUpdate(templateView, user.id)
@@ -448,10 +452,8 @@ export class GApi {
                 templateView.code = undefined;
             }
 
-            // Status code will depend on template count
-            // During the grace period, we allow update on maxed out but return 202
-            // Otherwize we just return 200 and basta
-            return resolve( new TemplateStatus( maxedOut ? 202 : 200, templateView));
+            // Return OK
+            return resolve( new TemplateStatus( 200, templateView));
         })
 
     }
