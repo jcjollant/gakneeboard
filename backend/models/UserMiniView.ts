@@ -17,7 +17,7 @@ export class UserMiniView {
     constructor(user:User, templates:TemplateView[]) {
         this.sha256 = user.sha256;
         this.name = user.name;
-        this.maxPages = Business.maxPagesFromAccountType(user.accountType)
+        this.maxPages = Business.maxTemplatesFromAccountType(user.accountType)
         this.maxTemp = user.maxTemplates;
         this.templates = templates;
         this.accountType = user.accountType;
