@@ -55,16 +55,16 @@ describe('Business', () => {
             const newUser = newTestUser()
             newUser.setAccountType( AccountType.simmer);
             newUser.printCredits = 0; // no credits
-            const c0 = Business.maxPages(newUser);
+            const c0 = Business.maxTemplates(newUser);
             expect(c0).toBe(2);
             newUser.printCredits = 2; // existing credits
-            const c1 = Business.maxPages(newUser);
+            const c1 = Business.maxTemplates(newUser);
             expect(c1).toBe(2);
             newUser.printCredits = 6; // existing credits higher than refill
-            const c2 = Business.maxPages(newUser);
+            const c2 = Business.maxTemplates(newUser);
             expect(c2).toBe(2); // should not loose credits
             newUser.printCredits = -1; // weird credits
-            const c3 = Business.maxPages(newUser);
+            const c3 = Business.maxTemplates(newUser);
             expect(c3).toBe(2);
         });
 
@@ -72,26 +72,26 @@ describe('Business', () => {
             const newUser = newTestUser()
             newUser.setAccountType( AccountType.private);
             newUser.printCredits = 0; // no credits
-            const c1 = Business.maxPages(newUser);
+            const c1 = Business.maxTemplates(newUser);
             expect(c1).toBe(5);
         });
     })
 
     describe('maxPagesFromAccountType', () => {
         it('should return 10 for beta account', () => {
-            expect(Business.maxPagesFromAccountType(AccountType.beta)).toBe(10);
+            expect(Business.maxTemplatesFromAccountType(AccountType.beta)).toBe(10);
         });
 
         it('should return 5 for private account', () => {
-            expect(Business.maxPagesFromAccountType(AccountType.private)).toBe(5);
+            expect(Business.maxTemplatesFromAccountType(AccountType.private)).toBe(5);
         });
 
         it('should return 2 for simmer account', () => {
-            expect(Business.maxPagesFromAccountType(AccountType.simmer)).toBe(2);
+            expect(Business.maxTemplatesFromAccountType(AccountType.simmer)).toBe(2);
         });
 
         it('should return 0 for unknown account type', () => {
-            expect(Business.maxPagesFromAccountType(AccountType.unknown)).toBe(0);
+            expect(Business.maxTemplatesFromAccountType(AccountType.unknown)).toBe(0);
         });
     });
 

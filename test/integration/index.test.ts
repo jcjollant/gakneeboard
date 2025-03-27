@@ -1,7 +1,7 @@
 const axios = require('axios')
 
 import { describe, expect, it} from '@jest/globals';
-import { jcHash, jcHash2, currentAirportModelVersion, currentAsOf, samplePublicationCode, jcTestTemplateData } from '../constants'
+import { jcHash, jcHash2, currentAirportModelVersion, currentAsOf, jcTestTemplateData } from '../constants'
 import { version } from '../../backend/constants'
 import { Maintenance } from '../../backend/Maintenance'
 import { newTestUser } from '../common'
