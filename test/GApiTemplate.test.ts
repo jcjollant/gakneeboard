@@ -100,7 +100,6 @@ describe( 'GApi Tests', () => {
             const simUserId = 55
             const simUser = newTestUser(simUserId)
             simUser.accountType = AccountType.simmer
-            simUser.maxTemplates = 30
 
             const tv = new TemplateView(0, jcTestTemplateName, jcTestTemplateData)
             const t = Template.fromView(tv, simUserId)
@@ -123,12 +122,17 @@ describe( 'GApi Tests', () => {
             jest.spyOn(TemplateDao, 'countForUser').mockResolvedValue(Business.MAX_TEMPLATE_SIMMER + 1)
             await expect(GApi.templateSave(simUser.sha256, tv)).rejects.toEqual(new GApiError( 402, "Maximum templates exceeded"))
 
+            // Boost Max Templates
+            simUser.maxTemplates = Business.MAX_TEMPLATE_SIMMER * 2
+            await GApi.templateSave(simUser.sha256, tv).then( ts => {
+                expect(ts.code).toBe(200)
+            })
         })
 
-        it('Can save existing tempalte AT max but not OVER max', async () => {
+        it('Can save existing template AT max but not OVER max', async () => {
             jest.clearAllMocks()
             const simUserId = 55
-            const simUser = newTestUser(simUserId)
+            const simUser = newTestUser(simUserId, AccountType.simmer)
             simUser.accountType = AccountType.simmer
             const templateId = 66
             const publicTemplate = new Template(templateId, jcUserId, jcTestTemplateData, jcTestTemplateName, jcTestTemplateDescription, 0, 0)
@@ -145,10 +149,15 @@ describe( 'GApi Tests', () => {
                 expect(ts.code).toBe(200)
             })
 
-            // Now one above should fail
+            // One above should fail
             jest.spyOn(TemplateDao, 'countForUser').mockResolvedValue(Business.MAX_TEMPLATE_SIMMER + 1)
             await expect(GApi.templateSave(simUser.sha256, tv)).rejects.toEqual(new GApiError( 402, "Maximum templates exceeded"))
 
+            // Boost Max Templates
+            simUser.maxTemplates = Business.MAX_TEMPLATE_SIMMER * 2
+            await GApi.templateSave(simUser.sha256, tv).then( ts => {
+                expect(ts.code).toBe(200)
+            })
         })
 
         it('finds publication code', async () => {

@@ -421,9 +421,7 @@ export class GApi {
             // console.log('[GApi.templateSave]', templateCountForUser, user.accountType)
 
             // Max limit control
-            const maxTemplates = Business.maxTemplates(user)
-            const canCreate = templateCountForUser < Business.maxTemplates( user)
-            const canSave = templateCountForUser <= Business.maxTemplates( user)
+            const maxTemplates = Math.max(Business.maxTemplates(user), user.maxTemplates)
             // We don't allow anything if you are above max 
             if(templateCountForUser > maxTemplates) {
                 return reject( new GApiError( 402, "Maximum templates exceeded"))
