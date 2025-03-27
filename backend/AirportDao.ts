@@ -72,6 +72,20 @@ export class AirportDao {
         return result.rows[0]['id'];
     }
 
+    public static parse(row:any, creatorId:number|undefined=undefined):Airport {
+        const airport:Airport = JSON.parse(row.data);
+        // Do we need to salvage the code?
+        if(!airport.code) airport.code = row.code;
+        // console.log('[AirportDao.readList] found.creatorId', found.creatorId)
+        // It's a custom airport if creatorId matches
+        airport.custom = ( creatorId ? (creatorId == row.creatorid) : false)
+        airport.id = row.id;
+        airport.version = row.version;
+        airport.sketch = row.sketch;
+
+        return airport
+    }
+
     /**
      * Build a list of airports that have a current model version and effective date
      * @returns Matching list
@@ -118,15 +132,7 @@ export class AirportDao {
     
         return result.rows.map( row => {
             if(row.data) {
-                const airport:Airport = JSON.parse(row.data);
-                // Do we need to salvage the code?
-                if(!airport.code) airport.code = row.code;
-                // console.log('[AirportDao.readList] found.creatorId', found.creatorId)
-                // It's a custom airport if creatorId matches
-                airport.custom = ( creatorId ? (creatorId == row.creatorid) : false)
-                airport.id = row.id;
-                airport.version = row.version;
-                airport.sketch = row.sketch;
+                const airport = AirportDao.parse(row, creatorId)
                 return [row.code,airport];
             } else {
                 return [row.code,AirportDao.undefinedAirport(row.code)]
