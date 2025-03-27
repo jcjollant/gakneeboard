@@ -39,7 +39,7 @@ app.use(express.json()) // for parsing application/json
 //     next();
 // });
 
-app.get("/", async (req:Request, res:Response) => {
+app.get('/', async (req:Request, res:Response) => {
     const output = await GApi.getSession(req)
     res.send(output)
 });
@@ -51,7 +51,7 @@ interface AirportPayload {
     user: string;
     airport: any; // Replace with proper airport type
 } 
-app.post("/airport", async (req,res) => {
+app.post('/airport', async (req,res) => {
     // console.log('[index.post.airport]', typeof req.body)
     const payload:AirportPayload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
     // console.log("[index] POST airport payload " + JSON.stringify(payload))
@@ -66,7 +66,7 @@ app.post("/airport", async (req,res) => {
     })
 })
 
-app.get("/airport/:id", async (req,res) => {
+app.get('/airport/:id', async (req,res) => {
     const userId = await UserTools.userIdFromRequest(req)
     // console.log( "[index.get.airport]", req.params.id, userId);
 
