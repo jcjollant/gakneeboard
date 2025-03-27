@@ -34,6 +34,7 @@ export enum MetricKey {
     airportsTotal = 'airports-total',
     airportsValid = 'airports-valid',
     airportsCurrent = 'airports-current',
+    customers = 'customers',
     exports = 'exports',
     export7 = 'exports-7d',
     export28 = 'exports-28d',
@@ -136,6 +137,8 @@ export class Metrics {
         allMetrics.push(facebookUsers)
         const onboarded28 = new Metric(MetricKey.onboard28)
         allMetrics.push(onboarded28)
+        const customers = new Metric(MetricKey.customers)
+        allMetrics.push(customers)
 
         const now = Date.now()
 
@@ -155,6 +158,10 @@ export class Metrics {
                 const dateDiff = (now - user.createDate.getTime()) / (1000 * 60 * 60 * 24)
                 // console.log('dateDiff', dateDiff)
                 if(dateDiff <= 28) onboarded28.addOne()
+            }
+
+            if( user.customerId) {
+                customers.addOne()
             }
         }
 
@@ -314,5 +321,31 @@ export class Metrics {
             }, [])
         return output
     }
-    
+
+    public static async topAirports() {
+        const templates:TemplateView[] = await TemplateDao.getAllTemplateData()
+
+        let map = {}
+
+        console.log('tempates', templates.length)
+        for(let template of templates) {
+            for(let page of template.data) {
+                if(page.type == PageType.tiles) {
+                    for(let tile of page.data) {
+                        if(tile.name == 'airport') {
+                            console.log('airport tile', tile.data.code)
+                            if(!tile.data.code) continue
+                            const code = tile.data.code.toUpperCase()
+                            const count = map[code] ?? 0
+                            map[code] = count + 1
+                        }
+                    }
+                }
+            }
+        }
+
+        for(let key in map) {
+            console.log(key, map[key])
+        }
+    }
 }
