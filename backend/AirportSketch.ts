@@ -36,7 +36,8 @@ export class AirportSketch {
 
         // extract sketch from PNG
         const response = await axios.post(
-            "https://gak-sketcher.vercel.app/api", 
+            // "https://gak-sketcher.vercel.app/api", 
+            "http://localhost:3001/api", 
             pngBuffer, {
             headers: { "Content-Type": "image/png" },
             responseType: "arraybuffer",
@@ -69,7 +70,7 @@ export class AirportSketch {
     try {
       const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.min.mjs");
       // Works in dev
-      // const value = 'pdfjs-dist/legacy/build/pdf.worker.min.mjs'
+      const value = 'pdfjs-dist/legacy/build/pdf.worker.min.mjs'
       // works when copied to public
       // const value = './pdf.worker.min.mjs'
       // const value = '//mozilla.github.io/pdf.js/build/pdf.worker.mjs'
@@ -78,7 +79,7 @@ export class AirportSketch {
       // const value = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
       // const value = '';
       // const value = 'pdf.worker.min.mjs'
-      const value = '//ga-api-seven.vercel.app/pdf.worker.min.mjs'
+      // const value = '//ga-api-seven.vercel.app/pdf.worker.min.mjs'
       // const value = workerPath
       console.log('[AirportSketch.pdfFirstPageToPng] worker', value);
       pdfjsLib.GlobalWorkerOptions.workerSrc = value
