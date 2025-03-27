@@ -1,23 +1,15 @@
+
 require('dotenv').config();
 
 //================
-// Airport metrics
-// import { Metrics } from "../backend/Metrics";
+// Metrics
+//================
+import { Metrics } from "../backend/Metrics";
 // Metrics.airports().then(metrics => {
 //     for(const metric of metrics)
 //         console.log(metric.name, metric.value)
 // })
-
-//================================
-// Show a list of current airports
-// import { Adip } from "../backend/adip/Adip";
-// import { AirportDao } from "../backend/AirportDao";
-// AirportDao.readCurrent(Adip.currentEffectiveDate).then(list => console.log(list.map(a => a.code).join(',')))
-
-//===================
-// Show Usage metrics
-//===================
-// import { Metrics } from "../backend/Metrics";
+// Usage metrics
 // Metrics.usage().then(metrics => {
 //     for(const metric of metrics)
 //         console.log(metric.name, metric.value)
@@ -25,6 +17,18 @@ require('dotenv').config();
 // Metrics.adip().then(metric => {
 //     console.log(metric.name, metric.value)
 // })
+// Users Metrics
+Metrics.users().then( output => {
+    console.log(output)
+    console.log(JSON.stringify(output))
+})
+// Template Details
+// Metrics.templateDetails().then(metrics => {
+//     for(const metric of metrics)
+//         console.log(metric.name, metric.value)
+// })
+
+
 
 //============
 // Users Check
@@ -49,23 +53,10 @@ require('dotenv').config();
 //     }
 // })
 
-//=================
-// Template Details
-//=================
+
 // import { Metrics } from "../backend/Metrics";
-// Metrics.templateDetails().then(metrics => {
-//     for(const metric of metrics)
-//         console.log(metric.name, metric.value)
-// })
+// Metrics.topAirports()
 
-
-//====================
-// Page count per user
-import { Metrics } from "../backend/Metrics";
-Metrics.users().then( output => {
-    console.log(output)
-    console.log(JSON.stringify(output))
-})
 
 //====================
 // User Categories
@@ -82,7 +73,6 @@ Metrics.users().then( output => {
 //     console.log(metric.name, metric.value)
 // })
 
-
 // load local file source.fmd into ArrayBuffer
 // var fs = require('fs');
 // fs.readFile('source.fmd', function(err:any, data:any) {
@@ -95,3 +85,43 @@ Metrics.users().then( output => {
 
 // import { Maintenance } from "../backend/Maintenance";
 // Maintenance.waylon(false, false)
+
+
+//================================
+// Show a list of current airports
+// import { Adip } from "../backend/adip/Adip";
+// import { AirportDao } from "../backend/AirportDao";
+// AirportDao.readCurrent(Adip.currentEffectiveDate).then(list => console.log(list.map(a => a.code).join(',')))
+
+
+//===============================================================================
+// Update all airports that do not have a sketch, with version 15 and are current
+// import { sql } from "@vercel/postgres";
+// import { AirportSketch } from "../backend/AirportSketch";
+// import { AirportDao } from "../backend/AirportDao";
+// import { Airport } from "../backend/models/Airport";
+// import { Adip } from "../backend/adip/Adip";
+// declare and execute
+// async function doIt() {
+//     const response = await sql`SELECT * FROM airports where sketch isnull and version=15`
+//     console.log('found rows', response.rowCount)
+//     await new Promise(resolve => setTimeout(resolve, 2000))
+//     for(const row of response.rows) {
+//         const airport = AirportDao.parse(row)
+//         airport.code = row.code
+//         console.log('Getting', airport.code)
+//         if(airport.effectiveDate != Adip.currentEffectiveDate) {
+//             console.log('skipping', airport.code)
+//             continue;
+//         }
+//         await AirportSketch.get(airport)
+
+//         // wait random time between 1 and 5 seconds
+//         const time = Math.floor(Math.random() * 4000) + 1000
+//         console.log('Waiting', time, 'ms')
+//         await new Promise(resolve => setTimeout(resolve, time))
+//     }
+// }
+// doIt().then(() => {
+//     console.log('done')
+// })
