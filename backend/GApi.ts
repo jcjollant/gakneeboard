@@ -203,7 +203,7 @@ export class GApi {
         const airports:([string,Airport|undefined])[] = await GApi.getAirportList(airportCodes, userId)
         // console.log('[GApi.getAirportViewList]', JSON.stringify(airports))
 
-        const missingSketches:{a:Airport,v:AirportView}[] = []
+        // const missingSketches:{a:Airport,v:AirportView}[] = []
         const output = airports.map( ([code,airport]) => {
             // console.log('[GApi.getAirportViewList]', code, airport)
             const view = airport ? new AirportView(airport) : AirportView.getUndefined(code)
@@ -214,9 +214,9 @@ export class GApi {
         })
 
         // resolve missing sketches
-        for( const ms of missingSketches) {
-            ms.v.sketch = await AirportSketch.get(ms.a)
-        }
+        // for( const ms of missingSketches) {
+        //     ms.v.sketch = await AirportSketch.get(ms.a)
+        // }
 
         return output
     }
