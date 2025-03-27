@@ -1,12 +1,11 @@
 
 import { afterAll, beforeAll, describe, expect, it} from '@jest/globals';
 import { UserDao } from '../../backend/dao/UserDao'
-import { jcUserId, jcHash, jcEmail, jcName, jcSource, jcMaxTemplates } from '../constants';
+import { jcUserId, jcHash, jcEmail, jcName, jcSource, jcCustomerId } from '../constants';
 import { AccountType } from '../../backend/models/AccountType';
 import { User } from '../../backend/models/User';
 import { newTestUser } from '../common'
 import { db, sql } from '@vercel/postgres';
-import { after } from 'node:test';
 
 require('dotenv').config();
 
@@ -38,6 +37,7 @@ describe('UserDao', () => {
             expect(user?.name).toEqual(jcName)
             expect(user?.source).toEqual(jcSource)
             expect(user?.email).toEqual(jcEmail)
+            expect(user?.customerId).toEqual(jcCustomerId)
         })
     })
 
