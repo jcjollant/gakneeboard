@@ -8,17 +8,12 @@ import { Canvas, createCanvas } from "canvas";
 export class AirportSketch {
   static doesNotExist = "dne";
 
-  static async get(airport: Airport): Promise<string> {
-    console.log("[AirportSketch.get] invoked for", airport.code);
-
-    if (!airport.iap || airport.iap.length < 1) {
-        await AirportSketch.notFound(airport.code);
-        return AirportSketch.doesNotExist;
-    }
+  static async get(airportCode: string, pdf:string): Promise<string> {
+    console.log("[AirportSketch.get] invoked for", airportCode, pdf);
 
     try {
         // Get PDF from aeronav
-        const pdfName = airport.iap[0].pdf;
+        const pdfName = pdf;
         const pdfBuffer = await Charts.getAeronavPdf(pdfName);
         // .teh.catch((error) => {
         //   // console.log('[AirportSketch.get] failed to get', pdfName, error)
@@ -30,10 +25,6 @@ export class AirportSketch {
         const pngBuffer = await AirportSketch.pdfFirstPageToPng(pdfBuffer);
         console.log("[AirportSketch.get] created png size", pngBuffer.length);
 
-        // save PNG file to disk
-        // await fs.writeFile('temp.png', pngBuffer)
-       
-
         // extract sketch from PNG
         const response = await axios.post(
             "https://gak-sketcher.vercel.app/api", 
@@ -41,11 +32,32 @@ export class AirportSketch {
             headers: { "Content-Type": "image/png" },
             responseType: "arraybuffer",
           })
-        console.log( "[AirportSketch.get] completed for", airport.code, "size", response.data.length);
-        return await AirportSketch.save(airport, response.data);
+        console.log( "[AirportSketch.get] completed for", airportCode, "size", response.data.length);
+        return await AirportSketch.save(airportCode, response.data);
     } catch (error) {
-        console.log("[AirportSketch.get] failed for", airport.code, error);
+        console.log("[AirportSketch.get] failed for", airportCode, error);
         throw error;
+    }
+  }
+
+  /**
+   * Refresh airport sketch
+   * @param airport 
+   * @param code 
+   * @returns 
+   */
+  static async resolve(airport:Airport, code:string=undefined) {
+    console.log("[AirportSketch.hook] invoked for", airport.code);
+
+    const airportCode = code ?? airport.code
+
+    if (!airport.iap || airport.iap.length < 1) {
+      console.log("[AirportSketch.hook] no IAP for", airportCode);
+      await AirportSketch.notFound(airportCode);
+      airport.sketch = AirportSketch.doesNotExist;
+    } else {
+      const sketch = await AirportSketch.get(airportCode, airport.iap[0].pdf)      
+      airport.sketch = sketch
     }
   }
 
@@ -132,8 +144,8 @@ export class AirportSketch {
    * @param pngBuffer
    * @returns
    */
-  static async save(airport: Airport, pngBuffer: Buffer): Promise<string> {
-    const code = airport.code;
+  static async save(airportCode: string, pngBuffer: Buffer): Promise<string> {
+    const code = airportCode;
         try {
         const blob = await put(`sketch/${code}.png`, pngBuffer, {
             access: "public",
