@@ -81,9 +81,9 @@ export class AirportSketch {
     try {
       const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.min.mjs");
       // Works in dev
-      const value = 'pdfjs-dist/legacy/build/pdf.worker.min.mjs'
+      // const value = 'pdfjs-dist/legacy/build/pdf.worker.min.mjs'
       // works when copied to public
-      // const value = './pdf.worker.min.mjs'
+      const value = '/pdf.worker.min.mjs'
       // const value = '//mozilla.github.io/pdf.js/build/pdf.worker.mjs'
       // const value = new URL(`//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`).toString();
       // const value = new URL(`//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`).toString();
