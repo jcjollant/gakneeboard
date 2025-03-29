@@ -5,6 +5,17 @@ import axios from "axios";
 import { Charts } from "./Charts";
 import { Canvas, createCanvas } from "canvas";
 
+// Manually set up a fake worker
+const fakeWorker = async () => {
+  return {
+    port: {
+      postMessage: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    },
+  };
+};
+
 export class AirportSketch {
   static doesNotExist = "dne";
 
@@ -77,17 +88,6 @@ export class AirportSketch {
     );
   }
 
-// Manually set up a fake worker
-static fakeWorker = async () => {
-  return {
-    port: {
-      postMessage: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-    },
-  };
-};
-
   static async pdfFirstPageToPng(pdfBuffer: Buffer): Promise<Buffer> {
     try {
       const pdfjs = await import("pdfjs-dist/legacy/build/pdf.min.mjs");
@@ -108,7 +108,7 @@ static fakeWorker = async () => {
       // pdfjs.disableWorker = true;
       // console.log('[AirportSketch.pdfFirstPageToPng] worker', value);
       // pdfjs.GlobalWorkerOptions.workerSrc = value
-      pdfjs.GlobalWorkerOptions.workerPort = AirportSketch.fakeWorker();
+      pdfjs.GlobalWorkerOptions.workerPort = fakeWorker();
       const scale = 300 / 72;
       const compression = 5; // Default compression level
 
