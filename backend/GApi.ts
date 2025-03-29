@@ -20,6 +20,8 @@ import { TemplateDao } from './TemplateDao'
 import { TemplateView } from './models/TemplateView'
 import { User } from './models/User'
 import { UserMiniView } from './models/UserMiniView'
+import { CodeAndAirport } from './models/CodeAndAirport'
+import { AirportSketch } from './AirportSketch'
 
 // Google API key
 
@@ -118,72 +120,85 @@ export class GApi {
         if(!Airport.isValidCode(codeParam)) throw new GApiError(400, "Invalid Airport Code");
         let code:string
         let airport:Airport|undefined
-        [code,airport] = (await GApi.getAirportList([codeParam], userId))[0];
-        return airport
+        const codeAndAirport = (await GApi.getAirportList([codeParam], userId))[0];
+        return codeAndAirport.airport
     }
 
-    public static async getAirportList(airportCodes:string[],userId:any=undefined):Promise<([string,Airport|undefined])[]> {
-        const cleanCodes:string[] = airportCodes.map( code => Airport.cleanupCode(code)) 
-        const airports:[string,Airport][] = await AirportDao.readList(cleanCodes, userId)
-        // rebuild the full list along with unknowns(undefined)
-        const output:([string,Airport|undefined])[] = []
-        for( const code of cleanCodes) {
-            // store the found value [code,airport]
-            const found = airports.find( ([upperCode,airport]) => upperCode == code)
-            // console.log('[GApi.getAirportList] found', found, 'code', code)
-            if(found) {
-                const airport:Airport = found[1]
-                if( airport.custom) { 
-                    // we don't update custom airports
-                    output.push([code, airport])
-                } else if( airport.version == versionInvalid) {
-                    // this is a known unknown
-                    output.push([code, undefined])
-                } else { // the airport now looks legitimate for an update
-                    // check whether data is current
-                    const versionCurrent:boolean = (airport.version == Airport.currentVersion);
-                    const dateCurrent:boolean = (airport.effectiveDate == Adip.currentEffectiveDate)
-                    // We don't update if data is already current
-                    if( versionCurrent && dateCurrent) {
-                        // console.log("[GApi.sanitize] ", airportId, "sane")
-                        output.push([code, airport])
-                    } else {
-                        // data needs to be refeshed => Adip
-                        let refresher:Airport|undefined = await Adip.fetchAirport(code)
-                        if( refresher) {
-                            // update this record in the database
-                            if( airport.id) { 
-                                await AirportDao.updateAirport(airport.id, refresher)
-                            } else {
-                                console.log('[GApi.getAirportList] Could not update', code, 'due to missing Id')
-                            }
-                            output.push([code, refresher])
-                        } else {
-                            // well, we tried but there is something fishy as this code was known before
-                            console.log('[GApi.getAirportList] Adip could not refresh', code)
-                            output.push([code, airport])
-                        }
-                    }
-    
-                }
-            } else { // code not found
-                if( Airport.isValidCode(code)) {
-                    // First time we see that code => Adip
-                    let firstTimer:Airport|undefined = await Adip.fetchAirport(code)
+    /**
+     * Evaluates whether an airport needs to be refreshed due to model change or effectiveDate
+     * @param code Clear Airport code
+     * @param airports List of known airports
+     * @returns The corresponding match, which could have an undefined Airport
+     */
+    static async getAirportCurrent(code:string, airports:CodeAndAirport[]):Promise<CodeAndAirport> {
+        // store the found value [code,airport]
+        const found = airports.find( (codeAndAirport) => codeAndAirport.code == code)
 
-                    // memorize this for next time
-                    if(firstTimer && firstTimer.code != '?') {
-                        await AirportDao.create(code, firstTimer);
-                    } else {
-                        await AirportDao.createUnknown(code);
-                    }
-                    output.push([code, firstTimer])
-                } else {
-                    output.push([code, undefined])
-                }
+        // Unknown stuff : Invalid Code / Legit New / Unknown valid code
+        if(!found) {
+            // invalid code =>
+            if( !Airport.isValidCode(code)) return CodeAndAirport.undefined(code)
+
+            // First time we see that code => Adip
+            let firstTimer:Airport|undefined = await Adip.fetchAirport(code)
+
+            // memorize this for next time
+            if(firstTimer && firstTimer.code != '?') {
+                await AirportDao.create(code, firstTimer);
+                // get airport diagram
+                AirportSketch.get(firstTimer)
+            } else {
+                await AirportDao.createUnknown(code);
             }
+            return new CodeAndAirport(code, firstTimer)
         }
-        return output
+
+        // console.log('[GApi.getAirportList] found', found.code)
+        const airport:Airport = found.airport
+
+        // Is this a known unknown?
+        if( !airport || airport.version == versionInvalid) {
+            return CodeAndAirport.undefined(code)
+        } 
+        
+
+        const versionCurrent:boolean = (airport.version == Airport.currentVersion);
+        const dateCurrent:boolean = (airport.effectiveDate == Adip.currentEffectiveDate)
+        // Happy path : data is already current or airport is custom (which we don't update)
+        if( airport.custom || versionCurrent && dateCurrent) { 
+            return new CodeAndAirport(code, airport)
+        } 
+        
+        // data needs to be refreshed => Adip
+        let refresher:Airport|undefined = await Adip.fetchAirport(code)
+        if( refresher) {
+            // update this record in the database
+            if( airport.id) { 
+                await AirportDao.updateAirport(airport.id, refresher)
+                // take advantage of this new data to refresh the diagram
+                if(!airport.sketch) AirportSketch.get(refresher)
+            } else {
+                console.log('[GApi.getAirportCurrent] Could not update', code, 'due to missing Id')
+            }
+            return new CodeAndAirport(code, refresher)
+        } 
+
+        // well, we tried but there is something fishy as this code was known before but Adip failed
+        console.log('[GApi.getAirportCurrent] Adip could not refresh', code)
+        return new CodeAndAirport(code, airport)
+    }
+
+    public static async getAirportList(airportCodes:string[],userId:any=undefined):Promise<(CodeAndAirport)[]> {
+        // clean up airport codes
+        const cleanCodes:string[] = airportCodes.map( code => Airport.cleanupCode(code)) 
+        // Read airports fromDB
+        const knownAirports:CodeAndAirport[] = await AirportDao.readList(cleanCodes, userId)
+        // rebuild the full list along with unknowns(undefined)
+        const output:(Promise<CodeAndAirport>)[] = []
+        for( const code of cleanCodes) {
+            output.push( GApi.getAirportCurrent(code, knownAirports))
+        }
+        return Promise.all(output)
     }
 
     public static async getAirportView(codeParam:string, userId: any=undefined):Promise<AirportView> {
@@ -199,23 +214,13 @@ export class GApi {
     */
     public static async getAirportViewList(airportCodes:string[],userId=undefined):Promise<AirportView[]> {
         // console.log('[GApi.getAirportViewList] codes', JSON.stringify(airportCodes), 'user', userId)
-        const airports:([string,Airport|undefined])[] = await GApi.getAirportList(airportCodes, userId)
+        const airports:(CodeAndAirport)[] = await GApi.getAirportList(airportCodes, userId)
         // console.log('[GApi.getAirportViewList]', JSON.stringify(airports))
 
-        // const missingSketches:{a:Airport,v:AirportView}[] = []
-        const output = airports.map( ([code,airport]) => {
+        const output = airports.map( (codeAndAirport) => {
             // console.log('[GApi.getAirportViewList]', code, airport)
-            const view = airport ? new AirportView(airport) : AirportView.getUndefined(code)
-            // if(view.isValid() && !view.sketch) {
-            //     missingSketches.push( {a:airport, v:view})
-            // }
-            return view
+            return codeAndAirport.airport ? new AirportView(codeAndAirport.airport) : AirportView.getUndefined(codeAndAirport.code)
         })
-
-        // resolve missing sketches
-        // for( const ms of missingSketches) {
-        //     ms.v.sketch = await AirportSketch.get(ms.a)
-        // }
 
         return output
     }
