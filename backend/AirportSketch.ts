@@ -105,10 +105,16 @@ export class AirportSketch {
       // const value = '//ga-api-seven.vercel.app/pdf.worker.min.mjs'
       // const value = workerPath
       // const value = `${process.cwd()}/node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs`
-      // const value = '';
-      // console.log('[AirportSketch.pdfFirstPageToPng] worker', value);
-      // pdfjs.GlobalWorkerOptions.workerSrc = value
-      pdfjs.GlobalWorkerOptions.workerPort = null
+      const value = '';
+      console.log('[AirportSketch.pdfFirstPageToPng] worker', value);
+      pdfjs.GlobalWorkerOptions.workerSrc = value
+
+    const fakeWorker = {
+      postMessage: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    };
+          pdfjs.GlobalWorkerOptions.workerPort = fakeWorker
       // pdfjs.GlobalWorkerOptions.workerPort = fakeWorker();
       const scale = 300 / 72;
       const compression = 5; // Default compression level
