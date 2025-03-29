@@ -1,6 +1,7 @@
 import { QueryResult, sql } from  "@vercel/postgres";
 import { Airport, versionInvalid } from "./models/Airport";
 import { PutBlobResult } from "@vercel/blob";
+import { CodeAndAirport } from "./models/CodeAndAirport";
 
 export class AirportDao {
     public static async count():Promise<number> {
@@ -119,7 +120,7 @@ export class AirportDao {
      * @param creatorId 
      * @returns 
      */
-    public static async readList(list:any, creatorId:number|undefined=undefined):Promise<[string,Airport][]> {
+    public static async readList(list:any, creatorId:number|undefined=undefined):Promise<CodeAndAirport[]> {
         // console.log( '[AirportDao.readList] ' + JSON.stringify(list) + ' / ' + creatorId)
 
         let result:QueryResult;
@@ -133,9 +134,9 @@ export class AirportDao {
         return result.rows.map( row => {
             if(row.data) {
                 const airport = AirportDao.parse(row, creatorId)
-                return [row.code,airport];
+                return new CodeAndAirport(row.code,airport);
             } else {
-                return [row.code,AirportDao.undefinedAirport(row.code)]
+                return new CodeAndAirport( row.code,AirportDao.undefinedAirport(row.code))
             }
         })
     }
