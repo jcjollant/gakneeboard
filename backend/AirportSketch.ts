@@ -89,11 +89,12 @@ export class AirportSketch {
       // const value = new URL(`//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`).toString();
       // const value = new URL(`//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`).toString();
       // const value = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
-      // const value = '';
       // const value = 'pdf.worker.min.mjs'
       // const value = '//ga-api-seven.vercel.app/pdf.worker.min.mjs'
       // const value = workerPath
-      const value = `${process.cwd()}/node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs`
+      // const value = `${process.cwd()}/node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs`
+      const value = '';
+      pdfjsLib.disableWorker = true;
       console.log('[AirportSketch.pdfFirstPageToPng] worker', value);
       pdfjsLib.GlobalWorkerOptions.workerSrc = value
       const scale = 300 / 72;
