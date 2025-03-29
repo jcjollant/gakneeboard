@@ -131,6 +131,7 @@ export class GApi {
      * @returns The corresponding match, which could have an undefined Airport
      */
     static async getAirportCurrent(code:string, airports:CodeAndAirport[]):Promise<CodeAndAirport> {
+        // console.log('[GApi.getAirportCurrent]', code)
         // store the found value [code,airport]
         const found = airports.find( (codeAndAirport) => codeAndAirport.code == code)
 
@@ -142,14 +143,14 @@ export class GApi {
             // First time we see that code => Adip
             let firstTimer:Airport|undefined = await Adip.fetchAirport(code)
 
-            // memorize this for next time
-            if(firstTimer && firstTimer.code != '?') {
-                await AirportDao.create(code, firstTimer);
-                // get airport diagram
-                AirportSketch.get(firstTimer)
-            } else {
+            // unknown airport
+            if(!firstTimer || firstTimer.code == '?') {
                 await AirportDao.createUnknown(code);
+                return CodeAndAirport.undefined(code)
             }
+            // new airport
+            await AirportDao.create(code, firstTimer);
+            await AirportSketch.resolve(firstTimer)
             return new CodeAndAirport(code, firstTimer)
         }
 
@@ -168,15 +169,15 @@ export class GApi {
         if( airport.custom || versionCurrent && dateCurrent) { 
             return new CodeAndAirport(code, airport)
         } 
-        
+
         // data needs to be refreshed => Adip
         let refresher:Airport|undefined = await Adip.fetchAirport(code)
         if( refresher) {
             // update this record in the database
             if( airport.id) { 
                 await AirportDao.updateAirport(airport.id, refresher)
-                // take advantage of this new data to refresh the diagram
-                if(!airport.sketch) AirportSketch.get(refresher)
+                // consider refreshing the skecth
+                if(!refresher.sketch) await AirportSketch.resolve(refresher, code)
             } else {
                 console.log('[GApi.getAirportCurrent] Could not update', code, 'due to missing Id')
             }
@@ -188,6 +189,12 @@ export class GApi {
         return new CodeAndAirport(code, airport)
     }
 
+    /**
+     * Builds a list of airports from a list of codes
+     * @param airportCodes 
+     * @param userId 
+     * @returns 
+     */
     public static async getAirportList(airportCodes:string[],userId:any=undefined):Promise<(CodeAndAirport)[]> {
         // clean up airport codes
         const cleanCodes:string[] = airportCodes.map( code => Airport.cleanupCode(code)) 
