@@ -1,10 +1,15 @@
-import { describe, expect, jest, test} from '@jest/globals';
+import { describe, expect, it, jest, test} from '@jest/globals';
 import { GApi, GApiError } from '../backend/GApi'
 import { jcHash, jcUserId, jcToken, jcName } from './constants'
 import { currentAsOf } from './constants';
 import { UserMiniView } from '../backend/models/UserMiniView';
 import { UserTools } from '../backend/UserTools';
 import { AirportSketch } from '../backend/AirportSketch';
+import { CodeAndAirport } from '../backend/models/CodeAndAirport';
+import { Adip } from '../backend/adip/Adip';
+import { AirportDao } from '../backend/AirportDao';
+import { exec } from 'child_process';
+import { Airport } from '../backend/models/Airport';
 
 require('dotenv').config();
 
@@ -178,6 +183,71 @@ describe( 'GApi Tests', () => {
         expect(session2.camv).toBeDefined()
         expect(session2.user).toBeDefined()
 
+    })
+    describe('getAirportCurent', () => {
+        it('Deals with invalid codes', async() => {
+            jest.spyOn(AirportSketch, 'get').mockResolvedValue('')
+            jest.spyOn(Adip, 'fetchAirport').mockResolvedValue(undefined)
+
+            // invalid code should be undefined
+            const invalidCode = 'ABCDEFGH'
+            expect( await GApi.getAirportCurrent(invalidCode, [])).toEqual( new CodeAndAirport(invalidCode))
+            expect(Adip.fetchAirport).toBeCalledTimes(0)
+            expect(AirportSketch.get).toBeCalledTimes(0)
+        })
+
+        it('Code is valid but airport doesnt exist', async () => {
+            jest.resetAllMocks()
+            jest.spyOn(AirportSketch, 'get').mockResolvedValue('')
+            
+            // Airport not found in adip
+            const validCode = 'RNT'
+            jest.spyOn(Adip, 'fetchAirport').mockResolvedValue(undefined)
+            jest.spyOn(AirportDao, 'createUnknown').mockResolvedValue(undefined)
+            expect( await GApi.getAirportCurrent(validCode, [])).toEqual( new CodeAndAirport(validCode))
+            // Adip should be called once
+            expect(AirportDao.createUnknown).toBeCalledTimes(1)
+            expect(AirportDao.createUnknown).toBeCalledWith(validCode)
+            expect(AirportSketch.get).toBeCalledTimes(0)
+
+        })
+
+        it('Gets a new valid airport', async () => {
+            jest.resetAllMocks()
+            jest.spyOn(AirportSketch, 'get').mockResolvedValue('')
+
+            const validCode = 'KBFI'
+            // Code is valid and airport is found in adip
+            jest.spyOn(Adip, 'fetchAirport').mockResolvedValue(undefined)
+            const mockBoeing = new Airport(validCode, "Boieng Field", 42)
+            jest.spyOn(Adip, 'fetchAirport').mockResolvedValue(mockBoeing)
+            jest.spyOn(AirportDao, 'create').mockResolvedValue(undefined)
+            expect( await GApi.getAirportCurrent(validCode, [])).toEqual( new CodeAndAirport(validCode, mockBoeing))
+            expect(AirportDao.create).toBeCalledTimes(1)
+            expect(AirportDao.create).toBeCalledWith(validCode, mockBoeing)
+
+        })
+
+        it('Deals with custom, current and known unknows', async () => {
+            jest.resetAllMocks()
+            const mockCode = "CUST"
+            const mockCustom = new Airport( mockCode, "Mock Custom", 42)
+            mockCustom.custom = true
+            const mockCaa = new CodeAndAirport(mockCode, mockCustom)
+            const currentCode = "RNT"
+            const currentAirport = new Airport(currentCode, "Current Renton", 42)
+            currentAirport.effectiveDate = Adip.currentEffectiveDate
+            const currentCaa = new CodeAndAirport(currentCode, currentAirport)
+            const kuCode = 'KUNK'
+            const kuCaa = CodeAndAirport.undefined( kuCode)
+            const knownAirports = [mockCaa, currentCaa, kuCaa]
+
+            jest.spyOn(Adip, 'fetchAirport').mockResolvedValue(undefined)
+            expect( await GApi.getAirportCurrent(mockCode, knownAirports)).toEqual( mockCaa)
+            expect( await GApi.getAirportCurrent(currentCode, knownAirports)).toEqual( currentCaa)
+            expect( await GApi.getAirportCurrent(kuCode, knownAirports)).toEqual( kuCaa)
+            expect(Adip.fetchAirport).toBeCalledTimes(0)
+        })
     })
 })
 
