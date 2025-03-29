@@ -4,6 +4,7 @@ import { Airport } from "./models/Airport";
 import axios from "axios";
 import { Charts } from "./Charts";
 import { Canvas, createCanvas } from "canvas";
+import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
 
 // Manually set up a fake worker
 const fakeWorker = async () => {
@@ -90,7 +91,7 @@ export class AirportSketch {
 
   static async pdfFirstPageToPng(pdfBuffer: Buffer): Promise<Buffer> {
     try {
-      const pdfjs = await import("pdfjs-dist/legacy/build/pdf.min.mjs");
+      // const pdfjs = await import("pdfjs-dist/legacy/build/pdf.min.mjs");
       // Works in dev
       // const value = 'pdfjs-dist/legacy/build/pdf.worker.min.mjs'
       // works when copied to public
@@ -108,12 +109,12 @@ export class AirportSketch {
       // pdfjs.disableWorker = true;
       // console.log('[AirportSketch.pdfFirstPageToPng] worker', value);
       // pdfjs.GlobalWorkerOptions.workerSrc = value
-      pdfjs.GlobalWorkerOptions.workerPort = fakeWorker();
+      // pdfjs.GlobalWorkerOptions.workerPort = fakeWorker();
       const scale = 300 / 72;
       const compression = 5; // Default compression level
 
       // Load the PDF from buffer
-      const pdf = await pdfjs.getDocument({
+      const pdf = await getDocument({
         data: new Uint8Array(pdfBuffer),
         standardFontDataUrl: "node_modules/pdfjs-dist/standard_fonts/",
       }).promise;
