@@ -108,7 +108,7 @@ export class AirportSketch {
       // const value = '';
       // console.log('[AirportSketch.pdfFirstPageToPng] worker', value);
       // pdfjs.GlobalWorkerOptions.workerSrc = value
-      pdfjs.GlobalWorkerOptions.port = null
+      pdfjs.GlobalWorkerOptions.workerPort = null
       // pdfjs.GlobalWorkerOptions.workerPort = fakeWorker();
       const scale = 300 / 72;
       const compression = 5; // Default compression level
