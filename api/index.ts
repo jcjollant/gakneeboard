@@ -8,7 +8,6 @@ import { Maintenance } from '../backend/Maintenance'
 import { NavlogTools } from "../backend/NavlogTools";
 import { Ticket } from "../backend/Ticket";
 import { Charts } from "../backend/Charts";
-import { AirportSketch } from "../backend/AirportSketch";
 
 const port:number = 3000
 const app = express();
@@ -246,30 +245,6 @@ app.get('/publications', async (req:Request, res:Response) => {
         catchError(res, e, 'GET /publications')
     }
 })
-
-
-// app.post('/sketch', upload.single('image'), async (req:Request, res:Response) => {
-//     if (!req.file) {
-//         return res.status(400).send('No image file uploaded.');
-//     }
-
-//     try {
-//         res.send(await AirportSketch.save(req.file))
-//     } catch( e) {
-//         catchError(res, e, 'POST /sketch')
-//     }
-// })
-
-// app.post('/sketchnotfound/', async (req:Request, res:Response) => {
-//     console.log('[index] POST /sketchnotfound', req.body)
-//     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
-//     try {
-//         res.send(await AirportSketch.notFound(payload.code))
-//     } catch( e) {
-//         catchError(res, e, 'POST /sketch')
-//     }
-// })
-
 
 /**
  * Payments management
