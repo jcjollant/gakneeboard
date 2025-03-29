@@ -19,9 +19,10 @@ export class AirportDao {
         return Number(result.rows[0].count)
     }
 
-    public static async create(code:string, data:any) {
+    public static async create(code:string, airport:Airport) {
         // console.log( '[AirportDao.create] ' + code)
-        await sql`INSERT INTO Airports (Code, Data, Version) VALUES (${code}, ${data},${data.version})`;
+        const result = await sql`INSERT INTO Airports (Code, Data, Version) VALUES (${code}, ${airport.toString()},${airport.version}) RETURNING id`;
+        airport.id = result.rows[0].id;
     }
 
     public static async createUnknown(code:string) {
