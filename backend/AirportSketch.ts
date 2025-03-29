@@ -79,7 +79,7 @@ export class AirportSketch {
 
   static async pdfFirstPageToPng(pdfBuffer: Buffer): Promise<Buffer> {
     try {
-      const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.min.mjs");
+      const pdfjs = await import("pdfjs-dist/legacy/build/pdf.min.mjs");
       // Works in dev
       // const value = 'pdfjs-dist/legacy/build/pdf.worker.min.mjs'
       // works when copied to public
@@ -94,14 +94,14 @@ export class AirportSketch {
       // const value = workerPath
       // const value = `${process.cwd()}/node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs`
       const value = '';
-      pdfjsLib.disableWorker = true;
+      // pdfjs.disableWorker = true;
       console.log('[AirportSketch.pdfFirstPageToPng] worker', value);
-      pdfjsLib.GlobalWorkerOptions.workerSrc = value
+      pdfjs.GlobalWorkerOptions.workerSrc = value
       const scale = 300 / 72;
       const compression = 5; // Default compression level
 
       // Load the PDF from buffer
-      const pdf = await pdfjsLib.getDocument({
+      const pdf = await pdfjs.getDocument({
         data: new Uint8Array(pdfBuffer),
         standardFontDataUrl: "node_modules/pdfjs-dist/standard_fonts/",
       }).promise;
