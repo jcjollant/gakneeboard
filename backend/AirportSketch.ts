@@ -106,9 +106,9 @@ export class AirportSketch {
       // const value = workerPath
       // const value = `${process.cwd()}/node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs`
       // const value = '';
-      // pdfjs.disableWorker = true;
       // console.log('[AirportSketch.pdfFirstPageToPng] worker', value);
       // pdfjs.GlobalWorkerOptions.workerSrc = value
+      pdfjs.GlobalWorkerOptions.port = null
       // pdfjs.GlobalWorkerOptions.workerPort = fakeWorker();
       const scale = 300 / 72;
       const compression = 5; // Default compression level
