@@ -77,6 +77,17 @@ export class AirportSketch {
     );
   }
 
+// Manually set up a fake worker
+static fakeWorker = async () => {
+  return {
+    port: {
+      postMessage: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    },
+  };
+};
+
   static async pdfFirstPageToPng(pdfBuffer: Buffer): Promise<Buffer> {
     try {
       const pdfjs = await import("pdfjs-dist/legacy/build/pdf.min.mjs");
@@ -93,10 +104,11 @@ export class AirportSketch {
       // const value = '//ga-api-seven.vercel.app/pdf.worker.min.mjs'
       // const value = workerPath
       // const value = `${process.cwd()}/node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs`
-      const value = '';
+      // const value = '';
       // pdfjs.disableWorker = true;
-      console.log('[AirportSketch.pdfFirstPageToPng] worker', value);
-      pdfjs.GlobalWorkerOptions.workerSrc = value
+      // console.log('[AirportSketch.pdfFirstPageToPng] worker', value);
+      // pdfjs.GlobalWorkerOptions.workerSrc = value
+      pdfjs.GlobalWorkerOptions.workerPort = AirportSketch.fakeWorker();
       const scale = 300 / 72;
       const compression = 5; // Default compression level
 
