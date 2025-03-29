@@ -1,3 +1,5 @@
+## 03/28/2025
+* Re-Enabled auto Diagram
 ## 03/27/2025 5132
 * Allowing for maxTemplate override
 ## 03/26/2025 5131
