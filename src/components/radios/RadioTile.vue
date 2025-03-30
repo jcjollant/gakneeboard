@@ -4,8 +4,8 @@
         <Header :title="getTitle()" :showReplace="displaySelection"
             @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
         <div class="tileContent" :class="{'expanded':expanded}">
-            <DisplayModeSelection v-if="displaySelection" :modes="modesList" v-model="displayMode"
-                @selection="onChangeMode" />
+            <DisplayModeSelection v-if="displaySelection" :modes="modesList" v-model="displayMode"  :expandable="!expanded"
+                @selection="onChangeMode" @expand="onExpand" />
             <ServiceVolumes v-else-if="displayMode==DisplayModeRadios.ServiceVolumes" v-model="serviceVolume"/>
             <Nordo v-else-if="displayMode==DisplayModeRadios.LostComms" />
             <div v-else-if="displayMode==DisplayModeRadios.FreqList" class="main">
@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { DisplayModeRadios } from '../../model/DisplayMode';
+import { DisplayModeChoice, DisplayModeRadios } from '../../model/DisplayMode';
 import { Frequency, FrequencyType } from '../../model/Frequency';
 import { Formatter } from '../../lib/Formatter'
 import { ServiceVolume} from '../../model/ServiceVolume'
@@ -52,7 +52,7 @@ import ServiceVolumes from './ServiceVolumes.vue';
 
 const displayMode = ref('') // active display mode
 const displaySelection = ref(false)
-const emits = defineEmits(['replace','update'])
+const emits = defineEmits(['expand','replace','update'])
 const expanded = ref(false)
 const noFreq:Frequency[] = []
 const frequencies = ref(noFreq)
@@ -61,9 +61,9 @@ const listEditMode = ref(false) // toggle list into edit mode
 const lookupTime = ref(0)
 const maxFreqCount = 15
 const modesList = ref([
-    {label:'Frequencies', value:DisplayModeRadios.FreqList},
-    {label:'Lost Comms', value:DisplayModeRadios.LostComms},
-    {label:'VOR Service Volumes', value:DisplayModeRadios.ServiceVolumes},
+    new DisplayModeChoice('Frequencies', DisplayModeRadios.FreqList, true),
+    new DisplayModeChoice('Lost Comms', DisplayModeRadios.LostComms),
+    new DisplayModeChoice('VOR Service Volumes', DisplayModeRadios.ServiceVolumes),
 ])
 const props = defineProps({
     params: { type: Object, default: null}, // expecting a list of radio {'target':'COM1', 'freq':'-.-', 'name':'-'}
@@ -86,7 +86,7 @@ watch( props, async() => {
 
 watch( serviceVolume, () => {
     // console.log('[RadioTile.watch] serviceVolume changed', serviceVolume.value)
-    emitUpdate()
+    emitUpdate(false)
 })
 
 function boxColumns() {
@@ -114,8 +114,9 @@ function boxSize() {
 }
 
 
-function emitUpdate() {
-    emits('update',{'mode':displayMode.value,'list':frequencies.value,'sv':serviceVolume});
+function emitUpdate(expand:boolean) {
+    const state = {'mode':displayMode.value,'list':frequencies.value,'sv':serviceVolume}
+    emits(expand ? 'expand' : 'update', state);
 }
 
 function getTitle() {
@@ -196,7 +197,7 @@ function addFrequency(freq:any) {
 // load data from text value
 function onApply() {
     frequencies.value = loadListFromText();
-    emitUpdate()
+    emitUpdate(false)
     // go back to normal mode
     listEditMode.value = false;
 }
@@ -206,16 +207,20 @@ function onCancel() {
     loadData( listBeforeEdit)
 }
 
-function onChangeMode(mode) {
+function onChangeMode(mode:DisplayModeRadios, expand:boolean=false) {
     // console.log('onChangeMode', mode)
     displayMode.value = mode
     displaySelection.value = false;
-    emitUpdate()
+    emitUpdate(expand)
 }
 
 function onEditMode() {
     listBeforeEdit = frequencies.value
     listEditMode.value = true
+}
+
+function onExpand() {
+    onChangeMode(DisplayModeRadios.FreqList, true)
 }
 
 function onLookup() {
