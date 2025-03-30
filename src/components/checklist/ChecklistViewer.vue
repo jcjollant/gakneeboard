@@ -56,7 +56,7 @@ function getClassResponse(item:ChecklistItem, index:number) {
     return output
 }
 
-function loadProps(newProps) {
+function loadProps(newProps:any) {
     // console.log('[ChecklistViewer.loadProps]', JSON.stringify(newProps))
     if(!newProps) return;
     theme.value = newProps.theme;
