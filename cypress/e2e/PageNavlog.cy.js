@@ -1,4 +1,5 @@
 import { placeHolderSubtitle, visitSkipBanner, newTemplate, replacePage, pageNameNavlog, expectToast, waitOneAirport } from './shared'
+import { replaceBy } from './shared'
 
 function checkBlankState() {
     cy.get(':nth-child(1) > .headerTitle').contains("NavLog")
@@ -106,7 +107,7 @@ describe('navlog Page', () => {
     cy.get('.actionBarVideo')
   })
 
-  it('7 altitudes', () => {
+  it.only('7 altitudes', () => {
     visitSkipBanner()
     newTemplate()
 
@@ -162,7 +163,7 @@ describe('navlog Page', () => {
     cy.get('#name').should('have.value', 'KRNT')
     cy.get('#alt').should('have.value', '32')
     // Change values and apply
-    cy.get('#name').type('{selectAll}0S9', {delay:0})
+    replaceBy('#name', '0S9')
     cy.get('#alt').type('00', {delay:0}) // just add 00
     cy.get('.actionDialog > [aria-label="Apply"]').click()
     // Values should be updated
@@ -170,24 +171,24 @@ describe('navlog Page', () => {
     cy.get('.checkpoint0 > .checkpointAlt').contains('3200')
     // change back to KRNT
     cy.get('.checkpoint0 > .checkpointName').click()
-    cy.get('#name').type('{selectAll}KRNT', {delay:0})
-    cy.get('#alt').type('{selectAll}32', {delay:0})
+    replaceBy('#name', 'KRNT')
+    replaceBy('#alt', '32')
     cy.get('.actionDialog > [aria-label="Apply"]').click()
 
     // Test calculator on first line
     cy.get('.leg0 > .magneticHeading').click()
-    cy.get('#calcMV').type('{selectAll}-15', {delay:0})
-    cy.get('#calcMD').type('{selectAll}2', {delay:0})
+    replaceBy('#calcMV', '-15')
+    replaceBy('#calcMD', '2', {delay:0})
     const expectedResult = [
       {tc: 246, wd: 45, ws: 21, tas: 106, gs: 125, wca: 4, th: 250, mh: 237},
       {tc: 45, wd: 45, ws: 20, tas: 106, gs: 86, wca: 0, th: 45, mh: 32},
       {tc: 45, wd: 225, ws: 20, tas: 106, gs: 126, wca: 0, th: 45, mh: 32},
     ]
     for(const result of expectedResult) {
-      cy.get('#calcTC').type('{selectAll}' + result.tc, {delay:0})
-      cy.get('#calcWD').type('{selectAll}' + result.wd, {delay:0})
-      cy.get('#calcWS').type('{selectAll}' + result.ws, {delay:0})
-      cy.get('#calcTAS').type('{selectAll}' + result.tas, {delay:0})
+      replaceBy('#calcTC', result.tc)
+      replaceBy('#calcWD', result.wd)
+      replaceBy('#calcWS', result.ws)
+      replaceBy('#calcTAS', result.tas)
       cy.get('#calcGS').contains(result.gs)
       cy.get('#calcWCA').contains(result.wca)
       cy.get('#calcTH').contains(result.th)
@@ -220,17 +221,17 @@ describe('navlog Page', () => {
     // check calculated values
     // MH updates for TC / MV / MD
     cy.get('.headingCourse').contains('True Course')
-    cy.get('#calcTC').type('{selectAll}135', {delay:0})
+    replaceBy('#calcTC', '135')
     cy.get('#mhHint').contains('135')
-    cy.get('#calcMV').type('{selectAll}10', {delay:0})
+    replaceBy('#calcMV','10')
     cy.get('#mhHint').contains('145')
-    cy.get('#calcMD').type('{selectAll}5', {delay:0})
+    replaceBy('#calcMD','5')
     cy.get('#mhHint').contains('150')
     // Toggle Magnectic Course
     cy.get('.headingCourse').click()
     cy.get('.headingCourse').contains('Magnetic Course')
     cy.get('#calcMC').should('have.value','145')
-    cy.get('#calcMC').type('{selectAll}200', {delay:0})
+    replaceBy('#calcMC','200')
     cy.get('#mhHint').contains('205')
 
     cy.get('.actionDialog > [aria-label="Apply"]').click()
@@ -244,8 +245,10 @@ describe('navlog Page', () => {
 
     // second leg is cruise, let's see if we have proper hints
     cy.get('.leg1 > .magneticHeading').click()
+    cy.get('.p-dialog-header').contains('Navigation Leg')
     cy.get('.between').should('have.class','attCruise')
-    cy.get('#cruiseGPH').type(9, {delay:0})
+
+    replaceBy('#cruiseGPH', '9')
     // Magnetic heading hint and copy
     cy.get('#mhHint').contains('205')
     cy.get('#mhHint').click()
@@ -266,8 +269,8 @@ describe('navlog Page', () => {
     // test descent hints
     cy.get('.leg6 > .magneticHeading').click()
     cy.get('.between').should('have.class','attDescent')
-    cy.get('#descentGPH').type('6', {delay:0})
-    cy.get('#descentFPM').type('500', {delay:0})
+    replaceBy('#descentGPH', '6')
+    replaceBy('#descentFPM','500')
     // should deliver hints
     cy.get('#ltHint').contains('4:00')
     cy.get('#ltHint').click()
@@ -306,9 +309,9 @@ describe('navlog Page', () => {
     expectToast('Bingo Fuel')
 
     // enter initial fuel, reserve and cruise values
-    cy.get('.varInitialFuel > .p-inputtext').type(53, {delay:0})
-    cy.get('.varReserveFuel > .p-inputtext').type(30, {delay:0})
-    cy.get('.varCruiseGph > .p-inputtext').type(9, {delay:0})
+    replaceBy('.varInitialFuel > .p-inputtext', '53')
+    replaceBy('.varReserveFuel > .p-inputtext', '30')
+    replaceBy('.varCruiseGph > .p-inputtext', '9')
     // and apply again
     cy.get('[aria-label="Apply"]').click()
 

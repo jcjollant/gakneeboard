@@ -159,10 +159,28 @@ export function displaySelection(pageNum, tileNum, mode=undefined) {
 
 }
 
+export function displaySelectionExpand(pageNum, tileNum, modeNumber, accept=true) {
+    cy.get(`.page${pageNum} > .tile${tileNum} .displayButton`).click({force: true})
+    cy.get(`.page${pageNum} > .tile${tileNum} .expand${modeNumber}`).click({force: true})
+    if(accept) cy.get('.p-confirm-dialog-accept').click()
+    else cy.get('.p-confirm-dialog-reject').click()
+
+}
+
 export function expectToast(message) {
     cy.get('.p-toast-message-content').contains(message)
     cy.get('.p-toast-icon-close').click()
     cy.get('.p-toast-icon-close').should('not.exist')
+}
+
+export function replaceBy(selector, value) {
+    cy.get(selector).type('{selectAll}{backspace}', {delay:0})
+    cy.get(selector).type(value, {delay:0})
+}
+
+
+export function viewport() {
+    cy.viewport(1300,1000)
 }
 
 export function waitForAirports() {

@@ -1,5 +1,5 @@
-import { bellinghamTitle, boeingTitle, checkCorner, checkTileSpan, checkTileVisible, displaySelection, loadDemo, maintenanceMode, rentonTitle, visitSkipBanner, waitForAirports, waitOneAirport } from './shared'
-
+import { bellinghamTitle, boeingTitle, checkCorner, checkTileSpan, checkTileTitle, checkTileVisible, loadDemo, maintenanceMode, rentonTitle, visitSkipBanner, waitForAirports, waitOneAirport } from './shared'
+import { displaySelection, displaySelectionExpand, viewport } from './shared'
 describe('Tiles', () => {
   it('Airport Tile', () => {
     visitSkipBanner()
@@ -172,7 +172,7 @@ describe('Tiles', () => {
     cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .value').contains(customValue)
   })
 
-  it('Merges', () => {
+  it('Merges when code match', () => {
     visitSkipBanner()
     // Load default demo
     loadDemo()
@@ -186,6 +186,7 @@ describe('Tiles', () => {
     cy.get('.p-inputtext').type('{selectAll}KBFI')
     cy.get('[aria-label="14L-32R"]').click()
     cy.get('[aria-label="Apply"]').click()
+    // now they are merged
     checkTileSpan(0, 0, true)
     checkTileVisible(0, 1, false)
 
@@ -218,6 +219,44 @@ describe('Tiles', () => {
       cy.get(`.corner${index}`).contains('Elevation')
       cy.get(`.corner${index}`).contains('22')
     }
+  })
+
+  it('Merges on expand', () => {
+    visitSkipBanner()
+    viewport()
+    // Load default demo
+    loadDemo()
+
+    waitForAirports()
+    checkTileTitle(0,0, boeingTitle)
+
+    // by default tiles are not merged
+    checkTileSpan(0, 0, false)
+    checkTileVisible(0, 1, true)
+
+    // expand diagram mode
+    displaySelectionExpand(0, 0, 2)
+    cy.get('.page0 .tile0 canvas').should('not.exist')
+    cy.get('.page0 .tile0 .runwayList').should('not.exist')
+    cy.get('.page0 .tile0 .rwySketch').should('exist')
+    checkTileSpan(0, 0, true)
+    checkTileVisible(0, 1, false)
+
+    // contract back to list mode
+    displaySelection(0,0,'Runway List')
+    cy.get('.page0 .tile0 canvas').should('not.exist')
+    cy.get('.page0 .tile0 .runwayList').should('exist')
+    cy.get('.page0 .tile0 .rwySketch').should('not.exist')
+    checkTileSpan(0, 0, false)
+    checkTileVisible(0, 1, true)
+
+    // expand back to one runway
+    displaySelectionExpand(0, 0, 0)
+    cy.get('.page0 .tile0 canvas').should('exist')
+    cy.get('.page0 .tile0 .runwayList').should('not.exist')
+    cy.get('.page0 .tile0 .rwySketch').should('not.exist')
+    checkTileSpan(0, 0, true)
+    checkTileVisible(0, 1, false)
   })
 
   it('Settings', () => {
