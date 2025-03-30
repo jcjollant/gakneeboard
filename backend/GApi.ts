@@ -150,7 +150,7 @@ export class GApi {
             }
             // new airport
             await AirportDao.create(code, firstTimer);
-            await AirportSketch.resolve(firstTimer)
+            // await AirportSketch.resolve(firstTimer)
             return new CodeAndAirport(code, firstTimer)
         }
 
@@ -177,7 +177,7 @@ export class GApi {
             if( airport.id) { 
                 await AirportDao.updateAirport(airport.id, refresher)
                 // consider refreshing the skecth
-                if(!refresher.sketch) await AirportSketch.resolve(refresher, code)
+                // if(!refresher.sketch) await AirportSketch.resolve(refresher, code)
             } else {
                 console.log('[GApi.getAirportCurrent] Could not update', code, 'due to missing Id')
             }
