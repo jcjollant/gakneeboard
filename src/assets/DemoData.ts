@@ -29,34 +29,34 @@ export class DemoData {
 
     static page0DemoTiles = new TemplatePage( PageType.tiles, "Tiles Demo",
         [
-            {id:0,name:TileType.airport,'data':{'code':'krnt','rwy':'16-34'}},
-            {id:1,name:TileType.airport,'data':{'code':'kbfi','rwy':'14L-32R'}},
-            {id:2,name:TileType.airport,'data':{'code':'w39','rwy':'NE-SW','rwyOrientation':'magnetic'}},
-            {id:3,name:TileType.airport,'data':{'code':'O26','rwy':'13-31'}},
-            {id:4,name:TileType.atis,'data':{}},
-            {id:5,name:TileType.clearance,"data":{mode:'dep',airport:'kbfi'}}
+            {name:TileType.airport,'data':{'code':'krnt','rwy':'16-34'}},
+            {name:TileType.airport,'data':{'code':'kbfi','rwy':'14L-32R'}},
+            {name:TileType.airport,'data':{'code':'w39','rwy':'NE-SW','rwyOrientation':'magnetic'}},
+            {name:TileType.airport,'data':{'code':'O26','rwy':'13-31'}},
+            {name:TileType.atis,'data':{}},
+            {name:TileType.clearance,"data":{mode:'dep',airport:'kbfi'}}
         ]
     ) 
 
     static page1DemoTiles = new TemplatePage( PageType.tiles, "Tiles",
         [
-            {'id':0,'name':'checklist','data':{name:'Power OFF stalls', items:[{"c":"Clearing Turns+Calls","r":"Made"},{"c":"Visual Reference","r":"Bugged"},{"c":"Altitude","r":"3,000"},{"c":"Power=1,600 Flaps > Full"},{"c":"Hold 65 3s, Level off until stall"},{"c":"Full Power + Right Rudder"},{"c":"Flaps 20 > 10 > 0"},{"c":"ACS HDG/Bank","r":"±10°/20°"}],theme:"blue"}},
-            {'id':1,'name':'airport','data':{'code':'kawo',mode:'list'}},
-            {'id':2,'name':'sunlight','data':{'from':'KRNT','to':'KSFF'}},
-            {'id':3,'name':'fuel'},
-            {'id':4,'name':'notes','data':{}},
-            {'id':5,'name':'radios','data':DemoData.demoRadioData},
+            {name:TileType.checklist,'data':{name:'Power OFF stalls', items:[{"c":"Clearing Turns+Calls","r":"Made"},{"c":"Visual Reference","r":"Bugged"},{"c":"Altitude","r":"3,000"},{"c":"Power=1,600 Flaps > Full"},{"c":"Hold 65 3s, Level off until stall"},{"c":"Full Power + Right Rudder"},{"c":"Flaps 20 > 10 > 0"},{"c":"ACS HDG/Bank","r":"±10°/20°"}],theme:"blue"}},
+            {name:TileType.airport,'data':{'code':'kawo',mode:'list'}},
+            {name:TileType.sunlight,'data':{'from':'KRNT','to':'KSFF'}},
+            {name:TileType.fuel},
+            {name:TileType.notes,'data':{}},
+            {name:TileType.radios,'data':DemoData.demoRadioData},
         ]
     )
 
     static page0DemoDefault = new TemplatePage( PageType.tiles, 'Default',
         [
-            {id:0,name:"airport","data":{"code":"KBFI","rwy":"14L-32R","rwyOrientation":"magnetic","corners":["weather","twr","field","tpa"]}},
-            {id:1,name:"airport","data":{"code":"KSFF","rwy":"04L-22R","rwyOrientation":"vertical","corners":["weather","twr","field","tpa"],"pattern":2}},
-            {id:2,name:"radios","data":DemoData.demoRadioData},
-            {id:3,name:"notes","data":{}},
-            {id:4,name:"atis","data":{}},
-            {id:5,name:"clearance","data":{mode:'dep',airport:'kbfi'}}
+            {name:"airport","data":{"code":"KBFI","rwy":"14L-32R","rwyOrientation":"magnetic","corners":["weather","twr","field","tpa"]}},
+            {name:"airport","data":{"code":"KSFF","rwy":"04L-22R","rwyOrientation":"vertical","corners":["weather","twr","field","tpa"],"pattern":2}},
+            {name:"radios","data":DemoData.demoRadioData},
+            {name:"notes","data":{}},
+            {name:"atis","data":{}},
+            {name:"clearance","data":{mode:'dep',airport:'kbfi'}}
         ]
     )
 
