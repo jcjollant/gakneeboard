@@ -68,5 +68,14 @@ export class TemplatePage {
         this.name = name
         this.data = data
     }
+
+    // Create a template page form its text description
+    static parse(text:string):TemplatePage {
+        const data = JSON.parse(text)
+        // We want at least type and name
+        if( !('type' in data && 'data' in data)) throw new Error('Invalid Page Format');
+        if(!data) return this.SELECTION
+        return new TemplatePage(data.type, data.name, data.data)
+    }
 }
 
