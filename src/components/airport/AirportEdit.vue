@@ -7,7 +7,7 @@
             <div v-else-if="validAirport && displayMode==DisplayModeAirport.OneRunway" class="rwyChoices">
                 <div class="miniSection">Runway</div>
                 <div class="rwySelector">
-                    <Button :label="rwy.name" class="sign" :severity="rwy.name == selectedRwy ? 'primary' : 'secondary'"
+                    <Button :label="rwy.name" class="sign" :severity="rwy.name == selectedRwyName ? 'primary' : 'secondary'"
                         v-for="rwy in rwyList" 
                         @click="selectRunway(rwy.name)"></Button>
                     <!-- <Button label="ALL" class="sign" v-if="rwyList.length > 0"  :severity="selectedRwy == 'all' ? 'primary' : 'secondary'"
@@ -17,7 +17,7 @@
                     <EitherOr v-if="validAirport" v-model="verticalOrientation" either="Vertical" or="Magnetic" class="eoOrientation" />
                 </div>
                 <div class="miniSection">Traffic Pattern</div>
-                <OneChoice v-if="validAirport" v-model="pattern" :choices="patternChoices" :thinpad="true" class="ocTP" />
+                <OneChoice v-if="validAirport" v-model="patternChoice" :choices="patternChoices" :thinpad="true" class="ocTP" />
                 <div class="rwyOrientation">
                     <EitherOr v-if="validAirport" v-model="showHeadings" either="Show Hdg" or="Hide Hdg" class="eoHeadings" />
                 </div>
@@ -29,9 +29,9 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import * as data from '@/assets/data.js'
+import * as data from '../../assets/data.js'
 
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner';
@@ -39,39 +39,42 @@ import ProgressSpinner from 'primevue/progressspinner';
 import ActionBar from '../shared/ActionBar.vue'
 import AirportInput from '../shared/AirportInput.vue'
 import OneChoice from '../shared/OneChoice.vue'
-import { UserUrl } from '@/lib/UserUrl.ts';
+import { OneChoiceValue } from '../../model/OneChoiceValue.ts'
+import { UserUrl } from '../../lib/UserUrl.ts';
 import EitherOr from '../shared/EitherOr.vue';
 import { DisplayModeAirport } from '../../model/DisplayMode';
+import { Airport } from '../../model/Airport.ts';
+import { Runway as RunwayModel } from '../../model/Airport.ts';
 
-let airport = null
+let airport = new Airport()
 const airportCode = ref('')
 const airportName = ref('')
 const emits = defineEmits(['close','selection'])
 const patternChoices = [
-    {label:'T+B',value:0, title:'Both runways with 45° entries'},
-    {label:'T/45', value:1, title:'Top Runway, 45° entry'},
-    {label:'T/M',value:2, title:'Top Runway, Midfield'},
-    {label:'B/45', value:3, title:'Bottom Runway, 45° entry'},
-    {label:'B/M',value:4, title:'Bottom Runway, Midfield'},
-    {label:'None', value:5, title:'None'},
+    new OneChoiceValue('T+B',0,'Both runways with 45° entries'),
+    new OneChoiceValue('T/45', 1, 'Top Runway, 45° entry'),
+    new OneChoiceValue('T/M', 2, 'Top Runway, Midfield'),
+    new OneChoiceValue('B/45', 3, 'Bottom Runway, 45° entry'),
+    new OneChoiceValue('B/M', 4, 'Bottom Runway, Midfield'),
+    new OneChoiceValue('None', 5, 'None'),
 ]
 const loading = ref(false)
-const pattern = ref(patternChoices[0])
+const patternChoice = ref(patternChoices[0])
 const props = defineProps({
-    displayMode: { type: DisplayModeAirport, required: true},
+    displayMode: { type: String, required: true},
     airport: { type: Object, default: null},
     rwyName: { type: String, default: null},
     rwyOrientation: { type: String, default: 'vertical'},
     tp: { type: Number, default: 0},
     showHeadings: { type: Boolean, default: true},
 })
-const rwyList = ref([])
+const rwyList = ref<RunwayModel[]>([])
 const showCancel = ref(false)
 const canApply = ref(false)
 const canCreate = ref(false)
 const validAirport = ref(false)
 const verticalOrientation = ref(true)
-const selectedRwy = ref(null)
+const selectedRwyName = ref('')
 const showCustomAirport = ref(false)
 const showHeadings = ref(true)
 
@@ -82,7 +85,7 @@ const showHeadings = ref(true)
 function loadProps(props) {
     // console.log('[AirportEdit.loadProps] ' + JSON.stringify(props))
     if( props.airport) {
-        airport = props.airport
+        airport = Airport.copy(props.airport)
         showAirport()
         // update edit field value to reflect airport code
         airportCode.value = airport.code;
@@ -91,10 +94,10 @@ function loadProps(props) {
         canApply.value = true;
         // select the first runway by default
         if( props.rwyName) {
-            selectedRwy.value = props.rwyName
+            selectedRwyName.value = props.rwyName
         } else {
-            // console.log( "using first runway")
-            selectedRwy.value = airport.rwys[0].name
+            // Default to first runway name
+            selectedRwyName.value = airport.rwys[0].name
         }
 
         // rwyOrientation.value = orientations[(props.rwyOrientation == 'magnetic' ? 1 : 0)]
@@ -104,7 +107,8 @@ function loadProps(props) {
         // restore show headings
         showHeadings.value = props.showHeadings
     }
-    pattern.value = patternChoices.find( p => p.value == props.tp);
+    // Traffic pattern
+    patternChoice.value = patternChoices.find( p => p.value == props.tp) ?? patternChoices[0];
 }
 
 onMounted(() => {
@@ -119,15 +123,16 @@ watch( props, async() => {
 })
 
 
-function loadAirport( code) {
+function loadAirport( code:string) {
     // console.log('[AirportEdit.loadAirport]', code)
     airportCode.value = code
     airportName.value = '...'
     data.getAirport( code)
-        .then( newAirport => {
+        .then( a => {
+            const newAirport = Airport.copy(a)
             // console.log("[AirportEdit.loadAirport] newAirport", newAirport)
             loading.value = false;
-            if( newAirport && newAirport.version != -1) {
+            if( newAirport.isValid()) {
                 loadAirportData(newAirport)
             } else { // airport is unknown
                 onInvalidAirport(code)
@@ -143,7 +148,7 @@ function loadAirportData(newAirport) {
     // select the first runway by default
     // console.log("[AirportEdit.loadAirport] runways", JSON.stringify(airport.rwys))
     if('rwys' in airport && airport.rwys.length > 0) {
-        selectedRwy.value = airport.rwys[0]['name']
+        selectedRwyName.value = airport.rwys[0]['name']
         canApply.value = true
     } else {
         canApply.value = false
@@ -157,7 +162,7 @@ function onApply() {
     // update settings with orientation
     const orientation = verticalOrientation.value ? 'vertical' : 'magnetic'
     const showHeadingsValue = showHeadings.value
-    emits('selection', airport, selectedRwy.value, orientation, pattern.value.value, showHeadingsValue)
+    emits('selection', airport, selectedRwyName.value, orientation, patternChoice.value.value, showHeadingsValue)
 }
 
 function onCancel() {
@@ -174,7 +179,7 @@ function onCustomUpdated(code, airportData) {
     loadAirport(code)
 }
 
-function onInvalidAirport(code) {
+function onInvalidAirport(code:string) {
     // console.log('[AirportEdit.onInvalidAirport]', code)
     rwyList.value = [];
     airportName.value = "Unknown"
@@ -187,7 +192,7 @@ function onInvalidAirport(code) {
 function selectRunway(rwy) {
     // console.log( "[AirportEdit.selectRunway]", rwy)
     canApply.value = true
-    selectedRwy.value = rwy
+    selectedRwyName.value = rwy
 }
 
 function showAirport() {
