@@ -32,7 +32,7 @@ import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../../assets/Toaster'
 import { PageType } from '../../assets/PageType'
 // import { Template } from '@/assets/Templates'
-import { readPageFromClipboard } from '../../assets/sheetData'
+import { readPageFromClipboard, readTileFromClipboard } from '../../assets/sheetData'
 import { duplicate } from '../../assets/data'
 
 import Button from 'primevue/button'
@@ -112,10 +112,9 @@ async function onEditorAction(ea:EditorAction) {
 
   } else if(ea.action == EditorAction.COPY_TILE_TO_CLIPBOARD) {
 
-    const pageData = model.value.data[ea.offset]
-    pageData['sourceTile'] = ea.offsetTo
+    const tileData = model.value.data[ea.offset].data[ea.offsetTo]
     // grab data and show toast
-    navigator.clipboard.writeText(JSON.stringify(pageData));
+    navigator.clipboard.writeText(JSON.stringify(tileData));
     toaster.success('Editor', 'Tile ' + (ea.offsetTo+1) + ' copied to clipboard')
 
   } else if(ea.action == EditorAction.DUPLICATE_PAGE) {
@@ -162,16 +161,16 @@ async function onEditorAction(ea:EditorAction) {
 
   } else if(ea.action == EditorAction.PASTE_TILE) {
     
-    await readPageFromClipboard().then( page => {
-      if( !('sourceTile' in page)) throw new Error('No source tile found in clipboard')
-      if(model.value) {
-        if( isNaN(ea.offset) || isNaN(ea.offsetTo)) return;
-        // offset has the page number, offsetTo has the tile number
-        // console.log('[App.onEditorAction] pasteTile', ea.offset, ea.offsetTo, page.sourceTile, page)
-        model.value.data[ea.offset].data[ea.offsetTo] = page.data[page.sourceTile];
-        model.value.data[ea.offset].data[ea.offsetTo].id = ea.offsetTo;
-        updatedPages.push(ea.offset)
-      }
+    readTileFromClipboard().then( tile => {
+      console.log('[Editor.onEditorAction]', ea.offset, ea.offsetTo, model.value)
+      if( isNaN(ea.offset) || isNaN(ea.offsetTo) || !model.value) return;
+      // offset has the page number, offsetTo has the tile number
+      // console.log('[App.onEditorAction] pasteTile', ea.offset, ea.offsetTo, page.sourceTile, page)
+      const newPageValue = JSON.parse( JSON.stringify(model.value.data[ea.offset]));
+      newPageValue.data[ea.offsetTo] = tile;
+      model.value.data[ea.offset] = newPageValue
+      // model.value.data[ea.offset].data[ea.offsetTo].id = ea.offsetTo;
+      updatedPages.push(ea.offset)
     }).catch( e => {
         toaster.error('Editor','Cannot Paste Tile' + e)
     }) 
@@ -199,16 +198,15 @@ async function onEditorAction(ea:EditorAction) {
 
     const temp = duplicate(model.value.data[ea.offset].data[tileFrom])
     // console.log('[Editor.onEditorAction]', temp, model.value.data[ea.offset].data[tileTo], tileFrom, tileTo)
-    model.value.data[ea.offset].data[tileFrom] = model.value.data[ea.offset].data[tileTo]
-    model.value.data[ea.offset].data[tileTo] = temp
-    // refresh ids
-    model.value.data[ea.offset].data[tileFrom].id = tileFrom
-    model.value.data[ea.offset].data[tileTo].id = tileTo
+    const newPageValue = JSON.parse( JSON.stringify(model.value.data[ea.offset]));
+    newPageValue.data[tileFrom] = model.value.data[ea.offset].data[tileTo]
+    newPageValue.data[tileTo] = temp
     // reset span and hide
-    model.value.data[ea.offset].data[tileFrom]['span2'] = false
-    model.value.data[ea.offset].data[tileFrom]['hide'] = false
-    model.value.data[ea.offset].data[tileTo]['span2'] = false
-    model.value.data[ea.offset].data[tileTo]['hide'] = false
+    newPageValue.data[tileFrom]['span2'] = false
+    newPageValue.data[tileFrom]['hide'] = false
+    newPageValue.data[tileTo]['span2'] = false
+    newPageValue.data[tileTo]['hide'] = false
+    model.value.data[ea.offset] = newPageValue
     updatedPages.push(ea.offset)
 
   } else {
