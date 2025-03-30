@@ -1,9 +1,10 @@
 <template>
     <div class="modesList">
-        <div v-for="mode in modes" class="choice">
+        <div v-for="(mode,index) in modes" class="choice">
             <Button  :label="mode.label" :severity="mode.value==model ? 'primary' : 'secondary'" class="labelButton"
                 @click="emits('selection', mode.value)"></Button>
-            <div class="expandable" v-if="expandable && mode.expandable" @click="emits('expand')" title="Select mode and expand tile">
+            <div v-if="expandable && mode.expandable" class="expandable" :class="'expand'+index"  title="Select mode and expand tile"
+                @click="emits('expand',mode.value)">
                 <font-awesome-icon class="expandableIcon" icon="fa-solid fa-left-right"></font-awesome-icon>
             </div>
         </div>
