@@ -1,10 +1,11 @@
 
-require('dotenv').config();
+import dotenv from 'dotenv'
+dotenv.config()
 
 //================
 // Metrics
 //================
-import { Metrics } from "../backend/Metrics";
+// import { Metrics } from "../backend/Metrics";
 // Metrics.airports().then(metrics => {
 //     for(const metric of metrics)
 //         console.log(metric.name, metric.value)
@@ -18,10 +19,10 @@ import { Metrics } from "../backend/Metrics";
 //     console.log(metric.name, metric.value)
 // })
 // Users Metrics
-Metrics.users().then( output => {
-    console.log(output)
-    console.log(JSON.stringify(output))
-})
+// Metrics.users().then( output => {
+//     console.log(output)
+//     console.log(JSON.stringify(output))
+// })
 // Template Details
 // Metrics.templateDetails().then(metrics => {
 //     for(const metric of metrics)
@@ -96,32 +97,43 @@ Metrics.users().then( output => {
 
 //===============================================================================
 // Update all airports that do not have a sketch, with version 15 and are current
-// import { sql } from "@vercel/postgres";
-// import { AirportSketch } from "../backend/AirportSketch";
-// import { AirportDao } from "../backend/AirportDao";
-// import { Airport } from "../backend/models/Airport";
-// import { Adip } from "../backend/adip/Adip";
+import { sql } from "@vercel/postgres";
+import { AirportSketch } from "../backend/AirportSketch";
+import { AirportDao } from "../backend/AirportDao";
+import { Airport } from "../backend/models/Airport";
+import { Adip } from "../backend/adip/Adip";
 // declare and execute
-// async function doIt() {
-//     const response = await sql`SELECT * FROM airports where sketch isnull and version=15`
-//     console.log('found rows', response.rowCount)
-//     await new Promise(resolve => setTimeout(resolve, 2000))
-//     for(const row of response.rows) {
-//         const airport = AirportDao.parse(row)
-//         airport.code = row.code
-//         console.log('Getting', airport.code)
-//         if(airport.effectiveDate != Adip.currentEffectiveDate) {
-//             console.log('skipping', airport.code)
-//             continue;
-//         }
-//         await AirportSketch.get(airport)
-
-//         // wait random time between 1 and 5 seconds
-//         const time = Math.floor(Math.random() * 4000) + 1000
-//         console.log('Waiting', time, 'ms')
-//         await new Promise(resolve => setTimeout(resolve, time))
-//     }
-// }
-// doIt().then(() => {
-//     console.log('done')
-// })
+async function doIt() {
+    let updated = 0;
+    const response = await sql`select * from airports where sketch ISNULL and version != -1`
+    // const response = await sql`SELECT * FROM airports where sketch isnull and version=15`
+    console.log('found rows', response.rowCount)
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    for(const row of response.rows) {
+        const airport = AirportDao.parse(row)
+        airport.code = row.code
+        console.log('Getting', airport.code)
+        // if(airport.effectiveDate != Adip.currentEffectiveDate) {
+        //     console.log('skipping', airport.code)
+        //     continue;
+        // }
+        if(!airport.iap || airport.iap.length < 1) {
+            console.log('skipping', airport.code)
+            continue;
+        }
+        const before = airport.iap[0].pdf
+        const iap = before.split('/')[1]
+        airport.iap[0].pdf = '2503/' + iap
+        console.log('airport', airport.code, 'before', before, 'after', airport.iap[0].pdf)
+        await AirportSketch.resolve(airport)
+        updated++;
+        // wait random time between 1 and 5 seconds
+        const time = Math.floor(Math.random() * 4000) + 3000
+        console.log('updated', updated, 'out of', response.rowCount)
+        console.log('Waiting', time, 'ms')
+        await new Promise(resolve => setTimeout(resolve, time))
+    }
+}
+doIt().then(() => {
+    console.log('done')
+})
