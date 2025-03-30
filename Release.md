@@ -1,4 +1,8 @@
-## 03/28/2025
+## 03/29/2025 5134
+* Disabled auto diagram
+* Checking users for invalid source
+* Checking airports without diagram
+## 03/28/2025 5133
 * Re-Enabled auto Diagram
 ## 03/27/2025 5132
 * Allowing for maxTemplate override
