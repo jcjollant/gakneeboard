@@ -84,7 +84,7 @@ const templateModified = ref(false)
 const toaster = useToaster(useToast())
 
 onMounted(() =>{
-  // console.log('[Template.onMounted]')
+  // console.log('[TemplateViewer.onMounted]')
   try {
     const templateId = Number(route.params.id) || 0
     if(templateId) {
@@ -151,7 +151,7 @@ function getTemplateName() {
 
 // update all widgets with provided data
 function loadTemplate(template:Template,saveToLocalStorage:boolean=false) {
-  // console.log( '[Template.loadTemplate]', typeof data, JSON.stringify(sheet))
+  // console.log( '[TemplateViewer.loadTemplate]', typeof data, JSON.stringify(sheet))
 
   // if we don't know what to show, we load a copy of the demo page
   if( template.isInvalid()) {
@@ -166,10 +166,10 @@ function loadTemplate(template:Template,saveToLocalStorage:boolean=false) {
   template.data = data
 
   activeTemplate.value = template;
-  // console.log('[Template.loadTemplate] template version', JSON.stringify(template.ver))
+  // console.log('[TemplateViewer.loadTemplate] template version', JSON.stringify(template.ver))
   updateOffsets()
 
-  // console.log('[Template.loadTemplate]', offset.value, offsetLast.value)
+  // console.log('[TemplateViewer.loadTemplate]', offset.value, offsetLast.value)
 
   // asynchronous localstorage maintenance
   setTimeout( async() => {
@@ -236,7 +236,7 @@ function onExported(format:any) {
   toaster.info( 'Exporting', activeTemplate.value.name)
   TemplateData.export(activeTemplate.value, format).then( eo => {
     // create file link in browser's memory
-    // console.log('[Teamplate.onExported] blob', eo.blob.size)
+    // console.log('[TemplateViewer.onExported] blob', eo.blob.size)
     const link = document.createElement('a')
     link.href = URL.createObjectURL(eo.blob)
     link.download = eo.filename
@@ -252,7 +252,7 @@ function onExported(format:any) {
 function onOffset(newOffset:number) {
   // console.log('[Template.onOffset]', newOffset, offsetLast.value)
   if(newOffset < 0 || newOffset > offsetLast.value){
-    console.log('[Template.onOffset] invalid offset', newOffset)
+    // console.log('[TemplateViewer.onOffset] invalid offset', newOffset)
     return;
   } 
 
@@ -261,13 +261,12 @@ function onOffset(newOffset:number) {
 }
 
 function onPageUpdate(index:number, pageData:TemplatePage) {
-  // console.log('[Template.onPageUpdate] index', pageData)
+  // console.log('[TemplateViewer.onPageUpdate]', index, pageData)
   templateModified.value = true
 
-  // save template data for that pages
+  // save template data for that page
   activeTemplate.value.data[index] = pageData
-  // Only update templates for changes pertaining to the first page and while a template is not new
-  // console.log('[Template.onPageUpdate]', route.params.id)
+
   // save template locally
   saveTemplateToLocalStore()
 }
