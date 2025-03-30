@@ -8,7 +8,9 @@ import { UserDao } from "./dao/UserDao";
 import { TemplateDao } from "./TemplateDao";
 import { User } from "./models/User";
 
-require('dotenv').config();
+import dotenv from 'dotenv'
+import { UserTools } from "./UserTools";
+dotenv.config()
 
 export class Check {
     name:string;
@@ -121,12 +123,30 @@ export class HealthCheck {
         return check
     }
 
+    static async users():Promise<Check> {
+        const check:Check = new Check('users')
+        const users:User[] = await new UserDao().getAll()
+        const count:number = users.length
+        const unknownSources = users.reduce( (acc, user:User) => {
+            if( UserTools.hasValidSource(user)) return acc;
+            return acc + 1
+        }, 0)
+        if( unknownSources > 0) {
+            check.fail(`${unknownSources} of ${count} have invalid sources`)
+        } else {
+            check.pass( `${count} users have valid a source`)
+        }
+        return check
+    
+    }
+
     public static async perform():Promise<Check[]> {
         return await Promise.all([
                 HealthCheck.effectiveDateCheck(), 
                 HealthCheck.environmentVariables(),
                 HealthCheck.airportDuplicatesCheck(),
-                HealthCheck.availablePublicationsCheck()
+                HealthCheck.availablePublicationsCheck(),
+                HealthCheck.users()
             ])
     }
 }

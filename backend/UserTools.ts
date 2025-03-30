@@ -146,4 +146,8 @@ export class UserTools {
         }
         return undefined
     }
+
+    public static hasValidSource(user:User):boolean {
+        return user.source === UserTools.google || user.source === UserTools.apple || user.source === UserTools.facebook
+    }
 }
