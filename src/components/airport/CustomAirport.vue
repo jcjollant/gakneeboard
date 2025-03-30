@@ -79,8 +79,8 @@ function onAddRunway() {
       if( Runway.isValidName(rwyName)) {
             const runway = new Runway(rwyName,rwyLength.value,rwyWidth.value)
             // console.log( "[CustomAirport.onAddRunway] Traffic patterns", rwyEnd0.value, rwy0RightPattern.value, rwyEnd1.value, rwy1RightPattern.value)
-            runway.setTrafficPattern( rwyEnd0.value, rwy0RightPattern.value ? Runway.rightPattern : Runway.leftPattern)
-            runway.setTrafficPattern( rwyEnd1.value, rwy1RightPattern.value ? Runway.rightPattern : Runway.leftPattern)
+            runway.setTrafficPattern( rwyEnd0.value, rwy0RightPattern.value ? TrafficPattern.right : TrafficPattern.left)
+            runway.setTrafficPattern( rwyEnd1.value, rwy1RightPattern.value ? TrafficPattern.right : TrafficPattern.left)
             runways.value.push(runway)
 
             rwyEnd0.value = ''
