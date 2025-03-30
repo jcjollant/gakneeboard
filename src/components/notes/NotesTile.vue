@@ -70,8 +70,13 @@ let wordBeforeEdit = ''
 
 function loadProps(props:any) {
     // console.log('[NotesTile.loadProps] ' + JSON.stringify(props))
-    // restore display mode without update
-    changeDisplayMode(props?.params?.mode,false)
+
+    // restore display mode
+    let newMode = props?.params?.mode ?? DisplayModeNotes.Blank
+    // For compatibility Craft => Word
+    if(newMode == DisplayModeNotes.Craft_deprecated) newMode = DisplayModeNotes.Word
+    displayMode.value = newMode
+    
     // Restore custom word
     word.value = props?.params?.word ?? 'CRAFT'
     compassHeading.value = props?.params?.comp ?? true
@@ -91,34 +96,32 @@ watch( props, async() => {
 })
 
 
-function changeDisplayMode(newMode:DisplayModeNotes,update=true) {
+function changeDisplayMode(newMode:DisplayModeNotes,expand:boolean=false) {
     // console.log('[NotesTiles.changeMode]', newMode)
     // Crap in => default out
     if(!newMode) newMode = DisplayModeNotes.Blank
-    // For compatibility Craft => Word
-    if(newMode == DisplayModeNotes.Craft_deprecated) newMode = DisplayModeNotes.Word
 
     displayMode.value = newMode
     displaySelection.value = false;
     editMode.value = false
 
-    if(update) emitUpdate()
+    emitUpdate(expand)
 }
 
-function emitUpdate() {
+function emitUpdate(expand:boolean) {
     // save non default data
     const data = {}
     if(displayMode.value != DisplayModeNotes.Blank) data['mode'] = displayMode.value
     if(word.value.length) data['word'] = word.value
     if(compassHeading.value != true) data['comp'] = compassHeading.value
 
-    emits('update', data)
+    emits(expand?'expand':'update', data)
 }
 
 function onEditApply() {
     // console.log('NotesTiles.onEditApply]', word.value)
     editMode.value = false;
-    emitUpdate()
+    emitUpdate(false)
 }
 
 function onEditCancel() {
@@ -134,8 +137,7 @@ function onEditMode() {
 }
 
 function onExpand() {
-    changeDisplayMode(DisplayModeNotes.Blank)
-    emits('expand')
+    changeDisplayMode(DisplayModeNotes.Blank, true)
 }
 
 </script>
