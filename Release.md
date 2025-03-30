@@ -1,4 +1,8 @@
 # User Experience updates
+## 03/30/2025 5140
+* Airport Tile expand mode for diagram + convenience button
+* Can expand Flight Categories and cloud clearance
+* Radio Tile expand mode for Frequency LIst
 ## 03/24/2025 5130
 * Airport Tile + Display Modes and Diagram
 * Airport Edit simplified for List and Diagram
