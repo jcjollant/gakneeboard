@@ -14,6 +14,11 @@ export class AirportDao {
         return Number(result.rows[0].count)
     }
 
+    public static async countMissingSketches():Promise<number> {
+        const result = await sql `SELECT COUNT(*) FROM airports WHERE sketch ISNULL AND version > -1`
+        return Number(result.rows[0].count)
+    }
+
     public static async countValid():Promise<number> {
         const result = await sql`SELECT count(*) FROM Airports WHERE version > -1`;
         return Number(result.rows[0].count)

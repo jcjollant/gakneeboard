@@ -10,6 +10,7 @@ import { User } from "./models/User";
 
 import dotenv from 'dotenv'
 import { UserTools } from "./UserTools";
+import { all } from "axios";
 dotenv.config()
 
 export class Check {
@@ -38,16 +39,23 @@ export class Check {
 
 export class HealthCheck {
 
-    static async airportDuplicatesCheck():Promise<Check> {
-        const check:Check = new Check('airportDuplicates')
-        await AirportDao.countDuplicates().then( (count:number) => {
-            if( count > 0) {
-                check.fail("Found " + count + " duplicates")
-            } else {
-                check.pass( "No duplicates found")
-            }
-        })
-        return check
+    static async airportChecks():Promise<Check[]> {
+        const dupeCheck:Check = new Check('airportDuplicates')
+        const dupeCount = await AirportDao.countDuplicates()
+        if( dupeCount > 0) {
+            dupeCheck.fail("Found " + dupeCount + " duplicates")
+        } else {
+            dupeCheck.pass( "No duplicates found")
+        }
+
+        const missingSketchesCount = await AirportDao.countMissingSketches()
+        const missingSketches:Check = new Check('airportMissingSketches')
+        if( missingSketchesCount > 0) {
+            missingSketches.fail("Found " + missingSketchesCount + " airports missing sketches")
+        } else {
+            missingSketches.pass( "No airports missing sketches")
+        }
+        return [dupeCheck, missingSketches]
     }
 
     // figure out if the data is stale
@@ -141,12 +149,14 @@ export class HealthCheck {
     }
 
     public static async perform():Promise<Check[]> {
-        return await Promise.all([
-                HealthCheck.effectiveDateCheck(), 
-                HealthCheck.environmentVariables(),
-                HealthCheck.airportDuplicatesCheck(),
-                HealthCheck.availablePublicationsCheck(),
-                HealthCheck.users()
-            ])
+        const airportChecks = await HealthCheck.airportChecks()
+        const allChecks = await Promise.all([
+            HealthCheck.effectiveDateCheck(), 
+            HealthCheck.environmentVariables(),
+            HealthCheck.availablePublicationsCheck(),
+            HealthCheck.users()
+        ])
+        allChecks.push(...airportChecks)
+        return allChecks
     }
 }

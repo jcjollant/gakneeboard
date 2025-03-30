@@ -5,8 +5,16 @@ dotenv.config()
 //============
 // Users Check
 import { HealthCheck } from "../backend/HealthChecks";
-HealthCheck.users() .then( check => {
-    console.log(check.name, check.status, check.msg)
+// HealthCheck.users() .then( check => {
+//     console.log(check.name, check.status, check.msg)
+// })
+
+//===============
+// Airports Check
+HealthCheck.airportChecks().then( checks => {
+    for(const check of checks) {
+        console.log(check.name, check.status, check.msg)
+    }
 })
 
 //============
