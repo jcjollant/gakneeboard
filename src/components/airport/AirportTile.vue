@@ -4,7 +4,7 @@
         <Header :title="title" :showReplace="editMode"
             @replace="emits('replace')" @display="displaySelection=!displaySelection" @title="onHeaderClick"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList" :expandable="!expanded"
-            @selection="changeMode" />
+            @selection="changeMode" @expand="onExpand" />
         <AirportEdit v-else-if="editMode" :displayMode="displayMode" :airport="airportData" :rwyName="runwayName" :rwyOrientation="rwyOrientation" :tp="patternMode" :showHeadings="showHeadings"
             @close="onHeaderClick" @selection="onSettingsUpdate" />
         <div v-else-if="displayMode==DisplayModeAirport.RunwayList" class="tileContent clickable"  @click="onHeaderClick">
@@ -65,7 +65,7 @@
     </div>    
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {ref, onMounted, watch} from 'vue';
 import { getAirport, getFreqCtaf, getFreqWeather} from '../../assets/data.js'
 import { Formatter } from '../../lib/Formatter.ts'
@@ -73,22 +73,23 @@ import { DisplayModeAirport, DisplayModeChoice } from '../../model/DisplayMode';
 
 import AirportEdit from './AirportEdit.vue';
 import Corner from './Corner.vue';
-import CornerStatic from '@/components/shared/CornerStatic.vue';
+import CornerStatic from '../../components/shared/CornerStatic.vue';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../../components/shared/Header.vue'
 import PlaceHolder from '../../components/shared/PlaceHolder.vue'
 import Runway from './Runway.vue'
+import { Airport, Runway as RunwayModel } from '../../model/Airport.ts';
 
 const defaultMode = DisplayModeAirport.OneRunway
 const displayMode = ref(defaultMode)
 const displaySelection = ref(false)
-const emits = defineEmits(['replace','update'])
+const emits = defineEmits(['expand','replace','update'])
 const expanded = ref(false)
 const editMode = ref(false)
 const modesList = ref([
-    new DisplayModeChoice('Runway Sketch', DisplayModeAirport.OneRunway, false),
+    new DisplayModeChoice('Runway Sketch', DisplayModeAirport.OneRunway, true),
     new DisplayModeChoice('Runway List', DisplayModeAirport.RunwayList),
-    new DisplayModeChoice('Airport Diagram', DisplayModeAirport.Diagram),
+    new DisplayModeChoice('Airport Diagram', DisplayModeAirport.Diagram, true),
 ])
 const title = ref('')
 const weatherFreq = ref('')
@@ -96,11 +97,12 @@ const weatherType = ref()
 const elevation = ref()
 const tpa = ref()
 const airportCode = ref('') // used during edit mode
-const rwyList = ref([]) // used during runway selection
+const rwyList = ref<RunwayModel[]>([]) // used during runway selection
 const rwySketch = ref('')
-const allEndings = ref([]) // used when displaying all runways
+const allEndings = ref<HybridEnding[]>([]) // used when displaying all runways
 
-const selectedRunway = ref(null)
+const noRunway = new RunwayModel()
+const selectedRunway = ref(noRunway)
 const airportData = ref()
 const patternMode = ref(0)
 const runwayName = ref('')
@@ -114,9 +116,6 @@ const defaultTitle = 'Airport'
 const corners = ref(defaultCornerFields)
 const unknownRunway = ref(false)
 
-
-var state = {}
-
 //-----------------------------------------------------
 // Props Management
 const props = defineProps({
@@ -124,18 +123,28 @@ const props = defineProps({
     span2: {type: Boolean, default: false},
 })
 
+interface AirportData {
+    code: string
+    rwy: string
+    pattern: number
+    corners: string[]
+    rwyOrientation: string
+    headings: boolean
+    mode: DisplayModeAirport
+}
+
 // load props can happen on initial load or when settings are changed
 // 1) Airport Code 2) Selected Runway 3) patternMode 4) Corners and 5) Runway orientation
-function loadProps(newProps) {
+function loadProps(newProps:any) {
     // console.log('[AirportTile.loadProps] ' + JSON.stringify(newProps))
-    state = newProps.params;
-    if( !state) {
-        console.log( 'Airport cannot load params ' + JSON.stringify(state))
+    const params = newProps.params;
+    if( !params) {
+        console.log( 'Airport cannot load params ' + JSON.stringify(params))
         return
     }
 
     // console.log('Airport loadProps ' + JSON.stringify(newProps))
-    const code = state.code
+    const code = params.code
     // Force edit mode if we don't have an airport yet
     if( !code) {
         title.value = defaultTitle
@@ -144,16 +153,16 @@ function loadProps(newProps) {
     }
 
     // #2 Runway
-    runwayName.value = state?.rwy ?? ''
+    runwayName.value = params?.rwy ?? ''
 
     // #3 Pattern mode
-    patternMode.value = state?.pattern ?? defaultPatternMode
+    patternMode.value = params?.pattern ?? defaultPatternMode
 
     // #3.5 Show headings
-    showHeadings.value = state?.headings ?? true;
+    showHeadings.value = params?.headings ?? true;
 
     // #4 Restore corner fields
-    let cornerFields = state.corners
+    let cornerFields = params.corners
     if( !cornerFields) {
         // console.log('AirportTile loading default cornerFields')
         cornerFields = defaultCornerFields;
@@ -165,21 +174,22 @@ function loadProps(newProps) {
     // console.log('AirportTile loaded corners ' + JSON.stringify(corners))
 
     // #5 Rwy orientation
-    rwyOrientation.value = state?.rwyOrientation ?? defaultRwyOrientation;
+    rwyOrientation.value = params?.rwyOrientation ?? defaultRwyOrientation;
 
     // #6 display mode
-    displayMode.value = state?.mode ?? defaultMode
+    displayMode.value = params?.mode ?? defaultMode
 
     // load data for this airport
     title.value = "Loading " + code + '...'
     getAirport( code, true)
-        .then(airport => {
+        .then(a => {
             // Refresh with that data to get immediate visuals
+            const airport = Airport.copy(a)
             onNewAirport(airport)
 
             // is there a follow up request?
-            if(!airport || !airport.promise) return;
-            airport.promise.then((outcome) => {
+            if(!a || !a.promise) return;
+            a.promise.then((outcome) => {
                 // console.log( '[AirportTile.loadProps] outcome', JSON.stringify(outcome))
                 // if data was not current, load new version
                 if(!outcome.current && outcome.airport){
@@ -208,46 +218,55 @@ watch( props, async() => {
 // End of props management
 //--------------------------
 
-function changeMode(newMode) {
+function changeMode(newMode:DisplayModeAirport, expand:boolean=false) {
     // console.log('[AirportTile.changeMode]', newMode, editMode.value)
     displaySelection.value = false;
     displayMode.value = newMode
     // Edit mode is only needed when there is no airport
     editMode.value = !airportData.value
 
-    // remove expanded in list mode
-    if( expanded.value && newMode == DisplayModeAirport.RunwayList) expanded.value = false;
+    updateData(expand)
+}
 
-    state.mode = newMode
-
-    updateData()
+class HybridEnding {
+    name: string
+    width: number
+    length: number
+    pattern: string
+    freq: number
+    constructor(name:string, width:number, length:number, pattern:string, freq:number) {
+        this.name = name
+        this.width = width
+        this.length = length
+        this.pattern = pattern
+        this.freq = freq
+    }
 }
 
 
-function getEnding(rwy, endIndex, freq) {
+function getEnding(rwy:RunwayModel, endIndex:number, freq):HybridEnding {
     // console.log('getEnding ' + JSON.stringify(rwy) + ' / ' + ending)
-    const output = {}
+    let output:HybridEnding
     try {
         const end = rwy.ends[endIndex]    
-        output['name'] = end.name
-        output['width'] = rwy.width
-        output['length'] = rwy.length
-        output['pattern'] = end.tp == 'L' ? 'LP' : 'RP'
+        const pattern = end.tp == 'L' ? 'LP' : 'RP'
+        let frequency = 0
         if( 'freq' in rwy) {
-            output['freq'] = rwy.freq;
-        } 
-        else if( freq) {
-            output['freq'] = freq ? freq.mhz : '-'
+            frequency = rwy.freq;
+        } else if( freq) {
+            frequency = freq.mhz
         }
+        return new HybridEnding( end.name, rwy.width, rwy.length, pattern, frequency)
     } catch( error) {
         console.log('[AirportTile.getEnding]', error)
     }
 
-    return output
+    return new HybridEnding( '', 0, 0, '', 0)
 }
 
-function getEndings(rwys, freq) {
-    const output = []
+// builds a list of all endings
+function getEndings(rwys:RunwayModel[], freq):HybridEnding[] {
+    const output:HybridEnding[] = []
     if( !rwys) return output;
     
     rwys.forEach((rwy) => {
@@ -258,6 +277,7 @@ function getEndings(rwys, freq) {
             output.push( getEnding(rwy,1,freq))
         }
     })
+    // sort endinds by name
     output.sort( (a,b) => { return a.name.localeCompare( b.name)})
     return output
 }
@@ -282,6 +302,11 @@ function onCornerUpdate( index, field) {
     }
 }
 
+function onExpand(mode:string) {
+    // console.log('[AirportTile.onExpand]', mode)
+    changeMode(mode as DisplayModeAirport, true)
+}
+
 // Toggle between edit mode and current mode
 function onHeaderClick() {
     if(displaySelection.value) return;
@@ -301,12 +326,12 @@ function onHeaderClick() {
 }    
 
 // consider new airport and its data
-function onNewAirport(airport) {
+function onNewAirport(airport:Airport) {
     if( airport && 'rwys' in airport) {
         rwyList.value = airport.rwys
         showAirport(airport)
         if(displayMode.value == DisplayModeAirport.OneRunway) {
-            showRunway( state.rwy ?? airport.rwys[0].name)            
+            showRunway( runwayName.value ?? airport.rwys[0].name)            
         }
     } else { // no data for this airport
         // console.log('No data came out of get airport ' + code)
@@ -317,24 +342,22 @@ function onNewAirport(airport) {
 }
 
 // Settings have been updated in edit mode
-function onSettingsUpdate( newAirport, newRunway, newOrientation, newPatternMode, newShowHeadings) {
+function onSettingsUpdate( newAirport:Airport, newRunway, newOrientation:string, newPatternMode, newShowHeadings) {
     // console.log( '[AirportTile.onSettingsUpdate] airport', JSON.stringify(newAirport))
     // console.log( '[AirportTile.onSettingsUpdate] newRunway', JSON.stringify(newRunway))
     // console.log( '[AirportTile.onSettingsUpdate] newOrientation', JSON.stringify(newOrientation))
     // console.log( '[AirportTile.onSettingsUpdate] newShowHeading', newShowHeadings)
+    // Close edit mode
     editMode.value = false
+
     props.params.code = newAirport.code;
     airportData.value = newAirport;
-    state.pattern = newPatternMode
     patternMode.value = newPatternMode;
     showHeadings.value = newShowHeadings
-    state.headings = newShowHeadings
+    rwyOrientation.value = newOrientation
     showAirport( newAirport)
-
-    props.params.rwy = newRunway
-    props.params.rwyOrientation = newOrientation
-    showRunway(newRunway)
-
+    showRunway( newRunway)
+    
     updateData()
 }
 
@@ -363,7 +386,7 @@ function showAirport( airport) {
 }
 
 // Show a runway from its name in the airport
-function showRunway(name) {
+function showRunway(name:string) {
     // console.log( 'Airport showRunway ' + name)
     const rwyData = airportData.value.rwys.find((rwy) => rwy.name == name)
     // console.log( '[AirportTile.showRunway]', JSON.stringify(rwyData))
@@ -378,12 +401,22 @@ function showRunway(name) {
 }
 
 // invoked whenever we want to save the current state
-function updateData() {
+function updateData(expand:boolean=false) {
+    const state:AirportData = {
+        code: airportCode.value,
+        rwy: runwayName.value,
+        pattern: patternMode.value,
+        corners: corners.value,
+        rwyOrientation: rwyOrientation.value,
+        headings: showHeadings.value,
+        mode: displayMode.value
+    }
+
     if( corners) { 
         state['corners'] = corners.value
     }
     // console.log( 'Airport widget updated with ' + JSON.stringify(airportParam));
-    emits('update', state);
+    emits( expand ? 'expand' : 'update', state);
 }
 
 </script>
