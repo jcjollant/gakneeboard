@@ -25,24 +25,26 @@ export class AirportSketch {
     try {
         // Get PDF from aeronav
         const pdfName = pdf;
-        const pdfBuffer = await Charts.getAeronavPdf(pdfName);
+        // const pdfBuffer = await Charts.getAeronavPdf(pdfName);
         // .teh.catch((error) => {
         //   // console.log('[AirportSketch.get] failed to get', pdfName, error)
         //   throw new Error(`failed to get ${pdfName} from aeronav`);
         // });
-        console.log( "[AirportSketch.get] found pdf", pdfName, "length", pdfBuffer.length);
+        // console.log( "[AirportSketch.get] found pdf", pdfName, "length", pdfBuffer.length);
 
         // turn PDF into PNG
-        const pngBuffer = await AirportSketch.pdfFirstPageToPng(pdfBuffer);
-        console.log("[AirportSketch.get] created png size", pngBuffer.length);
+        // const pngBuffer = await AirportSketch.pdfFirstPageToPng(pdfBuffer);
+        // console.log("[AirportSketch.get] created png size", pngBuffer.length);
 
         // extract sketch from PNG
         const response = await axios.post(
-            "https://gak-sketcher.vercel.app/api", 
-            pngBuffer, {
-            headers: { "Content-Type": "image/png" },
-            responseType: "arraybuffer",
-          })
+            // "https://gak-sketcher.vercel.app/api", 
+            "http://localhost:3000/api",
+            {pdf:pdf}, 
+            {
+              headers: { "Content-Type": "image/png" },
+              responseType: "arraybuffer",
+            })
         console.log( "[AirportSketch.get] completed for", airportCode, "size", response.data.length);
         return await AirportSketch.save(airportCode, response.data);
     } catch (error) {
