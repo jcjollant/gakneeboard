@@ -145,8 +145,8 @@ const expanded = ref(false)
 const modesList = ref([
     new DisplayModeChoice('Full Size ATIS', DisplayModeAtis.FullATIS, true),
     new DisplayModeChoice('Compact ATIS (x4)', DisplayModeAtis.CompactATIS),
-    new DisplayModeChoice('Flight Categories', DisplayModeAtis.Categories),
-    new DisplayModeChoice('Cloud Clearance', DisplayModeAtis.CloudClearance),
+    new DisplayModeChoice('Flight Categories', DisplayModeAtis.Categories, true),
+    new DisplayModeChoice('Cloud Clearance', DisplayModeAtis.CloudClearance, true),
 ])
 const props = defineProps({
     params: { type: Object, default: null}, // expects {'mode':'compact'}
@@ -181,12 +181,12 @@ watch( props, async() => {
 // End of Props management
 
 
-function changeMode(newMode:DisplayModeAtis) {
+function changeMode(newMode:DisplayModeAtis,expand:boolean=false) {
     // console.log('[Atis.changeMode]', newMode)
     displayMode.value = newMode
     displaySelection.value = false;
-    const params = {mode:newMode}
-    emits('update', params)
+    const state = {mode:newMode}
+    emits(expand?'expand':'update', state)
 }
 
 function cycleMode() {
@@ -207,9 +207,8 @@ function getTitle() {
     }
 }
 
-function onExpand() {
-    changeMode(DisplayModeAtis.FullATIS)
-    emits('expand')
+function onExpand(mode:DisplayModeAtis) {
+    changeMode(mode, true)
 }
 
 
