@@ -66,25 +66,23 @@ export class HealthCheck {
         // Force an Adip Check
         await Promise.all([AirportDao.readList( [rentonCode]),Adip.fetchAirport(rentonCode,false)]).then((results) => {
             try {
-                const rentonDb:Airport = results[0][0][1]
-                const rentonAdip:Airport|undefined = results[1]
 
-                if( !rentonDb) {
-                    check.fail(rentonCode + " is not in the database")
-                } else if( !rentonAdip) {
-                    check.fail(rentonCode + " is not in ADIP")
-                } else if( !('effectiveDate' in rentonDb)){
-                    check.fail(rentonCode + " does not have effectiveDate in database")
-                } else if( !('effectiveDate' in rentonAdip)){
-                    check.fail(rentonCode + " does not have effectiveDate in ADIP")
-                } else if(rentonDb.effectiveDate != rentonAdip.effectiveDate) {
-                    check.fail("effective date mismatch db=" + rentonDb.effectiveDate + ", ADIP=" + rentonAdip.effectiveDate)
-                } else if( rentonAdip.effectiveDate != Adip.currentEffectiveDate) {
-                    check.fail("effective date mismatch ExpectedADIP=" + Adip.currentEffectiveDate + ", ActualADIP=" + rentonAdip.effectiveDate)
-                } else {
-                    check.pass("Matching " + rentonDb.effectiveDate)
-                    // console.log("effective date check match : " + rentonDb.effectiveDate)
-                }
+                if( results[0].length == 0) throw new Error(rentonCode + " is not in the database")
+
+                const rentonDb:Airport = results[0][0].airport
+                if( rentonDb.version == -1) throw new Error(rentonCode + " version is invalid")
+
+                const rentonAdip:Airport|undefined = results[1]
+                if( !rentonAdip) throw new Error(rentonCode + " is not in ADIP")
+
+                if(rentonDb.effectiveDate != rentonAdip.effectiveDate) {
+                    throw new Error("effective date mismatch db=" + rentonDb.effectiveDate + ", ADIP=" + rentonAdip.effectiveDate)
+                } 
+                if( rentonAdip.effectiveDate != Adip.currentEffectiveDate) {
+                    throw new Error("effective date mismatch ExpectedADIP=" + Adip.currentEffectiveDate + ", ActualADIP=" + rentonAdip.effectiveDate)
+                } 
+
+                check.pass("Matching " + rentonDb.effectiveDate)
             } catch(e) {
                 check.fail(JSON.stringify(e))
             }

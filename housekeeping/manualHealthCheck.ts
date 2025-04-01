@@ -11,10 +11,14 @@ import { HealthCheck } from "../backend/HealthChecks";
 
 //===============
 // Airports Check
-HealthCheck.airportChecks().then( checks => {
-    for(const check of checks) {
-        console.log(check.name, check.status, check.msg)
-    }
+// HealthCheck.airportChecks().then( checks => {
+//     for(const check of checks) {
+//         console.log(check.name, check.status, check.msg)
+//     }
+// })
+
+HealthCheck.effectiveDateCheck().then( check => {
+    console.log(check.name, check.status, check.msg)
 })
 
 //============

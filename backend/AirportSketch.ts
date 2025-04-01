@@ -39,7 +39,7 @@ export class AirportSketch {
         // extract sketch from PNG
         const response = await axios.post(
             // "https://gak-sketcher.vercel.app/api", 
-            "http://localhost:3000/api",
+            "http://localhost:3001/api",
             {pdf:pdf}, 
             {
               headers: { "Content-Type": "image/png" },
