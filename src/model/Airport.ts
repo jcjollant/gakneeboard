@@ -11,20 +11,25 @@ class AirportFrequency {
     }
 }
 
+enum TrafficPattern {
+    left = 'L',
+    right = 'R',
+}
+
 export class RunwayEnd {
     name: string;
     mag: number;
-    tp: string; 
+    tp: TrafficPattern; 
     /**
      * @param name This runway end name, should start with RP if this is a Right pattern 
      * @param orientation Magnetic orientation of the runway
      */
     constructor(name:string, orientation:number) {
         if( name.startsWith('RP')) {
-            this.tp = Runway.rightPattern
+            this.tp = TrafficPattern.right
             this.name = name.substring(2);
         } else {
-            this.tp = Runway.leftPattern
+            this.tp = TrafficPattern.left
             this.name = name;
         }
         this.setMagneticOrientation(orientation);
@@ -32,9 +37,6 @@ export class RunwayEnd {
 
     setMagneticOrientation(value:number) {
         this.mag = value % 360;
-    }
-    setRightPattern(really:boolean=true) {
-        this.tp = really ? Runway.rightPattern : Runway.leftPattern;
     }
 }
 
@@ -45,6 +47,10 @@ export class RunwaySurface {
         this.type = type;
         this.cond = condition;
     }
+    static copy(from:any):RunwaySurface|undefined {
+        if(!from) return undefined;
+        return new RunwaySurface(from.type, from.cond)
+    }
 }
 
 export class Runway {
@@ -54,14 +60,14 @@ export class Runway {
     ends: RunwayEnd[];
     surface: RunwaySurface|undefined;
     freq: number;
-    public static rightPattern:string = 'R';
-    public static leftPattern:string = 'L';
+    // public static rightPattern:string = 'R';
+    // public static leftPattern:string = 'L';
 
-    constructor(name:string, length:number, width:number) {
+    constructor(name:string='', length:number=0, width:number=0) {
         this.name = name;
         this.length = length;
         this.width = width;
-        const ends:string[]  = name.split('-')
+        const ends:string[] = name.length ? name.split('-') : []
         this.ends = []
         this.ends.push( ...ends.map( (end) =>  new RunwayEnd(end, parseInt(end)*10) ) ); 
         this.freq = 0;
@@ -92,19 +98,10 @@ export class Runway {
         return undefined
     }
 
-    public setTrafficPattern(end:string, pattern:string) {
+    public setTrafficPattern(end:string, tp:TrafficPattern) {
         const rwyEnd:RunwayEnd|undefined = this.getEnd(end)
         if(rwyEnd) {
-            switch(pattern) {
-                case Runway.leftPattern:
-                    rwyEnd.setRightPattern(false)
-                    break;
-                case Runway.rightPattern:
-                    rwyEnd.setRightPattern(true)
-                    break;
-                default:
-                    throw new Error(`Invalid traffic pattern ${pattern}`)
-            }
+            rwyEnd.tp = tp;
         } else {
             throw new Error(`Runway end ${end} not found`)
         }
@@ -120,7 +117,7 @@ export class Runway {
 
         const runway:Runway = new Runway(from.name, from.length, from.width)
         runway.ends = from.ends.map((end:any) => new RunwayEnd(end.name, end.mag))
-        runway.surface = new RunwaySurface(from.surface.type, from.surface.cond)
+        runway.surface = RunwaySurface.copy(from.surface)
         runway.freq = from.freq
         return runway
     }

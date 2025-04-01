@@ -1,4 +1,4 @@
-import { titleAtis, visitSkipBanner, loadDemo, TileTypeLabel, displaySelection, replaceTile, checkTileSpan, checkTileVisible, checkTileTitle, departTitle, atisTitle } from './shared'
+import { titleAtis, visitSkipBanner, loadDemo, TileTypeLabel, displaySelection, replaceTile, checkTileSpan, checkTileVisible, checkTileTitle, departTitle, atisTitle, displaySelectionExpand } from './shared'
 
 const labelFullATIS = "Full Size ATIS"
 const labelCloudCleance = "Cloud Clearance"
@@ -103,15 +103,11 @@ describe('ATIS Tile', () => {
     loadDemo()
 
     // First attempt with cancel
-    displaySelection(0, 4)
-    cy.get('.tile4 .expandable').click()
-    cy.get('.p-confirm-dialog-reject').click()
+    displaySelectionExpand(0, 4, 0, false)
     checkTileTitle(0,5,departTitle)
 
     // second attempt with confirm
-    displaySelection(0, 4)
-    cy.get('.tile4 .expandable').click()
-    cy.get('.p-confirm-dialog-accept').click()
+    displaySelectionExpand(0,4,0)
     checkTileTitle(0,5,atisTitle)
 
     // confirm template has been saved with proper values
@@ -122,5 +118,18 @@ describe('ATIS Tile', () => {
         expect(template.data[0].data[4].name).to.equal('atis')
         expect(template.data[0].data[5].name).to.equal('atis')
       })
-  })
+    
+      // revert to compact
+      displaySelection(0,4,'Compact ATIS (x4)')
+      checkTileSpan(0, 4, false)
+      // merge Flight categories
+      displaySelectionExpand(0, 4, 2)
+      checkTileSpan(0, 4, true)
+      // revert to compact
+      displaySelection(0,4,'Compact ATIS (x4)')
+      checkTileSpan(0, 4, false)
+      // merge cloud clearance
+      displaySelectionExpand(0, 4, 3)
+      checkTileSpan(0, 4, true)
+    })
 })

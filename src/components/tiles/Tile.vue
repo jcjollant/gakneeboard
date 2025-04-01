@@ -9,9 +9,9 @@
         </div>
     </div>
     <AirportTile v-else-if="tile.name==TileType.airport" :params="tile.data" :span2="tile.span2"
-        @replace="onReplace" @update="onUpdate" />
+        @replace="onReplace" @update="onUpdate" @expand="onExpand" />
     <AtisTile v-else-if="tile.name==TileType.atis" :params="tile.data" :span2="tile.span2"
-        @replace="onReplace" @update="onUpdate" @expand="emits('expand')"/>
+        @replace="onReplace" @update="onUpdate" @expand="onExpand"/>
     <ChecklistTile v-else-if="tile.name==TileType.checklist" :params="tile.data" 
         @replace="onReplace" @update="onUpdate"/>
     <IfrTile v-else-if="tile.name==TileType.clearance" :params="tile.data"
@@ -21,14 +21,14 @@
         @replace="onReplace" @update="onUpdate"/>
     <NavlogTile v-else-if="tile.name==TileType.navlog" @replace="onReplace" />
     <NotesTile v-else-if="tile.name==TileType.notes" :params="tile.data" :span2="tile.span2"
-        @replace="onReplace" @update="onUpdate" @expand="emits('expand')" />
+        @replace="onReplace" @update="onUpdate" @expand="onExpand" />
     <RadioTile v-else-if="tile.name==TileType.radios" :params="tile.data" :span2="tile.span2"
-        @replace="onReplace" @update="onUpdate" />
+        @replace="onReplace" @update="onUpdate" @expand="onExpand" />
     <SunLight v-else-if="tile.name==TileType.sunlight" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {onMounted, ref, watch} from 'vue';
 import { TileType } from '../../model/TileType'
 
@@ -44,6 +44,7 @@ import FuelBug from '../fuel/FuelBug.vue';
 import FAButton from '../shared/FAButton.vue'
 import NavlogTile from '../navlog/NavlogTile.vue';
 import NotesTile from '../notes/NotesTile.vue';
+import { TileData } from '../../model/TileData';
 
 const emits = defineEmits(['update','expand'])
 
@@ -51,7 +52,7 @@ const props = defineProps({
     tile: { type: Object, default: null},
 })
 
-var state = {}
+var state:TileData
 const knownTiles = ref([
     {name:'Airport',tile:TileType.airport, class:'double', icon:'plane-departure', tooltip:'Display runway and useful information'},
     {name:'Notes',tile:TileType.notes, class:'', icon:'pen-to-square',  tooltip:'A blank tile to write stuff'},
@@ -90,19 +91,24 @@ function onReplace(newName = '', mode=undefined) {
     // console.log('[Tile.onReplace]', newName, mode)
 
     const tileName = newName.toLowerCase()
-    state = { id:tile.value.id,name: tileName, data:{}}
-    if(mode) state.data.mode = mode
+    // state = { id:tile.value.id,name: tileName, data:{}}
+    state = new TileData(tileName)
+    if(mode) state.data['mode'] = mode
     tile.value = state
     title.value = defaultTitle
     emits('update',state)
 }
 
 // when a tile notifies us of an update, we notify the parent to save values
-function onUpdate(params = '') {
+function onUpdate(params=undefined) {
     // console.log('Tile on update ' + JSON.stringify(params))
-    // keep same id and name, just refresh the param
-    state = { 'id':state.id,'name': state.name, 'data':params}
+    state = new TileData(state.name, params)
     emits('update',state)
+}
+
+function onExpand(params=undefined) {
+    state = new TileData(state.name, params)
+    emits('expand',state)
 }
 
 </script>

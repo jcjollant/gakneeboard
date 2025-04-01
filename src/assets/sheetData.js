@@ -2,6 +2,7 @@ import { DemoData } from './DemoData'
 import { PageType} from './PageType'
 import { Template, TemplatePage } from '../model/Template'
 import { TileType } from '../model/TileType'
+import { TileData } from '../model/TileData'
 
 export class SheetName {
   static default = 'gak-default'
@@ -237,37 +238,34 @@ export function getTemplateDummy() {
   return new Template('Dummy Tiles', '12 Dummy Tiles', false, pages)
 }
 
-export function isSameAirportAndRunway(tile1, tile2) {
-  if(!tile1 || !tile2) return false;
-  if(tile1.name != TileType.airport || tile2.name != TileType.airport) return false;
-  // do airport codes match?
-  if(tile1.data.code != tile2.data.code || !tile1.data.code || !tile2.data.code) return false;
-  if(tile1.data.rwy != tile2.data.rwy) return false;
-  return true;
-
-}
-
-export function isSameTypeAndMode(tile1, tile2, type, mode) {
-  if(!tile1 || !tile2) return false;
-  if(tile1.name != type || tile2.name != type) return false;
-  if( ('mode' in tile1.data && tile1.data?.mode != mode) || ('mode' in tile2.data && tile2.data?.mode != mode)) return false;
-  return true;
-}
-
 export function isDefaultName(name) {
   return name in defaultNames
 }
 
 // See whether a page data string is valid
-export async function readPageFromClipboard(page) {
+export async function readPageFromClipboard() {
   return new Promise( (resolve,reject) => {
     navigator.clipboard.readText().then( text => {
       try {
-        const pageData = JSON.parse(text)
-        if( !('type' in pageData && 'data' in pageData)) throw new Error('Unkonw object format');
+        const pageData = TemplatePage.parse(text)
         resolve( pageData)
       } catch(e) {
         reject('Clipboard data is not a Kneeboard Page')
+      }
+    }).catch( e => {
+      reject('Clipboard access denied')
+    })
+  })
+}
+
+export async function readTileFromClipboard() {
+  return new Promise( (resolve,reject) => {
+    navigator.clipboard.readText().then( text => {
+      try {
+        const tileData = TileData.parse(text)
+        resolve( tileData)
+      } catch(e) {
+        reject('Clipboard data is not a Kneeboard Tile')
       }
     }).catch( e => {
       reject('Clipboard access denied')

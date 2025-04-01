@@ -21,10 +21,10 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Checklist } from '../../model/Checklist'
 import { onMounted, ref, watch } from 'vue'
-import { UserUrl } from '@/lib/UserUrl'
+import { UserUrl } from '../../lib/UserUrl'
 
 import ActionBar from '../shared/ActionBar.vue'
 import ChecklistViewer from './ChecklistViewer.vue'
@@ -39,7 +39,8 @@ import Textarea from 'primevue/textarea'
 const editMode = ref(false)
 const emits = defineEmits(['replace','update'])
 const title = ref('Checklist')
-const checklist = ref(new Checklist())
+const noChecklist = new Checklist()
+const checklist = ref(noChecklist)
 const textData = ref('')
 const theme = ref('theme-blue')
 let nameBeforeEdit = 'Checklist'
@@ -52,21 +53,24 @@ const props = defineProps({
     params: { type: Object, default: null },
 })
 
-function loadProps(newProps) {
-    // console.log('[ChecklistTile.loadProps]', JSON.stringify(newProps))
-    if (newProps.params) {
+function loadProps(newProps:any) {
+    // console.log('[ChecklistTile.loadProps]', newProps)
+    const params = newProps.params
+    if (params) {
         // load params into checlist
-        checklist.value.parseParams( newProps.params.items);
+        const newList = new Checklist()
+        newList.parseParams(params.items);
+        checklist.value = newList;
         // checklist name
-        if (newProps.params.name) {
-            title.value = newProps.params.name
+        if (params.name) {
+            title.value = params.name
         }
         // checklist theme
-        if( 'theme' in newProps.params) {
-            theme.value = 'theme-' + newProps.params.theme
+        if( 'theme' in params) {
+            theme.value = 'theme-' + params.theme
         }
     } else {
-        data.value = null
+        checklist.value = noChecklist
     }
 }
 

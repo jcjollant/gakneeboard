@@ -97,12 +97,15 @@ export class Checklist {
     }
 
     parseParams(paramItems:any) {
+        // console.log('[Checklist.parseParams]', paramItems)
         // sanity check
         if(!paramItems) return [];
         // turn params into ChecklistItems
         this.items = paramItems.map( (item:any) => {
+            // console.log('[Checklist.parseParams] item', item)
             return new ChecklistItem(item.c, item.r, item.s, Checklist.parseItemType(item.t))
         })
+        // console.log('[Checklist.parseParams] items', this.items.length)
     }
 
     toEditor():string {

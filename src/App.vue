@@ -24,7 +24,7 @@
 <script setup>
 import { onBeforeMount, onMounted, ref } from 'vue';
 import { backend, getBackend, currentUser, routeToLocalTemplate, version } from '@/assets/data';
-import { LocalStore } from '@/lib/LocalStore';
+import { LocalStore } from './lib/LocalStore';
 import { TemplateData } from '@/assets/TemplateData';
 import { useRoute, useRouter } from 'vue-router';
 import { getTemplateDataFromName } from '@/assets/sheetData';
