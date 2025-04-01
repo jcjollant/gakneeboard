@@ -1,3 +1,5 @@
+## 03/31/2025 5140
+* Fixed Wille effectiveDateCheck
 ## 03/29/2025 5134
 * Disabled auto diagram
 * Checking users for invalid source
