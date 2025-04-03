@@ -3,13 +3,14 @@ import { UserMiniView } from './models/UserMiniView';
 import { TemplateDao } from './TemplateDao';
 import { TemplateView } from './models/TemplateView';
 import { UserDao } from './dao/UserDao'
+import { Business } from './business/Business';
 
 export class UserTools {
     static apple:string = 'apple'
     static facebook:string = 'facebook'
     static google:string = 'google'
 
-    public static async authenticate( body:any):Promise<User> {
+    public static async authenticate( body:any, userDaoParam:UserDao|undefined = undefined):Promise<User> {
         // console.log("User authenticate", JSON.stringify(body))
         if( typeof(body) == 'string') body = JSON.parse(body);
         if( !('source' in body)) throw new Error('Missing source');
@@ -25,11 +26,12 @@ export class UserTools {
         }
         if( !user) throw new Error('Invalid User');
 
-        const dbUser:User|undefined = await UserDao.getUserFromHash(user.sha256)
+        const userDao = userDaoParam ?? new UserDao()
+        const dbUser:User|undefined = await userDao.getFromHash(user.sha256)
         if(dbUser) return dbUser;
         
         // new user => creation
-        const userDao = new UserDao()
+        user.printCredits = Business.calculatePrintCredits(user)
         return await userDao.save(user);
     }
     
