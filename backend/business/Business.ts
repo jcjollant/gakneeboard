@@ -13,7 +13,7 @@ export class Business {
     static MAX_TEMPLATE_PRIVATE: number = 5;
     static MAX_TEMPLATE_BETA: number = 10;
 
-    private static calculatePrintCredits(user:User):number {
+    public static calculatePrintCredits(user:User):number {
         let credit = 0;
         
         switch(user.accountType) {
