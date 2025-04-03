@@ -8,11 +8,10 @@ import { AirportSketch } from '../backend/AirportSketch';
 import { CodeAndAirport } from '../backend/models/CodeAndAirport';
 import { Adip } from '../backend/adip/Adip';
 import { AirportDao } from '../backend/AirportDao';
-import { exec } from 'child_process';
 import { Airport } from '../backend/models/Airport';
 
-require('dotenv').config();
-
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 describe( 'GApi Tests', () => {
 
@@ -184,6 +183,7 @@ describe( 'GApi Tests', () => {
         expect(session2.user).toBeDefined()
 
     })
+
     describe('getAirportCurent', () => {
         it('Deals with invalid codes', async() => {
             jest.spyOn(AirportSketch, 'get').mockResolvedValue('')

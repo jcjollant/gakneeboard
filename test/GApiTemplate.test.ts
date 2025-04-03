@@ -1,5 +1,5 @@
-import { describe, expect, it, jest, test} from '@jest/globals';
-import { GApi, GApiError, TemplateStatus } from '../backend/GApi'
+import { describe, expect, it, jest} from '@jest/globals';
+import { GApi, GApiError } from '../backend/GApi'
 import { jcHash, jcUserId, jcTestTemplateData, jcTestTemplateName, jcTestTemplateDescription } from './constants'
 import { TemplateDao } from '../backend/TemplateDao';
 import { PublicationDao } from '../backend/PublicationDao';
@@ -9,12 +9,11 @@ import { TemplateView } from '../backend/models/TemplateView';
 import { Template } from '../backend/models/Template';
 import { User } from '../backend/models/User';
 import { newTestUser } from './common';
-import { sourceMapsEnabled } from 'process';
 import { Business } from '../backend/business/Business';
 import { AccountType } from '../backend/models/AccountType';
-import exp from 'constants';
 
-require('dotenv').config();
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 describe( 'GApi Tests', () => {
 

@@ -1,15 +1,16 @@
 
 import { describe, expect, it} from '@jest/globals';
-import { Template } from '../backend/models/Template.ts'
-import { TemplateDao } from '../backend/TemplateDao.ts'
-import { jcUserId, jcTestTemplateName, jcTestTemplateData } from './constants.ts';
+import { TemplateDao } from '../backend/TemplateDao'
+import { jcUserId, jcTestTemplateName, jcTestTemplateData } from './constants';
 import { sql } from '@vercel/postgres';
-import { newTestUser } from './common.ts';
-import { TemplateView } from '../backend/models/TemplateView.ts';
-import { UserDao } from '../backend/dao/UserDao.ts';
-import { PublicationDao } from '../backend/PublicationDao.ts';
+import { newTestUser } from './common';
+import { TemplateView } from '../backend/models/TemplateView';
+import { UserDao } from '../backend/dao/UserDao';
+import { PublicationDao } from '../backend/PublicationDao';
+import { Template } from '../backend/models/Template';
 
-require('dotenv').config();
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 describe('Custom Templates', () => {
     describe('countForUser', () => {
