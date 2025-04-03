@@ -1,3 +1,5 @@
+## 04/03/2025 5141
+* New Users are created with print credits
 ## 03/31/2025 5140
 * Fixed Wille effectiveDateCheck
 ## 03/29/2025 5134
