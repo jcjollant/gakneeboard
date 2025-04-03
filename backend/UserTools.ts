@@ -26,6 +26,7 @@ export class UserTools {
         }
         if( !user) throw new Error('Invalid User');
 
+        // Read user from DB
         const userDao = userDaoParam ?? new UserDao()
         const dbUser:User|undefined = await userDao.getFromHash(user.sha256)
         if(dbUser) return dbUser;

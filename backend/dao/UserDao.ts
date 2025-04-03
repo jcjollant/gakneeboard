@@ -25,7 +25,7 @@ export class UserDao extends Dao<User> {
     public getAll():Promise<User[]> {
         const dao = new UserDao()
         return new Promise( async (resolve, reject) => {
-            const result = await sql`SELECT id,sha256,data,create_time,customer_id FROM users`;
+            const result = await sql`SELECT * FROM users`;
             const users:User[] = []
             for(const row of result.rows) {
                 users.push(dao.parseRow(row))
@@ -80,7 +80,6 @@ export class UserDao extends Dao<User> {
             if(data?.source) user.setSource(data.source)
             if(data?.email) user.setEmail(data.email)
             if(data?.name) user.setName(data.name)
-            if(data?.maxTemplates) user.setMaxTemplates(data.maxTemplates)
         } catch (err) {
             Ticket.create(3, '[UserDao.parseRow] error parsing data ' + err)
             user.setSource('?')
@@ -90,6 +89,7 @@ export class UserDao extends Dao<User> {
         }
         user.setAccountType(row.account_type)
         user.setCustomerId(row.customer_id)
+        user.setMaxTemplates(row.max_templates)
         user.setPrintCredits(row.print_credit || 0)
         user.setCreateDate(row.create_time)
         user.setCustomerId(row.customer_id)
@@ -127,15 +127,20 @@ export class UserDao extends Dao<User> {
             // Do we know this user?
             const result = await this.db.query(`SELECT id from ${this.tableName} WHERE sha256 = '${user.sha256}'`);
             // console.log( '[UserDao.save] match count ' + result.rowCount)
+            const userData =  {
+                "name": "NewName",
+                "source": "",
+                "email": "lb54ca@test.com",
+            }
             if(result.rowCount == 0) {
                 // console.log( '[UserDao.save] adding ' + user.sha256)
-                const insert = await this.db.query(`INSERT INTO ${this.tableName} (sha256,data,version,account_type) VALUES ('${user.sha256}','${JSON.stringify(user)}',${this.modelVersion},'${user.accountType}') RETURNING id`)
+                const insert = await this.db.query(`INSERT INTO ${this.tableName} (sha256, data,version,account_type) VALUES ('${user.sha256}','${JSON.stringify(userData)}',${this.modelVersion},'${user.accountType}') RETURNING id`)
                 user.id = insert.rows[0].id
                 // console.log( '[UserDao.save] ' + user.sha256)
             } else if( overwrite){ // this user is known but we can override
                 // console.log( '[UserDao.save] known user ' + user.sha256)
                 user.id = result.rows[0].id
-                await this.db.query(`UPDATE ${this.tableName} SET data = '${JSON.stringify(user)}', version=${this.modelVersion}, account_type='${user.accountType}' WHERE id = ${user.id}`)
+                await this.db.query(`UPDATE ${this.tableName} SET data = '${JSON.stringify(userData)}', version=${this.modelVersion}, account_type='${user.accountType}' WHERE id = ${user.id}`)
             } else {
                 return reject('Cannot save existing user without overwrite')
             }

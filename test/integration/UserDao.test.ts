@@ -45,12 +45,22 @@ describe('UserDao', () => {
         const name = 'Paul'
         const source = 'SomeSource'
         const email = 'paul@example.com'
-        const maxTemplates = 12
+        const maxTemplatesData = 12
+        const maxTemplates = 10
         const customerId = 'someCustomerId'
         const createDate = '2025-03-10 06:19:07.69087'
-        const data:string = JSON.stringify( {name:name,source:source,email:email,maxTemplates:maxTemplates})
+        const data:string = JSON.stringify( {name:name,source:source,email:email,maxTemplates:maxTemplatesData})
         const printCredits = 100
-        const row = {id:1, sha256:'sha', data:data, account_type:AccountType.beta, customer_id: customerId, print_credit: printCredits, create_time:createDate}
+        const row = { 
+            id:1, 
+            sha256:'sha', 
+            data:data, 
+            account_type:AccountType.beta, 
+            customer_id: customerId, 
+            print_credit: printCredits, 
+            max_templates: maxTemplates,
+            create_time:createDate
+        }
         const userDao = new UserDao();
         const user:User = userDao.parseRow(row)
         expect(user.id).toBe(1)
