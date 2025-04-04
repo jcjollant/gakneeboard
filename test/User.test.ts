@@ -1,14 +1,15 @@
-import {describe, expect, test} from '@jest/globals';
+import {describe, expect, test, it, jest} from '@jest/globals';
 import { User } from '../backend/models/User'
 import { UserTools } from '../backend/UserTools'
 import { jcSource } from './constants'
 import { jcHash, jcUserId, jcToken, jcName, jcEmail } from './constants'
 import { UserMiniView } from '../backend/models/UserMiniView';
 import { AccountType } from '../backend/models/AccountType';
-import exp from 'constants';
 import { Business } from '../backend/business/Business';
+import { UserDao } from '../backend/dao/UserDao';
 
-require('dotenv').config();
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 const jc = { 'source':UserTools.google,'email':jcEmail}
 
@@ -49,6 +50,19 @@ describe( 'User', () => {
 })
 
 describe('UserTool', () => {
+    it('New users have print credit', async () => {
+        const body = { 'source':UserTools.google, 'token': jcToken }
+
+        const mockUserDao = new UserDao() as jest.Mocked<UserDao>;
+        // user doesn't exist
+        jest.spyOn(mockUserDao, 'getFromHash').mockResolvedValue(undefined)
+        jest.spyOn(mockUserDao, 'save').mockImplementation( u => new Promise( res => res(u)))
+
+        const user = await UserTools.authenticate(body, mockUserDao)
+
+        // should have default credit for simmer
+        expect(user.printCredits).toBe(Business.PRINT_CREDIT_SIMMER)
+    })
     test('Authenticate and UserMiniView', async () => {
         const body = { 'source':UserTools.google, 'token': jcToken }
         const user = await UserTools.authenticate(body)
