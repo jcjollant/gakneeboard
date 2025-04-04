@@ -107,7 +107,7 @@ describe('navlog Page', () => {
     cy.get('.actionBarVideo')
   })
 
-  it.only('7 altitudes', () => {
+  it('7 altitudes', () => {
     visitSkipBanner()
     newTemplate()
 
@@ -291,7 +291,7 @@ describe('navlog Page', () => {
     ]
     for(const data of legData) {
       cy.get(`.leg${data.index} > .magneticHeading`).click()
-      cy.get('#ld').type(data.ld, {delay:0})
+      replaceBy('#ld', data.ld)
       cy.get('#gs').type(data.gs, {delay:0})
       cy.get('#lt').type(data.lt, {delay:0})
       cy.get('#lf').type(data.lf, {delay:0})
