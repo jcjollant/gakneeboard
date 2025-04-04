@@ -80,6 +80,7 @@ function loadProps(props:any) {
         const twrFreq = airport.getFreqTowerIfr()
         // console.log('[DepartureContent.loadProps] twrFreq', twrFreq)
         const ctafFreq = airport.getFreqCtaf()
+        // tower frequency will be tower or ctaf
         freqTower.value = twrFreq ? Frequency.fromType(twrFreq,FrequencyType.tower) : ( ctafFreq ? Frequency.fromType(ctafFreq,FrequencyType.ctaf) : noFreq)
         const weatherFreq = airport.getFreqWeather()
         freqWeather.value = weatherFreq ? Frequency.fromType(weatherFreq.mhz, FrequencyType.weather) : noFreq
