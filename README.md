@@ -37,6 +37,12 @@ Refresh currentAsOf in test/constants.ts
 .\stripe.exe listen --forward-to locashost:3000/webhook
 Call http://localhost:3000/checkout with user and product
 
+## Refreshing Sketch Data
+1. Set database to prod
+2. Run ga-api on port 3000
+3. Run gak-sketcher on port 3001
+4. Run ts-node housekeeping/manualSketchUpdate.ts
+
 ## Authentication
 ### Apple
 * https://developer.apple.com/account/resources/identifiers/list/serviceId
