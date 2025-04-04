@@ -91,7 +91,7 @@ describe('UserDao', () => {
         const existingUser:User = new User(jcUserId, jcHash)
         // Saving an existing user without overwrite should fail
         // const userDao = new UserDao()
-        await expect(userDao.save(existingUser)).rejects.toEqual('Cannot save existing user without overwrite')
+        await expect(userDao.save(existingUser)).rejects.toEqual( new Error('Cannot save existing user without overwrite'))
 
         const newUser = newTestUser()
         await userDao.save(newUser).then( (user:User) => {

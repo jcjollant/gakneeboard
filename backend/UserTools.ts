@@ -9,6 +9,7 @@ export class UserTools {
     static apple:string = 'apple'
     static facebook:string = 'facebook'
     static google:string = 'google'
+    static test:string = 'test'
 
     public static async authenticate( body:any, userDaoParam:UserDao|undefined = undefined):Promise<User> {
         // console.log("User authenticate", JSON.stringify(body))
@@ -21,6 +22,8 @@ export class UserTools {
             user = UserTools.decodeGoogle( body.token);
         } else if( body.source == UserTools.apple) {
             user = UserTools.decodeApple( body.token, body.user);
+        } else if( body.source == UserTools.test){
+            user = body.testUser;
         } else {
             throw new Error('Invalid source');            
         }
@@ -33,6 +36,7 @@ export class UserTools {
         
         // new user => creation
         user.printCredits = Business.calculatePrintCredits(user)
+        user.maxTemplates = Business.maxTemplatesFromAccountType(user.accountType)
         return await userDao.save(user);
     }
     

@@ -9,6 +9,7 @@ import { Business } from '../backend/business/Business';
 import { UserDao } from '../backend/dao/UserDao';
 
 import * as dotenv from 'dotenv'
+import { brandNewUser, newTestUser } from './common';
 dotenv.config()
 
 const jc = { 'source':UserTools.google,'email':jcEmail}
@@ -50,7 +51,7 @@ describe( 'User', () => {
 })
 
 describe('UserTool', () => {
-    it('New users have print credit', async () => {
+    it('Authenticate gives print credit', async () => {
         const body = { 'source':UserTools.google, 'token': jcToken }
 
         const mockUserDao = new UserDao() as jest.Mocked<UserDao>;
@@ -62,6 +63,18 @@ describe('UserTool', () => {
 
         // should have default credit for simmer
         expect(user.printCredits).toBe(Business.PRINT_CREDIT_SIMMER)
+    })
+    it('new user creation give credit and max templates', async () => {
+        const testUser = brandNewUser()
+        const body = {source:testUser.source, token:testUser.sha256, testUser:testUser}
+        const userDao = new UserDao()
+        const newUser = await UserTools.authenticate(body, userDao)
+        expect(newUser.printCredits).toBe(Business.PRINT_CREDIT_SIMMER)
+        expect(newUser.maxTemplates).toBe(Business.MAX_TEMPLATE_SIMMER)
+        const savedUser = await userDao.getFromHash(testUser.sha256)
+        expect(savedUser.printCredits).toBe(Business.PRINT_CREDIT_SIMMER)
+        expect(savedUser.maxTemplates).toBe(Business.MAX_TEMPLATE_SIMMER)
+
     })
     test('Authenticate and UserMiniView', async () => {
         const body = { 'source':UserTools.google, 'token': jcToken }

@@ -41,6 +41,7 @@ export function newTestUser(userId:number=0, accoutType:AccountType=AccountType.
     const newUser = new User(userId, newHash)
     newUser.email = newEmail
     newUser.name = userName
+    newUser.source = 'test'
     // assign random value between 1 and 25
     newUser.setPrintCredits(Math.floor(Math.random() * 25) + 1)
     
@@ -50,4 +51,12 @@ export function newTestUser(userId:number=0, accoutType:AccountType=AccountType.
     newUser.setMaxTemplates(Business.maxTemplatesFromAccountType(accoutType))
 
     return newUser
+}
+
+export function brandNewUser() {
+    const user = newTestUser()
+    user.printCredits = 0;
+    user.maxTemplates = 0;
+    return user
+
 }
