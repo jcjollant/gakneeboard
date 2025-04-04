@@ -37,7 +37,7 @@ import Dialog from 'primevue/dialog'
 import FieldSet from 'primevue/fieldset'
 
 import AirportInput from '../shared/AirportInput.vue'
-import { Airport } from '../../model/Airport'
+import { Airport, AirportFrequency, Navaid } from '../../model/Airport'
 
 const emits = defineEmits(["add"]);
 const airports = ref<Airport[]>([])
@@ -54,9 +54,10 @@ class LookupAtcGroup {
     constructor(g:AtcGroup) {
         this.name = g.name;
         this.items = g.atcs.map(atc => {
-            let label = Formatter.frequency(atc.mhz) + ' ' + atc.name;
+            const value = Formatter.frequency(atc.value)
+            let label = value + ' ' + atc.name;
             // replace frequency name with group name
-            const frequency:Frequency = new Frequency(atc.mhz, g.name, atc.type)
+            const frequency:Frequency = new Frequency(value, g.name, atc.type)
             return new FrequencyLabelled( frequency, label)
         })
     }
@@ -86,14 +87,29 @@ function formatLabel(label:string) {
     return label
 }
 
+function formatAirportFrequency(airport:Airport, freq:AirportFrequency):FrequencyLabelled {
+    const value = Formatter.frequency(freq.mhz)
+    const name = airport.code + ' ' + freq.name
+    const label = value + ' ' + freq.name
+    return new FrequencyLabelled( new Frequency( value, name, Frequency.typeFromString(freq.name)), label)
+}
+
+function formatNavaid(navaid:Navaid):FrequencyLabelled {
+    const value = Formatter.frequency(navaid.freq)
+    const label = value + ' ' + navaid.id + ' ' + navaid.type
+    const frequency = new Frequency(value, navaid.id + ' ' + navaid.type, FrequencyType.navaid)
+    return   new FrequencyLabelled( frequency, label)
+}
+
+
 function onAirport(airport:Airport) {
     selectedAirport.value = airport
 
     if( !airport) return;
     
-    const local = airport.freq.map( f => new FrequencyLabelled( new Frequency(f.mhz, airport.code + ' ' + f.name, Frequency.typeFromString(f.name)), Formatter.frequency(f.mhz) + ' ' + f.name))
+    const local = airport.freq.map( f => formatAirportFrequency(airport,f))
     localFrequencies.value = local;
-    const navaids = airport.navaids.map( n => new FrequencyLabelled( new Frequency(n.freq, n.id + ' ' + n.type, FrequencyType.navaid), Formatter.frequency(n.freq) + ' ' + n.id + ' ' + n.type ))
+    const navaids = airport.navaids.map( formatNavaid)
     navaidFrequencies.value = navaids;
     const groupList = AtcGroup.parse(airport)
     // console.log('[LookupDialog.onAirport]', groupList)

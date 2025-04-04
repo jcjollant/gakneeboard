@@ -1,8 +1,11 @@
+import { Formatter } from "../lib/Formatter";
+
 export enum FrequencyType {
     clearance = 'cd',
     ctaf = 'ct',
     custom = 'cu',
     navaid = 'n',
+    phone = 'pn',
     weather = 'w',
     tracon = 'tr',
     tower = 'tw',
@@ -22,18 +25,21 @@ export class FrequencyLabelled {
 
 
 export class Frequency {
-    mhz:number;
+    value:string;
     name:string;
     type:FrequencyType;
 
-    constructor(mhz:number, name:string='', type:FrequencyType=FrequencyType.unknown) {
-        this.mhz = mhz;
+    constructor(value:string, name:string='', type:FrequencyType=FrequencyType.unknown) {
+        // console.log('[Frequency.constructor]', value, name, type)
+        this.value = value;
         this.name = name;
         this.type = type;
     }
 
-    static copy(freq:Frequency):Frequency {
-        return new Frequency(Number(freq.mhz), freq.name, freq.type)
+    static copy(freq:any):Frequency {
+        let value = 'value' in freq ? freq.value : freq.mhz
+        if( typeof value === 'number' ) value = Formatter.frequency(freq.mhz)
+        return new Frequency(value, freq.name, freq.type)
     }
 
     static typeFromString(s:string):FrequencyType {
@@ -71,6 +77,9 @@ export class Frequency {
             case 'unicom':
             case FrequencyType.ground: 
                 return FrequencyType.ground;
+            case 'phone':
+            case FrequencyType.phone:
+                return FrequencyType.phone;
             default: 
                 if(lowerCaseFreq.startsWith('awos') || lowerCaseFreq.startsWith('asos')) {
                     return FrequencyType.weather;
@@ -89,17 +98,17 @@ export class Frequency {
             case FrequencyType.navaid: return 'Navaid';
             case FrequencyType.weather: return 'Weather';
             case FrequencyType.custom: return 'Custom';
+            case FrequencyType.phone: return 'Phone';
             default: return 'Unknown';
         }
     }
 
     static noFreq(name='',type=FrequencyType.unknown) {
-        return new Frequency(0, name, type)
+        return new Frequency('', name, type)
     }
 
-    static fromType(mhz:number|undefined, type:FrequencyType):Frequency {
+    static fromType(value:number|undefined, type:FrequencyType):Frequency {
         let name:string = Frequency.typeToString(type);
-        return mhz ? new Frequency(mhz, name, type) : Frequency.noFreq(name, type)
+        return value ? new Frequency(Formatter.frequency(value), name, type) : Frequency.noFreq(name, type)
     }
-
 }

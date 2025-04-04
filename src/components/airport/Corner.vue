@@ -139,9 +139,9 @@ class CornerAtc {
     value:CornerValue
     mhz:number;
     constructor(atc:Frequency) {
-        this.id = '#A' + atc.mhz;
+        this.id = '#A' + atc.value;
         this.label = atc.name;
-        this.mhz = atc.mhz;
+        this.mhz = Number(atc.value);
     }
 }
 

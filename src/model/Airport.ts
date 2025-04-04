@@ -2,7 +2,7 @@ import { Frequency, FrequencyType } from "./Frequency";
 
 const modelVersion:number = 10;
 
-class AirportFrequency {
+export class AirportFrequency {
     name: string;
     mhz: number;
     constructor(name:string, frequency:number) {
@@ -307,10 +307,10 @@ export class Airport {
 
     getFreqGround():Frequency {
         const af = this.getFrequency('GND');
-        const name = Frequency.typeToString(FrequencyType.ground);
         if( af) {
-            return new Frequency(af.mhz, name, FrequencyType.ground)
+            return Frequency.fromType(af.mhz, FrequencyType.ground)
         }
+        const name = Frequency.typeToString(FrequencyType.ground);
         return  Frequency.noFreq(name, FrequencyType.ground)
     }
 
