@@ -361,7 +361,7 @@ function onSettingsUpdate( newAirport:Airport, newRunway, newOrientation:string,
     updateData()
 }
 
-function showAirport( airport) {
+function showAirport( airport:Airport) {
     // console.log( "[AirportTile.showAirport] Showing airport ", JSON.stringify(airport))
     if( airport == null) {
         // if airport data is missing, we switch to edit mode
@@ -375,8 +375,8 @@ function showAirport( airport) {
     
     // title.value = airport.code + ":" + airport.name
     title.value = airport.name
-    const weather = getFreqWeather( airport.freq)
-    weatherFreq.value = weather ? Formatter.frequency(weather.mhz) : Formatter.noFrequency
+    const weather = airport.getFreqWeather()
+    weatherFreq.value = Formatter.frequency(weather)
     weatherType.value = weather ? weather.name : '-'
 
     // If traffic is runway specific, it will be overriden by showRunway
