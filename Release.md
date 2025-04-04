@@ -1,3 +1,5 @@
+## 04/04/2025 5143
+* New users are created with max_templates and print_credit
 ## 04/03/2025 5141 5142
 1) 5141
 * New Users are created with print credits
