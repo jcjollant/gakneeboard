@@ -1,4 +1,4 @@
-import { displaySelection, loadDemo, lostCommsTitle, notesTitle, radioTitle, serviceVolumeTitle, TileTypeLabel, visitSkipBanner, replaceTile } from './shared'
+import { displaySelection, loadDemo, lostCommsTitle, notesTitle, radioTitle, serviceVolumeTitle, TileTypeLabel, visitSkipBanner, replaceTile, viewport } from './shared'
 
 const labelFrequencies = 'Frequencies'
 const labelLostComms = 'Lost Comms'
@@ -158,6 +158,23 @@ describe('Radios Tile', () => {
       else if( count < 8) cy.get('.freq0').should('have.class','medium')
       else cy.get('.freq0').should('have.class','small')
     }
+  })
+
+  it( 'Shows correct icon', () => {
+    visitSkipBanner()
+    loadDemo()
+    viewport()
+
+    cy.get('.page0 .tile2 .freqList').click()
+    cy.get('.p-inputtextarea').type('{selectall}{backspace}')
+    const list = ['123-456-7890,KAWO CD,Phone','123.450,Weather,Weather','222.222,Test,Navaid','333.500,CTAF,CTAF']
+    cy.get('.p-inputtextarea').type( list.join('\n'), {delay:0})
+    cy.get('[aria-label="Apply"]').click()
+
+    cy.get('.tile2 .freq0 .freqType').should('not.exist')
+    cy.get('.tile2 .freq1 .freqType').should('have.class', 'fa-cloud-sun-rain')
+    cy.get('.tile2 .freq2 .freqType').should('have.class', 'fa-tower-cell')
+    cy.get('.tile2 .freq3 .freqType').should('have.class', 'fa-plane')
   })
 
   it('Service Volumes', () => {
