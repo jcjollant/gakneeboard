@@ -122,29 +122,34 @@ export class UserDao extends Dao<User> {
     public async save(user:User, overwrite:boolean=false):Promise<User> {
         // console.log( '[UserDao.save]  ' + JSON.stringify(user))
         return new Promise<User>(async (resolve, reject) => {
-            if( !user.sha256) return reject('sha256 missing')
+            try {
+                if( !user.sha256) throw new Error('sha256 missing')
 
-            // Do we know this user?
-            const result = await this.db.query(`SELECT id from ${this.tableName} WHERE sha256 = '${user.sha256}'`);
-            // console.log( '[UserDao.save] match count ' + result.rowCount)
-            const userData =  {
-                "name": "NewName",
-                "source": "",
-                "email": "lb54ca@test.com",
+                    // Do we know this user?
+                    const result = await this.db.query(`SELECT id from ${this.tableName} WHERE sha256 = '${user.sha256}'`);
+                    // console.log( '[UserDao.save] match count ' + result.rowCount)
+                    const userData =  {
+                        "name": "NewName",
+                        "source": "",
+                        "email": "lb54ca@test.com",
+                    }
+                    if(result.rowCount == 0) {
+                        // console.log( '[UserDao.save] adding ' + user.sha256)
+                        const insert = await this.db.query(`INSERT INTO ${this.tableName} (sha256, data,version,account_type,max_templates,print_credit) VALUES ('${user.sha256}','${JSON.stringify(userData)}',${this.modelVersion},'${user.accountType}',${user.maxTemplates}, ${user.printCredits}) RETURNING id`)
+                        user.id = insert.rows[0].id
+                        // console.log( '[UserDao.save] ' + user.sha256)
+                    } else if( overwrite){ // this user is known but we can override
+                        // console.log( '[UserDao.save] known user ' + user.sha256)
+                        user.id = result.rows[0].id
+                        await this.db.query(`UPDATE ${this.tableName} SET data = '${JSON.stringify(userData)}', version=${this.modelVersion}, account_type='${user.accountType}' WHERE id = ${user.id}`)
+                    } else {
+                        throw new Error('Cannot save existing user without overwrite')
+                    }
+                    resolve( user)
+            } catch(err) {
+                console.log( '[UserDao.save] ' + user.sha256 + ' failed ' + err)
+                reject(err)
             }
-            if(result.rowCount == 0) {
-                // console.log( '[UserDao.save] adding ' + user.sha256)
-                const insert = await this.db.query(`INSERT INTO ${this.tableName} (sha256, data,version,account_type) VALUES ('${user.sha256}','${JSON.stringify(userData)}',${this.modelVersion},'${user.accountType}') RETURNING id`)
-                user.id = insert.rows[0].id
-                // console.log( '[UserDao.save] ' + user.sha256)
-            } else if( overwrite){ // this user is known but we can override
-                // console.log( '[UserDao.save] known user ' + user.sha256)
-                user.id = result.rows[0].id
-                await this.db.query(`UPDATE ${this.tableName} SET data = '${JSON.stringify(userData)}', version=${this.modelVersion}, account_type='${user.accountType}' WHERE id = ${user.id}`)
-            } else {
-                return reject('Cannot save existing user without overwrite')
-            }
-            resolve( user)
         })
     }
 
