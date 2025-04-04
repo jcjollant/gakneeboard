@@ -1,6 +1,8 @@
 # User Experience updates
 ## 04/03/2025 5142
 * Radio tile supports phone numbers
+## 03/31/2025 5141
+* Fixed pdfjs-dist version issue
 ## 03/30/2025 5140
 * Airport Tile expand mode for diagram + convenience button
 * Can expand Flight Categories and cloud clearance
