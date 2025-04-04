@@ -129,7 +129,7 @@ function getTitle() {
 }
 
 function loadData(data:any) {
-    // console.log('[RadioTile.loadData]', JSON.stringify(data))
+    // console.log('[RadioTile.loadData]', data)
     if( data && (Array.isArray(data) || 'list' in data)) {
         let list:Frequency[] = []
         // old format, all data is the actual list
@@ -137,10 +137,12 @@ function loadData(data:any) {
         let listData = Array.isArray(data) ? data : data.list;
 
         listData.forEach( (freq:any) => {
-            if( 'target' in freq) { // old format
+            if(freq instanceof Frequency) {
+                list.push( freq)
+            } else if( 'target' in freq) { // old format
                 // turn freq into mhz, keep name. Target is lost
-                list.push( new Frequency( Number(freq.target), freq.name))
-            } else {
+                list.push( new Frequency( freq.target, freq.name))
+            } else { // import format used in tile data
                 list.push( Frequency.copy(freq))
             }
         })
@@ -165,10 +167,11 @@ function loadData(data:any) {
 function loadListFromText() {
     const list:Frequency[] = []
     textData.value.split('\n').forEach( (row) => {
-        const [mhz,name,type] = row.split(',')
+        const [value,name,type] = row.split(',')
         // if we have enough values, we make a radio out of it
-        if( mhz && name) {
-            const freq = new Frequency(Number(mhz), name, Frequency.typeFromString(type))
+        if( value && name) {
+            const freq = new Frequency(value, name, Frequency.typeFromString(type))
+            // console.log('[RadioTile.loadListFromText]',freq)
             list.push(freq)
         }
     })
@@ -181,7 +184,7 @@ function loadProps(props:any) {
     expanded.value = props.span2 || false;
 }
 
-function addFrequency(freq:any) {
+function addFrequency(freq:Frequency) {
     // do we have room for more frequencies
     if( frequencies.value.length >= maxFreqCount * ( expanded.value ? 2 : 1)) {
         toaster.error('Radio Flow', 'Radio boxes are full')
@@ -232,7 +235,7 @@ function onLookup() {
 }
 
 function updateTextarea() {
-    textData.value = frequencies.value.map( (f:Frequency) => Formatter.frequency(f.mhz) + ',' + f.name + ',' + Frequency.typeToString(f.type)).join('\n')
+    textData.value = frequencies.value.map( (f:Frequency) => f.value + ',' + f.name + ',' + Frequency.typeToString(f.type)).join('\n')
 }
 </script>
 

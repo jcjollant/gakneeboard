@@ -1,15 +1,16 @@
 <template>
     <div class="frequencyBox" :class="[size]" :title="getTitle(freq)">
         <div class="name" :class="[size]">{{freq.name}}</div>
-        <div class="freq" :class="[size,getClass(freq)]">{{ freq.mhz ? Formatter.frequency(freq.mhz) : '' }}</div>
-        <font-awesome-icon v-if="size!='small' && iconClass.length" :icon="iconClass" class="freqType" :class="[size]"/>
+        <div class="freq" :class="[size,getClass(freq)]">
+            <font-awesome-icon v-if="size!='small' && iconClass.length" :icon="iconClass" class="freqType" :class="[size]"/>
+            <div>{{ freq.value }}</div>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
 
 import { onMounted, ref } from 'vue';
-import { Formatter } from '../../lib/Formatter'
 import { Frequency, FrequencyType } from '../../model/Frequency';
 
 const iconClass = ref<string[]>([])
@@ -30,6 +31,7 @@ function getClass(frequency:Frequency) {
         case FrequencyType.tracon:  css = 'tracon'; break;
         case FrequencyType.weather: css = 'weather'; break;
         case FrequencyType.ground: css = 'ground'; break;
+        case FrequencyType.phone: css = 'phone'; break;
         default: css = '';
     }
     return css
@@ -47,6 +49,7 @@ function getIcon():Array<string> {
         case FrequencyType.tower: icon = 'tower-observation'; break;
         case FrequencyType.tracon: icon = 'route'; break;
         case FrequencyType.weather: icon = 'cloud-sun-rain'; break;
+        // case FrequencyType.phone: icon = 'phone'; break;
     }
     return icon ? ["fas", icon] : []
 }
@@ -72,8 +75,9 @@ onMounted(() => {
     flex-flow: column;
     border: 1px solid darkslategrey;
     background-color: white;
-    flex: 1 1 0px;
-    position: relative
+    /* justify-content: space-between; */
+    padding: 0 3px;
+    /* flex: 1 1 0px; */
 }
 .frequencyBox.small {
     height: 42px;
@@ -82,18 +86,22 @@ onMounted(() => {
     height: 53px;
 }
 .freq {
-    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.freq.phone {
+    justify-content: center;
 }
 .freq.small {
-    padding: 5px 3px;
     font-size: 16px;
+    line-height: 30px;
 }
 .freq.medium {
-    line-height: 32px;
     font-size: 20px;
-    padding-left: 10px;
-    padding-right: 5px;
+    line-height: 30px;
 }
+
 .freq.large{
     font-size: 28px;
     padding-right: 10px;
@@ -110,7 +118,6 @@ onMounted(() => {
 }
 .name.medium {
     height: 20px;
-    padding-left: 5px;
     font-size: 16px;
 }
 .name.large {
@@ -119,12 +126,21 @@ onMounted(() => {
     font-size: 16px;
 }
 
+.freq.phone.small {
+    font-size: 9px;
+}
+.phone.medium {
+    font-size: 14px;
+}
+.phone.large {
+    font-size: 26px;
+}
+
 .freqType {
-    position: absolute;
+    /* position: absolute; */
+    color: darkgrey;
     width: 15px;
-    left: 5px;
-    bottom: 8px;
-    opacity: 0.4;
+    /* opacity: 0.4; */
 }
 .freqType.large {
     width: 30px;
