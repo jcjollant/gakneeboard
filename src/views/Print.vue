@@ -1,20 +1,20 @@
 <template>
   <div class="print">
-    <PrintOptions v-model:visible="showOptions"
+    <PrintOptions v-model:visible="showOptions" :pageSelection="pageSelection"
         @options="onOptionsUpdate"
         @print="onPrint"
         @close="showOptions=false"
         />
     <div v-if="template">
       <div v-if="printSingles" v-for="(page,index) in template.data" class="printOnePage printPageBreak">
-        <div class="onePage">
+        <div class="onePage" v-if="pageSelection[index]">
           <Page :data="page" :ver="template.ver"
             :class="{flipMode:(index % 2 == 1 && printFlipMode)}"/>
         </div>
       </div>
       <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages">
         <Page :data="page.front" :ver="template.ver"/>
-        <Page :data="page.back" :ver="template.ver"
+        <Page v-if="page.back" :data="page.back" :ver="template.ver"
           :class="{flipMode:printFlipMode}" />
       </div>
     </div>
@@ -22,18 +22,25 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { LocalStore } from '../lib/LocalStore';
 import { useRoute, useRouter } from 'vue-router';
 import { postPrint } from '../assets/data.js';
 import Page from '../components/page/Page.vue';
 import PrintOptions from '../components/print/PrintOptions.vue';
+import { Template, TemplatePage } from '../model/Template';
 
-const pages = ref([])
+interface PrintSheet {
+  front: TemplatePage,
+  back: TemplatePage
+}
+
+const pages = ref<PrintSheet[]>([]) // pages that will be printed
+const pageSelection = ref<boolean[]>([])
 const printFlipMode = ref(false)
 const printSingles = ref(false)
-const template = ref(null)
+const template = ref<Template|undefined>(undefined)
 const route = useRoute()
 const router = useRouter()
 const showOptions = ref(true)
@@ -43,6 +50,7 @@ onMounted(() => {
     // console.log('[Print.onMounted]')
     // load last template into active template
     template.value = LocalStore.getTemplate()
+    pageSelection.value = Array(template.value.data.length).fill(true)
     // console.log('[Print.onMounted]', template.value)
     refreshPages()
 });
@@ -59,12 +67,14 @@ watch(showOptions, (value) => {
 // New Options have been selected
 function onOptionsUpdate(options) {
   // console.log('[Print.onPrintOptions]', JSON.stringify(options))
-    if( options) {
-        printFlipMode.value = options.flipBackPage;
-        printSingles.value = (options.pagePerSheet == 1)
-    } else {
-        restorePrintOptions();
-    }
+  if( options) {
+      printFlipMode.value = options.flipBackPage;
+      printSingles.value = (options.pagePerSheet == 1)
+      pageSelection.value = options.pageSelection
+      refreshPages()
+  } else {
+      restorePrintOptions();
+  }
 }
 
 // Start printing
@@ -87,7 +97,7 @@ function onPrint(options) {
       if(postTime - preTime > 500) { 
         restorePrintOptions();
       }
-      res(true)
+      res()
       router.back()
     })
   }, 500);
@@ -95,11 +105,15 @@ function onPrint(options) {
 
 function refreshPages() {
     // build a list of side by side pages, used for printing
-    const pageList = []
-    const templateData = template.value.data
-    for( let index = 0; index < templateData.length; index+=2) {
-        const pages = {front:templateData[index], back:templateData[index+1]??null}
-        pageList.push(pages)
+    const pageList:PrintSheet[] = []
+    if(template.value) {
+      const templateData = template.value.data
+      const pages:TemplatePage[] = templateData.filter( (page:TemplatePage, index:number) => pageSelection.value[index])
+      // console.log('[Print.refreshPages]', pages.length)
+      for( let index = 0; index < pages.length; index+=2) {
+          const printSheet:PrintSheet = {front:pages[index], back:pages[index+1]??null}
+          pageList.push(printSheet)
+      }
     }
     pages.value = pageList
 }
