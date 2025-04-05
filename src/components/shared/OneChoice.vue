@@ -1,24 +1,28 @@
 <template>
     <div class="oneChoice">
-        <div v-for="(c,index) in choices" :aria-label="c.label" 
+        <div v-if="model" v-for="(c,index) in choices" :aria-label="c.label" 
             @click="onChoice(c)" 
             class="choice" :class="[{'choiceActive':(model.label==c.label),'choiceInactive':(model.label!=c.label),'thinPad':thinpad}, `choice${index}`]"
-            :title="c.title?c.title:null"
+            :title="c.title??undefined"
             >{{c.label}}</div>
+        <div v-else>Model Missing</div>
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { OneChoiceValue } from '../../model/OneChoiceValue';
+
 
 const props = defineProps({
-  choices: { type: Object, default: [{label:'No Choice'}]},
+  choices: { type: Array<OneChoiceValue>, default: []},
   thinpad: { type: Boolean, default: false },
 })
 
-const emits = defineEmits(["change"]);
-const model = defineModel()
 
-function onChoice(choice) {
+const emits = defineEmits(["change"]);
+const model = defineModel<OneChoiceValue>()
+
+function onChoice(choice:OneChoiceValue) {
     // console.log('[OneChoice.onChouce]', choice)
     model.value = choice
     emits('change')
@@ -44,7 +48,7 @@ function onChoice(choice) {
 }
 
 .choiceActive {
-    background-color: #b4c6e7;
+    background-color: var(--bg-choice-active);
 }
 
 .thinPad {
