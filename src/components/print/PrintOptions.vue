@@ -1,16 +1,18 @@
 <template>
   <Dialog modal header="Print">
     <div class="printPopup">
-      <!-- <FieldSet legend="Layout"> -->
-        <div class="pageOptions">
-          <div class="pageOptionLabel">Pages per sheet</div>
-          <OneChoice v-model="pagePerSheet" :choices="[onePage,twoPages]" 
-            @change="onNewOptions"/>
-          <div class="pageOptionLabel">Back Page Orientation</div>
-          <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]"
-            @change="onNewOptions" />
-        </div>
-      <!-- </FieldSet> -->
+      <div class="pageOptions">
+        <div class="pageOptionLabel">Pages per sheet</div>
+        <OneChoice v-model="pagePerSheet" :choices="[onePage,twoPages]" 
+          @change="onNewOptions"/>
+        <div class="pageOptionLabel">Back Page Orientation</div>
+        <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]"
+          @change="onNewOptions" />
+        <div class="pageOptionLabel">Pages</div>
+        <PageSelection v-model="pageSelection" 
+          @change="onNewOptions" />
+
+      </div>
       <FieldSet legend="Printing Tips">
         <p class="note">
           <li>Enable <b>Background Graphics</b> print setting for best results with Checklists</li>
@@ -31,33 +33,38 @@
   </Dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
+import { UserUrl } from '../../lib/UserUrl';
 
 import OneChoice from '../shared/OneChoice.vue';
 
 import Button from "primevue/button";
 import Dialog from 'primevue/dialog'
 import FieldSet from 'primevue/fieldset'
-import { UserUrl } from '@/lib/UserUrl';
+import PageSelection from './PageSelection.vue';
+import { OneChoiceValue } from '../../model/OneChoiceValue';
 
 const emits = defineEmits(["print","options",'close']);
 
-const onePage = {label:'One', value:1}
-const twoPages = {label:'Two', value:2}
-const normalOrientation = {label:'Normal', value:false}
-const flippedOrientation = {label:'Flipped', value:true, title:'So you can read back page when front page is clipped'}
+const onePage = new OneChoiceValue('One', 1)
+const twoPages = new OneChoiceValue('Two', 2)
+const normalOrientation = new OneChoiceValue('Normal', false)
+const flippedOrientation = new OneChoiceValue('Flipped', true, 'So you can read back page when front page is clipped')
 
 const pagePerSheet = ref(twoPages)
 const flipBackPage = ref(normalOrientation)
+const pageSelection = ref<boolean[]>([true, true, true])
 
 //---------------------
 // Props management
 const props = defineProps({
-  refresh: { type: Number, default: 0},
+  pageSelection: { type: Array<boolean>, required: true},
 })
 
-function loadProps( props) {
+function loadProps( props:any) {
+  // console.log('[PrintOptions] loadProps', props)
+  pageSelection.value = props.pageSelection
 }
 
 onMounted( () => {
@@ -65,15 +72,18 @@ onMounted( () => {
 })  
 
 watch( props, async() => {
+  // console.log('[PrintOptions] props changed', props)
   loadProps( props)
 })
+
 //---------------------
 
 function getOptions() {
   if(!pagePerSheet.value || !flipBackPage.value) return null;
   const printOptions = {
     pagePerSheet: pagePerSheet.value.value,
-    flipBackPage: flipBackPage.value.value
+    flipBackPage: flipBackPage.value.value,
+    pageSelection: pageSelection.value,
   }
   return printOptions
 }
@@ -88,7 +98,9 @@ function onPrint() {
 }
 
 function onNewOptions() {
-  emits('options', getOptions())
+  const options = getOptions()
+  // console.log('[PrintOptions.onNewOptions]', options)
+  emits('options', options)
 }
 
 </script>
