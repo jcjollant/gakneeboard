@@ -7,7 +7,7 @@ const emits = defineEmits(["close"]);
 
 </script>
 <template>
-    <Dialog modal header="Create Your Kneeboard">
+    <Dialog modal header="Build Your Perfect Kneeboard in Seconds">
         <div class="hdiw">
             <div class="item">
                 <font-awesome-icon class="icon" :icon="['fas','plane-departure']" />
@@ -18,16 +18,15 @@ const emits = defineEmits(["close"]);
                 <span>Checklist</span>
             </div>
             <div class="item">
-                <font-awesome-icon class="icon" :icon="['fas','route']" />
-                <span>Navlog</span>
+                <font-awesome-icon class="icon" :icon="['fas','walkie-talkie']" />
+                <span>Radios</span>
             </div>
         </div>
-        <div class="intro">Your own perfect Kneeboard in minutes:</div>
         <div class="detailed-content">
         <ol>
-            <li>Click on tiles to match your preferences</li>
+            <li>Customize Tiles to match your flight</li>
             <li>Print on Letter size paper</li>
-            <li>Slap on your kneeboard and go flying!</li>
+            <li>Clip on your kneeboard and go fly!</li>
         </ol>
         </div>
         <div class="actionDialog"><Button label="Got it" @click="emits('close')"></Button></div>
