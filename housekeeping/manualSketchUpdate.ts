@@ -24,7 +24,7 @@ async function doIt() {
         //     continue;
         // }
         if(!airport.iap || airport.iap.length < 1) {
-            console.log('skipping', airport.code)
+            await AirportSketch.resolve(airport)
             continue;
         }
         const before = airport.iap[0].pdf
