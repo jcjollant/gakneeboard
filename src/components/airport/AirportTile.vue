@@ -109,7 +109,7 @@ const runwayName = ref('')
 const rwyOrientation = ref('')
 const showHeadings = ref(true)
 
-const defaultCornerFields = ['weather','twr','field','tpa','#FCD/P','gnd','?Custom?Custom','#FUNICOM']
+const defaultCornerFields = ['weather','twr','field','tpa','#FCD/P','#FGND','?Custom?Custom','#FUNICOM']
 const defaultRwyOrientation = 'vertical'
 const defaultPatternMode = 0
 const defaultTitle = 'Airport'
