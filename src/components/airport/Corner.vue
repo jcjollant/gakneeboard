@@ -184,7 +184,7 @@ function formatNavaid(navaid) {
 }
 
 function loadProps(newProps:any) {
-    // console.log( '[Corner.loadProps]', JSON.stringify(newProps))
+    // console.log( '[Corner.loadProps]', newProps)
     if(newProps == undefined) {
         displayMode.value = DisplayMode.small
         unknownValues()
