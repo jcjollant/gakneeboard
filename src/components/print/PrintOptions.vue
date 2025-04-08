@@ -14,12 +14,12 @@
 
       </div>
       <FieldSet legend="Printing Tips">
-        <p class="note">
+        <ul class="note">
           <li>Enable <b>Background Graphics</b> print setting for best results with Checklists</li>
           <li>One page per sheet in <b>Portrait</b> layout make great PDFs</li>
           <li>Two pages per sheet in <b>Landscape</b> layout will fold to kneeboard size</li>
           <li>Printing from <b>iPads / iPhones</b> requires a page reload to exit print mode</li>
-        </p>
+        </ul>
         </FieldSet>
       <div class="actionDialog gap-2">
         <div class="floatLeft">
@@ -144,7 +144,7 @@ function onNewOptions() {
   font-size: 0.8rem;
 }
 
-p.note {
+ul.note {
   margin: 0
 }
 
