@@ -4,44 +4,34 @@ import { Template } from '../backend/models/Template';
 
 describe('Template', () => {
     describe('fromView', () => {
-        it('Can copy TemplateView', () => {
+        it('Constructor works', () => {
             const data = {data:'data'}
             const templateId = 1
             const userId = 2
             const version = 3
             const description = "desc"
             const pages = 4
+            const name = "Some Name"
+            const thumbnail = "https://some.url"
+            const thumbHash = "abcdef1234567890cdfea"
 
-            const tv = new TemplateView( templateId, "name", data, description, version, false, "code", pages)
-            const t = Template.fromView(tv, userId)
+            const t = new Template(templateId, userId, data, name, description, version, pages, thumbnail, thumbHash)
 
             expect(t).toBeDefined()
             expect(t.id).toEqual(templateId)
             expect(t.userId).toEqual(userId)
             expect(t.data).toEqual(data)
-            expect(t.name).toEqual("name")
+            expect(t.name).toEqual(name)
             expect(t.version).toEqual(version)
             expect(t.description).toEqual(description)
             expect(t.creationDate).toBeUndefined()
             expect(t.pages).toEqual(pages)
-        })
+            expect(t.thumbnail).toEqual(thumbnail)
+            expect(t.thumbhash).toEqual(thumbHash)
 
-        it('Works with minimum parameters', () => {
-            const templateId = 1
-            const userId = 2
-
-            const tv = new TemplateView( templateId, '', {})
-            const t = Template.fromView(tv, userId)
-
-            expect(t).toBeDefined()
-            expect(t.id).toEqual(templateId)
-            expect(t.userId).toEqual(userId)
-            expect(t.data).toEqual({})
-            expect(t.name).toEqual("")
-            expect(t.version).toEqual(0)
-            expect(t.description).toBeUndefined()
-            expect(t.creationDate).toBeUndefined()
-            expect(t.pages).toEqual(0)
+            const t2 = new Template(templateId, userId, data, name, description, version, pages)
+            expect(t2.thumbnail).toBeUndefined()
+            expect(t2.thumbhash).toBeUndefined()
         })
     })
 })

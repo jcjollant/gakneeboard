@@ -1,7 +1,8 @@
 import { describe, expect, it, test} from '@jest/globals';
-import { Publication } from '../backend/models/Publication.ts'
-import { jcTestTemplateData } from './constants.ts';
-import { TemplateView } from '../backend/models/TemplateView.ts';
+import { Publication } from '../backend/models/Publication'
+import { jcTestTemplateData, jcUserId } from './constants';
+import { TemplateView } from '../backend/models/TemplateView';
+import { Template } from '../backend/models/Template';
 
 describe('Sheet class', () => {
     test('Constructor', () => {
@@ -36,24 +37,32 @@ describe('Sheet class', () => {
         expect(t2.pages).toBe(pages)
     })
 
-    test('set Publication', async () => {
+    it('Can Parse Template', async () => {
         const id = 1
         const name = "name"
         const data = jcTestTemplateData
+        const version = 6
+        const description = "Some Description"
+        const pages = jcTestTemplateData.length
+        const thumbnail = "http://thumbnail.url"  
+        const thumbhash = "1236549871563546asdqweasd"
         // default values
-        const t = new TemplateView(id, name, data)
 
         const publicationCode = "AB"
-        const pub:Publication = new Publication(0, publicationCode, id, true)
-        t.setPublication(pub)
-        expect(t.publish).toBeTruthy()
-        expect(t.code).toBe(publicationCode)
-
-        // now mark it as unpublished
-        t.setPublication(undefined)
-        expect(t.publish).toBeFalsy()
-        expect(t.code).toBeUndefined()
-
+        const t = new Template(id, jcUserId, jcTestTemplateData, name, description, version, pages, thumbnail, thumbhash)
+        const pub = new Publication(0, publicationCode, id, true)
+        const tv = TemplateView.parseTemplate(t, pub)
+        expect(tv).toBeDefined()
+        expect(tv.id).toBe(id)
+        expect(tv.name).toBe(name)
+        expect(tv.desc).toBe(description)
+        expect(tv.data).toBe(data)
+        expect(tv.ver).toBe(version)
+        expect(tv.publish).toBeTruthy()
+        expect(tv.code).toBe(publicationCode)
+        expect(tv.pages).toBe(pages)
+        expect(tv.thumbUrl).toBe(thumbnail)
+        expect(tv.thumbHash).toBe(thumbhash)
     })
     it('can parse', () => {
         const sheetId = 12

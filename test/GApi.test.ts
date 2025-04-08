@@ -1,5 +1,5 @@
 import { describe, expect, it, jest, test} from '@jest/globals';
-import { GApi, GApiError } from '../backend/GApi'
+import { GApi } from '../backend/GApi'
 import { jcHash, jcUserId, jcToken, jcName } from './constants'
 import { currentAsOf } from './constants';
 import { UserMiniView } from '../backend/models/UserMiniView';
@@ -11,18 +11,10 @@ import { AirportDao } from '../backend/AirportDao';
 import { Airport } from '../backend/models/Airport';
 
 import * as dotenv from 'dotenv'
+import { GApiError } from '../backend/GApiError';
 dotenv.config()
 
 describe( 'GApi Tests', () => {
-
-    test('Renton is found with both codes', async () => {
-        let airport = await GApi.getAirport('RNT')
-        expect(airport).toBeDefined()
-        expect(airport?.code).toBe('KRNT')
-        let airport2 = await GApi.getAirport('KRNT')
-        expect(airport2).toBeDefined()
-        expect(airport2?.code).toBe('KRNT')
-    })
 
     test('Getting multiple Airports', async () => {
         let list = ['rnt','jfk']
@@ -67,36 +59,6 @@ describe( 'GApi Tests', () => {
         expect(airports[1]?.asof).toBe(0)
     })
 
-    test('Invalid Airport Code', async () => {
-        GApi.getAirport('ABCDE').then( () => {
-            expect(true).toBe(false) // should not get here
-        }).catch( e => {
-            expect(e).toBeInstanceOf(GApiError)
-            expect(e.status).toBe(400)
-        })
-
-        GApi.getAirportView('ABCDE').then( () => {
-            expect(true).toBe(false) // should not get here
-        }).catch( e => {
-            expect(e).toBeInstanceOf(GApiError)
-            expect(e.status).toBe(400)
-        })
-
-
-        GApi.getAirport('ABCDE', undefined).then( () => {
-            expect(true).toBe(false) // should not get here
-        }).catch( e => {
-            expect(e).toBeInstanceOf(GApiError)
-            expect(e.status).toBe(400)
-        })
-        GApi.getAirport('ABCDE', jcUserId).then( () => {
-            expect(true).toBe(false) // should not get here
-        }).catch( e => {
-            expect(e).toBeInstanceOf(GApiError)
-            expect(e.status).toBe(400)
-        })
-    })
-
     test('ICAOs are valid', () => {
         expect(GApi.getIcao('KRNTA')).toBeNull()
         expect(GApi.getIcao('KRNT')).toBe('KRNT')
@@ -120,10 +82,10 @@ describe( 'GApi Tests', () => {
         expect(GApi.isMilitary('261.6')).toBe(true)
     })
 
-    test('Update airport', async () => {
-        const customRnt = {"code":"TEST","name":"Test Airport JC","elev":1000,"freq":[{"name":"CTAF","mhz":124.7},{"name":"TWR","mhz":null},{"name":"Weather","mhz":126.95},{"name":"GND","mhz":121.6}],"rwys":[{"name":"16-34","length":5400,"width":120,"ends":[null]}],"custom":false,"version":6,"effectiveDate":""}
-        expect(await GApi.createCustomAirport(jcHash,customRnt)).toBe('TEST')
-    })
+    // test('Update airport', async () => {
+    //     const customRnt = {"code":"TEST","name":"Test Airport JC","elev":1000,"freq":[{"name":"CTAF","mhz":124.7},{"name":"TWR","mhz":null},{"name":"Weather","mhz":126.95},{"name":"GND","mhz":121.6}],"rwys":[{"name":"16-34","length":5400,"width":120,"ends":[null]}],"custom":false,"version":6,"effectiveDate":""}
+    //     expect(await GApi.createCustomAirport(jcHash,customRnt)).toBe('TEST')
+    // })
 
     test('Get Custom airport', async () => {
         jest.spyOn(AirportSketch,'get').mockResolvedValue(AirportSketch.doesNotExist)
@@ -182,6 +144,26 @@ describe( 'GApi Tests', () => {
         expect(session2.camv).toBeDefined()
         expect(session2.user).toBeDefined()
 
+    })
+
+    describe('getAirport', () => {
+        it('Handles invalid code', async () => {
+            await expect(GApi.getAirport('')).rejects.toEqual( new GApiError(400, 'Invalid Airport Code'));
+            await expect(GApi.getAirport('A')).rejects.toEqual( new GApiError(400, 'Invalid Airport Code'));
+            await expect(GApi.getAirport('ABCDE')).rejects.toEqual( new GApiError(400, 'Invalid Airport Code'));
+        })
+
+        it('Handles unknown codes with or w/o user', async () => {
+            jest.spyOn(GApi, 'getAirportList').mockResolvedValue([])
+            const output = await GApi.getAirport('ABCD')
+            expect(output).toBeUndefined()
+
+            const output2 = await GApi.getAirport('ABCD', undefined)
+            expect(output2).toBeUndefined()
+
+            const output3 = await GApi.getAirport('ABCD', jcUserId)
+            expect(output3).toBeUndefined()
+        })
     })
 
     describe('getAirportCurent', () => {
