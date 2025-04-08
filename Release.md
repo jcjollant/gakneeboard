@@ -1,3 +1,5 @@
+## 04/08/2025 51440
+* Thumbnails
 ## 04/04/2025 5143
 * New users are created with max_templates and print_credit
 ## 04/03/2025 5141 5142
