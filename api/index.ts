@@ -48,24 +48,24 @@ app.get('/', async (req:Request, res:Response) => {
 /**
  * Create a new custom airport
  */
-interface AirportPayload {
-    user: string;
-    airport: any; // Replace with proper airport type
-} 
-app.post('/airport', async (req,res) => {
-    // console.log('[index.post.airport]', typeof req.body)
-    const payload:AirportPayload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
-    // console.log("[index] POST airport payload " + JSON.stringify(payload))
-    if( !payload.user || !payload.airport ) {
-        res.status(400).send('Invalid request')
-        return
-    }
-    await GApi.createCustomAirport(payload.user, payload.airport).then( (code) => {
-        res.status(201).send(code + ' created')
-    }).catch( (e) => {
-        catchError(res, e, 'POST /airport')
-    })
-})
+// interface AirportPayload {
+//     user: string;
+//     airport: any; // Replace with proper airport type
+// } 
+// app.post('/airport', async (req,res) => {
+//     // console.log('[index.post.airport]', typeof req.body)
+//     const payload:AirportPayload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+//     // console.log("[index] POST airport payload " + JSON.stringify(payload))
+//     if( !payload.user || !payload.airport ) {
+//         res.status(400).send('Invalid request')
+//         return
+//     }
+//     await GApi.createCustomAirport(payload.user, payload.airport).then( (code) => {
+//         res.status(201).send(code + ' created')
+//     }).catch( (e) => {
+//         catchError(res, e, 'POST /airport')
+//     })
+// })
 
 app.get('/airport/:id', async (req,res) => {
     const userId = await UserTools.userIdFromRequest(req)
