@@ -1,5 +1,3 @@
-import { TemplateView } from "./TemplateView"
-
 export class PageType {
   static selection = 'selection'
   static tiles = 'tiles'
@@ -22,28 +20,37 @@ export class Tile {
 }
 
 export class Template {
-    id:number;
-    userId:number;
-    data:any;
-    name:string;
-    version:number;
-    description:string|undefined;
-    creationDate:Date|undefined;
-    pages:number;
+    id:number
+    userId:number
+    data:any
+    name:string
+    version:number
+    description:string|undefined
+    pages:number
+    thumbnail:string|undefined
+    thumbhash:string|undefined
+    creationDate:Date|undefined
 
-    constructor(id:number, userId:number, data:any, name:string, description:string|undefined, version:number, page:number, creationDate:Date|undefined=undefined) {
+    constructor(id:number, 
+            userId:number, 
+            data:any, 
+            name:string, 
+            description:string|undefined, 
+            version:number, 
+            page:number, 
+            thumbnail:string|undefined=undefined, 
+            thumbhash:string|undefined=undefined, 
+            creationDate:Date|undefined=undefined) {
         this.id = id;
         this.userId = userId;
         this.data = data;
         this.name = name;
         this.version = version;
         this.description = description;
-        this.creationDate = creationDate;
         this.pages = page;
-    }
-
-    static fromView(templateView: TemplateView, userId:number):Template {
-        return new Template( templateView.id, userId, templateView.data, templateView.name, templateView.desc, templateView.ver, templateView.pages);
+        this.thumbnail = thumbnail
+        this.thumbhash = thumbhash
+        this.creationDate = creationDate;
     }
 }
 
