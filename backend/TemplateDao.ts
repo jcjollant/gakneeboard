@@ -3,7 +3,6 @@ import { Template } from "./models/Template";
 import { UserTemplateData } from "./models/UserTemplateData";
 import { Dao } from "./dao/Dao";
 import { TemplateView } from "./models/TemplateView";
-import { template } from "@babel/core";
 import { ThumbnailData } from "./models/ThumbnailData";
 
 export class TemplateDao extends Dao<Template> {
