@@ -24,7 +24,7 @@ const router = useRouter()
 const test = ref(false)
 
 onMounted(() => {
-    test.value = GApiUrl.root.indexOf('localhost') > -1
+    test.value = GApiUrl.isTest()
     // console.log('[Menu.onMounted]')
 })
 
