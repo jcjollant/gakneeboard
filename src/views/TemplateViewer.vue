@@ -65,6 +65,7 @@ import LoadingPage from '../components/page/LoadingPage.vue'
 import Page from '../components/page/Page.vue'
 import TemplateExport from '../components/templates/TemplateExport.vue'
 import TemplateSettings from '../components/templates/TemplateSettings.vue'
+import { computeSHA256 } from '../assets/Sha.ts'
 
 const noTemplate = Template.noTemplate()
 const activeTemplate = ref(noTemplate)
@@ -151,7 +152,7 @@ function getTemplateName() {
 
 // update all widgets with provided data
 function loadTemplate(template:Template,saveToLocalStorage:boolean=false) {
-  // console.log( '[TemplateViewer.loadTemplate]', typeof data, JSON.stringify(sheet))
+  // console.log( '[TemplateViewer.loadTemplate]', template)
 
   // if we don't know what to show, we load a copy of the demo page
   if( template.isInvalid()) {
@@ -178,10 +179,7 @@ function loadTemplate(template:Template,saveToLocalStorage:boolean=false) {
       if(saveToLocalStorage) {
         saveTemplateToLocalStore()
       }
-      // refresh thumbnail if it doesnt exist
-      if(template.id > 0 && LocalStore.thumbnailGet(template.id) == null) {
-        updateThumbnail(template.id)
-      }
+      updateThumbnail(template)
       resolve()
     })
   }, 1000)
@@ -296,7 +294,7 @@ async function onSave() {
     return
   }
   // give page time to update the thumbnail
-  setTimeout( () => updateThumbnail(activeTemplate.value.id), 1000)
+  setTimeout( () => updateThumbnail(activeTemplate.value), 1000)
   try {
       // retrieve data from active template
       toaster.info( 'Say Request', 'Saving template ' + activeTemplate.value.name, 4000)
@@ -382,15 +380,20 @@ function updateOffsets() {
   // console.log('[Template.updateOffset] offsetLast', maxOffset)
 }
 
-function updateThumbnail(index:number) {
+function updateThumbnail(template:Template) {
+  // console.log('[TemplateViewer.updateThumbnail] template', template.id, template.thumb)
   // console.log('[Template.updateThumbnail]', activeTemplate.value?.id)
-  if(activeTemplate.value.isInvalid()) return;
+  if(template.id <= 0 || activeTemplate.value.isInvalid()) {
+    console.log('[Template.updateThumbnail] skipping invalid template')
+    return;
+  }
+  const index = template.id
   const element:HTMLElement|null = document.querySelector(".page0")
   if(element == null) return;
 
   // Capture page 0 into an image
-  html2canvas(element).then(canvas => {
-    // scale image to fit the thummbnail
+  html2canvas(element).then( async (canvas) => {
+    // scale image to fit the thumbnail
     const scaledCanvas = document.createElement('canvas')
     const scaleFactor = 200 / canvas.width;
     scaledCanvas.width = canvas.width * scaleFactor
@@ -399,12 +402,17 @@ function updateThumbnail(index:number) {
     if(scaledCtx == null) return
     scaledCtx.scale(scaleFactor, scaleFactor)
     scaledCtx.drawImage(canvas, 0, 0)
-    const scaledImg = scaledCanvas.toDataURL('image/png')
-
-    // actually save image
-    LocalStore.thumbnailSave(index, scaledImg)
-
-    // console.log( '[Template.updateThumbnail] done', index, scaledImg.length)
+    scaledCanvas.toBlob( async (blob) => {
+      // push thumbnail image to backend
+      if(blob == null) return
+      const sha256 = await computeSHA256(blob)
+      // console.log('[Template.updateThumbnail] sha256', sha256, template.thumbHash)
+      if(sha256 != template.thumbHash) {
+        activeTemplate.value.thumbUrl = await TemplateData.updateThumbnail(index, blob, sha256)
+      } else {
+        // console.log('[Template.updateThumbnail] skipping unchanged thumbnail')
+      }
+    }, 'image.png')
   }).catch((e) => console.log('[Template.updateThumbnail] failed', e))
 
 }
