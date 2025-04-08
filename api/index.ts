@@ -1,13 +1,15 @@
 import express, { Request, Response, NextFunction } from "express"
 import cors from "cors";
 import multer from "multer"
-import { GApi, GApiError } from '../backend/GApi'
+import { GApi } from '../backend/GApi'
 import { StripeClient } from '../backend/business/Stripe'
 import { UserTools } from '../backend/UserTools'
 import { Maintenance } from '../backend/Maintenance'
 import { NavlogTools } from "../backend/NavlogTools";
 import { Ticket } from "../backend/Ticket";
 import { Charts } from "../backend/Charts";
+import { GApiTemplate } from "../backend/GApiTemplate";
+import { GApiError } from "../backend/GApiError";
 
 const port:number = 3000
 const app = express();
@@ -288,7 +290,8 @@ app.get('/template/:id', async (req:Request, res:Response) => {
             throw new GApiError(401, 'Unauthorized')
         }
         // console.log( "[index] GET template " + req.params.id + " userId " + userId
-        let template = await GApi.templateGet(Number(req.params.id), userId);
+        const templateId = Number(req.params.id)
+        let template = await GApiTemplate.get(templateId, userId);
         if(template) {
             res.send(template)
         } else {
@@ -305,7 +308,7 @@ app.get('/template/:id', async (req:Request, res:Response) => {
 app.get('/templates', async (req:Request, res:Response) => {
     const userId = await UserTools.userIdFromRequest(req)
     try {
-        const templates = await GApi.templateGetList(userId);
+        const templates = await GApiTemplate.getList(userId);
         res.send(templates)
     } catch( e) {
         catchError(res, e, 'GET /templates')
@@ -317,7 +320,7 @@ app.post('/template', async (req:Request, res:Response) => {
     // console.log('[index.post/template]', typeof req.body)
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
     // console.log("[index] POST template payload " + JSON.stringify(payload))
-    GApi.templateSave(payload.user, payload.sheet).then( (status) => {
+    GApiTemplate.save(payload.user, payload.sheet).then( (status) => {
         // console.log('[index.post/sheet]', JSON.stringify(sheet))
         res.status(status.code).send(status.template)
     }).catch( (e) => {
@@ -327,13 +330,14 @@ app.post('/template', async (req:Request, res:Response) => {
 
 // Delete a specific template
 app.delete('/template/:id', async (req:Request, res:Response) => {
-    const templateId = req.params.id
-    const userId = await UserTools.userIdFromRequest(req)
     try {
-        if( !templateId || !userId) { 
+        const templateId = Number(req.params.id)
+        const userId = await UserTools.userIdFromRequest(req)
+
+            if( !templateId || !userId) { 
             throw new GApiError(400, 'Invalid request')
         }
-        await GApi.templateDelete(Number(templateId), userId).then( (template) => {
+        await GApiTemplate.delete(templateId, userId).then( (template) => {
             res.send(template + ' deleted')
         })
     } catch( e) {
@@ -345,6 +349,18 @@ app.delete('/template/:id', async (req:Request, res:Response) => {
         }
     }
     // console.log( "[index] DELETE sheet " + req.params.id
+})
+
+app.post('/templateThumbnail', upload.single('image'), async (req:Request, res:Response) => {
+    try {
+        const userId = await UserTools.userIdFromRequest(req)
+        const templateId = Number(req.body.templateId)
+        const thumbnailHash = req.body.sha256;
+        const thumbnailData = await GApiTemplate.updateThumbnail(templateId, userId, req.file.buffer, thumbnailHash)
+        res.send(thumbnailData)
+    } catch(e) {
+        catchError(res, e, 'POST /templateThumbnail')
+    }
 })
 
 app.get('/sunlight/:from/:to/:dateFrom/:dateTo?', async (req:Request, res:Response) => {
