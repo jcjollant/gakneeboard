@@ -1,5 +1,8 @@
 # User Experience updates
-## 04/06/2025
+## 04/08/2025 5150
+* Removed local template from list
+* Added thumbnail management
+## 04/06/2025 5144
 * Fixed Skyhawk demo
 * Refreshed How Does it Work
 ## 04/04/2025 5143
