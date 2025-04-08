@@ -6,11 +6,14 @@ describe('First Time User Experience', () => {
     // As a new user, The popup should show until I click "Got it"
     it('HDIW', () => {
         cy.visit(environment)
-        cy.get('#pv_id_1_header').contains('Create Your Kneeboard')
+        cy.get('#pv_id_1_header').contains('Build Your Perfect Kneeboard in Seconds')
         cy.get('.hdiw').contains('Airports')
         cy.get('.hdiw').contains('Checklist')
-        cy.get('.hdiw').contains('Navlog')
-        cy.get('.intro').contains('perfect Kneeboard')
+        cy.get('.hdiw').contains('Radios')
+        cy.get('ol > :nth-child(1)').contains('Customize Tiles to match your flight')
+        cy.get('ol > :nth-child(2)').contains('Print on Letter size paper')
+        cy.get('ol > :nth-child(3)').contains('Clip on your kneeboard and go fly!')
+
         cy.get('.p-button').contains('Got it')
         // Close with top right button
         cy.get('.p-dialog-header-icon').click()
@@ -35,10 +38,9 @@ describe('First Time User Experience', () => {
 
         // As a new user, I should see the default templates
         cy.get('.templateSection')
-        cy.get('.templateSection > .templateList').children().should('have.length', 3)
+        cy.get('.templateSection > .templateList').children().should('have.length', 2)
         cy.get('.templateSection > .templateList > :nth-child(1)').contains('New')
-        cy.get('.templateSection > .templateList > :nth-child(2)').contains('Local')
-        cy.get('.templateSection > .templateList > :nth-child(3)').contains('No Templates (yet)')
+        cy.get('.templateSection > .templateList > :nth-child(2)').contains('No Templates (yet)')
 
         // As a new user, I should see the demos
         cy.get('.demoSection')

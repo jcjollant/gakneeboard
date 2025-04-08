@@ -174,6 +174,7 @@ describe('Tiles', () => {
 
   it('Merges when code match', () => {
     visitSkipBanner()
+    viewport()
     // Load default demo
     loadDemo()
 
@@ -222,8 +223,8 @@ describe('Tiles', () => {
   })
 
   it('Merges on expand', () => {
-    visitSkipBanner()
     viewport()
+    visitSkipBanner()
     // Load default demo
     loadDemo()
 
