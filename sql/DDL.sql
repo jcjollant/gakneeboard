@@ -74,6 +74,12 @@ CREATE TABLE users(
 );
 CREATE UNIQUE INDEX users_sha256_key ON users USING btree ("sha256");
 
+## 04/07/2025 Dev + Prod
+ALTER TABLE sheets ADD COLUMN thumbhash CHAR(64);
+
+## 04/04/2025 Prod + Dev
+ALTER TABLE sheets ADD COLUMN thumbnail varchar(255);
+
 ## 04/03/2025 Prod + Dev
 ALTER TABLE users ADD COLUMN max_templates integer;
 update users set max_templates=2
