@@ -1,4 +1,5 @@
 import { Publication } from "./Publication";
+import { Template } from "./Template";
 
 export class TemplateView {
     id:number;
@@ -9,10 +10,21 @@ export class TemplateView {
     desc:string|undefined;
     ver:number;
     pages:number;
+    thumbUrl:string|undefined
+    thumbHash:string|undefined
 
     constructor( 
-            id:number, name:string, dataParam:any, description:string|undefined=undefined, 
-            version:number=0, publish:boolean|undefined=false, code:string|undefined=undefined, pages:number=0) {
+            id:number, 
+            name:string, 
+            dataParam:any, 
+            description:string|undefined=undefined, 
+            version:number=0, 
+            publish:boolean|undefined=false, 
+            code:string|undefined=undefined, 
+            pages:number=0, 
+            thumbnail:string|undefined=undefined,
+            thumbHash:string|undefined=undefined,
+            ) {
         this.id = id;
         this.name = name;
         this.desc = description ? description : undefined;
@@ -27,18 +39,23 @@ export class TemplateView {
         this.code = code;
         // Calculate pages it it's not provided
         this.pages = pages ? pages : (this.data.length ? this.data.length : 0);
+        this.thumbUrl = thumbnail;
+        this.thumbHash = thumbHash;
     }
 
-    setPublication(pub: Publication|undefined) {
-        if(pub) {
-            this.code = pub.code;
-            this.publish = pub.active;
-        } else {
-            this.code = undefined;
-            this.publish = false;
-        }
-    }
     static parse(sheet: any): TemplateView {
         return new TemplateView(sheet.id, sheet.name, sheet.data, sheet.description, sheet.ver, sheet.publish, sheet.code);
+    }
+
+    /**
+     * Create a view from template and publication
+     * @param template 
+     * @param pub 
+     * @returns 
+     */
+    static parseTemplate(template:Template, pub:Publication|undefined = undefined): TemplateView {
+        const publish = pub ? pub.active : false;
+        const code = pub ? pub.code : undefined;
+        return new TemplateView(template.id, template.name, template.data, template.description, template.version, publish, code, template.pages, template.thumbnail, template.thumbhash);
     }
 }
