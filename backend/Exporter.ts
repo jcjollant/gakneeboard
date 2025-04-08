@@ -1,6 +1,7 @@
 import { AceWriter } from "./exporters/AceWriter";
 import { FmdWriter } from "./exporters/FmdWriter";
-import { GApiError } from "./GApi";
+import { GApiError } from "./GApiError";
+import { Template } from "./models/Template";
 import { TemplateView } from "./models/TemplateView";
 
 export class Exporter {
