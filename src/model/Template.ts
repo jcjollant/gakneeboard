@@ -1,13 +1,15 @@
 import { PageType } from "../assets/PageType";
 
 export class Template {
-    id:number;
+    id:number
     name:string
     desc:string
     publish:boolean
     data:TemplatePage[]
     ver:number
     code:string
+    thumbUrl:string|undefined
+    thumbHash:string|undefined
     constructor(name:string, description:string, publish:boolean=false, data:TemplatePage[]=[], version:number=0) {
         this.id = 0
         this.name = name
@@ -16,6 +18,8 @@ export class Template {
         this.data = data
         this.ver = version
         this.code = ''
+        this.thumbUrl = undefined
+        this.thumbHash = undefined
     }
 
     static describe(template:any):string {
@@ -48,10 +52,14 @@ export class Template {
     }
 
     static parse(data:any):Template {
+        // console.log('[Template.parse]', data)
         const template = new Template(data.name, data.desc, data.publish, data.data, data.ver)
         template.id = data.id
         template.code = data.code
         template.ver =  data?.ver ?? template.ver
+        template.thumbUrl = data?.thumbUrl
+        template.thumbHash = data?.thumbHash
+
         return template
     }
 }
