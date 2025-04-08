@@ -89,7 +89,7 @@ export class DemoData {
     )
 
 // Skyhawk
-    static page0DemoSkyhawk = new TemplatePage( PageType.tiles, 'Skyhawk',
+    static page0DemoSkyhawk = new TemplatePage( PageType.tiles, 'C172 Reference',
         [
             {name:TileType.airport, data:{code:"0S9",rwy:"09-27",rwyOrientation:"magnetic",corners:["weather","twr","field","tpa"]}},
             {name:TileType.atis, data:{mode:DisplayModeAtis.CompactATIS}},
