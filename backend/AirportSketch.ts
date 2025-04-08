@@ -2,7 +2,6 @@ import { put } from "@vercel/blob";
 import { AirportDao } from "./AirportDao";
 import { Airport } from "./models/Airport";
 import axios from "axios";
-import { Charts } from "./Charts";
 import { Canvas, createCanvas } from "canvas";
 
 // Manually set up a fake worker
