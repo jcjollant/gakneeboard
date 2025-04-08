@@ -142,8 +142,7 @@ export class TemplateData {
         return new Promise( async (resolve, reject) => {
             getUrlWithUser(url).then( response => {
                 // console.log('[data.sheetGetById]', JSON.stringify(response))
-                const template = new Template(response.data.name, response.data.description, response.data.publish, response.data.data, response.data.ver)
-                template.id = response.data.id
+                const template = Template.parse(response.data)
                 resolve( template);
             }).catch( error => {
                 if(error.response && error.response.status == 404) {
@@ -191,4 +190,30 @@ export class TemplateData {
                 })
             })
     }
+
+    static async updateThumbnail(id:number, imageBlob:Blob, sha256:string):Promise<string> {
+        // console.log('[TemplateData.updateThumbnail] updating thumbnail', id, 'length', imageBlob.size)
+        return new Promise( async (resolve, reject) => {
+            const url = GApiUrl.templateThumbnail()
+            if( !currentUser.loggedIn) {
+                return reject('Cannot update thumbnail without user')
+            }
+            const formData = new FormData();
+            formData.append('image', imageBlob, 'thumbnail.png')
+            const sentId = GApiUrl.isTest() ? -id : id
+            formData.append('templateId', sentId.toString())
+            formData.append('user', currentUser.sha256)
+            formData.append('sha256', sha256)
+
+            axios.post(url, formData, { headers: {'Content-Type' : "multipart/form-data"}}).then( response => {
+                const thumbnailUrl = response.data.url
+                const thumbnailHash = response.data.hash
+                // save the thumbnail for use by home page
+                currentUser.updateThumbnail(id, thumbnailUrl, thumbnailHash)
+                // console.log('[TemplateData.updateThumbnail] thumbnail updated', thumbnailUrl)
+                resolve(thumbnailUrl)
+            }).catch(err => reject(err))
+        })
+    }
+
 }
