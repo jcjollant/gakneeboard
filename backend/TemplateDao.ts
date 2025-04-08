@@ -4,6 +4,7 @@ import { UserTemplateData } from "./models/UserTemplateData";
 import { Dao } from "./dao/Dao";
 import { TemplateView } from "./models/TemplateView";
 import { template } from "@babel/core";
+import { ThumbnailData } from "./models/ThumbnailData";
 
 export class TemplateDao extends Dao<Template> {
     protected tableName: string = 'sheets';
@@ -21,14 +22,13 @@ export class TemplateDao extends Dao<Template> {
      * @param userId 
      * @returns 
      */
-    public static async createOrUpdate(templateView:TemplateView,userId:number):Promise<Template> {
+    public static async createOrUpdateView(templateView:TemplateView,userId:number):Promise<TemplateView> {
 
-        const template = Template.fromView(templateView, userId)
-        template.version++;
+        templateView.ver++;
         if( templateView.id) {
             // console.log( "[SheetDao.createOrUpdate] updating", pageId);
             const result = await sql`
-                UPDATE sheets SET data=${JSON.stringify(template.data)},name=${template.name},description=${template.description},pages=${template.pages},version=${template.version} WHERE id=${template.id} AND user_id=${template.userId}
+                UPDATE sheets SET data=${JSON.stringify(templateView.data)},name=${templateView.name},description=${templateView.desc},pages=${templateView.pages},version=${templateView.ver} WHERE id=${templateView.id} AND user_id=${userId}
             `
             // we should update something
             if( result.rowCount == 0) {
@@ -37,12 +37,12 @@ export class TemplateDao extends Dao<Template> {
         } else { // new Tempalte creation
             const result = await sql`
                 INSERT INTO sheets (name, data, description, pages, version, user_id)
-                VALUES (${template.name}, ${JSON.stringify(template.data)}, ${template.description}, ${template.pages}, 1, ${template.userId})
+                VALUES (${templateView.name}, ${JSON.stringify(templateView.data)}, ${templateView.desc}, ${templateView.pages}, 1, ${userId})
                 RETURNING id;
             `
-            template.id = result.rows[0]['id']
+            templateView.id = result.rows[0]['id']
         }
-        return template
+        return templateView
     }
 
     /**
@@ -51,10 +51,10 @@ export class TemplateDao extends Dao<Template> {
      * @param userId Template owner
      * @return Deleted template Id or 0 if no match where found
      */
-    public static async delete(templateId:number, userId:number):Promise<number> {
-        const result = await sql`
-            DELETE FROM sheets WHERE id=${templateId} AND user_id=${userId};
-        `
+    public async delete(templateId:number, userId:number):Promise<number> {
+        const result = await this.db.query(`
+            DELETE FROM ${this.tableName} WHERE id=${templateId} AND user_id=${userId};
+        `)
         if( result.rowCount == 0) {
             return 0
         }
@@ -62,6 +62,17 @@ export class TemplateDao extends Dao<Template> {
         sql`UPDATE publications SET sheetid=NULL WHERE sheetid=${templateId}`
 
         return templateId
+    }
+
+    /**
+     * Delete a specific template for a given user
+     * @param templateId Template id
+     * @param userId Template owner
+     * @return Deleted template Id or 0 if no match where found
+     */
+    public static async deleteStatic(templateId:number, userId:number):Promise<number> {
+        const templateDao = new TemplateDao();
+        return templateDao.delete(templateId, userId)
     }
 
     /**
@@ -73,21 +84,9 @@ export class TemplateDao extends Dao<Template> {
         return result.rows.map((row) => new TemplateView(row['id'], '', row['data']));
     }
 
-    /**
-     * Find a template for a given user
-     * @param templateId 
-     * @param userId 
-     * @returns 
-     */
-    // public async getForUser(templateId:number, userId:number):Promise<Template> {
-    //     return new Promise<Template>(async (resolve, reject) => {
-    //         const result = await this.db.query(`SELECT * FROM ${this.tableName} WHERE id=${templateId} AND user_id=${userId}`)
-    //         if( result.rowCount == 0)
-    //             return reject("Not Found")
-    //         const row = result.rows[0]
-    //         resolve( this.parseRow(row))
-    //     })
-    // }
+    public static getInstance():TemplateDao {
+        return new TemplateDao()
+    }
 
     /**
      * Gets a list of pages for a given user. The list is returned as an array of objects without data nor version
@@ -98,11 +97,11 @@ export class TemplateDao extends Dao<Template> {
     public static async getOverviewListForUser(userId:number):Promise<TemplateView[]> {
         // console.log('[SheetDao.getListForUser] user', userId)
         return await sql`
-            SELECT s.id,s.name,s.description,s.pages,p.active,p.code as code FROM sheets AS s LEFT JOIN publications AS p ON s.id = p.sheetid WHERE user_id=${userId}
+            SELECT s.id,s.name,s.description,s.pages,s.thumbnail,s.thumbhash,p.active,p.code as code FROM sheets AS s LEFT JOIN publications AS p ON s.id = p.sheetid WHERE user_id=${userId}
         `.then( (result) => {
             // console.log('[SheetDao.getListForUser]', result.rowCount)
             if(result.rowCount) {
-                return result.rows.map( (row) => new TemplateView(row['id'], row['name'], [], row['description'], 0, row['active'], row['code'], row['pages']))
+                return result.rows.map( (row) => new TemplateView(row['id'], row['name'], [], row['description'], 0, row['active'], row['code'], row['pages'], row['thumbnail'], row['thumbhash']))
             } else {
                 return []
             }
@@ -117,8 +116,13 @@ export class TemplateDao extends Dao<Template> {
         return result.rows.map((row) => new UserTemplateData(Number(row['user_id']), row['pages']));
     }
 
+    /**
+     * Parse a result row into Template instance
+     * @param row 
+     * @returns 
+     */
     public parseRow(row: any): Template {
-        return new Template(row['id'], row['user_id'], row['data'], row['name'], row['description'], row['version'], row['pages'], row['creation_date'])
+        return new Template(row['id'], row['user_id'], row['data'], row['name'], row['description'], row['version'], row['pages'], row['thumbnail'], row['thumbhash'], row['creation_date'])
     }
 
     /**
@@ -127,20 +131,46 @@ export class TemplateDao extends Dao<Template> {
      * @param userId 
      * @returns 
      */
-    public static async readById(templateId:number, userId:number|undefined=undefined):Promise<TemplateView|undefined> {
+    public static async readByIdStatic(templateId:number, userId:number|undefined=undefined):Promise<Template|undefined> {
+        const templateDao = new TemplateDao();
+        return templateDao.readById(templateId, userId)
+    }
+
+    /**
+     * 
+     * @param templateId 
+     * @param userId 
+     * @returns 
+     */
+    async readById(templateId:number, userId:number|undefined=undefined):Promise<Template|undefined> {
         let result:any;
         if(userId) {
-            result = await sql`
-                SELECT data,name,description,version FROM sheets WHERE id=${templateId} AND user_id=${userId};
-            `
+            result = await this.db.query(`
+                SELECT * FROM ${this.tableName} WHERE id=${templateId} AND user_id=${userId};
+            `)
         } else {
-            result = await sql`
-                SELECT data,name,description,version FROM sheets WHERE id=${templateId};
-            `
+            result = await this.db.query(`
+                SELECT * FROM ${this.tableName} WHERE id=${templateId};
+            `)
         }
         if( result.rowCount == 0) return undefined
 
         const row = result.rows[0];
-        return new TemplateView( templateId, row['name'], row['data'], row['description'], row['version']);
+        return this.parseRow(row)
+    }
+
+
+    /**
+     * Update a template thumbnail
+     * @param template
+     * @returns the new thumbnail url
+     */
+    public async updateThumbnail(template: Template):Promise<ThumbnailData> {
+        const result = await sql`
+            UPDATE sheets SET thumbnail=${template.thumbnail},thumbhash=${template.thumbhash} WHERE id=${template.id}
+        `
+        if( result.rowCount == 0) throw new Error('Template not found')
+
+        return new ThumbnailData(template.thumbnail, template.thumbhash)
     }
 }
