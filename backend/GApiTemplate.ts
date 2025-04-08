@@ -123,11 +123,14 @@ export class GApiTemplate {
     }
 
 
-    static async updateThumbnail(templateId: number, userId: number, pngBuffer: Buffer, hash:string) {
-        console.log('[GApiTemplate.updateThumbnail] ' + templateId + ' for ' + userId + ' length ' + pngBuffer.length + ' with ' + hash)
+    static async updateThumbnail(templateIdParam: number, userId: number, pngBuffer: Buffer, hash:string) {
+        console.log('[GApiTemplate.updateThumbnail] ' + templateIdParam + ' for ' + userId + ' length ' + pngBuffer.length + ' with ' + hash)
         return new Promise<ThumbnailData>( async (resolve, reject) => {
-            console.log('[GApiTemplate.updateThumbnail] ' + templateId + ' for ' + userId)
+            console.log('[GApiTemplate.updateThumbnail] ' + templateIdParam + ' for ' + userId)
             const templateDao = new TemplateDao()
+            // we may have negative numbers for tests
+            const testTemplate = templateIdParam < 0
+            const templateId = Math.abs(templateIdParam)
             const template:Template|undefined = await templateDao.readById(templateId, userId)
 
             // unknown template for that user Id => 404
@@ -137,7 +140,7 @@ export class GApiTemplate {
 
             // save image data to blob
             try {
-                const blob = await put(`thumbnails/${templateId}.png`, pngBuffer, {
+                const blob = await put(`thumbnails/${templateIdParam}.png`, pngBuffer, {
                     access: "public",
                     contentType: "image/png",
                     token: process.env.BLOB_READ_WRITE_TOKEN,
@@ -152,7 +155,7 @@ export class GApiTemplate {
     
             } catch(error) {
                 console.log('[GApiTemplate.updateThumnail]' + error)
-                return reject( new GApiError(500, `Could not update thumbnail ${templateId} for ${userId}`))
+                return reject( new GApiError(500, `Could not update thumbnail ${templateIdParam} for ${userId}`))
             }
         })
     }
