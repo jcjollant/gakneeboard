@@ -11,38 +11,40 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { LocalStore } from '@/lib/LocalStore';
+import { Template } from '../../model/Template';
 
 const emits = defineEmits(['selection'])
 const props = defineProps({ 
-  template: { type: Object, default: null},
+  template: { type: Object, required: true},
   temporary: { type: Boolean, default: false},
   demo: { type: Boolean, default: false},
   src: { type: String, default: null }
 })
-const template = ref(null)
-const thumbnail = ref(null)
+const noTemplate = Template.noTemplate()
+const template = ref<Template>(noTemplate)
+const thumbnail = ref<string|undefined>(undefined)
 
 onMounted(() => {
     // console.log('[TemplateSelector.onMounted]', props.template)
     if( props.template) {
-        template.value = props.template
-        // get thumbnail from src
-        if( props.src ) {
-            if(props.src == 'local') {
-                // special value for local thumbnail
-                thumbnail.value = LocalStore.thumbnailGet(props.src)
-            } else {
-                thumbnail.value = props.src
-            }
-        } else {
-            thumbnail.value = LocalStore.thumbnailGet(props.template.id)
-        }
+        template.value = Template.parse(props.template)
+        thumbnail.value = props.src ?? template.value.thumbUrl
+        // // get thumbnail from src
+        // if( props.src ) {
+        //     if(props.src == 'local') {
+        //         // special value for local thumbnail
+        //         thumbnail.value = LocalStore.thumbnailGet(props.src)
+        //     } else {
+        //         thumbnail.value = props.src
+        //     }
+        // } else {
+        //     thumbnail.value = LocalStore.thumbnailGet(props.template.id)
+        // }
         // console.log('[TemplateSelector.onMounted] thumbnail', thumbnail.value)
     } else {
-        template.value = { name: '?', desc: 'No Description'}
+        template.value = noTemplate
     }
 })
 
