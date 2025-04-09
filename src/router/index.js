@@ -4,13 +4,15 @@ import PricingPlans from '../views/PricingPlans.vue';
 import Print from '../views/Print.vue';
 import TemplateViewer from '../views/TemplateViewer.vue';
 import ThankYou from '../views/ThankYou.vue';
+import FTUX from '../views/FTUX.vue';
 
 export const RouterNames = {
     Home: 'Home',
     Plans: 'Plans',
     ThankYou: 'Thank you',
     Print: 'Print',
-    Template: 'Template'
+    Template: 'Template',
+    FTUX: 'First Time',
 }
 
 const routes = [
@@ -18,7 +20,8 @@ const routes = [
     { path: '/plans', name: RouterNames.Plans, component: PricingPlans },
     { path: '/thankyou', name: RouterNames.ThankYou, component: ThankYou },
     { path: '/print/:id', name: RouterNames.Print, component: Print },
-    { path: '/template/:id', name: RouterNames.Template, component: TemplateViewer }
+    { path: '/ftux', name: RouterNames.FTUX, component: FTUX},
+    { path: '/template/:id', name: RouterNames.Template, component: TemplateViewer },
 ]
 
 
