@@ -1,4 +1,7 @@
 # User Experience updates
+## 04/09/2025 5151
+* Removed default demo
+* New Landing page and FTUX
 ## 04/08/2025 5150
 * Removed local template from list
 * Added thumbnail management
