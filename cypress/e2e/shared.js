@@ -1,6 +1,7 @@
 const devEnv = 'http://localhost:5173/'
 // const prodEnv = 'https://kneeboard.ga'
 export const environment = devEnv
+export const landing = environment + 'rwy01.html'
 // const devBackend = 'http://localhost:3000/'
 // export const backend = devBackend
 export const titleAtis = "ATIS @"
@@ -38,14 +39,13 @@ export class TileTypeLabel {
 }
 
 export const expectedDemos = [ 
-    {i:0, l:'Default', t:'Default Demo',c:['pageTiles','pageChecklist']}, 
-    {i:1, l:'C172 Reference', t:'A sample Skyhawk Reference',c:['pageTiles','pageTiles']}, 
-    {i:2, l:'Checklist',t:'Checklist syntax Showcase',c:['pageChecklist','pageChecklist']}, 
-    {i:3, l:'Tiles', t:'Every Tile Available on GA Kneeboard',c:['pageTiles','pageTiles']}, 
-    {i:4, l:'NavLog', t:'Navlog page along with six tiles',c:['pageNavlog','pageTiles']}, 
-    {i:5, l:'Charts', t:'Airport Diagram and Instrument Approach',c:['approachPage','approachPage']},
-    {i:6, l:'Holds Practice', t:'Full sheet of Holds and Compasses',c:['pageTiles','pageTiles']},
-    {i:7, l:'IFR Flight', t:'Full sheet of Holds and Compasses',c:['pageStrips','pageStrips']},
+    {i:0, l:'VFR Flight', t:'A sample Skyhawk Reference',c:['pageTiles','pageTiles']}, 
+    {i:1, l:'Checklist',t:'Checklist syntax Showcase',c:['pageChecklist','pageChecklist']}, 
+    {i:2, l:'Tiles', t:'Every Tile Available on GA Kneeboard',c:['pageTiles','pageTiles']}, 
+    {i:3, l:'NavLog', t:'Navlog page along with six tiles',c:['pageNavlog','pageTiles']}, 
+    {i:4, l:'Charts', t:'Airport Diagram and Instrument Approach',c:['approachPage','approachPage']},
+    {i:5, l:'Holds Practice', t:'Full sheet of Holds and Compasses',c:['pageTiles','pageTiles']},
+    {i:6, l:'IFR Flight', t:'Full sheet of Holds and Compasses',c:['pageStrips','pageStrips']},
 ]
 
 
@@ -91,7 +91,7 @@ export function visitAndCloseBanner() {
 }
 
 export function visitSkipBanner() {
-    localStorage.setItem( "popup", "2")
+    localStorage.setItem( "popup", "3")
     cy.visit(environment)
 }
 
@@ -114,13 +114,18 @@ export function maintenanceMode() {
     cy.get('.p-dialog-content').should('not.exist');
 }
 
-export function loadDemo(index=0) {
+export function loadDemo(index=-1) {
     // Turn text into index if necessary
-    const expectedDemos = ['Default','C172','Checklist','Tiles', 'NavLog', 'Charts', 'Holds', 'IFR']
-    const indexOf = expectedDemos.indexOf(index)
-    if(indexOf > -1) index = indexOf;
+    const demoNames = ['C172','Checklist','Tiles', 'NavLog', 'Charts', 'Holds', 'IFR']
+    if(index == -1) {
+        // load default demo
+        cy.get('.demoSection > .header').click()        
+    } else {
+        const indexOf = demoNames.indexOf(index)
+        if(indexOf > -1) index = indexOf;
+        cy.get('.demo' + index).click()
+    }
 
-    cy.get('.demo' + index).click()
     // wait for the page to be loaded
     cy.get('#btnPrint')
 }

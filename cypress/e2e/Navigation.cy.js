@@ -43,10 +43,7 @@ describe('Navigation', () => {
     cy.visit(environment + '?t=RC')
     cy.wait('@getPublication')
 
-    // remove banner
-    cy.contains('Got it').click()
-
-    cy.get('#app').contains('C172 G1000')
+    cy.get('.templateName').contains('C172 G1000')
     cy.get('#offsetPrev').should('have.class','noShow')
     cy.get('#offsetNext').should('not.have.class','noShow')
     cy.get('.page0').should('have.class','pageChecklist')

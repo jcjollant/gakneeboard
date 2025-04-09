@@ -361,9 +361,9 @@ describe('navlog Page', () => {
     // Every leg will consume 2 gallons
     for(let index = 2; index < altitudes.length + 3; index++) {
       cy.get(`:nth-child(${index}) > .legFuel`).click()
-      cy.get('#ld').type('3', {delay:0})
-      cy.get('#lf').type('2', {delay:0})
-      cy.get('#lt').type('1', {delay:0})
+      replaceBy('#ld', '3', {delay:0})
+      replaceBy('#lf', '2', {delay:0})
+      replaceBy('#lt', '1', {delay:0})
       cy.get('.actionDialog > [aria-label="Apply"]').click()
     }
 

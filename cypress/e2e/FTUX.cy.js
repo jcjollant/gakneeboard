@@ -1,29 +1,50 @@
-import { boeingTitle, demoChecklistOnPage, demoTilesOnPage, environment, expectedDemos, expectToast, loadDemo, rentonTitle, selectionTitle, visitAndCloseBanner, visitSkipBanner } from './shared.js'
+import { boeingTitle, demoChecklistOnPage, demoTilesOnPage, expectedDemos, expectToast, loadDemo, rentonTitle, selectionTitle, visitAndCloseBanner, visitSkipBanner } from './shared.js'
+import { environment, landing } from './shared.js'
+
+function checkFtuxTile() {
+    cy.get('h1').contains('Pick a demo to get started')
+}
 
 describe('First Time User Experience', () => {
 
+    it('Landing Page', () => {
+        cy.visit(landing)
+        cy.get('h1').contains('The Perfect Kneeboard')
+        cy.get('header > .cta-button').contains('Create Your Kneeboard')
+        cy.get(':nth-child(4) > .cta-button').contains('Start Building Now')
+        cy.get('.footer-cta > .cta-button').contains('Create Your Free Kneeboard')
+        // navigate to FTUX and back using 3 buttons
+        cy.get('header > .cta-button').click()
+        checkFtuxTile()
+        cy.go('back')
+
+        cy.get(':nth-child(4) > .cta-button').click()
+        checkFtuxTile()
+        cy.go('back')
+
+        cy.get('.footer-cta > .cta-button').click()
+        checkFtuxTile()
+
+    })
     // As a new user, I should get the HDIW popup with all its content
     // As a new user, The popup should show until I click "Got it"
-    it('HDIW', () => {
+    it('FTUX', () => {
         cy.visit(environment)
-        cy.get('#pv_id_1_header').contains('Build Your Perfect Kneeboard in Seconds')
-        cy.get('.hdiw').contains('Airports')
-        cy.get('.hdiw').contains('Checklist')
-        cy.get('.hdiw').contains('Radios')
-        cy.get('ol > :nth-child(1)').contains('Customize Tiles to match your flight')
-        cy.get('ol > :nth-child(2)').contains('Print on Letter size paper')
-        cy.get('ol > :nth-child(3)').contains('Clip on your kneeboard and go fly!')
+        checkFtuxTile()
+        const expectedDemos = ['VFR Flight','Checklists','Charts', 'IFR Flight']
+        for(let index = 0; index < expectedDemos.length; index++) {
+            const demo = expectedDemos[index]
+            cy.get(`.demo${index} > .name`).contains(demo)
+            cy.get(`.demo${index}`).click()
+            cy.get('.templateName').contains(demo)
+            localStorage.removeItem('popup')
+            cy.go('back')
+        }
+        cy.get('.demo0').click()
 
-        cy.get('.p-button').contains('Got it')
-        // Close with top right button
-        cy.get('.p-dialog-header-icon').click()
-
-        // reload should show the popup again
-        visitAndCloseBanner()
-
-        // reload should not show HDIW
+        // reload should not show FTUX
         cy.visit(environment)
-        cy.get('#pv_id_1_header').should('not.exist')
+        cy.get('h1').should('not.exist')
     })
 
     // As a new user, I should see the about button
@@ -59,7 +80,7 @@ describe('First Time User Experience', () => {
         cy.viewport('macbook-16')
 
         // Check Demo 0
-        loadDemo('Default')
+        loadDemo()
         demoTilesOnPage(0)
         demoChecklistOnPage(1)
 
@@ -115,7 +136,7 @@ describe('First Time User Experience', () => {
 
     it('Features Require Signin', () => {
         visitSkipBanner()
-        loadDemo('Default')
+        loadDemo()
 
         // As a new User I cannot save a template without signing in
         cy.get('#btnSave').click()

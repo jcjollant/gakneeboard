@@ -18,7 +18,7 @@
             </div>
         </div>
         <div class="section demoSection">
-            <div class="header">Demos</div>
+            <div class="header" @click="onDemoSelection(SheetName.default)">Demos</div>
             <div class="templateList">
                 <TemplateSelector v-for="(ds,index) in demos" :template="ds.template" :demo="true" :src="'/thumbnails/'+ds.src" :class="'demo'+index"
                     @selection="onDemoSelection(ds.name)" />
@@ -61,8 +61,7 @@ class DemoSelector {
 }
 
 const demos = ref<DemoSelector[]>([
-    new DemoSelector(SheetName.default, 'default.png', 'Default', 'Tiles and Checklist'),
-    new DemoSelector(SheetName.skyhawk, 'skyhawk.png', 'C172 Reference', 'Skyhawk Reference Sheet'),
+    new DemoSelector(SheetName.skyhawk, 'skyhawk.png', 'VFR Flight', 'Skyhawk Reference Sheet'),
     new DemoSelector(SheetName.checklist, 'checklist.png', 'Checklist','Checklists syntax Showcase'),
     new DemoSelector(SheetName.tiles, 'tiles.png', 'Tiles','Tiles Gallery'),
     new DemoSelector(SheetName.navlog, 'navlog.png', 'NavLog', 'Navlog page and companion tiles'),
