@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GA Kneeboard - Your Perfect Kneeboard</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      color: #1a1a1a;
+      background-color: #f9f9f9;
+    }
+    header, section {
+      padding: 2rem 1rem;
+      max-width: 1000px;
+      margin: auto;
+    }
+    header {
+      background: #e9f0ff;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 2rem;
+    }
+    header p {
+      font-size: 1.1rem;
+    }
+    .cta-button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      border-radius: 5px;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 1rem;
+    }
+    .features, .steps, .faq {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .features li, .faq li {
+      list-style: none;
+      padding-left: 1.2rem;
+      position: relative;
+    }
+    .features li::before, .faq li::before {
+      content: "✔";
+      position: absolute;
+      left: 0;
+      color: green;
+    }
+    .section-heading {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .footer-cta {
+      text-align: center;
+      background: #dbeafe;
+      padding: 2rem 1rem;
+    }
+    .alt {
+      background-color: #eeeeff;
+    }
+    .section-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .section-content img.section-icon {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+    img.responsive-img {
+      width: 100%;
+      max-width: 800px;
+      height: auto;
+      display: block;
+      margin: 1rem auto;
+      border-radius: 8px;
+    }    
+    @media (min-width: 600px) {
+      .section-content {
+        flex-direction: row;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>The Perfect Kneeboard ... Is The One You Make.</h1>
+    <p>Build a kneeboard that fits your flying style. Custom, clean, and always ready — in the air or in the sim.</p>
+    <a class="cta-button" href="/">🛫 Create Your Kneeboard</a>
+    <img class="responsive-img" src="assets/example01.jpg" alt="Printed kneeboard example" />
+  </header>
+
+  <section>
+    <h2 class="section-heading">iPads Are Great — Until They're Not</h2>
+    <div class="section-content">
+      <img src="assets/heat.jpg" alt="iPad overheating" class="section-icon" />
+      <ul class="features">
+        <li>Glare, reboots, and battery anxiety</li>
+        <li>Hard to find what you need, fast</li>
+        <li>Distracting screens instead of flying the plane</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="alt">
+    <h2 class="section-heading">One Page. Everything You Care About.</h2>
+    <div class="section-content">
+      <img src="assets/check.png" alt="Clean kneeboard layout" class="section-icon" />
+      <ul class="features">
+        <li>Airport info: patterns, runways, frequencies</li>
+        <li>Add your own clear, legible checklists</li>
+        <li>Works for both VFR & IFR</li>
+        <li>Print and go — no apps or syncing needed</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-heading">How It Works</h2>
+    <div class="section-content">
+      <img src="assets/kneeboard.jpg" alt="Steps to create kneeboard" class="section-icon" />
+      <ol class="steps">
+        <li>Customize Template</li>
+        <li>Print → Clip → Fly</li>
+      </ol>
+    </div>
+    <a class="cta-button" href="/">Start Building Now →</a>
+  </section>
+
+  <section class="alt">
+    <h2 class="section-heading">Built By Pilots. Used on Every Flight!</h2>
+    <div class="section-content">
+      <img src="assets/tag.jpg" alt="Pilot testimonial" class="section-icon" />
+      <p>"I’m a private pilot using GA Kneeboard on all my real and simulated flights. Whether I'm flying VFR or practicing instrument holds, this is what I rely on" - JC</p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-heading">FAQs</h2>
+    <div class="section-content">
+      <img src="assets/aim.jpg" alt="Frequently asked questions" class="section-icon" />
+      <ul class="faq">
+        <li><strong>Do I need to install anything?</strong> Nope. It’s 100% web-based.</li>
+        <li><strong>Is it free?</strong> Yes — Free tier includes 2 templates with 2 pages each.</li>
+        <li><strong>Is the data accurate?</strong> Data is updated every 28 days with FAA cycles</li>
+        <li><strong>VFR or IFR?</strong> Both. I use it for pattern work and instrument training.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="footer-cta">
+    <h2>The Perfect Kneeboard Is the One You Build</h2>
+    <p>Ditch the digital distractions. Print exactly what you need, and fly with confidence.</p>
+    <a class="cta-button" href="/">🛫 Create Your Free Kneeboard</a>
+  </section>
+</body>
+</html>
