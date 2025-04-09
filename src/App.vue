@@ -1,6 +1,6 @@
 <template>
-    <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
-    <Popup v-model:visible="showPopup" @close="onClosePopup" />
+    <!-- <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
+    <Popup v-model:visible="showPopup" @close="onClosePopup" /> -->
     <Feedback v-model:visible="showFeedback" @close="showFeedback=false" />
     <About v-model:visible="showAbout" @close="showAbout=false" />
     <Maintenance v-model:visible="showMaintenance" @close="showMaintenance=false" />
@@ -44,8 +44,6 @@ const route = useRoute()
 const router = useRouter()
 const showAbout = ref(false)
 const showFeedback = ref(false)
-const showHowDoesItWork = ref(true)
-const showPopup = ref(false)
 const showMaintenance = ref(false)
 const versionText = ref('')
 
@@ -59,13 +57,10 @@ onBeforeMount( () => {
         LocalStore.cleanUp()
     })
 
-    // How does it work popup check
-    showHowDoesItWork.value = LocalStore.popupShow(1)
-    // Next popup check, needs current user.
-    if(!showHowDoesItWork.value && currentUser.loggedIn && currentUser.templates.length > 1) {
-      showPopup.value = LocalStore.popupShow(2)
+    // Is this a FTUX?
+    if( LocalStore.popupShow(3)) {
+      router.push({name: RouterNames.FTUX})
     }
-    // console.log('[App.onBeforeMount]', showHowDoesItWork.value, showPopup.value)
 })
 
 onMounted( () => {
@@ -102,17 +97,17 @@ onMounted( () => {
     showMaintenance.value = false;
 })
 
-function onCloseHowDoesItWork() {
-  showHowDoesItWork.value =  false
-  LocalStore.popupHide(1)
-}
+// function onCloseHowDoesItWork() {
+//   showHowDoesItWork.value =  false
+//   LocalStore.popupHide(1)
+// }
 
-function onClosePopup(remember) {
-  showPopup.value = false
-  if(remember) {
-    LocalStore.popupHide(2)
-  }
-}
+// function onClosePopup(remember) {
+//   showPopup.value = false
+//   if(remember) {
+//     LocalStore.popupHide(2)
+//   }
+// }
 
 </script>
 
