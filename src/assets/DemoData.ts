@@ -118,9 +118,14 @@ export class DemoData {
         ]
     )
 
+    static charts():Template {
+        const page0DemoCharts = new TemplatePage( PageType.diagram, 'Airport Diagram', {airport:"KRNT"})
+        const page1DemoCharts = new TemplatePage( PageType.approach, 'Approach Plate', {airport:"KRNT",pdf:0})
+        return  new Template('Charts', 'Airport Diagram and Instrument Approach', false, [page0DemoCharts,page1DemoCharts])
+    }
 
     static checklist():Template {
-        return new Template('Checklist Demo', 'A C172 preflight Checklist', false, [DemoData.page0DemoChecklist, DemoData.page1DemoChecklist, DemoData.page2DemoChecklist])
+        return new Template('Checklists', 'A C172 preflight Checklist', false, [DemoData.page0DemoChecklist, DemoData.page1DemoChecklist, DemoData.page2DemoChecklist])
     }
 
     static default():Template {
@@ -131,10 +136,13 @@ export class DemoData {
         return new Template('Holds Demo', 'Two sheets of Holds and Compass', false, Array(4).fill(DemoData.page0DemoHold))
     }
 
+    static ifrflight():Template {
+        const pageDemoIFRFlight = new TemplatePage(PageType.strips, 'Strips', {list:['radio','atis','craft','notes','radio','atis','craft','notes']})
+        return new Template('IFR Flight', 'Two pages of Strips for IFR Flights', false, [pageDemoIFRFlight,pageDemoIFRFlight])
+    }
+
     static skyhawk():Template {
-        return new Template('C172 VFR','Skyhawk VFR Reference Template', false, [DemoData.page0DemoSkyhawk,DemoData.page1DemoSkyhawk])
-
-
+        return new Template('VFR Flight','Skyhawk VFR Reference Template', false, [DemoData.page0DemoSkyhawk,DemoData.page1DemoSkyhawk])
     }
 
     static tiles():Template {

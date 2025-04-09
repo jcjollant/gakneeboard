@@ -82,13 +82,6 @@ const page1DemoNavlog = {
 
 export const templateDemoNavlog = new Template('Navlog Demo', 'Navlog page along with six tiles', false, [page0DemoNavlog,page1DemoNavlog])
 
-const page0DemoCharts = {type:PageType.diagram, data:{airport:"KRNT"}}
-const page1DemoCharts = {type:PageType.approach, data:{airport:"KRNT",pdf:0}}
-const templateDemoCharts = new Template('Chart Demo', 'Airport Diagram and Instrument Approach', false, [page0DemoCharts,page1DemoCharts])
-
-const pageDemoIFRFlight = {type:PageType.strips, data:{list:['radio','atis','craft','notes','radio','atis','craft','notes']}}
-const templateDemoIFRFlight = new Template('IFR Flight', 'Two pages of Strips for IFR Flights', false, [pageDemoIFRFlight,pageDemoIFRFlight])
-
 export function describePage(sheet, pageNumber, maxLength=undefined) {
   if(!sheet) return "empty";
 
@@ -193,11 +186,11 @@ export function getTemplateDataFromName(name) {
   } else if( name == SheetName.skyhawk) { 
     return DemoData.skyhawk()
   } else if( name == SheetName.charts) { 
-    return duplicate(templateDemoCharts)
+    return DemoData.charts()
   } else if( name == SheetName.holds) { 
     return DemoData.holds()
   } else if( name == SheetName.ifrflight) { 
-    return duplicate(templateDemoIFRFlight)
+    return DemoData.ifrflight()
   } else {
     return null;
   }
