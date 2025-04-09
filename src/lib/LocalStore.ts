@@ -200,30 +200,16 @@ export class LocalStore {
      */
     static popupShow(id:number):boolean {
         const popup = localStorage.getItem( LocalStore.popup);
-        const hdiw = localStorage.getItem(LocalStore.howDoesItWork_deprecated)
-        if( id == 1) { // We are interested in HDIW
-            // we show "how does it work" if neither the popup nor set and the legacy value
-            // If popup is 1 or legacy is false then we don't show
-            return ( popup == null && hdiw == null);
-        } else if( id == 2) { // we want the second popup
-            // we only show the popup if the first one has been seen but not the second
-            return (popup == '1' || hdiw == 'false')
-        }
 
-        return false;
+        return popup ? Number(popup) < id : true;
     }
 
     /**
      * Stop further showing how does it work by setting the flag in local store
      */
-    static popupHide(id:number) {
+    static popupHide(id:number=0) {
         localStorage.removeItem(LocalStore.howDoesItWork_deprecated)
-        if( id == 1) {
-            localStorage.setItem(LocalStore.popup, '1')
-        } else if( id == 2) {
-            localStorage.setItem(LocalStore.popup, '2')
-
-        }
+        localStorage.setItem(LocalStore.popup, id.toString())
     }
 
 
