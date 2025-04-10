@@ -327,7 +327,7 @@ export async function postPrint(id, options) {
 
 export function reportError(message) {
   // we are just printing in the console for now but eventually we want to report
-  console.log(message);
+  console.error(message);
 }
 
 /**
