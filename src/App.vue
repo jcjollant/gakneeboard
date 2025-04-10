@@ -1,7 +1,7 @@
 <template>
     <!-- <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
     <Popup v-model:visible="showPopup" @close="onClosePopup" /> -->
-    <Feedback v-model:visible="showFeedback" @close="showFeedback=false" />
+    <Feedback :open="showFeedback" @submit="feedbackSubmitted"  />
     <About v-model:visible="showAbout" @close="showAbout=false" />
     <Maintenance v-model:visible="showMaintenance" @close="showMaintenance=false" />
     <Toast />
@@ -13,8 +13,8 @@
       <Session v-if="route.name!=RouterNames.Print && route.name!=RouterNames.ThankYou" />
     </div>
     <MenuButton v-if="route.name!='Print'" icon="comments" class="feedbackButton" label="Give Feedback"
-      @click="showFeedback=true" />
-    <MenuButton v-if="route.name!='Print'" icon="circle-info" class="aboutButton" label="About GA Kneeboard"
+      @click="showFeedback=!showFeedback" />
+    <MenuButton v-if="route.name!='Print' && !showFeedback" icon="circle-info" class="aboutButton" label="About GA Kneeboard"
       @click="showAbout=true" />
     <div v-if="route.name!='Print'" class="versionDialog" :title="'Frontend/Backend versions ' + versionText" >{{ versionText }}
       <span class="maintenanceButton" v-show="true"
@@ -31,10 +31,10 @@ import { getTemplateDataFromName } from '@/assets/sheetData';
 // Components
 import About from '@/components/menu/About.vue'
 import ConfirmDialog from 'primevue/confirmdialog';
-import Feedback from '@/components/dialog/Feedback.vue'
-import HowDoesItWork from '@/components/dialog/HowDoesItWork.vue'
+import Feedback from './components/dialog/Feedback.vue'
+// import HowDoesItWork from '@/components/dialog/HowDoesItWork.vue'
 import Maintenance from '@/components/menu/Maintenance.vue'
-import Popup from '@/components/dialog/Popup.vue'
+// import Popup from '@/components/dialog/Popup.vue'
 import MenuButton from '@/components/menu/MenuButton.vue';
 import Session from '@/components/menu/Session.vue'
 import Toast from 'primevue/toast'
@@ -96,6 +96,13 @@ onMounted( () => {
     }
     showMaintenance.value = false;
 })
+
+function feedbackSubmitted() {
+  // wait before closing the feedback drawer
+  setTimeout( () => {
+    showFeedback.value = false
+  }, 100)
+}
 
 // function onCloseHowDoesItWork() {
 //   showHowDoesItWork.value =  false

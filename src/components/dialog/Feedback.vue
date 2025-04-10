@@ -1,45 +1,48 @@
 <template>
-  <Dialog modal header="Give Feedback">
-    <!-- <div class="mb-5">
-      <span>We'd love to hear about your experience.</span>
-    </div> -->
-    <div class="mb-5 mt-4">
-      <div>
-        <FloatLabel>
-          <Textarea rows="10" cols="80" autoResize v-model:modelValue="feedbackText"></Textarea>
-          <label>How can we improve your experience?</label>
-        </FloatLabel>
-      </div>
-      <div v-if="user && user.loggedIn" class="flex align-items-center">
-          <Checkbox v-model="contactMeValue" inputId="contact" name="pizza" value="yes" />
-          <label for="contact" class="ml-2">Let me know when my feedback is addressed</label>
-      </div>
+  <div class="drawer-container" @click="isOpen=true">
+    <div class="drawer" :class="{'open':isOpen}">
+        <textarea class="feedbackText" rows="10"  autoResize v-model="feedbackText" placeholder="Enter your feedback here"></textarea>
+        <div class="actions">
+          <div v-if="user && user.loggedIn" class="followup">
+            <Checkbox v-model="contactMeValue" inputId="contact" name="pizza" value="yes" />
+            <label for="contact" class="ml-2">Please follow up</label>
+          </div>
+          <!-- <Button label="Do Not Send" @click="closeMe" link></Button> -->
+          <Button label="Send" @click="send" :disabled="feedbackText.length==0"></Button>
+        </div>
+
     </div>
-    <div class="actionDialog gap-2">
-      <Button label="Do Not Send" @click="closeMe" link></Button>
-      <Button label="Send" @click="send" :disabled="feedbackText.length==0"></Button>
-    </div>
-  </Dialog>
+</div>
 </template>
 
-<script setup>
-// import { defineEmits } from "vue";
-import { onUpdated, ref } from 'vue'
-import { getCurrentUser, sendFeedback } from '@/assets/data.js'
+<script setup lang="ts">
+import { onUpdated, ref, watch } from 'vue'
+import { getCurrentUser, sendFeedback } from '../../assets/data.js'
 import { useToast } from 'primevue/usetoast';
-import { useToaster } from '@/assets/Toaster.ts';
-import Dialog from "primevue/dialog";
+import { useToaster } from '../../assets/Toaster.ts';
 import Button from "primevue/button";
-import Textarea from "primevue/textarea";
-import FloatLabel from "primevue/floatlabel"
 import Checkbox from 'primevue/checkbox';
+import { CurrentUser } from '../../assets/CurrentUser.ts';
 
-const emits = defineEmits(['close']);
+const emits = defineEmits(['submit']);
 
 const feedbackText = ref('')
 const contactMeValue = ref('')
-const user = ref(null)
+const isOpen = ref(false) 
+const props = defineProps({
+  open: {
+    type: Boolean,
+    default: false
+  }
+})
+const noUser = CurrentUser.noUser()
+const user = ref(noUser)
 const toaster = useToaster(useToast());
+
+watch(() => props.open, (newValue) => {
+  // console.log('[Feedback.watch] open', newValue, isOpen.value)
+  isOpen.value = newValue
+})
 
 onUpdated( () => {
   // console.log('[Feedback.onUpdated]')
@@ -47,23 +50,63 @@ onUpdated( () => {
   // console.log('[Feedback.onUpdated]', JSON.stringify(user.value))
 })
 
-function closeMe() {
-  emits('close')
-}
-
 /**
  * Send the feedback
  */
 async function send() {
   // console.log( '[Feedback.send] ' + contactMeValue.value)
-  await sendFeedback(feedbackText.value, contactMeValue.value == 'yes');
-  feedbackText.value = ''
-  toaster.info('Readback Correct', 'Thanks for your feedback!')
-  closeMe()
+  sendFeedback(feedbackText.value, contactMeValue.value == 'yes').then( () => {
+    feedbackText.value = ''
+    toaster.info('Readback Correct', 'Thanks for your feedback!')
+    emits('submit')
+  })
 }
 
 </script>
 
 <style scoped>
+.drawer-container {
+  position: relative;
+}
 
+.drawer {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 350px;
+  background-color: #f0f0f0;
+  transform: translateY(350px);
+  transition: transform 0.3s ease-in-out;
+}
+
+.drawer.open {
+  transform: translateY(0);
+}
+
+.drawer-content {
+  padding: 20px;
+}
+
+.feedbackText {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 16px;
+  resize: none;
+}
+.followup {
+  display: flex;
+  align-items: center;
+}
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
 </style>

@@ -15,6 +15,8 @@ export class CurrentUser {
   accountType:AccountType;
   printCredits:number;
 
+  static noUser() { return new  CurrentUser()}
+
   constructor() {
     // console.log('[CurrentUser.constructor] constructor called')
     this.loggedIn = false;
