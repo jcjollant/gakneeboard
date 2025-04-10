@@ -1,7 +1,11 @@
 # User Experience updates
-## 04/09/2025 5151
+## 04/09/2025
+1) 5151
 * Removed default demo
 * New Landing page and FTUX
+2) 5152
+* App Responsiveness for mobile
+* Drawer mode for Feedback
 ## 04/08/2025 5150
 * Removed local template from list
 * Added thumbnail management
