@@ -8,7 +8,13 @@
   text-align: center;
 }
 
- body {
+@media (max-width: 768px) {
+  #app {
+    min-width: unset;
+  }
+}
+
+body {
   margin: 0;
   min-height: 100vh; 
 }

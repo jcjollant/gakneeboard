@@ -90,4 +90,34 @@ img {
     padding: 1em;
     cursor: pointer;
 }
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr; /* Change to single column */
+        grid-template-rows: auto; /* Let rows adjust automatically */
+    }
+    
+    /* Optionally adjust other styles for mobile */
+    h1 {
+        font-size: 1.5rem;
+        margin-top: 1rem;
+    }
+    
+    .demo {
+        padding: 0.75em;
+    }
+    
+    .name {
+        font-size: 1.2em;
+    }
+    
+    .subtitle {
+        font-size: 0.9em;
+    }
+    
+    img {
+        width: 140px;
+    }
+}
 </style>
