@@ -2,7 +2,7 @@
   <div class="drawer-container" @click="isOpen=true">
     <div class="drawer" :class="{'open':isOpen}">
         <textarea class="feedbackText" rows="10"  autoResize v-model="feedbackText" placeholder="Enter your feedback here"></textarea>
-        <div class="actions">
+        <div class="actions" v-if="isOpen">
           <div v-if="user && user.loggedIn" class="followup">
             <Checkbox v-model="contactMeValue" inputId="contact" name="pizza" value="yes" />
             <label for="contact" class="ml-2">Please follow up</label>
