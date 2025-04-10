@@ -14,7 +14,7 @@
     </div>
     <MenuButton v-if="route.name!='Print'" icon="comments" class="feedbackButton" label="Give Feedback"
       @click="showFeedback=!showFeedback" />
-    <MenuButton v-if="route.name!='Print' && !showFeedback" icon="circle-info" class="aboutButton" label="About GA Kneeboard"
+    <MenuButton v-if="route.name!='Print'" icon="circle-info" class="aboutButton" label="About GA Kneeboard"
       @click="showAbout=true" />
     <div v-if="route.name!='Print'" class="versionDialog" :title="'Frontend/Backend versions ' + versionText" >{{ versionText }}
       <span class="maintenanceButton" v-show="true"

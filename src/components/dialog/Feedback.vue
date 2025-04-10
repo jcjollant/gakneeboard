@@ -7,8 +7,10 @@
             <Checkbox v-model="contactMeValue" inputId="contact" name="pizza" value="yes" />
             <label for="contact" class="ml-2">Please follow up</label>
           </div>
-          <!-- <Button label="Do Not Send" @click="closeMe" link></Button> -->
-          <Button label="Send" @click="send" :disabled="feedbackText.length==0"></Button>
+          <div>
+            <Button label="Do Not Send" @click="emits('submit')" link></Button>
+            <Button label="Send" @click="send" :disabled="feedbackText.length==0"></Button>
+          </div>
         </div>
 
     </div>
@@ -20,9 +22,9 @@ import { onUpdated, ref, watch } from 'vue'
 import { getCurrentUser, sendFeedback } from '../../assets/data.js'
 import { useToast } from 'primevue/usetoast';
 import { useToaster } from '../../assets/Toaster.ts';
+import { CurrentUser } from '../../assets/CurrentUser.ts';
 import Button from "primevue/button";
 import Checkbox from 'primevue/checkbox';
-import { CurrentUser } from '../../assets/CurrentUser.ts';
 
 const emits = defineEmits(['submit']);
 
@@ -67,6 +69,7 @@ async function send() {
 <style scoped>
 .drawer-container {
   position: relative;
+  z-index: 3;
 }
 
 .drawer {
@@ -78,9 +81,9 @@ async function send() {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 350px;
+  height: 300px;
   background-color: #f0f0f0;
-  transform: translateY(350px);
+  transform: translateY(300px);
   transition: transform 0.3s ease-in-out;
 }
 
