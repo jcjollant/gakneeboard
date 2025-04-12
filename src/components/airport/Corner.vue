@@ -1,7 +1,7 @@
 <template>
     <div>
         <div @click="toggleSelection" class="clickable" :class="{faded: value=='.'}">
-            <div :class="{'big':displayMode==DisplayMode.big,'small':displayMode!=DisplayMode.big,'flipped':displayMode==DisplayMode.flipped}">
+            <div :class="{'big':displayMode==DisplayMode.big,'small':displayMode!=DisplayMode.big,'flipped':displayMode==DisplayMode.flipped, 'notes':notes}">
                 <div class="label">{{label}}</div>
                 <div class="value">{{value}}</div>
             </div>
@@ -124,7 +124,7 @@ const cornerTypes = ref([
     { name: 'Field Elevation', key: 'field' },
     { name: 'Traffic Pattern Altitude', key: 'tpa' },
     { name: 'Runway Information', key: 'rwyinfo' },
-    { name: 'Nothing', key: 'blank' },
+    { name: 'Notes', key: 'notes' },
 ]);
 const customLabel = ref('')
 const customValue = ref('')
@@ -132,6 +132,7 @@ const customValue = ref('')
 const frequencies = ref<CornerValue[]>([])
 const navaids = ref<NavaidValue[]>([])
 const atcGroups = ref<CornerAtcGroup[]>([])
+const notes = ref(false)
 
 class CornerAtc {
     id:string;
@@ -248,6 +249,7 @@ function onChange(field:string) {
 // turn the selection into the actual field
 // @return true if the field is a frequency
 function showField( field:string) {
+    notes.value = false
     // console.log('[Corner.showField]', field, typeof field)
     if( field.length > 2 && field[0] == '#') { 
         // Special fields start with # then one letter code
@@ -255,13 +257,13 @@ function showField( field:string) {
         // #N -> Navaid
         // #R -> Radial
         // #A -> ATC
-        if(field[1] == 'F' && airport.freq) {
+        if(field[1] == 'F' && airport.freq) { // Frequency
             // RadioFrequencies use the '#F' prefix
             const freqName = field.substring(2)
             // console.log('[Corner.showField]', freqName)
             value.value = Formatter.frequency( getFrequency( airport.freq, freqName))
             label.value = freqName
-        } else if( field[1] == 'N' && airport.navaids) {
+        } else if( field[1] == 'N' && airport.navaids) { // Navaids
             // Navaids use the '#N' prefix
             const navaidName = field.substring(2)
             // console.log('[Corner.showField]', freqName)
@@ -273,7 +275,7 @@ function showField( field:string) {
             // console.log('[Corner.showField]', freqName)
             value.value = formatNavaid( getNavaid( airport.navaids, navaidName))
             label.value = navaidName + ' Radial'
-        } else if( field[1] == 'A' && airport.atc) {
+        } else if( field[1] == 'A' && airport.atc) { // ATC
             // ATC use the '#A' prefix
             const freq = Number(field.substring(2))
             value.value = freq.toFixed(3)
@@ -283,7 +285,7 @@ function showField( field:string) {
             unknownValues()
         }
         // console.log('[Corner.showField]', label.value)
-    } else if( field.length > 0 && field[0] == '?') {
+    } else if( field.length > 0 && field[0] == '?') { // custom
         // custom labels '?' as marker and separator
         // Field should look like '?label?value'
         const tokens = field.split('?')
@@ -338,9 +340,11 @@ function showField( field:string) {
                 value.value = runway.length + 'x' + runway.width
                 label.value = runway.surface ? (runway.surface.cond + '/' + runway.surface.type) : '?'
                 break;
+            case 'notes':
             case 'blank':
-                value.value = '.'
-                label.value = ''
+                notes.value = true;
+                value.value = '  '
+                label.value = 'Notes'
                 break;
             default:
                 unknownValues()
@@ -366,6 +370,15 @@ function unknownValues() {
     padding: 0;
     max-width:110px;
     overflow: hidden;
+}
+.notes {
+    border: 1px dashed darkgrey;
+    width: 80px;
+    height: 40px;
+}
+
+.small .value {
+    height: 19px;
 }
 .small .label {
     font-size:9px;
@@ -450,4 +463,5 @@ function unknownValues() {
     gap: 5px;
     width: fit-content;
 }
+
 </style>
