@@ -1,7 +1,7 @@
 <template>
     <!-- <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
     <Popup v-model:visible="showPopup" @close="onClosePopup" /> -->
-    <Feedback :open="showFeedback" @submit="feedbackSubmitted"  />
+    <Feedback v-if="route.name!=RouterNames.Print" :open="showFeedback" @submit="feedbackSubmitted"  />
     <About v-model:visible="showAbout" @close="showAbout=false" />
     <Maintenance v-model:visible="showMaintenance" @close="showMaintenance=false" />
     <Toast />
