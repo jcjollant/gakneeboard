@@ -81,6 +81,7 @@ onMounted(() => {
 }
 .frequencyBox.small {
     height: 42px;
+    width: 75px;
 }
 .frequencyBox.medium, .frequencyBox.large {
     height: 53px;
