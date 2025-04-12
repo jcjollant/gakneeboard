@@ -1,14 +1,14 @@
 <template>
     <div class="container">
         <h1>Pick a demo to get started</h1>
-        <div class="grid">
+        <div class="grid mb-5">
             <div v-for="(demo,index) in demos" class="demo" :class="['demo'+index]" @click="loadDemo(demo.page)">
                 <div class="name">{{demo.title}}</div>
                 <div class="subtitle">{{demo.description}}</div>
                 <img :src="'/thumbnails/' + demo.img" />
             </div>
         </div>
-
+        <FAButton label="Home Page" icon="eject" @click="skipDemo" />
     </div>
 </template>
 
@@ -18,6 +18,7 @@ import { getTemplateDataFromName, SheetName } from '../assets/sheetData'
 import { routeToLocalTemplate } from '../assets/data'
 import { useRouter } from 'vue-router'
 import { LocalStore } from '../lib/LocalStore'
+import FAButton from '../components/shared/FAButton.vue'
 
 class Demo {
     title: string
@@ -49,6 +50,11 @@ function loadDemo(page: string) {
     // Save demo data to localstore
     routeToLocalTemplate(router, templateData);
     // We are done with FTUX
+    LocalStore.popupHide(3)
+}
+
+function skipDemo() {
+    router.push('/')
     LocalStore.popupHide(3)
 }
 
