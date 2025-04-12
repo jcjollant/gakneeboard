@@ -1,4 +1,6 @@
 # User Experience updates
+## 04/12/2025 5161
+* Removed feedback from prints
 ## 04/11/2025 5160
 * User can skip Home Page
 * New Notes corner type
