@@ -1,4 +1,7 @@
 # User Experience updates
+## 04/11/2025 5160
+* User can skip Home Page
+* New Notes corner type
 ## 04/09/2025
 1) 5151
 * Removed default demo
