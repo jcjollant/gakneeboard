@@ -40,7 +40,11 @@ describe('First Time User Experience', () => {
             localStorage.removeItem('popup')
             cy.go('back')
         }
+        // Should see skip button
+        cy.get('.container > .fabutton').contains('Home Page')
+
         cy.get('.demo0').click()
+
 
         // reload should not show FTUX
         cy.visit(environment)

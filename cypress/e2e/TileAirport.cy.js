@@ -86,6 +86,7 @@ describe('Tiles', () => {
   })
 
   it('Configure Corners', () => {
+    viewport()
     visitSkipBanner()
     loadDemo('Tiles')
 
@@ -97,15 +98,19 @@ describe('Tiles', () => {
       {name:'Field Elevation',label:'Elevation',value:'32'}, 
       {name:'Traffic Pattern Altitude',label:'TPA',value:'1250'}, 
       {name:'Runway Information',label:'(G) Good/ASPH-CONC',value:'5382x200'}, 
-      {name:'Nothing',label:'',value:''}, 
+      {name:'Notes',label:'Notes',value:''}, 
     ]
     for(let index = 0; index < expectedStandardFields.length; index++) {
       const field = expectedStandardFields[index]
       cy.get(`.standardList > :nth-child(${index+1})`).contains(field.name)
-      cy.get(`.standardList > :nth-child(${index+1})`).click()
+      cy.get(`.standardList > :nth-child(${index+1}) > .ml-2`).click()
       if(field.label != '') cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .label').contains(field.label)
       if(field.value != '') cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .value').contains(field.value)
     }
+
+    // last one is notes. should have a border
+    cy.get('.tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small').should('have.css', 'border')
+
     // Radios
     const expectedRadios = [
       {name:'124.700 : CTAF',label:'CTAF',value:'124.700'}, 
