@@ -4,17 +4,6 @@ import { Airport } from "./models/Airport";
 import axios from "axios";
 import { Canvas, createCanvas } from "canvas";
 
-// Manually set up a fake worker
-const fakeWorker = async () => {
-  return {
-    port: {
-      postMessage: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-    },
-  };
-};
-
 export class AirportSketch {
   static doesNotExist = "dne";
 
@@ -55,10 +44,11 @@ export class AirportSketch {
   /**
    * Refresh airport sketch
    * @param airport 
-   * @param code 
+   * @param code Airport code, which may differ from airport.code
+   * @param skipGet Allows to skip the get if instrument approach is found
    * @returns 
    */
-  static async resolve(airport:Airport, code:string=undefined) {
+  static async resolve(airport:Airport, code:string=undefined, skipGet:boolean=false) {
     console.log("[AirportSketch.hook] invoked for", airport.code);
 
     const airportCode = code ?? airport.code
@@ -67,7 +57,7 @@ export class AirportSketch {
       console.log("[AirportSketch.hook] no IAP for", airportCode);
       await AirportSketch.notFound(airportCode);
       airport.sketch = AirportSketch.doesNotExist;
-    } else {
+    } else if( !skipGet){
       const sketch = await AirportSketch.get(airportCode, airport.iap[0].pdf)      
       airport.sketch = sketch
     }
