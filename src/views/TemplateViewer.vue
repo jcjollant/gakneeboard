@@ -384,7 +384,7 @@ function updateThumbnail(template:Template) {
   // console.log('[TemplateViewer.updateThumbnail] template', template.id, template.thumb)
   // console.log('[Template.updateThumbnail]', activeTemplate.value?.id)
   if(template.id <= 0 || activeTemplate.value.isInvalid()) {
-    console.log('[Template.updateThumbnail] skipping invalid template')
+    // console.log('[Template.updateThumbnail] skipping invalid template')
     return;
   }
   const index = template.id
