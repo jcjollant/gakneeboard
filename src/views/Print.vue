@@ -2,10 +2,10 @@
   <div class="print">
     <PrintOptions v-model:visible="showOptions" :pageSelection="pageSelection"
         @options="onOptionsUpdate"
-        @print="onPrint"
+        @print="onPrint(false, $event)" @pdf="onPrint(true, $event)"
         @close="showOptions=false"
         />
-    <div v-if="template">
+    <div v-if="template" id="printTemplate" :class="{'single':printSingles}">
       <div v-if="printSingles" v-for="(page,index) in template.data" class="printOnePage printPageBreak">
         <div class="onePage" v-if="pageSelection[index]">
           <Page :data="page" :ver="template.ver"
@@ -14,8 +14,7 @@
       </div>
       <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages">
         <Page :data="page.front" :ver="template.ver"/>
-        <Page v-if="page.back" :data="page.back" :ver="template.ver"
-          :class="{flipMode:printFlipMode}" />
+        <Page :data="page.back" :ver="template.ver" :class="{flipMode:printFlipMode}" />
       </div>
     </div>
     <div v-else>No Template</div>
@@ -30,6 +29,7 @@ import { postPrint } from '../assets/data.js';
 import Page from '../components/page/Page.vue';
 import PrintOptions from '../components/print/PrintOptions.vue';
 import { Template, TemplatePage } from '../model/Template';
+import { exportToPDF } from '../assets/pdf'
 
 interface PrintSheet {
   front: TemplatePage,
@@ -77,30 +77,39 @@ function onOptionsUpdate(options) {
   }
 }
 
+
 // Start printing
-function onPrint(options) {
+async function onPrint(pdf:boolean, options) {
   // console.log('[Print.onPrint]')
   printing = true
   showOptions.value = false
-//   printFlipMode.value = options.flipBackPage;
-//   printSingles.value = (options.pagePerSheet == 1)
-
   postPrint(route.params.id, options)
 
-  // print window content after a short timeout to let flipmode kickin
-  setTimeout( async () => {
-    return new Promise( (res) => {
-      const preTime = new Date().getTime();
-      window.print();
-      const postTime = new Date().getTime();
-      // on iOS, window.print returns immediately
-      if(postTime - preTime > 500) { 
-        restorePrintOptions();
-      }
-      res()
-      router.back()
-    })
-  }, 500);
+  if(true) {
+    const element = document.getElementById('printTemplate')
+    // count sheets. 
+    // Single must accounts for visible otherwise just use pages as is (already filtered)
+    // const sheetsCount = printSingles.value ? pageSelection.value.reduce( (acc,visible) => visible ? acc + 1 : acc, 0) : pages.value.length
+    const elements = printSingles.value ? document.querySelectorAll('.printOnePage') : document.querySelectorAll('.printTwoPages')
+    if(element) await exportToPDF(elements, printSingles.value)
+    router.back()
+  } else {
+    // print window content after a short timeout to let flipmode kickin
+    setTimeout( async () => {
+      return new Promise( (res) => {
+        const preTime = new Date().getTime();
+        window.print();
+        const postTime = new Date().getTime();
+        // on iOS, window.print returns immediately
+        if(postTime - preTime > 500) { 
+          restorePrintOptions();
+        }
+        res()
+        router.back()
+      })
+    }, 500);
+  } 
+
 }
 
 function refreshPages() {
@@ -153,5 +162,11 @@ function restorePrintOptions() {
   grid-template-columns: auto auto;
   gap: 0 var(--pages-gap);
   width: fit-content;
+}
+#printTemplate {
+  width: var(--page-width-two);
+}
+#printTemplate.single {
+  width: var(--page-width)
 }
 </style>
