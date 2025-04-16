@@ -11,14 +11,15 @@ describe('First Time User Experience', () => {
         cy.visit(landing)
         cy.get('h1').contains('The Perfect Kneeboard')
         cy.get('header > .cta-button').contains('Create Your Kneeboard')
-        cy.get(':nth-child(4) > .cta-button').contains('Start Building Now')
+        cy.get('.hdiw').contains('Start Building Now')
+        cy.get('.hdiw').should('have.class', 'cta-button')
         cy.get('.footer-cta > .cta-button').contains('Create Your Free Kneeboard')
         // navigate to FTUX and back using 3 buttons
         cy.get('header > .cta-button').click()
         checkFtuxTile()
         cy.go('back')
 
-        cy.get(':nth-child(4) > .cta-button').click()
+        cy.get('.hdiw').click()
         checkFtuxTile()
         cy.go('back')
 
