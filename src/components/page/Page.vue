@@ -1,5 +1,8 @@
 <template>
-    <ChecklistPage v-if="type==PageType.checklist" :data="pageData" 
+    <div v-if="type==PageType.none">
+        <div class="contentPage"></div>
+    </div>
+    <ChecklistPage v-else-if="type==PageType.checklist" :data="pageData" 
         @replace="onReplace" @update="onUpdate" :version="version" />
     <CoverPage v-else-if="type==PageType.cover" :data="pageData" 
         @replace="onReplace" @update="onUpdate" />
@@ -21,10 +24,10 @@
     <SelectionPage v-else @replace="onReplace" />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 
-import { PageType } from '@/assets/PageType'
+import { PageType } from '../../assets/PageType'
 
 import ApproachPage from '../charts/ApproachPage.vue'
 import ChecklistPage from '../checklist/ChecklistPage.vue'
@@ -42,7 +45,7 @@ import LoadingPage from './LoadingPage.vue'
 
 const confirm = useConfirm()
 const emits = defineEmits(['update'])
-const pageData = ref(null)
+const pageData = ref({})
 const type = ref(PageType.tiles)
 const version = ref(0)
 
@@ -53,10 +56,13 @@ const props = defineProps({
 
 function loadProps(props) {
     // console.log('[Page.loadProps]', JSON.stringify(props.data))
-    if(!props.data) return
-    pageData.value = props.data.data ? props.data.data : null
-    type.value = props.data.type ? props.data.type : null
-    version.value = props.ver;
+    if(!props.data) {
+        type.value = PageType.none
+    } else {
+        pageData.value = props.data.data ? props.data.data : null
+        type.value = props.data.type ? props.data.type : null
+        version.value = props.ver;
+    }
     // console.log('[Page.loadProps] version', props.ver)
 }
 
@@ -72,7 +78,7 @@ watch( props, async(newP, oldP) => {
 
 
 // Page must be replaced with new type
-function onReplace(newType=undefined) {
+function onReplace(newType:string|undefined=undefined) {
     // console.log('[Page.onReplace]', newType)
     if(newType) {
         onUpdateType(newType)
@@ -101,7 +107,7 @@ function onUpdate( newData) {
     emits('update', newPageData)
 }
 
-function onUpdateType( newType) {
+function onUpdateType( newType:string) {
     pageData.value = {}
     type.value = newType
     const newPageData = {type:newType,data:{}}
