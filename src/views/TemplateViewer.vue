@@ -129,7 +129,7 @@ onMounted(() =>{
           }
         })
 
-      console.log('[Template.onBeforePrint]')
+      // console.log('[Template.onBeforePrint]')
     }
   }
 })
