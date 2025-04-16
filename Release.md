@@ -1,4 +1,6 @@
-## 04/08/2025 51440
+## 04/16/2025 5160
+* Fixed metrics when Tiles page has no selection.
+## 04/08/2025 5150
 * Thumbnails
 ## 04/04/2025 5143
 * New users are created with max_templates and print_credit
