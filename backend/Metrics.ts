@@ -193,27 +193,31 @@ export class Metrics {
             for(let page of template.data) {
                 if(page.type == PageType.tiles) {
                     ml[MetricKey.pageTiles].addOne()
-                    for(let tile of page.data) {
-                        ml[MetricKey.tilesTotal].addOne()
-                        if(tile.name == 'airport') {
-                            ml[MetricKey.tileAirport].addOne()
-                        } else if(tile.name == 'atis') {
-                            ml[MetricKey.tileAtis].addOne()
-                        } else if(tile.name == 'checklist') {
-                            ml[MetricKey.tileChecklist].addOne()
-                        } else if(tile.name == 'clearance') {
-                            ml[MetricKey.tileClearance].addOne()
-                        } else if(tile.name == 'fuel') {
-                            ml[MetricKey.tileFuel].addOne()
-                        } else if(tile.name == 'navlog') {
-                            ml[MetricKey.tileNavlog].addOne()
-                        } else if(tile.name == 'notes') {
-                            ml[MetricKey.tileNotes].addOne()
-                        } else if(tile.name == 'radios') {
-                            ml[MetricKey.tileRadios].addOne()
-                        } else if(tile.name == 'sunlight') {
-                            ml[MetricKey.tileSunlight].addOne()
+                    try {
+                        for(let tile of page.data) {
+                            ml[MetricKey.tilesTotal].addOne()
+                            if(tile.name == 'airport') {
+                                ml[MetricKey.tileAirport].addOne()
+                            } else if(tile.name == 'atis') {
+                                ml[MetricKey.tileAtis].addOne()
+                            } else if(tile.name == 'checklist') {
+                                ml[MetricKey.tileChecklist].addOne()
+                            } else if(tile.name == 'clearance') {
+                                ml[MetricKey.tileClearance].addOne()
+                            } else if(tile.name == 'fuel') {
+                                ml[MetricKey.tileFuel].addOne()
+                            } else if(tile.name == 'navlog') {
+                                ml[MetricKey.tileNavlog].addOne()
+                            } else if(tile.name == 'notes') {
+                                ml[MetricKey.tileNotes].addOne()
+                            } else if(tile.name == 'radios') {
+                                ml[MetricKey.tileRadios].addOne()
+                            } else if(tile.name == 'sunlight') {
+                                ml[MetricKey.tileSunlight].addOne()
+                            }
                         }
+                    } catch(err) {
+                        console.log('[Metrics.templateDetails] could not list tiles', template.id, page.name, page.data)
                     }
                 } else if(page.type == PageType.checklist) {
                     ml[MetricKey.pageChecklist].addOne()
