@@ -106,3 +106,5 @@ SELECT user_id FROM usage WHERE user_id NOTNULL AND usage_type = 'session' AND c
 
 # Prints in the past 30 days
 SELECT count(*) FROM usage WHERE usage_type = 'print' and create_time > current_date - 30 
+
+SELECT users.id, COUNT(sheets.*) FROM users LEFT JOIN sheets ON sheets.user_id = users.id GROUP BY users.id ORDER BY COUNT DESC 
