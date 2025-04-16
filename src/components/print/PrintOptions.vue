@@ -2,14 +2,14 @@
   <Dialog modal header="Print">
     <div class="printPopup">
       <div class="pageOptions">
+        <div class="pageOptionLabel">Pages</div>
+        <PageSelection v-model="pageSelection" 
+          @change="onNewOptions" />
         <div class="pageOptionLabel">Pages per sheet</div>
         <OneChoice v-model="pagePerSheet" :choices="[onePage,twoPages]" 
           @change="onNewOptions"/>
         <div class="pageOptionLabel">Back Page Orientation</div>
         <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]"
-          @change="onNewOptions" />
-        <div class="pageOptionLabel">Pages</div>
-        <PageSelection v-model="pageSelection" 
           @change="onNewOptions" />
 
       </div>
