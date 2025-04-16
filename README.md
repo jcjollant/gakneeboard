@@ -5,7 +5,7 @@ Start the UI
 And access via the browser, typically on port 5173
 `http://localhost:5173`
 
-Start on local network (to allow access from other devices on the network)
+Start on local network (to allow access from other devices on the network). This is good for testing on the iPad
 `npm run dev -- --host`
 
 # Testing
