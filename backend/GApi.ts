@@ -22,6 +22,7 @@ import { UserMiniView } from './models/UserMiniView'
 import { CodeAndAirport } from './models/CodeAndAirport'
 import { GApiError } from './GApiError'
 import { Template } from './models/Template'
+import { AirportSketch } from './AirportSketch'
 
 // Google API key
 
@@ -134,7 +135,7 @@ export class GApi {
             }
             // new airport
             await AirportDao.create(code, firstTimer);
-            // await AirportSketch.resolve(firstTimer)
+            await AirportSketch.resolve(firstTimer, code, true)
             return new CodeAndAirport(code, firstTimer)
         }
 
@@ -161,7 +162,7 @@ export class GApi {
             if( airport.id) { 
                 await AirportDao.updateAirport(airport.id, refresher)
                 // consider refreshing the skecth
-                // if(!refresher.sketch) await AirportSketch.resolve(refresher, code)
+                if(!refresher.sketch) await AirportSketch.resolve(refresher, code, true)
             } else {
                 console.log('[GApi.getAirportCurrent] Could not update', code, 'due to missing Id')
             }
