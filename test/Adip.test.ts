@@ -1,4 +1,4 @@
-import {describe, expect, test} from '@jest/globals';
+import {describe, expect, it, test} from '@jest/globals';
 import { Adip } from '../backend/adip/Adip'
 import { Airport } from '../backend/models/Airport';
 import { PatternDirection, Runway, RunwaySurface } from '../backend/models/Runway'
@@ -36,6 +36,14 @@ function checkAtc(airport:Airport,expectedAtcs:any) {
 }
 
 describe('Adip', () => {
+
+    it('gets effectiveDate from variables', () => {
+        process.env.EFFECTIVE_DATE = "test"
+        expect(Adip.currentEffectiveDate()).toBe("test")
+        // unset environment variable
+        delete process.env.EFFECTIVE_DATE
+        expect(Adip.currentEffectiveDate()).toBe(Adip.defaultEffectiveDate)
+    })
 
     test('Military frequencies', () => {
         expect(Adip.isMilitary(123.0)).toBeFalsy()
