@@ -78,12 +78,13 @@ export class HealthCheck {
                 if(rentonDb.effectiveDate != rentonAdip.effectiveDate) {
                     throw new Error("effective date mismatch db=" + rentonDb.effectiveDate + ", ADIP=" + rentonAdip.effectiveDate)
                 } 
-                if( rentonAdip.effectiveDate != Adip.currentEffectiveDate) {
-                    throw new Error("effective date mismatch ExpectedADIP=" + Adip.currentEffectiveDate + ", ActualADIP=" + rentonAdip.effectiveDate)
+                if( rentonAdip.effectiveDate != (Adip.currentEffectiveDate())) {
+                    throw new Error("effective date mismatch ExpectedADIP=" + Adip.currentEffectiveDate() + ", ActualADIP=" + rentonAdip.effectiveDate)
                 } 
 
                 check.pass("Matching " + rentonDb.effectiveDate)
             } catch(e) {
+                console.log('[HealthCheck.effectiveDateCheck] ' + e)
                 check.fail(JSON.stringify(e))
             }
         })
@@ -98,7 +99,8 @@ export class HealthCheck {
             'STRIPE_WEBHOOK_SECRET', 
             'STRIPE_HH1_PRICE', 
             'STRIPE_PP1_PRICE', 
-            'STRIPE_BD1_PRICE']
+            'STRIPE_BD1_PRICE',
+            'EFFECTIVE_DATE']
 
         const check:Check = new Check("Environment Variables")
         for(const envVar of envVars) {
