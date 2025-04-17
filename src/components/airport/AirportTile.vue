@@ -363,7 +363,7 @@ function onSettingsUpdate( newAirport:Airport, newRunway, newOrientation:string,
 
 function showAirport( airport:Airport) {
     // console.log( "[AirportTile.showAirport] Showing airport ", JSON.stringify(airport))
-    if( airport == null) {
+    if( !airport) {
         // if airport data is missing, we switch to edit mode
         // console.log( 'Airport data missing')
         editMode.value = true
