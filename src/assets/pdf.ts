@@ -34,7 +34,7 @@ export async function exportToPDF(elements:NodeListOf<Element>, onePagePerSheet:
         // add a page if
         if( imageCount > 0) pdf.addPage();
 
-        const canvas = await html2canvas(element as HTMLElement, { scale: 2 });
+        const canvas = await html2canvas(element as HTMLElement, { scale: 2, allowTaint : true, useCORS: true });
         const imgData = canvas.toDataURL('image/png');
         const imgProps = pdf.getImageProperties(imgData);
         const aspectRatio = imgProps.width / imgProps.height;
