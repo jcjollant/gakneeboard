@@ -87,7 +87,7 @@ export class GApiTemplate {
             // check user is in good shape
             if( !user) return reject( new GApiError( 400, "Invalid user"));
 
-            const templateCountForUser = await TemplateDao.countForUser(user.id)
+            const templateCountForUser = await TemplateDao.countForUserStatic(user.id)
             // console.log('[GApiTemplate.save]', templateCountForUser, user.accountType)
 
             // Max limit control

@@ -10,9 +10,13 @@ export class TemplateDao extends Dao<Template> {
 
     static modelVersion:number = 1;
 
-    public static async countForUser(userId:number):Promise<number> {
-        const result = await sql`SELECT COUNT(*) FROM sheets WHERE user_id=${userId}`
+    public async countForUser(userId:number):Promise<number> {
+        const result = await this.db.query(`SELECT COUNT(*) FROM ${this.tableName} WHERE user_id=${userId}`)
         return Number(result.rows[0].count)
+    }
+
+    public static async countForUserStatic(userId:number):Promise<number> {
+        return this.getInstance().countForUser(userId)
     }
 
     /**
@@ -81,6 +85,11 @@ export class TemplateDao extends Dao<Template> {
     public static async getAllTemplateData():Promise<TemplateView[]> {
         const result = await sql`SELECT id,data FROM sheets`
         return result.rows.map((row) => new TemplateView(row['id'], '', row['data']));
+    }
+
+    public async getForUser(userId:number):Promise<Template[]> {
+        const result = await this.db.query(`SELECT * FROM ${this.tableName} WHERE user_id=${userId}`)
+        return result.rows.map((row) => this.parseRow(row))
     }
 
     public static getInstance():TemplateDao {

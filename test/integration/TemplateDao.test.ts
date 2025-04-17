@@ -17,12 +17,12 @@ describe('Custom Templates', () => {
         it('Can CountForUser', async () => {
             const result = await sql`SELECT user_id, COUNT(*) FROM sheets GROUP BY user_id`
             for( const row of result.rows) {
-                const count = await TemplateDao.countForUser(row.user_id)
+                const count = await TemplateDao.countForUserStatic(row.user_id)
                 expect(count).toBe(Number(row.count))
             }
         })
         it('Returns 0 for invalid user', async () => {
-            const count = await TemplateDao.countForUser(0)
+            const count = await TemplateDao.countForUserStatic(0)
             expect(count).toBe(0)
         })
     })
