@@ -13,9 +13,12 @@ const maxNavaids:number = 10
 
 export class Adip {
     static basicAuth:string = 'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP'
-    // static currentEffectiveDate: string = "2025-01-23T00:00:00"
-    // static currentEffectiveDate:string = "2025-02-20T00:00:00"
-    static currentEffectiveDate:string = "2025-03-20T00:00:00"
+    static defaultEffectiveDate = "2025-03-20T00:00:00"
+    public static currentEffectiveDate():string {
+        // return default date if environment variable is not set
+        // console.log('[Adip.currentEffectiveData', process.env.EFFECTIVE_DATE)
+        return process.env.EFFECTIVE_DATE || Adip.defaultEffectiveDate
+    }
 
     /**
      * Fetch airport details from Adip then parse it into an Airport object

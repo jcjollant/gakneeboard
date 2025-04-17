@@ -96,4 +96,4 @@ Metrics.perform().then( metrics => {
 // Show a list of current airports
 // import { Adip } from "../backend/adip/Adip";
 // import { AirportDao } from "../backend/AirportDao";
-// AirportDao.readCurrent(Adip.currentEffectiveDate).then(list => console.log(list.map(a => a.code).join(',')))
+// AirportDao.readCurrent(Adip.currentEffectiveDate()).then(list => console.log(list.map(a => a.code).join(',')))

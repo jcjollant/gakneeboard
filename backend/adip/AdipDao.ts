@@ -4,7 +4,8 @@ import { Adip } from "./Adip";
 export class AdipDao {
 
     public static async cleanUpStaleData():Promise<number> {
-        const result = await sql`UPDATE adip SET data=NULL WHERE code in (SELECT DISTINCT code FROM adip WHERE create_time > ${Adip.currentEffectiveDate}) AND create_time < ${Adip.currentEffectiveDate} AND data NOTNULL`
+        const effectiveDate = Adip.currentEffectiveDate()
+        const result = await sql`UPDATE adip SET data=NULL WHERE code in (SELECT DISTINCT code FROM adip WHERE create_time > ${effectiveDate}) AND create_time < ${effectiveDate} AND data NOTNULL`
         return Promise.resolve(result.rowCount)
     }
 

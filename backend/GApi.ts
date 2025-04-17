@@ -87,7 +87,7 @@ export class GApi {
     }
 
     public static getAirportCurrentEffectiveDate() {
-        return AirportView.formatAsOf( Adip.currentEffectiveDate)
+        return AirportView.formatAsOf( Adip.currentEffectiveDate())
     }
 
     /**
@@ -149,7 +149,7 @@ export class GApi {
         
 
         const versionCurrent:boolean = (airport.version == Airport.currentVersion);
-        const dateCurrent:boolean = (airport.effectiveDate == Adip.currentEffectiveDate)
+        const dateCurrent:boolean = (airport.effectiveDate == Adip.currentEffectiveDate())
         // Happy path : data is already current or airport is custom (which we don't update)
         if( airport.custom || versionCurrent && dateCurrent) { 
             return new CodeAndAirport(code, airport)
