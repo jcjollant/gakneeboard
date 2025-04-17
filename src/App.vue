@@ -1,12 +1,10 @@
 <template>
-    <!-- <HowDoesItWork v-model:visible="showHowDoesItWork" @close="onCloseHowDoesItWork" />
-    <Popup v-model:visible="showPopup" @close="onClosePopup" /> -->
     <Feedback v-if="route.name!=RouterNames.Print" :open="showFeedback" @submit="feedbackSubmitted"  />
     <About v-model:visible="showAbout" @close="showAbout=false" />
     <Maintenance v-model:visible="showMaintenance" @close="showMaintenance=false" />
     <Toast />
     <ConfirmDialog />
-    <div class="application" @about="console.log('about')">
+    <div class="application">
         <router-view ></router-view>
     </div>
     <div class="session">
