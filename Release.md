@@ -1,4 +1,8 @@
 # User Experience updates
+## 04/17/2025 5163
+* Updated pricing to show max pages
+* Adde plans link in menu bar
+* Fixed airport sketch not showing on prints
 ## 04/15/2025 5162
 * Fixed Prints on iPad via PDF
 ## 04/12/2025 5161
