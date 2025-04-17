@@ -1,5 +1,8 @@
-## 04/16/2025 5160
+## 04/16/2025
+1) 5160
 * Fixed metrics when Tiles page has no selection.
+2) 5161
+* Added support for EFFECTIVE_DATE variable
 ## 04/08/2025 5150
 * Thumbnails
 ## 04/04/2025 5143
