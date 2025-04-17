@@ -160,9 +160,16 @@ export class GApi {
         if( refresher) {
             // update this record in the database
             if( airport.id) { 
+                // update airport data
                 await AirportDao.updateAirport(airport.id, refresher)
-                // consider refreshing the skecth
-                if(!refresher.sketch) await AirportSketch.resolve(refresher, code, true)
+
+                // restore sketch
+                if( airport.sketch) {
+                    refresher.sketch = airport.sketch
+                } else {
+                    // consider refreshing the skecth
+                    await AirportSketch.resolve(refresher, code, true)
+                }
             } else {
                 console.log('[GApi.getAirportCurrent] Could not update', code, 'due to missing Id')
             }
