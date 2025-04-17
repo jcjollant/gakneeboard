@@ -19,10 +19,7 @@ async function doIt() {
         const airport = AirportDao.parse(row)
         airport.code = row.code
         console.log('Getting', airport.code)
-        // if(airport.effectiveDate != Adip.currentEffectiveDate) {
-        //     console.log('skipping', airport.code)
-        //     continue;
-        // }
+
         if(!airport.iap || airport.iap.length < 1) {
             await AirportSketch.resolve(airport)
             continue;
