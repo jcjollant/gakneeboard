@@ -6,6 +6,9 @@
             <div v-if="name" title="Active Template Name" class="templateName">{{name}}</div>
             <div v-if="test" class="test">Test Backend</div>
         </div>
+        <div class="right" @click="router.push('/plans')">
+            Plans
+        </div>
     </div>
 </template>
 
@@ -64,5 +67,16 @@ onMounted(() => {
 }
 .right {
     display: flex;
+    padding-right: 100px;
+    cursor: pointer;
+    color: #666;
+    padding: 4px 10px;
+    margin-right: 100px;
+}
+
+.right:hover {
+    color: white;
+    border-radius: 4px;;
+    background-color: var(--bg);
 }
 </style>
