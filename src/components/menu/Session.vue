@@ -51,6 +51,7 @@ function onAuthentication(newUser:any) {
   // console.log('[Session.onAuthentication] ' + JSON.stringify(userParam))
   showSignIn.value = false
   if( newUser) {
+    // console.log('[Session.onAuthentication] ', newUser)
     toaster.success('Clear', 'Welcome ' + newUser.name)
     // reload Home Page
     router.push({name:'Home',query:{_r:Date.now()}});
