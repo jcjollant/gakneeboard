@@ -6,35 +6,34 @@ function ejectAndConfirm() {
 
 describe('Selection Page', () => {
 
-  it('Try All Pages', () => {
-    visitSkipBanner()
-    newTemplate()
+  it('Try All Page types', () => {
 
-    // Tiles on Page 1
-    cy.get('.page0 > .list > [aria-label="Tiles"]').click()
-    cy.get('.page0 > :nth-child(6) > .headerTitle').contains('Tile Selection')
+    // First text is button label, second is expected title if different from label 
+    const expectedPageTypes = [
+     ['Tiles','Tile Selection'], 
+      ['Strips'], 
+      ['Checklist'], 
+      ['NavLog'], 
+      ['Airport Diagram'], 
+      ['Instrument Approach'], 
+      ['Cover','Title'], 
+      ['Notes'], 
+      ['Blank',undefined]]
 
-    // Checklist on page 2
-    cy.get('.page1 > .list > [aria-label="Checklist"]').click()
-    cy.get('.page1 > .headerTitle').contains('Checklist')
-
-    // Cover on page 2
-    replacePage(1, pageNameCover)
-    cy.get('.titleContainer > .title').contains('Title')
-    // open edit mode to enable heading
-    cy.get('.page1 > .main').click()
-
-    // Instrument Approaches on Page 2
-    replacePage(1, pageNameInstrumentApproach)
-    cy.get('.contentPage > .headerTitle').contains('Instrument Approach')
-
-    // navlog on page 2
-    replacePage(1, pageNameNavlog)
-    cy.get('.contentPage > :nth-child(1) > .headerTitle').contains('NavLog')
-
-    // Notes on page 2
-    replacePage(1, pageNameNotes)
-    cy.get('.contentPage > .headerTitle').contains('Notes')
-
+    // load the page to the right
+    for(let index = 0; index < expectedPageTypes.length; index += 2) {
+      visitSkipBanner()
+      newTemplate()
+      const pageType = expectedPageTypes[index]
+      const contains = pageType.length > 1 ? pageType[1] : pageType[0]
+      replacePage(0, pageType[0], false)
+      if(contains) cy.get('.page0').contains(contains)
+      if( index + 1 < expectedPageTypes.length) {
+        const page2Type = expectedPageTypes[index+1]
+        const contains2 = page2Type.length > 1 ? page2Type[1] : page2Type[0]
+        replacePage(1, page2Type[0], false)
+        cy.get('.page1').contains(contains2)
+      }
+    }
   })
 })

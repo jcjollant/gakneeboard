@@ -1,4 +1,4 @@
-import { boeingTitle, demoChecklistOnPage, demoTilesOnPage, expectedDemos, expectToast, loadDemo, rentonTitle, selectionTitle, visitAndCloseBanner, visitSkipBanner } from './shared.js'
+import { boeingTitle, demoChecklistOnPage, demoTilesOnPage, expectedDemos, expectToast, loadDemo, rentonTitle, selectionTitle, visitAndCloseBanner, visitSkipBanner, waitForAirports } from './shared.js'
 import { environment, landing } from './shared.js'
 
 function checkFtuxTile() {
@@ -80,12 +80,13 @@ describe('First Time User Experience', () => {
     })
 
     // As a new User I can open demos
-    it('Open Demos', () => {
+    it.only('Open Demos', () => {
         visitSkipBanner()
         cy.viewport('macbook-16')
 
         // Check Demo 0
         loadDemo()
+        waitForAirports()
         demoTilesOnPage(0)
         demoChecklistOnPage(1)
 

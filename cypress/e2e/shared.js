@@ -15,6 +15,7 @@ export const bellinghamTitle = 'Bellingham Intl'
 export const boeingTitle = 'Boeing Fld/king County Intl'
 export const clearanceTitle = 'Clearance @'
 export const departTitle = 'Depart @'
+export const demoNameTiles = 'Tiles Demo'
 export const feltsTitle = 'Felts Fld'
 export const holdTitle = 'Hold @'
 export const kenmoreTitle = 'Kenmore Air Harbor'
@@ -138,10 +139,12 @@ export function newTemplate() {
     cy.get('.page1 > .headerTitle').contains('Page Selection')
 }
 
-export function replacePage(pageNum, newPage=undefined) {
+export function replacePage(pageNum, newPage=undefined, replaceButton=true) {
     try {
-        cy.get(`.page${pageNum} .replaceButton`).click({force:true})
-        cy.get('.p-confirm-dialog-accept').click()
+        if(replaceButton) {
+            cy.get(`.page${pageNum} .replaceButton`).click({force:true})
+            cy.get('.p-confirm-dialog-accept').click()
+        }
         cy.get('.contentPage > .headerTitle').contains('Page Selection')
     } catch(e) {
         // doesn't matter if it's not there

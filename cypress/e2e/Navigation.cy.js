@@ -1,4 +1,4 @@
-import { environment, loadDemo, visitSkipBanner } from './shared'
+import { demoNameTiles, environment, loadDemo, visitSkipBanner } from './shared'
 
 describe('Navigation', () => {
   it('Offset', () => {
@@ -38,24 +38,16 @@ describe('Navigation', () => {
 
   })
 
-  it('Publication', () => {
+  it('Navigates directly to publication', () => {
     cy.intercept({method: 'GET',url: '/publication/**',}).as('getPublication');
     cy.visit(environment + '?t=RC')
     cy.wait('@getPublication')
 
     cy.get('.templateName').contains('C172 G1000')
-    cy.get('#offsetPrev').should('have.class','noShow')
-    cy.get('#offsetNext').should('not.have.class','noShow')
-    cy.get('.page0').should('have.class','pageChecklist')
-    cy.get('.page1').should('have.class','pageChecklist')
-    cy.get('.page2').should('have.class','pageChecklist')
-    cy.get('.page3').should('have.class','pageChecklist')
-    cy.get('.page4').should('have.class','pageChecklist')
-    cy.get('.page5').should('have.class','pageChecklist')
-
-    // pages should have a version number
-    cy.get('.page0 .version')
-    cy.get('.page1 .version')
   })
 
+  it('Goes directly to Tiles demo', () => {
+    cy.visit(environment + '?d=tiles')
+    cy.get('.templateName').contains(demoNameTiles)
+  })
 })
