@@ -14,11 +14,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { getTemplateDataFromName, SheetName } from '../assets/sheetData'
+import { SheetName } from '../assets/sheetData'
 import { routeToLocalTemplate } from '../assets/data'
 import { useRouter } from 'vue-router'
 import { LocalStore } from '../lib/LocalStore'
 import FAButton from '../components/shared/FAButton.vue'
+import { DemoData } from '../assets/DemoData'
 
 class Demo {
     title: string
@@ -42,7 +43,7 @@ const demos = ref<Demo[]>([
 const router = useRouter()
 
 function loadDemo(page: string) {
-    const templateData = getTemplateDataFromName(page)
+    const templateData = DemoData.fromName(page)
     if(!templateData)  {
         console.log('[FTUX.loadDemo] Unknown Demo Template')
         return;
