@@ -1,7 +1,5 @@
 <template>
-    <div v-if="type==PageType.none">
-        <div class="contentPage"></div>
-    </div>
+    <BlankPage v-if="type==PageType.none" @replace="onReplace(PageType.selection)" />
     <ChecklistPage v-else-if="type==PageType.checklist" :data="pageData" 
         @replace="onReplace" @update="onUpdate" :version="version" />
     <CoverPage v-else-if="type==PageType.cover" :data="pageData" 
@@ -30,6 +28,7 @@ import { onMounted, ref, watch } from 'vue'
 import { PageType } from '../../assets/PageType'
 
 import ApproachPage from '../charts/ApproachPage.vue'
+import BlankPage from './BlankPage.vue'
 import ChecklistPage from '../checklist/ChecklistPage.vue'
 import CoverPage from '../cover/CoverPage.vue'
 import DiagramPage from '../charts/DiagramPage.vue'
