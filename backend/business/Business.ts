@@ -9,6 +9,9 @@ export class Business {
     static PRINT_PER_PURCHASE: number = 10;
     static PRINT_CREDIT_SIMMER: number = 4;
     static PRINT_CREDIT_PRIVATE:number = 10;
+    static MAX_PAGES_SIMMER: number = 4;
+    static MAX_PAGES_PRIVATE: number = 10;
+    static MAX_PAGES_BETA: number = 50;
     static MAX_TEMPLATE_SIMMER: number = 2;
     static MAX_TEMPLATE_PRIVATE: number = 5;
     static MAX_TEMPLATE_BETA: number = 10;
@@ -21,6 +24,20 @@ export class Business {
             case AccountType.private: credit = this.PRINT_CREDIT_PRIVATE; break;
         }
         return Math.max( user.printCredits, credit)
+    }
+
+    static maxPages(user:User):number {
+        return this.maxPagesFromAccountType(user.accountType)
+    }
+
+    static maxPagesFromAccountType(accountType:AccountType):number {
+        switch(accountType) {
+            case AccountType.private: return this.MAX_PAGES_PRIVATE;
+            case AccountType.beta:    return this.MAX_PAGES_BETA;
+            case AccountType.simmer:  return this.MAX_PAGES_SIMMER;
+            default:
+                return 0;
+        }
     }
 
     static maxTemplates(user:User):number {
