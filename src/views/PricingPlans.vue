@@ -4,7 +4,7 @@
   <div class="pricing-container">
     <div class="pricing-header">
       <h2>Simple, Transparent Pricing</h2>
-      <p>Choose the plan that's right for you</p>
+      <p>Choose the plan that's right for you<br>For perspective, a C172 burns $8.82 of fuel during taxi</p>
       <!-- <EitherOr v-model="monthly" either="Monthly" or="Anually" /> -->
     </div>
     
@@ -84,7 +84,7 @@ const plans = ref([
     features: {
       "4 Prints Per Month(*)": true,
       "2 Templates": true,
-      "4 Pages": true,
+      "2 Pages per Template": true,
       "Airport Data Update": false,
     },
     popular: false,
