@@ -10,10 +10,12 @@
             </div>
             <div class="key">Templates</div>
             <div class="value">
-                <div class="templatesCount" :class="{'maxedOut':user.templates.length >= user.maxTemplateCount }">{{user.templates.length}} / {{ user.maxTemplateCount }}</div>
+                <div class="templatesCount" :class="{'maxedOut':user.templates.length > user.maxTemplateCount }">{{user.templates.length}} / {{ user.maxTemplateCount }}</div>
             </div>
-            <div class="key">Pages Per Template</div>
-            <div class="value pagesCount">{{ user.maxPageCount }}</div>
+            <div class="key">Pages</div>
+            <div class="value">
+              <div class="pagesCount" :class="{'maxedOut':user.pageCount > user.maxPageCount }">{{ user.pageCount }} / {{ user.maxPageCount }}</div>
+            </div>
             <div v-if="user.accountType == AccountType.beta" class="key">Print Credit</div>
             <div v-if="user.accountType == AccountType.beta" class="value">
               <div class="unlimited" >Unlimited</div>
