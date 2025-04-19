@@ -8,6 +8,7 @@ export class User {
     name:string;
     source:string;
     email:string;
+    maxPages:number;
     maxTemplates:number;
     accountType:AccountType;
     customerId:string|undefined;
@@ -20,6 +21,7 @@ export class User {
         this.name = '';
         this.source = '';
         this.email = '';
+        this.maxPages = Business.MAX_PAGES_SIMMER;
         this.maxTemplates = Business.MAX_TEMPLATE_SIMMER;
         this.accountType = AccountType.simmer;
         this.customerId = undefined;
@@ -42,6 +44,10 @@ export class User {
 
     public setSource(source:string) {
         this.source = source;
+    }
+
+    public setMaxPages( newMax:number) {
+        this.maxPages = newMax;
     }
 
     public setMaxTemplates( newMax:number) {
