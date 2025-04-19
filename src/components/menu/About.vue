@@ -12,7 +12,6 @@
             <li>Show off your kneeboards to fellow pilots,</li>
             <li>Make your templates public for community's benefit,</li>
             <li>Test the app and report issues,</li>
-            <li>Support us via <a :href="UserUrl.patreon" target="_blank">Patreon</a>.</li>
           </ol>
         </div>
         <div class="justify"><strong>Special Thanks</strong> to Ash, Jason, Steve and Stewart whom have contributed invaluable feedback and suggestions since Day 1</div>
