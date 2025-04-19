@@ -85,11 +85,13 @@ export class UserDao extends Dao<User> {
             user.setSource('?')
             user.setEmail('?')
             user.setName('?')
-            user.maxTemplates = 0
+            user.setMaxPages(0)
+            user.setMaxTemplates(0)
         }
         user.setAccountType(row.account_type)
         user.setCustomerId(row.customer_id)
-        user.setMaxTemplates(row.max_templates)
+        user.setMaxPages(row.max_pages || 0)
+        user.setMaxTemplates(row.max_templates || 0)
         user.setPrintCredits(row.print_credit || 0)
         user.setCreateDate(row.create_time)
         user.setCustomerId(row.customer_id)
@@ -135,7 +137,23 @@ export class UserDao extends Dao<User> {
                     }
                     if(result.rowCount == 0) {
                         // console.log( '[UserDao.save] adding ' + user.sha256)
-                        const insert = await this.db.query(`INSERT INTO ${this.tableName} (sha256, data,version,account_type,max_templates,print_credit) VALUES ('${user.sha256}','${JSON.stringify(userData)}',${this.modelVersion},'${user.accountType}',${user.maxTemplates}, ${user.printCredits}) RETURNING id`)
+                        // const insert = await this.db.query(`INSERT INTO ${this.tableName} (sha256, data,version,account_type,max_pages,max_templates,print_credit) VALUES ('${user.sha256}','${JSON.stringify(userData)}',${this.modelVersion},'${user.accountType}',${user.maxPages},${user.maxTemplates}, ${user.printCredits}) RETURNING id`)
+                        const insert = await this.db.query(
+                            `INSERT INTO ${this.tableName} 
+                            (sha256, data, version, account_type, max_pages, max_templates, print_credit) 
+                            VALUES ($1, $2, $3, $4, $5, $6, $7) 
+                            RETURNING id`,
+                            [
+                                user.sha256,
+                                JSON.stringify(userData),
+                                this.modelVersion,
+                                user.accountType,
+                                user.maxPages,
+                                user.maxTemplates,
+                                user.printCredits
+                            ]
+                        );
+
                         user.id = insert.rows[0].id
                         // console.log( '[UserDao.save] ' + user.sha256)
                     } else if( overwrite){ // this user is known but we can override
