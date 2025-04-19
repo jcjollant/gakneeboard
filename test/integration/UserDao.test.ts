@@ -45,6 +45,7 @@ describe('UserDao', () => {
         const name = 'Paul'
         const source = 'SomeSource'
         const email = 'paul@example.com'
+        const maxPages = 8;
         const maxTemplatesData = 12
         const maxTemplates = 10
         const customerId = 'someCustomerId'
@@ -58,6 +59,7 @@ describe('UserDao', () => {
             account_type:AccountType.beta, 
             customer_id: customerId, 
             print_credit: printCredits, 
+            max_pages: maxPages,
             max_templates: maxTemplates,
             create_time:createDate
         }
@@ -68,6 +70,7 @@ describe('UserDao', () => {
         expect(user.name).toBe(name)
         expect(user.source).toBe(source)
         expect(user.email).toBe(email)
+        expect(user.maxPages).toBe(maxPages)
         expect(user.maxTemplates).toBe(maxTemplates)
         expect(user.accountType).toBe(AccountType.beta)
         expect(user.customerId).toBe(customerId)

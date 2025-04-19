@@ -7,6 +7,10 @@ import { SubscriptionDao } from '../backend/dao/SubscriptionDao'
 import { Refill } from '../backend/models/Refill'
 import { AccountType } from '../backend/models/AccountType'
 import { Business } from '../backend/business/Business'
+import { TemplateDao } from '../backend/TemplateDao'
+import { TemplateView } from '../backend/models/TemplateView'
+import { PageType, Template } from '../backend/models/Template'
+
 
 export function getMockUserDao(user:User):UserDao {
     const mockUserDao = new UserDao() as jest.Mocked<UserDao>;
@@ -34,6 +38,21 @@ export function getMockBrandNewSubscription():Subscription {
     return mockSubscription;
 }
 
+export function getMockTemplateDao( tv:TemplateView, numTemplates:number = Business.MAX_TEMPLATE_SIMMER, numPages:number = 0, prevPages:number = 0):TemplateDao {
+    const mockTemplateDao = new TemplateDao() as jest.Mocked<TemplateDao>;
+    jest.spyOn(mockTemplateDao, 'createOrUpdate').mockResolvedValue(tv)
+    jest.spyOn(mockTemplateDao, 'countForUser').mockResolvedValue(numTemplates)
+    jest.spyOn(mockTemplateDao, 'pageCount').mockResolvedValue([numPages,prevPages])
+    jest.spyOn(TemplateDao, 'getInstance').mockReturnValue(mockTemplateDao)
+    return mockTemplateDao
+}
+
+export function getTemplateView(numPages:number, id:number=0):TemplateView {
+    const data = Array(numPages).fill({type:PageType.notes})
+    const tv = new TemplateView(id, 'someName', data)
+    return tv
+}
+
 export function newTestUser(userId:number=0, accoutType:AccountType=AccountType.simmer):User {
     const userName = Math.random().toString(36).substring(5)
     const newEmail = Math.random().toString(36).substring(7) + '@test.com'
@@ -42,6 +61,7 @@ export function newTestUser(userId:number=0, accoutType:AccountType=AccountType.
     newUser.email = newEmail
     newUser.name = userName
     newUser.source = 'test'
+    newUser.accountType = accoutType
     // assign random value between 1 and 25
     newUser.setPrintCredits(Math.floor(Math.random() * 25) + 1)
     
@@ -49,6 +69,7 @@ export function newTestUser(userId:number=0, accoutType:AccountType=AccountType.
     // const max = [2,5,10]
     // newUser.setMaxTemplates(max[Math.floor(Math.random() * max.length)])
     newUser.setMaxTemplates(Business.maxTemplatesFromAccountType(accoutType))
+    newUser.setMaxPages(Business.maxPagesFromAccountType(accoutType))
 
     return newUser
 }

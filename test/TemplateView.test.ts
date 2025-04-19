@@ -3,38 +3,51 @@ import { Publication } from '../backend/models/Publication'
 import { jcTestTemplateData, jcUserId } from './constants';
 import { TemplateView } from '../backend/models/TemplateView';
 import { Template } from '../backend/models/Template';
+import e from 'express';
 
 describe('Sheet class', () => {
-    test('Constructor', () => {
-        const id = 1
-        const name = "name"
-        const data = jcTestTemplateData
-        const t = new TemplateView(id, name, data)
-        expect(t.id).toBe(id) 
-        expect(t.name).toBe(name)
-        expect(t.data).toBe(data)
-        expect(t.publish).toBeFalsy()
-        expect(t.code).toBeUndefined()
-        expect(t.desc).toBeUndefined()
-        expect(t.ver).toBe(0)
-        expect(t.pages).toBe(jcTestTemplateData.length)
-
-        const id2 = 2
-        const name2 = ''
-        const data2 = [{value:'nothing'}]
-        const description2 = 'description deux'
-        const publicationCode:string = "AB"
-        const version = 12;
-        const pages = 13
-        const t2 = new TemplateView(id2, name2, data2, description2, version, true, publicationCode, pages)
-        expect(t2.id).toBe(id2)
-        expect(t2.name).toBe(name2)
-        expect(t2.data).toBe(data2)
-        expect(t2.desc).toBe(description2)
-        expect(t2.ver).toBe(version)
-        expect(t2.publish).toBeTruthy()
-        expect(t2.code).toBe(publicationCode)
-        expect(t2.pages).toBe(pages)
+    describe('constructor', () => {
+        it('Consumes parameters', () => {
+            const id2 = 2
+            const name2 = ''
+            const data2 = [{value:'nothing'}]
+            const description2 = 'description deux'
+            const publicationCode:string = "AB"
+            const version = 12;
+            const pages = 13
+            const thumbnail = 'https://some.url'
+            const thumbhash = '1236549871563546asdqweasd'
+            const t = new TemplateView(id2, name2, data2, description2, version, true, publicationCode, pages, thumbnail, thumbhash)
+            expect(t.id).toBe(id2)
+            expect(t.name).toBe(name2)
+            expect(t.data).toBe(data2)
+            expect(t.desc).toBe(description2)
+            expect(t.ver).toBe(version)
+            expect(t.publish).toBeTruthy()
+            expect(t.code).toBe(publicationCode)
+            expect(t.pages).toBe(pages)
+            expect(t.thumbUrl).toBe(thumbnail)
+            expect(t.thumbHash).toBe(thumbhash)
+        })
+    
+        it('Creates default values', () => {
+            const id = 1
+            const name = "name"
+            const data = ['a','b','c']
+            const t = new TemplateView(id, name, data)
+            expect(t).toBeDefined()
+            expect(t.id).toBe(id)
+            expect(t.name).toBe(name)
+            expect(t.data).toBe(data)
+            expect(t.desc).toBeUndefined()
+            expect(t.ver).toBe(0)
+            expect(t.publish).toBeFalsy()
+            expect(t.code).toBeUndefined()
+            expect(t.pages).toBe(data.length)
+            expect(t.thumbUrl).toBeUndefined()
+            expect(t.thumbHash).toBeUndefined()
+        })
+    
     })
 
     it('Can Parse Template', async () => {

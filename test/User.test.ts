@@ -71,9 +71,11 @@ describe('UserTool', () => {
         const newUser = await UserTools.authenticate(body, userDao)
         expect(newUser.printCredits).toBe(Business.PRINT_CREDIT_SIMMER)
         expect(newUser.maxTemplates).toBe(Business.MAX_TEMPLATE_SIMMER)
+        expect(newUser.maxPages).toBe(Business.MAX_PAGES_SIMMER)
         const savedUser = await userDao.getFromHash(testUser.sha256)
         expect(savedUser.printCredits).toBe(Business.PRINT_CREDIT_SIMMER)
         expect(savedUser.maxTemplates).toBe(Business.MAX_TEMPLATE_SIMMER)
+        expect(savedUser.maxPages).toBe(Business.MAX_PAGES_SIMMER)
 
     })
     test('Authenticate and UserMiniView', async () => {

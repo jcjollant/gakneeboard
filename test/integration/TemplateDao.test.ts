@@ -32,7 +32,7 @@ describe('Custom Templates', () => {
             const tv1 = new TemplateView(-1, "name", jcTestTemplateData, "description", 1)
 
             // tv has invalid template, jcUserId is valid
-            expect(TemplateDao.createOrUpdateView(tv1, jcUserId)).rejects.toThrow(new Error('Invalid template or user id'))
+            expect(TemplateDao.createOrUpdateViewStatic(tv1, jcUserId)).rejects.toThrow(new Error('Invalid template or user id'))
 
             const result = await sql`SELECT * FROM sheets LIMIT 1`
             expect(result.rows.length).toBe(1)
@@ -40,13 +40,13 @@ describe('Custom Templates', () => {
             const tv2 = new TemplateView(row.id, row.name, row.data, row.description, 2)
 
             // tv2 has valid template id, 0 is invalid for userId
-            expect(TemplateDao.createOrUpdateView(tv2, 0)).rejects.toThrow( new Error('Invalid template or user id'))
+            expect(TemplateDao.createOrUpdateViewStatic(tv2, 0)).rejects.toThrow( new Error('Invalid template or user id'))
         })
 
         it( 'creates a new template', async() => {
             const tv1 = new TemplateView(0, "name1", jcTestTemplateData, "description1", 1, true, undefined, 2)
  
-            const t1 = await TemplateDao.createOrUpdateView(tv1, jcUserId)
+            const t1 = await TemplateDao.createOrUpdateViewStatic(tv1, jcUserId)
             expect(t1.id).toBeGreaterThan(0)
             expect(t1.pages).toBe(2)
 
@@ -66,7 +66,7 @@ describe('Custom Templates', () => {
             const pages2 = 0
             const tv1 = new TemplateView(0, name1, data1, desc1, version, true, undefined, pages1)
  
-            const t1 = await TemplateDao.createOrUpdateView(tv1, jcUserId)
+            const t1 = await TemplateDao.createOrUpdateViewStatic(tv1, jcUserId)
             expect(t1.id).toBeGreaterThan(0)
             // memorize template id
             tv1.id = t1.id
@@ -83,7 +83,7 @@ describe('Custom Templates', () => {
             tv1.desc = desc2
             tv1.data = data2
             tv1.pages = pages2
-            const t2 = await TemplateDao.createOrUpdateView(tv1, jcUserId)
+            const t2 = await TemplateDao.createOrUpdateViewStatic(tv1, jcUserId)
             tv1.id = t2.id
             tv1.ver = t2.ver
 
@@ -150,13 +150,13 @@ describe('Custom Templates', () => {
             const tv2 = new TemplateView(0, "name2", jcTestTemplateData, "description2", 1, true, undefined, 2)
             const tv3 = new TemplateView(0, "name3", jcTestTemplateData, "description3", 1, false, undefined, 2)
  
-            const t1 = await TemplateDao.createOrUpdateView(tv1, user.id)
+            const t1 = await TemplateDao.createOrUpdateViewStatic(tv1, user.id)
             const pub1 = await PublicationDao.publish(t1.id)
             expect(pub1).toBeDefined()
-            const t2 = await TemplateDao.createOrUpdateView(tv2, user.id)
+            const t2 = await TemplateDao.createOrUpdateViewStatic(tv2, user.id)
             const pub2 = await PublicationDao.publish(t2.id)
             expect(pub2).toBeDefined()
-            const t3 = await TemplateDao.createOrUpdateView(tv3, user.id)
+            const t3 = await TemplateDao.createOrUpdateViewStatic(tv3, user.id)
 
             expect(t1.id).toBeGreaterThan(0)
             console.log(t1.id)
