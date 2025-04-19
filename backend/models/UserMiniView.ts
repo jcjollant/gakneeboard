@@ -8,8 +8,8 @@ import { User } from './User'
 export class UserMiniView {
     sha256: string;
     name: string;
-    maxPages: number; // max pages per template
-    maxTemp: number; // mex templates
+    maxPages: number; // max pages across all templates
+    maxTemp: number; // max templates
     templates: TemplateView[];
     accountType: AccountType;
     printCredits: number;
@@ -17,7 +17,7 @@ export class UserMiniView {
     constructor(user:User, templates:TemplateView[]) {
         this.sha256 = user.sha256;
         this.name = user.name;
-        this.maxPages = Business.maxTemplatesFromAccountType(user.accountType)
+        this.maxPages = user.maxPages
         this.maxTemp = user.maxTemplates;
         this.templates = templates;
         this.accountType = user.accountType;
