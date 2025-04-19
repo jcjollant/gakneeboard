@@ -107,7 +107,7 @@ onMounted(() =>{
       loadTemplate(LocalStore.getTemplate())
     }
   } catch(e) {
-    console.log('[Template.onMounted] failed loading template ' + e)
+    console.log('[TemplateViewer.onMounted] failed loading template ' + e)
     // revert to demo tiles
     loadTemplate(DemoData.tiles(), true)
   }
@@ -129,7 +129,7 @@ onMounted(() =>{
           }
         })
 
-      // console.log('[Template.onBeforePrint]')
+      // console.log('[TemplateViewer.onBeforePrint]')
     }
   }
 })
@@ -248,7 +248,7 @@ function onExported(format:any) {
 
 // Validate and assign new offset value
 function onOffset(newOffset:number) {
-  // console.log('[Template.onOffset]', newOffset, offsetLast.value)
+  // console.log('[TemplateViewer.onOffset]', newOffset, offsetLast.value)
   if(newOffset < 0 || newOffset > offsetLast.value){
     // console.log('[TemplateViewer.onOffset] invalid offset', newOffset)
     return;
@@ -299,7 +299,7 @@ async function onSave() {
       // retrieve data from active template
       toaster.info( 'Say Request', 'Saving template ' + activeTemplate.value.name, 4000)
       TemplateData.save(activeTemplate.value).then(ts => {
-        // console.log('[Template.onSave]', activeTemplate.value.id, JSON.stringify(t))
+        // console.log('[TemplateViewer.onSave]', activeTemplate.value.id, JSON.stringify(t))
         const t = ts.template
         let message = 'Template "' + t.name + '" saved';
         if(t.publish && t.code) {
@@ -332,7 +332,7 @@ async function onSave() {
 }
 
 function onSettings(settings) {
-  // console.log('[Template.onSettings]', settings)
+  // console.log('[TemplateViewer.onSettings]', settings)
   showSettings.value = false;
   if( activeTemplate.value.name != settings.name 
     || activeTemplate.value.desc != settings.desc 
@@ -349,12 +349,12 @@ function onSettings(settings) {
 }
 
 function saveTemplateToLocalStore() {
-  // console.log('[Template.saveTemplateToLocaStore]', thumbnail)
+  // console.log('[TemplateViewer.saveTemplateToLocaStore]', thumbnail)
   LocalStore.saveTemplate(activeTemplate.value)
 }
 
 function updateOffsets() {
-  // console.log('[Template.onResize]', window.innerWidth)
+  // console.log('[TemplateViewer.onResize]', window.innerWidth)
   if(activeTemplate.value.isInvalid()) return;
 
   if( cssPageGap == -1) {
@@ -363,7 +363,7 @@ function updateOffsets() {
 
     cssPageGap = parseInt(elt.getPropertyValue('--pages-gap'));
     cssPageWidth = parseInt(elt.getPropertyValue('--page-width'));
-    // console.log('[Template.updateOffset] cssPageGap', cssPageGap)
+    // console.log('[TemplateViewer.updateOffset] cssPageGap', cssPageGap)
   }
 
   // how many pages can fit in the new width?
@@ -371,20 +371,20 @@ function updateOffsets() {
   const pageCount = activeTemplate.value.data.length;
   // cssPageGap * (1 + numPages) +  cssPageWidth * numPages
   const maxOffset = Math.max(pageCount - pageFit, 0)
-  // console.log('[Template.onResize] fitting', fittingPages, 'offsetLast', offsetLast.value)
+  // console.log('[TemplateViewer.onResize] fitting', fittingPages, 'offsetLast', offsetLast.value)
 
   // adjust offset if we have blankspace
   if(offset.value > maxOffset) offset.value = maxOffset
   singlePage.value = pageFit == 1;
   offsetLast.value = maxOffset;
-  // console.log('[Template.updateOffset] offsetLast', maxOffset)
+  // console.log('[TemplateViewer.updateOffset] offsetLast', maxOffset)
 }
 
 function updateThumbnail(template:Template) {
   // console.log('[TemplateViewer.updateThumbnail] template', template.id, template.thumb)
-  // console.log('[Template.updateThumbnail]', activeTemplate.value?.id)
-  if(template.id <= 0 || activeTemplate.value.isInvalid()) {
-    // console.log('[Template.updateThumbnail] skipping invalid template')
+  // console.log('[TemplateViewer.updateThumbnail]', activeTemplate.value?.id)
+  if(template.id <= 0 || activeTemplate.value.isInvalid() || !currentUser.loggedIn) {
+    // console.log('[TemplateViewer.updateThumbnail] not ready to save')
     return;
   }
   const index = template.id
@@ -406,14 +406,14 @@ function updateThumbnail(template:Template) {
       // push thumbnail image to backend
       if(blob == null) return
       const sha256 = await computeSHA256(blob)
-      // console.log('[Template.updateThumbnail] sha256', sha256, template.thumbHash)
       if(sha256 != template.thumbHash) {
+        console.log('[TemplateViewer.updateThumbnail] sha256', sha256, template.thumbHash)
         activeTemplate.value.thumbUrl = await TemplateData.updateThumbnail(index, blob, sha256)
       } else {
-        // console.log('[Template.updateThumbnail] skipping unchanged thumbnail')
+        console.log('[TemplateViewer.updateThumbnail] skipping unchanged thumbnail')
       }
     }, 'image.png')
-  }).catch((e) => console.log('[Template.updateThumbnail] failed', e))
+  }).catch((e) => console.log('[TemplateViewer.updateThumbnail] failed', e))
 
 }
 </script>
