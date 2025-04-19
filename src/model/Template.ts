@@ -6,6 +6,7 @@ export class Template {
     desc:string
     publish:boolean
     data:TemplatePage[]
+    pages:number;
     ver:number
     code:string
     thumbUrl:string|undefined
@@ -16,6 +17,7 @@ export class Template {
         this.desc = description
         this.publish = publish
         this.data = data
+        this.pages = data.length
         this.ver = version
         this.code = ''
         this.thumbUrl = undefined
@@ -59,6 +61,7 @@ export class Template {
         template.ver =  data?.ver ?? template.ver
         template.thumbUrl = data?.thumbUrl
         template.thumbHash = data?.thumbHash
+        template.pages = data.data.length || data.pages
 
         return template
     }
