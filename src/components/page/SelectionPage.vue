@@ -1,25 +1,12 @@
 <template>
     <div class="contentPage">
         <Header :title="'New Page Selection'" :replace="false" :clickable="false"></Header>
-        <!-- <div class="widgetTitle">Tile Selection</div> -->
         <div class="list">
             <template v-for="section in sections">
                 <Separator :name="section.name" />
                 <FAButton v-for="page in section.pages" :label="page.name" :title="page.tooltip" :icon="page.icon"
                     @click="replacePage(page.type)"/>
             </template>
-            <!-- <Separator name="Basics" />
-            <FAButton v-for="page in basicPages" :label="page.name" :title="page.tooltip" :icon="page.icon"
-                @click="replacePage(page.type)"/>
-            <Separator name="Navigation" />
-            <FAButton v-for="page in knownPages" :label="page.name" :title="page.tooltip" :icon="page.icon"
-                @click="replacePage(page.type)"/>
-            <Separator name="Charts" />
-            <FAButton v-for="page in chartsPages" :label="page.name" :title="page.tooltip" :icon="page.icon"
-                @click="replacePage(page.type)"/>
-            <Separator name="Cosmetics" />
-            <FAButton v-for="page in cosmeticPages" :label="page.name" :title="page.tooltip" :icon="page.icon"
-                @click="replacePage(page.type)"/> -->
         </div>
     </div>
 </template>
@@ -51,6 +38,7 @@ const group3 = ref([
 const group4 = ref([
     {name:'Cover',type:PageType.cover, icon:'image', tooltip:'A cover page for your stylish templates'},
     {name:'Notes',type:PageType.notes, icon:'pen-to-square', tooltip:'A blank page to write down instructions'},
+    {name:'Blank',type:PageType.none, icon:'file', tooltip:'A blank page'},
 ])
 
 const sections = ref([
