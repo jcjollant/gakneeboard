@@ -1,5 +1,5 @@
 export class PageType {
-  static none = '';
+  static none = 'blank';
   static approach = 'approach';
   static checklist = 'checklist';
   static cover = 'cover';
