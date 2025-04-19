@@ -93,7 +93,7 @@ export class Metrics {
         const output:Metric[] = []
         output.push( new Metric(MetricKey.airportsTotal, await AirportDao.count()))
         output.push( new Metric(MetricKey.airportsValid, await AirportDao.countValid()))
-        output.push( new Metric(MetricKey.airportsCurrent, (await AirportDao.readCurrent(Adip.currentEffectiveDate)).length))
+        output.push( new Metric(MetricKey.airportsCurrent, (await AirportDao.readCurrent(Adip.currentEffectiveDate())).length))
         return output
     }
 
