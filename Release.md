@@ -1,3 +1,6 @@
+## 4/19/2025 5170
+* Max pages
+* Thumbnails in DB
 ## 04/16/2025
 1) 5160
 * Fixed metrics when Tiles page has no selection.
