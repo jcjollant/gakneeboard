@@ -1,6 +1,8 @@
 import { Business } from "./business/Business"
+import { ThumbnailDao } from "./dao/ThumbnailDao"
 import { UserDao } from "./dao/UserDao"
 import { GApiError } from "./GApiError"
+import { AccountType } from "./models/AccountType"
 import { Publication } from "./models/Publication"
 import { Template } from "./models/Template"
 import { TemplateView } from "./models/TemplateView"
@@ -87,7 +89,9 @@ export class GApiTemplate {
             // check user is in good shape
             if( !user) return reject( new GApiError( 400, "Invalid user"));
 
-            const templateCountForUser = await TemplateDao.countForUserStatic(user.id)
+            // Check limits
+            const templateDao = TemplateDao.getInstance()
+            const templateCountForUser = await templateDao.countForUser(user.id)
             // console.log('[GApiTemplate.save]', templateCountForUser, user.accountType)
 
             // Max limit control
@@ -101,7 +105,20 @@ export class GApiTemplate {
                 return reject( new GApiError( 402, "Maximum templates reached"))
             }
 
-            await TemplateDao.createOrUpdateView(templateView, user.id)
+            // Block page augmentation over the limit
+            const [totalPageCount, previousPageCount] = await templateDao.pageCount(user.id, templateView.id)
+            if(templateView.pages >= previousPageCount) { // page augmentation
+                if(totalPageCount - previousPageCount + templateView.pages > user.maxPages) {
+                    return reject(new GApiError(402, "Maximum pages reached"))
+                }
+
+                // Flight Simmers cannot save templates above 2 pages.
+                if(user.accountType == AccountType.simmer && templateView.pages > 2) {
+                    return reject(new GApiError(402, "Maximum 2 pages per template reached"))
+                }
+            }
+
+            await templateDao.createOrUpdate(templateView, user.id)
 
             // Should we check publication?
             if(templateView.publish) {
@@ -122,11 +139,18 @@ export class GApiTemplate {
 
     }
 
-
-    static async updateThumbnail(templateIdParam: number, userId: number, pngBuffer: Buffer, hash:string) {
-        console.log('[GApiTemplate.updateThumbnail] ' + templateIdParam + ' for ' + userId + ' length ' + pngBuffer.length + ' with ' + hash)
+    /**
+     * Captures a new thumbnail for a template
+     * @param templateIdParam 
+     * @param userId 
+     * @param pngBuffer 
+     * @param hash 
+     * @returns 
+     */
+    static async updateThumbnail(templateIdParam: number, userId: number, pngBuffer: Buffer, hash:string):Promise<ThumbnailData> {
+        // console.log('[GApiTemplate.updateThumbnail] ' + templateIdParam + ' for ' + userId + ' length ' + pngBuffer.length + ' with ' + hash)
         return new Promise<ThumbnailData>( async (resolve, reject) => {
-            console.log('[GApiTemplate.updateThumbnail] ' + templateIdParam + ' for ' + userId)
+            // console.log('[GApiTemplate.updateThumbnail] ' + templateIdParam + ' for ' + userId)
             const templateDao = new TemplateDao()
             // we may have negative numbers for tests
             const testTemplate = templateIdParam < 0
@@ -140,21 +164,29 @@ export class GApiTemplate {
 
             // save image data to blob
             try {
-                const blob = await put(`thumbnails/${templateIdParam}.png`, pngBuffer, {
-                    access: "public",
-                    contentType: "image/png",
-                    token: process.env.BLOB_READ_WRITE_TOKEN,
-                })
-                // save url with associated airport
-                template.thumbnail = blob.url
-                template.thumbhash = hash
-                const output = await templateDao.updateThumbnail(template)
-                console.log("[GApiTemplate.updateThumbnail] uploaded", template.thumbnail);
+                if(template.thumbnail) {
+                    // Saving thumbnail to db
+                    // console.log("[GApiTemplate.updateThumbnail] updating in DB", template.thumbnail)
+                    await ThumbnailDao.save(templateIdParam, pngBuffer, hash)
 
-                return resolve( output)
+                    return resolve( new ThumbnailData(template.thumbnail, hash))
+                } else {
+                    // refresh blob
+                    const blob = await put(`thumbnails/${templateIdParam}.png`, pngBuffer, {
+                        access: "public",
+                        contentType: "image/png",
+                        token: process.env.BLOB_READ_WRITE_TOKEN,
+                    })
+                    // save url with associated airport
+                    template.thumbnail = blob.url
+                    template.thumbhash = hash
+                    const output = await templateDao.updateThumbnail(template)
+                    console.log("[GApiTemplate.updateThumbnail] uploaded", template.thumbnail);
     
+                    return resolve( output)
+                }
             } catch(error) {
-                console.log('[GApiTemplate.updateThumnail]' + error)
+                console.log('[GApiTemplate.updateThumnail] ' + error)
                 return reject( new GApiError(500, `Could not update thumbnail ${templateIdParam} for ${userId}`))
             }
         })
