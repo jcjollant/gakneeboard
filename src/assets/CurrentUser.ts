@@ -8,6 +8,7 @@ export class CurrentUser {
   loggedIn:boolean
   sha256:string;
   name:string;
+  pageCount:number;
   templates:Template[];
   maxPageCount:number;
   maxTemplateCount:number;
@@ -23,6 +24,7 @@ export class CurrentUser {
     this.sha256 = "";
     this.name = "";
     this.templates = [];
+    this.pageCount = 0;
     this.maxPageCount = 0;
     this.maxTemplateCount = 0;
     this.accountType = AccountType.unknown
@@ -102,8 +104,9 @@ export class CurrentUser {
         this.name = data.name;
         this.accountType = data.accountType;
         
-        this.templates = data.templates ? data.templates : [];
+        this.templates = data.templates ? data.templates.map(Template.parse) : [];
         this.sortTemplates()
+        this.pageCount = this.templates.reduce((a, t) => a + t.pages, 0 )
         this.maxPageCount = Number(data.maxPages ? data.maxPages : 0);
         this.maxTemplateCount = Number(data.maxTemp ? data.maxTemp : 0);
         this.printCredits = Number(data.printCredits ? data.printCredits : 0)
@@ -116,13 +119,15 @@ export class CurrentUser {
     }
   }
 
-  updateTemplate(updatedTemplate:any) {
+  // A template has been updated. Reflect the new data
+  updateTemplate(updatedTemplate:Template) {
     // console.log('[data.customSheetSave] sheet saved', JSON.stringify(responseSheet))
     // update that sheet in currentUser.sheets if it exists
     let index = -1
     if( updatedTemplate.id != 0 && this.templates.length > 0) {
       index = this.templates.findIndex( t => t.id == updatedTemplate.id)
     }
+
     // we don't need the data
     const templateNoData = duplicate(updatedTemplate)
     templateNoData.data = []
@@ -134,6 +139,11 @@ export class CurrentUser {
       // update existing entry
       this.templates[index] = templateNoData;
     }
+    
+    // update page count
+    this.pageCount = this.templates.reduce((a, t) => a + t.pages, 0)
+
+
     this.sortTemplates()
     this.notify()
   }
