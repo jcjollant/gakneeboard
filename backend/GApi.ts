@@ -23,6 +23,7 @@ import { CodeAndAirport } from './models/CodeAndAirport'
 import { GApiError } from './GApiError'
 import { Template } from './models/Template'
 import { AirportSketch } from './AirportSketch'
+import { SessionInfo } from './models/SessionInfo'
 
 // Google API key
 
@@ -256,8 +257,8 @@ export class GApi {
         return null
     }
 
-    public static async getSession(req:any):Promise<any> {
-        const output:any = {
+    public static async getSession(req:any):Promise<SessionInfo> {
+        const output:SessionInfo = {
             version: version,
             aced: GApi.getAirportCurrentEffectiveDate(),
             camv: AirportView.currentVersion,
@@ -269,7 +270,7 @@ export class GApi {
             // console.log('[userTools.userMiniFromRequest] user ' + JSON.stringify(user))
             if( user) {
                 const userMini = await UserTools.userMini(user)
-                output['user'] = userMini
+                output.user = userMini
                 UsageDao.create(UsageType.Session,user.id)
             }
         }
