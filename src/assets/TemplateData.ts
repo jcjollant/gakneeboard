@@ -182,7 +182,7 @@ export class TemplateData {
                 .catch( error => {
                     // is this a 402?
                     if(error.response && error.response.status == 402) {
-                        reject('Maximum templates overshot. Consider upgrading or deleting templates')
+                        reject(error.response.data)
                     } else {
                         reportError('[TemplateData.save] error ' + error)
                         reject(error)
