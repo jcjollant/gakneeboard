@@ -1,4 +1,10 @@
 # User Experience updates
+
+## 04/19/2025 5170
+* Showing Page count
+* Maxed out message come from backend
+* Added Blnk page to cosmetic group
+* Removed display mode for Notes and Cover Headers
 ## 04/17/2025 5163
 * Updated pricing to show max pages
 * Adde plans link in menu bar
