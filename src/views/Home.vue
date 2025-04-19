@@ -39,7 +39,7 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 import { currentUser, routeToLocalTemplate } from '../assets/data';
 import { useRouter } from 'vue-router';
-import { getTemplateBlank, getTemplateDataFromName, SheetName } from '../assets/sheetData';
+import { getTemplateBlank, SheetName } from '../assets/sheetData';
 import { Template } from '../model/Template';
 import { useToast } from 'primevue/usetoast';
 import { useToaster } from '../assets/Toaster';
@@ -48,6 +48,7 @@ import Menu from '../components/menu/Menu.vue'
 import PlaceHolder from '../components/shared/PlaceHolder.vue'
 import TemplateSelector from '../components/templates/TemplateSelector.vue'
 import Toast from 'primevue/toast'
+import { DemoData } from '../assets/DemoData';
 
 class DemoSelector {
     name: string
@@ -96,7 +97,7 @@ onUnmounted( () => {
 })
 
 function onDemoSelection(name:string) {
-    const templateData = getTemplateDataFromName(name)
+    const templateData = DemoData.fromName(name)
     if(!templateData) {
         toaster.error('Load Demo', 'Unknown Demo Template')
         return;
