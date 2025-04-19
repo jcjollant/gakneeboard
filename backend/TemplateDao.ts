@@ -19,14 +19,7 @@ export class TemplateDao extends Dao<Template> {
         return this.getInstance().countForUser(userId)
     }
 
-    /**
-     * Create a new Sheet or update and existing one for a given user.
-     * @param templateView 
-     * @param userId 
-     * @returns 
-     */
-    public static async createOrUpdateView(templateView:TemplateView,userId:number):Promise<TemplateView> {
-
+    public async createOrUpdate(templateView:TemplateView, userId:number):Promise<TemplateView> {
         templateView.ver++;
         if( templateView.id) {
             // console.log( "[SheetDao.createOrUpdate] updating", pageId);
@@ -46,6 +39,17 @@ export class TemplateDao extends Dao<Template> {
             templateView.id = result.rows[0]['id']
         }
         return templateView
+    }
+
+    /**
+     * Create a new Sheet or update and existing one for a given user.
+     * @param templateView 
+     * @param userId 
+     * @returns 
+     */
+    public static async createOrUpdateViewStatic(templateView:TemplateView,userId:number):Promise<TemplateView> {
+        const templateDao = this.getInstance()
+        return templateDao.createOrUpdate(templateView, userId)
     }
 
     /**
@@ -124,6 +128,23 @@ export class TemplateDao extends Dao<Template> {
         return result.rows.map((row) => new UserTemplateData(Number(row['user_id']), row['pages']));
     }
 
+    /**
+     * Count pages for a user and template
+     * @param userId 
+     * @param templateId 
+     * @return a tupple with the total number of pages for the designated user and the specific number of pages for one template
+     */
+    public async pageCount(userId: number, templateId: number): Promise<[number, number]> {
+        const result = await this.db.query(`
+            SELECT id,pages FROM ${this.tableName} WHERE user_id=${userId};
+        `)
+        const [total,previous] = result.rows.reduce((acc, row) => {
+            acc[0] += row['pages'];
+            if(row['id'] == templateId) acc[1] = row['pages'];
+            return acc;
+        }, [0,0])
+        return [total,previous]
+    }
     /**
      * Parse a result row into Template instance
      * @param row 
