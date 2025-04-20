@@ -21,7 +21,8 @@ const props = defineProps({
 })
 
 function getClass(frequency:Frequency) {
-    if(!frequency) return ''
+    // console.log("[FrequencyBox.getClass]", frequency)
+    if(!frequency || frequency.value == '') return 'blank'
     let css = ''
     switch(frequency.type) {
         case FrequencyType.ctaf: css = 'ctaf'; break;
@@ -80,7 +81,7 @@ onMounted(() => {
     /* flex: 1 1 0px; */
 }
 .frequencyBox.small {
-    height: 42px;
+    height: fit-content;
     width: 75px;
 }
 .frequencyBox.medium, .frequencyBox.large {
@@ -145,6 +146,9 @@ onMounted(() => {
 }
 .freqType.large {
     width: 30px;
+    height: 30px;
+}
+.blank {
     height: 30px;
 }
 .ctaf {
