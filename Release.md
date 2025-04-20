@@ -1,5 +1,8 @@
 # User Experience updates
 
+## 4/20/2025 5171
+* Fixed Frequency Label truncated bottom when printing
+* Localizer frequencies are correctly recognized as NavAid
 ## 04/19/2025 5170
 * Showing Page count
 * Maxed out message come from backend
