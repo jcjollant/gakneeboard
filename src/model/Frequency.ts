@@ -83,6 +83,8 @@ export class Frequency {
             default: 
                 if(lowerCaseFreq.startsWith('awos') || lowerCaseFreq.startsWith('asos')) {
                     return FrequencyType.weather;
+                } else if(lowerCaseFreq.startsWith('loc')) {
+                    return FrequencyType.navaid;
                 }
                 return FrequencyType.unknown;
         }
