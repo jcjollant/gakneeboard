@@ -15,6 +15,7 @@ import * as dotenv from 'dotenv'
 import { GApiTemplate } from '../backend/GApiTemplate';
 import { GApiError } from '../backend/GApiError';
 import { PageType } from '../backend/TemplateTools';
+import { UsageDao } from '../backend/dao/UsageDao';
 dotenv.config()
 
 describe( 'GApiTemplate Tests', () => {
@@ -88,6 +89,7 @@ describe( 'GApiTemplate Tests', () => {
         it('dodges invalid and unknown user', async () => {
             jest.clearAllMocks()
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(undefined)
+            jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
             const template = new TemplateView(0, jcTestTemplateName, jcTestTemplateData)
 
             await expect(GApiTemplate.save(jcHash, template)).rejects.toEqual(new GApiError(400, "Invalid user"))
@@ -100,6 +102,7 @@ describe( 'GApiTemplate Tests', () => {
             jest.clearAllMocks()
             const simUser = newTestUser()
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(simUser)
+            jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
 
             await expect(GApiTemplate.save(simUser.sha256, null as unknown as TemplateView)).rejects.toEqual(new GApiError(400, "Invalid template"))
         })
@@ -113,6 +116,7 @@ describe( 'GApiTemplate Tests', () => {
             const tv = TemplateView.parseTemplate(t)
 
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(simUser)
+            jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
             jest.spyOn(PublicationDao, 'unpublish').mockResolvedValue()
             // User below max
             const mockTemplateDao = new TemplateDao() as jest.Mocked<TemplateDao>;
@@ -138,11 +142,14 @@ describe( 'GApiTemplate Tests', () => {
             await GApiTemplate.save(simUser.sha256, tv).then( ts => {
                 expect(ts.code).toBe(200)
             })
+
+            expect(UsageDao.create).toBeCalledTimes(2)
         })
 
         it('Enforces Sim user page restrictions', async () => {
             const simUser = newTestUser(55, AccountType.simmer)
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(simUser)
+            jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
 
             const tv4pages = getTemplateView(4)
 
@@ -173,6 +180,7 @@ describe( 'GApiTemplate Tests', () => {
             const tvMax = getTemplateView(Business.MAX_PAGES_BETA, 1)
 
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(betaUser)
+            jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
             jest.spyOn(PublicationDao, 'unpublish').mockResolvedValue()
             //
             const mockTemplateDao = getMockTemplateDao(tvMax, Business.MAX_TEMPLATE_BETA, 0, 0)
@@ -203,6 +211,7 @@ describe( 'GApiTemplate Tests', () => {
             const publicTemplateView = TemplateView.parseTemplate(publicTemplate)
 
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(simUser)
+            jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
 
             const mockTemplateDao = getMockTemplateDao(publicTemplateView)
 
@@ -236,6 +245,7 @@ describe( 'GApiTemplate Tests', () => {
 
             const userJc = new User(jcUserId, jcHash)
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(userJc)
+            jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
             jest.spyOn(PublicationDao, 'publish').mockResolvedValue(publication)
             const mockTemplateDao = getMockTemplateDao(publicTemplateView, Business.MAX_TEMPLATE_SIMMER - 1, 2, 0)
 
@@ -260,6 +270,7 @@ describe( 'GApiTemplate Tests', () => {
             const userJc = new User(jcUserId, jcHash)
 
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(userJc)
+            jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
             getMockTemplateDao(publicTemplateView)
             jest.spyOn(PublicationDao, 'publish').mockResolvedValue(undefined)
 
@@ -277,6 +288,7 @@ describe( 'GApiTemplate Tests', () => {
             expect(userJc.maxTemplates).toBe(Business.MAX_TEMPLATE_SIMMER)
 
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(userJc)
+            jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
             const mockTemplateDao = new TemplateDao() as jest.Mocked<TemplateDao>;
             jest.spyOn(mockTemplateDao, 'createOrUpdate').mockResolvedValue(privateTemplateView)
             jest.spyOn(mockTemplateDao, 'countForUser').mockResolvedValue(1) // starting count
@@ -304,6 +316,7 @@ describe( 'GApiTemplate Tests', () => {
 
             const userJc = new User(jcUserId, jcHash)
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(userJc)
+            jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
             getMockTemplateDao(templateView, 1)
 
             jest.spyOn(PublicationDao, 'publish').mockResolvedValue(undefined)

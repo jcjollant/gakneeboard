@@ -139,6 +139,7 @@ describe('index', () => {
             await sql`DELETE FROM sheets WHERE id=${templateId}`
         })
         // remove that user
+        await sql`DELETE FROM usage WHERE user_id=${user.id}`
         await sql`DELETE FROM users WHERE id=${user.id} AND sha256=${user.sha256}`
     }, 10000)
 })
