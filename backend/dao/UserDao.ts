@@ -135,9 +135,10 @@ export class UserDao extends Dao<User> {
                         "source": user.source,
                         "email": user.email,
                     }
+                    const stringifiedData = JSON.stringify(userData)
                     if(result.rowCount == 0) {
                         // console.log( '[UserDao.save] adding ' + user.sha256)
-                        // const insert = await this.db.query(`INSERT INTO ${this.tableName} (sha256, data,version,account_type,max_pages,max_templates,print_credit) VALUES ('${user.sha256}','${JSON.stringify(userData)}',${this.modelVersion},'${user.accountType}',${user.maxPages},${user.maxTemplates}, ${user.printCredits}) RETURNING id`)
+                        // const insert = await this.db.query(`INSERT INTO ${this.tableName} (sha256, data,version,account_type,max_pages,max_templates,print_credit) VALUES ('${user.sha256}','${stringifiedData}',${this.modelVersion},'${user.accountType}',${user.maxPages},${user.maxTemplates}, ${user.printCredits}) RETURNING id`)
                         const insert = await this.db.query(
                             `INSERT INTO ${this.tableName} 
                             (sha256, data, version, account_type, max_pages, max_templates, print_credit) 
@@ -145,7 +146,7 @@ export class UserDao extends Dao<User> {
                             RETURNING id`,
                             [
                                 user.sha256,
-                                JSON.stringify(userData),
+                                stringifiedData,
                                 this.modelVersion,
                                 user.accountType,
                                 user.maxPages,
@@ -159,10 +160,21 @@ export class UserDao extends Dao<User> {
                     } else if( overwrite){ // this user is known but we can override
                         // console.log( '[UserDao.save] known user ' + user.sha256)
                         user.id = result.rows[0].id
-                        await this.db.query(`UPDATE ${this.tableName} SET data = '${JSON.stringify(userData)}', version=${this.modelVersion}, account_type='${user.accountType}' WHERE id = ${user.id}`)
+                        await this.db.query(`UPDATE ${this.tableName} SET data = $1, version=$2, account_type=$3 WHERE id = $4`,
+                            [
+                                stringifiedData,
+                                this.modelVersion,
+                                user.accountType,
+                                user.id
+                            ]
+                        )
                     } else {
                         throw new Error('Cannot save existing user without overwrite')
                     }
+                    // set use to values that have been used
+                    user.name = userData.name
+                    user.source = userData.source
+                    user.email = userData.email
                     resolve( user)
             } catch(err) {
                 console.log( '[UserDao.save] ' + user.sha256 + ' failed ' + err)
