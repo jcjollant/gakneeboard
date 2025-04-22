@@ -5,6 +5,7 @@ import { Usage } from "../models/Usage";
 export enum UsageType {
     Export = 'export',
     Print = 'print',
+    Save = 'save',
     Session = 'session'
 }
 

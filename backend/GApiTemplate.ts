@@ -1,5 +1,6 @@
 import { Business } from "./business/Business"
 import { ThumbnailDao } from "./dao/ThumbnailDao"
+import { UsageDao, UsageType } from "./dao/UsageDao"
 import { UserDao } from "./dao/UserDao"
 import { GApiError } from "./GApiError"
 import { AccountType } from "./models/AccountType"
@@ -118,7 +119,10 @@ export class GApiTemplate {
                 }
             }
 
-            await templateDao.createOrUpdate(templateView, user.id)
+            await Promise.all([
+                templateDao.createOrUpdate(templateView, user.id),
+                UsageDao.create(UsageType.Save, user.id, templateView.id ? JSON.stringify({id:templateView.id}) : undefined)
+            ])
 
             // Should we check publication?
             if(templateView.publish) {

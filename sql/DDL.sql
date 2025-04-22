@@ -1,4 +1,7 @@
 ## 04/19/2025 Dev + Prod
+ALTER TYPE usagetype ADD VALUE 'save'
+
+## 04/19/2025 Dev + Prod
 CREATE TABLE thumbnails (
     id SERIAL PRIMARY KEY,
     template_id integer,
