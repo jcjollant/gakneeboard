@@ -131,9 +131,9 @@ export class UserDao extends Dao<User> {
                     const result = await this.db.query(`SELECT id from ${this.tableName} WHERE sha256 = '${user.sha256}'`);
                     // console.log( '[UserDao.save] match count ' + result.rowCount)
                     const userData =  {
-                        "name": "NewName",
-                        "source": "",
-                        "email": "lb54ca@test.com",
+                        "name": user.name,
+                        "source": user.source,
+                        "email": user.email,
                     }
                     if(result.rowCount == 0) {
                         // console.log( '[UserDao.save] adding ' + user.sha256)
