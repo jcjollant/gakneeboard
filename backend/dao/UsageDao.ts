@@ -23,11 +23,11 @@ export class UsageDao extends Dao<Usage> {
         return new Promise<Boolean>(async (resolve, reject) => {
             sql`INSERT INTO usage (user_id, data, usage_type) VALUES (${userId}, ${data},${type})`
                 .then( () => {
-                    // console.log('[PrintDao.create] success')
+                    // console.log('[UsageDao.create] success')
                     resolve(true)
                 })
                 .catch( err => {
-                    console.log('[PrintDao.create] error', err)
+                    console.log('[UsageDao.create] error', err, type)
                     reject(err)
                 })
         })
