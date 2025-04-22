@@ -1,3 +1,5 @@
+## 4/21/2025 5171
+* Fixed new joiner bug since 4/03/2025
 ## 4/19/2025 5170
 * Max pages
 * Thumbnails in DB
