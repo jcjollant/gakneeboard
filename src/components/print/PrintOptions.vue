@@ -15,8 +15,8 @@
       </div>
       <FieldSet legend="Printing Tips">
         <ul class="note">
-          <li>Enable <b>Background Graphics</b> print setting for best results with Checklists</li>
           <li>Two pages per sheet will fold to kneeboard size</li>
+          <li>Flipped back page can be read when front page is clipped</li>
           <li>You can save to PDF format from the next screen</li>
         </ul>
         </FieldSet>
