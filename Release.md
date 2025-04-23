@@ -1,5 +1,7 @@
 # User Experience updates
 
+## 4/22/2025 5172
+* Refreshed print options
 ## 4/20/2025 5171
 * Fixed Frequency Label truncated bottom when printing
 * Localizer frequencies are correctly recognized as NavAid
