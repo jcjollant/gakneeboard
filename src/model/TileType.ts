@@ -1,4 +1,5 @@
 export class TileType {
+    static selection:string = '';
     static airport:string = 'airport';
     static atis:string = 'atis';
     static checklist:string = 'checklist';

@@ -1,6 +1,7 @@
 <template>
     <div v-if="!tile || tile.name==''" class="tile">
-        <Header :title="title" :replace="false" :clickable="false"></Header>
+        <Header :title="title" :replace="restorable" :clickable="restorable" :displayMode="false"
+            @replace="tile=previousTile"></Header>
         <div class="tileContent list">
             <FAButton v-for="tile in knownTiles"
                 :icon="tile.icon" 
@@ -31,6 +32,7 @@
 <script setup lang="ts">
 import {onMounted, ref, watch} from 'vue';
 import { TileType } from '../../model/TileType'
+import { TileData } from '../../model/TileData';
 
 import Header from '../shared/Header.vue';
 import AirportTile from '../airport/AirportTile.vue';
@@ -44,7 +46,6 @@ import FuelBug from '../fuel/FuelBug.vue';
 import FAButton from '../shared/FAButton.vue'
 import NavlogTile from '../navlog/NavlogTile.vue';
 import NotesTile from '../notes/NotesTile.vue';
-import { TileData } from '../../model/TileData';
 
 const emits = defineEmits(['update','expand'])
 
@@ -64,9 +65,11 @@ const knownTiles = ref([
     {name:'Fuel',tile:TileType.fuel, class:'', icon:'gas-pump', tooltip:'Track your fuel consumption'},
     {name:'Navlog',tile:TileType.navlog, class:'', icon:'route',  tooltip:'Companion Tile to the Navlog Page'},
 ])
-const selectedTile = ref(undefined)
-const tile = ref({})
+const selectionTile = new TileData(TileType.selection)
+const tile = ref(selectionTile)
+const previousTile = ref(selectionTile)
 const defaultTitle = 'Tile Selection'
+const restorable = ref(false)
 const title = ref(defaultTitle)
 
 onMounted(() => {
@@ -86,17 +89,26 @@ function loadProps( props) {
     tile.value = props.tile
 }
 
-// replace a tile with a new one
-function onReplace(newName = '', mode=undefined) {
+// replace current tile with a new one, which could be the selection tile
+function onReplace(newName = TileType.selection, mode=undefined) {
     // console.log('[Tile.onReplace]', newName, mode)
 
     const tileName = newName.toLowerCase()
     // state = { id:tile.value.id,name: tileName, data:{}}
     state = new TileData(tileName)
     if(mode) state.data['mode'] = mode
+
+    if(newName == TileType.selection) {
+        // console.log('[Tile.onReplace]', tile.value)
+        previousTile.value = tile.value
+        restorable.value = true
+    } else {
+        // memorize new state if not selection
+        emits('update',state)
+    }
+    // refect in the tile
     tile.value = state
     title.value = defaultTitle
-    emits('update',state)
 }
 
 // when a tile notifies us of an update, we notify the parent to save values
@@ -115,28 +127,23 @@ function onExpand(params=undefined) {
 
 <style scoped>
 .list {
-    display: grid;
     padding: 10px;
+    display: grid;
     gap:5px;
     grid-template-columns: 110px 110px;
-    grid-template-rows: repeat(5, 1fr);
-    height: 186px;
-}
-
-.modesList {
-    display: grid;
-    padding: 10px;
-    gap:5px;
-    grid-template-rows: repeat(4, 1fr);
-    height: 186px;
+    grid-template-rows: repeat(6, 1fr);
 }
 
 .double  {
     grid-column: 1 / span 2;
 }
 
-.tileName {
+/* .tileName {
     line-height: 2.5rem;
+} */
+.selection {
+    padding: 10px;
+    display: flex;
+    flex-flow: column;
 }
-
 </style>
