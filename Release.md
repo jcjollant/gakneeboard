@@ -1,5 +1,7 @@
 # User Experience updates
 
+## 4/25/2025 5173
+* User can cancel tile selection from selection tile
 ## 4/22/2025 5172
 * Refreshed print options
 ## 4/20/2025 5171
