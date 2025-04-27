@@ -33,6 +33,7 @@
                         <div>Bk</div>
                         <div>Ov</div>
                     </div>
+                    <div class="wtrmrk clear">CLR</div>
                 </div>
                 <div class="tempEx br">
                     <div class="tileBoxLabel">Temp</div>
@@ -497,6 +498,10 @@ function onHeaderClick() {
     justify-content: space-between;
     width: 100%;
     padding: 2px 4px;
+}
+.clear {
+    top: 0;
+    flex-flow: row-reverse;
 }
 .windEx .at {
     display: flex;
