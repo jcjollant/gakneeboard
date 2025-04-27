@@ -1,7 +1,9 @@
 # User Experience updates
-
-## 4/26/2025 5180
+## 4/26/2025
+1) 5180
 * Sky Clear in expanded mode
+2) 5181
+* Wind Calm and Visibility 10 using the same pattern
 ## 4/25/2025 5173
 * User can cancel tile selection from selection tile
 ## 4/22/2025 5172
