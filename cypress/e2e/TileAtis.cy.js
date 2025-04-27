@@ -5,7 +5,7 @@ const labelCloudCleance = "Cloud Clearance"
 const labelCompact = "Compact ATIS (x4)"
 
 describe('ATIS Tile', () => {
-  it.only('ATIS Tile', () => {
+  it('ATIS Tile', () => {
     visitSkipBanner()
     loadDemo()
 
