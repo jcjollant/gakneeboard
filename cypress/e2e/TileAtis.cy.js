@@ -5,7 +5,7 @@ const labelCloudCleance = "Cloud Clearance"
 const labelCompact = "Compact ATIS (x4)"
 
 describe('ATIS Tile', () => {
-  it('ATIS Tile', () => {
+  it.only('ATIS Tile', () => {
     visitSkipBanner()
     loadDemo()
 
@@ -76,6 +76,12 @@ describe('ATIS Tile', () => {
     // now they should merge
     checkTileSpan(0, 4, true)
     checkTileVisible(0, 5, false)
+
+    // Check expanded mode watermarks
+    const expectedSkyExContent = ['Fw', 'Sc', 'Bk', 'Ov', 'CLR']
+    for(let skyExContent of expectedSkyExContent) {
+      cy.get('.skyEx').contains(skyExContent)
+    }
 
     // Switch both to Compact
     displaySelection(0, 4, labelCompact)
