@@ -12,10 +12,7 @@
                 <div class="windEx br">
                     <div class="tileBoxLabel">Wind</div>
                     <div class="at">@</div>
-                    <div class="wtrmrk">
-                        <div>Calm</div>
-                        <div>Vrbl</div>
-                    </div>
+                    <div class="wtrmrk clear">Calm</div>
                 </div>
                 <div class="visEx br">
                     <div class="tileBoxLabel">Vis</div>
@@ -24,6 +21,7 @@
                         <div>Fg</div>
                         <div>Br</div>
                     </div>
+                    <div class="wtrmrk clear">10</div>
                 </div>
                 <div class="skyEx br">
                     <div class="tileBoxLabel">Sky</div>
