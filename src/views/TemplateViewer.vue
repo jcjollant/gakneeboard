@@ -89,7 +89,11 @@ onMounted(() =>{
   try {
     const templateId = Number(route.params.id) || 0
     if(templateId) {
-      activeTemplate.value = noTemplate;
+      // Create a temporary template with a matching number of pages
+      const userTemplate = currentUser.templates.find( t => t.id == templateId)
+      const temporaryTemplate = Template.noTemplate(userTemplate ? userTemplate.pages : 2);
+      activeTemplate.value = temporaryTemplate;
+
       TemplateData.get(templateId).then( template => {
         if(template.id) {
           loadTemplate(template, true)
