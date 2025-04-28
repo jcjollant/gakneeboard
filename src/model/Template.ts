@@ -45,10 +45,10 @@ export class Template {
         return !this.isInvalid()
     }
 
-    static noTemplate(): Template {
-        const template = new Template('', '')
-        const loadingPage =  new TemplatePage()
-        template.data = [loadingPage,loadingPage]
+    static noTemplate(pageCount:number = 2): Template {
+        const loadingPage = new TemplatePage()
+        const data = Array<TemplatePage>(pageCount).fill(loadingPage)
+        const template = new Template('', '', false, data)
 
         return template;
     }
