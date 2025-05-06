@@ -6,6 +6,8 @@ import { AccountType } from '../../backend/models/AccountType';
 import { User } from '../../backend/models/User';
 import { newTestUser } from '../common'
 import { db, sql } from '@vercel/postgres';
+import e from 'express';
+import { Business } from '../../backend/business/Business';
 
 require('dotenv').config();
 
@@ -154,6 +156,27 @@ describe('UserDao', () => {
             // We should have some date
             expect(users[0].createDate).toBeDefined()
         })
+    })
+
+    it('updateType', async () => {
+        const existingUser:User = new User(jcUserId, jcHash)
+        existingUser.accountType = AccountType.simmer
+        existingUser.maxTemplates = Business.MAX_TEMPLATE_SIMMER
+        existingUser.maxPages = Business.MAX_PAGES_SIMMER
+        await userDao.updateType(existingUser)
+        const readUser = await userDao.get(jcUserId)
+        expect(readUser.id).toBe(jcUserId)
+        expect(readUser.maxTemplates).toBe(Business.MAX_TEMPLATE_SIMMER)
+        expect(readUser.maxPages).toBe(Business.MAX_PAGES_SIMMER)
+        
+        // Switch this user to Beta and check wether values are saved
+        existingUser.accountType = AccountType.beta
+        existingUser.maxTemplates = Business.MAX_TEMPLATE_BETA
+        existingUser.maxPages = Business.MAX_PAGES_BETA
+        await userDao.updateType(existingUser)
+        const readUser2 = await userDao.get(jcUserId)
+        expect(readUser2.maxTemplates).toBe(Business.MAX_TEMPLATE_BETA)
+        expect(readUser2.maxPages).toBe(Business.MAX_PAGES_BETA)
     })
 });
 
