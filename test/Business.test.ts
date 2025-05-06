@@ -314,7 +314,13 @@ describe('Business', () => {
             const mockUserDao = getMockUserDao(user)
             mockEmail.mockReset()
 
-            await Business.updateAccountType(user, mockUserDao)
+            expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_SIMMER)
+            expect(user.maxPages).toEqual(Business.MAX_PAGES_SIMMER)
+
+            await Business.updateAccountType(user, AccountType.beta, mockUserDao)
+
+            expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_BETA)
+            expect(user.maxPages).toEqual(Business.MAX_PAGES_BETA)
 
             expect(mockUserDao.updateType).toHaveBeenCalledTimes(1);
             expect(Email.send).toHaveBeenCalledTimes(1);
