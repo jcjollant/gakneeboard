@@ -183,9 +183,13 @@ export class UserDao extends Dao<User> {
         })
     }
 
-    // Update and existing user with a new customer_id
+    /**
+     * Update an existing user with a new customer_id
+     * @param user target user with id and customerId
+     * @returns true if exactely one user was updated
+     */
     static async updateCustomerId(user:User):Promise<boolean> {
-        console.log( '[UserDao.updateCustomerId] ' + user.id + ' to ' + user.customerId)
+        // console.log( '[UserDao.updateCustomerId] ' + user.id + ' to ' + user.customerId)
         const result = await sql`UPDATE users SET customer_id=${user.customerId} WHERE id=${user.id}`
         return result.rowCount == 1;
     }
@@ -207,11 +211,14 @@ export class UserDao extends Dao<User> {
         })
     }
 
-    // Update and existing user with a new account_type
-    public updateType(user:User):Promise<void> {
+    /**
+     * Update an existing user with a new account_type, max_pages and max_templates
+     * @param user, Target user
+     */
+     public updateType(user:User):Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
-                const result = await sql`UPDATE users SET account_type=${user.accountType} WHERE id=${user.id}`
+                const result = await sql`UPDATE users SET account_type=${user.accountType},max_templates=${user.maxTemplates},max_pages=${user.maxPages} WHERE id=${user.id}`
                 if(result.rowCount == 1) {
                     resolve()
                 } else {
