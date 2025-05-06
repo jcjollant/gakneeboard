@@ -132,8 +132,7 @@ export class Business {
             if(!customerId) return reject('Customer Id is required');
 
             const user = await userDao.getFromCustomerId(customerId)
-            user.accountType = AccountType.simmer
-            await Business.updateAccountType(user, userDao)
+            await Business.updateAccountType(user, AccountType.simmer, userDao)
 
             resolve(user)
         })
@@ -164,24 +163,28 @@ export class Business {
             subscriptionDao.update(subscriptionId, customerId, priceId, periodEnd, cancelAt, endedAt), 
             userDao.getFromCustomerId(customerId)])
 
-        // update account type
-        user.accountType = newAccountType
+        // Refresh account type
+        await Business.updateAccountType(user, newAccountType, userDao)
 
-        // New subscription nay need print refill
+        // New subscription may need print refill
         if(sub.isBrandNew()) {
             user.printCredits = Business.calculatePrintCredits(user)
             await userDao.updatePrintCredit(user)
         }
-
-        // Refresh account type
-        await Business.updateAccountType(user, userDao)
     }
 
-    static async updateAccountType(user:User, userDao:UserDao):Promise<User> {
+    static async updateAccountType(user:User, newAccountType:AccountType, userDao:UserDao):Promise<User> {
+        // update account type
+        user.accountType = newAccountType
+        user.maxTemplates = Business.maxTemplatesFromAccountType(newAccountType)
+        user.maxPages = Business.maxPagesFromAccountType(newAccountType)
+
         await userDao.updateType(user)
+
         const message = 'user ' + user.id + ' updated to ' + user.accountType
         // console.log('[Business.updateAccountType]', message)
         await Email.send(message, EmailType.Purchase)
+
         return user;
     }
 }
