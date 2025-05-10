@@ -411,7 +411,7 @@ function updateThumbnail(template:Template) {
       if(blob == null) return
       const sha256 = await computeSHA256(blob)
       if(sha256 != template.thumbHash) {
-        console.log('[TemplateViewer.updateThumbnail] sha256', sha256, template.thumbHash)
+        // console.log('[TemplateViewer.updateThumbnail] sha256', sha256, template.thumbHash)
         activeTemplate.value.thumbUrl = await TemplateData.updateThumbnail(index, blob, sha256)
       } else {
         console.log('[TemplateViewer.updateThumbnail] skipping unchanged thumbnail')
