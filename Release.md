@@ -1,4 +1,7 @@
 # User Experience updates
+## 5/09/2025 5190
+* New Checklist Digest section with C172S checklist
+* In Navlog, renamed Apply to Apply & Close
 ## 4/27/2025 5182
 * Loading pages matches template length
 ## 4/26/2025
