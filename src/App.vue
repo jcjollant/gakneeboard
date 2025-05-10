@@ -79,7 +79,7 @@ onMounted( () => {
 
         // Get that publication data
         new Promise( (resolve, reject) => {
-            TemplateData.getPublication(code).then( template => {
+            TemplateData.getPublication(code).then( (template: any) => {
                 // console.log('[App.onMounted] publication found ', template)
                 if(template) {
                     routeToLocalTemplate(router, template)
