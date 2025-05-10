@@ -25,13 +25,13 @@
                 <!-- list all demos -->
             </div>
         </div>
-        <!-- <div class="section demoSection">
-            <div class="header">POH Normal Procedures</div>
+        <div class="section demoSection">
+            <div class="header">Checklists Digest</div>
             <div class="templateList">
                 <TemplateSelector v-for="(p,index) in poh" :template="p.template" :demo="true" :src="'/thumbnails/'+p.src" :class="'poh'+index"
-                    @selection="onPohSelection(d.code)" />
+                    @selection="onPohSelection(p)" />
             </div>
-        </div> -->
+        </div>
     </div>
 </template>
 
@@ -43,12 +43,13 @@ import { getTemplateBlank, SheetName } from '../assets/sheetData';
 import { Template } from '../model/Template';
 import { useToast } from 'primevue/usetoast';
 import { useToaster } from '../assets/Toaster';
+import { DemoData } from '../assets/DemoData';
 
 import Menu from '../components/menu/Menu.vue'
 import PlaceHolder from '../components/shared/PlaceHolder.vue'
 import TemplateSelector from '../components/templates/TemplateSelector.vue'
 import Toast from 'primevue/toast'
-import { DemoData } from '../assets/DemoData';
+import { TemplateData } from '../assets/TemplateData';
 
 class DemoSelector {
     name: string
@@ -70,9 +71,14 @@ const demos = ref<DemoSelector[]>([
     new DemoSelector(SheetName.holds, 'holds.png', 'Holds Practice','Full sheet of Holds and Compasses'),
     new DemoSelector(SheetName.ifrflight, 'strips.png', 'IFR Flight','Strips for IFR flights notekeeping'),
 ])
-// const poh = ref([
-//     {code: 'AA', src: 'C172SGFC700.png', template: {name:'C172S GFC700',desc:'CESSNA MODEL 172S NAV III GFC 700 AFCS'}},
-// ])
+interface Poh {
+    code: string
+    src: string
+    template: Template
+}
+const poh = ref<Poh[]>([
+    {code: 'AA', src: 'C172SGFC700.png', template: new Template('C172S GFC700', 'CESSNA MODEL 172S NAV III GFC 700 AFCS', false, [])},
+])
 //const localTemplate = ref({name:'Local',desc:'Resume your last session'})
 const newTemplate = ref(new Template('New','Create a new template'))
 const router = useRouter()
@@ -113,6 +119,26 @@ function onNewTemplate() {
     // Save demo data to localstore
     routeToLocalTemplate(router, templateData);
 }
+
+function onPohSelection(poh:Poh) {
+    const code = poh.code
+    toaster.info('Loading Checklist',poh.template.name)
+    TemplateData.getPublication(code).then( (templateData: any) => {
+        // console.log('[Home.onPohSelection] publication found ', template)
+        toast.removeAllGroups()
+        if(templateData) {
+            routeToLocalTemplate(router, templateData)
+        } else {
+            // template not found?
+            toaster.error('Load POH','Error fectching template ' + code)
+        }
+    }).catch((e: any) => {
+        // Get publication failed
+        toaster.error('Load POH','Error fetching template ' + code)
+        console.log('[Home.onPohSelection] publication fetch failed', e)
+    }) 
+}
+
 
 function onTemplateSelection(index) {
     router.push( '/template/' + index)
