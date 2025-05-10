@@ -115,7 +115,7 @@
             </div>
             <div class="actionDialog gap-2">
                 <Button label="Do Not Apply" @click="emits('close')" link></Button>
-                <Button label="Apply" @click="onApply(false)"></Button>
+                <Button label="Apply & Close" @click="onApply(false)"></Button>
                 <Button v-if="!lastLeg" label="Apply & Next Leg" @click="onApply(true)"></Button>
             </div>
          </div>
