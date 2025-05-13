@@ -3,7 +3,7 @@
         <Toast />
         <Menu></Menu>
         <div class="section templateSection">
-            <div class="header">Templates</div>
+            <div class="header">My Templates</div>
             <div class="templateList">
                 <TemplateSelector :template="newTemplate" :temporary="true" src="/thumbnails/new.png" class="templateNew"
                     @selection="onNewTemplate"/>
@@ -78,6 +78,7 @@ interface Poh {
 }
 const poh = ref<Poh[]>([
     {code: 'AA', src: 'C172SGFC700.png', template: new Template('C172S GFC700', 'CESSNA MODEL 172S NAV III GFC 700 AFCS', false, [])},
+    {code: 'AB', src: 'C182TGFC700.png', template: new Template('C182T GFC700', 'CESSNA MODEL 182T NAV III GFC 700 AFCS', false, [])},
 ])
 //const localTemplate = ref({name:'Local',desc:'Resume your last session'})
 const newTemplate = ref(new Template('New','Create a new template'))
