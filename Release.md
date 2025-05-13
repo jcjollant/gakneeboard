@@ -1,4 +1,6 @@
 # User Experience updates
+## 5/13/2025 5200
+* New Checlist Digest for C182T
 ## 5/09/2025 5190
 * New Checklist Digest section with C172S checklist
 * In Navlog, renamed Apply to Apply & Close
