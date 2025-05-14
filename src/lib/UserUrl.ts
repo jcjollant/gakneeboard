@@ -13,6 +13,7 @@ export class UserUrl {
     static printGuide:string = 'https://gakneeboard.wordpress.com/print-guide/'
     static radioTileGuide:string = 'https://gakneeboard.wordpress.com/radio-tile-guide/'
     static sunlightTileGuide:string = 'https://gakneeboard.wordpress.com/2024/08/10/sunlight-tile-guide/'
+    static checklistDigestPage:string = 'https://gakneeboard.wordpress.com/checklists-digest/'
 
     // Youtube
     static navlogVideo:string = 'https://www.youtube.com/playlist?list=PLS4A2hmRgOclcjE4THa034Lgq0THbewUX'
