@@ -26,7 +26,7 @@
             </div>
         </div>
         <div class="section demoSection">
-            <div class="header">Checklists Digest</div>
+            <div class="header">Checklists Digest <font-awesome-icon :icon="['fas', 'question']" class="inlineButton" @click="onChecklistHelp" title="How do use these checklists?"></font-awesome-icon></div>
             <div class="templateList">
                 <TemplateSelector v-for="(p,index) in poh" :template="p.template" :demo="true" :src="'/thumbnails/'+p.src" :class="'poh'+index"
                     @selection="onPohSelection(p)" />
@@ -44,12 +44,13 @@ import { Template } from '../model/Template';
 import { useToast } from 'primevue/usetoast';
 import { useToaster } from '../assets/Toaster';
 import { DemoData } from '../assets/DemoData';
+import { TemplateData } from '../assets/TemplateData';
+import { UserUrl } from '../lib/UserUrl'
 
 import Menu from '../components/menu/Menu.vue'
 import PlaceHolder from '../components/shared/PlaceHolder.vue'
 import TemplateSelector from '../components/templates/TemplateSelector.vue'
 import Toast from 'primevue/toast'
-import { TemplateData } from '../assets/TemplateData';
 
 class DemoSelector {
     name: string
@@ -79,6 +80,7 @@ interface Poh {
 const poh = ref<Poh[]>([
     {code: 'AA', src: 'C172SGFC700.png', template: new Template('C172S GFC700', 'CESSNA MODEL 172S NAV III GFC 700 AFCS', false, [])},
     {code: 'AB', src: 'C182TGFC700.png', template: new Template('C182T GFC700', 'CESSNA MODEL 182T NAV III GFC 700 AFCS', false, [])},
+    {code: 'AC', src: 'PA-28-161-CHEROKEE-WARRIOR-II.png', template: new Template('PA-28 CHEROKEE WII', 'PA-28 161 CHEROKEE WARRIOR II', false, [])},
 ])
 //const localTemplate = ref({name:'Local',desc:'Resume your last session'})
 const newTemplate = ref(new Template('New','Create a new template'))
@@ -102,6 +104,10 @@ onUnmounted( () => {
     // console.log('[Home.onUnmounted]')
     currentUser.removeListener(userUpdate)
 })
+
+function onChecklistHelp() {
+    UserUrl.open( UserUrl.checklistDigestPage)
+}
 
 function onDemoSelection(name:string) {
     const templateData = DemoData.fromName(name)
@@ -177,5 +183,11 @@ function userUpdate() {
     flex-wrap: wrap;
     gap: 10px;
     padding: 10px;
+}
+
+.inlineButton {
+    color: var(--bg);
+    cursor: pointer ;
+    margin-left: 15px;
 }
 </style>
