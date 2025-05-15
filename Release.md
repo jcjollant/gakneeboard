@@ -1,4 +1,6 @@
 # User Experience updates
+## 5/15/2025 5201
+* New Checklist Digest for PA-28 (and associated help page)
 ## 5/13/2025 5200
 * New Checlist Digest for C182T
 ## 5/09/2025 5190
