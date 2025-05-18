@@ -173,6 +173,9 @@ function loadTemplate(template:Template,saveToLocalStorage:boolean=false) {
   activeTemplate.value = template;
   // console.log('[TemplateViewer.loadTemplate] template version', JSON.stringify(template.ver))
   updateOffsets()
+  
+  // Update the browser tab title with the template name
+  document.title = template.name ? template.name : 'New Template';
 
   // console.log('[TemplateViewer.loadTemplate]', offset.value, offsetLast.value)
 

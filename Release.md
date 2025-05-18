@@ -1,4 +1,6 @@
 # User Experience updates
+## 5/18/2025 5201
+* Tab is picking up template name
 ## 5/15/2025 5201
 * New Checklist Digest for PA-28 (and associated help page)
 ## 5/13/2025 5200
