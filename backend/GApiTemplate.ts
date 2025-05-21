@@ -168,27 +168,24 @@ export class GApiTemplate {
 
             // save image data to blob
             try {
-                if(template.thumbnail) {
-                    // Saving thumbnail to db
-                    // console.log("[GApiTemplate.updateThumbnail] updating in DB", template.thumbnail)
-                    await ThumbnailDao.save(templateIdParam, pngBuffer, hash)
-
-                    return resolve( new ThumbnailData(template.thumbnail, hash))
-                } else {
-                    // refresh blob
-                    const blob = await put(`thumbnails/${templateIdParam}.png`, pngBuffer, {
-                        access: "public",
-                        contentType: "image/png",
-                        token: process.env.BLOB_READ_WRITE_TOKEN,
-                    })
-                    // save url with associated airport
-                    template.thumbnail = blob.url
-                    template.thumbhash = hash
-                    const output = await templateDao.updateThumbnail(template)
-                    console.log("[GApiTemplate.updateThumbnail] uploaded", template.thumbnail);
-    
-                    return resolve( output)
-                }
+                // Always save to blob storage
+                const blob = await put(`thumbnails/${templateIdParam}.png`, pngBuffer, {
+                    access: "public",
+                    contentType: "image/png",
+                    token: process.env.BLOB_READ_WRITE_TOKEN,
+                })
+                
+                // Save url with associated template
+                template.thumbnail = blob.url
+                template.thumbhash = hash
+                const output = await templateDao.updateThumbnail(template)
+                
+                // Also save to database for backward compatibility
+                // await ThumbnailDao.save(templateIdParam, pngBuffer, hash)
+                
+                // console.log("[GApiTemplate.updateThumbnail] uploaded to blob", template.thumbnail);
+                
+                return resolve(output)
             } catch(error) {
                 console.log('[GApiTemplate.updateThumnail] ' + error)
                 return reject( new GApiError(500, `Could not update thumbnail ${templateIdParam} for ${userId}`))
