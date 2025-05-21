@@ -4,6 +4,7 @@ import { UserTemplateData } from "./models/UserTemplateData";
 import { Dao } from "./dao/Dao";
 import { TemplateView } from "./models/TemplateView";
 import { ThumbnailData } from "./models/ThumbnailData";
+import { TemplateHistoryDao, TemplateOperation } from "./dao/TemplateHistoryDao";
 
 export class TemplateDao extends Dao<Template> {
     protected tableName: string = 'sheets';
@@ -22,6 +23,14 @@ export class TemplateDao extends Dao<Template> {
     public async createOrUpdate(templateView:TemplateView, userId:number):Promise<TemplateView> {
         templateView.ver++;
         if( templateView.id) {
+            // Get the current template before updating it
+            const currentTemplate = await this.readById(templateView.id, userId);
+            
+            // If the template exists, save it to history before updating
+            if (currentTemplate) {
+                await TemplateHistoryDao.saveHistory(currentTemplate, TemplateOperation.UPDATE);
+            }
+            
             // console.log( "[SheetDao.createOrUpdate] updating", pageId);
             const result = await sql`
                 UPDATE sheets SET data=${JSON.stringify(templateView.data)},name=${templateView.name},description=${templateView.desc},pages=${templateView.pages},version=${templateView.ver} WHERE id=${templateView.id} AND user_id=${userId}
@@ -59,6 +68,14 @@ export class TemplateDao extends Dao<Template> {
      * @return Deleted template Id or 0 if no match where found
      */
     public async delete(templateId:number, userId:number):Promise<number> {
+        // Get the template before deleting it
+        const template = await this.readById(templateId, userId);
+        
+        // If the template exists, save it to history before deleting
+        if (template) {
+            await TemplateHistoryDao.saveHistory(template, TemplateOperation.DELETE);
+        }
+        
         const result = await this.db.query(`
             DELETE FROM ${this.tableName} WHERE id=${templateId} AND user_id=${userId};
         `)
