@@ -4,6 +4,7 @@ import { TemplateDao } from './TemplateDao';
 import { TemplateView } from './models/TemplateView';
 import { UserDao } from './dao/UserDao'
 import { Business } from './business/Business';
+import { Email, EmailType } from './Email';
 
 export class UserTools {
     static apple:string = 'apple'
@@ -37,7 +38,15 @@ export class UserTools {
         // new user => creation
         user.printCredits = Business.calculatePrintCredits(user)
         user.maxTemplates = Business.maxTemplatesFromAccountType(user.accountType)
-        return await userDao.save(user);
+        
+        // Save the new user
+        const savedUser = await userDao.save(user);
+        
+        // Send email notification as Ned for new user signup
+        const emailMessage = `New user signed up!\n\nName: ${user.name}\nEmail: ${user.email}\nSource: ${user.source}\nAccount Type: ${user.accountType}`;
+        await Email.send(emailMessage, EmailType.Feedback);
+        
+        return savedUser;
     }
     
     static createUserSha(source:string, email:string) {
