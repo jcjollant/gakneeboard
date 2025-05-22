@@ -1,4 +1,8 @@
-## 05/16/2025
+## 5/21/2025 5210
+* Email on new user
+* Historical Template data saved
+* Thumbnail refreshed everytime
+## 05/16/2025 5200
 * Effective date update
 ## 5/05/2025 5190
 * Fixed subscription update bug
