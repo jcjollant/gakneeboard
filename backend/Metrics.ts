@@ -55,6 +55,8 @@ export enum MetricKey {
     print28 = 'prints-28d',
     printUser7 = 'printUsers-7d',
     printUser28 = 'printUsers-28d',
+    save7 = 'save-7d',
+    save28 = 'save-28d',
     sessions = 'sessions',
     sessions7 = 'sessions-7d',
     sessions14 = 'sessions-14d',
@@ -106,6 +108,8 @@ export class Metrics {
         usageMetrics.push( new Metric(MetricKey.print28, await usageDao.countTypeSince(UsageType.Print, 28)))
         usageMetrics.push( new Metric(MetricKey.printUser7, await usageDao.countTypeByUserSince(UsageType.Print, 7)))
         usageMetrics.push( new Metric(MetricKey.printUser28, await usageDao.countTypeByUserSince(UsageType.Print, 28)))
+        usageMetrics.push( new Metric(MetricKey.save7, await usageDao.countTypeSince(UsageType.Save, 7)))
+        usageMetrics.push( new Metric(MetricKey.save28, await usageDao.countTypeSince(UsageType.Save, 28)))
         usageMetrics.push( new Metric(MetricKey.sessions7, await usageDao.countTypeByUserSince(UsageType.Session, 7)))
         usageMetrics.push( new Metric(MetricKey.sessions28, await usageDao.countTypeByUserSince(UsageType.Session, 28)))
 
