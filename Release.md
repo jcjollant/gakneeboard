@@ -1,4 +1,6 @@
 # User Experience updates
+* 5/25/2025
+* Saving template hides info toast on success
 ## 5/18/2025 5201
 * Tab is picking up template name
 ## 5/15/2025 5201

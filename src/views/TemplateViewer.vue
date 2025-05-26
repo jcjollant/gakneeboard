@@ -82,7 +82,8 @@ const showExport = ref(false)
 const showSettings = ref(false)
 const singlePage = ref(false)
 const templateModified = ref(false)
-const toaster = useToaster(useToast())
+const toast = useToast()
+const toaster = useToaster(toast)
 
 onMounted(() =>{
   // console.log('[TemplateViewer.onMounted]')
@@ -312,6 +313,7 @@ async function onSave() {
         if(t.publish && t.code) {
           message += '\nShare code is ' + t.code
         }
+        toast.removeAllGroups()
         toaster.success( 'Clear', message)
         if(ts.code == 202) {
           toaster.warning('Max Templates', 'You have reached your template maximum. Please consider upgrading promptly', 6000)
