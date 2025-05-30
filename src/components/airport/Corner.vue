@@ -3,7 +3,7 @@
         <div @click="toggleSelection" class="clickable" :class="{faded: value=='.'}">
             <div :class="{'big':displayMode==DisplayMode.big,'small':displayMode!=DisplayMode.big,'flipped':displayMode==DisplayMode.flipped, 'notes':notes}">
                 <div class="label">{{label}}</div>
-                <div class="value">{{value}}</div>
+                <div class="value" :class="getFrequencyColorClass()">{{value}}</div>
             </div>
         </div>
         <OverlayPanel ref="op">
@@ -77,7 +77,7 @@ import { ref, onMounted, watch } from 'vue';
 import { getFrequency, getNavaid } from '../../assets/data';
 import { AtcGroup } from '../../model/AtcGroup';
 import { Formatter } from '../../lib/Formatter';
-import { Frequency } from '../../model/Frequency';
+import { Frequency, FrequencyType } from '../../model/Frequency';
 import { Airport, Runway } from '../../model/Airport';
 
 import Button from 'primevue/button'
@@ -133,6 +133,7 @@ const frequencies = ref<CornerValue[]>([])
 const navaids = ref<NavaidValue[]>([])
 const atcGroups = ref<CornerAtcGroup[]>([])
 const notes = ref(false)
+const currentFrequencyType = ref<FrequencyType | null>(null)
 
 class CornerAtc {
     id:string;
@@ -182,6 +183,20 @@ watch( props, () => {
 function formatNavaid(navaid) {
     if(!navaid || !navaid.to) return '-'
     return navaid.to.toFixed(0) + '°'
+}
+
+function getFrequencyColorClass() {
+    if (!currentFrequencyType.value) return ''
+    
+    switch(currentFrequencyType.value) {
+        case FrequencyType.ctaf: return 'ctaf'
+        case FrequencyType.tower: return 'tower'
+        case FrequencyType.weather: return 'weather'
+        case FrequencyType.navaid: return 'navaid'
+        case FrequencyType.ground: return 'ground'
+        case FrequencyType.tracon: return 'tracon'
+        default: return ''
+    }
 }
 
 function loadProps(newProps:any) {
@@ -250,6 +265,8 @@ function onChange(field:string) {
 // @return true if the field is a frequency
 function showField( field:string) {
     notes.value = false
+    currentFrequencyType.value = null
+    
     // console.log('[Corner.showField]', field, typeof field)
     if( field.length > 2 && field[0] == '#') { 
         // Special fields start with # then one letter code
@@ -261,26 +278,39 @@ function showField( field:string) {
             // RadioFrequencies use the '#F' prefix
             const freqName = field.substring(2)
             // console.log('[Corner.showField]', freqName)
-            value.value = Formatter.frequency( getFrequency( airport.freq, freqName))
+            const freq = getFrequency( airport.freq, freqName)
+            value.value = Formatter.frequency(freq)
             label.value = freqName
+            
+            // Determine frequency type based on name
+            if (freq) {
+                currentFrequencyType.value = Frequency.typeFromString(freqName)
+            }
         } else if( field[1] == 'N' && airport.navaids) { // Navaids
             // Navaids use the '#N' prefix
             const navaidName = field.substring(2)
             // console.log('[Corner.showField]', freqName)
             value.value = Formatter.frequency( getNavaid( airport.navaids, navaidName))
             label.value = navaidName
+            currentFrequencyType.value = FrequencyType.navaid
         } else if( field[1] == 'R' && airport.navaids) {
             // Navaid Radial use the '#R' prefix
             const navaidName = field.substring(2)
             // console.log('[Corner.showField]', freqName)
             value.value = formatNavaid( getNavaid( airport.navaids, navaidName))
             label.value = navaidName + ' Radial'
+            // Radials don't get frequency colors
         } else if( field[1] == 'A' && airport.atc) { // ATC
             // ATC use the '#A' prefix
             const freq = Number(field.substring(2))
             value.value = freq.toFixed(3)
             const atc = airport.atc.find( a => a.mhz == freq)
             label.value = atc ? atc.name : '?' 
+            
+            // Determine ATC frequency type
+            if (atc) {
+                currentFrequencyType.value = Frequency.typeFromString(atc.name)
+            }
         } else {
             unknownValues()
         }
@@ -304,20 +334,24 @@ function showField( field:string) {
                 // console.log('[Corner.showField]', weather)
                 label.value = weather ? weather.name : ''
                 value.value = weather ? Formatter.frequency(weather.mhz) : '?'
+                currentFrequencyType.value = FrequencyType.weather
                 break
             case 'twr':
                 if( runway.freq > 0) {
                     // console.log('[Corner.showField]', JSON.stringify(runway.freq))
                     value.value = runway.freq.toFixed(3)
                     label.value = 'RWY ' + runway.name
+                    currentFrequencyType.value = FrequencyType.tower
                 } else {
                     // assign mhz or '-' if the frequency is undefined
                     let freq = airport.getFreqTower()
                     if( freq) {
                         label.value = 'TWR'
+                        currentFrequencyType.value = FrequencyType.tower
                     } else {
                         freq = airport.getFreqCtaf()
                         label.value = 'CTAF'
+                        currentFrequencyType.value = FrequencyType.ctaf
                     }
                     value.value = Formatter.frequency(freq)
                 }
@@ -335,6 +369,7 @@ function showField( field:string) {
                 const ground =  airport.getFreqGround()
                 value.value = Formatter.frequency(ground)
                 label.value = 'GND'
+                currentFrequencyType.value = FrequencyType.ground
                 break;
             case 'rwyinfo':
                 value.value = runway.length + 'x' + runway.width
@@ -361,6 +396,7 @@ function toggleSelection(event) {
 function unknownValues() {
     label.value = '-'
     value.value = '-'
+    currentFrequencyType.value = null
 }
 
 </script>
@@ -393,6 +429,24 @@ function unknownValues() {
     font-size: 20px;
     text-align: right;
 }
+
+/* Frequency color coding */
+.value.ctaf {
+    color: var(--text-ctaf);
+}
+.value.navaid {
+    color: var(--text-navaid);
+}
+.value.tower, .value.tracon {
+    color: var(--text-atc);
+}
+.value.weather {
+    color: var(--text-weather);
+}
+.value.ground {
+    color: var(--text-atc);
+}
+
 .atcSmall {
     font-size: 0.9rem;
 }
