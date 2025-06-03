@@ -1,7 +1,7 @@
 <template>
     <div class="menu" >
         <div class="left">
-            <Logo @click="router.push('/')" />
+            <Logo :hasTemplate="!!name" @click="router.push('/')" />
             <font-awesome-icon v-if="name" class="icon" icon="fa-chevron-right" />
             <div v-if="name" title="Active Template Name" class="templateName">{{name}}</div>
             <div v-if="test" class="test">Test Backend</div>
