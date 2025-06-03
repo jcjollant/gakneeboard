@@ -1,10 +1,16 @@
 <template>
-    <div class="logo">
+    <div class="logo" :class="{'template-loaded': hasTemplate}">
         <img src="/favicon.png" class="logo-img" alt="GA Kneeboard">
         <div class="logo-name">GA Kneeboard</div>
         <div class="logo-beta">BETA</div>
     </div>
 </template>
+
+<script setup>
+defineProps({
+    hasTemplate: Boolean
+});
+</script>
 
 <style scoped>
 .logo {
@@ -34,9 +40,10 @@
     color: #777;
 }
 
-/* Hide the logo text and beta label on narrow screens */
+/* Hide the logo text and beta label on narrow screens only when a template is loaded */
 @media (max-width: 768px) {
-    .logo-name, .logo-beta {
+    .template-loaded .logo-name, 
+    .template-loaded .logo-beta {
         display: none;
     }
 }

@@ -1,6 +1,9 @@
 # User Experience updates
-## 6/02/2025 5230
+## 6/02/2025
+1) 5230
 * Hiding GA Kneeboard and plans from the menu when screen is narrow
+2) 5231
+* GA Kneeboard is shown when no template is loaded
 ## 5/29/2025 5221
 * Airport Tile corners are using the same color codes
 ## 5/25/2025 5220
