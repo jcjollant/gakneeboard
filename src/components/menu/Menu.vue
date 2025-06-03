@@ -57,6 +57,12 @@ onMounted(() => {
     width: 100%;
     background-color: lightgrey;
 }
+.templateName {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+}
 .test {
     border-radius: 5px;;
     font-size: 0.8rem;
@@ -78,5 +84,16 @@ onMounted(() => {
     color: white;
     border-radius: 4px;;
     background-color: var(--bg);
+}
+
+/* Adjust template name display on narrow screens */
+@media (max-width: 768px) {
+    .templateName {
+        max-width: 200px;
+    }
+    
+    .right {
+        display: none;
+    }
 }
 </style>

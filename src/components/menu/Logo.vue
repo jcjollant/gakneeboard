@@ -33,4 +33,11 @@
     height: 25px;
     color: #777;
 }
+
+/* Hide the logo text and beta label on narrow screens */
+@media (max-width: 768px) {
+    .logo-name, .logo-beta {
+        display: none;
+    }
+}
 </style>
