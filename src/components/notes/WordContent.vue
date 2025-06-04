@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 const emits = defineEmits(['letterclick'])
 const props = defineProps({
@@ -17,6 +17,12 @@ const letters = ref([])
 onMounted(() => {
     loadProps(props)
 })
+
+watch( props, async() => {
+    // console.log("Airport props changed " + JSON.stringify(props));
+    loadProps(props)
+})
+
 
 function loadProps(props: any) {
     letters.value = props.word.split('')
