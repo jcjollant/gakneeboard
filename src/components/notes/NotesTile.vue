@@ -125,6 +125,7 @@ function onEditApply() {
 }
 
 function onEditCancel() {
+    // console.log('[NotesTile] onEditCancel', word.value, wordBeforeEdit)
     word.value = wordBeforeEdit
     compassHeading.value = compassHeadingBeforeEdit
     editMode.value = false;
