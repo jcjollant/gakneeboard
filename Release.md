@@ -1,4 +1,6 @@
 # User Experience updates
+## 6/03/2025 5232
+* Fixed Note tile Word not updating on copy
 ## 6/02/2025
 1) 5230
 * Hiding GA Kneeboard and plans from the menu when screen is narrow
