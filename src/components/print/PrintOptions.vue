@@ -1,6 +1,10 @@
 <template>
   <Dialog modal header="Print">
     <div class="printPopup">
+      <div v-if="props.templateModified" class="versionWarning">
+        <font-awesome-icon :icon="['fas', 'exclamation-triangle']"></font-awesome-icon>
+        Warning: The version number shown in the checklist will only increase once the template is saved.
+      </div>
       <div class="pageOptions">
         <div class="pageOptionLabel">Pages</div>
         <PageSelection v-model="pageSelection" 
@@ -59,6 +63,7 @@ const pageSelection = ref<boolean[]>([true, true, true])
 // Props management
 const props = defineProps({
   pageSelection: { type: Array<boolean>, required: true},
+  templateModified: { type: Boolean, default: false },
 })
 
 function loadProps( props:any) {
@@ -105,6 +110,19 @@ function onNewOptions() {
 </script>
 
 <style scoped>
+.versionWarning {
+  color: #ff8800;
+  background-color: #fff8f0;
+  border: 1px solid #ff8800;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .floatLeft {
     position:absolute;
     left: 2rem;

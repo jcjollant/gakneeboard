@@ -1,6 +1,7 @@
 <template>
   <div class="print">
     <PrintOptions v-model:visible="showOptions" :pageSelection="pageSelection"
+        :templateModified="templateModified && template && template.ver > 0"
         @options="onOptionsUpdate"
         @print="onPrint(false, $event)" @pdf="onPrint(true, $event)"
         @close="showOptions=false"
@@ -41,6 +42,7 @@ const pageSelection = ref<boolean[]>([])
 const printFlipMode = ref(false)
 const printSingles = ref(false)
 const template = ref<Template|undefined>(undefined)
+const templateModified = ref(false)
 const route = useRoute()
 const router = useRouter()
 const showOptions = ref(true)
@@ -51,6 +53,8 @@ onMounted(() => {
     // load last template into active template
     template.value = LocalStore.getTemplate()
     pageSelection.value = Array(template.value.data.length).fill(true)
+    // Check if template is modified from route query params
+    templateModified.value = route.query.modified === '1'
     // console.log('[Print.onMounted]', template.value)
     refreshPages()
 });

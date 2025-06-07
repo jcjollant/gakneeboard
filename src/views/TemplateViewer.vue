@@ -291,7 +291,12 @@ function onPrint() {
 
   // go to print mode
   const printTemplateId = activeTemplate.value?.id || 0
-  router.push('/print/' + printTemplateId)
+  // Only pass templateModified if the template has an ID
+  const isModified = activeTemplate.value?.id > 0 && templateModified.value
+  router.push({
+    path: '/print/' + printTemplateId,
+    query: { modified: isModified ? '1' : '0' }
+  })
 }
 
 async function onSave() {
