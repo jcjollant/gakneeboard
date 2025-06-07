@@ -1,4 +1,6 @@
 # User Experience updates
+## 6/06/2025 5233
+* Added warning message to prints before saving which cause erroneous version number
 ## 6/03/2025 5232
 * Fixed Note tile Word not updating on copy
 ## 6/02/2025
