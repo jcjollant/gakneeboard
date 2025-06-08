@@ -1,4 +1,7 @@
 # User Experience updates
+## 6/08/2025 5240
+* New Demos IFR Flight and Acronyms
+* Former IFR Flight has been renamed to IFR Strips
 ## 6/06/2025 5233
 * Added warning message to prints before saving which cause erroneous version number
 ## 6/03/2025 5232
