@@ -1,6 +1,9 @@
 <template>
     <div class="container">
         <h1>Pick a demo to get started</h1>
+        <div class="blurb">
+            <p>GA Kneeboard is a solution to create and print the perfect-to-you aviation kneeboard</p>
+        </div>
         <div class="grid mb-5">
             <div v-for="(demo,index) in demos" class="demo" :class="['demo'+index]" @click="loadDemo(demo.page)">
                 <div class="name">{{demo.title}}</div>
@@ -70,6 +73,9 @@ h1 {
     align-items: center;
     justify-content: center;
     height: 100%;
+}
+.blurb {
+    max-width: 400px;
 }
 .grid {
     display: grid;
