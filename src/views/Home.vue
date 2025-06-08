@@ -64,13 +64,15 @@ class DemoSelector {
 }
 
 const demos = ref<DemoSelector[]>([
-    new DemoSelector(SheetName.skyhawk, 'skyhawk.png', 'VFR Flight', 'Skyhawk Reference Sheet'),
+    new DemoSelector(SheetName.skyhawk, 'vfrflight.png', 'VFR Flight', 'VFR Flight Demo Template'),
+    new DemoSelector(SheetName.ifrflight, 'ifrflight.png', 'IFR Flight','IFR Flight Demo Template'),
     new DemoSelector(SheetName.checklist, 'checklist.png', 'Checklist','Checklists syntax Showcase'),
+    new DemoSelector(SheetName.acronyms, 'acronyms.png', 'Acronyms', 'Popular VFR and IFR acronyms'),
     new DemoSelector(SheetName.tiles, 'tiles.png', 'Tiles','Tiles Gallery'),
     new DemoSelector(SheetName.navlog, 'navlog.png', 'NavLog', 'Navlog page and companion tiles'),
     new DemoSelector(SheetName.charts, 'charts.png', 'Charts','Airport Diagram and Instrument Approach'),
     new DemoSelector(SheetName.holds, 'holds.png', 'Holds Practice','Full sheet of Holds and Compasses'),
-    new DemoSelector(SheetName.ifrflight, 'strips.png', 'IFR Flight','Strips for IFR flights notekeeping'),
+    new DemoSelector(SheetName.ifrstrips, 'strips.png', 'IFR Strips','Strips for IFR flights notekeeping'),
 ])
 interface Poh {
     code: string

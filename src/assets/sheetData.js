@@ -14,6 +14,8 @@ export class SheetName {
   static charts = 'gak-charts'
   static holds = 'gak-holds'
   static ifrflight = 'gak-ifrflight'
+  static ifrstrips = 'gak-ifrstrips'
+  static acronyms = 'gak-acronyms'
 }
 
 import { duplicate } from './data'
