@@ -26,11 +26,12 @@ export enum DisplayModeNotes {
 
 export enum DisplayModeIfr {
     Approach = 'apch',
+    Alternate = 'alt',
     BoxV = 'boxV',
     BoxH_deprecated = 'boxH',
     Departure = 'dep',
     Craft_deprecated = 'craft',
-    Hold = 'hold',
+    Hold_deprecated = 'hold',
 }
 
 export enum DisplayModeAtis {

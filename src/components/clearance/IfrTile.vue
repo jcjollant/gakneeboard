@@ -1,6 +1,6 @@
 <template>
     <div class="tile">
-        <Header :title="getTitle()" :left="!displaySelection" :showReplace="displaySelection" :showDisplayMode="true"
+        <Header :title="getTitle()" :left="displayMode==DisplayModeIfr.Departure" :showReplace="displaySelection" :showDisplayMode="true"
             @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" @selection="changeDisplayMode" />
         <div v-else-if="editMode" class="editMode">
@@ -11,7 +11,7 @@
             @click="editMode=true" />
         <DepartureContent v-else-if="displayMode==DisplayModeIfr.Departure" :airport="airport" class="clickable"
             @click="editMode=true" />
-        <HoldingContent v-else-if="displayMode==DisplayModeIfr.Hold" />
+        <ImageContent v-else-if="displayMode==DisplayModeIfr.Alternate" src="alternate.png" /> 
         <CraftBoxedContent v-else />
     </div>
 
@@ -20,15 +20,15 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { Airport } from '../../model/Airport.ts';
-import { DisplayModeIfr } from '../../model/DisplayMode.ts';
+import { DisplayModeChoice, DisplayModeIfr } from '../../model/DisplayMode.ts';
 import { getAirport } from '../../assets/data.js';
 
 import ActionBar from '../shared/ActionBar.vue';
 import ApproachContent from './ApproachContent.vue';
 import CraftBoxedContent from './CraftBoxedContent.vue';
-import Header from '../shared/Header.vue';
-import HoldingContent from './HoldingContent.vue';
 import DepartureContent from './DepartureContent.vue';
+import Header from '../shared/Header.vue';
+import ImageContent from '../shared/ImageContent.vue';
 import AirportInput from '../shared/AirportInput.vue';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 
@@ -45,10 +45,10 @@ const props = defineProps({
 })
 const displaySelection=ref(false)
 const displayModes = [
-    {label:'CRAFT Clearance', value:DisplayModeIfr.BoxV},
-    {label:'Departure', value:DisplayModeIfr.Departure},
-    {label:'Hold', value:DisplayModeIfr.Hold},
-    {label:'Approach', value:DisplayModeIfr.Approach},
+    new DisplayModeChoice( 'CRAFT Clearance', DisplayModeIfr.BoxV),
+    new DisplayModeChoice( 'Departure', DisplayModeIfr.Departure),
+    new DisplayModeChoice( 'Approach', DisplayModeIfr.Approach),
+    new DisplayModeChoice( 'Alternate', DisplayModeIfr.Alternate),
 ]
 
 onMounted(() => {   
@@ -102,20 +102,25 @@ function emitUpdate() {
 function getTitle() {
     if( displaySelection.value) return "IFR Tile Mode"
     let title:string;
+    let airportPosition:string = 'none';
     if( displayMode.value==DisplayModeIfr.Approach) {
         title =  'Apch'
-    } else if( displayMode.value==DisplayModeIfr.Hold) {
-        title = 'Hold @'
+        airportPosition = 'prepend'
+    } else if( displayMode.value==DisplayModeIfr.Alternate) {
+        title = 'IFR Alternate'
     } else if( displayMode.value==DisplayModeIfr.Departure) {
         title = 'Depart @'
+        airportPosition = 'append'
     } else {
-        title = 'Clearance @'
+        title = 'IFR Clearance'
     }
+
+    // Should we bake airport code into the title?
     if( airport.value.code) {
         // append for all modes except approach which is prepend
-        if( displayMode.value == DisplayModeIfr.Approach) {
+        if( airportPosition == 'prepend') {
             title = airport.value.code + ' ' + title
-        } else {
+        } else if(airportPosition == 'append') {
             title += ' ' + airport.value.code
             // Departure gets an additional 'to'
              if(displayMode.value == DisplayModeIfr.Departure) title += ' to'
