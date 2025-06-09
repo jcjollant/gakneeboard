@@ -6,6 +6,7 @@ export class TileType {
     static clearance:string = 'clearance';
     static dummy:string = 'dummy';
     static fuel:string = 'fuel';
+    static hold:string = 'hold';
     static navlog:string = 'navlog';
     static notes:string = 'notes';
     static radios:string = 'radios';
