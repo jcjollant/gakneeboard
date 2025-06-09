@@ -212,7 +212,7 @@ export class DemoData {
             {"name":"checklist","data":{"name":"IFR Reporting","items":[{"c":"Missed","r":"M"},{"c":"Airspeed ±10kts ","r":"A"},{"c":"Reaching Fix","r":"R"},{"c":"Vacating Altitude","r":"V"},{"c":"ETA ±2min","r":"E"},{"c":"Leaving Hold","r":"L"},{"c":"Outer Marker","r":"O"},{"c":"Unforecasted Weather","r":"U"},{"c":"Safety of flight","r":"S"},{"c":"VFR on Top","r":"V"},{"c":"Final Approach Fix","r":"F"}],"theme":"yellow"},"span2":false,"hide":false},
             {"name":"checklist","data":{"name":"IFR Reporting Cont'd","items":[{"c":"Radio nav Equip. Failure","r":"R"},{"c":"Compulsory Reporting","r":"C"},{"c":"Unable to hold 500fpm","r":"500"},{"s":" Do Not Fly a PT"},{"c":"Straight In Approach","r":"S"},{"c":"Hold in lieu of PT","r":"H"},{"c":"DME Arc","r":"A"},{"c":"Radar Vector to FAF","r":"R"},{"c":"No PT on chart","r":"P"},{"c":"Timed Apch from a Hold","r":"T"},{"c":"Teardrop Course Reversal","r":"T"}],"theme":"yellow"},"span2":false,"hide":false},
             {"name":"airport","data":{"code":"KAWO","rwy":"11-29","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {"name":"atis","data":{"mode":""},"span2":false,"hide":false},
+            {"name":"clearance","data":{"mode":"alt"}},
             {"name":"notes","data":{"mode":"word","word":"WARNMM"},"span2":true,"hide":false},
             {"name":"notes","data":{"mode":"word","word":"LaWBB","comp":false},"span2":false,"hide":true}
         ]
