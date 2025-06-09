@@ -1,7 +1,6 @@
 import { Adip } from "./adip/Adip";
 import { AdipDao } from "./adip/AdipDao";
 import { AirportDao } from "./AirportDao";
-import { db, sql } from  "@vercel/postgres";
 import { Email, EmailType } from "./Email";
 import { FeedbackDao } from "./FeedbackDao"
 import { PageType } from './TemplateTools'
