@@ -1,4 +1,7 @@
 # User Experience updates
+## 6/09/2025 5241
+* New Alternate display mode for IFR Tile
+* Using that mode for IFR Demo
 ## 6/08/2025 5240
 * New Demos IFR Flight and Acronyms
 * Former IFR Flight has been renamed to IFR Strips
