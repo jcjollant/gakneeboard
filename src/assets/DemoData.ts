@@ -18,13 +18,13 @@ export class DemoData {
         { mhz: 132.95, 'name': 'PAE TWR 34L', type: FrequencyType.tower }
     ]
 
-    static page0DemoHold = new TemplatePage(PageType.tiles, "Holds Demo",
+    static pageHold = new TemplatePage(PageType.tiles, "Holds Practice",
         [
-            { id: 0, name: TileType.clearance, data: { mode: "hold" } },
+            { id: 0, name: TileType.hold},
             { id: 1, name: TileType.notes, data: { mode: "compass", comp: false } },
-            { id: 2, name: TileType.clearance, data: { mode: "hold" } },
+            { id: 2, name: TileType.hold},
             { id: 3, name: TileType.notes, data: { mode: "compass", comp: false } },
-            { id: 4, name: TileType.clearance, data: { mode: "hold" } },
+            { id: 4, name: TileType.hold},
             { id: 5, name: TileType.notes, data: { mode: "compass", comp: false } },
         ]
     )
@@ -271,7 +271,7 @@ export class DemoData {
     }
 
     static holds(): Template {
-        return new Template('Holds Demo', 'Two sheets of Holds and Compass', false, Array(4).fill(DemoData.page0DemoHold))
+        return new Template('Holds Demo', 'Two sheets of Holds and Compass', false, Array(4).fill(DemoData.pageHold))
     }
 
     static ifrflight(): Template {

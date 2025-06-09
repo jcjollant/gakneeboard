@@ -20,6 +20,7 @@
     <Dummy v-else-if="tile.name==TileType.dummy" :params="tile.data"  />
     <FuelBug v-else-if="tile.name==TileType.fuel" :params="tile.data"
         @replace="onReplace" @update="onUpdate"/>
+    <Hold v-else-if="tile.name==TileType.hold" @replace="onReplace" @update="onUpdate" />
     <NavlogTile v-else-if="tile.name==TileType.navlog" @replace="onReplace" />
     <NotesTile v-else-if="tile.name==TileType.notes" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate" @expand="onExpand" />
@@ -40,6 +41,7 @@ import AtisTile from '../atis/AtisTile.vue'
 import ChecklistTile from '../checklist/ChecklistTile.vue';
 import IfrTile from '../../components/clearance/IfrTile.vue';
 import Dummy from './Dummy.vue';
+import Hold from '../clearance/HoldTile.vue'
 import RadioTile from '../radios/RadioTile.vue';
 import SunLight from '../sunlight/SunLight.vue';
 import FuelBug from '../fuel/FuelBug.vue';
