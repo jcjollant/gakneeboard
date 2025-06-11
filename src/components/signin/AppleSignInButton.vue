@@ -16,13 +16,14 @@ onMounted( () => {
         console.log('Apple Id auth script must be included')
         return
     }
-    const location:String = window.location.href;
-    // console.log( '[AppleSignInButton.onMounted]', location);
+    // extract the return url from the current page, removing additional path
+    const origin:String = window.location.origin;
+    console.log( '[AppleSignInButton.onMounted]', origin);
     
     (window as any).AppleID.auth.init({
         clientId : 'ga.kneeboard',
         scope : 'name email',
-        redirectURI : location,
+        redirectURI : origin,
         // state : 'testState',
         // nonce : 'testNonce',
         usePopup : true
