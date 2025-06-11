@@ -17,7 +17,7 @@ onMounted( () => {
         return
     }
     // extract the return url from the current page, removing additional path
-    const origin:String = window.location.origin;
+    const origin:String = window.location.origin + '/';
     console.log( '[AppleSignInButton.onMounted]', origin);
     
     (window as any).AppleID.auth.init({
