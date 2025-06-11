@@ -1,4 +1,6 @@
 # User Experience updates
+## 6/11/2025 5242
+* Fixed origin parsing in Apple SignIn
 ## 6/09/2025 5241
 * New Alternate display mode for IFR Tile
 * Using that mode for IFR Demo
