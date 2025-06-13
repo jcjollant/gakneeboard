@@ -19,6 +19,14 @@ body {
   min-height: 100vh; 
 }
 
+@media (max-width: 500px) {
+  body {
+    transform: scale(0.66);
+    transform-origin: 0 0;
+    width: 500px;
+  }
+}
+
 :root {
   --bg: #2196F3;
   --bg-choice-active: #b4c6e7;

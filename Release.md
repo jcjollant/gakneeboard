@@ -1,6 +1,9 @@
 # User Experience updates
-## 6/13/2025 5245
+## 6/13/2025
+1) 5245
 * Improving real estate usage
+2) 5246
+* Smaller scale on small devices
 ## 6/12/2025 5244
 * Single page template support
 * Moved navigation buttons to the bottom
