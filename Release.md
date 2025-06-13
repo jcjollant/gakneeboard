@@ -4,6 +4,8 @@
 * Improving real estate usage
 2) 5246
 * Smaller scale on small devices
+3) 5247
+* Collapsable menu and proportional scaling on min size
 ## 6/12/2025 5244
 * Single page template support
 * Moved navigation buttons to the bottom
