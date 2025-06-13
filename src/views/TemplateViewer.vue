@@ -472,19 +472,15 @@ function updateThumbnail(template:Template) {
   flex: 0 0 var(--page-width);
 }
 
-@media (min-height: calc(2 * var(--page-height) + var(--pages-gap) + 200px)) {
+@media (min-width: 550px) {
   .pageAll {
-    flex-wrap: wrap;
+    margin-left: var(--pages-gap);
   }
 }
-
-@media (max-height: calc(2 * var(--page-height) + var(--pages-gap) + 200px)) {
+@media (min-height: 1750px) {
   .pageAll {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    justify-content: flex-start; /* Align to the left to ensure first page is fully visible */
-    padding-left: 50px; /* Add some padding to the left for better visibility */
-  }
+    flex-wrap: wrap;
+  } 
 }
 
 .templateMenu {
