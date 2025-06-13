@@ -16,21 +16,27 @@
     <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
       @offset="onOffset" @update="onPageUpdate" />
     <div class="pageGroup" :class="{'editor':showEditor}" >
-      <div class="templateMenu">
-        <MenuButton id="btnPrint" icon="print" title="Print Template" label="Print"
-          @click="onPrint"/>
-        <MenuButton id="btnSave" icon="save" title="Save Template to the Cloud" label="Save"  :disabled="activeTemplate.isInvalid()"
-          @click="onSave"/>
-        <MenuButton id="btnEditor"
-          icon="screwdriver-wrench" title="Toggle Edit Tools" label="Editor Tools" :active="showEditor"
-          :class="{'editorButtonActive':showEditor}" class="editorButton" 
-          @click="onEditor"/>
-        <MenuButton id="btnExport" icon="file-export" title="Export Template to Various Formats" label="Export"
-          @click="onExport"/>
-        <MenuButton id="btnSettings" icon="gear" title="Template Name and Description" label="Settings"
-          @click="showSettings=true"/>
-        <MenuButton id="btnDelete" icon="trash" title="Delete Template" label="Delete" :danger="true" :disabled="activeTemplate.isInvalid()"
-          @click="onDelete"/>
+      <div>
+        <div v-if="menuCollapased" class="templateMenu">
+          <MenuButton id="btnExpand" icon="bars" title="Show Actions" label="Actions"
+            @click="menuCollapased=false"/>
+        </div>
+        <div v-else class="templateMenu">
+          <MenuButton id="btnPrint" icon="print" title="Print Template" label="Print"
+            @click="onPrint"/>
+          <MenuButton id="btnSave" icon="save" title="Save Template to the Cloud" label="Save"  :disabled="activeTemplate.isInvalid()"
+            @click="onSave"/>
+          <!-- <MenuButton id="btnEditor"
+            icon="screwdriver-wrench" title="Toggle Edit Tools" label="Editor Tools" :active="showEditor"
+            :class="{'editorButtonActive':showEditor}" class="editorButton" 
+            @click="onEditor"/> -->
+          <MenuButton id="btnExport" icon="file-export" title="Export Template to Various Formats" label="Export"
+            @click="onExport"/>
+          <MenuButton id="btnSettings" icon="gear" title="Template Name and Description" label="Settings"
+            @click="showSettings=true"/>
+          <MenuButton id="btnDelete" icon="trash" title="Delete Template" label="Delete" :danger="true" :disabled="activeTemplate.isInvalid()"
+            @click="onDelete"/>
+        </div>
       </div>
       <div v-if="activeTemplate" class="pageAll" :class="{'editor':showEditor}">
         <Page v-for="(data,index) in activeTemplate.data" 
@@ -75,6 +81,7 @@ let cssPageGap = -1
 let cssPageWidth = -1
 const emits = defineEmits(['about','template'])
 const confirm = useConfirm()
+const menuCollapased = ref(false)
 const offset = ref(0)
 const offsetLast = ref(0)
 const route = useRoute()
@@ -394,6 +401,8 @@ function updateOffsets() {
   singlePage.value = pageFit == 1;
   offsetLast.value = maxOffset;
   // console.log('[TemplateViewer.updateOffset] offsetLast', maxOffset)
+
+  menuCollapased.value = window.innerWidth <= cssPageWidth + cssPageGap
 }
 
 function updateThumbnail(template:Template) {
@@ -485,7 +494,7 @@ function updateThumbnail(template:Template) {
 
 .templateMenu {
   position: absolute;
-  left: var(--menu-border-offset);
+  left: calc( var(--menu-border-offset) / 2);
   top: 0;
   display: flex;
   flex-flow: column;
