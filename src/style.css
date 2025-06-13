@@ -21,7 +21,7 @@ body {
 
 @media (max-width: 500px) {
   body {
-    transform: scale(0.66);
+    transform: scale(calc(100vw / 500));
     transform-origin: 0 0;
     width: 500px;
   }
