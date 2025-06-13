@@ -5,6 +5,14 @@
       @close="showExport=false" @export="onExported" />
     <TemplateSettings v-model:visible="showSettings" :template="activeTemplate"
       @close="showSettings=false" @save="onSettings" />
+    <div class="navigationButtons">
+      <i class="pi pi-chevron-circle-left offsetButton" :class="{'disabled':(offset == 0)}"
+        title="Previous Page" id="offsetPrev"
+        @click="onOffset(offset - 1)"></i>
+      <i class="pi pi-chevron-circle-right offsetButton" :class="{'disabled':(offset >= offsetLast)}"
+        title="Next Page" id="offsetNext"
+        @click="onOffset(offset + 1)"></i>
+    </div>
     <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
       @offset="onOffset" @update="onPageUpdate" />
     <div class="pageGroup" :class="{'editor':showEditor}" >
@@ -24,9 +32,6 @@
         <MenuButton id="btnDelete" icon="trash" title="Delete Template" label="Delete" :danger="true" :disabled="activeTemplate.isInvalid()"
           @click="onDelete"/>
       </div>
-      <i class="pi pi-chevron-circle-left offsetButton" :class="{'noShow':(offset == 0)}"
-        title="Previous Page" id="offsetPrev"
-        @click="onOffset(offset - 1)"></i>
       <div v-if="activeTemplate" class="pageAll" :class="{'editor':showEditor}">
         <Page v-for="(data,index) in activeTemplate.data" 
           v-show="index >= offset" :data="data" :class="'page'+index" :ver="activeTemplate.ver"
@@ -36,9 +41,6 @@
         <LoadingPage></LoadingPage>
         <LoadingPage></LoadingPage>
       </div>
-      <i class="pi pi-chevron-circle-right offsetButton"  :class="{'noShow':(offset >= offsetLast)}"
-        title="Next Page" id="offsetNext"
-        @click="onOffset(offset + 1)"></i>
     </div>
   </div>
 </template>
@@ -448,8 +450,8 @@ function updateThumbnail(template:Template) {
 
 .pageGroup {
   position: relative;
-  display: grid;
-  grid-template-columns: var(--pages-gap) 1fr var(--pages-gap);
+  display: flex;
+  justify-content: center;
   align-items: center;
   width: 100%;
 }
@@ -457,10 +459,32 @@ function updateThumbnail(template:Template) {
 .pageAll {
   display: flex;
   gap: var(--pages-gap);
-  flex-wrap: wrap;
-  height: var(--page-height);
-  justify-content: center;
+  /* justify-content: center; */
+  /* max-height: calc(2 * var(--page-height) + var(--pages-gap)); */
   overflow: hidden;
+}
+
+/* Ensure all pages have the same width */
+.pageAll > * {
+  width: var(--page-width);
+  min-width: var(--page-width);
+  max-width: var(--page-width);
+  flex: 0 0 var(--page-width);
+}
+
+@media (min-height: calc(2 * var(--page-height) + var(--pages-gap) + 200px)) {
+  .pageAll {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-height: calc(2 * var(--page-height) + var(--pages-gap) + 200px)) {
+  .pageAll {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start; /* Align to the left to ensure first page is fully visible */
+    padding-left: 50px; /* Add some padding to the left for better visibility */
+  }
 }
 
 .templateMenu {
@@ -479,12 +503,28 @@ function updateThumbnail(template:Template) {
     gap: var(--pages-gap);
 }
 
+.navigationButtons {
+  position: fixed;
+  bottom: var(--menu-border-offset);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1rem;
+  z-index: 10;
+}
+
 .offsetButton {
   font-size: 2rem;
   color: #333;
   font-weight: bold;
   cursor: pointer;
   z-index: 1;
+}
+
+.offsetButton.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .sheetName {
