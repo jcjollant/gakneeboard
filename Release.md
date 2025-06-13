@@ -1,4 +1,7 @@
 # User Experience updates
+## 6/12/2025 5244
+* Single page template support
+* Moved navigation buttons to the bottom
 ## 6/11/2025 5242
 * Fixed origin parsing in Apple SignIn
 ## 6/09/2025 5241
