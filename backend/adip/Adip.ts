@@ -13,7 +13,7 @@ const maxNavaids:number = 10
 
 export class Adip {
     static basicAuth:string = 'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP'
-    static defaultEffectiveDate = "2025-05-16T00:00:00"
+    static defaultEffectiveDate = "2025-06-12T00:00:00"
     public static currentEffectiveDate():string {
         // return default date if environment variable is not set
         // console.log('[Adip.currentEffectiveData', process.env.EFFECTIVE_DATE)

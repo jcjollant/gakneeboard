@@ -1,3 +1,5 @@
+## 06/13/2025 5240
+* New Effective date 2025-06-12T00:00:00
 ## 05/25/2025 5220
 * Added save-7d and save-28d to metrics
 ## 5/21/2025 5210
