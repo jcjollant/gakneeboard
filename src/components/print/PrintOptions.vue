@@ -12,6 +12,7 @@
         <div class="pageOptionLabel">Pages per sheet</div>
         <OneChoice v-model="pagePerSheet" :choices="[onePage,twoPages]" 
           @change="onNewOptions"/>
+        
         <div class="pageOptionLabel">Back Page Orientation</div>
         <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]"
           @change="onNewOptions" />
@@ -37,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { UserUrl } from '../../lib/UserUrl';
 
 import OneChoice from '../shared/OneChoice.vue';
@@ -58,6 +59,9 @@ const flippedOrientation = new OneChoiceValue('Flipped', true, 'So you can read 
 const pagePerSheet = ref(twoPages)
 const flipBackPage = ref(normalOrientation)
 const pageSelection = ref<boolean[]>([true, true, true])
+
+// Computed property to check if there's only one page
+const isSinglePage = computed(() => pageSelection.value.length <= 1)
 
 //---------------------
 // Props management
@@ -149,6 +153,12 @@ function onNewOptions() {
 }
 .pageOptionLabel {
   text-align: right;
+}
+
+.disabledOption {
+  color: #999;
+  font-style: italic;
+  padding-left: 10px;
 }
 
 .printPopup {

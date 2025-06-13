@@ -16,6 +16,7 @@
           <Button icon="pi pi-eject" label="Replace" title="Replace Page" 
             @click="onAction(EditorAction.reset(index))"></Button>
           <Button icon="pi pi-trash" label="Delete" title="Delete Page" severity="warning" class="btnDelete"
+            :disabled="model.data.length <= 1"
             @click="onAction(EditorAction.deletePage(index))"></Button>
         </div>
       </div>
@@ -125,8 +126,8 @@ async function onEditorAction(ea:EditorAction) {
   } else if(ea.action == EditorAction.DELETE_PAGE) {
 
     // protection against last page removal
-    if( model.value.data.length == 2) {
-      toaster.warning('Cannot Delete Page', 'Last two pages cannot be deleted. Delete the template instead.')
+    if( model.value.data.length == 1) {
+      toaster.warning('Cannot Delete Page', 'Last page cannot be deleted. Delete the template instead.')
       return;
     }
     // remove page from active template

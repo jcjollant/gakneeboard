@@ -15,7 +15,7 @@
       </div>
       <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages">
         <Page :data="page.front" :ver="template.ver"/>
-        <Page :data="page.back" :ver="template.ver" :class="{flipMode:printFlipMode}" />
+        <Page v-if="page.back" :data="page.back" :ver="template.ver" :class="{flipMode:printFlipMode}" />
       </div>
     </div>
     <div v-else>No Template</div>
@@ -31,10 +31,11 @@ import Page from '../components/page/Page.vue';
 import PrintOptions from '../components/print/PrintOptions.vue';
 import { Template, TemplatePage } from '../model/Template';
 import { exportToPDF } from '../assets/pdf'
+import { PageType } from '../assets/PageType.js';
 
 interface PrintSheet {
   front: TemplatePage,
-  back: TemplatePage
+  back: TemplatePage | null
 }
 
 const pages = ref<PrintSheet[]>([]) // pages that will be printed
@@ -123,9 +124,29 @@ function refreshPages() {
       const templateData = template.value.data
       const pages:TemplatePage[] = templateData.filter( (page:TemplatePage, index:number) => pageSelection.value[index])
       // console.log('[Print.refreshPages]', pages.length)
-      for( let index = 0; index < pages.length; index+=2) {
-          const printSheet:PrintSheet = {front:pages[index], back:pages[index+1]??null}
-          pageList.push(printSheet)
+      
+      // If there's only one page and we're printing two pages per sheet,
+      // add a temporary blank page
+      if (pages.length === 1 && !printSingles.value) {
+        // Create a blank page with the same structure as a regular page
+        const blankPage = new TemplatePage(PageType.none)
+        
+        // Add the blank page to the list
+        const printSheet:PrintSheet = {front:pages[0], back:blankPage}
+        pageList.push(printSheet)
+      } else {
+        // Normal case with multiple pages or single page mode
+        for( let index = 0; index < pages.length; index+=2) {
+            // Only create a printSheet with back page if it exists
+            if (index + 1 < pages.length) {
+              const printSheet:PrintSheet = {front:pages[index], back:pages[index+1]}
+              pageList.push(printSheet)
+            } else {
+              // For the last page when there's an odd number of pages
+              const printSheet:PrintSheet = {front:pages[index], back:null}
+              pageList.push(printSheet)
+            }
+        }
       }
     }
     pages.value = pageList
@@ -166,6 +187,10 @@ function restorePrintOptions() {
   grid-template-columns: auto auto;
   gap: 0 var(--pages-gap);
   width: fit-content;
+}
+/* Add a class to handle single page in two-page layout */
+.printTwoPages:has(> :only-child) {
+  grid-template-columns: auto;
 }
 #printTemplate {
   width: var(--page-width-two);
