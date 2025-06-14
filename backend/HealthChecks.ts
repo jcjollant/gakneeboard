@@ -66,9 +66,10 @@ export class HealthCheck {
         // Force an Adip Check
         await Promise.all([AirportDao.readList( [rentonCode]),Adip.fetchAirport(rentonCode,false)]).then((results) => {
             try {
-
+                // Check we have found Renton in the database
                 if( results[0].length == 0) throw new Error(rentonCode + " is not in the database")
 
+                // Check we have the correct version
                 const rentonDb:Airport = results[0][0].airport
                 if( rentonDb.version == -1) throw new Error(rentonCode + " version is invalid")
 
