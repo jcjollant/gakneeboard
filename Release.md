@@ -1,4 +1,6 @@
 # User Experience updates
+## 6/14/2025 5248
+* Updated print warning text
 ## 6/13/2025
 1) 5245
 * Improving real estate usage

@@ -3,7 +3,7 @@
     <div class="printPopup">
       <div v-if="props.templateModified" class="versionWarning">
         <font-awesome-icon :icon="['fas', 'exclamation-triangle']"></font-awesome-icon>
-        Warning: The version number shown in the checklist will only increase once the template is saved.
+        Warning: Unsaved changes. Checklists version number only increase upon saving template.
       </div>
       <div class="pageOptions">
         <div class="pageOptionLabel">Pages</div>
