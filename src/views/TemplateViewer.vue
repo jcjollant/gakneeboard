@@ -5,31 +5,32 @@
       @close="showExport=false" @export="onExported" />
     <TemplateSettings v-model:visible="showSettings" :template="activeTemplate"
       @close="showSettings=false" @save="onSettings" />
-    <div class="navigationButtons">
+    <!-- <div class="navigationButtons">
       <i class="pi pi-chevron-circle-left offsetButton" :class="{'disabled':(offset == 0)}"
         title="Previous Page" id="offsetPrev"
         @click="onOffset(offset - 1)"></i>
       <i class="pi pi-chevron-circle-right offsetButton" :class="{'disabled':(offset >= offsetLast)}"
         title="Next Page" id="offsetNext"
         @click="onOffset(offset + 1)"></i>
-    </div>
-    <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
-      @offset="onOffset" @update="onPageUpdate" />
-    <div class="pageGroup" :class="{'editor':showEditor}" >
-      <div>
+    </div> -->
+    <!-- <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
+      @offset="onOffset" @update="onPageUpdate" /> -->
+    <div class="pageGroup">
         <div v-if="menuCollapased" class="templateMenu">
-          <MenuButton id="btnExpand" icon="bars" title="Show Actions" label="Actions"
+          <MenuButton id="btnExpand" icon="bars" title="Show Action Buttons" label="Show Actions"
             @click="menuCollapased=false"/>
         </div>
         <div v-else class="templateMenu">
+          <MenuButton id="btnExpand" icon="bars" title="Hide Action Buttons" label="Hide Actions" :active="true"
+            @click="menuCollapased=true"/>
           <MenuButton id="btnPrint" icon="print" title="Print Template" label="Print"
             @click="onPrint"/>
           <MenuButton id="btnSave" icon="save" title="Save Template to the Cloud" label="Save"  :disabled="activeTemplate.isInvalid()"
             @click="onSave"/>
-          <!-- <MenuButton id="btnEditor"
-            icon="screwdriver-wrench" title="Toggle Edit Tools" label="Editor Tools" :active="showEditor"
+          <MenuButton id="btnEditor"
+            icon="screwdriver-wrench" title="Toggle Editor mode" label="Editor" :active="showEditor"
             :class="{'editorButtonActive':showEditor}" class="editorButton" 
-            @click="onEditor"/> -->
+            @click="onEditor"/>
           <MenuButton id="btnExport" icon="file-export" title="Export Template to Various Formats" label="Export"
             @click="onExport"/>
           <MenuButton id="btnSettings" icon="gear" title="Template Name and Description" label="Settings"
@@ -39,26 +40,37 @@
         </div>
       </div>
       <div v-if="activeTemplate" class="pageAll" :class="{'editor':showEditor}">
-        <Page v-for="(data,index) in activeTemplate.data" 
-          v-show="index >= offset" :data="data" :class="'page'+index" :ver="activeTemplate.ver"
-          @update="onPageUpdate(index, $event)" />
+        <div v-for="(data,index) in activeTemplate.data" class="pageGrid">
+          <Page :data="data" :class="'page'+index" :ver="activeTemplate.ver"
+            @update="onPageUpdate(index, $event)" />
+          
+          <VerticalActionBar v-if="showEditor" :offset="index" :last="index == activeTemplate.data.length - 1"
+            @action="onAction" />
+          <div v-else></div>
+          <HorizontalActionBar v-if="showEditor" @action="onAction" :index="index" :blockDelete="activeTemplate.data.length < 2" />
+          <div></div>
+        </div>
       </div>
       <div v-else class="pageAll">
         <LoadingPage></LoadingPage>
         <LoadingPage></LoadingPage>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
+import { computeSHA256 } from '../assets/Sha.ts'
 import { currentUser } from '../assets/data.js'
 import { DemoData } from '../assets/DemoData.ts'
+import { duplicate } from '../assets/data'
+import { EditorAction } from '../assets/EditorAction.ts'
 import { LocalStore } from '../lib/LocalStore.ts'
 import { onMounted, onUnmounted, ref } from 'vue'
+import { PageType } from '../assets/PageType.ts'
 import { RouterNames } from '../router/index.js'
 import { Template, TemplatePage } from '../model/Template'
 import { TemplateData } from '../assets/TemplateData.ts'
+import { readPageFromClipboard, readTileFromClipboard } from '../assets/sheetData'
 import { useConfirm } from 'primevue/useconfirm'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
@@ -66,14 +78,14 @@ import { useToaster } from '../assets/Toaster.ts'
 
 // Components
 import html2canvas from 'html2canvas'
-import Editor from '../components/editor/Editor.vue'
 import Menu from '../components/menu/Menu.vue'
 import MenuButton from '../components/menu/MenuButton.vue'
 import LoadingPage from '../components/page/LoadingPage.vue'
 import Page from '../components/page/Page.vue'
 import TemplateExport from '../components/templates/TemplateExport.vue'
 import TemplateSettings from '../components/templates/TemplateSettings.vue'
-import { computeSHA256 } from '../assets/Sha.ts'
+import VerticalActionBar from '../components/editor/VerticalActionBar.vue'
+import HorizontalActionBar from '../components/editor/HorizontalActionBar.vue'
 
 const noTemplate = Template.noTemplate()
 const activeTemplate = ref(noTemplate)
@@ -202,6 +214,30 @@ function loadTemplate(template:Template,saveToLocalStorage:boolean=false) {
   }, 1000)
 }
 
+function onAction(action:EditorAction) {
+  let confirmation:any|undefined = undefined
+  if(action.action == EditorAction.DUPLICATE_PAGE) confirmation = {message:'Please confirm you want to overwrite page ' + (action.offsetTo + 1), header:'Overwrite Page', acceptLabel:'Yes, Overwrite'}
+  if(action.action == EditorAction.DELETE_PAGE && activeTemplate.value.data[action.offset].type != PageType.selection) {
+    confirmation = {message:'Please confirm you want to delete page ' + (action.offset + 1), header:'Delete Page', acceptLabel:'Yes, Delete'}
+  }
+
+  if(confirmation) {
+    confirm.require({
+        message: confirmation.message,
+        header: confirmation.header,
+        rejectLabel: 'No',
+        acceptLabel: confirmation.acceptLabel,
+        accept: () => {
+          onEditorAction(action)
+        }
+      })
+  } else {
+    onEditorAction(action)
+  }
+}
+
+
+
 function onDelete() {
   if(activeTemplate.value.isInvalid()) return;
 
@@ -237,6 +273,137 @@ function onEditor() {
 
   showEditor.value = !showEditor.value;
 }
+
+// Pages are manipulated via editor buttons
+async function onEditorAction(ea:EditorAction) {
+  // console.log('[Editor.onEditorAction]', ea, activeTemplate.value)
+  let updateOffset = false;
+  const updatedPages:number[] = []
+
+  // if we dont have a template, we can leave
+  if(!activeTemplate.value) return;
+
+  if(ea.action == EditorAction.COPY_PAGE_TO_CLIPBOARD) {
+
+    const pageData = activeTemplate.value.data[ea.offset]
+    // grab data and show toast
+    navigator.clipboard.writeText(JSON.stringify(pageData));
+    toaster.success('Editor', 'Page ' + (ea.offset+1) + ' copied to clipboard')
+
+  } else if(ea.action == EditorAction.COPY_TILE_TO_CLIPBOARD) {
+
+    const tileData = activeTemplate.value.data[ea.offset].data[ea.offsetTo]
+    // grab data and show toast
+    navigator.clipboard.writeText(JSON.stringify(tileData));
+    toaster.success('Editor', 'Tile ' + (ea.offsetTo+1) + ' copied to clipboard')
+
+  } else if(ea.action == EditorAction.DUPLICATE_PAGE) {
+
+    activeTemplate.value.data[ea.offsetTo] = duplicate(activeTemplate.value.data[ea.offset])
+    updatedPages.push(ea.offsetTo)
+
+  } else if(ea.action == EditorAction.DELETE_PAGE) {
+
+    // protection against last page removal
+    if( activeTemplate.value.data.length == 1) {
+      toaster.warning('Cannot Delete Page', 'Last page cannot be deleted. Delete the template instead.')
+      return;
+    }
+    // remove page from active template
+    activeTemplate.value.data.splice(ea.offset, 1)
+    // updatedPages.push(ea.offset)
+    updateOffset = true
+
+  } else if(ea.action == EditorAction.INSERT_PAGE) {
+
+    // validate offset
+    if( isNaN(ea.offset) || ea.offset < 0) return;
+    if( ea.offset >= activeTemplate.value.data.length) {
+      // append blank page to last position
+      activeTemplate.value.data.push( TemplatePage.SELECTION)
+    } else {
+      // insert blank page at position
+      activeTemplate.value.data.splice(ea.offset, 0, TemplatePage.SELECTION)
+    }
+    updatedPages.push(ea.offset)
+    updateOffset = true;
+
+  } else if(ea.action == EditorAction.PASTE_PAGE) {
+
+    readPageFromClipboard().then( page => {
+      if(activeTemplate.value) {
+        activeTemplate.value.data[ea.offset] = page;
+        updatedPages.push(ea.offset)
+      }
+    }).catch( e => {
+        toaster.error('Editor', 'Cannot Paste ' + e)
+    }) 
+
+  } else if(ea.action == EditorAction.PASTE_TILE) {
+    
+    readTileFromClipboard().then( tile => {
+      console.log('[Editor.onEditorAction]', ea.offset, ea.offsetTo, activeTemplate.value)
+      if( isNaN(ea.offset) || isNaN(ea.offsetTo) || !activeTemplate.value) return;
+      // offset has the page number, offsetTo has the tile number
+      // console.log('[App.onEditorAction] pasteTile', ea.offset, ea.offsetTo, page.sourceTile, page)
+      const newPageValue = JSON.parse( JSON.stringify(activeTemplate.value.data[ea.offset]));
+      newPageValue.data[ea.offsetTo] = tile;
+      activeTemplate.value.data[ea.offset] = newPageValue
+      // activeTemplate.value.data[ea.offset].data[ea.offsetTo].id = ea.offsetTo;
+      updatedPages.push(ea.offset)
+    }).catch( e => {
+        toaster.error('Editor','Cannot Paste Tile' + e)
+    }) 
+
+  } else if(ea.action == EditorAction.RESET_PAGE) {
+
+    activeTemplate.value.data[ea.offset] = duplicate(TemplatePage.SELECTION)
+    updatedPages.push(ea.offset)
+
+  } else if(ea.action == EditorAction.SWAP_PAGE) {
+
+    const swap = duplicate(activeTemplate.value.data[ea.offset])
+    activeTemplate.value.data[ea.offset] = activeTemplate.value.data[ea.offset + 1]
+    activeTemplate.value.data[ea.offset + 1] = swap;
+    updatedPages.push(ea.offset)
+    updatedPages.push(ea.offset + 1)
+
+  } else if(ea.action == EditorAction.SWAP_TILES) {
+
+    // is this a tile page?
+    if(activeTemplate.value.data[ea.offset].type != PageType.tiles) return;
+    const tileFrom = ea.params?.from
+    const tileTo = ea.params?.to
+    if(tileFrom === undefined || tileTo === undefined) return;
+
+    const temp = duplicate(activeTemplate.value.data[ea.offset].data[tileFrom])
+    // console.log('[Editor.onEditorAction]', temp, activeTemplate.value.data[ea.offset].data[tileTo], tileFrom, tileTo)
+    const newPageValue = JSON.parse( JSON.stringify(activeTemplate.value.data[ea.offset]));
+    newPageValue.data[tileFrom] = activeTemplate.value.data[ea.offset].data[tileTo]
+    newPageValue.data[tileTo] = temp
+    // reset span and hide
+    newPageValue.data[tileFrom]['span2'] = false
+    newPageValue.data[tileFrom]['hide'] = false
+    newPageValue.data[tileTo]['span2'] = false
+    newPageValue.data[tileTo]['hide'] = false
+    activeTemplate.value.data[ea.offset] = newPageValue
+    updatedPages.push(ea.offset)
+
+  } else {
+    reportError('[App.onEditorAction] unknown action ' + ea)
+  }
+
+  // console.log('[Editor.editoAction] ', updatedPages)
+  for( const index of updatedPages) {
+    // console.log('[Editor.editoAction] updatePage', ea.action, index)
+    // emits('update', index, activeTemplate.value.data[index]) 
+  }
+
+  templateModified.value = true
+  // LocalStore.saveTemplate(activeTemplate.value)
+}
+
+
 
 function onExport() {
   if(activeTemplate.value.id == 0) {
@@ -452,7 +619,6 @@ function updateThumbnail(template:Template) {
   position: relative;
   display: flex;
   flex-flow: column;
-  align-items: center;
   gap: var(--main-gap);
   min-height: 100vh;
 }
@@ -460,25 +626,14 @@ function updateThumbnail(template:Template) {
 .pageGroup {
   position: relative;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: left;
+  align-items: left;
   width: 100%;
 }
 
 .pageAll {
   display: flex;
-  gap: var(--pages-gap);
-  /* justify-content: center; */
-  /* max-height: calc(2 * var(--page-height) + var(--pages-gap)); */
-  overflow: hidden;
-}
-
-/* Ensure all pages have the same width */
-.pageAll > * {
-  width: var(--page-width);
-  min-width: var(--page-width);
-  max-width: var(--page-width);
-  flex: 0 0 var(--page-width);
+  align-items: center;
 }
 
 @media (min-width: 550px) {
@@ -559,5 +714,12 @@ function updateThumbnail(template:Template) {
   font-style: italic;
   color: orange;
   opacity: 0.4;
+}
+
+ .pageGrid {
+  /* create a 2x2 grid */
+  display: grid;
+  grid-template-columns: var(--page-width) var(--pages-gap);
+  grid-template-rows: var(--page-height) var(--pages-gap);
 }
 </style>
