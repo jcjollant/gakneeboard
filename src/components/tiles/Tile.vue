@@ -59,8 +59,8 @@ var state:TileData
 const knownTiles = ref([
     {name:'Airport',tile:TileType.airport, class:'double', icon:'plane-departure', tooltip:'Display runway and useful information'},
     {name:'Notes',tile:TileType.notes, class:'', icon:'pen-to-square',  tooltip:'A blank tile to write stuff'},
-    {name:'Weather',tile:TileType.atis, class:'', icon:'cloud-sun-rain', tooltip:'Write down ATIS information'},
     {name:'Checklist',tile:TileType.checklist, class:'', icon:'list-check', tooltip:'Short checklist'},
+    {name:'Weather',tile:TileType.atis, class:'', icon:'cloud-sun-rain', tooltip:'Write down ATIS information'},
     {name:'Radios',tile:TileType.radios, class:'', icon:'headset',  tooltip:'Radio frequencies'},
     {name:'IFR',tile:TileType.clearance, class:'', icon:'plane-circle-check', tooltip:'Instrument Flying'},
     {name:'Sunlight',tile:TileType.sunlight, class:'', icon:'sun',  tooltip:'Sunrise, Sunset, Civil Twilight...'},
