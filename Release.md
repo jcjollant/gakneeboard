@@ -1,6 +1,9 @@
 # User Experience updates
-## 6/14/2025 5248
+## 6/14/2025
+1) 5248
 * Updated print warning text
+2) 5249
+* Editor is back. Nav button are out
 ## 6/13/2025
 1) 5245
 * Improving real estate usage
