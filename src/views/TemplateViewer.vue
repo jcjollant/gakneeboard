@@ -634,6 +634,7 @@ function updateThumbnail(template:Template) {
 .pageAll {
   display: flex;
   align-items: center;
+  overflow: auto;
 }
 
 @media (min-width: 550px) {

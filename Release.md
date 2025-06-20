@@ -1,4 +1,6 @@
 # User Experience updates
+## 6/20/2025
+1) 5251 - Improved scrolling beahavioe
 ## 6/18/2025 
 1) 5250 - Fixed title typo
 ## 6/14/2025
