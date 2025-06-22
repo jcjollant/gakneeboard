@@ -9,19 +9,31 @@
         <div class="pageOptionLabel">Pages</div>
         <PageSelection v-model="pageSelection" 
           @change="onNewOptions" />
-        <div class="pageOptionLabel">Pages per sheet</div>
-        <OneChoice v-model="pagePerSheet" :choices="[onePage,twoPages]" 
-          @change="onNewOptions"/>
         
-        <div class="pageOptionLabel">Back Page Orientation</div>
-        <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]"
-          @change="onNewOptions" />
-
+        <template v-if="!isFullPageFormat">
+          <div class="pageOptionLabel">Pages per sheet</div>
+          <OneChoice v-model="pagePerSheet" :choices="[onePage,twoPages]" 
+            @change="onNewOptions"/>
+          
+          <div class="pageOptionLabel">Back Page Orientation</div>
+          <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]"
+            @change="onNewOptions" />
+        </template>
+        
+        <template v-else>
+          <div class="pageOptionLabel">Format</div>
+          <div class="formatInfo">Full Page (one page per sheet)</div>
+        </template>
       </div>
       <FieldSet legend="Printing Tips">
-        <ul class="note">
+        <ul class="note" v-if="!isFullPageFormat">
           <li>Two pages per sheet will fold to kneeboard size</li>
           <li>Flipped back page can be read when front page is clipped</li>
+          <li>You can save to PDF format from the next screen</li>
+        </ul>
+        <ul class="note" v-else>
+          <li>Full page templates print one page per sheet in portrait mode</li>
+          <li>The number of printed pages will match the template page count</li>
           <li>You can save to PDF format from the next screen</li>
         </ul>
         </FieldSet>
@@ -63,11 +75,15 @@ const pageSelection = ref<boolean[]>([true, true, true])
 // Computed property to check if there's only one page
 const isSinglePage = computed(() => pageSelection.value.length <= 1)
 
+// Computed property to check if the format is fullpage
+const isFullPageFormat = computed(() => props.format === 'fullpage')
+
 //---------------------
 // Props management
 const props = defineProps({
   pageSelection: { type: Array<boolean>, required: true},
   templateModified: { type: Boolean, default: false },
+  format: { type: String, default: 'kneeboard' },
 })
 
 function loadProps( props:any) {
@@ -77,7 +93,18 @@ function loadProps( props:any) {
 
 onMounted( () => {
   loadProps(props)
+  // Set pagePerSheet to onePage for fullpage format
+  if (props.format === 'fullpage') {
+    pagePerSheet.value = onePage
+  }
 })  
+
+// Watch for format changes
+watch(() => props.format, (newFormat) => {
+  if (newFormat === 'fullpage') {
+    pagePerSheet.value = onePage
+  }
+})
 
 watch( props, async() => {
   // console.log('[PrintOptions] props changed', props)
@@ -87,10 +114,11 @@ watch( props, async() => {
 //---------------------
 
 function getOptions() {
-  if(!pagePerSheet.value || !flipBackPage.value) return null;
+  if(!pagePerSheet.value) return null;
+  
   const printOptions = {
-    pagePerSheet: pagePerSheet.value.value,
-    flipBackPage: flipBackPage.value.value,
+    pagePerSheet: isFullPageFormat.value ? 1 : pagePerSheet.value.value,
+    flipBackPage: flipBackPage.value ? flipBackPage.value.value : false,
     pageSelection: pageSelection.value,
   }
   return printOptions
@@ -159,6 +187,12 @@ function onNewOptions() {
   color: #999;
   font-style: italic;
   padding-left: 10px;
+}
+
+.formatInfo {
+  font-weight: bold;
+  color: #2196F3;
+  padding: 5px 0;
 }
 
 .printPopup {
