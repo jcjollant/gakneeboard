@@ -1,5 +1,5 @@
 <template>
-    <div class="tiles pageTiles">
+    <div class="tiles pageTiles" :class="{'fullpage': isFullPage}">
         <Tile v-for="(tile,index) in tiles" v-show="!tile.hide" 
           :tile="tile" :class="[{'span-2':tile.span2},`tile${index}`]" 
           @update="onUpdate(index,$event)" @expand="onExpand(index, $event)" />
@@ -7,11 +7,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { TileType } from '../../model/TileType'
 import { DisplayModeAirport, DisplayModeAtis, DisplayModeNotes, DisplayModeRadios } from '../../model/DisplayMode'
 import { useConfirm } from "primevue/useconfirm";
 import { TileData } from '../../model/TileData';
+import { TemplateFormat } from '../../model/TemplateFormat';
 
 import Tile from './Tile.vue'
 
@@ -19,7 +20,12 @@ const confirm = useConfirm()
 const emits = defineEmits(['update'])
 const props = defineProps({
     data: { type: Object, default: null},
+    format: { type: String, default: TemplateFormat.Kneeboard },
 })
+
+const isFullPage = computed(() => props.format === TemplateFormat.FullPage)
+const tilesPerRow = computed(() => isFullPage.value ? 3 : 2)
+const totalTiles = computed(() => isFullPage.value ? 12 : 6)
 const tiles=ref<TileData[]>([])
 const debouncedMerge = debounce(resolveMergedTiles)
 
@@ -30,15 +36,26 @@ function loadProps(props:any) {
       // console.log('[TilePage.loadProps] no data')
 
       let newData:TileData[] = []
-      // create 6 empty tiles
+      // create empty tiles based on format (6 for kneeboard, 12 for full page)
       const emptyTile:TileData = {name:'',data:{},span2:false,hide:false}
-      for(let index = 0; index<6; index++) {
+      for(let index = 0; index < totalTiles.value; index++) {
           newData.push(emptyTile)
       }
       tiles.value = newData;
       // console.log('[TilePage.loadProps]', JSON.stringify(tiles.value))
   } else { // we have usable data
-    tiles.value = props.data.map( TileData.copy)
+    // Copy existing data
+    const tileData = props.data.map(TileData.copy);
+    
+    // If format is full page but we have fewer than 12 tiles, add empty tiles
+    if (isFullPage.value && tileData.length < totalTiles.value) {
+      const emptyTile:TileData = {name:'',data:{},span2:false,hide:false};
+      for (let i = tileData.length; i < totalTiles.value; i++) {
+        tileData.push(emptyTile);
+      }
+    }
+    
+    tiles.value = tileData;
   }
   // console.log('[TilePage.loadProps] tiles', tiles.value)
   resolveMergedTiles()
@@ -95,7 +112,7 @@ function onExpand(index:number, newTileData:TileData) {
         const copy = new TileData(newTileData.name, newTileData.data)
         tiles.value[to] = copy;
         // console.log('[TilePage.onExpand] copy from', tiles.value[index])
-        // console.log('[TilePage.onExpand] copy   to', tiles.value[to])
+        // console.log('[TilePage.onExpand] copy   to', tiles.value[targetIndex])
         resolveMergedTiles()
         emits('update', tiles.value)
       }
@@ -113,6 +130,17 @@ function onUpdate(index:number, newTileData:TileData) {
 function resolveMergedTiles() {
   // console.log('[TilePage.resolveMergedTiles]', tiles.value)
   // apply spanned tile processing
+
+  // Do not merge full page tiles
+  if( isFullPage.value) {
+    // Reset all span and hide flags
+    for (const tile of tiles.value) {
+      tile.span2 = false;
+      tile.hide = false;
+    }
+    return;
+  }
+
   for( const index of [0,2,4]) {
     // we merge two tiles if they are side by side and are blanks notes tiles
     const leftTile = tiles.value[index];
@@ -166,8 +194,17 @@ function resolveModeMatch(leftTile:TileData, rightTile:TileData, defaultMode:str
   grid-template-columns: auto auto;
   gap: 1px 2px;
 }
+
+.tiles.fullpage {
+  grid-template-columns: auto auto auto;
+}
+
 .span-2 {
   grid-column: span 2;
   width: var(--tile-width-expanded);
+}
+
+.fullpage .span-2 {
+  width: calc(var(--tile-width) * 2 + 2px); /* Two tile widths plus gap */
 }
 </style>
