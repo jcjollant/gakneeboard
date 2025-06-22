@@ -33,16 +33,16 @@
             @click="onEditor"/>
           <MenuButton id="btnExport" icon="file-export" title="Export Template to Various Formats" label="Export"
             @click="onExport"/>
-          <MenuButton id="btnSettings" icon="gear" title="Template Name and Description" label="Settings"
+          <MenuButton id="btnSettings" icon="gear" title="Template Name and Description" label="Properties"
             @click="showSettings=true"/>
           <MenuButton id="btnDelete" icon="trash" title="Delete Template" label="Delete" :danger="true" :disabled="activeTemplate.isInvalid()"
             @click="onDelete"/>
         </div>
       </div>
       <div v-if="activeTemplate" class="pageAll" :class="{'editor':showEditor}">
-        <div v-for="(data,index) in activeTemplate.data" class="pageGrid">
+        <div v-for="(data,index) in activeTemplate.data" class="pageGrid" :class="{'fullpage-grid': activeTemplate.format === TemplateFormat.FullPage}">
           <Page :data="data" :class="'page'+index" :ver="activeTemplate.ver"
-            @update="onPageUpdate(index, $event)" />
+            :format="activeTemplate.format" @update="onPageUpdate(index, $event)" />
           
           <VerticalActionBar v-if="showEditor" :offset="index" :last="index == activeTemplate.data.length - 1"
             @action="onAction" />
@@ -66,6 +66,7 @@ import { duplicate } from '../assets/data'
 import { EditorAction } from '../assets/EditorAction.ts'
 import { LocalStore } from '../lib/LocalStore.ts'
 import { onMounted, onUnmounted, ref } from 'vue'
+import { TemplateFormat } from '../model/TemplateFormat.ts'
 import { PageType } from '../assets/PageType.ts'
 import { RouterNames } from '../router/index.js'
 import { Template, TemplatePage } from '../model/Template'
@@ -113,7 +114,10 @@ onMounted(() =>{
     if(templateId) {
       // Create a temporary template with a matching number of pages
       const userTemplate = currentUser.templates.find( t => t.id == templateId)
-      const temporaryTemplate = Template.noTemplate(userTemplate ? userTemplate.pages : 2);
+      const tempPages = userTemplate ? userTemplate.pages : 2
+      const tempFormat = userTemplate ? userTemplate.format : TemplateFormat.Kneeboard
+      const temporaryTemplate = Template.noTemplate( tempPages, tempFormat);
+      // console.log('[TemplateViewer.onMounted] temporaryTemplate', temporaryTemplate)
       activeTemplate.value = temporaryTemplate;
 
       TemplateData.get(templateId).then( template => {
@@ -547,14 +551,15 @@ function updateOffsets() {
   // console.log('[TemplateViewer.onResize]', window.innerWidth)
   if(activeTemplate.value.isInvalid()) return;
 
+  const elt = getComputedStyle(document.body)
   if( cssPageGap == -1) {
-    const elt = getComputedStyle(document.body)
-    // transform
-
     cssPageGap = parseInt(elt.getPropertyValue('--pages-gap'));
-    cssPageWidth = parseInt(elt.getPropertyValue('--page-width'));
-    // console.log('[TemplateViewer.updateOffset] cssPageGap', cssPageGap)
   }
+
+  // Get the appropriate page width based on the template format
+  const widthProp = activeTemplate.value.format === 'fullpage' 
+    ? '--fullpage-width' : '--page-width';
+  cssPageWidth = parseInt( elt.getPropertyValue( widthProp))
 
   // how many pages can fit in the new width?
   const pageFit = Math.floor((window.innerWidth - cssPageGap) / (cssPageWidth + cssPageGap))
@@ -602,7 +607,7 @@ function updateThumbnail(template:Template) {
         // console.log('[TemplateViewer.updateThumbnail] sha256', sha256, template.thumbHash)
         activeTemplate.value.thumbUrl = await TemplateData.updateThumbnail(index, blob, sha256)
       } else {
-        console.log('[TemplateViewer.updateThumbnail] skipping unchanged thumbnail')
+        // console.log('[TemplateViewer.updateThumbnail] skipping unchanged thumbnail')
       }
     }, 'image.png')
   }).catch((e) => console.log('[TemplateViewer.updateThumbnail] failed', e))
@@ -722,5 +727,10 @@ function updateThumbnail(template:Template) {
   display: grid;
   grid-template-columns: var(--page-width) var(--pages-gap);
   grid-template-rows: var(--page-height) var(--pages-gap);
+}
+
+.pageGrid.fullpage-grid {
+  grid-template-columns: var(--fullpage-width) var(--pages-gap);
+  grid-template-rows: var(--fullpage-height) var(--pages-gap);
 }
 </style>
