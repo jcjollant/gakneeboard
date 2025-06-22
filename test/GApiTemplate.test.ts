@@ -16,6 +16,7 @@ import { GApiTemplate } from '../backend/GApiTemplate';
 import { GApiError } from '../backend/GApiError';
 import { PageType } from '../backend/TemplateTools';
 import { UsageDao } from '../backend/dao/UsageDao';
+import { TemplateFormat } from '../backend/models/TemplateFormat';
 dotenv.config()
 
 describe( 'GApiTemplate Tests', () => {
@@ -31,7 +32,7 @@ describe( 'GApiTemplate Tests', () => {
 
         it('Succeeds with proper template', async () => {
             const templateId = 22
-            const template = new Template( templateId, jcUserId, jcTestTemplateData, jcTestTemplateName, undefined, 1, 2)
+            const template = new Template( templateId, jcUserId, jcTestTemplateData, TemplateFormat.Kneeboard, jcTestTemplateName, undefined, 1, 2)
             const templateDao = new TemplateDao()
             jest.spyOn(templateDao, 'readById').mockResolvedValue(template)
             jest.spyOn(templateDao, 'delete').mockResolvedValue(templateId)
@@ -56,7 +57,7 @@ describe( 'GApiTemplate Tests', () => {
         })
 
         it('Returns template with publication status', async () => {
-            const template = new Template( 0, jcUserId, jcTestTemplateData, jcTestTemplateName, undefined, 1, 2)
+            const template = new Template( 0, jcUserId, jcTestTemplateData, TemplateFormat.Kneeboard, jcTestTemplateName, undefined, 1, 2)
             const templateView = TemplateView.parseTemplate(template)
 
             jest.spyOn(PublicationDao, 'findByTemplate').mockResolvedValue(undefined);
@@ -112,7 +113,7 @@ describe( 'GApiTemplate Tests', () => {
             const simUserId = 55
             const simUser = newTestUser(simUserId, AccountType.simmer)
 
-            const t = new Template(0, simUserId, jcTestTemplateData, jcTestTemplateName, "Some Description", 1, 2)
+            const t = new Template(0, simUserId, jcTestTemplateData, TemplateFormat.Kneeboard, jcTestTemplateName, "Some Description", 1, 2)
             const tv = TemplateView.parseTemplate(t)
 
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(simUser)
@@ -207,7 +208,7 @@ describe( 'GApiTemplate Tests', () => {
             const simUserId = 55
             const simUser = newTestUser(simUserId, AccountType.simmer)
             const templateId = 66
-            const publicTemplate = new Template(templateId, jcUserId, jcTestTemplateData, jcTestTemplateName, jcTestTemplateDescription, 0, 0)
+            const publicTemplate = new Template(templateId, jcUserId, jcTestTemplateData, TemplateFormat.Kneeboard, jcTestTemplateName, jcTestTemplateDescription, 0, 0)
             const publicTemplateView = TemplateView.parseTemplate(publicTemplate)
 
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(simUser)
@@ -282,7 +283,7 @@ describe( 'GApiTemplate Tests', () => {
             jest.clearAllMocks()
 
             const templateId = 44;
-            const privateTemplateView = new TemplateView(templateId, jcTestTemplateName, ['a','b'], '', 1, false)
+            const privateTemplateView = new TemplateView(templateId, jcTestTemplateName, ['a','b'], TemplateFormat.Kneeboard, '', 1, false)
 
             const userJc = new User(jcUserId, jcHash)
             expect(userJc.maxTemplates).toBe(Business.MAX_TEMPLATE_SIMMER)
@@ -310,9 +311,9 @@ describe( 'GApiTemplate Tests', () => {
             jest.clearAllMocks()
 
             const templateId = 11;
-            const templateView = new TemplateView( templateId, 'name', {}, '', 1, false)
+            const templateView = new TemplateView( templateId, 'name', {}, TemplateFormat.Kneeboard, '', 1, false)
             expect(templateView.publish).toBeFalsy()
-            const template = new Template(templateId, jcUserId, jcTestTemplateData, jcTestTemplateName, jcTestTemplateDescription, 0, 0)
+            const template = new Template(templateId, jcUserId, jcTestTemplateData, TemplateFormat.Kneeboard, jcTestTemplateName, jcTestTemplateDescription, 0, 0)
 
             const userJc = new User(jcUserId, jcHash)
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(userJc)

@@ -4,6 +4,7 @@ import { jcTestTemplateData, jcUserId } from './constants';
 import { TemplateView } from '../backend/models/TemplateView';
 import { Template } from '../backend/models/Template';
 import e from 'express';
+import { TemplateFormat } from '../backend/models/TemplateFormat';
 
 describe('Sheet class', () => {
     describe('constructor', () => {
@@ -17,7 +18,8 @@ describe('Sheet class', () => {
             const pages = 13
             const thumbnail = 'https://some.url'
             const thumbhash = '1236549871563546asdqweasd'
-            const t = new TemplateView(id2, name2, data2, description2, version, true, publicationCode, pages, thumbnail, thumbhash)
+            const format = TemplateFormat.FullPage
+            const t = new TemplateView(id2, name2, data2, format, description2, version, true, publicationCode, pages, thumbnail, thumbhash)
             expect(t.id).toBe(id2)
             expect(t.name).toBe(name2)
             expect(t.data).toBe(data2)
@@ -28,6 +30,7 @@ describe('Sheet class', () => {
             expect(t.pages).toBe(pages)
             expect(t.thumbUrl).toBe(thumbnail)
             expect(t.thumbHash).toBe(thumbhash)
+            expect(t.format).toBe(format)
         })
     
         it('Creates default values', () => {
@@ -46,6 +49,7 @@ describe('Sheet class', () => {
             expect(t.pages).toBe(data.length)
             expect(t.thumbUrl).toBeUndefined()
             expect(t.thumbHash).toBeUndefined()
+            expect(t.format).toBe(TemplateFormat.Kneeboard)
         })
     
     })
@@ -59,10 +63,11 @@ describe('Sheet class', () => {
         const pages = jcTestTemplateData.length
         const thumbnail = "http://thumbnail.url"  
         const thumbhash = "1236549871563546asdqweasd"
+        const format = TemplateFormat.FullPage
         // default values
 
         const publicationCode = "AB"
-        const t = new Template(id, jcUserId, jcTestTemplateData, name, description, version, pages, thumbnail, thumbhash)
+        const t = new Template(id, jcUserId, jcTestTemplateData, format, name, description, version, pages, thumbnail, thumbhash)
         const pub = new Publication(0, publicationCode, id, true)
         const tv = TemplateView.parseTemplate(t, pub)
         expect(tv).toBeDefined()
@@ -76,6 +81,7 @@ describe('Sheet class', () => {
         expect(tv.pages).toBe(pages)
         expect(tv.thumbUrl).toBe(thumbnail)
         expect(tv.thumbHash).toBe(thumbhash)
+        expect(tv.format).toBe(format)
     })
     it('can parse', () => {
         const sheetId = 12
@@ -84,7 +90,7 @@ describe('Sheet class', () => {
         const description = "Some Description"
         const version = 28
         const code = "AB"
-        const sheet  = {id:sheetId, name:name, data:data, description:description, ver:version, publish:false, code:code}
+        const sheet  = {id:sheetId, name:name, data:data, format:'fullpage', description:description, ver:version, publish:false, code:code}
 
         const parsed = TemplateView.parse(sheet)
         expect(parsed).toBeDefined()
@@ -95,5 +101,6 @@ describe('Sheet class', () => {
         expect(parsed.ver).toBe(version)
         expect(parsed.publish).toBeFalsy()
         expect(parsed.code).toBe(code)  
+        expect(parsed.format).toBe(TemplateFormat.FullPage)
     })
 })
