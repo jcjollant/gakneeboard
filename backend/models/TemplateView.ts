@@ -1,5 +1,6 @@
 import { Publication } from "./Publication";
 import { Template } from "./Template";
+import { TemplateFormat } from "./TemplateFormat";
 
 export class TemplateView {
     id:number;
@@ -10,6 +11,7 @@ export class TemplateView {
     desc:string|undefined;
     ver:number;
     pages:number;
+    format:string;
     thumbUrl:string|undefined
     thumbHash:string|undefined
 
@@ -17,6 +19,7 @@ export class TemplateView {
             id:number, 
             name:string, 
             dataParam:any, 
+            format:TemplateFormat=TemplateFormat.Kneeboard,
             description:string|undefined=undefined, 
             version:number=0, 
             publish:boolean|undefined=false, 
@@ -34,6 +37,7 @@ export class TemplateView {
         } else {
             this.data = dataParam;
         }
+        this.format = format;
         this.ver = version;
         this.publish = publish ?? false; // false if undefined
         this.code = code;
@@ -44,7 +48,7 @@ export class TemplateView {
     }
 
     static parse(sheet: any): TemplateView {
-        return new TemplateView(sheet.id, sheet.name, sheet.data, sheet.description, sheet.ver, sheet.publish, sheet.code);
+        return new TemplateView(sheet.id, sheet.name, sheet.data, sheet.format, sheet.description, sheet.ver, sheet.publish, sheet.code);
     }
 
     /**
@@ -56,6 +60,6 @@ export class TemplateView {
     static parseTemplate(template:Template, pub:Publication|undefined = undefined): TemplateView {
         const publish = pub ? pub.active : false;
         const code = pub ? pub.code : undefined;
-        return new TemplateView(template.id, template.name, template.data, template.description, template.version, publish, code, template.pages, template.thumbnail, template.thumbhash);
+        return new TemplateView(template.id, template.name, template.data, template.format, template.description, template.version, publish, code, template.pages, template.thumbnail, template.thumbhash);
     }
 }
