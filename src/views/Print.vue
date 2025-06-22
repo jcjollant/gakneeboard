@@ -2,6 +2,7 @@
   <div class="print">
     <PrintOptions v-model:visible="showOptions" :pageSelection="pageSelection"
         :templateModified="templateModified && template && template.ver > 0"
+        :format="template?.format"
         @options="onOptionsUpdate"
         @print="onPrint(false, $event)" @pdf="onPrint(true, $event)"
         @close="showOptions=false"
@@ -9,13 +10,13 @@
     <div v-if="template" id="printTemplate" :class="{'single':printSingles}">
       <div v-if="printSingles" v-for="(page,index) in template.data" class="printOnePage printPageBreak">
         <div class="onePage" v-if="pageSelection[index]">
-          <Page :data="page" :ver="template.ver"
+          <Page :data="page" :ver="template.ver" :format="template.format"
             :class="{flipMode:(index % 2 == 1 && printFlipMode)}"/>
         </div>
       </div>
       <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages">
-        <Page :data="page.front" :ver="template.ver"/>
-        <Page v-if="page.back" :data="page.back" :ver="template.ver" :class="{flipMode:printFlipMode}" />
+        <Page :data="page.front" :ver="template.ver" :format="template.format"/>
+        <Page v-if="page.back" :data="page.back" :ver="template.ver" :format="template.format" :class="{flipMode:printFlipMode}" />
       </div>
     </div>
     <div v-else>No Template</div>
@@ -27,11 +28,12 @@ import { onMounted, ref, watch } from 'vue';
 import { LocalStore } from '../lib/LocalStore';
 import { useRoute, useRouter } from 'vue-router';
 import { postPrint } from '../assets/data.js';
-import Page from '../components/page/Page.vue';
-import PrintOptions from '../components/print/PrintOptions.vue';
 import { Template, TemplatePage } from '../model/Template';
 import { exportToPDF } from '../assets/pdf'
 import { PageType } from '../assets/PageType.js';
+import { TemplateFormat } from '../model/TemplateFormat.js';
+import Page from '../components/page/Page.vue';
+import PrintOptions from '../components/print/PrintOptions.vue';
 
 interface PrintSheet {
   front: TemplatePage,
@@ -53,9 +55,21 @@ onMounted(() => {
     // console.log('[Print.onMounted]')
     // load last template into active template
     template.value = LocalStore.getTemplate()
+    
+    // Ensure the format property is correctly set
+    if (!template.value.format) {
+      template.value.format = TemplateFormat.Kneeboard; // Default to kneeboard if not set
+    }
+    
     pageSelection.value = Array(template.value.data.length).fill(true)
     // Check if template is modified from route query params
     templateModified.value = route.query.modified === '1'
+    
+    // Set printSingles to true for full page templates
+    if (template.value && template.value.format === TemplateFormat.FullPage) {
+      printSingles.value = true
+    }
+    
     // console.log('[Print.onMounted]', template.value)
     refreshPages()
 });
@@ -76,6 +90,12 @@ function onOptionsUpdate(options) {
       printFlipMode.value = options.flipBackPage;
       printSingles.value = (options.pagePerSheet == 1)
       pageSelection.value = options.pageSelection
+      
+      // Ensure full page templates always use one page per sheet
+      if (template.value && template.value.format === TemplateFormat.FullPage) {
+        printSingles.value = true
+      }
+      
       refreshPages()
   } else {
       restorePrintOptions();
@@ -196,6 +216,14 @@ function restorePrintOptions() {
   width: var(--page-width-two);
 }
 #printTemplate.single {
-  width: var(--page-width)
+  width: var(--page-width);
+}
+
+/* Full page format adjustments */
+#printTemplate:has(.contentPage.fullpage) {
+  width: calc(var(--fullpage-width) * 2 + var(--pages-gap));
+}
+#printTemplate.single:has(.contentPage.fullpage) {
+  width: var(--fullpage-width);
 }
 </style>
