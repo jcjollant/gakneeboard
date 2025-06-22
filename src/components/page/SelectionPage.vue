@@ -1,8 +1,8 @@
 <template>
-    <div class="contentPage">
+    <div class="contentPage" :class="{'fullpage': isFullPage}">
         <Header :title="'New Page Selection'" :replace="false" :clickable="false"></Header>
         <div class="list">
-            <template v-for="section in sections">
+            <template v-for="section in filteredSections">
                 <Separator :name="section.name" />
                 <FAButton v-for="page in section.pages" :label="page.name" :title="page.tooltip" :icon="page.icon"
                     @click="replacePage(page.type)"/>
@@ -12,13 +12,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 import { PageType } from '../../assets/PageType'
+import { TemplateFormat } from '../../model/TemplateFormat'
 
 import Header from '../shared/Header.vue'
 import FAButton from '../shared/FAButton.vue'
 import Separator from './Separator.vue'
+
+const props = defineProps({
+    format: { type: String, default: TemplateFormat.Kneeboard }
+})
+
+const isFullPage = computed(() => props.format === TemplateFormat.FullPage)
 
 const emits = defineEmits(['replace'])
 
@@ -47,6 +54,30 @@ const sections = ref([
     {name:'Charts', pages:group3},
     {name:'Cosmetics', pages:group4}
 ])
+
+// Filter sections based on format
+const filteredSections = computed(() => {
+    if (isFullPage.value) {
+        // For full page format, only allow Tiles and Checklist
+        const allowedTypes = [PageType.tiles, PageType.checklist];
+        
+        return sections.value.map(section => {
+            // Filter pages in each section
+            const filteredPages = section.pages.filter(page => 
+                allowedTypes.includes(page.type)
+            );
+            
+            // Only include sections that have pages after filtering
+            return filteredPages.length > 0 ? {
+                name: section.name,
+                pages: filteredPages
+            } : null;
+        }).filter(section => section !== null);
+    }
+    
+    // For kneeboard format, return all sections
+    return sections.value;
+})
 
 function replacePage(type:PageType) {
     // console.log('[SelectionPage.replacePage]', type)
