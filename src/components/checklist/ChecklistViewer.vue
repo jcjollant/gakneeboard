@@ -19,26 +19,27 @@ import { Checklist, ChecklistItem } from '../../model/Checklist'
 import PlaceHolder from '../shared/PlaceHolder.vue';
 
 const props = defineProps({
+    font: { type: String, default: 'font-medium'},
     list: { type: Checklist, required: true },
     theme: { type: String, default: 'theme-yellow'},
-    size: { type: Number, default: 1 },
+    // size: { type: Number, default: 1 },
 })
 
+const font = ref('font-medium')
 const theme = ref('theme-yellow')
-const size = ref(1)
 const items = ref<ChecklistItem[]>([])
 
 // Use theme only when item is strong or line is event and theme is not blank
 function getClassSection(item:ChecklistItem) {
-    if( item.type=='strong') return theme.value+'-strong'
-    else if( item.type=='emer') return 'emergent'
-    else if( item.type=='blank') return ''
-    return 'normal'
+    const output = [font.value];
+    if( item.type=='strong') output.push(theme.value+'-strong')
+    else if( item.type=='emer') output.push('emergent')
+    else if( item.type!='blank') output.push('normaal')
+    return output
 }
 
 function getClassChallenge(item:ChecklistItem, index:number) {
-    const output = ['challenge'];
-    if(size.value > 1) output.push('size' + size.value)
+    const output = ['challenge', font.value];
     if(item.response == '') output.push('spanned')
     if(item.type=='emer') output.push('important')
     // Every other item has the theme
@@ -48,8 +49,7 @@ function getClassChallenge(item:ChecklistItem, index:number) {
 }
 
 function getClassResponse(item:ChecklistItem, index:number) {
-    const output = ['response']
-    if(size.value > 1) output.push('size' + size.value)
+    const output = ['response', font.value]
     if(item.type=='emer') output.push('important')
     // Every other item has the theme
     if(index%2) output.push(theme.value)
@@ -57,10 +57,10 @@ function getClassResponse(item:ChecklistItem, index:number) {
 }
 
 function loadProps(newProps:any) {
-    // console.log('[ChecklistViewer.loadProps]', JSON.stringify(newProps))
+    // console.log('[ChecklistViewer.loadProps]', newProps)
     if(!newProps) return;
+    font.value = newProps.font;
     theme.value = newProps.theme;
-    size.value = newProps.size;
     items.value = newProps.list?.items;
 }
 
@@ -78,7 +78,6 @@ watch(props, () => {
 .challenge {
     text-align: left;
     padding-left: 10px;
-    height: 23px;
 }
 
 .challenge.important, .response.important {
@@ -88,8 +87,6 @@ watch(props, () => {
 .item {
     display: grid;
     grid-template-columns: 70% auto;
-    line-height: 23px;
-    height: 22px;
 }
 
 .normal {
@@ -116,17 +113,15 @@ watch(props, () => {
     text-shadow: 2px 2px black;
 }
 
-.size2 {
-    font-size: 0.8rem;
+/* .font-small {
     line-height: 23px;
     height: 22px;
 }
 
-.size3 {
-    font-size: 0.7rem;
+.font-smaller {
     line-height: 19px;
     height: 19px;
-}
+} */
 
 .spanned {
     grid-column: 1 / span 2
