@@ -45,10 +45,18 @@ body {
   --main-gap: 1rem;
   --menu-border-offset: 10px;
   --menu-height: 2rem;
+  
+  /* Kneeboard format (5.5x8.5) */
   --page-width: 500px;
   --page-width-two: 1050px;
   --page-height: 800px;
+  
+  /* Full page format (8.5x11) */
+  --fullpage-width: 750px;
+  --fullpage-height: 1050px;
+  
   --page-content: calc(var(--page-height) - var(--header-height) - 1px);
+  --fullpage-content: calc(var(--fullpage-height) - var(--header-height) - 1px);
   --pages-gap: 50px;
   --text-atc: #000088;
   --text-ctaf: #990099;
@@ -104,6 +112,11 @@ body {
   position: relative;
   border: 1px solid darkgray;
   background:white;
+}
+
+.contentPage.fullpage {
+  width: var(--fullpage-width);
+  height: var(--fullpage-height);
 }
 
 .stripAction {
@@ -246,6 +259,24 @@ body {
     color: #040;
     background-color: rgba(0, 255, 0, 0.1);
 }
+
+.font-medium {
+    font-size: 1rem;
+}
+
+.font-small {
+    font-size: 0.8rem;
+}
+.font-smaller {
+    font-size: 0.7rem;
+}
+.font-large {
+    font-size: 1.2rem;
+}
+.font-larger {
+    font-size: 1.4rem;
+}
+
 
 @media print {
   @page {
