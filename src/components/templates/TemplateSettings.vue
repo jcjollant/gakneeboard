@@ -1,5 +1,5 @@
 <template>
-  <Dialog modal header="Template Settings" :style="{width: '35rem'}">
+  <Dialog modal header="Template Properties" :style="{width: '35rem'}">
     <div>
       <div class="properties">
         <InputGroup class="pageName">
@@ -17,13 +17,17 @@
             <InputGroupAddon>ID</InputGroupAddon>
             <InputText v-model="templateId" :disabled="true"  class="templateId"/>
         </InputGroup>
+        <InputGroup>
+            <InputGroupAddon>Format</InputGroupAddon>
+            <div class="formatDisplay">{{ formatDisplay }}</div>
+        </InputGroup>
         <TemplateSharing v-model="publish" :template="template" />
         <div>
         </div>
       </div>
       <div class="actionDialog gap-2">
-        <Button label="Do Not Save" @click="onButtonClose" link></Button>
-        <Button label="Save" @click="onButtonSave"></Button>
+        <Button label="Do Not Apply" @click="onButtonClose" link></Button>
+        <Button label="Apply" @click="onButtonSave"></Button>
       </div>
     </div>
   </Dialog>
@@ -46,6 +50,7 @@ const templateDesc = ref('')
 const templateId = ref(0)
 const templateVersion = ref(0)
 const template = ref(null)
+const formatDisplay = ref('Kneeboard Size')
 
 //-----------------
 // Props management
@@ -65,6 +70,9 @@ function loadProps(props) {
     templateId.value = props.template.id
     templateVersion.value = props.template.ver
     publish.value = props.template.publish
+    
+    // Set format display
+    formatDisplay.value = props.template.format === 'fullpage' ? 'Full Page' : 'Kneeboard Size'
   } 
 }
 
@@ -87,6 +95,8 @@ function onButtonSave () {
     desc: templateDesc.value,
     ver: templateVersion.value,
     publish: publish.value,
+    // Preserve the format property
+    format: template.value?.format || 'kneeboard',
   }
   emits('save',settings)
 }
