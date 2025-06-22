@@ -1,12 +1,12 @@
 <template>
     <BlankPage v-if="type==PageType.none" @replace="onReplace(PageType.selection)" />
-    <ChecklistPage v-else-if="type==PageType.checklist" :data="pageData" 
+    <ChecklistPage v-else-if="type==PageType.checklist" :data="pageData" :format="format"
         @replace="onReplace" @update="onUpdate" :version="version" />
     <CoverPage v-else-if="type==PageType.cover" :data="pageData" 
         @replace="onReplace" @update="onUpdate" />
     <NavlogPage v-else-if="type==PageType.navLog" :data="pageData"
         @replace="onReplace" @update="onUpdate" />
-    <TilePage v-else-if="type==PageType.tiles" :data="pageData" 
+    <TilePage v-else-if="type==PageType.tiles" :data="pageData" :format="format"
         @update="onUpdate" />
     <NotesPage v-else-if="type==PageType.notes" 
         @replace="onReplace(PageType.selection)" />
@@ -14,18 +14,19 @@
         @replace="onReplace" @update="onUpdate" />
     <DiagramPage v-else-if="type==PageType.diagram" :data="pageData"
         @replace="onReplace" @update="onUpdate"  />
-    <LoadingPage v-else-if="type==PageType.loading" />
+    <LoadingPage v-else-if="type==PageType.loading" :format="format" />
     <FlightNotesPage v-else-if="type==PageType.flightNotes" 
         @replace="onReplace" />
     <StripPage v-else-if="type==PageType.strips" :data="pageData"
         @replace="onReplace" @update="onUpdate" />
-    <SelectionPage v-else @replace="onReplace" />
+    <SelectionPage v-else @replace="onReplace" :format="format" />
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 
 import { PageType } from '../../assets/PageType'
+import { TemplateFormat } from '../../model/TemplateFormat'
 
 import ApproachPage from '../charts/ApproachPage.vue'
 import BlankPage from './BlankPage.vue'
@@ -51,6 +52,7 @@ const version = ref(0)
 const props = defineProps({
     data: { type: Object, default: null},
     ver: { type: Number, default: 0},
+    format: { type: String, default: TemplateFormat.Kneeboard},
 })
 
 function loadProps(props) {
