@@ -122,11 +122,8 @@ function onDemoSelection(name:string) {
 }
 
 function onNewTemplate() {
-    const templateData = getTemplateBlank()
-    templateData.name = 'New Template'
-
-    // Save demo data to localstore
-    routeToLocalTemplate(router, templateData);
+    // Instead of creating a template directly, navigate to format selection
+    router.push('/format-selector');
 }
 
 function onPohSelection(poh:Poh) {
