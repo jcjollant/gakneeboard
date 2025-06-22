@@ -1,3 +1,5 @@
+import { TemplateFormat } from "./TemplateFormat"
+
 export class PageType {
   static selection = 'selection'
   static tiles = 'tiles'
@@ -23,6 +25,7 @@ export class Template {
     id:number
     userId:number
     data:any
+    format:TemplateFormat
     name:string
     version:number
     description:string|undefined
@@ -34,6 +37,7 @@ export class Template {
     constructor(id:number, 
             userId:number, 
             data:any, 
+            format:TemplateFormat,
             name:string, 
             description:string|undefined, 
             version:number, 
@@ -44,6 +48,7 @@ export class Template {
         this.id = id;
         this.userId = userId;
         this.data = data;
+        this.format = format;
         this.name = name;
         this.version = version;
         this.description = description;
