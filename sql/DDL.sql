@@ -1,3 +1,7 @@
+## 6/21/2025 Dev + Pros
+ALTER TABLE sheets 
+  ADD COLUMN "format" VARCHAR(16) DEFAULT 'kneeboard';
+
 ## 04/19/2025 Dev + Prod
 ALTER TYPE usagetype ADD VALUE 'save'
 
