@@ -5,6 +5,7 @@ import Print from '../views/Print.vue';
 import TemplateViewer from '../views/TemplateViewer.vue';
 import ThankYou from '../views/ThankYou.vue';
 import FTUX from '../views/FTUX.vue';
+import FormatSelector from '../components/templates/FormatSelector.vue';
 
 export const RouterNames = {
     Home: 'Home',
@@ -13,6 +14,7 @@ export const RouterNames = {
     Print: 'Print',
     Template: 'Template',
     FTUX: 'First Time',
+    FormatSelector: 'Format Selector',
 }
 
 const routes = [
@@ -22,6 +24,7 @@ const routes = [
     { path: '/print/:id', name: RouterNames.Print, component: Print },
     { path: '/ftux', name: RouterNames.FTUX, component: FTUX},
     { path: '/template/:id', name: RouterNames.Template, component: TemplateViewer },
+    { path: '/format-selector', name: RouterNames.FormatSelector, component: FormatSelector },
 ]
 
 
