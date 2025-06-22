@@ -19,6 +19,7 @@ export class SheetName {
 }
 
 import { duplicate } from './data'
+import { TemplateFormat } from '../model/TemplateFormat'
 
 // used to check if a sheet name is already taken by defaults
 const defaultNames = [SheetName.default, SheetName.tiles, SheetName.checklist, SheetName.reset]
@@ -34,7 +35,7 @@ const pageDataBlankTiles = {type:PageType.tiles,data:[
 ]}
 const pageDataBlankChecklist = {type:PageType.checklist, data:{}}
 // Template Blank has two blank pages
-const templateBlank = new Template('Blank','', false, [TemplatePage.SELECTION,TemplatePage.SELECTION])
+const templateBlank = new Template('Blank','', false, [TemplatePage.SELECTION,TemplatePage.SELECTION], TemplateFormat.Kneeboard)
 
 export function describePage(sheet, pageNumber, maxLength=undefined) {
   if(!sheet) return "empty";
