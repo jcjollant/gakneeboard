@@ -1,6 +1,9 @@
 # User Experience updates
 ## 6/22/2025
 1) 5260 - FullPage template and Customizable font in Checklist
+2) 5261 
+* Fixed Fullpage print
+* New Demo Seattle Airports
 ## 6/20/2025
 1) 5251 - Improved scrolling beahavioe
 ## 6/18/2025 
