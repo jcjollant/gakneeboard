@@ -261,20 +261,20 @@ body {
 }
 
 .font-medium {
-    font-size: 1rem;
+    font-size: 14px;
 }
 
 .font-small {
-    font-size: 0.8rem;
+    font-size: 13px;
 }
 .font-smaller {
-    font-size: 0.7rem;
+    font-size: 12px;
 }
 .font-large {
-    font-size: 1.2rem;
+    font-size: 15px;
 }
 .font-larger {
-    font-size: 1.4rem;
+    font-size: 17px;
 }
 
 
