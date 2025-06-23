@@ -1,4 +1,6 @@
 # User Experience updates
+## 6/23/2025
+1) 5262 - Improved checklist margins for legibility
 ## 6/22/2025
 1) 5260 - FullPage template and Customizable font in Checklist
 2) 5261 

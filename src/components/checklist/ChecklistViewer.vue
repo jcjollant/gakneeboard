@@ -113,15 +113,31 @@ watch(props, () => {
     text-shadow: 2px 2px black;
 }
 
-/* .font-small {
+.font-medium {
     line-height: 23px;
     height: 22px;
 }
 
+.font-small {
+    line-height: 21px;
+    height: 20px;
+}
+
 .font-smaller {
     line-height: 19px;
-    height: 19px;
-} */
+    height: 18px;
+}
+
+.font-large {
+    line-height: 25px;
+    height: 25px;
+
+}
+
+.font-larger {
+    line-height: 28px;
+    height: 28px;
+}
 
 .spanned {
     grid-column: 1 / span 2
