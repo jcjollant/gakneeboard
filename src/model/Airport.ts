@@ -11,7 +11,7 @@ export class AirportFrequency {
     }
 }
 
-enum TrafficPattern {
+export enum TrafficPattern {
     left = 'L',
     right = 'R',
 }
@@ -60,8 +60,6 @@ export class Runway {
     ends: RunwayEnd[];
     surface: RunwaySurface|undefined;
     freq: number;
-    // public static rightPattern:string = 'R';
-    // public static leftPattern:string = 'L';
 
     constructor(name:string='', length:number=0, width:number=0) {
         this.name = name;
