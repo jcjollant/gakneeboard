@@ -38,7 +38,7 @@
                     <img v-else class="rwySketch" :src="rwySketch" />
                 </div>
                 <div v-else>
-                    <div class="airportCode" :class="{shortAirportCode: airportCode.length == 3}">{{airportCode}}</div>
+                    <div class="airportCode">{{airportCode}}</div>
                     <div v-if="unknownRunway" class="unknownRwy">Unknown Runway</div>
                     <Runway v-else :runway="selectedRunway" :pattern="patternMode" :orientation="rwyOrientation" :headings="showHeadings" class="clickable"
                         @click="onHeaderClick"/>
@@ -482,6 +482,7 @@ function updateData(expand:boolean=false) {
     font-weight: 600;
 }
 .airportCode {
+/*
     font-weight: 900;
     font-size: 4rem;
     line-height: 240px;
@@ -493,8 +494,19 @@ function updateData(expand:boolean=false) {
     text-align: center;
     vertical-align: middle;
     z-index: 0;
+    cursor: pointer;*/
+
+    font-weight: 900;
+    font-size: 3rem;
+    line-height: 3rem;
+    opacity: 0.10;
+    position: absolute;
+    height: 100%;
+    z-index: 0;
     cursor: pointer;
+    writing-mode: sideways-lr;
 }
+
 .shortAirportCode {
     font-size: 6rem;
 }
