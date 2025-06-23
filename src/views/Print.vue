@@ -7,7 +7,7 @@
         @print="onPrint(false, $event)" @pdf="onPrint(true, $event)"
         @close="showOptions=false"
         />
-    <div v-if="template" id="printTemplate" :class="{'single':printSingles}">
+    <div v-if="template" id="printTemplate" :class="{'single':printSingles,'fullpage':template.format === TemplateFormat.FullPage}">
       <div v-if="printSingles" v-for="(page,index) in template.data" class="printOnePage printPageBreak">
         <div class="onePage" v-if="pageSelection[index]">
           <Page :data="page" :ver="template.ver" :format="template.format"
@@ -217,6 +217,9 @@ function restorePrintOptions() {
 }
 #printTemplate.single {
   width: var(--page-width);
+}
+#printTemplate.single.fullpage {
+  width: var(--fullpage-width);
 }
 
 /* Full page format adjustments */
