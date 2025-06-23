@@ -149,8 +149,8 @@ watch(props, () => {
 // End of props management
 
 function getPlaceHolder() {
-    // Increase the number of items for full page format (approximately 50% more)
-    const items = [[50,66],[46,61],[35,46],[30,40],[26,34]];
+    // Figure out how many items fit in a list from XL to XS starting with KB format
+    const items = [[43,57],[38,51],[35,46],[31,41],[27,36]];
     const fontSizes = ['font-smaller', 'font-small', 'font-medium', 'font-large', 'font-larger']
     const fontIndex = Math.max(fontSizes.indexOf(font.value),0)
     return `Up to ${items[fontIndex][isFullPage.value?1:0]} items will fit vertically.
