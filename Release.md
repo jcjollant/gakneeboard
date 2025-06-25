@@ -1,4 +1,6 @@
 # User Experience updates
+## 6/24/2025
+1) 5266 - Saving a new opens the props dialog
 ## 6/23/2025
 1) 5262 - Improved checklist margins for legibility
 2) 5263 - Improved checklist font size

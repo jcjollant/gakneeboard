@@ -5,14 +5,6 @@
       @close="showExport=false" @export="onExported" />
     <TemplateSettings v-model:visible="showSettings" :template="activeTemplate"
       @close="showSettings=false" @save="onSettings" />
-    <!-- <div class="navigationButtons">
-      <i class="pi pi-chevron-circle-left offsetButton" :class="{'disabled':(offset == 0)}"
-        title="Previous Page" id="offsetPrev"
-        @click="onOffset(offset - 1)"></i>
-      <i class="pi pi-chevron-circle-right offsetButton" :class="{'disabled':(offset >= offsetLast)}"
-        title="Next Page" id="offsetNext"
-        @click="onOffset(offset + 1)"></i>
-    </div> -->
     <!-- <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
       @offset="onOffset" @update="onPageUpdate" /> -->
     <div class="pageGroup">
@@ -178,6 +170,45 @@ function getTemplateName() {
   } 
   if( templateModified.value) name += '*'
   return name;
+}
+
+function doSave() {
+  try {
+      // retrieve data from active template
+      toaster.info( 'Say Request', 'Saving template ' + activeTemplate.value.name, 4000)
+      TemplateData.save(activeTemplate.value).then(ts => {
+        // console.log('[TemplateViewer.onSave]', activeTemplate.value.id, JSON.stringify(t))
+        const t = ts.template
+        let message = 'Template "' + t.name + '" saved';
+        if(t.publish && t.code) {
+          message += '\nShare code is ' + t.code
+        }
+        toast.removeAllGroups()
+        toaster.success( 'Clear', message)
+        if(ts.code == 202) {
+          toaster.warning('Max Templates', 'You have reached your template maximum. Please consider upgrading promptly', 6000)
+        }
+        // update version number
+        activeTemplate.value.ver = t.ver
+        // update code
+        activeTemplate.value.code = t.code
+
+        // mark the template as not modified anymore
+        templateModified.value = false
+
+        // did we just get an id?
+        if(!activeTemplate.value.id) {
+          activeTemplate.value.id = t.id
+          router.push('/template/' + t.id)
+        }
+      }).catch( e => {
+        toaster.error( 'Could not save', e, 6000)
+      })
+  } catch( e) {
+    // console.log('[Menu.onTemplateSave]', e)
+    toaster.error('Save Template','Could not save template "' + activeTemplate.value?.name + '"')
+  }  
+
 }
 
 // update all widgets with provided data
@@ -480,49 +511,24 @@ function onPrint() {
 }
 
 async function onSave() {
+
+  // If there is nothing to save, just get out
   if( activeTemplate.value.isInvalid()) return;
 
   if( !currentUser.loggedIn) {
-    toaster.warning('Squawk and Ident','Please sign in to use custom templates')
+    toaster.warning('Squawk and Ident','Please sign in to save custom templates')
     return
   }
-  // give page time to update the thumbnail
+
+  // Update thumbnail in the background after some time
   setTimeout( () => updateThumbnail(activeTemplate.value), 1000)
-  try {
-      // retrieve data from active template
-      toaster.info( 'Say Request', 'Saving template ' + activeTemplate.value.name, 4000)
-      TemplateData.save(activeTemplate.value).then(ts => {
-        // console.log('[TemplateViewer.onSave]', activeTemplate.value.id, JSON.stringify(t))
-        const t = ts.template
-        let message = 'Template "' + t.name + '" saved';
-        if(t.publish && t.code) {
-          message += '\nShare code is ' + t.code
-        }
-        toast.removeAllGroups()
-        toaster.success( 'Clear', message)
-        if(ts.code == 202) {
-          toaster.warning('Max Templates', 'You have reached your template maximum. Please consider upgrading promptly', 6000)
-        }
-        // update version number
-        activeTemplate.value.ver = t.ver
-        // update code
-        activeTemplate.value.code = t.code
 
-        // mark the template as not modified anymore
-        templateModified.value = false
-
-        // did we just get an id?
-        if(!activeTemplate.value.id) {
-          activeTemplate.value.id = t.id
-          router.push('/template/' + t.id)
-        }
-      }).catch( e => {
-        toaster.error( 'Could not save', e, 6000)
-      })
-  } catch( e) {
-    // console.log('[Menu.onTemplateSave]', e)
-    toaster.error('Save Template','Could not save template "' + activeTemplate.value?.name + '"')
-  }  
+  // if this template has never been saved before, show the settings dialog to get a proper name
+  if(!activeTemplate.value.id) {
+    showSettings.value = true;
+  } else {
+    doSave();
+  }
 }
 
 function onSettings(settings) {
@@ -537,8 +543,7 @@ function onSettings(settings) {
     // We consider the template as modified if it's a cloud template
     templateModified.value = activeTemplate.value.id > 0
     saveTemplateToLocalStore()
-    // save template if relevant
-    if(currentUser.loggedIn && activeTemplate.value.id ) onSave()
+    doSave()
   }
 }
 
