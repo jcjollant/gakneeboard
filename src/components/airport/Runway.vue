@@ -130,8 +130,11 @@ function show(runway) {
     // console.log(ctx.font);
     ctx.fillStyle = 'white';
     ctx.textAlign = 'center';
-    ctx.fillText( southEnd.name, 0, -rwyHLength + rwyFontSize * 1.5);
     ctx.fillText( northEnd.name, 0, rwyHLength - rwyFontSize * 0.5);
+    ctx.rotate(Math.PI);
+    // ctx.fillText( southEnd.name, 0, -rwyHLength + rwyFontSize * 1.5);
+    ctx.fillText( southEnd.name, 0, rwyHLength - rwyFontSize * 0.5);
+    ctx.rotate(Math.PI);
 
     // runway centerline
     if(rwyColor=='black') {
