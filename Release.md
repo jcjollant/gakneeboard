@@ -1,4 +1,9 @@
 # User Experience updates
+## 6/27/2025
+1) 5270
+* Version number added to save confirmation toast
+* Delete confirmation closed pending deletion toast
+* Runway name flipped to look prototypical
 ## 6/24/2025
 1) 5266 - Saving a new opens the props dialog
 ## 6/23/2025
