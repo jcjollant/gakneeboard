@@ -179,7 +179,7 @@ function doSave() {
       TemplateData.save(activeTemplate.value).then(ts => {
         // console.log('[TemplateViewer.onSave]', activeTemplate.value.id, JSON.stringify(t))
         const t = ts.template
-        let message = 'Template "' + t.name + '" saved';
+        let message = 'Template "' + t.name + '" saved with version ' + t.ver;
         if(t.publish && t.code) {
           message += '\nShare code is ' + t.code
         }
@@ -293,11 +293,11 @@ function onDelete() {
           // go back to home page
           router.push('/')
           // and give visual feedback
+          toast.removeAllGroups()
           toaster.success( 'Clear', 'Template "' + name + '" deleted')
         })
       }
     })
-
 }
 
 function onEditor() {
