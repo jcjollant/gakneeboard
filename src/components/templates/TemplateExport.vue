@@ -2,17 +2,17 @@
   <Dialog modal header="Export Template" :style="{width: '45rem'}">
     <div class="formatLine">
         <div>Format:</div>
-        <OneChoice v-model="activeFormat" :choices="formats"></OneChoice>
+        <OneChoice v-model="activeFormat" :choices="choices"></OneChoice>
     </div>
     <Fieldset legend="Description">
-        <div>{{ activeFormat.description }}</div>
+        <div>{{ activeFormat.value.desc }}</div>
         <div>All checklist information will be extracted from the current template across checklist pages and checklist tiles. The resulting file will be downloaded by your browser.</div>
-        <div v-if="activeFormat.source"><a :href='activeFormat.source' target="_blank">source</a></div>
+        <div v-if="activeFormat.value.source"><a :href='activeFormat.value.source' target="_blank">source</a></div>
         <div class="mt-5 experimental"><strong>This feature is EXPERIMENTAL</strong></div>
     </Fieldset>
     <div class="actionDialog gap-2">
       <Button label="Do Not Export" @click="emits('close')" link></Button>
-      <Button label="Export Template" @click="emits('export', activeFormat.value)"></Button>
+      <Button label="Export Template" @click="emits('export', activeFormat.value.str)"></Button>
     </div>
   </Dialog>
 </template>
@@ -21,26 +21,20 @@
 import { ref } from 'vue';
 import Dialog from 'primevue/dialog'
 import OneChoice from '../shared/OneChoice.vue';
-import { UserUrl } from '@/lib/UserUrl';
+import { UserUrl } from '../../lib/UserUrl';
 
 import Button from 'primevue/button';
 import Fieldset from 'primevue/fieldset';
+import { OneChoiceValue } from '../../model/OneChoiceValue';
 
 const emits = defineEmits(['close','export'])
 
-const formatAce = {
-  label:'Garmin ACE',
-  value:'ace', 
-  description:'ACE file format allows you to import custom checklist in some Garmin(c) devices.',
-  source: UserUrl.garminAce
-}
-const formatFmd = {
-  label:'Foreflight FMD',
-  value:'fmd',
-  description:'FMD file format allows you to import custom checklist into Foreflight EFB.'
-}
+const formatAce = new OneChoiceValue('Garmin ACE', {str:'ace', desc:'ACE file format allows you to import custom checklist in some Garmin(c) devices.', src:UserUrl.garminAce})
+
+const formatFmd = new OneChoiceValue('Foreflight FMD', {str:'fmd', desc:'FMD file format allows you to import custom checklist into Foreflight EFB.', src:undefined})
+
 const activeFormat = ref(formatAce)
-const formats = ref([formatFmd,formatAce])
+const choices = ref([formatFmd,formatAce])
 
 
 const description = ref('')
