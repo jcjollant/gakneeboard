@@ -7,7 +7,12 @@
             <div v-else class="atis tileBoxLabel br">Weather</div>
             <div class="boxRoute box">
                 <div class="tileBoxLabel">Route</div>
-                <div class="watermrk">R</div>
+                <div class="watermrk bottomRight">
+                    <div>RV</div>
+                    <div class="direct">D></div>
+                    <div>AF</div>
+                </div>
+                <!-- <div class="watermrk">R</div> -->
             </div>
         </div>
         <div class="row bb">
@@ -17,11 +22,19 @@
             <div v-else class="atc tileBoxLabel br">Clearance</div>
             <div class="boxAltitudes box br">
                 <div class="tileBoxLabel">Alt/Exp</div>
-                <div class="watermrk">A</div>
+                <div class="watermrk topRight">SID</div>
+                <!-- <div class="watermrk">A</div> -->
             </div>
             <div class="boxFrequency box">
                 <div class="tileBoxLabel">Freq</div>
-                <div class="watermrk">F</div>
+                <div class="xpdrValue">
+                    <div class="xNumber">1</div>
+                    <div class="xDigit"></div>
+                    <div class="xDigit"></div>
+                    <div class="xNumber">.</div>
+                    <div class="xDigit"></div>
+                </div>
+                <!-- <div class="watermrk">F</div> -->
             </div>
         </div>
         <div class="row bb">
@@ -31,7 +44,13 @@
             <div v-else class="gnd tileBoxLabel br">Ground</div>
             <div class="boxTransponder box br">
                 <div class="tileBoxLabel">XPDR</div>
-                <div class="watermrk">T</div>
+                <div class="xpdrValue">
+                    <div class="xDigit"></div>
+                    <div class="xDigit"></div>
+                    <div class="xDigit"></div>
+                    <div class="xDigit"></div>
+                </div>
+                <!-- <div class="watermrk">T</div> -->
             </div>
             <div class="boxTaxi box">
                 <div class="tileBoxLabel">Taxi</div>
@@ -163,5 +182,39 @@ watch(props, async() => {
     position: relative;
 }
 
+.xpdrValue {
+    display: flex;
+    gap: 2px;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+}
 
+.xDigit {
+    border: 1px dashed lightgrey;
+    width: 17px;
+    height: 38px;
+    border-radius: 4px;
+}
+
+.topRight {
+    text-align: right;
+    top: 0;
+    right: 0;
+    font-size: 10px;
+    padding: 2px 4px;
+}
+
+.bottomRight {
+    display: flex;
+    bottom: 0;    
+    right: 0;
+    font-size: 12px;
+    gap: 14px;
+    padding: 2px 4px;
+    justify-content: end;
+}
+.direct {
+    text-decoration: line-through;
+}
 </style>
