@@ -1,4 +1,6 @@
 # User Experience updates
+## 6/28/2025
+1) 5271 - Watermark imrovements for Departure and ATIS tiles
 ## 6/27/2025
 1) 5270
 * Version number added to save confirmation toast
