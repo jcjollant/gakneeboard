@@ -12,7 +12,11 @@
                 <div class="windEx br">
                     <div class="tileBoxLabel">Wind</div>
                     <div class="at">@</div>
+                    <div class="wtrmrk">
+                        <div>Vrb</div>
+                    </div>
                     <div class="wtrmrk clear">Calm</div>
+                    <!-- <div class="wtrmrk">VRB</div> -->
                 </div>
                 <div class="visEx br">
                     <div class="tileBoxLabel">Vis</div>
@@ -34,7 +38,7 @@
                     <div class="wtrmrk clear">CLR</div>
                 </div>
                 <div class="tempEx br">
-                    <div class="tileBoxLabel">Temp</div>
+                    <div class="tileBoxLabel">T°/DP</div>
                 </div>
                 <div class="altEx br">
                     <div class="tileBoxLabel">Alt</div>
@@ -55,21 +59,49 @@
             </div>
             <div class="wind br">
                 <div class="tileBoxLabel">Wind</div>
+                <div class="at">@</div>
+                <div class="wtrmrk">
+                    <div>Vrb</div>
+                </div>
+                <div class="wtrmrk clear">Calm</div>
+                <!-- <div class="wtrmrk">VRB</div> -->
             </div>
+            <!-- <div class="wind br">
+                <div class="tileBoxLabel">Wind</div>
+            </div> -->
             <div class="runway">
                 <div class="tileBoxLabel">Rwy</div>
             </div>
             <div class="visibility bt bb">
                 <div class="tileBoxLabel">Vis</div>
+                <div class="wtrmrk">
+                    <div>Ra</div>
+                    <div>Fg</div>
+                    <div>Br</div>
+                </div>
+                <div class="wtrmrk clear">10</div>
+                <!-- <div class="tileBoxLabel">Vis</div> -->
             </div>
             <div class="sky bt bl">
                 <div class="tileBoxLabel">Sky</div>
+                <div class="wtrmrk">
+                    <div>Fw</div>
+                    <div>Sc</div>
+                    <div>Bk</div>
+                    <div>Ov</div>
+                </div>
+                <div class="wtrmrk clear">CLR</div>
             </div>
             <div class="temperature bb">
-                <div class="tileBoxLabel">Temp</div>
+                <div class="tileBoxLabel">T°/DP</div>
             </div>
             <div class="altimeter">
                 <div class="tileBoxLabel">Alt</div>
+                <div class="wtrmrk">
+                    <div>28</div>
+                    <div>29</div>
+                    <div>30</div>
+                </div>
             </div>
         </div>
         <div v-else-if="displayMode==DisplayModeAtis.CompactATIS" class="tileContent" @click="cycleMode">
