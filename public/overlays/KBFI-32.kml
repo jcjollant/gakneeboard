@@ -1,0 +1,1295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>32 Arrival</name>
+	<open>1</open>
+	<atom:link rel="app" href="https://www.google.com/earth/about/versions/#earth-pro" title="Google Earth Pro 7.3.6.10201"></atom:link><gx:CascadingStyle kml:id="__managed_style_209259139838FE377C10">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2<![CDATA[&]]>id=2000<![CDATA[&]]>scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"></hotSpot>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>12</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>c02dc0fb</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<text><![CDATA[<!DOCTYPE html>]]>
+<![CDATA[<html>]]>
+<![CDATA[  <head></head>]]>
+<![CDATA[  <body></body>]]>
+<![CDATA[</html>]]></text>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle><gx:CascadingStyle kml:id="__managed_style_25ED5A350838FE2C13D8">
+		<Style>
+			<IconStyle>
+				<scale>1.8</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2<![CDATA[&]]>id=2000<![CDATA[&]]>scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"></hotSpot>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>6</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<displayMode>hide</displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle><gx:CascadingStyle kml:id="__managed_style_1EDAA918E738FE2C13D8">
+		<Style>
+			<IconStyle>
+				<scale>1.5</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2<![CDATA[&]]>id=2000<![CDATA[&]]>scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"></hotSpot>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>4</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<displayMode>hide</displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle><gx:CascadingStyle kml:id="__managed_style_1A9AD804ED38FE377C10">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2<![CDATA[&]]>id=2000<![CDATA[&]]>scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"></hotSpot>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>8</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>c02dc0fb</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<text><![CDATA[<!DOCTYPE html>]]>
+<![CDATA[<html>]]>
+<![CDATA[  <head></head>]]>
+<![CDATA[  <body></body>]]>
+<![CDATA[</html>]]></text>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle><gx:CascadingStyle kml:id="__managed_style_2070FB3EDF38FE2AB3E8">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2<![CDATA[&]]>id=2000<![CDATA[&]]>scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"></hotSpot>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>6</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<displayMode>hide</displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle><gx:CascadingStyle kml:id="__managed_style_1A8E37251E38FE2AB3E8">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2<![CDATA[&]]>id=2000<![CDATA[&]]>scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"></hotSpot>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>4</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<displayMode>hide</displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_08F60BA36138FE2AB3E8">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_1A8E37251E38FE2AB3E8</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_2070FB3EDF38FE2AB3E8</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_0932E4648A38FE2C13D8">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_1EDAA918E738FE2C13D8</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_25ED5A350838FE2C13D8</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_0A3B1B29DB38FE377C109">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#failed15</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#failed8</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_0A3B1B29DB38FE377C107">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#failed3</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#failed14</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_0A3B1B29DB38FE377C100">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#failed</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#failed2</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_0A3B1B29DB38FE377C101">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#failed18</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#failed9</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_0A3B1B29DB38FE377C108">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#failed10</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#failed1</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_0A3B1B29DB38FE377C102">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#failed4</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#failed16</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_0A3B1B29DB38FE377C106">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#failed19</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#failed7</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_0A3B1B29DB38FE377C103">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#failed20</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#failed5</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_0A3B1B29DB38FE377C104">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#failed0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#failed11</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_0A3B1B29DB38FE377C105">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#failed13</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#failed12</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_0A3B1B29DB38FE377C10">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#failed6</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#failed17</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="failed">
+		<LineStyle>
+			<color>ff7f0000</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>80ffff00</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed14">
+		<LineStyle>
+			<color>32484848</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>80989898</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed15">
+		<LineStyle>
+			<color>ff014808</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>8001ff00</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed0">
+		<LineStyle>
+			<color>ff7f0000</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>80ffff00</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed16">
+		<LineStyle>
+			<color>ff014808</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>8000ff00</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed17">
+		<LineStyle>
+			<color>ff7f0000</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>80ffff00</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed18">
+		<LineStyle>
+			<color>ff014808</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>8000ff00</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed3">
+		<LineStyle>
+			<color>32484848</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>80989898</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed1">
+		<LineStyle>
+			<color>ff7f0000</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>80ffff00</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed19">
+		<LineStyle>
+			<color>ff00006c</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>80ff00ff</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed20">
+		<LineStyle>
+			<color>ff014808</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>8000ff00</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed2">
+		<LineStyle>
+			<color>ff7f0000</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>80ffff00</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed4">
+		<LineStyle>
+			<color>ff014808</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>8000ff00</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed5">
+		<LineStyle>
+			<color>ff014808</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>8000ff00</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed6">
+		<LineStyle>
+			<color>ff7f0000</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>80ffff00</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed7">
+		<LineStyle>
+			<color>ff00006c</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>80ff00ff</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed8">
+		<LineStyle>
+			<color>ff014808</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>8001ff00</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed9">
+		<LineStyle>
+			<color>ff014808</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>8000ff00</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed10">
+		<LineStyle>
+			<color>ff7f0000</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>80ffff00</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed11">
+		<LineStyle>
+			<color>ff7f0000</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>80ffff00</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed12">
+		<LineStyle>
+			<color>ff7f0000</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>80ffff00</color>
+		</PolyStyle>
+	</Style>
+	<Style id="failed13">
+		<LineStyle>
+			<color>ff7f0000</color>
+			<width>4</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>80ffff00</color>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="m_ylw-pushpin">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#s_ylw-pushpin</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#s_ylw-pushpin_hl</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_grn-pushpin">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_grn-pushpin2</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_grn-pushpin</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_grn-pushpin0">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_grn-pushpin</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_grn-pushpin0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_grn-pushpin2">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_grn-pushpin0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_grn-pushpin1</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_grn-pushpin1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_grn-pushpin1</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_grn-pushpin2</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_ylw-pushpin">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_ylw-pushpin1</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_ylw-pushpin1</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_ylw-pushpin0">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_ylw-pushpin0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_ylw-pushpin</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_ylw-pushpin1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_ylw-pushpin</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_ylw-pushpin0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="s_ylw-pushpin">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<Style id="s_ylw-pushpin_hl">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<Style id="sh_grn-pushpin1">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/grn-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+		<ListStyle>
+		</ListStyle>
+	</Style>
+	<Style id="sh_grn-pushpin2">
+		<IconStyle>
+			<color>ff00ff00</color>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/grn-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+		<ListStyle>
+		</ListStyle>
+	</Style>
+	<Style id="sh_grn-pushpin0">
+		<IconStyle>
+			<color>ff2e7a3c</color>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/grn-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+		<ListStyle>
+		</ListStyle>
+	</Style>
+	<Style id="sh_grn-pushpin">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/grn-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+		<ListStyle>
+		</ListStyle>
+	</Style>
+	<Style id="sh_ylw-pushpin0">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+	</Style>
+	<Style id="sh_ylw-pushpin">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+	</Style>
+	<Style id="sh_ylw-pushpin1">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+	</Style>
+	<Style id="sn_grn-pushpin">
+		<IconStyle>
+			<color>ff2e7a3c</color>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/grn-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+		<ListStyle>
+		</ListStyle>
+	</Style>
+	<Style id="sn_grn-pushpin0">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/grn-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+		<ListStyle>
+		</ListStyle>
+	</Style>
+	<Style id="sn_grn-pushpin1">
+		<IconStyle>
+			<color>ff00ff00</color>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/grn-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+		<ListStyle>
+		</ListStyle>
+	</Style>
+	<Style id="sn_grn-pushpin2">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/grn-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+		<ListStyle>
+		</ListStyle>
+	</Style>
+	<Style id="sn_ylw-pushpin">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+	</Style>
+	<Style id="sn_ylw-pushpin0">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+	</Style>
+	<Style id="sn_ylw-pushpin1">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<BalloonStyle>
+		</BalloonStyle>
+	</Style>
+	<Placemark>
+		<name>KRNT Centerline</name>
+		<styleUrl>#__managed_style_0A3B1B29DB38FE377C107</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>absolute</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-122.2171520464831,47.4998715114407,304 -122.2069475491825,47.39886026463221,304 -122.1996958289488,47.39837353435698,304 -122.2164787415586,47.50004399451562,304 -122.2171520464831,47.4998715114407,304 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="047308531F38FE2FBF2C">
+		<name>IFR Arrivals</name>
+		<LookAt>
+			<longitude>-122.228387382323</longitude>
+			<latitude>47.40994767449884</latitude>
+			<altitude>792</altitude>
+			<heading>0.1076268134273241</heading>
+			<tilt>0</tilt>
+			<range>26435.3507570643</range>
+			<altitudeMode>absolute</altitudeMode>
+			<gx:fovy>35</gx:fovy>
+		</LookAt>
+		<styleUrl>#__managed_style_0A3B1B29DB38FE377C106</styleUrl>
+		<Polygon>
+			<extrude>1</extrude>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-122.1687830077764,47.36250334375417,792.0000000000001 -122.1533045189237,47.37219198018552,792.0000000000001 -122.2930410644813,47.51886491026855,792.0000000000001 -122.1687830077764,47.36250334375417,792.0000000000001 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark>
+		<name>IFR Arrivals 2,600ft</name>
+		<LookAt>
+			<longitude>-122.162493954767</longitude>
+			<latitude>47.41660627372686</latitude>
+			<altitude>0</altitude>
+			<heading>0.07999631071867126</heading>
+			<tilt>45.1893232068725</tilt>
+			<range>18450.45051216199</range>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</LookAt>
+		<styleUrl>#m_ylw-pushpin</styleUrl>
+		<Point>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.1599192579044,47.36905289591561,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Kent 1,100fr</name>
+		<styleUrl>#__managed_style_0A3B1B29DB38FE377C109</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>absolute</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-122.2230575364483,47.4427178364004,335 -122.2217637932026,47.39836917717369,335 -122.2427981753108,47.38202563912314,335 -122.2350234624409,47.37561051456159,335 -122.209282283259,47.39801108917575,335 -122.213536399038,47.44493246820065,335 -122.2403513280924,47.48104897657725,335 -122.3005604616857,47.53016365839761,335 -122.300972645652,47.53004484590166,335 -122.2439042335829,47.47900999591894,335 -122.2230575364483,47.4427178364004,335 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark>
+		<name>Vashon 1,000ft</name>
+		<styleUrl>#__managed_style_0A3B1B29DB38FE377C101</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>absolute</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-122.4722925563998,47.50453806066145,305 -122.3127555242843,47.52466501466422,305 -122.2937609464934,47.50273021121757,305 -122.27859554239,47.50893149942294,305 -122.2797350880155,47.51013185388666,305 -122.2916524045791,47.50528424053585,305 -122.3097911378388,47.52806607546354,305 -122.4750639440649,47.51393573029042,305 -122.4722925563998,47.50453806066145,305 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark>
+		<name>Bellevue 1,600ft</name>
+		<styleUrl>#__managed_style_0A3B1B29DB38FE377C103</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>absolute</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-122.1867292266412,47.62204250878224,488 -122.2571766776363,47.59127788926322,488 -122.277173959221,47.54232787732099,488 -122.275914242111,47.53953001493789,488 -122.2543137700072,47.58988064467651,488 -122.1821988207453,47.61619799538639,488 -122.1867292266412,47.62204250878224,488 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark>
+		<name>Green Lake 1,200ft</name>
+		<styleUrl>#__managed_style_0A3B1B29DB38FE377C102</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>absolute</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-122.3377405280749,47.67129944811877,365 -122.2764635700825,47.64273300164106,365 -122.2881589995758,47.55660081500308,365 -122.2664417889484,47.52238392368556,365 -122.2786411175338,47.51230082861009,365 -122.2765283569916,47.51055064206918,365 -122.2627126660072,47.52222717807075,365 -122.2850257632785,47.55770849016944,365 -122.2724146574782,47.64424828924712,365 -122.3288284408726,47.67845517915789,365 -122.3377405280749,47.67129944811877,365 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark>
+		<name>Green Lake 1,200ft</name>
+		<Camera>
+			<longitude>-122.1729792896968</longitude>
+			<latitude>47.54883734987285</latitude>
+			<altitude>22190.72266079694</altitude>
+			<heading>-71.5962882805062</heading>
+			<tilt>21.45589987034729</tilt>
+			<roll>3.524840736107036</roll>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</Camera>
+		<styleUrl>#msn_grn-pushpin0</styleUrl>
+		<Point>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.3335008193904,47.67830872638606,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Bellevue 1,600ft</name>
+		<LookAt>
+			<longitude>-122.2143840691345</longitude>
+			<latitude>47.61735674230916</latitude>
+			<altitude>0</altitude>
+			<heading>-89.16049341532764</heading>
+			<tilt>31.23515633550351</tilt>
+			<range>17315.90972486327</range>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</LookAt>
+		<styleUrl>#msn_grn-pushpin0</styleUrl>
+		<Point>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.1832033821503,47.62012059504772,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Kent 1,100ft</name>
+		<Camera>
+			<longitude>-122.18704355122</longitude>
+			<latitude>47.38026103054971</latitude>
+			<altitude>12194.27176718829</altitude>
+			<heading>-71.60682478992119</heading>
+			<tilt>21.45590012767357</tilt>
+			<roll>3.540496640766107</roll>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</Camera>
+		<styleUrl>#msn_grn-pushpin0</styleUrl>
+		<Point>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.2395403045241,47.37883555985161,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Vashon 1,000ft</name>
+		<Camera>
+			<longitude>-122.3299689452707</longitude>
+			<latitude>47.50610632981813</latitude>
+			<altitude>22171.79421684988</altitude>
+			<heading>-71.71215468098514</heading>
+			<tilt>21.45589987034724</tilt>
+			<roll>3.524840736107016</roll>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</Camera>
+		<styleUrl>#msn_grn-pushpin1</styleUrl>
+		<Point>
+			<altitudeMode>absolute</altitudeMode>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.4732114758075,47.50835089289561,350</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0907FEA29E38FE2B6B94">
+		<name>32R</name>
+		<LookAt>
+			<longitude>-122.3006393933355</longitude>
+			<latitude>47.53092177759115</latitude>
+			<altitude>4.519252409868635</altitude>
+			<heading>0.107626818920027</heading>
+			<tilt>0</tilt>
+			<range>1419.161163934768</range>
+			<altitudeMode>absolute</altitudeMode>
+			<gx:fovy>35</gx:fovy>
+		</LookAt>
+		<styleUrl>#__managed_style_08F60BA36138FE2AB3E8</styleUrl>
+		<Point>
+			<coordinates>-122.3007975615238,47.53011168777704,3.874708505731543</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="042B219B8838FE2BF886">
+		<name>32L</name>
+		<LookAt>
+			<longitude>-122.2951122786525</longitude>
+			<latitude>47.51939797218715</latitude>
+			<altitude>4.703161146488948</altitude>
+			<heading>0.107626817985387</heading>
+			<tilt>0</tilt>
+			<range>1418.977226506249</range>
+			<altitudeMode>absolute</altitudeMode>
+			<gx:fovy>35</gx:fovy>
+		</LookAt>
+		<styleUrl>#__managed_style_0932E4648A38FE2C13D8</styleUrl>
+		<Point>
+			<coordinates>-122.2930425025248,47.51886001285326,5.532309440596277</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>VMC</name>
+		<LookAt>
+			<longitude>-122.2191990861528</longitude>
+			<latitude>47.45811644562184</latitude>
+			<altitude>0</altitude>
+			<heading>-58.36185614622875</heading>
+			<tilt>18.92865131570394</tilt>
+			<range>7150.132990713719</range>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</LookAt>
+		<styleUrl>#msn_ylw-pushpin1</styleUrl>
+		<Point>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.2134380677235,47.4428468250576,0</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>1,000ft</name>
+		<LookAt>
+			<longitude>-122.348135349595</longitude>
+			<latitude>47.55935168687472</latitude>
+			<altitude>0</altitude>
+			<heading>-0.07340703152670083</heading>
+			<tilt>45.0860183748673</tilt>
+			<range>19490.76723703325</range>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</LookAt>
+		<styleUrl>#msn_ylw-pushpin</styleUrl>
+		<Point>
+			<altitudeMode>absolute</altitudeMode>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.397605038869,47.5183947323637,305</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>800ft</name>
+		<Camera>
+			<longitude>-122.2655105278049</longitude>
+			<latitude>47.51678170320083</latitude>
+			<altitude>5492.981472677969</altitude>
+			<heading>-73.05146213313338</heading>
+			<tilt>34.23139312933392</tilt>
+			<roll>2.295517436875758</roll>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</Camera>
+		<styleUrl>#msn_ylw-pushpin</styleUrl>
+		<Point>
+			<altitudeMode>absolute</altitudeMode>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.3133405375688,47.52661435923431,310</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>1,200ft</name>
+		<Camera>
+			<longitude>-122.2854592915991</longitude>
+			<latitude>47.61374977922434</latitude>
+			<altitude>17217.18354707425</altitude>
+			<heading>12.89824053221487</heading>
+			<tilt>1.491616580618344</tilt>
+			<roll>59.60291245021936</roll>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</Camera>
+		<styleUrl>#msn_ylw-pushpin0</styleUrl>
+		<Point>
+			<altitudeMode>absolute</altitudeMode>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.2841148304994,47.57293078778137,400.0000000000001</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>1,600ft</name>
+		<Camera>
+			<longitude>-122.1722698648498</longitude>
+			<latitude>47.62938089744817</latitude>
+			<altitude>7866.637639854857</altitude>
+			<heading>-117.7042959716374</heading>
+			<tilt>35.33926590979576</tilt>
+			<roll>2.228943298997101</roll>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</Camera>
+		<styleUrl>#msn_ylw-pushpin</styleUrl>
+		<Point>
+			<altitudeMode>absolute</altitudeMode>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.2307265816629,47.60040911289759,350</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>1,100ft</name>
+		<Camera>
+			<longitude>-122.2428525451145</longitude>
+			<latitude>47.44693521524972</latitude>
+			<altitude>9577.606170215999</altitude>
+			<heading>-175.2135860265351</heading>
+			<tilt>23.03514034179323</tilt>
+			<roll>3.294984319677142</roll>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</Camera>
+		<styleUrl>#msn_ylw-pushpin</styleUrl>
+		<Point>
+			<altitudeMode>absolute</altitudeMode>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.2262905112879,47.38661271208763,350</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Blake</name>
+		<styleUrl>#__managed_style_0A3B1B29DB38FE377C100</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>absolute</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-122.3234392804141,47.55402017966246,456.9999999999999 -122.4847850325132,47.53709520827346,456.9999999999999 -122.4850799439652,47.53496112981253,456.9999999999999 -122.3248290421829,47.55192657661225,456.9999999999999 -122.3076819968205,47.53787214540251,456.9999999999999 -122.3234392804141,47.55402017966246,456.9999999999999 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark>
+		<name>Alki</name>
+		<styleUrl>#__managed_style_0A3B1B29DB38FE377C105</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>absolute</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-122.323653547971,47.55411980981228,456.9999999999999 -122.4067786704962,47.58824428388337,456.9999999999999 -122.4082301907071,47.58498810146348,456.9999999999999 -122.3276159441007,47.55360737830762,456.9999999999999 -122.323653547971,47.55411980981228,456.9999999999999 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark>
+		<name>Green Lake</name>
+		<styleUrl>#__managed_style_0A3B1B29DB38FE377C104</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>absolute</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-122.3239352819989,47.55488943174355,488 -122.3212775881863,47.64182265770442,488 -122.3364780160258,47.6733504926989,488 -122.3391127830341,47.67142217991027,488 -122.3261911467399,47.64219901254039,488 -122.3268623365078,47.55448362602617,488 -122.3239352819989,47.55488943174355,488 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark>
+		<name>Bellevue</name>
+		<styleUrl>#__managed_style_0A3B1B29DB38FE377C10</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>absolute</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-122.3248581881405,47.56273651077276,488 -122.2125442472589,47.63123968801452,488 -122.2152986831962,47.63338935998474,488 -122.2863069506277,47.59007519390681,488 -122.3282416685256,47.56394325928787,488 -122.3248581881405,47.56273651077276,488 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark>
+		<name>Rainier Beach Transition</name>
+		<styleUrl>#__managed_style_0A3B1B29DB38FE377C108</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>absolute</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-122.3232735163806,47.55387415855002,456.9999999999999 -122.3060885148959,47.55742465549228,456.9999999999999 -122.1984406506566,47.48394708764532,456.9999999999999 -122.0816387076112,47.45836852324353,456.9999999999999 -122.0805394579505,47.46130163114357,456.9999999999999 -122.1957250976572,47.48725515863769,456.9999999999999 -122.3057360829995,47.56049380020622,456.9999999999999 -122.3268173965182,47.55544269300537,456.9999999999999 -122.3232735163806,47.55387415855002,456.9999999999999 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark>
+		<name>&lt; 1,900ft</name>
+		<Camera>
+			<longitude>-122.3396001934105</longitude>
+			<latitude>47.49598473891035</latitude>
+			<altitude>13623.64212588029</altitude>
+			<heading>-16.3297952848287</heading>
+			<tilt>23.62847213991054</tilt>
+			<roll>3.22312518789045</roll>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</Camera>
+		<styleUrl>#msn_grn-pushpin1</styleUrl>
+		<Point>
+			<altitudeMode>absolute</altitudeMode>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.3696978079942,47.54729110347212,350</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Alki Departure 1,500ft</name>
+		<Camera>
+			<longitude>-122.3148137706164</longitude>
+			<latitude>47.50977558908254</latitude>
+			<altitude>13684.99775114578</altitude>
+			<heading>-16.31149732281535</heading>
+			<tilt>23.62847213991055</tilt>
+			<roll>3.223125187890473</roll>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</Camera>
+		<styleUrl>#msn_grn-pushpin</styleUrl>
+		<Point>
+			<altitudeMode>absolute</altitudeMode>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.4014847269291,47.58449209554916,450</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>1,600ft</name>
+		<Camera>
+			<longitude>-122.3115350558091</longitude>
+			<latitude>47.53003564239949</latitude>
+			<altitude>13753.68309159598</altitude>
+			<heading>-16.30907871267318</heading>
+			<tilt>23.62847213991058</tilt>
+			<roll>3.223125187890491</roll>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</Camera>
+		<styleUrl>#msn_grn-pushpin2</styleUrl>
+		<Point>
+			<altitudeMode>absolute</altitudeMode>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.3243131261556,47.59834903843646,500</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>1,600ft</name>
+		<open>1</open>
+		<Camera>
+			<longitude>-122.2854592915991</longitude>
+			<latitude>47.61374977922434</latitude>
+			<altitude>17217.18354707425</altitude>
+			<heading>12.89824053221487</heading>
+			<tilt>1.491616580618344</tilt>
+			<roll>59.60291245021936</roll>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</Camera>
+		<styleUrl>#msn_grn-pushpin2</styleUrl>
+		<Point>
+			<altitudeMode>absolute</altitudeMode>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.2686820748239,47.59714411982694,500</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>1,500ft</name>
+		<open>1</open>
+		<Camera>
+			<longitude>-122.2702746515144</longitude>
+			<latitude>47.58495805173879</latitude>
+			<altitude>10654.59702961263</altitude>
+			<heading>-32.97004290912592</heading>
+			<tilt>5.412794010718138</tilt>
+			<roll>13.77510267441867</roll>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</Camera>
+		<styleUrl>#msn_grn-pushpin</styleUrl>
+		<Point>
+			<altitudeMode>absolute</altitudeMode>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.2835029839271,47.54358577161219,500</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>1,900ft</name>
+		<open>1</open>
+		<Camera>
+			<longitude>-122.1730359836768</longitude>
+			<latitude>47.53124409421014</latitude>
+			<altitude>12495.23847345552</altitude>
+			<heading>-33.92197255181573</heading>
+			<tilt>5.838441793295867</tilt>
+			<roll>12.75733459598195</roll>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</Camera>
+		<styleUrl>#msn_grn-pushpin</styleUrl>
+		<Point>
+			<altitudeMode>absolute</altitudeMode>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.1988085252063,47.48722929925039,500</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Bellevue Departure</name>
+		<open>1</open>
+		<Camera>
+			<longitude>-122.2233539839393</longitude>
+			<latitude>47.62374128787378</latitude>
+			<altitude>19140.32868609756</altitude>
+			<heading>12.94425045888584</heading>
+			<tilt>1.491616565039531</tilt>
+			<roll>59.60184645941934</roll>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</Camera>
+		<styleUrl>#msn_grn-pushpin</styleUrl>
+		<Point>
+			<altitudeMode>absolute</altitudeMode>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.2124273929687,47.63189066177918,500</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark>
+		<name>Blake Departure</name>
+		<Camera>
+			<longitude>-122.4072339224391</longitude>
+			<latitude>47.56811962251479</latitude>
+			<altitude>19145.21422620109</altitude>
+			<heading>12.8084210418749</heading>
+			<tilt>1.491616565574456</tilt>
+			<roll>59.60184586124043</roll>
+			<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+		</Camera>
+		<styleUrl>#msn_ylw-pushpin0</styleUrl>
+		<Point>
+			<gx:drawOrder>1</gx:drawOrder>
+			<coordinates>-122.4858902566728,47.53490518226452,0</coordinates>
+		</Point>
+	</Placemark>
+</Document>
+</kml>
