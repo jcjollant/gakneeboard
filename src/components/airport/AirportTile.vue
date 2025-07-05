@@ -38,7 +38,7 @@
                     <img v-else class="rwySketch" :src="rwySketch" />
                 </div>
                 <div v-else>
-                    <div class="airportCode" :class="{left:flipCode}">{{airportCode}}</div>
+                    <div class="airportCode">{{airportCode}}</div>
                     <div v-if="unknownRunway" class="unknownRwy">Unknown Runway</div>
                     <Runway v-else :runway="selectedRunway" :pattern="patternMode" :orientation="rwyOrientation" :headings="showHeadings" class="clickable"
                         @click="onHeaderClick"/>
@@ -108,7 +108,6 @@ const patternMode = ref(0)
 const runwayName = ref('')
 const rwyOrientation = ref('')
 const showHeadings = ref(true)
-const flipCode = ref(false)
 
 const defaultCornerFields = ['weather','twr','field','tpa','#FCD/P','#FGND','?Custom?Custom','#FUNICOM']
 const defaultRwyOrientation = 'vertical'
@@ -395,12 +394,6 @@ function showRunway(name:string) {
         selectedRunway.value = rwyData
         runwayName.value = name
         unknownRunway.value = false
-        // flipCode if traffic patterns are opposite and covering the right side
-        const end0 = rwyData.ends[0]
-        const end1 = rwyData.ends[1]
-        const overlappingPatterns = end0.tp != end1.tp
-        const patternRight = (end1.mag > 270 || end1.mag <= 90) ? end1.tp == TrafficPattern.right : end0.tp == TrafficPattern.right ; 
-        flipCode.value = overlappingPatterns && patternRight
     } else {
         // console.log( 'Unknown runway ' + name) 
         unknownRunway.value = true
@@ -490,21 +483,21 @@ function updateData(expand:boolean=false) {
 }
 .airportCode {
     font-weight: 900;
-    font-size: 3rem;
-    line-height: 3rem;
+    font-size: 2rem;
+    line-height: 2rem;
     opacity: 0.10;
     position: absolute;
-    height: 100%;
+    width: 100%;
     z-index: 0;
     cursor: pointer;
-    writing-mode: vertical-rl;
-    right: 0;
+/*    writing-mode: vertical-rl;*/
+    left: 0;
     text-align: center;
 }
-.airportCode.left {
+/* .airportCode.left {
     writing-mode: sideways-lr;
     right: unset;
-}
+} */
 .shortAirportCode {
     font-size: 6rem;
 }
