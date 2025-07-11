@@ -17,7 +17,7 @@ export const jcSource = 'google'
 export const jcCustomerId = 'cus_RrzUYrH8moRDAU'
 export const samplePublicationCode = '8Q'
 
-export const currentAsOf = 20250612;
+export const currentAsOf = 20250710;
 export const currentAirportModelVersion = 10
 export const krntAtcs =  [
     {mhz:119.2, useCount:6, name:'SEATTLE-TACOMA APPROACH CONTROL'},
