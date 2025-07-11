@@ -1,3 +1,5 @@
+## 07/10/2025
+1) 5280 - Effective Date update
 ## 06/22/2025
 1) 5250 Added support for FullPage Format
 ## 06/13/2025
