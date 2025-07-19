@@ -23,16 +23,16 @@
             <div class="boxAltitudes box br">
                 <div class="tileBoxLabel">Alt/Exp</div>
                 <div class="watermrk topRight">SID</div>
-                <!-- <div class="watermrk">A</div> -->
             </div>
             <div class="boxFrequency box">
                 <div class="tileBoxLabel">Freq</div>
-                <div class="xpdrValue">
-                    <div class="xNumber">1</div>
-                    <div class="xDigit"></div>
-                    <div class="xDigit"></div>
-                    <div class="xNumber">.</div>
-                    <div class="xDigit"></div>
+                <div class="freqValue">
+                    <div class="fNumber">1</div>
+                    <div class="digit fDigit"></div>
+                    <div class="digit fDigit"></div>
+                    <div class="fNumber">.</div>
+                    <div class="digit fDigit"></div>
+                    <div class="digit fDigit"></div>
                 </div>
                 <!-- <div class="watermrk">F</div> -->
             </div>
@@ -45,10 +45,10 @@
             <div class="boxTransponder box br">
                 <div class="tileBoxLabel">XPDR</div>
                 <div class="xpdrValue">
-                    <div class="xDigit"></div>
-                    <div class="xDigit"></div>
-                    <div class="xDigit"></div>
-                    <div class="xDigit"></div>
+                    <div class="digit xDigit"></div>
+                    <div class="digit xDigit"></div>
+                    <div class="digit xDigit"></div>
+                    <div class="digit xDigit"></div>
                 </div>
                 <!-- <div class="watermrk">T</div> -->
             </div>
@@ -173,7 +173,7 @@ watch(props, async() => {
     position:absolute;
     left: 2px;
     bottom: 2px;
-    opacity: 0.2;
+    opacity: 0.3;
 }
 
 .tileBoxLabel {
@@ -182,19 +182,28 @@ watch(props, async() => {
     position: relative;
 }
 
+.freqValue {
+    display: flex;
+    align-items: center;
+}
+.digit {
+    border: 1px dashed lightgrey;
+    height: 38px;
+    border-radius: 4px;
+}
+.fDigit {
+    width: 16px
+}
 .xpdrValue {
     display: flex;
-    gap: 2px;
     justify-content: center;
     align-items: center;
     font-size: 20px;
+    padding: 0 1px;
 }
 
 .xDigit {
-    border: 1px dashed lightgrey;
-    width: 17px;
-    height: 38px;
-    border-radius: 4px;
+    width: 25%;
 }
 
 .topRight {
