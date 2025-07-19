@@ -12,11 +12,9 @@
                 <div class="windEx br">
                     <div class="tileBoxLabel">Wind</div>
                     <div class="at">@</div>
-                    <div class="wtrmrk">
-                        <div>Vrb</div>
-                    </div>
+                    <div class="wtrmrk"><div>Vrb</div></div>
                     <div class="wtrmrk clear">Calm</div>
-                    <!-- <div class="wtrmrk">VRB</div> -->
+                    <div class="wtrmrk gust">G</div>
                 </div>
                 <div class="visEx br">
                     <div class="tileBoxLabel">Vis</div>
@@ -64,7 +62,7 @@
                     <div>Vrb</div>
                 </div>
                 <div class="wtrmrk clear">Calm</div>
-                <!-- <div class="wtrmrk">VRB</div> -->
+                <div class="wtrmrk gust">G</div>
             </div>
             <!-- <div class="wind br">
                 <div class="tileBoxLabel">Wind</div>
@@ -112,6 +110,7 @@
                 <div class="wind br" :class="{bb: n < 4 }">
                     <div class="tileBoxLabel">Wind</div>
                     <span class="at">@</span>
+                    <div class="wtrmrk gust">G</div>
                 </div>
                 <div class="altimeter br" :class="{bb: n < 4 }">
                     <div class="tileBoxLabel">Alt</div>
@@ -532,6 +531,11 @@ function onHeaderClick() {
 .clear {
     top: 0;
     flex-flow: row-reverse;
+}
+.gust {
+    right: 0;
+    width: 49px;
+    opacity: 0.2;
 }
 .windEx .at {
     display: flex;
