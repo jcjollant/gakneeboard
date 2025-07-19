@@ -1,4 +1,6 @@
 # User Experience updates
+## 7/19/2025
+1) 5290 - Widenned XPDR, added one digit to departure frequency, added Gust
 ## 7/05/2025
 1) 5280 - Moved Airport Code to top
 ## 6/28/2025
