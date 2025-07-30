@@ -92,6 +92,9 @@ SELECT * FROM publications WHERE sheetid = 275
 #########
 # Usage
 
+# Biggest print users in the past 30 days
+SELECT user_id, count(*) AS print_count FROM usage WHERE usage_type = 'print' and create_time > current_date - 30 GROUP BY user_id ORDER BY print_count DESC
+
 # Most recent session for each user
 SELECT user_id, MAX(create_time) FROM usage WHERE user_id NOTNULL AND usage_type = 'session' GROUP BY user_id ORDER BY "max" desc LIMIT 100 
 
