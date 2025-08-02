@@ -16,13 +16,13 @@
             <div class="value">
               <div class="pagesCount" :class="{'maxedOut':user.pageCount > user.maxPageCount }">{{ user.pageCount }} / {{ user.maxPageCount }}</div>
             </div>
-            <div v-if="user.accountType == AccountType.beta" class="key">Print Credit</div>
+            <div class="key">Print Credit</div>
             <div v-if="user.accountType == AccountType.beta" class="value">
               <div class="unlimited" >Unlimited</div>
             </div>
-            <!-- <div v-else="user.accountType == AccountType.beta" class="value">
+            <div v-else class="value">
                 <div class="printCredits" :class="{'maxedOut':user.printCredits == 0 }">{{ user.printCredits }}</div>
-            </div> -->
+            </div>
         </div>
         <div class="actions">
           <Button link label="Sign Out" class="btnSignOut" @click="emits('signout')"></Button>
