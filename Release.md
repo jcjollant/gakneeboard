@@ -1,4 +1,8 @@
 # User Experience updates
+## 8/02/2025
+1) 5320
+* Enforcing prints credits
+* Reversed the contact me logic in feedback form
 ## 7/19/2025
 1) 5290 - Widenned XPDR, added one digit to departure frequency, added Gust
 ## 7/05/2025
