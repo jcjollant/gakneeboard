@@ -27,11 +27,12 @@
 import { onMounted, ref, watch } from 'vue';
 import { LocalStore } from '../lib/LocalStore';
 import { useRoute, useRouter } from 'vue-router';
-import { postPrint } from '../assets/data.js';
+import { postPrint, currentUser } from '../assets/data.js';
 import { Template, TemplatePage } from '../model/Template';
 import { exportToPDF } from '../assets/pdf'
 import { PageType } from '../assets/PageType.js';
 import { TemplateFormat } from '../model/TemplateFormat.js';
+import { AccountType } from '../model/AccounType.js';
 import Page from '../components/page/Page.vue';
 import PrintOptions from '../components/print/PrintOptions.vue';
 
@@ -53,6 +54,12 @@ let printing = false
 
 onMounted(() => {
     // console.log('[Print.onMounted]')
+    // Check if user can print before showing print options
+    if (!canUserPrint()) {
+      redirectToPlansPage()
+      return
+    }
+    
     // load last template into active template
     template.value = LocalStore.getTemplate()
     
@@ -106,6 +113,14 @@ function onOptionsUpdate(options) {
 // Start printing
 async function onPrint(pdf:boolean, options) {
   // console.log('[Print.onPrint]')
+  
+  // Double-check if user can still print before proceeding
+  if (!canUserPrint()) {
+    printing = false
+    redirectToPlansPage()
+    return
+  }
+  
   printing = true
   showOptions.value = false
   postPrint(route.params.id, options)
@@ -175,6 +190,27 @@ function refreshPages() {
 function restorePrintOptions() {
     // Bring everything back to normal
     printFlipMode.value = false;
+}
+
+// Check if the current user can print (has credits if they're a free user)
+function canUserPrint(): boolean {
+  // If user is not logged in, allow printing (guest mode)
+  if (!currentUser.loggedIn) {
+    return true;
+  }
+  
+  // If user is not a free user (simmer), allow printing
+  if (currentUser.accountType !== AccountType.simmer) {
+    return true;
+  }
+  
+  // For free users (simmers), check if they have print credits
+  return currentUser.printCredits > 0;
+}
+
+// Redirect user to plans page with out-of-credits indicator
+function redirectToPlansPage() {
+  router.push('/plans?reason=out-of-credits');
 }
 
 </script>
