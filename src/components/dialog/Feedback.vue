@@ -57,7 +57,7 @@ onUpdated( () => {
  */
 async function send() {
   // console.log( '[Feedback.send] ' + contactMeValue.value)
-  sendFeedback(feedbackText.value, contactMeValue.value == 'yes').then( () => {
+  sendFeedback(feedbackText.value, contactMeValue.value == 'mo').then( () => {
     feedbackText.value = ''
     toaster.info('Readback Correct', 'Thanks for your feedback!')
     emits('submit')
