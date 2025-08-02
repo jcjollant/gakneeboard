@@ -4,8 +4,8 @@
         <textarea class="feedbackText" rows="10"  autoResize v-model="feedbackText" placeholder="Enter your feedback here"></textarea>
         <div class="actions" v-if="isOpen">
           <div v-if="user && user.loggedIn" class="followup">
-            <Checkbox v-model="contactMeValue" inputId="contact" name="pizza" value="yes" />
-            <label for="contact" class="ml-2">Please follow up</label>
+            <Checkbox v-model="contactMeValue" inputId="contact" name="reply" value="no" />
+            <label for="contact" class="ml-2">Do not contact me about this feedback</label>
           </div>
           <div>
             <Button label="Do Not Send" @click="emits('submit')" link></Button>
