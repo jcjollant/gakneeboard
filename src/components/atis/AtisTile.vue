@@ -23,7 +23,7 @@
                         <div>Fg</div>
                         <div>Br</div>
                     </div>
-                    <div class="wtrmrk clear">10</div>
+                    <div class="wtrmrk clear">10+</div>
                 </div>
                 <div class="skyEx br">
                     <div class="tileBoxLabel">Sky</div>
