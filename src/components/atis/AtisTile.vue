@@ -77,7 +77,7 @@
                     <div>Fg</div>
                     <div>Br</div>
                 </div>
-                <div class="wtrmrk clear">10</div>
+                <div class="wtrmrk clear">10+</div>
                 <!-- <div class="tileBoxLabel">Vis</div> -->
             </div>
             <div class="sky bt bl">
