@@ -2,6 +2,19 @@
 <template>
   <Menu></Menu>
   <div class="pricing-container">
+    <!-- Out of Credits Banner -->
+    <div v-if="showOutOfCreditsBanner" class="out-of-credits-banner">
+      <div class="banner-content">
+        <div class="banner-icon">
+          <img class="banner-image" src="/assets/lowfuel.png" alt="Low Fuel gauges"></img>
+        </div>
+        <div class="banner-text">
+          <h3>You are low on Print Credits!</h3>
+          <p>Upgrade your plan to continue printing now or wait for the monthly refill.</p>
+        </div>
+      </div>
+    </div>
+    
     <div class="pricing-header">
       <h2>Simple, Transparent Pricing</h2>
       <p>Choose the plan that's right for you<br>For perspective, a C172 burns $8.82 of fuel during taxi</p>
@@ -56,13 +69,12 @@
         </div>
       </div>
     </div>
-    <div>(*) Optional 10 additional prints $5</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router';
+import { ref, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router';
 import { Checkout, Pricing } from '../assets/Checkout';
 import { currentUser } from '../assets/data';
 import { useToast } from 'primevue/usetoast'
@@ -73,6 +85,12 @@ import { AccountType } from '../model/AccounType';
 
 const toaster = useToaster(useToast())
 const monthly = ref(true)
+const route = useRoute()
+
+// Check if user came here due to being out of print credits
+const showOutOfCreditsBanner = computed(() => {
+  return route.query.reason === 'out-of-credits'
+})
 
 const plans = ref([
 {
@@ -82,7 +100,7 @@ const plans = ref([
     monthly: false,
     description: "Best to Try it out",
     features: {
-      "4 Prints Per Month(*)": true,
+      "4 Prints Per Month": true,
       "2 Templates": true,
       "2 Pages per Template": true,
       "Airport Data Update": false,
@@ -107,13 +125,13 @@ const plans = ref([
   //   code: Pricing.hobbs
   // },
   {
-    name: "Private Pilot",
+    name: "Student Pilot",
     price: 2.99,
     monthly: true,
     subtitle: "No Commitment",
     description: "Best for Occasional Use",
     features: {
-      "8 Prints Per Month(*)": true,
+      "8 Prints Per Month": true,
       "5 Templates": true,
       "10 Pages": true,
       "Airport Data Update": true,
@@ -177,6 +195,68 @@ function onPlan(code:Pricing) {
 </script>
 
 <style scoped>
+.out-of-credits-banner {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  border: 2px solid #F59E0B;
+  border-radius: 0.75rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.banner-icon {
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  background-color: #F59E0B;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.banner-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.banner-text h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #92400E;
+  text-align: center;
+}
+
+.banner-text p {
+  margin: 0;
+  color: #92400E;
+  font-size: 1rem;
+}
+
+.banner-image {
+  width: 64px;
+}
+
+@media (max-width: 640px) {
+  .banner-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .banner-icon {
+    align-self: center;
+  }
+}
+
 .pricing-container {
   padding: 3rem 1rem;
 }
