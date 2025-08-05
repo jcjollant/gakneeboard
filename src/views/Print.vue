@@ -16,6 +16,7 @@
       </div>
       <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages">
         <Page :data="page.front" :ver="template.ver" :format="template.format"/>
+        <SideBar class="sidebar" />
         <Page v-if="page.back" :data="page.back" :ver="template.ver" :format="template.format" :class="{flipMode:printFlipMode}" />
       </div>
     </div>
@@ -35,6 +36,7 @@ import { TemplateFormat } from '../model/TemplateFormat.js';
 import { AccountType } from '../model/AccounType.js';
 import Page from '../components/page/Page.vue';
 import PrintOptions from '../components/print/PrintOptions.vue';
+import SideBar from '../components/print/SideBar.vue';
 
 interface PrintSheet {
   front: TemplatePage,
@@ -239,6 +241,7 @@ function redirectToPlansPage() {
   justify-content: center;
 }
 .printTwoPages {
+  position: relative;
   display: grid;
   grid-template-columns: auto auto;
   gap: 0 var(--pages-gap);
@@ -264,5 +267,16 @@ function redirectToPlansPage() {
 }
 #printTemplate.single:has(.contentPage.fullpage) {
   width: var(--fullpage-width);
+}
+.sidebar {
+  padding: 0 5px;
+  position: absolute;
+  left: calc( var(--page-width) + var(--pages-gap));
+  top: 0;
+  width: var(--page-height);
+  height: var(--pages-gap);
+  /* border: 1px solid blue; */
+  transform: rotate(90deg);
+  transform-origin: top left;
 }
 </style>
