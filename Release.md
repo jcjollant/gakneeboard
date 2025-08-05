@@ -1,4 +1,8 @@
 # User Experience updates
+## 8/04/2025
+1) 5321
+* New Sidebar with Tail number, date and Kneeboard.ga
+* New Icon
 ## 8/02/2025
 1) 5320
 * Enforcing prints credits
