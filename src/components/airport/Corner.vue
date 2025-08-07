@@ -114,7 +114,7 @@ const value = ref('')
 const props = defineProps({
     airport: { type: Object, default: null},
     data: { type: String, default: null},
-    runway: { type: Object, default: null},
+    runway: { type: Runway, default: null},
     flip: { type: Boolean, default: false},
     big: { type: Boolean, default: false},
 })
