@@ -10,6 +10,7 @@ import { Request } from "express"
 
 const planUrl = '/plans'
 const pp1Price = process.env.STRIPE_PP1_PRICE;
+const pp2Price = process.env.STRIPE_PP2_PRICE;
 const hh1Price = process.env.STRIPE_HH1_PRICE;
 const bd1Price = process.env.STRIPE_BD1_PRICE;
 const ff1Price = 'free';
@@ -176,7 +177,8 @@ export class StripeClient {
     accountTypeFromPrice(planId: string) {
         switch(planId) {
             case bd1Price: return AccountType.beta;
-            case pp1Price: return AccountType.private;
+            case pp1Price: return AccountType.student;
+            case pp2Price: return AccountType.private;
             case ff1Price: return AccountType.simmer;
             default: return AccountType.unknown;
         }
@@ -187,6 +189,7 @@ export class StripeClient {
         let price:string|undefined
         switch(product.toLowerCase()) {
             case 'pp1': return new Price( pp1Price, true);
+            case 'pp2': return new Price( pp2Price, true);
             case 'hh1': return new Price( hh1Price, false);
             case 'bd1': return new Price( bd1Price, true);
             default: throw new Error('Product not found : ' + product);
