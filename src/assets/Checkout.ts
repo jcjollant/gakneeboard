@@ -5,10 +5,8 @@ import { AccountType } from '../model/AccounType'
 
 export class Pricing {
     static simmer = 'fs1';
-    static privatePilot = 'pp1';
-    // static privateAnnual = 'pp2';
-    // static instrumentMonthly = 'ip1';
-    // static instrumentAnnual = 'ip2';
+    static studentPilot = 'pp1'; // This is the old private pilot.
+    static privatePilot = 'pp2';
     static hobbs = 'hh1';
     static betaDeal = 'bd1';
 }
@@ -26,6 +24,7 @@ export class Checkout {
             case Pricing.simmer:
                 return AccountType.simmer;
             case Pricing.betaDeal:
+            case Pricing.privatePilot:
                 return AccountType.beta;
             case Pricing.hobbs:
                 return AccountType.hobbs;
