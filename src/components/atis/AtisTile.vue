@@ -173,8 +173,8 @@ const displayMode = ref(defaultMode)
 const displaySelection = ref(false)
 const expanded = ref(false)
 const modesList = ref([
-    new DisplayModeChoice('Full Size ATIS', DisplayModeAtis.FullATIS, true),
-    new DisplayModeChoice('Compact ATIS (x4)', DisplayModeAtis.CompactATIS),
+    new DisplayModeChoice('Full Size', DisplayModeAtis.FullATIS, true),
+    new DisplayModeChoice('Compact (4 rows)', DisplayModeAtis.CompactATIS),
     new DisplayModeChoice('Flight Categories', DisplayModeAtis.Categories, true),
     new DisplayModeChoice('Cloud Clearance', DisplayModeAtis.CloudClearance, true),
 ])
