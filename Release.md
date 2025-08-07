@@ -1,4 +1,8 @@
 # User Experience updates
+## 8/07/2025
+1) 5322
+* Added new pricing plan Private Pilot, renamed Private to Student Pilot
+* Added more airports in cache
 ## 8/04/2025
 1) 5321
 * New Sidebar with Tail number, date and Kneeboard.ga
