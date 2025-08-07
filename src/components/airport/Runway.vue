@@ -13,6 +13,8 @@ const props = defineProps({
     pattern : { type: Number, default: 0},
     orientation : { type: String, default : null},
     headings : { type: Boolean, default: true},
+    label : { type: String, default: null },
+    small : { type: Boolean, default: false},
 })
 
 let patternMode = 0
@@ -22,6 +24,7 @@ let showNorthTp = true
 let showSouthMidField = false
 let showSouthTp = true
 let magneticOrientation = false
+let smallDisplay = false
 
 const myCanvas = ref()
 const label = ref('')
@@ -43,22 +46,34 @@ function loadProps( props) {
     // console.log( 'RunwayView loadProps ' + JSON.stringify(props))
     magneticOrientation = (props.orientation && props.orientation == 'magnetic')
     showHeadings = props.headings
-    setNewPatternMode(props.pattern)
+
+    patternMode = props.pattern
+    showNorthMidField = (patternMode == 4)
+    showNorthTp = (patternMode == 0 || patternMode == 3 || patternMode == 4)
+    showSouthMidField = (patternMode == 2)
+    showSouthTp = (patternMode == 0 || patternMode == 1 || patternMode == 2)
+
+    const runway = props.runway
+
+    if( props.label) {
+        label.value = props.label;
+    } else if( 'length' in runway) {
+        if( 'width' in runway) {
+            label.value = runway['length'] + 'x' + runway['width'];
+        } else {
+            label.value = runway['length'];
+        }
+    }
+
+    smallDisplay = props.small
+
+    show(runway)
+
 }
 
 function getAngle( orientation) {
     if(orientation < 0) orientation += 360;
     return orientation % 360;
-}
-
-function setNewPatternMode( value) {
-    // console.log('RunwayView setNewPatternMode ' + value)
-    patternMode = value
-    showNorthMidField = (patternMode == 4)
-    showNorthTp = (patternMode == 0 || patternMode == 3 || patternMode == 4)
-    showSouthMidField = (patternMode == 2)
-    showSouthTp = (patternMode == 0 || patternMode == 1 || patternMode == 2)
-    show( props.runway)
 }
 
 function show(runway) {
@@ -79,30 +94,21 @@ function show(runway) {
     northEnd = runway.ends[northRwyIndex];
     southEnd = runway.ends[southRwyIndex];
 
-    if( 'length' in runway) {
-        if( 'width' in runway) {
-            label.value = runway['length'] + 'x' + runway['width'];
-        } else {
-            label.value = runway['length'];
-        }
-    } else {
-        dimension.value = '';
-    }
-
     const ctx = myCanvas.value.getContext('2d');
-    const referenceSize = 240;
-    myCanvas.value.width = referenceSize;
-    myCanvas.value.height = referenceSize;
+    // console.log('[Runway.show] parent width', myCanvas.value.parentElement.clientWidth)
+    const referenceSize = myCanvas.value.parentElement.clientHeight;
+    myCanvas.value.width = myCanvas.value.parentElement.clientWidth;
+    myCanvas.value.height = myCanvas.value.parentElement.clientHeight;
 
-    const rwyLength = referenceSize * 0.55;
+    const rwyLength = referenceSize * ( smallDisplay ? 0.65 : 0.55);
     const rwyHLength = rwyLength / 2;
-    const rwyWidth = referenceSize * 0.12;
+    const rwyWidth = referenceSize * ( smallDisplay ? 0.18 : 0.12);
     const rwyHWidth = rwyWidth / 2;
     const tpDownwindDist = referenceSize * 0.15;
     const tpBaseDist = rwyLength / 2 + tpDownwindDist * 0.65;
     const tpLineWidth = referenceSize * 0.01;
     const tpArrowTip = referenceSize * 0.03;
-    const rwyFontSize = Math.round( referenceSize / 20);
+    const rwyFontSize = Math.round( referenceSize / ( smallDisplay ? 12 : 20));
 
 
     // Move center to origin
