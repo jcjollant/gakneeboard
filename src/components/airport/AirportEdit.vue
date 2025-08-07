@@ -1,10 +1,10 @@
 <template>
     <div class="content">
         <div class="settings">
-            <AirportInput :code="airportCode" :auto="true" :expanded="displayMode!=DisplayModeAirport.OneRunway"
+            <AirportInput :code="airportCode" :auto="true" :expanded="!runwaySelection"
                 @valid="loadAirportData" @invalid="onInvalidAirport" />
             <ProgressSpinner v-if="loading" class="spinner" ></ProgressSpinner>
-            <div v-else-if="validAirport && displayMode==DisplayModeAirport.OneRunway" class="rwyChoices">
+            <div v-else-if="validAirport && runwaySelection" class="rwyChoices">
                 <div class="miniSection">Runway</div>
                 <div class="rwySelector">
                     <Button :label="rwy.name" class="sign" :severity="rwy.name == selectedRwyName ? 'primary' : 'secondary'"
@@ -47,6 +47,7 @@ import { Airport } from '../../model/Airport.ts';
 import { Runway as RunwayModel } from '../../model/Airport.ts';
 
 let airport = new Airport()
+
 const airportCode = ref('')
 const airportName = ref('')
 const emits = defineEmits(['close','selection'])
@@ -74,6 +75,7 @@ const canApply = ref(false)
 const canCreate = ref(false)
 const validAirport = ref(false)
 const verticalOrientation = ref(true)
+const runwaySelection = ref(false)
 const selectedRwyName = ref('')
 const showCustomAirport = ref(false)
 const showHeadings = ref(true)
@@ -107,6 +109,7 @@ function loadProps(props) {
         // restore show headings
         showHeadings.value = props.showHeadings
     }
+    runwaySelection.value = (props.displayMode == DisplayModeAirport.OneRunway || props.displayMode == DisplayModeAirport.FourRunways)
     // Traffic pattern
     patternChoice.value = patternChoices.find( p => p.value == props.tp) ?? patternChoices[0];
 }
