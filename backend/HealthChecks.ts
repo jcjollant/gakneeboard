@@ -99,7 +99,8 @@ export class HealthCheck {
             'STRIPE_SECRET_KEY', 
             'STRIPE_WEBHOOK_SECRET', 
             'STRIPE_HH1_PRICE', 
-            'STRIPE_PP1_PRICE', 
+            'STRIPE_PP1_PRICE',
+            'STRIPE_PP2_PRICE', 
             'STRIPE_BD1_PRICE',
             'EFFECTIVE_DATE']
 
