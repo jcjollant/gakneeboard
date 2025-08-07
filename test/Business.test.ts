@@ -4,9 +4,7 @@ import { AccountType } from '../backend/models/AccountType';
 import { Business } from '../backend/business/Business';
 import { getMockBrandNewSubscription, getMockSubscriptionDao, getMockUserDao, newTestUser } from './common';
 import { Email } from '../backend/Email';
-import { SubscriptionDao } from '../backend/dao/SubscriptionDao';
-import { Subscription } from '../backend/models/Subscription';
-import { mock } from 'node:test';
+import { User } from '../backend/models/User';
 
 // Mock the dependencies
 jest.mock('../backend/dao/UserDao');
@@ -40,10 +38,19 @@ describe('Business', () => {
             expect(c3).toBe(expectedRefill);
         });
 
-        it('should return correct credits for private account', () => {
-            const expectedRefill = 10
+        it('should return correct credits for student account', () => {
+            const expectedRefill = Business.PRINT_CREDIT_STUDENT
             const newUser = newTestUser()
-            newUser.setAccountType( AccountType.private);
+            newUser.setAccountType( AccountType.student);
+            newUser.printCredits = 0; // no credits
+            const c1 = Business['calculatePrintCredits'](newUser);
+            expect(c1).toBe(expectedRefill);
+        });
+
+        it('should return correct credits for student account', () => {
+            const expectedRefill = Business.PRINT_CREDIT_STUDENT
+            const newUser = newTestUser()
+            newUser.setAccountType( AccountType.student);
             newUser.printCredits = 0; // no credits
             const c1 = Business['calculatePrintCredits'](newUser);
             expect(c1).toBe(expectedRefill);
@@ -68,30 +75,41 @@ describe('Business', () => {
             expect(c3).toBe(2);
         });
 
-        it('should return correct max pages for private account', () => {
-            const newUser = newTestUser()
-            newUser.setAccountType( AccountType.private);
-            newUser.printCredits = 0; // no credits
-            const c1 = Business.maxTemplates(newUser);
-            expect(c1).toBe(5);
-        });
     })
 
-    describe('maxPagesFromAccountType', () => {
-        it('should return 10 for beta account', () => {
-            expect(Business.maxTemplatesFromAccountType(AccountType.beta)).toBe(10);
+    describe('quotas', () => {
+        const user = new User(0, '')
+
+        it('should return beta account quotas', () => {
+            user.accountType = AccountType.simmer
+            const quotas = Business.getQuotas(user);
+            expect(quotas.pages).toBe(4);
+            expect(quotas.prints).toBe(4);
+            expect(quotas.templates).toBe(2);
         });
 
-        it('should return 5 for private account', () => {
-            expect(Business.maxTemplatesFromAccountType(AccountType.private)).toBe(5);
+        it('should return student account quotas', () => {
+            user.accountType = AccountType.student
+            const quotas = Business.getQuotas(user);
+            expect(quotas.pages).toBe(4);
+            expect(quotas.prints).toBe(8);
+            expect(quotas.templates).toBe(2);
         });
 
-        it('should return 2 for simmer account', () => {
-            expect(Business.maxTemplatesFromAccountType(AccountType.simmer)).toBe(2);
+        it('should return private account quotas', () => {
+            user.accountType = AccountType.private
+            const quotas = Business.getQuotas(user);
+            expect(quotas.pages).toBe(50);
+            expect(quotas.prints).toBe(-1);
+            expect(quotas.templates).toBe(10);
         });
 
-        it('should return 0 for unknown account type', () => {
-            expect(Business.maxTemplatesFromAccountType(AccountType.unknown)).toBe(0);
+        it('should return beta account quotas', () => {
+            user.accountType = AccountType.beta
+            const quotas = Business.getQuotas(user);
+            expect(quotas.pages).toBe(50);
+            expect(quotas.prints).toBe(-1);
+            expect(quotas.templates).toBe(10);
         });
     });
 
@@ -127,7 +145,7 @@ describe('Business', () => {
             expect(mockUserDao.updatePrintCredit).not.toHaveBeenCalled();
         });
 
-        it('should decrease print credits for private account', async () => {
+        it('should decrease print credits for simmer account', async () => {
             const initialPrintCredit = 1
             const newUser = newTestUser();
             const mockUserDao = getMockUserDao(newUser);
@@ -221,6 +239,12 @@ describe('Business', () => {
             const result3 = await Business.printPurchase('customer-id', 5, mockUserDao);
             expect(result3).toBe(newUser);
             expect(Email.send).toHaveBeenCalledTimes(3);
+
+            newUser.setAccountType(AccountType.student);
+            const result4 = await Business.printPurchase('customer-id', 5, mockUserDao);
+            expect(result4).toBe(newUser);
+            expect(Email.send).toHaveBeenCalledTimes(4);
+
         });
     });
 

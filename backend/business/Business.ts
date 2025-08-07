@@ -5,38 +5,46 @@ import { AccountType } from "../models/AccountType";
 import { Refill } from "../models/Refill";
 import { User } from "../models/User";
 
+class Quota {
+    prints:number;
+    pages:number;
+    templates:number;
+    constructor(prints:number, pages:number, templates:number) {
+        this.prints = prints;
+        this.pages = pages;
+        this.templates = templates;
+    }
+}
+
 export class Business {
     static PRINT_PER_PURCHASE: number = 10;
     static PRINT_CREDIT_SIMMER: number = 4;
-    static PRINT_CREDIT_PRIVATE:number = 10;
+    static PRINT_CREDIT_STUDENT: number = 8;
+    static PRINT_CREDIT_PRIVATE:number = -1;
+    static PRINT_CREDIT_BETA:number = -1;
     static MAX_PAGES_SIMMER: number = 4;
-    static MAX_PAGES_PRIVATE: number = 10;
+    static MAX_PAGES_STUDENT: number = 4;
+    static MAX_PAGES_PRIVATE: number = 50;
     static MAX_PAGES_BETA: number = 50;
     static MAX_TEMPLATE_SIMMER: number = 2;
-    static MAX_TEMPLATE_PRIVATE: number = 5;
+    static MAX_TEMPLATE_STUDENT: number = 2;
+    static MAX_TEMPLATE_PRIVATE: number = 10;
     static MAX_TEMPLATE_BETA: number = 10;
 
     public static calculatePrintCredits(user:User):number {
-        let credit = 0;
-        
+        return Math.max( user.printCredits, Business.getQuotas(user).prints)
+    }
+
+    static getQuotas(user:User):Quota {
         switch(user.accountType) {
-            case AccountType.simmer: credit = this.PRINT_CREDIT_SIMMER; break;
-            case AccountType.private: credit = this.PRINT_CREDIT_PRIVATE; break;
-        }
-        return Math.max( user.printCredits, credit)
-    }
-
-    static maxPages(user:User):number {
-        return this.maxPagesFromAccountType(user.accountType)
-    }
-
-    static maxPagesFromAccountType(accountType:AccountType):number {
-        switch(accountType) {
-            case AccountType.private: return this.MAX_PAGES_PRIVATE;
-            case AccountType.beta:    return this.MAX_PAGES_BETA;
-            case AccountType.simmer:  return this.MAX_PAGES_SIMMER;
+            case AccountType.student: 
+                return new Quota(this.PRINT_CREDIT_STUDENT, this.MAX_PAGES_STUDENT, this.MAX_TEMPLATE_STUDENT)
+            case AccountType.private: 
+                return new Quota(this.PRINT_CREDIT_PRIVATE, this.MAX_PAGES_PRIVATE, this.MAX_TEMPLATE_PRIVATE)
+            case AccountType.beta: 
+                return new Quota(this.PRINT_CREDIT_BETA, this.MAX_PAGES_BETA, this.MAX_TEMPLATE_BETA)
             default:
-                return 0;
+                return new Quota(this.PRINT_CREDIT_SIMMER, this.MAX_PAGES_SIMMER, this.MAX_TEMPLATE_SIMMER)
         }
     }
 
@@ -49,6 +57,7 @@ export class Business {
             case AccountType.private: return this.MAX_TEMPLATE_PRIVATE;
             case AccountType.beta:    return this.MAX_TEMPLATE_BETA;
             case AccountType.simmer:  return this.MAX_TEMPLATE_SIMMER;
+            case AccountType.student: return this.MAX_TEMPLATE_STUDENT;
             default:
                 return 0;
         }
@@ -62,19 +71,19 @@ export class Business {
      */
     static async printConsume(user: User, userDao: UserDao):Promise<boolean> {
         const accountType = user.accountType
-        if(accountType == AccountType.beta) {
-            return true;
-        } else if(accountType == AccountType.simmer || accountType == AccountType.private) {
-            // simmer and private accounts are metered
-            if(user.printCredits <= 0) return false; // Broke bro
-            // use one tocken
-            user.printCredits--
-            await userDao.updatePrintCredit(user)
-            // console.log('[Business.printConsume] ' + user.id + ' consumed a print, ' + user.printCredits + ' remaining')
-            return true
-        }
-        // other account types are not known
-        return false
+        const quotas = this.getQuotas(user)
+
+        // Unlimited users do not consume prints
+        if( quotas.prints == -1) return true;
+
+        // user with quotas are metered
+        if(user.printCredits <= 0) return false; // Broke bro
+        // use one tocken
+        user.printCredits--
+        await userDao.updatePrintCredit(user)
+
+        // console.log('[Business.printConsume] ' + user.id + ' consumed a print, ' + user.printCredits + ' remaining')
+        return true
     }
 
     /**
@@ -176,8 +185,9 @@ export class Business {
     static async updateAccountType(user:User, newAccountType:AccountType, userDao:UserDao):Promise<User> {
         // update account type
         user.accountType = newAccountType
-        user.maxTemplates = Business.maxTemplatesFromAccountType(newAccountType)
-        user.maxPages = Business.maxPagesFromAccountType(newAccountType)
+        const quotas = this.getQuotas(user)
+        user.maxTemplates = quotas.templates
+        user.maxPages = quotas.pages
 
         await userDao.updateType(user)
 
