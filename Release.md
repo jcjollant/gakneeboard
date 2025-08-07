@@ -1,3 +1,7 @@
+## 08/07/2025
+1) 5320
+* Effective Date update
+* New Account type Private, old Private becomes Student
 ## 07/10/2025
 1) 5280 - Effective Date update
 ## 06/22/2025
