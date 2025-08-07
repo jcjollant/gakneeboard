@@ -1,7 +1,7 @@
 <template>
     <div class="modesList">
         <div v-for="(mode,index) in modes" class="choice">
-            <Button  :label="mode.label" :severity="mode.value==model ? 'primary' : 'secondary'" class="labelButton"
+            <Button  :label="mode.label" :severity="mode.value==model ? 'primary' : 'secondary'" class="labelButton" :title="mode.description"
                 @click="emits('selection', mode.value)"></Button>
             <div v-if="expandable && mode.expandable" class="expandable" :class="'expand'+index"  title="Select mode and expand tile"
                 @click="emits('expand',mode.value)">
