@@ -68,8 +68,9 @@ export function newTestUser(userId:number=0, accoutType:AccountType=AccountType.
     // max either 2, 5 or 10
     // const max = [2,5,10]
     // newUser.setMaxTemplates(max[Math.floor(Math.random() * max.length)])
-    newUser.setMaxTemplates(Business.maxTemplatesFromAccountType(accoutType))
-    newUser.setMaxPages(Business.maxPagesFromAccountType(accoutType))
+    const quotas = Business.getQuotas(newUser)
+    newUser.setMaxTemplates(quotas.templates)
+    newUser.setMaxPages(quotas.pages)
 
     return newUser
 }
