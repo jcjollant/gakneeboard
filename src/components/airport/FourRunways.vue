@@ -6,11 +6,11 @@
 </template>
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { RunwaySettings } from './RunwaySettings';
+import { RunwayViewSettings } from './RunwayViewSettings';
 
 const emits = defineEmits(['rwyclick'])
-const noRunways = new Array<RunwaySettings>(4).fill(new RunwaySettings())
-const rwySettings = ref<RunwaySettings[]>(noRunways)
+const noRunways = new Array<RunwayViewSettings>(4).fill(new RunwayViewSettings())
+const rwySettings = ref<RunwayViewSettings[]>(noRunways)
 
 </script>
 <style scoped>
