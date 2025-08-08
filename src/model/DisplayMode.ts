@@ -12,9 +12,9 @@ export class DisplayModeChoice {
 }
 
 export enum DisplayModeAirport {
-    OneRunway = 'one',
-    FourRunways = 'four',
-    RunwayList = 'list',
+    RunwaySketch = 'one',
+    // FourRunways = 'four',
+    // RunwayList = 'list',
     Diagram = 'diag',
 }
 
