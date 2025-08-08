@@ -44,7 +44,8 @@ import { UserUrl } from '../../lib/UserUrl.ts';
 import EitherOr from '../shared/EitherOr.vue';
 import { DisplayModeAirport } from '../../model/DisplayMode';
 import { Airport } from '../../model/Airport.ts';
-import { Runway as RunwayModel } from '../../model/Airport.ts';
+import { Runway as AirportRunway } from '../../model/Airport.ts';
+import { AirportTileConfig } from './AirportTileConfig.ts';
 
 let airport = new Airport()
 
@@ -62,14 +63,10 @@ const patternChoices = [
 const loading = ref(false)
 const patternChoice = ref(patternChoices[0])
 const props = defineProps({
-    displayMode: { type: String, required: true},
     airport: { type: Object, default: null},
-    rwyName: { type: String, default: null},
-    rwyOrientation: { type: String, default: 'vertical'},
-    tp: { type: Number, default: 0},
-    showHeadings: { type: Boolean, default: true},
+    config: { type:AirportTileConfig, required: true},
 })
-const rwyList = ref<RunwayModel[]>([])
+const rwyList = ref<AirportRunway[]>([])
 const showCancel = ref(false)
 const canApply = ref(false)
 const canCreate = ref(false)
@@ -89,29 +86,37 @@ function loadProps(props) {
     if( props.airport) {
         airport = Airport.copy(props.airport)
         showAirport()
+    }
+    if(props.config) {
+        const config = props.config as AirportTileConfig
         // update edit field value to reflect airport code
-        airportCode.value = airport.code;
+        airportCode.value = config.code;
         // if we have an airport to start with, we can revert.
         showCancel.value = true;
         canApply.value = true;
+
         // select the first runway by default
-        if( props.rwyName) {
-            selectedRwyName.value = props.rwyName
-        } else {
+        if( config.rwys.length > 0) {
+            selectedRwyName.value = config.rwys[0]
+        } else if( props.airport) {
             // Default to first runway name
-            selectedRwyName.value = airport.rwys[0].name
+            selectedRwyName.value = props.airport.rwys[0].name
         }
 
         // rwyOrientation.value = orientations[(props.rwyOrientation == 'magnetic' ? 1 : 0)]
-        verticalOrientation.value = (props.rwyOrientation == 'vertical')    
+        verticalOrientation.value = (config.rwyOrientation == 'vertical')
         // console.log( 'AirportEdit loadProps ' + props.rwyOrientation)
 
         // restore show headings
-        showHeadings.value = props.showHeadings
+        showHeadings.value = config.headings
+        runwaySelection.value = config.mode == DisplayModeAirport.RunwaySketch
+
+        // Traffic pattern
+        patternChoice.value = patternChoices.find( p => p.value == config.pattern) ?? patternChoices[0];
+    } else { // In the absence of a config
+        runwaySelection.value = false;
+        patternChoice.value = patternChoices[0];
     }
-    runwaySelection.value = (props.displayMode == DisplayModeAirport.OneRunway || props.displayMode == DisplayModeAirport.FourRunways)
-    // Traffic pattern
-    patternChoice.value = patternChoices.find( p => p.value == props.tp) ?? patternChoices[0];
 }
 
 onMounted(() => {
