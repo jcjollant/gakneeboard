@@ -7,13 +7,10 @@
 
 <script setup>
 import {onMounted,ref,watch} from 'vue'
+import { RunwayViewSettings } from './RunwayViewSettings'
 
 const props = defineProps({
-    runway: { type: Object, default: null},
-    pattern : { type: Number, default: 0},
-    orientation : { type: String, default : null},
-    headings : { type: Boolean, default: true},
-    label : { type: String, default: null },
+    settings: { type: RunwayViewSettings, required: true },
     small : { type: Boolean, default: false},
 })
 
@@ -43,20 +40,21 @@ watch( props, async() => {
 })
 
 function loadProps( props) {
-    // console.log( 'RunwayView loadProps ' + JSON.stringify(props))
-    magneticOrientation = (props.orientation && props.orientation == 'magnetic')
-    showHeadings = props.headings
+    console.log( 'RunwayView loadProps ' + JSON.stringify(props))
+    const settings = props.settings ?? new RunwayViewSettings();
+    magneticOrientation = (settings.orientation && settings.orientation == 'magnetic')
+    showHeadings = settings.headings
 
-    patternMode = props.pattern
+    patternMode = settings.pattern
     showNorthMidField = (patternMode == 4)
     showNorthTp = (patternMode == 0 || patternMode == 3 || patternMode == 4)
     showSouthMidField = (patternMode == 2)
     showSouthTp = (patternMode == 0 || patternMode == 1 || patternMode == 2)
 
-    const runway = props.runway
+    const runway = settings.runway
 
-    if( props.label) {
-        label.value = props.label;
+    if( settings.label) {
+        label.value = settings.label;
     } else if( 'length' in runway) {
         if( 'width' in runway) {
             label.value = runway['length'] + 'x' + runway['width'];
