@@ -92,6 +92,16 @@ export class Formatter {
         return `${minutes}:${secondsStr}`
     }
 
+    /**
+     * Turns a navaid into its bearing
+     * @param navaid 
+     * @returns 
+     */
+    static navaid(navaid:any) {
+        if(!navaid || !navaid.to) return '-'
+        return navaid.to.toFixed(0) + '°'
+    }
+
     static speed(value:any) {
         if(value == null || value == undefined) return Formatter.noSpeed
         if(typeof value == 'string') return Number(value).toFixed(0)
