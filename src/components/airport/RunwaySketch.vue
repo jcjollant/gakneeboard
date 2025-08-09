@@ -8,6 +8,7 @@
 <script setup>
 import {onMounted,ref,watch} from 'vue'
 import { RunwayViewSettings } from './RunwayViewSettings'
+import { RunwayOrientation } from './RunwayOrientation'
 
 const props = defineProps({
     settings: { type: RunwayViewSettings, required: true },
@@ -20,7 +21,7 @@ let showNorthMidField = false
 let showNorthTp = true
 let showSouthMidField = false
 let showSouthTp = true
-let magneticOrientation = false
+let verticalOrientation = false
 let smallDisplay = false
 
 const myCanvas = ref()
@@ -40,22 +41,24 @@ watch( props, async() => {
 })
 
 function loadProps( props) {
-    console.log( 'RunwayView loadProps ' + JSON.stringify(props))
+    // console.log( '[RunwaySketch.loadProps]', JSON.stringify(props))
     const settings = props.settings ?? new RunwayViewSettings();
-    magneticOrientation = (settings.orientation && settings.orientation == 'magnetic')
+    verticalOrientation = settings.orientation == RunwayOrientation.Vertical
     showHeadings = settings.headings
 
-    patternMode = settings.pattern
+    patternMode = settings.patternMode
     showNorthMidField = (patternMode == 4)
     showNorthTp = (patternMode == 0 || patternMode == 3 || patternMode == 4)
     showSouthMidField = (patternMode == 2)
     showSouthTp = (patternMode == 0 || patternMode == 1 || patternMode == 2)
 
+    // console.log('[RunwaySketch.loadProps] patternMode', patternMode, 'showNorthTp', showNorthTp, 'showSouthTp', showSouthTp, 'showHeadings', showHeadings, 'verticalOrientation', verticalOrientation, 'settings', JSON.stringify(settings))
+
     const runway = settings.runway
 
     if( settings.label) {
         label.value = settings.label;
-    } else if( 'length' in runway) {
+    } else if( runway && 'length' in runway) {
         if( 'width' in runway) {
             label.value = runway['length'] + 'x' + runway['width'];
         } else {
@@ -94,11 +97,11 @@ function show(runway) {
 
     const ctx = myCanvas.value.getContext('2d');
     // console.log('[Runway.show] parent width', myCanvas.value.parentElement.clientWidth)
-    const referenceSize = myCanvas.value.parentElement.clientHeight;
+    const referenceSize = myCanvas.value.parentElement.clientWidth
     myCanvas.value.width = myCanvas.value.parentElement.clientWidth;
     myCanvas.value.height = myCanvas.value.parentElement.clientHeight;
 
-    const rwyLength = referenceSize * ( smallDisplay ? 0.65 : 0.55);
+    const rwyLength = referenceSize * ( smallDisplay ? 0.80 : 0.55);
     const rwyHLength = rwyLength / 2;
     const rwyWidth = referenceSize * ( smallDisplay ? 0.18 : 0.12);
     const rwyHWidth = rwyWidth / 2;
@@ -111,7 +114,7 @@ function show(runway) {
 
     // Move center to origin
     ctx.translate((referenceSize) / 2, (referenceSize) / 2); // Move back to original position
-    if( magneticOrientation) {
+    if( !verticalOrientation) {
         const angleInRad = Math.PI / 180 * northEnd.mag; // Convert degrees to radians
         ctx.rotate(angleInRad);
     }
