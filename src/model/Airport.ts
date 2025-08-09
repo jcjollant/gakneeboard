@@ -198,6 +198,7 @@ export class Airport {
     // copy constructor
     static currentVersion:number = modelVersion;
     static invalidVersion:number = -1;
+    static noAirport = new Airport();
     code: string;
     name: string;
     elev: number;
