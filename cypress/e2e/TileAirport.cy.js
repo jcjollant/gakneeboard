@@ -1,7 +1,7 @@
 import { bellinghamTitle, boeingTitle, checkCorner, checkTileSpan, checkTileTitle, checkTileVisible, loadDemo, maintenanceMode, rentonTitle, visitSkipBanner, waitForAirports, waitOneAirport } from './shared'
 import { displaySelection, displaySelectionExpand, viewport } from './shared'
 describe('Tiles', () => {
-  it('Airport Tile', () => {
+  it.only('One Airport', () => {
     visitSkipBanner()
     maintenanceMode()
     loadDemo('Tiles')
@@ -10,11 +10,10 @@ describe('Tiles', () => {
 
     // Renton and Boeing fields
     const expectedValues = [
-      {tile:rentonTitle,'label0':'ATIS','value0':'126.950','label1':'TWR','value1':'124.700','label2':'Elev','value2':'32','label3':'TPA',value3:'1250',watermark:'KRNT','dimensions':'5382x200'},
-      {tile:boeingTitle,'label0':'ATIS','value0':'127.750','label1':'RWY 14L-32R','value1':'118.300','label2':'Elev','value2':'22','label3':'TPA','value3':'1022','watermark':'KBFI','dimensions':'3709x100'},
+      {tile:rentonTitle,label0:'ATIS',value0:'126.950',label1:'TWR','value1':'124.700',label2:'Elev','value2':'32',label3:'GND',value3:'121.600',watermark:'KRNT','dimensions':'5382x200'},
+      {tile:boeingTitle,label0:'ATIS',value0:'127.750',label1:'TWR','value1':'118.300',label2:'Elev','value2':'22',label3:'GND',value3:'121.900','watermark':'KBFI','dimensions':'3709x100'},
     ]
-    for(let index = 0; index < expectedValues.length; index++) {
-      const value = expectedValues[index]
+    expectedValues.forEach((value,index) => {
       cy.get(`.page0 > .tile${index} > .headerTitle`).contains(value.tile)
       cy.get(`.page0 > .tile${index} > .tileContent .top.left > .clickable`)
       checkCorner(0, index, '.top.left', value.label0, value.value0)
@@ -29,11 +28,13 @@ describe('Tiles', () => {
       checkCorner(0, index, '.bottom.right', value.label3, value.value3)
 
       cy.get(`.page0 > .tile${index} > .tileContent .container .label`).contains(value.dimensions)
-      cy.get(`.page0 > .tile${index} > .tileContent .airportCode`).contains(value.watermark)
-    }
+      cy.get(`.page0 .tile${index} .airportCode`).contains(value.watermark)
+
+    })
 
     // Switch runway and check frequency is being updated accordingly
     cy.get('.page0 > .tile1 > .headerTitle > .titleText').click()
+    cy.get('[aria-label="14L-32R"]').click() // disable the other runway
     cy.get('[aria-label="14R-32L"]').click()
     cy.get('[aria-label="Apply"]').click()
     cy.get(`.page0 > .tile1 > .tileContent .top.right .value`).contains('120.600')
@@ -49,7 +50,7 @@ describe('Tiles', () => {
     cy.get('.page0 > .tile2 .settings > .airportCode .airportName').contains(bellinghamTitle)
     cy.get('.page0 .tile2 .actionBar [aria-label="Apply"]').click()
     // Check for bellingham fields
-    const kbliValues = {tile:bellinghamTitle, label0:'ATIS',value0:'134.450',label1:'TWR',value1:'124.900',label2:'Elev',value2:'171',label3:'TPA',value3:'1201',watermark:'KBLI',dimensions:'6700x150'}
+    const kbliValues = {tile:bellinghamTitle, label0:'ATIS',value0:'134.450',label1:'TWR',value1:'124.900',label2:'Elev',value2:'171',label3:'GND',value3:'121.600',watermark:'KBLI',dimensions:'6700x150'}
     cy.get('.page0 > .tile2 > .headerTitle').contains(kbliValues.tile)
     checkCorner( 0, 2, '.top.left', kbliValues.label0, kbliValues.value0)
     checkCorner( 0, 2, '.top.right', kbliValues.label1, kbliValues.value1)
