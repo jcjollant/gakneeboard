@@ -32,7 +32,7 @@ let runway:Runway = Runway.noRunway()
 const value = ref('')
 
 const props = defineProps({
-    airport: { type: Object, default: null},
+    airport: { type: Airport, default: null},
     data: { type: String, default: null},
     runway: { type: Runway, default: Runway.noRunway()},
     flip: { type: Boolean, default: false},
@@ -78,9 +78,11 @@ function loadProps(newProps:any) {
         // console.log('[Corner.loadProps] no data')
         unknownValues()
     } else {
+        airport = newProps.airport
         showField(newProps.data)
     }
 
+    runway = newProps.runway
 
     // console.log( '[Corner.loadProps] big', newProps.big)
     if(newProps.big) {
@@ -94,6 +96,7 @@ function loadProps(newProps:any) {
 
 // turn the selection into the actual label/value pair
 function showField( field:string) {
+    // console.log('[Corner.showField]', field)
     notes.value = false
     currentFrequencyType.value = null
     
@@ -160,14 +163,15 @@ function showField( field:string) {
         switch( field) {
             case 'weather':
                 const weather =  airport.getFreqWeather()
-                // console.log('[Corner.showField]', weather)
+                // console.log('[Corner.showField] weather', airport, weather)
                 label.value = weather ? weather.name : ''
                 value.value = weather ? Formatter.frequency(weather.mhz) : '?'
                 currentFrequencyType.value = FrequencyType.weather
                 break
             case 'twr':
+                console.log('[Corner.showField] twr', runway)
                 if( runway.freq > 0) {
-                    // console.log('[Corner.showField]', JSON.stringify(runway.freq))
+                    // console.log('[Corner.showField]', runway.freq)
                     value.value = runway.freq.toFixed(3)
                     label.value = 'RWY ' + runway.name
                     currentFrequencyType.value = FrequencyType.tower
@@ -201,6 +205,7 @@ function showField( field:string) {
                 currentFrequencyType.value = FrequencyType.ground
                 break;
             case 'rwyinfo':
+                // console.log('[Corner.showField] rwyinfo', runway)
                 value.value = runway.length + 'x' + runway.width
                 label.value = runway.surface ? (runway.surface.cond + '/' + runway.surface.type) : '?'
                 break;
