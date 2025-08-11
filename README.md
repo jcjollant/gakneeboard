@@ -9,7 +9,7 @@ Start on local network (to allow access from other devices on the network). This
 `npm run dev -- --host`
 
 # Testing
-=> See tests/Readme.md
+[See Tests Readme](test/Readme.md) 
 
 # Release
 ## Checklist
