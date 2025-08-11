@@ -1,4 +1,7 @@
 # User Experience updates
+## 8/11/2025
+1) 5330
+* Added version number to sidebar
 ## 8/07/2025
 1) 5322
 * Added new pricing plan Private Pilot, renamed Private to Student Pilot
