@@ -117,7 +117,7 @@ export function maintenanceMode() {
 
 export function loadDemo(index=-1) {
     // Turn text into index if necessary
-    const demoNames = ['C172','Checklist','Tiles', 'NavLog', 'Charts', 'Holds', 'IFR']
+    const demoNames = ['VFR','IFR','Checklist','Acronyms','Tiles', 'NavLog', 'Charts', 'Holds']
     if(index == -1) {
         // load default demo
         cy.get('.demoSection > .header').click()        
