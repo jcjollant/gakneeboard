@@ -35,13 +35,13 @@
                     <Corner v-for="index in [1,5,7,3]" :airport="airportData" :data="corners[index]" :runway="mainRunway" :big="true" :class="['corner'+index]"
                         @click="onCornerEdit(index, $event)" />
                 </div>
-                <Corner v-if="!expanded" class="corner top left" :airport="airportData" :data="corners[0]" :runway="mainRunway" :flip="true"
+                <Corner v-if="!expanded" class="corner top left" :airport="airportData" :data="corners[0]" :runway="mainRunway" :flip="true" id="corner0"
                     @click="onCornerEdit(0, $event)" />
-                <Corner v-if="!expanded" class="corner top right" :airport="airportData" :data="corners[1]"  :runway="mainRunway" :flip="true"
+                <Corner v-if="!expanded" class="corner top right" :airport="airportData" :data="corners[1]"  :runway="mainRunway" :flip="true" id="corner1"
                     @click="onCornerEdit(1, $event)"/>
-                <Corner v-if="!expanded"  class="corner bottom left" :airport="airportData" :data="corners[2]"  :runway="mainRunway"
+                <Corner v-if="!expanded"  class="corner bottom left" :airport="airportData" :data="corners[2]"  :runway="mainRunway"  id="corner2"
                     @click="onCornerEdit(2, $event)"/>
-                <Corner v-if="!expanded"  class="corner bottom right" :airport="airportData" :data="corners[3]"  :runway="mainRunway"
+                <Corner v-if="!expanded"  class="corner bottom right" :airport="airportData" :data="corners[3]"  :runway="mainRunway"  id="corner3"
                     @click="onCornerEdit(3, $event)"/>
             </div>
             <PlaceHolder v-else title="No Airport" />
@@ -107,14 +107,14 @@ const props = defineProps({
 
 // load props can happen on initial load or when settings are changed
 function loadProps(newProps:any) {
-    // console.log('[AirportTile.loadProps]', newProps)
+    // console.debug('[AirportTile.loadProps]', newProps)
     const params = newProps.params;
     if( !params) {
-        console.log( 'Airport cannot load params ' + JSON.stringify(params))
+        console.warn( 'Airport cannot load params ' + JSON.stringify(params))
         return
     }
 
-    // console.log('Airport loadProps ' + JSON.stringify(newProps))
+    // console.debug('Airport loadProps ' + JSON.stringify(newProps))
     let propsConfig = new AirportTileConfig()
 
     if( params.code) {
@@ -141,15 +141,15 @@ function loadProps(newProps:any) {
     // Restore corner fields
     let cornerFields = params.corners
     if( !cornerFields) {
-        // console.log('AirportTile loading default cornerFields')
+        // console.debug('AirportTile loading default cornerFields')
         cornerFields = defaultCornerFields;
     } 
     cornerFields.forEach( (field, index) => {
-        // console.log('[AirportTile.loadProps]', index)
+        // console.debug('[AirportTile.loadProps]', index)
         corners.value[index] = field
     })
     propsConfig.corners = corners.value
-    // console.log('AirportTile loaded corners ' + JSON.stringify(corners))
+    // console.debug('AirportTile loaded corners ' + JSON.stringify(corners))
 
     // Rwy orientation
     propsConfig.rwyOrientation = params?.rwyOrientation ?? RunwayOrientation.Vertical;
@@ -178,10 +178,10 @@ function loadProps(newProps:any) {
         } 
 
         a.promise.then((outcome) => {
-            // console.log( '[AirportTile.loadProps] outcome', JSON.stringify(outcome))
+            // console.debug( '[AirportTile.loadProps] outcome', JSON.stringify(outcome))
             // if data was not current, load new version
             if(!outcome.current && outcome.airport){
-                // console.log( '[AirportTile.loadProps] data was not current', JSON.stringify(outcome))
+                // console.debug( '[AirportTile.loadProps] data was not current', JSON.stringify(outcome))
                 const refreshedAirport = Airport.copy(outcome.airport)
                 showAirport(refreshedAirport)
             }
@@ -190,13 +190,13 @@ function loadProps(newProps:any) {
 }
 
 onMounted(() => {
-    // console.log('Airport mounted with ' + JSON.stringify(props.params))
+    // console.debug('Airport mounted with ' + JSON.stringify(props.params))
     // get this airport data from parameters
     loadProps(props)
 })
 
 watch( props, async() => {
-    // console.log("Airport props changed " + JSON.stringify(props));
+    // console.debug("Airport props changed " + JSON.stringify(props));
     loadProps(props)
 })
 
@@ -204,7 +204,7 @@ watch( props, async() => {
 //--------------------------
 
 function changeMode(newMode:DisplayModeAirport, expand:boolean=false) {
-    // console.log('[AirportTile.changeMode]', newMode, editMode.value)
+    // console.debug('[AirportTile.changeMode]', newMode, editMode.value)
     displaySelection.value = false;
     displayMode.value = newMode
     // Edit mode is only needed when there is no airport
@@ -218,7 +218,7 @@ function changeMode(newMode:DisplayModeAirport, expand:boolean=false) {
  * @param index Corder
  */
 function onCornerEdit(index:number, event) {
-    // console.log('[AirportTile.onCornerEdit]', index, event)
+    console.debug('[AirportTile.onCornerEdit]', index, event)
     cornerConfigEvent.value = event
     cornerConfigIndex.value = index
 }
@@ -228,7 +228,7 @@ function onCornerEdit(index:number, event) {
  * @param {*} data 
  */
 function onCornerUpdate( field:string) {
-    // console.log( 'onCornerUpdate ' + JSON.stringify(data))
+    // console.debug( 'onCornerUpdate ' + JSON.stringify(data))
     // prevent event processing in the component
     cornerConfigEvent.value = undefined
     if( field) {
@@ -236,12 +236,12 @@ function onCornerUpdate( field:string) {
         corners.value[cornerConfigIndex.value] = field
         saveConfig();
     } else {
-        console.log('Missing data from corner update')
+        console.warn('Missing data from corner update')
     }
 }
 
 function onExpand(mode:string) {
-    // console.log('[AirportTile.onExpand]', mode)
+    // console.debug('[AirportTile.onExpand]', mode)
     changeMode(mode as DisplayModeAirport, true)
 }
 
@@ -262,7 +262,7 @@ function onHeaderClick() {
 // Settings have been updated in edit mode
 // Show new Airport and runway(s)
 function onSettingsUpdate( newAirport:Airport, newConfig:AirportTileConfig, save:boolean = true) {
-    // console.log('[AirportTile.onSettingsUpdate]', newAirport, newConfig, save)
+    // console.debug('[AirportTile.onSettingsUpdate]', newAirport, newConfig, save)
     // Close edit mode and save config
     editMode.value = false
     config.value = newConfig
@@ -279,7 +279,7 @@ function onSettingsUpdate( newAirport:Airport, newConfig:AirportTileConfig, save
  * @param airport
  */
 function showAirport( airport:Airport) {
-    // console.log( "[AirportTile.showAirport] Showing airport ", JSON.stringify(airport))
+    // console.debug( "[AirportTile.showAirport] Showing airport ", JSON.stringify(airport))
     if( !airport) {
         // if airport data is missing, we switch to edit mode
         editMode.value = true
@@ -300,12 +300,12 @@ function showAirport( airport:Airport) {
     aptDiagram.value = airport.sketch
 
     // get runway(s) data into runwayViews
-    // console.log('[AirportTile.showAirport] config', config.value)
+    // console.debug('[AirportTile.showAirport] config', config.value)
     const conf = config.value
     if(conf && conf.rwys) {
         runwayViews.value = conf.rwys.map((rwyName, index) => {
             const rwyData = airport.rwys.find((rwy) => rwy.name == rwyName)
-            // console.log( '[AirportTile.showAirport] runway ', index, rwyData, conf)
+            // console.debug( '[AirportTile.showAirport] runway ', index, rwyData, conf)
             return new RunwayViewSettings(rwyData, conf.pattern, conf.rwyOrientation, undefined, conf.headings)
         })
     } else {
@@ -327,15 +327,15 @@ function showAirport( airport:Airport) {
 
 // invoked whenever we want to save the current state
 function saveConfig(expand:boolean=false) {
-    // console.log('[AirportTile.saveConfig]', config.value)
+    // console.debug('[AirportTile.saveConfig]', config.value)
     if( !config.value) {
-        console.log('[AirportTile.saveConfig] config is missing')
+        console.warn('[AirportTile.saveConfig] config is missing')
         return;
     }
 
     // in saved config, rwyOrientation is just a string
 
-    // console.log( 'Airport widget updated with ' + JSON.stringify(airportParam));
+    // console.debug( 'Airport widget updated with ' + JSON.stringify(airportParam));
     emits( expand ? 'expand' : 'update', config.value);
 }
 
