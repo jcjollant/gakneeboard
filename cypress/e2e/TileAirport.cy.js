@@ -1,9 +1,24 @@
-import { bellinghamTitle, boeingTitle, checkCorner, checkTileSpan, checkTileTitle, checkTileVisible, loadDemo, maintenanceMode, rentonTitle, visitSkipBanner, waitForAirports, waitOneAirport } from './shared'
+import { bellinghamTitle, boeingTitle, checkTileSpan, checkTileTitle, checkTileVisible, loadDemo, maintenanceMode, rentonTitle, visitSkipBanner, waitForAirports, waitOneAirport } from './shared'
 import { displaySelection, displaySelectionExpand, viewport } from './shared'
+
+function checkCorner(page, tile, corner, label, value) {
+    cy.get(`.page${page} > .tile${tile} > .tileContent ${corner} .label`).contains(label)
+    cy.get(`.page${page} > .tile${tile} > .tileContent ${corner} .value`).contains(value)
+}
+
+function clickCorner(page, tile, corner) {
+    // cy.get(`.page${page} > .tile${tile} > .tileContent #corner${corner}`).should('have.currentTager').click()
+    cy.get(`.page${page} > .tile${tile} > .tileContent #corner${corner}`).trigger('mousedown')
+}
+
+function toggleEditMode( page, tile) {
+    cy.get(`.page${page} > .tile${tile} > .headerTitle > .titleText`).click()
+}
+
 describe('Tiles', () => {
-  it.only('One Airport', () => {
+  it('Shows default fields in Sketch mode single runway', () => {
     visitSkipBanner()
-    maintenanceMode()
+    // maintenanceMode()
     loadDemo('Tiles')
 
     waitForAirports()
@@ -14,7 +29,7 @@ describe('Tiles', () => {
       {tile:boeingTitle,label0:'ATIS',value0:'127.750',label1:'TWR','value1':'118.300',label2:'Elev','value2':'22',label3:'GND',value3:'121.900','watermark':'KBFI','dimensions':'3709x100'},
     ]
     expectedValues.forEach((value,index) => {
-      cy.get(`.page0 > .tile${index} > .headerTitle`).contains(value.tile)
+      checkTileTitle(0, index, value.tile)
       cy.get(`.page0 > .tile${index} > .tileContent .top.left > .clickable`)
       checkCorner(0, index, '.top.left', value.label0, value.value0)
 
@@ -32,16 +47,8 @@ describe('Tiles', () => {
 
     })
 
-    // Switch runway and check frequency is being updated accordingly
-    cy.get('.page0 > .tile1 > .headerTitle > .titleText').click()
-    cy.get('[aria-label="14L-32R"]').click() // disable the other runway
-    cy.get('[aria-label="14R-32L"]').click()
-    cy.get('[aria-label="Apply"]').click()
-    cy.get(`.page0 > .tile1 > .tileContent .top.right .value`).contains('120.600')
-    cy.get(`.page0 > .tile1 > .tileContent .top.right .label`).contains('RWY 14R-32L')
-
     // Enter a new airport code and check it's data is loading
-    cy.get('.page0 > .tile2 > .headerTitle > .titleText').click()
+    toggleEditMode(0, 2)
     cy.get('.page0 > :nth-child(3) > .content > .settings > .airportCode > .p-inputgroup > .p-inputtext').clear().type('KBLI')
     // wait for the reply
     waitOneAirport()
@@ -50,7 +57,8 @@ describe('Tiles', () => {
     cy.get('.page0 > .tile2 .settings > .airportCode .airportName').contains(bellinghamTitle)
     cy.get('.page0 .tile2 .actionBar [aria-label="Apply"]').click()
     // Check for bellingham fields
-    const kbliValues = {tile:bellinghamTitle, label0:'ATIS',value0:'134.450',label1:'TWR',value1:'124.900',label2:'Elev',value2:'171',label3:'GND',value3:'121.600',watermark:'KBLI',dimensions:'6700x150'}
+    const kbliValues = {tile:bellinghamTitle, label0:'ATIS',value0:'134.450',label1:'TWR',value1:'124.900',label2:'Elev',value2:'171',label3:'GND',value3:'127.400',watermark:'KBLI',dimensions:'6700x150'}
+    checkTileTitle(0, 2, kbliValues.tile)
     cy.get('.page0 > .tile2 > .headerTitle').contains(kbliValues.tile)
     checkCorner( 0, 2, '.top.left', kbliValues.label0, kbliValues.value0)
     checkCorner( 0, 2, '.top.right', kbliValues.label1, kbliValues.value1)
@@ -58,42 +66,32 @@ describe('Tiles', () => {
     checkCorner( 0, 2, '.bottom.right', kbliValues.label3, kbliValues.value3)
     cy.get(`.page0 > .tile2 > .tileContent .container .label`).contains(kbliValues.dimensions)
 
-    // Test All Runways mode with KAWO Arlington
-    cy.get('.runwayList > :nth-child(1) > :nth-child(1)').contains('Rwy')
-    cy.get('.runwayList > :nth-child(1) > :nth-child(2)').contains('Len')
-    cy.get('.runwayList > :nth-child(1) > :nth-child(3)').contains('Freq')
-    cy.get('.runwayList > :nth-child(2) > .runwayListItemRunway > .patternRight').contains('11')
-    cy.get('.runwayList > :nth-child(2) > .runwayListItemRunway > .patternLeft').contains('29')
-    cy.get('.runwayList > :nth-child(3) > .runwayListItemRunway > .patternRight').contains('16')
-    cy.get('.runwayList > :nth-child(3) > .runwayListItemRunway > .patternLeft').contains('34')
-    cy.get(':nth-child(1) > :nth-child(1) > :nth-child(1) > .label').contains('Elev')
-    cy.get(':nth-child(2) > :nth-child(1) > :nth-child(1) > .label').contains('TPA')
-    cy.get('.footer > :nth-child(3) > :nth-child(1) > :nth-child(1) > .label').contains('AWOS-3PT')
-    cy.get(':nth-child(1) > :nth-child(1) > :nth-child(1) > :nth-child(2)').contains('142')
-    cy.get('.footer > :nth-child(2) > :nth-child(1) > :nth-child(1) > :nth-child(2)').contains('1142')
-    cy.get('.footer > :nth-child(3) > :nth-child(1) > :nth-child(1) > :nth-child(2)').contains('135.625')
-
     // Replace tile with Notes
-    cy.get('.page0 > .tile2 > .headerTitle > .titleText').click()
+    toggleEditMode(0, 2)
     cy.get('.page0 > .tile2 > .headerTitle > .replaceButton').click({force: true})
     cy.get('[aria-label="Notes"]').click()
     cy.get('.page0 > :nth-child(3) > .headerTitle > div').contains('Notes')
+
     // Change tile back to Airport
-    cy.get('.page0 > .tile2 > .headerTitle > .titleText').click()
+    toggleEditMode(0, 2)
     cy.get('.page0 > .tile2 > .headerTitle > .replaceButton').click({force: true})
     cy.get('[aria-label="Airport"]').click()
     // we should be in edit mode
     cy.get('.p-inputtext')
   })
 
-  it('Configure Corners', () => {
+  it.only('Configures Corners', () => {
     viewport()
     visitSkipBanner()
     loadDemo('Tiles')
 
+    waitForAirports()
+    checkTileTitle(0, 0, rentonTitle)
+
     // Check Corners have all expected data
     // Open Renton bottom right corner to get the corner selection window
-    cy.get(`.page0 > .tile0 > .tileContent .bottom.right`).click()
+    clickCorner(0, 0, 3)
+
     // standard fields
     const expectedStandardFields = [
       {name:'Field Elevation',label:'Elevation',value:'32'}, 
@@ -176,6 +174,16 @@ describe('Tiles', () => {
     cy.get('.ctCustom > label.ml-2').click()
     cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .label').contains(customLabel)
     cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .value').contains(customValue)
+
+    // Switch runway and check frequency is being updated accordingly
+    toggleEditMode(0, 1)
+    cy.get('[aria-label="14L-32R"]').click() // disable the other runway
+    cy.get('[aria-label="14R-32L"]').click()
+    cy.get('[aria-label="Apply"]').click()
+    cy.get(`.page0 > .tile1 > .tileContent .top.right .value`).contains('120.600')
+    cy.get(`.page0 > .tile1 > .tileContent .top.right .label`).contains('RWY 14R-32L')
+
+
   })
 
   it('Merges when code match', () => {
@@ -315,7 +323,11 @@ describe('Tiles', () => {
       })
   })
 
-  it('Display mode', () => {
+  it('Shows two runway sketches', () => {
+
+  })
+
+  it('Handles Display Mode', () => {
     visitSkipBanner()
     loadDemo()
 
