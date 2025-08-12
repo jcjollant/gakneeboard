@@ -73,14 +73,13 @@ class CornerValue {
 }
 
 watch(props, () => {
-    // console.log('[CornerConfig.watch] props', props)
-    if (props.event) menu.value.toggle(props.event)
+    console.debug('[CornerConfig.watch] props', props, menu.value)
+
+    if (props.event) {
+        menu.value.toggle(props.event)
+    }
     loadProps(props)
 })
-
-// watch(activeCorner, () => {
-//     console.log('[CornerConfig.watch] selectedIndex', activeCorner.value)
-// })
 
 function loadProps(props:any) {
     activeCorner.value = props.index
@@ -132,7 +131,7 @@ function onCustomValue() {
 }
 
 function onSelection(value: string) {
-    // console.log('[CornerConfig.onSelection]', value)
+    // console.debug('[CornerConfig.onSelection]', value)
     menu.value.hide()
     if (value == '??') {
         showCustom.value = true
