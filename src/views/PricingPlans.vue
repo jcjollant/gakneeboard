@@ -51,6 +51,14 @@
                   <path d="M18 6L6 18M6 6L18 18"></path>
                 </svg>
               </span>
+              <span v-else-if="typeof value === 'number'">
+                <svg v-if="value==2" class="icon check" viewBox="0 0 24 24">
+                  <path d="M20 6L9 17L4 12"></path>
+                </svg>
+                <svg v-else class="icon check" viewBox="0 0 24 24">
+                  <path d="M20 6 L9 17 L4 12 M24 6 L13 17 L8 12"></path>
+                </svg>
+              </span>
               <svg v-else class="icon check" viewBox="0 0 24 24">
                 <path d="M20 6L9 17L4 12"></path>
               </svg>
@@ -100,30 +108,15 @@ const plans = ref([
     monthly: false,
     description: "Best to Try it out",
     features: {
-      "4 Prints Per Month": true,
-      "2 Templates": true,
-      "2 Pages per Template": true,
-      "Airport Data Update": false,
+      "4 Prints per Month": false,
+      "Advanced Print Options": false,
+      "Templates": 2,
+      "Pages": 2,
     },
     popular: false,
     active: true,
     code: Pricing.simmer
   },
-  // {
-  //   name: "Hobbs Hugger",
-  //   price: 5,
-  //   monthly: false,
-  //   subtitle: "No Commitment!",
-  //   description: "Best for infrequent use",
-  //   features: {
-  //     "Prints: 25 pages": true,
-  //     "5 Templates": true,
-  //     "Airport Data Update": true,
-  //   },
-  //   popular: false,
-  //   active: true,
-  //   code: Pricing.hobbs
-  // },
   {
     name: "Student Pilot",
     price: 2.99,
@@ -131,14 +124,14 @@ const plans = ref([
     subtitle: "No Commitment",
     description: "Best for Occasional Use",
     features: {
-      "8 Prints Per Month": true,
-      "5 Templates": true,
-      "10 Pages": true,
-      "Airport Data Update": true,
+      "8 Prints per Month": true,
+      "Advanced Print Options": true,
+      "Templates": 2,
+      "Pages": 2,
     },
     popular: false,
     active: true,
-    code: Pricing.privatePilot
+    code: Pricing.studentPilot
   },
   // {
   //   name: "Instrument Pilot",
@@ -161,16 +154,32 @@ const plans = ref([
     price: 3.49,
     monthly: true,
     subtitle: "Charged $41.88/year",
-    description: "30% off regular price",
+    description: "Expires Sep 30th",
     features: {
       "Unlimited Prints": true,
-      "10 Templates": true,
-      "50 Pages": true,
-      "Airport Data Update": true,
+      "Advanced Print Options": true,
+      "Templates": 10,
+      "Pages": 50,
     },
     popular: true,
     active: true,
     code: Pricing.betaDeal
+  },
+  {
+    name: "Private Pilot",
+    price: 4.49,
+    monthly: true,
+    subtitle: "Charged $53.88/year",
+    description: "This is our regular price",
+    features: {
+      "Unlimited Prints": true,
+      "Advanced Print Options": true,
+      "Templates": 10,
+      "Pages": 50,
+    },
+    popular: false,
+    active: true,
+    code: Pricing.privatePilot
   }
 ])
 const router = useRouter()
@@ -287,7 +296,7 @@ function onPlan(code:Pricing) {
 
 @media (min-width: 768px) {
   .pricing-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 

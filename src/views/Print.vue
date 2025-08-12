@@ -16,7 +16,7 @@
       </div>
       <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages">
         <Page :data="page.front" :ver="template.ver" :format="template.format"/>
-        <SideBar class="sidebar" />
+        <SideBar class="sidebar" :ver="template.ver" />
         <Page v-if="page.back" :data="page.back" :ver="template.ver" :format="template.format" :class="{flipMode:printFlipMode}" />
       </div>
     </div>
