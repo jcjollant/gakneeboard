@@ -50,11 +50,6 @@ export const expectedDemos = [
 ]
 
 
-export function checkCorner(page, tile, classe, label, value) {
-    cy.get(`.page${page} > .tile${tile} > .tileContent ${classe} .label`).contains(label)
-    cy.get(`.page${page} > .tile${tile} > .tileContent ${classe} .value`).contains(value)
-}
-
 export function checkTileSpan(page, tile, spanned=true) {
     const condition = spanned ? 'have.class' : 'not.have.class'
     cy.get(`.page${page} > .tile${tile}`).should(condition,'span-2')
