@@ -169,7 +169,7 @@ function showField( field:string) {
                 currentFrequencyType.value = FrequencyType.weather
                 break
             case 'twr':
-                console.log('[Corner.showField] twr', runway)
+                // console.log('[Corner.showField] twr', runway)
                 if( runway.freq > 0) {
                     // console.log('[Corner.showField]', runway.freq)
                     value.value = runway.freq.toFixed(3)
