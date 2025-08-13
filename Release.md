@@ -5,6 +5,8 @@
 * New Corner selection menu
 2) 5332
 * removed logs
+3) 5333
+* Fixed Runway sketch position on merged tile
 ## 8/11/2025
 1) 5330
 * Added version number to sidebar

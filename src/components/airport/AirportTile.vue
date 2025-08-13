@@ -462,7 +462,7 @@ function updateTitle() {
     height: var(--tile-content-height);
 }
 .oneRunway {
-    width: var(--tile-content-width);
+    width: 100%;
     height: var(--tile-content-height);
 }
 .twoRunways {
