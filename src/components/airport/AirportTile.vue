@@ -218,7 +218,7 @@ function changeMode(newMode:DisplayModeAirport, expand:boolean=false) {
  * @param index Corder
  */
 function onCornerEdit(index:number, event) {
-    console.debug('[AirportTile.onCornerEdit]', index, event)
+    // console.debug('[AirportTile.onCornerEdit]', index, event)
     cornerConfigEvent.value = event
     cornerConfigIndex.value = index
 }

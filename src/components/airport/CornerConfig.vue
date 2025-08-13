@@ -73,7 +73,7 @@ class CornerValue {
 }
 
 watch(props, () => {
-    console.debug('[CornerConfig.watch] props', props, menu.value)
+    // console.debug('[CornerConfig.watch] props', props, menu.value)
 
     if (props.event) {
         menu.value.toggle(props.event)

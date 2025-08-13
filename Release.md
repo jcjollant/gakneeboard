@@ -3,6 +3,8 @@
 1) 5331
 * Multiple runway selection
 * New Corner selection menu
+2) 5332
+* removed logs
 ## 8/11/2025
 1) 5330
 * Added version number to sidebar
