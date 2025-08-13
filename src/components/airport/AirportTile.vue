@@ -20,12 +20,14 @@
                 </div>
                 <div v-else><!-- Runway Sketch(es) -->
                     <div class="airportCode">{{config.code.toUpperCase()}}</div>
-                    <div v-if="runwayViews.length == 0"class="unknownRwy">Unknown Runway</div>
-                    <RunwaySketch v-else-if="runwayViews.length==1" :settings="runwayViews[0]" class="clickable oneRunway" @click="onHeaderClick()"/>
+                    <div v-if="runwayViews.length==1" class="flex">
+                        <RunwaySketch :settings="runwayViews[0]" class="clickable oneRunway" @click="onHeaderClick()"/>
+                    </div>
                     <div v-else-if="runwayViews.length==2" class="clickable twoRunways" @click="onHeaderClick()">
                         <RunwaySketch :settings="runwayViews[0]" :small="true" class="smallRunway"/>
                         <RunwaySketch :settings="runwayViews[1]" :small="true" class="smallRunway"/>
                     </div>
+                    <div v-else class="unknownRwy">Unknown Runway</div>
                 </div>
                 <div v-if="expanded" class="top left cornerColumn">
                     <Corner v-for="index in [0,4,6,2]" :airport="airportData" :data="corners[index]" :runway="mainRunway" :big="true" :class="['corner'+index]"
@@ -462,8 +464,9 @@ function updateTitle() {
     height: var(--tile-content-height);
 }
 .oneRunway {
-    width: 100%;
+    width: var(--tile-content-width);
     height: var(--tile-content-height);
+    /* margin: auto; */
 }
 .twoRunways {
     display: flex;
