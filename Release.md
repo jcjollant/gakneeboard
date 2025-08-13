@@ -7,6 +7,8 @@
 * removed logs
 3) 5333
 * Fixed Runway sketch position on merged tile
+4) 5334
+* Fixed display mode issue
 ## 8/11/2025
 1) 5330
 * Added version number to sidebar

@@ -159,6 +159,7 @@ function loadProps(newProps:any) {
     // Sisplay mode
     propsConfig.mode = params?.mode ?? defaultMode
     displayMode.value = propsConfig.mode;
+    // console.debug('[AirportTile.loadProps] displayMode', displayMode.value)
 
     // Activate this new configuration
     config.value = propsConfig
@@ -206,9 +207,10 @@ watch( props, async() => {
 //--------------------------
 
 function changeMode(newMode:DisplayModeAirport, expand:boolean=false) {
-    // console.debug('[AirportTile.changeMode]', newMode, editMode.value)
+    console.debug('[AirportTile.changeMode]', newMode, editMode.value)
     displaySelection.value = false;
-    displayMode.value = newMode
+    config.value.mode = newMode
+
     // Edit mode is only needed when there is no airport
     editMode.value = !airportData.value
 
