@@ -5,8 +5,8 @@
             @selection="onCornerUpdate" />
         <Header :title="title" :showReplace="editMode"
             @replace="emits('replace')" @display="displaySelection=!displaySelection" @title="onHeaderClick()"></Header>
-        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList" :expandable="!expanded"
-            @selection="changeMode" @expand="onExpand" />
+        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList" :expandable="true" :expanded="expanded"
+            @expand="onExpand" />
         <AirportEdit v-else-if="editMode" :airport="airportData" :config="config"
             @close="onHeaderClick()" @update="onSettingsUpdate" />
         <!-- <div class="compact" v-else-if="displayMode==DisplayModeAirport.FourRunways">
@@ -60,6 +60,8 @@ import { Airport, Runway } from '../../model/Airport.ts';
 import { AirportTileConfig } from './AirportTileConfig.ts';
 import { RunwayOrientation } from './RunwayOrientation.ts';
 import { RunwayViewSettings } from './RunwayViewSettings.ts';
+import { TileData } from '../../model/TileData.ts';
+import { TileType } from '../../model/TileType.ts';
 
 import AirportEdit from './AirportEdit.vue';
 import Corner from './Corner.vue';
@@ -72,7 +74,7 @@ import RunwaySketch from './RunwaySketch.vue'
 const defaultMode = DisplayModeAirport.RunwaySketch
 const displayMode = ref(defaultMode)
 const displaySelection = ref(false)
-const emits = defineEmits(['expand','replace','update'])
+const emits = defineEmits(['replace','update'])
 const expanded = ref(false)
 const editMode = ref(false)
 const modesList = ref([
@@ -161,10 +163,11 @@ function loadProps(newProps:any) {
     displayMode.value = propsConfig.mode;
     // console.debug('[AirportTile.loadProps] displayMode', displayMode.value)
 
+    expanded.value = newProps.span2
+    // console.debug('[AirportTile.loadProps] expanded', expanded.value)
+
     // Activate this new configuration
     config.value = propsConfig
-
-    expanded.value = newProps.span2
 
     // Temporary title
     title.value = "Loading " + propsConfig.code + '...'
@@ -203,19 +206,22 @@ watch( props, async() => {
     loadProps(props)
 })
 
-// End of props management
-//--------------------------
-
-function changeMode(newMode:DisplayModeAirport, expand:boolean=false) {
-    console.debug('[AirportTile.changeMode]', newMode, editMode.value)
+watch(displayMode, (newMode) => {
+    // console.debug('[AirportTile.displayMode]', displayMode.value)
+    if(newMode == displayMode.value) return;
+    
     displaySelection.value = false;
-    config.value.mode = newMode
+    config.value.mode = newMode;
 
     // Edit mode is only needed when there is no airport
     editMode.value = !airportData.value
 
-    saveConfig(expand)
-}
+    saveConfig()
+})
+
+// End of props management
+//--------------------------
+
 
 /**
  * Corner edition is being invoked, show the panel
@@ -244,9 +250,10 @@ function onCornerUpdate( field:string) {
     }
 }
 
-function onExpand(mode:string) {
-    // console.debug('[AirportTile.onExpand]', mode)
-    changeMode(mode as DisplayModeAirport, true)
+function onExpand(newValue:boolean) {
+    // console.debug('[AirportTile.onExpand]', newValue)
+    expanded.value = newValue
+    saveConfig()
 }
 
 // Toggle between edit mode and current mode
@@ -330,17 +337,14 @@ function showAirport( airport:Airport) {
 }
 
 // invoked whenever we want to save the current state
-function saveConfig(expand:boolean=false) {
+function saveConfig() {
     // console.debug('[AirportTile.saveConfig]', config.value)
     if( !config.value) {
         console.warn('[AirportTile.saveConfig] config is missing')
         return;
     }
 
-    // in saved config, rwyOrientation is just a string
-
-    // console.debug( 'Airport widget updated with ' + JSON.stringify(airportParam));
-    emits( expand ? 'expand' : 'update', config.value);
+    emits( 'update', new TileData( TileType.airport, config.value, expanded.value));
 }
 
 function updateTitle() {

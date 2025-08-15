@@ -2,8 +2,8 @@
     <div class="tile" ref="thisTile">
         <Header :title="getTitle()" :left="!displaySelection && displayMode==DisplayModeAtis.FullATIS && !expanded"
             @replace="emits('replace')" @display="displaySelection=!displaySelection"></Header>
-        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList" :expandable="!expanded"
-            @selection="changeMode" @expand="onExpand" />
+        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList" :expandable="true" :expanded="expanded"
+            @expand="onExpand" />
         <div v-else-if="displayMode==DisplayModeAtis.FullATIS && expanded" class="tileContent">
             <div v-for="n in 4" class="expanded" :class="{'bb': n < 4}">
                 <div class="infoEx br">
@@ -164,10 +164,12 @@ import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../shared/Header.vue';
 import NoSettings from '../shared/NoSettings.vue'
 import { DisplayModeAtis, DisplayModeChoice } from '../../model/DisplayMode';
+import { TileType } from '../../model/TileType';
+import { TileData } from '../../model/TileData';
 
 // Enum with display modes
 
-const emits = defineEmits(['replace','update','expand'])
+const emits = defineEmits(['replace','update'])
 const defaultMode = DisplayModeAtis.FullATIS
 const displayMode = ref(defaultMode)
 const displaySelection = ref(false)
@@ -210,13 +212,19 @@ watch( props, async() => {
 })
 // End of Props management
 
+watch(displayMode, (newMode) => {
+    // console.log('[Atis.watch] displayMode changed to ' + newMode)
+    if(newMode != displayMode.value) changeMode(newMode)
+})
 
-function changeMode(newMode:DisplayModeAtis,expand:boolean=false) {
+
+function changeMode(newMode:DisplayModeAtis) {
     // console.log('[Atis.changeMode]', newMode)
+    if(newMode == displayMode.value) return;
+    
     displayMode.value = newMode
     displaySelection.value = false;
-    const state = {mode:newMode}
-    emits(expand?'expand':'update', state)
+    saveConfig()
 }
 
 function cycleMode() {
@@ -237,15 +245,16 @@ function getTitle() {
     }
 }
 
-function onExpand(mode:DisplayModeAtis) {
-    changeMode(mode, true)
+function onExpand(newValue:boolean) {
+    expanded.value = newValue
+    saveConfig()
 }
 
+function saveConfig() {
+    const data = {mode:displayMode.value}
+    emits('update', new TileData(TileType.atis, data, expanded.value))    
 
-function onHeaderClick() {
-    displaySelection.value = ! displaySelection.value
 }
-
 </script>
 
 <style scoped>

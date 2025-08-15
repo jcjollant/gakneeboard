@@ -70,6 +70,8 @@ import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import Calendar from 'primevue/calendar'
 import Checkbox from 'primevue/checkbox'
+import { TileType } from '../../model/TileType'
+import { TileData } from '../../model/TileData'
 
 const mode = ref('')
 const airportFromCode = ref('')
@@ -117,7 +119,7 @@ function loadProps(newProps) {
     const now = new Date()
     dateFrom.value = now
     nightFlight.value = state.night
-    // console.log('[SunLight.loadProps] from', JSON.stringify(dateFrom.value), "to", JSON.stringify(dateTo.value))
+    // console.debug('[SunLight.loadProps] from', JSON.stringify(dateFrom.value), "to", JSON.stringify(dateTo.value))
 
     getData(false)
 }
@@ -165,7 +167,7 @@ function getData( update=true) {
 
     loading.value = true
     getSunlight( airportFromCode.value, airportToCode.value, dateFrom.value, nightFlight.value).then( sunlightData => {
-        // console.log('[Sunlight.getData] data received', JSON.stringify(sunlightData))
+        // console.debug('[Sunlight.getData] data received', JSON.stringify(sunlightData))
         loading.value = false
         if( sunlightData) {
             sunriseTime.value = formatTime(sunlightData, 'sunrise')
@@ -183,7 +185,7 @@ function getData( update=true) {
             state.from = airportFromCode.value
             state.to = airportToCode.value
             state.night = nightFlight.value
-            if(update) emits('update',state)
+            if(update) saveConfig()
         } else {
             sunriseTime.value = '-'
             sunsetTime.value = '-'
@@ -196,7 +198,7 @@ function getData( update=true) {
 }
 
 function onAirportFrom( airport) {
-    // console.log('[SunLight.onAirportFrom]', JSON.stringify(airport))
+    // console.debug('[SunLight.onAirportFrom]', JSON.stringify(airport))
     if(airport.code && airport.code != airportFromCode.value) {
         airportFromCode.value = airport.code
     }
@@ -211,7 +213,7 @@ function onApply() {
     if( airportFromCode.value && dateFrom.value) {
         // copy airportFrom onto airportTo if not provided
         if( airportToCode.value == '' || !airportToCode.value) airportToCode.value = airportFromCode.value
-        // console.log('[SunLight.onApply]', airportFromCode.value, airportToCode.value, date.value)
+        // console.debug('[SunLight.onApply]', airportFromCode.value, airportToCode.value, date.value)
         // fetch data for these airports
         getData()
         onClick()
@@ -227,6 +229,9 @@ function onClick() {
     if(edit) circleKey.value = Date.now()
 }    
 
+function saveConfig() {
+    emits('update', new TileData( TileType.sunlight, state))
+}
 </script>
 
 <style scoped>

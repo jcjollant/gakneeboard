@@ -6,10 +6,10 @@ export class TileData {
     span2: boolean
     hide: boolean
 
-    constructor(name:string,data:Object|undefined = undefined) {
+    constructor(name:string,data:Object|undefined = undefined, expanded:boolean=false) {
         this.name = name
         this.data = data ?? {}
-        this.span2 = false
+        this.span2 = expanded
         this.hide = false
     }
 

@@ -25,6 +25,8 @@ import FuelGauge from './FuelGauge.vue';
 import FuelEdit from './FuelEdit.vue';
 import { onMounted } from 'vue';
 import { watch } from 'vue';
+import { TileData } from '../../model/TileData';
+import { TileType } from '../../model/TileType';
 
 const emits = defineEmits(['replace','update'])
 const props = defineProps({
@@ -66,7 +68,7 @@ const reserve = ref(1)
 
 function onHeaderClick() {
     editMode.value = !editMode.value;
-    // console.log( 'FuelBug onHeaderClick ' + editMode.value)
+    // console.debug( 'FuelBug onHeaderClick ' + editMode.value)
 }
 
 function onSettingsUpdate(newUsable, newFuelFlow, newReserve) {
@@ -75,7 +77,7 @@ function onSettingsUpdate(newUsable, newFuelFlow, newReserve) {
     fuelFlow.value = newFuelFlow
     reserve.value = newReserve
     const data = {usable:newUsable,fuelFlow:newFuelFlow,reserve:newReserve}
-    emits('update',data)
+    emits('update', new TileData(TileType.fuel, data))
 }
 
 </script>

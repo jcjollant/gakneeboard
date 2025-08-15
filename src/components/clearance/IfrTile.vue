@@ -2,7 +2,7 @@
     <div class="tile">
         <Header :title="getTitle()" :left="displayMode==DisplayModeIfr.Departure" :showReplace="displaySelection" :showDisplayMode="true"
             @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
-        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" @selection="changeDisplayMode" />
+        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" />
         <div v-else-if="editMode" class="editMode">
             <AirportInput v-model="airport" :expanded="true" @valid="onAirportUpdate"/>
             <ActionBar :actions="[{action:'cancel',label:'Manual'}]" :showApply="false" @cancel="editMode=false" @action="onManual"/>
@@ -31,6 +31,8 @@ import Header from '../shared/Header.vue';
 import ImageContent from '../shared/ImageContent.vue';
 import AirportInput from '../shared/AirportInput.vue';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
+import { TileData } from '../../model/TileData.ts';
+import { TileType } from '../../model/TileType.ts';
 
 // Enum with display modes
 
@@ -59,8 +61,15 @@ watch( props, async() => {
     loadProps(props)
 })
 
+watch( displayMode, (newMode) => {
+    displaySelection.value = false;
+    if( newMode != displayMode.value) {
+        saveConfig()
+    } 
+})
+
 function loadProps(props:any) {
-    // console.log('[Clearance.loadProps]', JSON.stringify(props))
+    // console.debug('[Clearance.loadProps]', JSON.stringify(props))
     displayMode.value = defaultMode
     if( props.params) {
          if( props.params.mode) {
@@ -85,18 +94,10 @@ function loadProps(props:any) {
     }
 }
 
-
-function changeDisplayMode(newMode:DisplayModeIfr) {
-    displaySelection.value = false;
-    displayMode.value = newMode;
-    emitUpdate()
-}
-
-function emitUpdate() {
+function saveConfig() {
     // build parameters
     const params = {mode:displayMode.value, airport:airport.value.code}
-    emits('update', params)
-
+    emits('update', new TileData( TileType.clearance, params))
 }
 
 function getTitle() {
@@ -133,16 +134,12 @@ function getTitle() {
 function onManual() {
     editMode.value = false
     airport.value = noAirport
-    emitUpdate()
+    saveConfig()
 }
 
 function onAirportUpdate() {
     editMode.value = false
-    emitUpdate()
-}
-
-function onMenuClick() {
-    editMode.value = !editMode.value
+    saveConfig()
 }
 
 </script>

@@ -37,7 +37,7 @@ const emits = defineEmits(['replace'])
 const mode=ref('')
 
 function applyData(newNavlog) {
-    // console.log('[NavlogTile.applyData] new navlog', JSON.stringify(newNavlog))
+    // console.debug('[NavlogTile.applyData] new navlog', JSON.stringify(newNavlog))
     if(!newNavlog || !newNavlog.entries) {
         items.value = null
         return

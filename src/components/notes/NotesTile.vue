@@ -3,8 +3,8 @@
         <Header :title="displaySelection ? 'Notes Tile Mode' : 'Notes'"
             :stealth="!displaySelection && displayMode==DisplayModeNotes.Blank" :showReplace="displaySelection"
             @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
-        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" :expandable
-            @selection="changeDisplayMode" @expand="onExpand" />
+        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" :expandable="true" :expanded="expanded"
+            @expand="onExpand" />
         <div v-else-if="editMode" class="edit">
             <div class="paddedEdit" v-show="displayMode==DisplayModeNotes.Word">
                 <InputGroup>
@@ -34,13 +34,15 @@
 <script setup lang="ts">
 import { onMounted, watch, ref } from 'vue'
 import { DisplayModeChoice, DisplayModeNotes } from '../../model/DisplayMode'; 
+import { TileType } from '../../model/TileType';
+import { TileData } from '../../model/TileData';
+
 import WordContent from './WordContent.vue';
 import CompassContent from './CompassContent.vue';
 import InputGroup from 'primevue/inputgroup';
 import InputGroupAddon from 'primevue/inputgroupaddon';
 import InputText from 'primevue/inputtext';
 import ActionBar from '../shared/ActionBar.vue';
-
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../shared/Header.vue';
 import EitherOr from '../shared/EitherOr.vue';
@@ -50,7 +52,7 @@ import EitherOr from '../shared/EitherOr.vue';
 const compassHeading = ref(true)
 let compassHeadingBeforeEdit = true
 const displayMode = ref(DisplayModeNotes.Blank)
-const emits = defineEmits(['replace','update','expand'])
+const emits = defineEmits(['replace','update'])
 const displaySelection = ref(false)
 const displayModes = [
     new DisplayModeChoice('Blank', DisplayModeNotes.Blank, true),
@@ -64,7 +66,7 @@ const props = defineProps({
     params: { type: Object, default: null},
     span2: { type: Boolean, default: false}
 })
-const expandable = ref(true)
+const expanded = ref(false)
 const word = ref('CRAFT')
 let wordBeforeEdit = ''
 
@@ -80,8 +82,7 @@ function loadProps(props:any) {
     // Restore custom word
     word.value = props?.params?.word ?? 'CRAFT'
     compassHeading.value = props?.params?.comp ?? true
-
-    expandable.value = !props?.span2;
+    expanded.value = props?.span2 ?? false
 }
 
 onMounted(() => {   
@@ -95,9 +96,13 @@ watch( props, async() => {
     loadProps(props)
 })
 
+watch(displayMode, (newMode) => {
+    changeDisplayMode(newMode)
+})
 
-function changeDisplayMode(newMode:DisplayModeNotes,expand:boolean=false) {
+function changeDisplayMode(newMode:DisplayModeNotes) {
     // console.log('[NotesTiles.changeMode]', newMode)
+    if(newMode == displayMode.value) return;
     // Crap in => default out
     if(!newMode) newMode = DisplayModeNotes.Blank
 
@@ -105,23 +110,23 @@ function changeDisplayMode(newMode:DisplayModeNotes,expand:boolean=false) {
     displaySelection.value = false;
     editMode.value = false
 
-    emitUpdate(expand)
+    saveConfig()
 }
 
-function emitUpdate(expand:boolean) {
+function saveConfig() {
     // save non default data
     const data = {}
     if(displayMode.value != DisplayModeNotes.Blank) data['mode'] = displayMode.value
     if(word.value.length) data['word'] = word.value
     if(compassHeading.value != true) data['comp'] = compassHeading.value
 
-    emits(expand?'expand':'update', data)
+    emits('update', new TileData( TileType.notes, data, expanded.value))
 }
 
 function onEditApply() {
     // console.log('NotesTiles.onEditApply]', word.value)
     editMode.value = false;
-    emitUpdate(false)
+    saveConfig()
 }
 
 function onEditCancel() {
@@ -137,8 +142,9 @@ function onEditMode() {
     editMode.value = true
 }
 
-function onExpand() {
-    changeDisplayMode(DisplayModeNotes.Blank, true)
+function onExpand(newValue:boolean) {
+    expanded.value = newValue
+    saveConfig()
 }
 
 </script>

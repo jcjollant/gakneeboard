@@ -4,8 +4,8 @@
         <Header :title="getTitle()" :showReplace="displaySelection"
             @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
         <div class="tileContent" :class="{'expanded':expanded}">
-            <DisplayModeSelection v-if="displaySelection" :modes="modesList" v-model="displayMode"  :expandable="!expanded"
-                @selection="onChangeMode" @expand="onExpand" />
+            <DisplayModeSelection v-if="displaySelection" :modes="modesList" v-model="displayMode" :expandable="true" :expanded="expanded"
+                @expand="onExpand" />
             <ServiceVolumes v-else-if="displayMode==DisplayModeRadios.ServiceVolumes" v-model="serviceVolume"/>
             <Nordo v-else-if="displayMode==DisplayModeRadios.LostComms" />
             <div v-else-if="displayMode==DisplayModeRadios.FreqList" class="main">
@@ -32,8 +32,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { DisplayModeChoice, DisplayModeRadios } from '../../model/DisplayMode';
-import { Frequency, FrequencyType } from '../../model/Frequency';
-import { Formatter } from '../../lib/Formatter'
+import { Frequency } from '../../model/Frequency';
 import { ServiceVolume} from '../../model/ServiceVolume'
 import { UserUrl } from '../../lib/UserUrl';
 import { useToast } from 'primevue/usetoast';
@@ -49,10 +48,12 @@ import Nordo from './Nordo.vue';
 import PlaceHolder from '../shared/PlaceHolder.vue'
 import Textarea from 'primevue/textarea';
 import ServiceVolumes from './ServiceVolumes.vue';
+import { TileData } from '../../model/TileData';
+import { TileType } from '../../model/TileType';
 
-const displayMode = ref('') // active display mode
+const displayMode = ref(DisplayModeRadios.FreqList) // active display mode
 const displaySelection = ref(false)
-const emits = defineEmits(['expand','replace','update'])
+const emits = defineEmits(['replace','update'])
 const expanded = ref(false)
 const noFreq:Frequency[] = []
 const frequencies = ref(noFreq)
@@ -79,6 +80,11 @@ onMounted(() => {
     loadProps(props);
 })
 
+watch(displayMode, (newMode) => {
+    displaySelection.value = false
+    if( newMode == displayMode.value) return;
+    saveConfig()
+})
 watch( props, async() => {
     // console.log('Radio watch ' + JSON.stringify(props.params))
     loadProps(props);
@@ -86,7 +92,7 @@ watch( props, async() => {
 
 watch( serviceVolume, () => {
     // console.log('[RadioTile.watch] serviceVolume changed', serviceVolume.value)
-    emitUpdate(false)
+    saveConfig()
 })
 
 function boxColumns() {
@@ -111,12 +117,6 @@ function boxSize() {
         return 'small';
     }
     return boxColumns() ? 'small' : 'large'
-}
-
-
-function emitUpdate(expand:boolean) {
-    const state = {'mode':displayMode.value,'list':frequencies.value,'sv':serviceVolume}
-    emits(expand ? 'expand' : 'update', state);
 }
 
 function getTitle() {
@@ -200,7 +200,7 @@ function addFrequency(freq:Frequency) {
 // load data from text value
 function onApply() {
     frequencies.value = loadListFromText();
-    emitUpdate(false)
+    saveConfig()
     // go back to normal mode
     listEditMode.value = false;
 }
@@ -210,20 +210,14 @@ function onCancel() {
     loadData( listBeforeEdit)
 }
 
-function onChangeMode(mode:DisplayModeRadios, expand:boolean=false) {
-    // console.log('onChangeMode', mode)
-    displayMode.value = mode
-    displaySelection.value = false;
-    emitUpdate(expand)
-}
-
 function onEditMode() {
     listBeforeEdit = frequencies.value
     listEditMode.value = true
 }
 
-function onExpand() {
-    onChangeMode(DisplayModeRadios.FreqList, true)
+function onExpand(newValue:boolean) {
+    expanded.value = newValue
+    saveConfig()
 }
 
 function onLookup() {
@@ -232,6 +226,11 @@ function onLookup() {
     lookupTime.value = Date.now()
     // loadDataFromText()
     // mode.value = 'lookup'
+}
+
+function saveConfig() {
+    const data = {'mode':displayMode.value,'list':frequencies.value,'sv':serviceVolume}
+    emits('update', new TileData( TileType.radios, data, expanded.value));
 }
 
 function updateTextarea() {

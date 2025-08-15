@@ -35,6 +35,8 @@ import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
+import { TileData } from '../../model/TileData'
+import { TileType } from '../../model/TileType'
 
 const editMode = ref(false)
 const emits = defineEmits(['replace','update'])
@@ -54,7 +56,7 @@ const props = defineProps({
 })
 
 function loadProps(newProps:any) {
-    // console.log('[ChecklistTile.loadProps]', newProps)
+    // console.debug('[ChecklistTile.loadProps]', newProps)
     const params = newProps.params
     if (params) {
         // load params into checlist
@@ -86,10 +88,10 @@ watch(props, () => {
 //------------------------
 
 function onApply() {
-    // console.log('[ChecklistTile.onApply] not implemented')
+    // console.debug('[ChecklistTile.onApply] not implemented')
     // turn textData into a list of items
     checklist.value.parseEditor(textData.value)
-    // console.log('[CheclistPage.onApply]', JSON.stringify(items))
+    // console.debug('[CheclistPage.onApply]', JSON.stringify(items))
     const newParams = { name: title.value, items: checklist.value.toParams() }
     if( theme.value.startsWith('theme-')) {
         newParams['theme'] = theme.value.substring(6)
@@ -97,18 +99,18 @@ function onApply() {
     // go back to normal mode
     editMode.value = false
     // notify parent of data change
-    emits('update', newParams)
+    emits('update', new TileData( TileType.checklist, newParams))
 }
 
 function onCancel() {
-    // console.log('[ChecklistTile.onCancel] not implemented')
+    // console.debug('[ChecklistTile.onCancel] not implemented')
     editMode.value = false
     title.value = nameBeforeEdit;
     theme.value = themeBeforeEdit;
 }
 
 function onHeaderClick() {
-    // console.log('[ChecklistTile.onHeaderClick] not implemented')
+    // console.debug('[ChecklistTile.onHeaderClick] not implemented')
     if( !editMode.value) {
         nameBeforeEdit = title.value;
         themeBeforeEdit = theme.value;

@@ -10,9 +10,9 @@
         </div>
     </div>
     <AirportTile v-else-if="tile.name==TileType.airport" :params="tile.data" :span2="tile.span2"
-        @replace="onReplace" @update="onUpdate" @expand="onExpand" />
+        @replace="onReplace" @update="onUpdate" />
     <AtisTile v-else-if="tile.name==TileType.atis" :params="tile.data" :span2="tile.span2"
-        @replace="onReplace" @update="onUpdate" @expand="onExpand"/>
+        @replace="onReplace" @update="onUpdate"/>
     <ChecklistTile v-else-if="tile.name==TileType.checklist" :params="tile.data" 
         @replace="onReplace" @update="onUpdate"/>
     <IfrTile v-else-if="tile.name==TileType.clearance" :params="tile.data"
@@ -23,9 +23,9 @@
     <Hold v-else-if="tile.name==TileType.hold" @replace="onReplace" @update="onUpdate" />
     <NavlogTile v-else-if="tile.name==TileType.navlog" @replace="onReplace" />
     <NotesTile v-else-if="tile.name==TileType.notes" :params="tile.data" :span2="tile.span2"
-        @replace="onReplace" @update="onUpdate" @expand="onExpand" />
+        @replace="onReplace" @update="onUpdate" />
     <RadioTile v-else-if="tile.name==TileType.radios" :params="tile.data" :span2="tile.span2"
-        @replace="onReplace" @update="onUpdate" @expand="onExpand" />
+        @replace="onReplace" @update="onUpdate" />
     <SunLight v-else-if="tile.name==TileType.sunlight" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" />
 </template>
@@ -49,7 +49,7 @@ import FAButton from '../shared/FAButton.vue'
 import NavlogTile from '../navlog/NavlogTile.vue';
 import NotesTile from '../notes/NotesTile.vue';
 
-const emits = defineEmits(['update','expand'])
+const emits = defineEmits(['update'])
 
 const props = defineProps({
     tile: { type: Object, default: null},
@@ -75,25 +75,25 @@ const restorable = ref(false)
 const title = ref(defaultTitle)
 
 onMounted(() => {
-    // console.log('Tile mounted')
+    // console.debug('Tile mounted')
     loadProps(props)
 })
 
 watch( props, async (newP, oldP) => {
-    // console.log("Tile props changed " + JSON.stringify(props));
-    // console.log("old:" + JSON.stringify(oldP) + '\nnew:' + JSON.stringify(newP));
+    // console.debug("Tile props changed " + JSON.stringify(props));
+    // console.debug("old:" + JSON.stringify(oldP) + '\nnew:' + JSON.stringify(newP));
     loadProps(props)
 })
 
 function loadProps( props) {
     state = JSON.parse( JSON.stringify(props.tile));
-    // console.log( 'Tile loadProps ' + JSON.stringify(state  ))
+    // console.debug( 'Tile loadProps ' + JSON.stringify(state  ))
     tile.value = props.tile
 }
 
 // replace current tile with a new one, which could be the selection tile
 function onReplace(newName = TileType.selection, mode=undefined) {
-    // console.log('[Tile.onReplace]', newName, mode)
+    // console.debug('[Tile.onReplace]', newName, mode)
 
     const tileName = newName.toLowerCase()
     // state = { id:tile.value.id,name: tileName, data:{}}
@@ -101,7 +101,7 @@ function onReplace(newName = TileType.selection, mode=undefined) {
     if(mode) state.data['mode'] = mode
 
     if(newName == TileType.selection) {
-        // console.log('[Tile.onReplace]', tile.value)
+        // console.debug('[Tile.onReplace]', tile.value)
         previousTile.value = tile.value
         restorable.value = true
     } else {
@@ -114,15 +114,10 @@ function onReplace(newName = TileType.selection, mode=undefined) {
 }
 
 // when a tile notifies us of an update, we notify the parent to save values
-function onUpdate(params=undefined) {
-    // console.log('Tile on update ' + JSON.stringify(params))
-    state = new TileData(state.name, params)
+function onUpdate(newState:TileData) {
+    // console.debug('[Tile.onUpdate]', newState)
+    state = newState
     emits('update',state)
-}
-
-function onExpand(params=undefined) {
-    state = new TileData(state.name, params)
-    emits('expand',state)
 }
 
 </script>
