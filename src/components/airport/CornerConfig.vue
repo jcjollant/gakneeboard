@@ -94,10 +94,13 @@ function loadProps(props:any) {
         runway = Runway.copy(props.runway)
         if (airport.isValid()) {
             // build a frequency list with '#F' prefix
-            const freqList = airport.freq.map(f => new CornerValue('#F' + f.name, Formatter.frequency(f.mhz) + ' : ' + f.name))
+            const freqList = airport.freq.map(f => { 
+                const formattedFreq = Formatter.frequency(f.mhz)
+                return new CornerValue('#F' + f.name + '#' + formattedFreq, formattedFreq + ' : ' + f.name + (f.notes.length ? ' (' + f.notes + ')' : ''))
+            })
             // add a bogus frequency for selected runway
 
-            if (runway && 'freq' in runway) freqList.push(new CornerValue('#Ftwr', 'Selected Runway'))
+            // if (runway && 'freq' in runway) freqList.push(new CornerValue('#Ftwr', 'Selected Runway'))
             frequencies.value = freqList
         }
     }
@@ -110,6 +113,7 @@ function loadProps(props:any) {
     })
     i.push({ label: "Information", items: items1 })
 
+    // Frequencies list
     const items2: any[] = []
     frequencies.value.forEach(f => {
         items2.push({ label: f.label, command: () => onSelection(f.id) })
