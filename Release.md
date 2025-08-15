@@ -1,4 +1,8 @@
 # User Experience updates
+## 8/15/2025
+1) 5340 
+* New Expand mode
+* Improved Frequency selection for Tower frequencies
 ## 8/12/2025
 1) 5331
 * Multiple runway selection
