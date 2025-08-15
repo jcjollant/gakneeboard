@@ -29,6 +29,10 @@ export class Template {
         // console.log('[Template.constructor] Created template with format:', this.format);
     }
 
+    static copy(src:Template):Template {
+        return new Template(src.name, src.desc, src.publish, src.data, src.format, src.ver)
+    }
+
     static describe(template:any):string {
         if(!template) return 'n/a'
         let output = template.desc??'(none)'
