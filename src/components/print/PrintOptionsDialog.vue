@@ -6,18 +6,18 @@
         Warning: Unsaved changes. Checklists version number only increase upon saving template.
       </div>
       <div class="pageOptions">
-        <div class="pageOptionLabel">Pages</div>
-        <PageSelection v-model="pageSelection" 
-          @change="onNewOptions" />
+        <div class="pageOptionLabel">Page Selection</div>
+        <PageSelection v-model="pageSelection" @change="onNewOptions" />
         
         <template v-if="!isFullPageFormat">
           <div class="pageOptionLabel">Pages per sheet</div>
-          <OneChoice v-model="pagePerSheet" :choices="[onePage,twoPages]" 
-            @change="onNewOptions"/>
+          <OneChoice v-model="pagePerSheet" :choices="[onePage,twoPages]" @change="onNewOptions"/>
           
           <div class="pageOptionLabel">Back Page Orientation</div>
-          <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]"
-            @change="onNewOptions" />
+          <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]" @change="onNewOptions" />
+
+          <div class="pageOptionLabel">Vertical Info Bar</div>
+          <OneChoice v-model="showSideBar" :choices="[showOption, hideOption]" @change="onNewOptions" />
         </template>
         
         <template v-else>
@@ -60,6 +60,7 @@ import Dialog from 'primevue/dialog'
 import FieldSet from 'primevue/fieldset'
 import PageSelection from './PageSelection.vue';
 import { OneChoiceValue } from '../../model/OneChoiceValue';
+import { PrintOptions } from './PrintOptions';
 
 const emits = defineEmits(["print","options",'close']);
 
@@ -67,13 +68,13 @@ const onePage = new OneChoiceValue('One', 1)
 const twoPages = new OneChoiceValue('Two', 2)
 const normalOrientation = new OneChoiceValue('Normal', false)
 const flippedOrientation = new OneChoiceValue('Flipped', true, 'So you can read back page when front page is clipped')
+const showOption = new OneChoiceValue('Show', true, 'Show Version Number, Tail # and Date')
+const hideOption = new OneChoiceValue('Hide', false, 'Hide Version Number, Tail # and Date')
 
 const pagePerSheet = ref(twoPages)
 const flipBackPage = ref(normalOrientation)
 const pageSelection = ref<boolean[]>([true, true, true])
-
-// Computed property to check if there's only one page
-const isSinglePage = computed(() => pageSelection.value.length <= 1)
+const showSideBar = ref(showOption)
 
 // Computed property to check if the format is fullpage
 const isFullPageFormat = computed(() => props.format === 'fullpage')
@@ -113,15 +114,15 @@ watch( props, async() => {
 
 //---------------------
 
-function getOptions() {
-  if(!pagePerSheet.value) return null;
+function getOptions():PrintOptions|undefined {
+  if(!pagePerSheet.value) return undefined;
   
-  const printOptions = {
-    pagePerSheet: isFullPageFormat.value ? 1 : pagePerSheet.value.value,
-    flipBackPage: flipBackPage.value ? flipBackPage.value.value : false,
-    pageSelection: pageSelection.value,
-  }
-  return printOptions
+  return new PrintOptions(
+    flipBackPage.value?.value,
+    isFullPageFormat.value ? 1 : pagePerSheet.value.value,
+    pageSelection.value,
+    showSideBar.value.value
+  )
 }
 
 function onHelp() {
@@ -135,8 +136,8 @@ function onPrint() {
 
 function onNewOptions() {
   const options = getOptions()
-  // console.log('[PrintOptions.onNewOptions]', options)
-  emits('options', options)
+  // console.debug('[PrintOptions.onNewOptions]', options)
+  if(options) emits('options', options)
 }
 
 </script>
