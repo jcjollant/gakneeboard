@@ -3,6 +3,8 @@
 1) 5340 
 * New Expand mode
 * Improved Frequency selection for Tower frequencies
+2) 5341
+* Duplicate template feature
 ## 8/12/2025
 1) 5331
 * Multiple runway selection
