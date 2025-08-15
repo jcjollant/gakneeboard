@@ -3,8 +3,8 @@
     <Menu :name="getTemplateName()"></Menu>
     <TemplateExport v-model:visible="showExport" :template="activeTemplate"
       @close="showExport=false" @export="onExported" />
-    <TemplateSettings v-model:visible="showSettings" :template="activeTemplate"
-      @close="showSettings=false" @save="onSettings" />
+    <TemplateSettings v-model:visible="showSettings" :template="settingsTemplate"
+      @close="showSettings=false" @save="onNewSettings" />
     <!-- <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
       @offset="onOffset" @update="onPageUpdate" /> -->
     <div class="pageGroup">
@@ -17,8 +17,9 @@
             @click="menuCollapased=true"/>
           <MenuButton id="btnPrint" icon="print" title="Print Template" label="Print"
             @click="onPrint"/>
-          <MenuButton id="btnSave" icon="save" title="Save Template to the Cloud" label="Save"  :disabled="activeTemplate.isInvalid()"
+          <MenuButton id="btnSave" icon="save" title="Save Template to the Cloud" label="Save" :disabled="activeTemplate.isInvalid()"
             @click="onSave"/>
+          <MenuButton id="btnDuplicate" v-if="activeTemplate.ver > 0" icon="clone" title="Save as a duplicate new template" label="Duplicate" @click="onSave(true)" />
           <MenuButton id="btnEditor"
             icon="screwdriver-wrench" title="Toggle Editor mode" label="Editor" :active="showEditor"
             :class="{'editorButtonActive':showEditor}" class="editorButton" 
@@ -26,7 +27,7 @@
           <MenuButton id="btnExport" icon="file-export" title="Export Template to Various Formats" label="Export"
             @click="onExport"/>
           <MenuButton id="btnSettings" icon="gear" title="Template Name and Description" label="Properties"
-            @click="showSettings=true"/>
+            @click="onSettings"/>
           <MenuButton id="btnDelete" icon="trash" title="Delete Template" label="Delete" :danger="true" :disabled="activeTemplate.isInvalid()"
             @click="onDelete"/>
         </div>
@@ -82,6 +83,7 @@ import HorizontalActionBar from '../components/editor/HorizontalActionBar.vue'
 
 const noTemplate = Template.noTemplate()
 const activeTemplate = ref(noTemplate)
+const settingsTemplate = ref(noTemplate)
 let cssPageGap = -1
 let cssPageWidth = -1
 const emits = defineEmits(['about','template'])
@@ -177,7 +179,7 @@ function doSave() {
       // retrieve data from active template
       toaster.info( 'Say Request', 'Saving template ' + activeTemplate.value.name, 4000)
       TemplateData.save(activeTemplate.value).then(ts => {
-        // console.log('[TemplateViewer.onSave]', activeTemplate.value.id, JSON.stringify(t))
+        // console.debug('[TemplateViewer.doSave]', activeTemplate.value.id, JSON.stringify(t))
         const t = ts.template
         let message = 'Template "' + t.name + '" saved with version ' + t.ver;
         if(t.publish && t.code) {
@@ -510,38 +512,57 @@ function onPrint() {
   })
 }
 
-async function onSave() {
+async function onSave(clone:boolean=false) {
 
   // If there is nothing to save, just get out
   if( activeTemplate.value.isInvalid()) return;
 
   if( !currentUser.loggedIn) {
-    toaster.warning('Squawk and Ident','Please sign in to save custom templates')
+    toaster.warning('Squawk and Ident','Please sign in to save templates')
     return
   }
 
   // Update thumbnail in the background after some time
   setTimeout( () => updateThumbnail(activeTemplate.value), 1000)
 
-  // if this template has never been saved before, show the settings dialog to get a proper name
-  if(!activeTemplate.value.id) {
+  // to duplicate this template, we reset the id to 0 while keeping the data
+  if(clone) { 
+    const newTemplate = Template.copy(activeTemplate.value)
+    // console.debug('[TemplateViewer.onSave]', newTemplate)
+    newTemplate.id = 0
+    newTemplate.name = 'Copy of ' + activeTemplate.value.name
+    newTemplate.ver = 0
+    settingsTemplate.value = newTemplate;
     showSettings.value = true;
-  } else {
-    doSave();
+  } else { // this is a normal save
+    // if this template has never been saved before, show the settings dialog to get a proper name
+    if(!activeTemplate.value.id) {
+      settingsTemplate.value = activeTemplate.value
+      showSettings.value = true;
+    } else {
+      doSave();
+    }
   }
+  
 }
 
-function onSettings(settings) {
-  // console.log('[TemplateViewer.onSettings]', settings)
+function onSettings() {
+  settingsTemplate.value = activeTemplate.value
+  showSettings.value = true;
+}
+
+function onNewSettings(settings:any) {
+  // console.debug('[TemplateViewer.onSettings]', settings)
+
+  // Hide settings
   showSettings.value = false;
-  if( activeTemplate.value.name != settings.name 
-    || activeTemplate.value.desc != settings.desc 
-    || activeTemplate.value.publish != settings.publish) {
-    activeTemplate.value.name = settings.name
-    activeTemplate.value.desc = settings.desc
-    activeTemplate.value.publish = settings.publish
+
+  if( settingsTemplate.value.name != settings.name 
+    || settingsTemplate.value.desc != settings.desc 
+    || settingsTemplate.value.publish != settings.publish) {
+    activeTemplate.value = settingsTemplate.value
     // We consider the template as modified if it's a cloud template
-    templateModified.value = activeTemplate.value.id > 0
+    templateModified.value = settingsTemplate.value.id > 0
     saveTemplateToLocalStore()
     doSave()
   }
