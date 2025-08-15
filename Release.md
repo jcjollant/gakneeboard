@@ -5,6 +5,7 @@
 * Improved Frequency selection for Tower frequencies
 2) 5341
 * Duplicate template feature
+* New Print option to show/hide vertical bar
 ## 8/12/2025
 1) 5331
 * Multiple runway selection
