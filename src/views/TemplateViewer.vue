@@ -478,7 +478,7 @@ function onOffset(newOffset:number) {
 }
 
 function onPageUpdate(index:number, pageData:TemplatePage) {
-  // console.log('[TemplateViewer.onPageUpdate]', index, pageData)
+  // console.debug('[TemplateViewer.onPageUpdate]', index, pageData)
   templateModified.value = true
 
   // save template data for that page
