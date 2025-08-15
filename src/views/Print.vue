@@ -1,6 +1,6 @@
 <template>
   <div class="print">
-    <PrintOptions v-model:visible="showOptions" :pageSelection="pageSelection"
+    <PrintOptionsDialog v-model:visible="showOptions" :pageSelection="pageSelection"
         :templateModified="templateModified && template && template.ver > 0"
         :format="template?.format"
         @options="onOptionsUpdate"
@@ -16,7 +16,7 @@
       </div>
       <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages">
         <Page :data="page.front" :ver="template.ver" :format="template.format"/>
-        <SideBar class="sidebar" :ver="template.ver" />
+        <SideBar v-if="printSideBar" class="sidebar" :ver="template.ver" />
         <Page v-if="page.back" :data="page.back" :ver="template.ver" :format="template.format" :class="{flipMode:printFlipMode}" />
       </div>
     </div>
@@ -35,8 +35,9 @@ import { PageType } from '../assets/PageType.js';
 import { TemplateFormat } from '../model/TemplateFormat.js';
 import { AccountType } from '../model/AccounType.js';
 import Page from '../components/page/Page.vue';
-import PrintOptions from '../components/print/PrintOptions.vue';
+import PrintOptionsDialog from '../components/print/PrintOptionsDialog.vue';
 import SideBar from '../components/print/SideBar.vue';
+import { PrintOptions } from '../components/print/PrintOptions.js';
 
 interface PrintSheet {
   front: TemplatePage,
@@ -47,6 +48,7 @@ const pages = ref<PrintSheet[]>([]) // pages that will be printed
 const pageSelection = ref<boolean[]>([])
 const printFlipMode = ref(false)
 const printSingles = ref(false)
+const printSideBar = ref(true)
 const template = ref<Template|undefined>(undefined)
 const templateModified = ref(false)
 const route = useRoute()
@@ -93,12 +95,13 @@ watch(showOptions, (value) => {
 })
 
 // New Options have been selected
-function onOptionsUpdate(options) {
+function onOptionsUpdate(options:PrintOptions) {
   // console.log('[Print.onPrintOptions]', JSON.stringify(options))
   if( options) {
       printFlipMode.value = options.flipBackPage;
       printSingles.value = (options.pagePerSheet == 1)
       pageSelection.value = options.pageSelection
+      printSideBar.value = options.showSidebar
       
       // Ensure full page templates always use one page per sheet
       if (template.value && template.value.format === TemplateFormat.FullPage) {
