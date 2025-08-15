@@ -5,9 +5,11 @@ const modelVersion:number = 10;
 export class AirportFrequency {
     name: string;
     mhz: number;
-    constructor(name:string, frequency:number) {
+    notes: string;
+    constructor(name:string, frequency:number, notes:string='') {
         this.name = name;
         this.mhz = frequency;
+        this.notes = notes;
     }
 }
 
@@ -266,8 +268,8 @@ export class Airport {
         return version != Airport.invalidVersion
     }
     
-    addFrequency(name:string, mhz:number) {
-        this.freq.push(new AirportFrequency(name,mhz));
+    addFrequency(name:string, mhz:number, notes:string='') {
+        this.freq.push(new AirportFrequency(name,mhz,notes));
     }
 
     /**
