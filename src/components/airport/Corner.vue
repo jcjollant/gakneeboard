@@ -52,8 +52,6 @@ watch( props, () => {
 })
 
 function getFrequencyColorClass() {
-    if (!currentFrequencyType.value) return ''
-    
     switch(currentFrequencyType.value) {
         case FrequencyType.ctaf: return 'ctaf'
         case FrequencyType.tower: return 'tower'
@@ -112,14 +110,18 @@ function showField( field:string) {
             // RadioFrequencies use the '#F' prefix
             const freqName = field.substring(2)
             // console.log('[Corner.showField]', freqName)
-            const freq = getFrequency( airport.freq, freqName)
-            value.value = Formatter.frequency(freq)
-            label.value = freqName
-            
-            // Determine frequency type based on name
-            if (freq) {
-                currentFrequencyType.value = Frequency.typeFromString(freqName)
+            if(freqName.length > 4 && freqName[3] == '#') {
+                // Value is already formatter. For Example #F#TWR#120.600
+                value.value = freqName.substring(4)
+                const labelValue = freqName.substring(0, 3)
+                label.value = labelValue
+            } else {
+                const freqValue = getFrequency( airport.freq, freqName)                
+                value.value = Formatter.frequency(freqValue)
+                label.value = freqName
             }
+            // Determine frequency type based on name
+            currentFrequencyType.value = Frequency.typeFromString(label.value)            
         } else if( field[1] == 'N' && airport.navaids) { // Navaids
             // Navaids use the '#N' prefix
             const navaidName = field.substring(2)
