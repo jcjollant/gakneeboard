@@ -90,9 +90,9 @@ watch( props, async() => {
     loadProps(props);
 })
 
-watch( serviceVolume, () => {
+watch( serviceVolume, (newValue) => {
     // console.log('[RadioTile.watch] serviceVolume changed', serviceVolume.value)
-    saveConfig()
+    if(newValue != serviceVolume.value) saveConfig()
 })
 
 function boxColumns() {
