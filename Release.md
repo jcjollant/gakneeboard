@@ -6,6 +6,8 @@
 2) 5341
 * Duplicate template feature
 * New Print option to show/hide vertical bar
+3) 5342
+* Fixed over saving by Radio tile
 ## 8/12/2025
 1) 5331
 * Multiple runway selection
