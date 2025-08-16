@@ -251,6 +251,7 @@ function onExpand(newValue:boolean) {
 }
 
 function saveConfig() {
+    // console.debug('[AtisTile.saveConfig]')
     const data = {mode:displayMode.value}
     emits('update', new TileData(TileType.atis, data, expanded.value))    
 
