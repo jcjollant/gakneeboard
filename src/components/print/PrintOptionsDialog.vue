@@ -3,7 +3,7 @@
     <div class="printPopup">
       <div v-if="props.templateModified" class="versionWarning">
         <font-awesome-icon :icon="['fas', 'exclamation-triangle']"></font-awesome-icon>
-        Warning: Unsaved changes. Checklists version number only increase upon saving template.
+        <div>Unsaved changes.</div>
       </div>
       <div class="pageOptions">
         <div class="pageOptionLabel">Page Selection</div>
@@ -36,14 +36,15 @@
           <li>The number of printed pages will match the template page count</li>
           <li>You can save to PDF format from the next screen</li>
         </ul>
-        </FieldSet>
+      </FieldSet>
       <div class="actionDialog gap-2">
         <div class="floatLeft">
             <font-awesome-icon :icon="['fas', 'question']"
                 @click="onHelp" title="Perfect Prints help"></font-awesome-icon>
         </div>
         <Button label="Do Not Print" @click="emits('close')" link></Button>
-        <Button label="Print" @click="onPrint"></Button>
+        <Button v-if="upgrade" label="Upgrade to Print w/ options" @click="onPrint"></Button>
+        <Button label="Print" @click="onPrint" :disabled="upgrade"></Button>
       </div>
     </div>
   </Dialog>
@@ -52,6 +53,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { UserUrl } from '../../lib/UserUrl';
+import { OneChoiceValue } from '../../model/OneChoiceValue';
+import { PrintOptions } from './PrintOptions';
 
 import OneChoice from '../shared/OneChoice.vue';
 
@@ -59,8 +62,6 @@ import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import FieldSet from 'primevue/fieldset'
 import PageSelection from './PageSelection.vue';
-import { OneChoiceValue } from '../../model/OneChoiceValue';
-import { PrintOptions } from './PrintOptions';
 
 const emits = defineEmits(["print","options",'close']);
 
@@ -75,7 +76,7 @@ const pagePerSheet = ref(twoPages)
 const flipBackPage = ref(normalOrientation)
 const pageSelection = ref<boolean[]>([true, true, true])
 const showSideBar = ref(showOption)
-
+const upgrade = ref(false)
 // Computed property to check if the format is fullpage
 const isFullPageFormat = computed(() => props.format === 'fullpage')
 
@@ -137,7 +138,11 @@ function onPrint() {
 function onNewOptions() {
   const options = getOptions()
   // console.debug('[PrintOptions.onNewOptions]', options)
-  if(options) emits('options', options)
+  if(options) {
+    const unselected = options.pageSelection.find( (p:boolean) => !p)
+    upgrade.value = options.flipBackPage || !options.showSidebar || (unselected === false)
+    emits('options', options)
+  } 
 }
 
 </script>
@@ -222,6 +227,4 @@ li {
 :deep(.p-fieldset-content) {
   padding: 0;
 }
-
-
 </style>
