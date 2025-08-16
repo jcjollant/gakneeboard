@@ -5,7 +5,7 @@ import {
     faBan, faBars, faBorderAll, faBuilding,
     faCamera, faCheck, faChevronRight, faCircleInfo, faClone, faCloud, faCloudSunRain, faComments,
     faDisplay,
-    faEject,
+    faEject, faExclamationTriangle,
     faFileExport, faFile,
     faGasPump, faGear, faHeadset, faImage, faJetFighter,
     faLeftRight, faLink, faListCheck,
@@ -17,7 +17,7 @@ import {
     faSave, faScrewdriverWrench, faStarOfLife, faSun,
     faTowerCell, faTowerObservation, faTrash, faTruckFast,
     faUser,
-    faVideo, faWalkieTalkie, faXmark
+    faVideo, faWalkieTalkie, faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import 'primeicons/primeicons.css';
@@ -35,7 +35,7 @@ library.add(
     faBan, faBars, faBorderAll, faBuilding,
     faCamera, faCheck, faChevronRight, faCircleInfo, faClone, faCloud, faCloudSunRain, faComments, 
     faDisplay,
-    faEject,
+    faEject, faExclamationTriangle,
     faFacebookF, faFileExport, faFile, faGoogle, 
     faGasPump, faGear, faHeadset, faImage, faJetFighter, 
     faLeftRight, faLink, faListCheck, 
