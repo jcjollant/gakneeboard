@@ -18,7 +18,7 @@
           <MenuButton id="btnPrint" icon="print" title="Print Template" label="Print"
             @click="onPrint"/>
           <MenuButton id="btnSave" icon="save" title="Save Template to the Cloud" label="Save" :disabled="activeTemplate.isInvalid()"
-            @click="onSave"/>
+            @click="onSave(false)"/>
           <MenuButton id="btnDuplicate" v-if="activeTemplate.ver > 0" icon="clone" title="Save as a duplicate new template" label="Duplicate" @click="onSave(true)" />
           <MenuButton id="btnEditor"
             icon="screwdriver-wrench" title="Toggle Editor mode" label="Editor" :active="showEditor"
@@ -467,18 +467,6 @@ function onExported(format:any) {
   })  
 }
 
-// Validate and assign new offset value
-function onOffset(newOffset:number) {
-  // console.log('[TemplateViewer.onOffset]', newOffset, offsetLast.value)
-  if(newOffset < 0 || newOffset > offsetLast.value){
-    // console.log('[TemplateViewer.onOffset] invalid offset', newOffset)
-    return;
-  } 
-
-  offset.value = newOffset;
-  updateOffsets()
-}
-
 function onPageUpdate(index:number, pageData:TemplatePage) {
   // console.debug('[TemplateViewer.onPageUpdate]', index, pageData)
   templateModified.value = true
@@ -513,7 +501,7 @@ function onPrint() {
 }
 
 async function onSave(clone:boolean=false) {
-
+  // console.debug('[TemplateViewer.onSave]', clone, activeTemplate.value)
   // If there is nothing to save, just get out
   if( activeTemplate.value.isInvalid()) return;
 
