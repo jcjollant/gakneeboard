@@ -1,7 +1,7 @@
 <template>
     <BlankPage v-if="type==PageType.none" @replace="onReplace(PageType.selection)" />
     <ChecklistPage v-else-if="type==PageType.checklist" :data="pageData" :format="format"
-        @replace="onReplace" @update="onUpdate" :version="version" />
+        @replace="onReplace" @update="onUpdate" />
     <CoverPage v-else-if="type==PageType.cover" :data="pageData" 
         @replace="onReplace" @update="onUpdate" />
     <NavlogPage v-else-if="type==PageType.navLog" :data="pageData"
@@ -47,11 +47,9 @@ const confirm = useConfirm()
 const emits = defineEmits(['update'])
 const pageData = ref({})
 const type = ref(PageType.tiles)
-const version = ref(0)
 
 const props = defineProps({
     data: { type: Object, default: null},
-    ver: { type: Number, default: 0},
     format: { type: String, default: TemplateFormat.Kneeboard},
 })
 
@@ -62,7 +60,6 @@ function loadProps(props) {
     } else {
         pageData.value = props.data.data ? props.data.data : null
         type.value = props.data.type ? props.data.type : null
-        version.value = props.ver;
     }
     // console.log('[Page.loadProps] version', props.ver)
 }
