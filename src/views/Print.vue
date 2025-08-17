@@ -116,7 +116,7 @@ function onOptionsUpdate(options:PrintOptions) {
 
 
 // Start printing
-async function onPrint(pdf:boolean, options) {
+async function onPrint(pdf:boolean, options:PrintOptions|undefined) {
   // console.log('[Print.onPrint]')
   
   // Double-check if user can still print before proceeding
@@ -130,31 +130,13 @@ async function onPrint(pdf:boolean, options) {
   showOptions.value = false
   postPrint(route.params.id, options)
 
-  if(true) {
-    const element = document.getElementById('printTemplate')
-    // count sheets. 
-    // Single must accounts for visible otherwise just use pages as is (already filtered)
-    // const sheetsCount = printSingles.value ? pageSelection.value.reduce( (acc,visible) => visible ? acc + 1 : acc, 0) : pages.value.length
-    const elements = printSingles.value ? document.querySelectorAll('.printOnePage') : document.querySelectorAll('.printTwoPages')
-    if(element) await exportToPDF(elements, printSingles.value)
-    router.back()
-  } else {
-    // print window content after a short timeout to let flipmode kickin
-    setTimeout( async () => {
-      return new Promise( (res) => {
-        const preTime = new Date().getTime();
-        window.print();
-        const postTime = new Date().getTime();
-        // on iOS, window.print returns immediately
-        if(postTime - preTime > 500) { 
-          restorePrintOptions();
-        }
-        res()
-        router.back()
-      })
-    }, 500);
-  } 
-
+  const element = document.getElementById('printTemplate')
+  // count sheets. 
+  // Single must accounts for visible otherwise just use pages as is (already filtered)
+  // const sheetsCount = printSingles.value ? pageSelection.value.reduce( (acc,visible) => visible ? acc + 1 : acc, 0) : pages.value.length
+  const elements = printSingles.value ? document.querySelectorAll('.printOnePage') : document.querySelectorAll('.printTwoPages')
+  if(element) await exportToPDF(elements, printSingles.value)
+  router.back()
 }
 
 function refreshPages() {

@@ -1,6 +1,5 @@
 <template>
     <div class="updateButton" aria-label="Update" :title="manage?'Manage Account':'Upgrade Account'" :class="{'manage':manage}">
-        <!-- <font-awesome-icon icon="['fas','arrow-up']" /> -->
         <div>{{manage?'Manage':'Upgrade'}}</div>
     </div>
 </template>

@@ -3,15 +3,15 @@
     <div class="printPopup">
       <div v-if="props.templateModified" class="versionWarning">
         <font-awesome-icon :icon="['fas', 'exclamation-triangle']"></font-awesome-icon>
-        Warning: Unsaved changes. Checklists version number only increase upon saving template.
+        <div>Unsaved changes.</div>
       </div>
       <div class="pageOptions">
         <div class="pageOptionLabel">Page Selection</div>
         <PageSelection v-model="pageSelection" @change="onNewOptions" />
         
         <template v-if="!isFullPageFormat">
-          <div class="pageOptionLabel">Pages per sheet</div>
-          <OneChoice v-model="pagePerSheet" :choices="[onePage,twoPages]" @change="onNewOptions"/>
+          <!-- <div class="pageOptionLabel">Pages per sheet</div>
+          <OneChoice v-model="pagePerSheet" :choices="[onePage,twoPages]" @change="onNewOptions"/> -->
           
           <div class="pageOptionLabel">Back Page Orientation</div>
           <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]" @change="onNewOptions" />
@@ -36,14 +36,15 @@
           <li>The number of printed pages will match the template page count</li>
           <li>You can save to PDF format from the next screen</li>
         </ul>
-        </FieldSet>
+      </FieldSet>
       <div class="actionDialog gap-2">
         <div class="floatLeft">
             <font-awesome-icon :icon="['fas', 'question']"
                 @click="onHelp" title="Perfect Prints help"></font-awesome-icon>
         </div>
         <Button label="Do Not Print" @click="emits('close')" link></Button>
-        <Button label="Print" @click="onPrint"></Button>
+        <Button v-if="upgrade" label="Upgrade to use Print Options" @click="onUpgrade" severity="warning"></Button>
+        <Button label="Print" @click="onPrint" :disabled="upgrade"></Button>
       </div>
     </div>
   </Dialog>
@@ -52,6 +53,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { UserUrl } from '../../lib/UserUrl';
+import { OneChoiceValue } from '../../model/OneChoiceValue';
+import { PrintOptions } from './PrintOptions';
+import { useRouter } from 'vue-router';
 
 import OneChoice from '../shared/OneChoice.vue';
 
@@ -59,15 +63,15 @@ import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import FieldSet from 'primevue/fieldset'
 import PageSelection from './PageSelection.vue';
-import { OneChoiceValue } from '../../model/OneChoiceValue';
-import { PrintOptions } from './PrintOptions';
+import { currentUser } from '../../assets/data';
+import { AccountType } from '../../model/AccounType';
 
 const emits = defineEmits(["print","options",'close']);
 
 const onePage = new OneChoiceValue('One', 1)
 const twoPages = new OneChoiceValue('Two', 2)
 const normalOrientation = new OneChoiceValue('Normal', false)
-const flippedOrientation = new OneChoiceValue('Flipped', true, 'So you can read back page when front page is clipped')
+const flippedOrientation = new OneChoiceValue('Flipped', true, 'You can read back page without unclipping')
 const showOption = new OneChoiceValue('Show', true, 'Show Version Number, Tail # and Date')
 const hideOption = new OneChoiceValue('Hide', false, 'Hide Version Number, Tail # and Date')
 
@@ -75,9 +79,11 @@ const pagePerSheet = ref(twoPages)
 const flipBackPage = ref(normalOrientation)
 const pageSelection = ref<boolean[]>([true, true, true])
 const showSideBar = ref(showOption)
-
+const simmer = ref(true)
+const upgrade = ref(false)
 // Computed property to check if the format is fullpage
 const isFullPageFormat = computed(() => props.format === 'fullpage')
+const router = useRouter()
 
 //---------------------
 // Props management
@@ -90,6 +96,7 @@ const props = defineProps({
 function loadProps( props:any) {
   // console.log('[PrintOptions] loadProps', props)
   pageSelection.value = props.pageSelection
+  simmer.value = currentUser.accountType == AccountType.simmer
 }
 
 onMounted( () => {
@@ -108,7 +115,7 @@ watch(() => props.format, (newFormat) => {
 })
 
 watch( props, async() => {
-  // console.log('[PrintOptions] props changed', props)
+  // console.debug('[PrintOptions] props changed', props)
   loadProps( props)
 })
 
@@ -129,17 +136,28 @@ function onHelp() {
   UserUrl.open( UserUrl.printGuide)
 }
 
-function onPrint() {
-  // console.log('[Print.onPrint] options', JSON.stringify(options.value),'pageOptions', JSON.stringify(pageOption.value))
-  emits('print', getOptions())
-}
-
 function onNewOptions() {
   const options = getOptions()
   // console.debug('[PrintOptions.onNewOptions]', options)
-  if(options) emits('options', options)
+  if(options) {
+    if( simmer.value) {
+      const unselected = options.pageSelection.find( (p:boolean) => !p)
+      // user need to upgrade if they changed any default settings
+      upgrade.value = options.flipBackPage || !options.showSidebar || (unselected === false)
+    }
+    emits('options', options)
+  } 
 }
 
+function onPrint() {
+  // console.debug('[Print.onPrint] options', JSON.stringify(options.value),'pageOptions', JSON.stringify(pageOption.value))
+  emits('print', getOptions())
+}
+
+function onUpgrade() {
+  // navigate to plans page
+  router.push('/plans')
+}
 </script>
 
 <style scoped>
@@ -222,6 +240,4 @@ li {
 :deep(.p-fieldset-content) {
   padding: 0;
 }
-
-
 </style>
