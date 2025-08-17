@@ -10,14 +10,14 @@
     <div v-if="template" id="printTemplate" :class="{'single':printSingles,'fullpage':template.format === TemplateFormat.FullPage}">
       <div v-if="printSingles" v-for="(page,index) in template.data" class="printOnePage printPageBreak">
         <div class="onePage" v-if="pageSelection[index]">
-          <Page :data="page" :ver="template.ver" :format="template.format"
+          <Page :data="page" :format="template.format"
             :class="{flipMode:(index % 2 == 1 && printFlipMode)}"/>
         </div>
       </div>
       <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages">
-        <Page :data="page.front" :ver="template.ver" :format="template.format"/>
+        <Page :data="page.front" :format="template.format"/>
         <SideBar v-if="printSideBar" class="sidebar" :ver="template.ver" />
-        <Page v-if="page.back" :data="page.back" :ver="template.ver" :format="template.format" :class="{flipMode:printFlipMode}" />
+        <Page v-if="page.back" :data="page.back" :format="template.format" :class="{flipMode:printFlipMode}" />
       </div>
     </div>
     <div v-else>No Template</div>
