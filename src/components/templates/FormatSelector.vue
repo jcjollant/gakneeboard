@@ -6,16 +6,14 @@
         <img src="/thumbnails/kneeboard-size.png" class="formatImage" />
         <div class="formatTitle">Kneeboard Size</div>
         <div class="formatDescription">
-          5.5" x 8.5" format designed to be folded and used on a kneeboard.
-          Supports all page types.
+          5.5" x 8.5" to fold and clip on kneeboard.
         </div>
       </div>
       <div class="formatOption" @click="selectFormat(TemplateFormat.FullPage)">
         <img src="/thumbnails/fullpage-size.png" class="formatImage" />
         <div class="formatTitle">Full Page</div>
         <div class="formatDescription">
-          8.5" x 11" full letter size format.
-          Supports Tiles (3x4 grid) and Checklist page types.
+          8.5" x 11" full Letter size format.
         </div>
       </div>
     </div>
