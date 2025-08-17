@@ -34,7 +34,7 @@
       </div>
       <div v-if="activeTemplate" class="pageAll" :class="{'editor':showEditor}">
         <div v-for="(data,index) in activeTemplate.data" class="pageGrid" :class="{'fullpage-grid': activeTemplate.format === TemplateFormat.FullPage}">
-          <Page :data="data" :class="'page'+index" :ver="activeTemplate.ver"
+          <Page :data="data" :class="'page'+index"
             :format="activeTemplate.format" @update="onPageUpdate(index, $event)" />
           
           <VerticalActionBar v-if="showEditor" :offset="index" :last="index == activeTemplate.data.length - 1"
