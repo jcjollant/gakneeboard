@@ -1,4 +1,7 @@
 # User Experience updates
+## 8/16/2025
+1) 5343
+* Simmers need to upgrade to use print options
 ## 8/15/2025
 1) 5340 
 * New Expand mode
