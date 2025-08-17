@@ -33,7 +33,7 @@
                 <ChecklistViewer v-for="(checklist,index) in page.lists" :list="checklist" :theme="theme" :font="font"
                     :size="columns.value" :class="['list','list'+index]" />
             </div>
-            <div v-if="version > 0" class="version">v{{version}}</div>
+            <!-- <div v-if="version > 0" class="version">v{{version}}</div> -->
         </div>
     </div>
 </template>
@@ -80,7 +80,7 @@ let nameBeforeEdit = ''
 const page = ref<ChecklistPage>(new ChecklistPage())
 const props = defineProps({
     data: { type: Object, default: null },
-    version: { type: Number, default: 0 },
+    // version: { type: Number, default: 0 },
     format: { type: String, default: TemplateFormat.Kneeboard }
 })
 
@@ -88,7 +88,7 @@ const isFullPage = computed(() => props.format === TemplateFormat.FullPage)
 const textData = ref(['','',''])
 const theme = ref('theme-yellow')
 let themeBeforeEdit = 'theme-yellow'
-const version = ref(props.version)
+// const version = ref(props.version)
 
 // Props management
 function loadProps(newProps:any) {
@@ -130,7 +130,7 @@ function loadProps(newProps:any) {
         }
     }
     page.value = newPage
-    version.value = newProps.version
+    // version.value = newProps.version
 }
 
 onMounted(() => {
