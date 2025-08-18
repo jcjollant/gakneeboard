@@ -1,4 +1,9 @@
 # User Experience updates
+## 8/17/2025
+1) 5344
+* New Paper Nalog Page
+* New Demo for Paper navlog
+* Fixed singled last page on prints
 ## 8/16/2025
 1) 5343
 * Simmers need to upgrade to use print options
