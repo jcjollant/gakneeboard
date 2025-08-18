@@ -1,7 +1,9 @@
 import { on } from 'events';
+import { image } from 'html2canvas/dist/types/css/types/image';
+import { shadow } from 'pdfjs-dist';
 
-export async function exportToPDF(elements:NodeListOf<Element>, onePagePerSheet:boolean): Promise<void> {
-    // console.log('[pdf.exportToPDF]', elements.length);
+export async function exportToPDF(elements:NodeListOf<Element>, landscape:boolean): Promise<void> {
+    // console.debug('[pdf.exportToPDF]', elements.length, landscape);
 
     const [{ jsPDF }, html2canvasModule] = await Promise.all([
       import('jspdf'),
@@ -16,7 +18,7 @@ export async function exportToPDF(elements:NodeListOf<Element>, onePagePerSheet:
     }
   
     const pdf = new jsPDF({
-        orientation: onePagePerSheet ? 'portrait' : 'landscape',
+        orientation: landscape ? 'landscape' : 'portrait',
         unit: 'in',
         format: 'letter'
       });
@@ -24,11 +26,15 @@ export async function exportToPDF(elements:NodeListOf<Element>, onePagePerSheet:
     const margin = 0.25
     const longSide = 11
     const shortSide = 8.5
-    const pageHeight = onePagePerSheet ? longSide : shortSide;
-    const pageWidth = onePagePerSheet ? shortSide : longSide;
+    const pageWidth = landscape ? longSide : shortSide;
     const printableWidth = pageWidth - 2 * margin;
+    const pageHeight = landscape ? shortSide : longSide;
     const printableHeight = pageHeight - 2 * margin;
- 
+
+    const printApectRatio = printableWidth / printableHeight;
+
+    // console.debug('[pdf.exportToPDF] WxH', pageWidth, pageHeight)
+
     let imageCount = 0;
     for( const element of elements) {
         // add a page if
@@ -37,15 +43,23 @@ export async function exportToPDF(elements:NodeListOf<Element>, onePagePerSheet:
         const canvas = await html2canvas(element as HTMLElement, { scale: 2, allowTaint : true, useCORS: true });
         const imgData = canvas.toDataURL('image/png');
         const imgProps = pdf.getImageProperties(imgData);
-        const aspectRatio = imgProps.width / imgProps.height;
-        const scaledHeight = printableWidth * imgProps.height / imgProps.width;
-        const scaledWidth = printableHeight * imgProps.width / imgProps.height;
-        if( onePagePerSheet) {
-            const xOffset = (printableWidth - scaledWidth) / 2
-            pdf.addImage(imgData, 'PNG', margin + xOffset, margin, scaledWidth, printableHeight);
-        } else {
-            pdf.addImage(imgData, 'PNG', margin, margin, printableWidth, scaledHeight);
+        console.log('[pdf.exportToPDF] image', imgProps.width, imgProps.height)
+        const imgAspectRatio = imgProps.width / imgProps.height;
+        let scaledWidth = printableWidth;
+        let scaledHeight = printableHeight;
+        if( printApectRatio < imgAspectRatio) {
+          // Reduce height to scale
+          scaledHeight = printableHeight * printApectRatio / imgAspectRatio;
+        } else if( printApectRatio > imgAspectRatio) {
+          // Reduce width to scale
+          scaledWidth = printableWidth * imgAspectRatio / printApectRatio;
         }
+        // center image
+        const xOffset = margin + (printableWidth - scaledWidth) / 2
+        const yOffset = margin + (printableHeight - scaledHeight) / 2
+        // const scaledWidth = printableHeight * imgProps.width / imgProps.height;
+        console.debug('[pdf,exportToPDF] scaledW', scaledWidth, 'scaledH', scaledHeight, 'printableW', printableWidth, 'printableH', printableHeight)
+        pdf.addImage(imgData, 'PNG', xOffset, yOffset, scaledWidth, scaledHeight);
         imageCount++;
     }
   
