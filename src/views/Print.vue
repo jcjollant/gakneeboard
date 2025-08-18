@@ -4,7 +4,7 @@
         :templateModified="templateModified && template && template.ver > 0"
         :format="template?.format"
         @options="onOptionsUpdate"
-        @print="onPrint(false, $event)" @pdf="onPrint(true, $event)"
+        @print="onPrint"
         @close="showOptions=false"
         />
     <div v-if="template" id="printTemplate" :class="{'single':printSingles,'fullpage':template.format === TemplateFormat.FullPage}">
@@ -34,10 +34,10 @@ import { exportToPDF } from '../assets/pdf'
 import { PageType } from '../assets/PageType.js';
 import { TemplateFormat } from '../model/TemplateFormat.js';
 import { AccountType } from '../model/AccounType.js';
+import { PrintOptions } from '../components/print/PrintOptions.js';
 import Page from '../components/page/Page.vue';
 import PrintOptionsDialog from '../components/print/PrintOptionsDialog.vue';
 import SideBar from '../components/print/SideBar.vue';
-import { PrintOptions } from '../components/print/PrintOptions.js';
 
 interface PrintSheet {
   front: TemplatePage,
@@ -116,7 +116,7 @@ function onOptionsUpdate(options:PrintOptions) {
 
 
 // Start printing
-async function onPrint(pdf:boolean, options:PrintOptions|undefined) {
+async function onPrint(options:PrintOptions|undefined) {
   // console.log('[Print.onPrint]')
   
   // Double-check if user can still print before proceeding
@@ -135,7 +135,11 @@ async function onPrint(pdf:boolean, options:PrintOptions|undefined) {
   // Single must accounts for visible otherwise just use pages as is (already filtered)
   // const sheetsCount = printSingles.value ? pageSelection.value.reduce( (acc,visible) => visible ? acc + 1 : acc, 0) : pages.value.length
   const elements = printSingles.value ? document.querySelectorAll('.printOnePage') : document.querySelectorAll('.printTwoPages')
-  if(element) await exportToPDF(elements, printSingles.value)
+  // we only print in landscape mode for double pages and paper navlog
+  const paperNavlog = template.value && template.value.data.length > 0 && template.value.data[0].type === PageType.paperNavlog
+  const landscape:boolean = paperNavlog || !printSingles.value
+  // onePagePerSheet ? 'portrait' : 'landscape'
+  if(element) await exportToPDF(elements, landscape)
   router.back()
 }
 
@@ -165,7 +169,8 @@ function refreshPages() {
               pageList.push(printSheet)
             } else {
               // For the last page when there's an odd number of pages
-              const printSheet:PrintSheet = {front:pages[index], back:null}
+              const blankPage = new TemplatePage(PageType.none)
+              const printSheet:PrintSheet = {front:pages[index], back:blankPage}
               pageList.push(printSheet)
             }
         }
@@ -211,18 +216,9 @@ function redirectToPlansPage() {
   display:flex;
   justify-content: center;
 }
-/* .print {
-  position: relative;
-  display: flex;
-  flex-flow: column;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  min-height: 100vh;
-} */
 .printOnePage {
   display: flex;
-  width: 100%;
+  width: fit-content;
   justify-content: center;
 }
 .printTwoPages {
