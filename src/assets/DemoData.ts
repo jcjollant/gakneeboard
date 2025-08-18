@@ -256,6 +256,8 @@ export class DemoData {
         ]
     )
 
+    static pagePaperNavlog = new TemplatePage(PageType.paperNavlog, 'Paper NavLog')
+
     static acronyms(): Template {
         return new Template('Acronyms', 'Popular Acronyms', false, [DemoData.page0Acronyms, DemoData.page1Acronyms, DemoData.page2Acronyms])
     }
@@ -303,6 +305,8 @@ export class DemoData {
             return DemoData.ifrstrips()
         } else if(name == SheetName.seattle) {
             return DemoData.seattleAirports()
+        } else if(name == SheetName.paperNavlog) {
+            return DemoData.paperNavlog()
         }
         return undefined;
     }
@@ -334,5 +338,9 @@ export class DemoData {
 
     static tiles(): Template {
         return new Template('Tiles Demo', 'Every Tile Available on GA Kneeboard', false, [DemoData.page0DemoTiles, DemoData.page1DemoTiles])
+    }
+
+    static paperNavlog(): Template {
+        return new Template('Paper Navlog', 'Printable Paper Navlog Template', false, [DemoData.pagePaperNavlog])
     }
 }

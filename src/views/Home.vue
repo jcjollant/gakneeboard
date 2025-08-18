@@ -73,7 +73,8 @@ const demos = ref<DemoSelector[]>([
     new DemoSelector(SheetName.charts, 'charts.png', 'Charts','Airport Diagram and Instrument Approach'),
     new DemoSelector(SheetName.holds, 'holds.png', 'Holds Practice','Full sheet of Holds and Compasses'),
     new DemoSelector(SheetName.ifrstrips, 'strips.png', 'IFR Strips','Strips for IFR flights notekeeping'),
-    new DemoSelector(SheetName.seattle, 'seattle.png', 'Seattle Airports', '24 GA Airports in the Seattle Area')
+    new DemoSelector(SheetName.seattle, 'seattle.png', 'Seattle Airports', '24 GA Airports in the Seattle Area'),
+    new DemoSelector(SheetName.paperNavlog, 'paper-navlog.png', 'Paper NavLog', 'Printable Template for Paper Navlog'),
 ])
 interface Poh {
     code: string
