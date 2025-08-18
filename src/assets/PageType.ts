@@ -8,6 +8,7 @@ export class PageType {
   static loading = 'loading';
   static navLog = 'navlog';
   static notes = 'notes';
+  static paperNavlog = 'papernavlog'
   static selection = 'selection';
   static strips = 'strips';
   static tiles = 'tiles';

@@ -17,6 +17,7 @@ export class SheetName {
   static ifrstrips = 'gak-ifrstrips'
   static acronyms = 'gak-acronyms'
   static seattle = 'gak-seattle'
+  static paperNavlog = 'gak-paper-navlog'
 }
 
 import { duplicate } from './data'

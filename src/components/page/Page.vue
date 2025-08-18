@@ -6,6 +6,8 @@
         @replace="onReplace" @update="onUpdate" />
     <NavlogPage v-else-if="type==PageType.navLog" :data="pageData"
         @replace="onReplace" @update="onUpdate" />
+    <PaperNavlogPage v-else-if="type==PageType.paperNavlog" :data="pageData"
+        @replace="onReplace" @update="onUpdate" />
     <TilePage v-else-if="type==PageType.tiles" :data="pageData" :format="format"
         @update="onUpdate" />
     <NotesPage v-else-if="type==PageType.notes" 
@@ -36,6 +38,7 @@ import DiagramPage from '../charts/DiagramPage.vue'
 import FlightNotesPage from '../clearance/FlightNotesPage.vue'
 import NavlogPage from '../navlog/NavlogPage.vue'
 import NotesPage from '../notes/NotesPage.vue'
+import PaperNavlogPage from '../navlog/PaperNavlogPage.vue'
 import SelectionPage from './SelectionPage.vue'
 import StripPage from '../strips/StripPage.vue'
 import TilePage from '../tiles/TilePage.vue'

@@ -29,6 +29,32 @@ const isFullPage = computed(() => props.format === TemplateFormat.FullPage)
 
 const emits = defineEmits(['replace'])
 
+enum Section {
+    composable = 'Composable',
+    navigation = 'Navigation',
+    charts = 'Charts',
+    cosmetics = 'Cosmetics'
+}
+
+class PageItem {
+    name: string
+    type: PageType
+    icon: string
+    tooltip: string
+    smallPage: boolean
+    fullPage: boolean
+    section: Section
+    constructor(name: string, type: PageType, icon: string, tooltip: string, section: Section, smallPage: boolean, fullPage: boolean) {
+        this.name = name
+        this.type = type
+        this.icon = icon
+        this.tooltip = tooltip
+        this.section = section
+        this.smallPage = smallPage
+        this.fullPage = fullPage
+    }
+}
+
 const group1 = ref([
     {name:'Tiles',type:PageType.tiles, icon:'border-all', tooltip:'A 2x3 grid of customizable tiles like Airport, ATIS, Radios, ...'},
     {name:'Strips',type:PageType.strips, icon:'bars', tooltip:'Customizable horizontal strips'},
@@ -49,34 +75,36 @@ const group4 = ref([
 ])
 
 const sections = ref([
-    {name:'Composable', pages:group1},
-    {name:'Navigation', pages:group2},
-    {name:'Charts', pages:group3},
-    {name:'Cosmetics', pages:group4}
+    Section.composable,
+    Section.navigation,
+    Section.charts,
+    Section.cosmetics,
+])
+
+const allPages = ref([
+    new PageItem('Tiles', PageType.tiles, 'border-all', 'A 2x3 grid of customizable tiles like Airport, ATIS, Radios, ...', Section.composable, true, true),
+    new PageItem('Strips', PageType.strips, 'bars', 'Customizable horizontal strips', Section.composable, true, false),
+    new PageItem('Checklist', PageType.checklist, 'list-check', 'A customizable checklist', Section.composable, true, true),
+    new PageItem('NavLog', PageType.navLog, 'route', 'A Navigation Log with checkpoints and headings', Section.navigation, true, false),
+    new PageItem('Paper Navlog', PageType.paperNavlog, 'route', 'A Blank Template for hand built navlogs', Section.navigation, false, true),
+    new PageItem('Airport Diagram', PageType.diagram, 'road-circle-check', 'Airport Diagram (FAA)', Section.charts, true, false),
+    new PageItem('Instrument Approach', PageType.approach, 'plane-arrival', 'Instrument Approach Plates (FAA)', Section.charts, true, false),
+    new PageItem('Cover', PageType.cover, 'image', 'A cover page for your stylish templates', Section.cosmetics, true, false),
+    new PageItem('Notes', PageType.notes, 'pen-to-square', 'A blank page to write down instructions', Section.cosmetics, true, false),
+    new PageItem('Blank', PageType.none, 'file', 'A blank page', Section.cosmetics, false, false)
 ])
 
 // Filter sections based on format
 const filteredSections = computed(() => {
-    if (isFullPage.value) {
-        // For full page format, only allow Tiles and Checklist
-        const allowedTypes = [PageType.tiles, PageType.checklist];
-        
-        return sections.value.map(section => {
-            // Filter pages in each section
-            const filteredPages = section.pages.filter(page => 
-                allowedTypes.includes(page.type)
-            );
-            
-            // Only include sections that have pages after filtering
-            return filteredPages.length > 0 ? {
-                name: section.name,
-                pages: filteredPages
-            } : null;
-        }).filter(section => section !== null);
-    }
-    
-    // For kneeboard format, return all sections
-    return sections.value;
+    return sections.value.map( section => {
+        // filter pages that belong in the section and support the page format
+        const filteredPages = allPages.value.filter(page => 
+            page.section === section && 
+            (isFullPage.value ? page.fullPage : page.smallPage)
+        )
+
+        return filteredPages.length == 0 ? null : {name:section, pages:filteredPages}
+    }).filter(section => section !== null)
 })
 
 function replacePage(type:PageType) {
