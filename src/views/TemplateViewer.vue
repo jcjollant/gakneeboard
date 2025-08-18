@@ -744,7 +744,10 @@ function updateThumbnail(template:Template) {
 }
 
 .pageGrid.fullpage-grid {
-  grid-template-columns: var(--fullpage-width) var(--pages-gap);
-  grid-template-rows: var(--fullpage-height) var(--pages-gap);
+
+  grid-template-columns: auto var(--pages-gap);
+  grid-template-rows: auto var(--pages-gap);
+  /* grid-template-columns: var(--fullpage-width) var(--pages-gap);
+  grid-template-rows: var(--fullpage-height) var(--pages-gap); */
 }
 </style>
