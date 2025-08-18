@@ -341,6 +341,6 @@ export class DemoData {
     }
 
     static paperNavlog(): Template {
-        return new Template('Paper Navlog', 'Printable Paper Navlog Template', false, [DemoData.pagePaperNavlog])
+        return new Template('Paper Navlog', 'Printable Paper Navlog Template', false, [DemoData.pagePaperNavlog], TemplateFormat.FullPage)
     }
 }

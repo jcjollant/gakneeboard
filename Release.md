@@ -4,6 +4,8 @@
 * New Paper Nalog Page
 * New Demo for Paper navlog
 * Fixed singled last page on prints
+2) 5345
+* Fixed DemotData Template type
 ## 8/16/2025
 1) 5343
 * Simmers need to upgrade to use print options

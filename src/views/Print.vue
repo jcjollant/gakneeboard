@@ -148,6 +148,7 @@ function refreshPages() {
     const pageList:PrintSheet[] = []
     if(template.value) {
       const templateData = template.value.data
+      // create a list of selected pages
       const pages:TemplatePage[] = templateData.filter( (page:TemplatePage, index:number) => pageSelection.value[index])
       // console.log('[Print.refreshPages]', pages.length)
       
@@ -169,8 +170,7 @@ function refreshPages() {
               pageList.push(printSheet)
             } else {
               // For the last page when there's an odd number of pages
-              const blankPage = new TemplatePage(PageType.none)
-              const printSheet:PrintSheet = {front:pages[index], back:blankPage}
+              const printSheet:PrintSheet = {front:pages[index], back:null}
               pageList.push(printSheet)
             }
         }
