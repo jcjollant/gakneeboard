@@ -1,4 +1,7 @@
 # User Experience updates
+## 8/20/2025
+1) 5346
+* Fixed display mode selection
 ## 8/17/2025
 1) 5344
 * New Paper Nalog Page
