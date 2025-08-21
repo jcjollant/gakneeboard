@@ -4,7 +4,7 @@
             :stealth="!displaySelection && displayMode==DisplayModeNotes.Blank" :showReplace="displaySelection"
             @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" :expandable="true" :expanded="expanded"
-            @expand="onExpand" />
+            @expand="onExpand" @keep="displaySelection=false" />
         <div v-else-if="editMode" class="edit">
             <div class="paddedEdit" v-show="displayMode==DisplayModeNotes.Word">
                 <InputGroup>
@@ -96,22 +96,18 @@ watch( props, async() => {
     loadProps(props)
 })
 
-watch(displayMode, (newMode) => {
-    changeDisplayMode(newMode)
-})
-
-function changeDisplayMode(newMode:DisplayModeNotes) {
+watch(displayMode, (newValue, oldValue) => {
     // console.log('[NotesTiles.changeMode]', newMode)
-    if(newMode == displayMode.value) return;
-    // Crap in => default out
-    if(!newMode) newMode = DisplayModeNotes.Blank
+    if(newValue == oldValue) return;
 
-    displayMode.value = newMode
+    // Crap in => default out
+    if(!newValue) newValue = DisplayModeNotes.Blank
+
     displaySelection.value = false;
     editMode.value = false
 
     saveConfig()
-}
+})
 
 function saveConfig() {
     // save non default data

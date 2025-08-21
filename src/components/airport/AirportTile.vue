@@ -6,7 +6,7 @@
         <Header :title="title" :showReplace="editMode"
             @replace="emits('replace')" @display="displaySelection=!displaySelection" @title="onHeaderClick()"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList" :expandable="true" :expanded="expanded"
-            @expand="onExpand" />
+            @expand="onExpand" @keep="displaySelection=false" />
         <AirportEdit v-else-if="editMode" :airport="airportData" :config="config"
             @close="onHeaderClick()" @update="onSettingsUpdate" />
         <!-- <div class="compact" v-else-if="displayMode==DisplayModeAirport.FourRunways">
@@ -206,12 +206,12 @@ watch( props, async() => {
     loadProps(props)
 })
 
-watch(displayMode, (newMode) => {
-    // console.debug('[AirportTile.displayMode]', displayMode.value)
-    if(newMode == displayMode.value) return;
+watch(displayMode, (newValue,oldValue) => {
+    console.debug('[AirportTile.displayMode]', displayMode.value, newValue, oldValue)
+    if(newValue == oldValue) return;
     
     displaySelection.value = false;
-    config.value.mode = newMode;
+    config.value.mode = newValue;
 
     // Edit mode is only needed when there is no airport
     editMode.value = !airportData.value

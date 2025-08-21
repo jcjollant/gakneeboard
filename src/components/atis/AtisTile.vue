@@ -3,7 +3,7 @@
         <Header :title="getTitle()" :left="!displaySelection && displayMode==DisplayModeAtis.FullATIS && !expanded"
             @replace="emits('replace')" @display="displaySelection=!displaySelection"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList" :expandable="true" :expanded="expanded"
-            @expand="onExpand" />
+            @expand="onExpand" @keep="displaySelection=false" />
         <div v-else-if="displayMode==DisplayModeAtis.FullATIS && expanded" class="tileContent">
             <div v-for="n in 4" class="expanded" :class="{'bb': n < 4}">
                 <div class="infoEx br">
@@ -212,26 +212,20 @@ watch( props, async() => {
 })
 // End of Props management
 
-watch(displayMode, (newMode) => {
+watch(displayMode, (newValue, oldValue) => {
     // console.log('[Atis.watch] displayMode changed to ' + newMode)
-    if(newMode != displayMode.value) changeMode(newMode)
+    if(newValue == oldValue) return;
+
+    displaySelection.value = false;
+    saveConfig()
 })
 
 
-function changeMode(newMode:DisplayModeAtis) {
-    // console.log('[Atis.changeMode]', newMode)
-    if(newMode == displayMode.value) return;
-    
-    displayMode.value = newMode
-    displaySelection.value = false;
-    saveConfig()
-}
-
 function cycleMode() {
     if(displayMode.value == '') {
-        changeMode(DisplayModeAtis.CompactATIS)
+        displayMode.value = DisplayModeAtis.CompactATIS
     } else {
-        changeMode(defaultMode)
+        displayMode.value = defaultMode
     }
 }
 

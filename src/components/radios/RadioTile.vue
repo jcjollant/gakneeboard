@@ -5,7 +5,7 @@
             @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
         <div class="tileContent" :class="{'expanded':expanded}">
             <DisplayModeSelection v-if="displaySelection" :modes="modesList" v-model="displayMode" :expandable="true" :expanded="expanded"
-                @expand="onExpand" />
+                @expand="onExpand" @keep="displaySelection=false" />
             <ServiceVolumes v-else-if="displayMode==DisplayModeRadios.ServiceVolumes" v-model="serviceVolume"/>
             <Nordo v-else-if="displayMode==DisplayModeRadios.LostComms" />
             <div v-else-if="displayMode==DisplayModeRadios.FreqList" class="main">
@@ -80,9 +80,9 @@ onMounted(() => {
     loadProps(props);
 })
 
-watch(displayMode, (newMode) => {
+watch(displayMode, (newValue, oldValue) => {
     displaySelection.value = false
-    if( newMode == displayMode.value) return;
+    if( newValue == oldValue) return;
     saveConfig()
 })
 watch( props, async() => {
