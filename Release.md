@@ -1,4 +1,7 @@
 # User Experience updates
+## 8/21/2025
+1) 5347 
+* Added Aviate Software LLC to EULA and Privacy
 ## 8/20/2025
 1) 5346
 * Fixed display mode selection
