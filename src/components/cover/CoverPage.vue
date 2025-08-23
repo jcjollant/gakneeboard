@@ -89,7 +89,7 @@ function onCancel() {
             <div class="titleContainer">
                 <div class="title">{{ title ? title : 'No Title' }}</div>
             </div>
-            <Image v-if="imageUrl" :src="imageUrl" width="400" />
+            <Image v-if="imageUrl" :src="imageUrl" width="400" class="coverImage" />
             <i v-else class='pi pi-camera imageHolder'></i>
             <div class="subtitle">{{ subtitle }}</div>
         </div>
@@ -108,6 +108,10 @@ function onCancel() {
 }
 .main{
     height: 100%;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+
 }
 .settings {
     display: flex;
@@ -134,4 +138,5 @@ function onCancel() {
     justify-content: center;
     align-items: center;
 }
+
 </style>
