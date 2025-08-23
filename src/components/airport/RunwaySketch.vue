@@ -118,24 +118,52 @@ function show(runway) {
         const angleInRad = Math.PI / 180 * northEnd.mag; // Convert degrees to radians
         ctx.rotate(angleInRad);
     }
-    // draw runway at the center
-    let rwyColor = 'black'
+
+    // draw runway pavement
+    let rwyFillStyle = 'black';
+    let markingFillStyle = 'white'
+    let centerLine = true;
     if('surface' in runway && 'type' in runway.surface) {
         switch( runway.surface.type) {
-            case 'TURF': rwyColor = 'darkgreen'; break
-            case 'WATER': rwyColor = 'darkblue'; break
+            case 'TURF': // EX S43 15L
+                rwyFillStyle = 'darkgreen'; 
+                centerLine = false;
+                break
+            case 'WATER': // ex: W39
+                rwyFillStyle = 'darkblue'; 
+                centerLine = false;
+                break
             case 'GRVL':
-            case 'GRAVEL': rwyColor = '#777777'; break
-            case 'DIRT': rwyColor = '#5C4033'; break
+            case 'GRAVEL':  // ex 00W
+                // rwyFillStyle = '#888888';
+                const img = new Image();
+                img.src = '/assets/gravel.png';
+                rwyFillStyle = ctx.createPattern(img, 'repeat')
+                markingFillStyle = 'black';
+                centerLine = false;
+                break
+            case 'DIRT': // ex: O26
+                rwyFillStyle = '#5C4033'; 
+                centerLine = false;
+                break
+            case 'ASPH-CONC': // ex: KRNT
+            case 'CONC': rwyFillStyle = '#333333'; break
+            case 'SAND': // ex: S16
+                rwyFillStyle = '#C2B280';  //#D5C295
+                markingFillStyle = 'black';
+                centerLine = false;
+                break;
+            default:
+                ctx.fillStyle = 'black';
         }
     }
-    ctx.fillStyle = rwyColor
+    ctx.fillStyle = rwyFillStyle
     ctx.fillRect( -rwyHWidth, -rwyHLength, rwyWidth, rwyLength);
 
     // draw runway names
     ctx.font = rwyFontSize + "px Verdana"
     // console.log(ctx.font);
-    ctx.fillStyle = 'white';
+    ctx.fillStyle = markingFillStyle;
     ctx.textAlign = 'center';
     ctx.fillText( northEnd.name, 0, rwyHLength - rwyFontSize * 0.5);
     ctx.rotate(Math.PI);
@@ -144,7 +172,7 @@ function show(runway) {
     ctx.rotate(Math.PI);
 
     // runway centerline
-    if(rwyColor=='black') {
+    if(centerLine) {
         ctx.beginPath();
         ctx.strokeStyle = 'white';
         ctx.setLineDash([5, 2])
