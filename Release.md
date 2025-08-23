@@ -2,6 +2,8 @@
 ## 8/23/2025
 1) 5350
 * Runway colors for Sand, Concrete and Gravel
+2) 5351
+* Fixed large image woul not print with Cover page
 ## 8/21/2025
 1) 5347 
 * Added Aviate Software LLC to EULA and Privacy
