@@ -1,4 +1,7 @@
 # User Experience updates
+## 8/23/2025
+1) 5350
+* Runway colors for Sand, Concrete and Gravel
 ## 8/21/2025
 1) 5347 
 * Added Aviate Software LLC to EULA and Privacy
