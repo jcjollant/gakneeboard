@@ -31,6 +31,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
+import { TemplateSettings } from "./TemplateSettings";
 
 import Button from "primevue/button";
 import Dialog from 'primevue/dialog'
@@ -38,6 +39,7 @@ import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputText from "primevue/inputtext";
 import TemplateSharing from "./TemplateSharing.vue";
+
 
 const emits = defineEmits(["close","save"]);
 const publish = ref(false)
@@ -82,12 +84,7 @@ function onButtonClose() {
 
 function onButtonSave () {
   // refresh name and description
-  const settings = {
-    name: templateName.value,
-    desc: templateDesc.value,
-    ver: templateVersion.value,
-    publish: publish.value,
-  }
+  const settings = new TemplateSettings( templateName.value, templateDesc.value, templateVersion.value, publish.value)
   emits('save',settings)
 }
 

@@ -3,7 +3,7 @@
     <Menu :name="getTemplateName()"></Menu>
     <TemplateExport v-model:visible="showExport" :template="activeTemplate"
       @close="showExport=false" @export="onExported" />
-    <TemplateSettings v-model:visible="showSettings" :template="settingsTemplate"
+    <TemplateSettingsDialog v-model:visible="showSettings" :template="settingsTemplate"
       @close="showSettings=false" @save="onNewSettings" />
     <!-- <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
       @offset="onOffset" @update="onPageUpdate" /> -->
@@ -77,9 +77,10 @@ import MenuButton from '../components/menu/MenuButton.vue'
 import LoadingPage from '../components/page/LoadingPage.vue'
 import Page from '../components/page/Page.vue'
 import TemplateExport from '../components/templates/TemplateExport.vue'
-import TemplateSettings from '../components/templates/TemplateSettings.vue'
+import TemplateSettingsDialog from '../components/templates/TemplateSettingsDialog.vue'
 import VerticalActionBar from '../components/editor/VerticalActionBar.vue'
 import HorizontalActionBar from '../components/editor/HorizontalActionBar.vue'
+import { TemplateSettings } from '../components/templates/TemplateSettings.ts'
 
 const noTemplate = Template.noTemplate()
 const activeTemplate = ref(noTemplate)
@@ -539,7 +540,7 @@ function onSettings() {
   showSettings.value = true;
 }
 
-function onNewSettings(settings:any) {
+function onNewSettings(settings:TemplateSettings) {
   // console.debug('[TemplateViewer.onSettings]', settings)
 
   // Hide settings
@@ -548,6 +549,9 @@ function onNewSettings(settings:any) {
   if( settingsTemplate.value.name != settings.name 
     || settingsTemplate.value.desc != settings.desc 
     || settingsTemplate.value.publish != settings.publish) {
+    settingsTemplate.value.name = settings.name
+    settingsTemplate.value.desc = settings.desc
+    settingsTemplate.value.publish = settings.publish
     activeTemplate.value = settingsTemplate.value
     // We consider the template as modified if it's a cloud template
     templateModified.value = settingsTemplate.value.id > 0
