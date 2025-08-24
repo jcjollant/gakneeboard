@@ -6,6 +6,8 @@
 * Fixed large image woul not print with Cover page
 3) 5352
 * Fixed Template rename
+4) 5353
+* Fixed overall page height
 ## 8/21/2025
 1) 5347 
 * Added Aviate Software LLC to EULA and Privacy
