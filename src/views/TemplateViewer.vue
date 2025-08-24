@@ -64,6 +64,7 @@ import { PageType } from '../assets/PageType.ts'
 import { RouterNames } from '../router/index.js'
 import { Template, TemplatePage } from '../model/Template'
 import { TemplateData } from '../assets/TemplateData.ts'
+import { TemplateSettings } from '../components/templates/TemplateSettings.ts'
 import { readPageFromClipboard, readTileFromClipboard } from '../assets/sheetData'
 import { useConfirm } from 'primevue/useconfirm'
 import { useRoute, useRouter } from 'vue-router'
@@ -80,7 +81,6 @@ import TemplateExport from '../components/templates/TemplateExport.vue'
 import TemplateSettingsDialog from '../components/templates/TemplateSettingsDialog.vue'
 import VerticalActionBar from '../components/editor/VerticalActionBar.vue'
 import HorizontalActionBar from '../components/editor/HorizontalActionBar.vue'
-import { TemplateSettings } from '../components/templates/TemplateSettings.ts'
 
 const noTemplate = Template.noTemplate()
 const activeTemplate = ref(noTemplate)
@@ -229,13 +229,15 @@ function loadTemplate(template:Template,saveToLocalStorage:boolean=false) {
   // we are on the first page and last page is calculated based on number of pages
   offset.value = 0
   template.data = data
+  templateModified.value = false;
 
   activeTemplate.value = template;
   // console.log('[TemplateViewer.loadTemplate] template version', JSON.stringify(template.ver))
   updateOffsets()
   
   // Update the browser tab title with the template name
-  document.title = template.name ? template.name : 'New Template';
+  document.title = template.name || 'New Template';
+
 
   // console.log('[TemplateViewer.loadTemplate]', offset.value, offsetLast.value)
 
@@ -438,7 +440,6 @@ async function onEditorAction(ea:EditorAction) {
   }
 
   templateModified.value = true
-  // LocalStore.saveTemplate(activeTemplate.value)
 }
 
 
@@ -485,11 +486,6 @@ function onPrint() {
     toaster.warning('Squawk and Ident','Please sign in before printing')
     return
   }
-
-  // if( templateModified.value) {
-  //   toaster.warning('Line up and Wait', 'Please save your template before printing')
-  //   return
-  // }
 
   // go to print mode
   const printTemplateId = activeTemplate.value?.id || 0
