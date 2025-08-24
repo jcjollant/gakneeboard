@@ -108,6 +108,7 @@ function onCancel() {
 }
 .main{
     height: 100%;
+    max-height: 800px;
     display: flex;
     flex-flow: column;
     justify-content: space-between;
