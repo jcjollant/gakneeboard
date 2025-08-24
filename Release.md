@@ -8,6 +8,8 @@
 * Fixed Template rename
 4) 5353
 * Fixed overall page height
+5) 5354
+* Fixed modified flag
 ## 8/21/2025
 1) 5347 
 * Added Aviate Software LLC to EULA and Privacy
