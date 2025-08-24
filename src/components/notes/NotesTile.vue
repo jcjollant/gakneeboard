@@ -51,7 +51,7 @@ import EitherOr from '../shared/EitherOr.vue';
 
 const compassHeading = ref(true)
 let compassHeadingBeforeEdit = true
-const displayMode = ref(DisplayModeNotes.Blank)
+const displayMode = ref(DisplayModeNotes.Unknown)
 const emits = defineEmits(['replace','update'])
 const displaySelection = ref(false)
 const displayModes = [
@@ -71,7 +71,7 @@ const word = ref('CRAFT')
 let wordBeforeEdit = ''
 
 function loadProps(props:any) {
-    // console.log('[NotesTile.loadProps] ' + JSON.stringify(props))
+    // console.debug('[NotesTile.loadProps]', props)
 
     // restore display mode
     let newMode = props?.params?.mode ?? DisplayModeNotes.Blank
@@ -97,7 +97,7 @@ watch( props, async() => {
 })
 
 watch(displayMode, (newValue, oldValue) => {
-    // console.log('[NotesTiles.changeMode]', newMode)
+    // console.debug('[NotesTiles.changeMode]', oldValue, '=>', newValue, displayMode.value)
     if(newValue == oldValue) return;
 
     // Crap in => default out
@@ -106,7 +106,9 @@ watch(displayMode, (newValue, oldValue) => {
     displaySelection.value = false;
     editMode.value = false
 
-    saveConfig()
+    if(oldValue != DisplayModeNotes.Unknown) {
+        saveConfig()
+    }
 })
 
 function saveConfig() {
