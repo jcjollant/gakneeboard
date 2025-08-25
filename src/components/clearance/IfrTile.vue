@@ -12,6 +12,7 @@
         <DepartureContent v-else-if="displayMode==DisplayModeIfr.Departure" :airport="airport" class="clickable"
             @click="editMode=true" />
         <ImageContent v-else-if="displayMode==DisplayModeIfr.Alternate" src="alternate.png" /> 
+        <ImageContent v-else-if="displayMode==DisplayModeIfr.LostComms" src="lostcomms-ifr.png" /> 
         <CraftBoxedContent v-else />
     </div>
 
@@ -51,6 +52,7 @@ const displayModes = [
     new DisplayModeChoice( 'Departure', DisplayModeIfr.Departure),
     new DisplayModeChoice( 'Approach', DisplayModeIfr.Approach),
     new DisplayModeChoice( 'Alternate', DisplayModeIfr.Alternate),
+    new DisplayModeChoice( 'Lost Comms', DisplayModeIfr.LostComms),
 ]
 
 onMounted(() => {   
@@ -109,6 +111,8 @@ function getTitle() {
         airportPosition = 'prepend'
     } else if( displayMode.value==DisplayModeIfr.Alternate) {
         title = 'IFR Alternate'
+    } else if( displayMode.value==DisplayModeIfr.LostComms) {
+        title = 'IFR Lost Comms'
     } else if( displayMode.value==DisplayModeIfr.Departure) {
         title = 'Depart @'
         airportPosition = 'append'
