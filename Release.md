@@ -1,4 +1,7 @@
 # User Experience updates
+## 8/24/2024
+1) 5355
+* Last comms display mode for Radio Tile and IFR Tile.
 ## 8/23/2025
 1) 5350
 * Runway colors for Sand, Concrete and Gravel
