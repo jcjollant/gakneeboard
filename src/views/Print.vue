@@ -227,6 +227,7 @@ function redirectToPlansPage() {
   grid-template-columns: auto auto;
   gap: 0 var(--pages-gap);
   width: fit-content;
+  height: var(--page-height);
 }
 /* Add a class to handle single page in two-page layout */
 .printTwoPages:has(> :only-child) {
