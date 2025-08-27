@@ -1,5 +1,8 @@
 # User Experience updates
-## 8/24/2024
+## 8/26/2025
+1) 5356
+* New Cover page image behavior with Blob
+## 8/24/2025
 1) 5355
 * Last comms display mode for Radio Tile and IFR Tile.
 ## 8/23/2025
