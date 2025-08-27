@@ -10,7 +10,8 @@ import { Ticket } from "../backend/Ticket";
 import { Charts } from "../backend/Charts";
 import { GApiTemplate } from "../backend/GApiTemplate";
 import { GApiError } from "../backend/GApiError";
-
+import { UserImage } from "../backend/UserImage";
+import { UserDao } from "../backend/dao/UserDao";
 const port:number = 3000
 const app = express();
 
@@ -375,6 +376,21 @@ app.get('/sunlight/:from/:to/:dateFrom/:dateTo?', async (req:Request, res:Respon
         catchError(res, e, 'GET /sunlight/:from/:to/:date')
     }        
 })
+
+app.post('/userImage', async (req:Request, res:Response) => {
+    try {
+        const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+        const userId = await UserDao.getIdFromHash(payload.user)
+        if(!userId) throw new GApiError(401, 'Unauthorized')
+        const imageUrl = payload.imageUrl
+        const blobUrl = await UserImage.getBlobUrl(userId, imageUrl)
+        console.debug('GET /userImage', blobUrl)
+        res.send(blobUrl)
+    } catch(e) {
+        catchError(res, e, 'POST /userImage')
+    }
+})
+
 
 if(process.env.__VERCEL_DEV_RUNNING != "1") {
     app.listen(port, () => console.log("[index] Server ready on port " + port));
