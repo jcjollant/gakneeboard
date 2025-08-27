@@ -1,5 +1,4 @@
 import { Business } from "./business/Business"
-import { ThumbnailDao } from "./dao/ThumbnailDao"
 import { UsageDao, UsageType } from "./dao/UsageDao"
 import { UserDao } from "./dao/UserDao"
 import { GApiError } from "./GApiError"
@@ -156,8 +155,6 @@ export class GApiTemplate {
         return new Promise<ThumbnailData>( async (resolve, reject) => {
             // console.log('[GApiTemplate.updateThumbnail] ' + templateIdParam + ' for ' + userId)
             const templateDao = new TemplateDao()
-            // we may have negative numbers for tests
-            const testTemplate = templateIdParam < 0
             const templateId = Math.abs(templateIdParam)
             const template:Template|undefined = await templateDao.readById(templateId, userId)
 
