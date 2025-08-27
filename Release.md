@@ -1,6 +1,8 @@
 ## 08/26/2025
 1) 5350
 * Removed restriction for admin user
+2) 5351
+* New API for user images
 ## 08/07/2025
 1) 5320
 * Effective Date update
