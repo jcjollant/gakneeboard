@@ -6,22 +6,24 @@
       </div>
       <div v-if="activeTopic.value==topicAbout.value">
         <div class="mb-2 justify"><strong>GA Kneeboard</strong> was created to save our bacon when the iPad fails. Its sheer convenience made it a primary source of flight information.</div>
-        <div class="mb-2 justify"><strong>You can help</strong> in many ways : 
-          <ol>
-            <li>Suggest features you value as a pilot,</li>
-            <li>Show off your kneeboards to fellow pilots,</li>
-            <li>Make your templates public for community's benefit,</li>
-            <li>Test the app and report issues,</li>
-          </ol>
+        <div class="allButtons">
+          <div v-for="guide in guides">
+            <FAButton iconclass="fab" :icon="guide.icon" :label="guide.name" @click="openUrl(guide.url)" :link="true" class="oneButton" />
+            <div class="buttonDesc">{{ guide.subtitle }}</div>
+          </div>
         </div>
         <div class="justify"><strong>Special Thanks</strong> to Ash, Jason, Steve and Stewart whom have contributed invaluable feedback and suggestions since Day 1</div>
       </div>
       <div v-else-if="activeTopic.value==topicGuide.value" class="mb-5">
-        <div class="mb-5 justify"><a :href="UserUrl.blog" target="_blank">GA Kneeboard Blog</a> is the best source for updates and user guides. For example:</div>
-        <div class="mb-5 guides">
-          <Button v-for="guide in guides" :label="guide.name" @click="openUrl(guide.url)" severity="help"></Button>
+        <div class="mb-2 justify"><strong>You can help</strong> in many ways : 
+          <ol>
+            <li>Suggest features via "Give Feedback" or <a href="mailto:support@kneeboard.ga">email</a></li>
+            <li>Show off your kneeboards to fellow pilots,</li>
+            <li>Make your templates public for community's benefit,</li>
+            <li>Test the app and report issues,</li>
+          </ol>
+          And of course, purchase a <a href="./plans">subscription</a>!
         </div>
-        <div class="mb-5 justify">GA Kneeboard public <a :href="UserUrl.facebookProfile" target="_blank">Facebook Profile</a> is a good source for updates.</div>
       </div>
       <div v-else-if="activeTopic.value==topicWarning.value" class="warning-content mb-5">
         <div class="topWarning">
@@ -59,21 +61,19 @@
 
 <script setup>
 import { ref } from "vue";
+import { UserUrl } from '@/lib/UserUrl.ts'
 
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
+import FAButton from "../shared/FAButton.vue";
 import OneChoice from "../shared/OneChoice.vue";
-import { UserUrl } from '@/lib/UserUrl.ts'
 
 const emits = defineEmits(["close","hdiw"]);
 
 const guides = [
-  {name:'Airport Tile', url:UserUrl.airportTileGuide},
-  {name:'ATIS Tile', url:UserUrl.atisTileGuide},
-  {name:"Checklist Syntax",url:UserUrl.checklistGuide},
-  {name:'Fuel Bug Tile', url:UserUrl.fuelBugTileGuide},
-  {name:"Radio Flow Tile", url:UserUrl.radioFlowTileGuide},
-  {name:"Sun Light Tile", url:UserUrl.sunlightTileGuide},
+  {name:'',icon:'wordpress',subtitle:'Updates blog', url:UserUrl.blog},
+  {name:'',icon:'youtube',subtitle:'Demo Videos', url:UserUrl.youTubeChannel},
+  {name:'',icon:'facebook-f',subtitle:'Socialize', url:UserUrl.facebookProfile},
 ]
 
 const topicAbout = {label:'About',value:'about'}
@@ -134,5 +134,22 @@ ol {
   font-weight: 700;
   text-align: right;
   margin-bottom: 0.5rem;
+}
+.allButtons {
+  display: flex;
+  gap: 2rem;
+  margin: 1rem;
+  justify-content: center;
+}
+.oneButton {
+  width: 10rem;
+  height: 5rem;
+  font-size: 3rem;
+  border-radius: 10px;
+}
+.buttonDesc {
+  font-size: 0.75rem;
+  text-align: center;
+  margin-top: 0.5rem;
 }
 </style>

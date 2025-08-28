@@ -16,6 +16,7 @@ export class UserUrl {
     static checklistDigestPage:string = 'https://gakneeboard.wordpress.com/checklists-digest/'
 
     // Youtube
+    static youTubeChannel:string = 'https://www.youtube.com/@GAKneeboard/videos'
     static navlogVideo:string = 'https://www.youtube.com/playlist?list=PLS4A2hmRgOclcjE4THa034Lgq0THbewUX'
     static airportTileVideo:string='https://youtu.be/lt6GeShW-kU'
     static editorVideo:string = 'https://youtu.be/v9C5Eyr_A3E'
