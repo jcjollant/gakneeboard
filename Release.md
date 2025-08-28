@@ -1,4 +1,7 @@
 # User Experience updates
+## 8/28/2025
+1) 5357
+* Reworked about box
 ## 8/26/2025
 1) 5356
 * New Cover page image behavior with Blob
