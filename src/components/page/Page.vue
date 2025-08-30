@@ -6,7 +6,7 @@
         @replace="onReplace" @update="onUpdate" />
     <NavlogPage v-else-if="type==PageType.navLog" :data="pageData"
         @replace="onReplace" @update="onUpdate" />
-    <PaperNavlogPage v-else-if="type==PageType.paperNavlog" :format="format"
+    <PaperNavlogPage v-else-if="type==PageType.paperNavlog" :data="pageData" :format="format"
         @replace="onReplace" @update="onUpdate" />
     <TilePage v-else-if="type==PageType.tiles" :data="pageData" :format="format"
         @update="onUpdate" />
