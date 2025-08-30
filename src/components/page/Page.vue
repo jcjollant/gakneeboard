@@ -6,7 +6,7 @@
         @replace="onReplace" @update="onUpdate" />
     <NavlogPage v-else-if="type==PageType.navLog" :data="pageData"
         @replace="onReplace" @update="onUpdate" />
-    <PaperNavlogPage v-else-if="type==PageType.paperNavlog" :data="pageData"
+    <PaperNavlogPage v-else-if="type==PageType.paperNavlog" :format="format"
         @replace="onReplace" @update="onUpdate" />
     <TilePage v-else-if="type==PageType.tiles" :data="pageData" :format="format"
         @update="onUpdate" />
@@ -45,6 +45,7 @@ import TilePage from '../tiles/TilePage.vue'
 
 import { useConfirm } from 'primevue/useconfirm'
 import LoadingPage from './LoadingPage.vue'
+import { Template } from '../../model/Template'
 
 const confirm = useConfirm()
 const emits = defineEmits(['update'])
