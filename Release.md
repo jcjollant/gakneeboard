@@ -1,4 +1,7 @@
 # User Experience updates
+## 8/30/2025
+1) 5360
+* PaperNavlog small format
 ## 8/28/2025
 1) 5357
 * Reworked about box
