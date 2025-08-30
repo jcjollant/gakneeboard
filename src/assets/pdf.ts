@@ -59,7 +59,7 @@ export async function exportToPDF(elements:NodeListOf<Element>, landscape:boolea
         });
         const imgData = canvas.toDataURL('image/png');
         const imgProps = pdf.getImageProperties(imgData);
-        // console.log('[pdf.exportToPDF] image', imgProps.width, imgProps.height)
+        // console.debug('[pdf.exportToPDF] image', imgProps.width, imgProps.height)
         const imgAspectRatio = imgProps.width / imgProps.height;
         let scaledWidth = printableWidth;
         let scaledHeight = printableHeight;
