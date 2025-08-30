@@ -115,7 +115,7 @@ watch(props, (newVal) => {
 
 function loadProps(props:any) {
   if(props.data) {
-    numlines.value = props.data.waypoints
+    numlines.value = props.data.waypoints || maxWaypoints
   }
   // console.debug('[PaperNavlogPage.onMounted')
   if(props.format == TemplateFormat.FullPage) {
