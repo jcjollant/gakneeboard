@@ -1,27 +1,74 @@
-<script setup>
+<template>
+    <div class="contentPage pageCover">
+        <Header v-if="mode=='edit'" title="Cover Page" :showReplace="true" :page="true" :displayMode="false"
+            @replace="emits('replace')"></Header>
+        <div v-if="mode=='edit'" class="settings">
+            <InputGroup>
+                <InputGroupAddon class="coverAddon">Title</InputGroupAddon>
+                <InputText v-model="title" />
+            </InputGroup>
+            <InputGroup>
+                <InputGroupAddon class="coverAddon">Image URL</InputGroupAddon>
+                <InputText v-model="imageUrl" placeholder="http://somewhere.net/images/cover.jpg" />
+            <Button icon="pi pi-refresh" label="Fetch" @click="onFetch" />
+            </InputGroup>
+            <InputGroup>
+                <InputGroupAddon class="coverAddon">Subtitle</InputGroupAddon>
+                <InputText v-model="subtitle" />
+            </InputGroup>
+            <ImageViewer :url="imageBlobUrl" class="imageViewer" />
+            <ActionBar @cancel="onCancel" @apply="onApply"/>
+        </div>
+        <div v-else @click="onEdit" class="main clickable">
+            <div class="titleContainer">
+                <div class="title">{{ title ? title : 'No Title' }}</div>
+            </div>
+            <ImageViewer :url="imageBlobUrl" />
+            <div class="subtitle">{{ subtitle }}</div>
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 
 import ActionBar from '../shared/ActionBar.vue'
-
-import Image from 'primevue/image'
+import Button from 'primevue/button'
+import ImageViewer from './ImageViewer.vue'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
 import Header from '../shared/Header.vue'
+import axios from 'axios'
+import { GApiUrl } from '../../lib/GApiUrl'
+import { currentUser } from '../../assets/data'
+// import axios from 'axios'
 
 const emits = defineEmits(['replace','update'])
 
 const props = defineProps({
     data: { type: Object, default: null },
 })
+const data = ref(null)
+const imageUrl = ref('')
+const imageBlobUrl = ref('')
+let imageUrlBeforeEdit = ''
+const mode = ref('')
+const subtitle = ref('Click anywhere to customize')
+let subtitleBeforeEdit = ''
+const title = ref('Title')
+let titleBeforeEdit = ''
 
-function loadProps(newProps) {
-    // console.log('[CoverPage.loadProps]', JSON.stringify(newProps))
+
+
+function loadProps(newProps:any) {
+    // console.debug('[CoverPage.loadProps]', newProps.data)
 
     if( !newProps || !newProps.data) return;
     const data = newProps.data;
     if(data.title) title.value = data.title;
     if(data.imageUrl) imageUrl.value = data.imageUrl;
+    if(data.blobUrl) imageBlobUrl.value = data.blobUrl;
     if(data.subtitle) subtitle.value = data.subtitle;
 }
 
@@ -35,26 +82,15 @@ watch(props, () => {
 
 // End of props management
 
-const data = ref(null)
-const imageUrl = ref('')
-let imageUrlBeforeEdit = ''
-const mode = ref('')
-const subtitle = ref('Click anywhere to customize')
-let subtitleBeforeEdit = ''
-const title = ref('Title')
-let titleBeforeEdit = ''
-
 function onApply() {
-    const newData = { title: title.value, imageUrl: imageUrl.value, subtitle: subtitle.value }
+    const newData = { 
+        title: title.value, 
+        imageUrl: imageUrl.value, 
+        blobUrl: imageBlobUrl.value, 
+        subtitle: subtitle.value 
+    }
     mode.value = ''
     emits('update', newData)
-}
-
-function onEdit() {
-    imageUrlBeforeEdit = imageUrl.value;
-    subtitleBeforeEdit = subtitle.value;
-    titleBeforeEdit = title.value;
-    mode.value = 'edit'
 }
 
 function onCancel() {
@@ -64,37 +100,27 @@ function onCancel() {
     title.value = titleBeforeEdit;
 }
 
-</script>
+function onEdit() {
+    imageUrlBeforeEdit = imageUrl.value;
+    subtitleBeforeEdit = subtitle.value;
+    titleBeforeEdit = title.value;
+    mode.value = 'edit'
+}
 
-<template>
-    <div class="contentPage pageCover">
-        <Header v-if="mode=='edit'" title="Cover Page" :showReplace="true" :page="true" :displayMode="false"
-            @replace="emits('replace')"></Header>
-        <div v-if="mode=='edit'" class="settings">
-            <InputGroup>
-                <InputGroupAddon class="coverAddon">Title</InputGroupAddon>
-                <InputText v-model="title" />
-            </InputGroup>
-            <InputGroup>
-                <InputGroupAddon class="coverAddon">Image URL</InputGroupAddon>
-                <InputText v-model="imageUrl" placeholder="http://somewhere.net/images/cover.jpg" />
-            </InputGroup>
-            <InputGroup>
-                <InputGroupAddon class="coverAddon">Subtitle</InputGroupAddon>
-                <InputText v-model="subtitle" />
-            </InputGroup>
-            <ActionBar @cancel="onCancel" @apply="onApply"/>
-        </div>
-        <div v-else @click="onEdit" class="main clickable">
-            <div class="titleContainer">
-                <div class="title">{{ title ? title : 'No Title' }}</div>
-            </div>
-            <Image v-if="imageUrl" :src="imageUrl" width="400" class="coverImage" />
-            <i v-else class='pi pi-camera imageHolder'></i>
-            <div class="subtitle">{{ subtitle }}</div>
-        </div>
-    </div>
-</template>
+async function onFetch() {
+    const url = GApiUrl.root + 'userImage/'
+    const payload = {user:currentUser.sha256, imageUrl:imageUrl.value}
+    const headers = { headers: {'Content-Type':'application/json'} }
+    // console.debug('[CoverPage.onFetch]', url, payload)
+    await axios.post(url, payload, headers).then( response => {
+        // console.debug('[CoverPage.onFetch]', response.data)
+        imageBlobUrl.value = response.data;
+    }).catch( error => {
+        console.log(error)
+    })
+
+}
+</script>
 
 <style scoped>
 
@@ -111,7 +137,7 @@ function onCancel() {
     max-height: 800px;
     display: flex;
     flex-flow: column;
-    justify-content: space-between;
+    justify-content: space-evenly;
 
 }
 .settings {
@@ -134,10 +160,13 @@ function onCancel() {
 }
 
 .titleContainer {
-    height: 18rem;
+    height: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-
+.imageViewer {
+    height: 100%;
+    width: 100%;
+}
 </style>

@@ -1,5 +1,5 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faFacebookF, faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { faFacebookF, faGoogle, faWordpress, faYoutube } from '@fortawesome/free-brands-svg-icons';
 import {
     faArrowDown, faArrowUp,
     faBan, faBars, faBorderAll, faBuilding,
@@ -45,7 +45,7 @@ library.add(
     faSave, faScrewdriverWrench, faStarOfLife, faSun, 
     faTowerCell, faTowerObservation, faTrash, faTruckFast,
     faUser,
-    faVideo, faWalkieTalkie, faXmark)
+    faVideo, faWalkieTalkie, faWordpress, faXmark, faYoutube)
 
 createApp(App)
     .use(PrimeView)

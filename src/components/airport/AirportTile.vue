@@ -207,7 +207,7 @@ watch( props, async() => {
 })
 
 watch(displayMode, (newValue,oldValue) => {
-    console.debug('[AirportTile.displayMode]', displayMode.value, newValue, oldValue)
+    // console.debug('[AirportTile.displayMode]', displayMode.value, newValue, oldValue)
     if(newValue == oldValue) return;
     
     displaySelection.value = false;

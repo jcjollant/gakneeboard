@@ -8,6 +8,7 @@
                 @expand="onExpand" @keep="displaySelection=false" />
             <ServiceVolumes v-else-if="displayMode==DisplayModeRadios.ServiceVolumes" v-model="serviceVolume"/>
             <Nordo v-else-if="displayMode==DisplayModeRadios.LostComms" />
+            <ImageContent v-else-if="displayMode==DisplayModeRadios.LostCommsIFR" src="lostcomms-ifr.png" /> 
             <div v-else-if="displayMode==DisplayModeRadios.FreqList" class="main">
                 <div v-if="listEditMode" class="edit">
                     <div class="lookupList">
@@ -37,19 +38,20 @@ import { ServiceVolume} from '../../model/ServiceVolume'
 import { UserUrl } from '../../lib/UserUrl';
 import { useToast } from 'primevue/usetoast';
 import { useToaster } from '../../assets/Toaster'
+import { TileData } from '../../model/TileData';
+import { TileType } from '../../model/TileType';
 
 import ActionBar from '../shared/ActionBar.vue'
 import Button from 'primevue/button'
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../shared/Header.vue';
 import FrequencyBox from '../shared/FrequencyBox.vue'
+import ImageContent from '../shared/ImageContent.vue'
 import LookupDialog from './LookupDialog.vue'
 import Nordo from './Nordo.vue';
 import PlaceHolder from '../shared/PlaceHolder.vue'
 import Textarea from 'primevue/textarea';
 import ServiceVolumes from './ServiceVolumes.vue';
-import { TileData } from '../../model/TileData';
-import { TileType } from '../../model/TileType';
 
 const displayMode = ref(DisplayModeRadios.FreqList) // active display mode
 const displaySelection = ref(false)
@@ -63,7 +65,8 @@ const lookupTime = ref(0)
 const maxFreqCount = 15
 const modesList = ref([
     new DisplayModeChoice('Frequencies', DisplayModeRadios.FreqList, true),
-    new DisplayModeChoice('Lost Comms', DisplayModeRadios.LostComms),
+    new DisplayModeChoice('Lost Comms VFR', DisplayModeRadios.LostComms),
+    new DisplayModeChoice('Lost Comms IFR', DisplayModeRadios.LostCommsIFR),
     new DisplayModeChoice('VOR Service Volumes', DisplayModeRadios.ServiceVolumes),
 ])
 const props = defineProps({
@@ -122,7 +125,8 @@ function boxSize() {
 function getTitle() {
     if(displaySelection.value) return "Radios Tile Mode";
     switch(displayMode.value) {
-        case DisplayModeRadios.LostComms: return 'Lost Comms';
+        case DisplayModeRadios.LostComms: return 'Lost Comms VFR';
+        case DisplayModeRadios.LostCommsIFR: return 'Lost Comms IFR';
         case DisplayModeRadios.ServiceVolumes: return 'VOR Service Volumes';
         default: return 'Radios';
     }

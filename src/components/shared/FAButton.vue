@@ -1,6 +1,6 @@
 <template>
     <div class="fabutton" :aria-label="label" :class="{'link':link,menu:menu}">
-        <font-awesome-icon v-if="icon" :icon="['fas',icon]" />
+        <font-awesome-icon v-if="icon" :icon="[iconclass,icon]" />
         <div v-if="label" class="label">{{ label }}</div>
     </div>
 </template>
@@ -10,6 +10,7 @@
 const props = defineProps({
     label: { type: String, default: null},
     icon: { type: String, default: null},
+    iconclass: { type: String, default: 'fas'},
     disabled: { type: Boolean, default: true},
     link: {type: Boolean, default: false},
     menu: {type: Boolean, default: false},

@@ -1,4 +1,13 @@
 # User Experience updates
+## 8/28/2025
+1) 5357
+* Reworked about box
+## 8/26/2025
+1) 5356
+* New Cover page image behavior with Blob
+## 8/24/2025
+1) 5355
+* Last comms display mode for Radio Tile and IFR Tile.
 ## 8/23/2025
 1) 5350
 * Runway colors for Sand, Concrete and Gravel

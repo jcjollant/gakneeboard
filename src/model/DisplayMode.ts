@@ -35,6 +35,7 @@ export enum DisplayModeIfr {
     Departure = 'dep',
     Craft_deprecated = 'craft',
     Hold_deprecated = 'hold',
+    LostComms = 'lostcomms',
 }
 
 export enum DisplayModeAtis {
@@ -47,5 +48,6 @@ export enum DisplayModeAtis {
 export enum DisplayModeRadios {
     FreqList = '',
     LostComms = 'nordo',
+    LostCommsIFR = 'lost-comms-ifr',
     ServiceVolumes = 'sv',
 }

@@ -38,6 +38,7 @@ import { PrintOptions } from '../components/print/PrintOptions.js';
 import Page from '../components/page/Page.vue';
 import PrintOptionsDialog from '../components/print/PrintOptionsDialog.vue';
 import SideBar from '../components/print/SideBar.vue';
+import BlankPage from '../components/page/BlankPage.vue';
 
 interface PrintSheet {
   front: TemplatePage,
@@ -170,7 +171,8 @@ function refreshPages() {
               pageList.push(printSheet)
             } else {
               // For the last page when there's an odd number of pages
-              const printSheet:PrintSheet = {front:pages[index], back:null}
+              const blankPage = new TemplatePage(PageType.none)
+              const printSheet:PrintSheet = {front:pages[index], back:blankPage}
               pageList.push(printSheet)
             }
         }
@@ -227,6 +229,7 @@ function redirectToPlansPage() {
   grid-template-columns: auto auto;
   gap: 0 var(--pages-gap);
   width: fit-content;
+  height: var(--page-height);
 }
 /* Add a class to handle single page in two-page layout */
 .printTwoPages:has(> :only-child) {

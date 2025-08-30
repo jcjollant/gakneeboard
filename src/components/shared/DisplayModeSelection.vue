@@ -48,7 +48,7 @@ function onChoose(mode:string) {
     flex-flow: column;
     align-items: center;
     padding: 10px;
-    gap: 10px;
+    gap: 5px;
 }
 .labelButton {
     width:100%;
