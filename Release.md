@@ -3,6 +3,7 @@
 1) 5361
 * Cover page Title and subtitle are now conditional which allows for full page image
 2) 5362 fixed mulitple rendering
+3) 5363 fixed unsave title and image size
 ## 8/30/2025
 1) 5360
 * PaperNavlog small format
