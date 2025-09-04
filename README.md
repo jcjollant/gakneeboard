@@ -30,10 +30,7 @@ Menu Tools > Import/Export Data
 Save files in c:\src\kneeboard.ga\data
 
 ## New Data Cycle
-Refresh Adip.defaultEffectiveDate in backend/adip/Adip.ts (starting date)
-Refresh currentAsOf in test/constants.ts
-Refresh cycle constant in manualSketchUpdate.ts
-Refresh EFFECTIVE_DATE in Vercel environment variables for ga-api
+see [Operations](documentation/Operations.md)
 
 ## Testing with Stripe
 .\stripe.exe listen --forward-to locashost:3000/webhook
