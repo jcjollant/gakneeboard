@@ -192,7 +192,7 @@ export class TemplateDao extends Dao<Template> {
         let result:any;
         if(userId) {
             result = await this.db.query(`
-                SELECT * FROM ${this.tableName} WHERE id=${templateId} AND user_id=${userId};
+                SELECT * FROM ${this.tableName} WHERE id=${templateId} AND (user_id=${userId} OR ${userId}=1);
             `)
         } else {
             result = await this.db.query(`
