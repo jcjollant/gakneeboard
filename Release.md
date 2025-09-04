@@ -1,3 +1,6 @@
+## 09/03/2025
+1) 5360
+* Effective date update
 ## 08/26/2025
 1) 5350
 * Removed restriction for admin user
