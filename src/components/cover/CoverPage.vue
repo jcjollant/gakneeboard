@@ -20,11 +20,11 @@
             <ActionBar @cancel="onCancel" @apply="onApply"/>
         </div>
         <div v-else @click="onEdit" class="main clickable">
-            <div class="titleContainer">
+            <div v-if="title" class="titleContainer">
                 <div class="title">{{ title ? title : 'No Title' }}</div>
             </div>
-            <ImageViewer :url="imageBlobUrl" />
-            <div class="subtitle">{{ subtitle }}</div>
+            <ImageViewer :url="imageBlobUrl" class="imageViewer" />
+            <div v-if="subtitle" class="subtitle">{{ subtitle }}</div>
         </div>
     </div>
 </template>
@@ -132,9 +132,10 @@ async function onFetch() {
     font-size:7rem;
     opacity: 0.3;
 }
+
 .main{
     height: 100%;
-    max-height: 800px;
+    max-height: var(--page-height);
     display: flex;
     flex-flow: column;
     justify-content: space-evenly;

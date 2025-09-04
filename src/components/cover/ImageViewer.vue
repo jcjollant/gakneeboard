@@ -1,6 +1,7 @@
 <template>
-        <Image v-if="imageUrl" :src="imageUrl" width="400" class="coverImage"/>
-        <i v-else class='pi pi-camera imageHolder'></i>
+    <!-- <Image v-if="imageUrl" :src="imageUrl" class="coverImage" max-width="400px"/> -->
+    <img v-if="imageUrl" :src="imageUrl" class="coverImage"/>
+    <i v-else class='pi pi-camera imageHolder'></i>
 </template> 
 
 <script lang="ts" setup>
