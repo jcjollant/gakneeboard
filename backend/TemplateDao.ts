@@ -190,7 +190,7 @@ export class TemplateDao extends Dao<Template> {
      */
     async readById(templateId:number, userId:number|undefined=undefined):Promise<Template|undefined> {
         let result:any;
-        if(userId) {
+        if(userId && userId != 1) {
             result = await this.db.query(`
                 SELECT * FROM ${this.tableName} WHERE id=${templateId} AND (user_id=${userId} OR ${userId}=1);
             `)
