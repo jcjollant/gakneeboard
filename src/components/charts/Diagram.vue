@@ -10,6 +10,7 @@ import { ref, onMounted, watch } from 'vue'
 import { DiagramData } from '../../lib/DiagramData';
 import { getDocument } from 'pdfjs-dist'
 
+let pageRendering = false;
 const placeHolderText = ref('')
 const pdfCanvas = ref(null)
 const pdfFile = ref('')
@@ -59,6 +60,8 @@ function loadPdf() {
         getDocument({data:atob(pdfDataBase64)}).promise.then( pdf => {
             // Get first page
             pdf.getPage(1).then( page => {
+                if(pageRendering) return;
+                pageRendering = true;
                 // console.log('[ApproachPage.showApproach] Page loaded');
 
                 var scale = 3;
@@ -78,6 +81,7 @@ function loadPdf() {
                 };
                 var renderTask = page.render(renderContext);
                 renderTask.promise.then(function () {
+                    pageRendering = false;
                     // console.log('Page rendered');
                 });                    
             })
