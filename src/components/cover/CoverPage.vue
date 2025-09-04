@@ -66,10 +66,10 @@ function loadProps(newProps:any) {
 
     if( !newProps || !newProps.data) return;
     const data = newProps.data;
-    if(data.title) title.value = data.title;
+    title.value = data.title;
+    subtitle.value = data.subtitle;
     if(data.imageUrl) imageUrl.value = data.imageUrl;
     if(data.blobUrl) imageBlobUrl.value = data.blobUrl;
-    if(data.subtitle) subtitle.value = data.subtitle;
 }
 
 onMounted(() => {
@@ -165,9 +165,5 @@ async function onFetch() {
     display: flex;
     justify-content: center;
     align-items: center;
-}
-.imageViewer {
-    height: 100%;
-    width: 100%;
 }
 </style>
