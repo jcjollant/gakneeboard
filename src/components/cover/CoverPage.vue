@@ -152,7 +152,6 @@ async function onFetch() {
     font-size: 1rem;
     font-weight: bold;
     opacity: 0.5;
-    padding-top: 2rem;
 }
 
 .title {
@@ -161,7 +160,6 @@ async function onFetch() {
 }
 
 .titleContainer {
-    height: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
