@@ -3,6 +3,7 @@ import { Dao } from "./Dao";
 import { Usage } from "../models/Usage";
 
 export enum UsageType {
+    Eula = 'eula',
     Export = 'export',
     Print = 'print',
     Save = 'save',

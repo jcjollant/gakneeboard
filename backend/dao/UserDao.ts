@@ -184,6 +184,23 @@ export class UserDao extends Dao<User> {
     }
 
     /**
+     * A user has accepted the End User License Agreement. Update the date field in the database
+     * This call will override the previous value
+     * @param userId User that performed the action
+     * @param version Version of the EULA that was accepted
+     * @returns true if exactly one user was updated
+     */
+    async updateEulaAcceptance(userId: number, version:number):Promise<boolean> {
+        try {
+            const result = await sql`UPDATE users SET eula=${version} WHERE id=${userId}`
+            return result.rowCount == 1
+        } catch(err) {
+            console.error( '[UserDao.updateEulaAcceptance] ' + userId + ' failed ' + err)
+            return false
+        }
+    }
+
+    /**
      * Update an existing user with a new customer_id
      * @param user target user with id and customerId
      * @returns true if exactely one user was updated

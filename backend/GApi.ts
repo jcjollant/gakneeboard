@@ -28,6 +28,25 @@ import { SessionInfo } from './models/SessionInfo'
 // Google API key
 
 export class GApi {
+    public static async acceptEula(userId:number, version:number):Promise<boolean> {
+        // console.debug('[GApi.acceptEula]', userId)
+        try {
+            const userDao = new UserDao()
+
+            // record a new usage for this acceptance and update the user acceptance date
+            const data = {version: version}
+            await Promise.all([
+                UsageDao.create(UsageType.Eula, userId, JSON.stringify(data)),
+                userDao.updateEulaAcceptance(userId, version)
+            ])
+            return true;
+        } catch( e) {
+            console.error('[GApi.acceptEula]', e)
+            return false;
+        }
+    }
+
+
     public static async authenticate(body:any):Promise<UserMiniView> {
         try {
             const user:User = await UserTools.authenticate(body);

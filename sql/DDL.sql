@@ -1,6 +1,9 @@
+## 9/05/2025 Dev
+ALTER TABLE users ADD COLUMN eula INT default 0;
+ALTER TYPE usagetype ADD VALUE 'eula'
+
 ## 6/21/2025 Dev + Pros
-ALTER TABLE sheets 
-  ADD COLUMN "format" VARCHAR(16) DEFAULT 'kneeboard';
+ALTER TABLE sheets ADD COLUMN "format" VARCHAR(16) DEFAULT 'kneeboard';
 
 ## 04/19/2025 Dev + Prod
 ALTER TYPE usagetype ADD VALUE 'save'
