@@ -1,6 +1,8 @@
 <template>
-    <img v-if="imageUrl" :src="imageUrl" class="coverImage"/>
-    <i v-else class='pi pi-camera imageHolder'></i>
+    <div class="imageViewer">
+        <img v-if="imageUrl" :src="imageUrl" class="coverImage"/>
+        <i v-else class='pi pi-camera imageHolder'></i>
+    </div>
 </template> 
 
 <script lang="ts" setup>
@@ -21,4 +23,17 @@ watch(() => props.url, (newVal) => {
 
 </script>
 <style scoped>
+.imageViewer {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    flex: 1;
+}
+.coverImage {
+    height: 100%;
+}
 </style>
