@@ -4,6 +4,7 @@
 2) 5362 fixed mulitple rendering
 3) 5363 fixed unsave title and image size
 4) 5364 fixed image ratio
+5) 5365 fixed preview margin
 ## 8/30/2025
 1) 5360
 * PaperNavlog small format
