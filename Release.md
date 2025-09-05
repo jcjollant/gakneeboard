@@ -1,19 +1,13 @@
-## 09/03/2025
-1) 5360
-* Effective date update
+## 09/05/2025 - 5361 - Eula Acceptance
+## 09/03/2025 - 5360 - Effective date update
 ## 08/26/2025
 1) 5350
 * Removed restriction for admin user
 2) 5351
 * New API for user images
-## 08/07/2025
-1) 5320
-* Effective Date update
-* New Account type Private, old Private becomes Student
-## 07/10/2025
-1) 5280 - Effective Date update
-## 06/22/2025
-1) 5250 Added support for FullPage Format
+## 08/07/2025 - 5320 - Effective Date update - New Account type Private, old Private becomes Student
+## 07/10/2025 - 5280 - Effective Date update
+## 06/22/2025 - 5250 - Added support for FullPage Format
 ## 06/13/2025
 1) 5240
 * New Effective date 2025-06-12T00:00:00
