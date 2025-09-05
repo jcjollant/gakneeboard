@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from "express"
+import express, { Request, Response } from "express"
 import cors from "cors";
 import multer from "multer"
 import { GApi } from '../backend/GApi'
@@ -149,7 +149,21 @@ app.get('/diagram/:cycle/:fileName', async (req:Request, res:Response) => {
     }
 })
 
-
+app.post('/eula', async (req,res) => {
+    // console.debug('[index] /eula', req.body)
+    const userId = await UserTools.userIdFromRequest(req)
+    if(!userId) {
+        res.status(400).send('Invalid request')
+        return
+    }
+    // read version from request body
+    const version = req.body.version
+    await GApi.acceptEula(userId, version).then( (result) => {
+        res.send(result)
+    }).catch( (e) => {
+        catchError(res, e, 'POST /eula')
+    })
+})
 
 // Trigger download of a template export in various formats
 app.get('/export/template/:id/:format', async(req:Request,res:Response) => {
