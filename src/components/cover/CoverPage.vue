@@ -16,7 +16,7 @@
                 <InputGroupAddon class="coverAddon">Subtitle</InputGroupAddon>
                 <InputText v-model="subtitle" />
             </InputGroup>
-            <ImageViewer :url="imageBlobUrl" class="imageViewer" />
+            <ImageViewer :url="imageBlobUrl" class="imagePreview" />
             <ActionBar @cancel="onCancel" @apply="onApply"/>
         </div>
         <div v-else @click="onEdit" class="main clickable">
@@ -133,6 +133,10 @@ async function onFetch() {
     opacity: 0.3;
 }
 
+.imagePreview {
+    margin-bottom: 35px;
+}
+
 .main{
     height: 100%;
     max-height: var(--page-height);
@@ -146,6 +150,7 @@ async function onFetch() {
     flex-flow: column;
     gap: 10px;
     padding: 5px;
+    height: var(--page-content)
 }
 
 .subtitle {
