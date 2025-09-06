@@ -1,4 +1,5 @@
-## 09/05/2025 - 5361 - Eula Acceptance
+## 09/05/2025 - 5362 - Eula Acceptance status
+## 09/05/2025 - 5361 - Eula Acceptance API
 ## 09/03/2025 - 5360 - Effective date update
 ## 08/26/2025
 1) 5350
