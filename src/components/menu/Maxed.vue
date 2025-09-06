@@ -1,7 +1,7 @@
 <template>
     <Dialog modal :header="'Hey ' + currentUser.name + ', a personal note to you'" style="width: 600px">
         <p class="mb-1">As Pilots, we know what keeps us aloft : Lift, Thrust and Money. 
-            <br><b>GA Kneeboard</b> has been airborne for 1 year, and the amazing feedback tells us we have the correct heading. Along with the free plan, we now have a paid plan for pilots whom want us to stay aloft for years to come.
+            <br><b>GA Kneeboard</b> has been airborne since 2024, and the amazing feedback tells us we have the correct heading. Along with the free plan, we now have a paid plan for pilots whom want us to stay aloft for years to come.
         </p>
         <p>
             As we speak, you are over your plan by <b>{{ overage.join(' and ') }}</b>. Please consider what works best for you.
