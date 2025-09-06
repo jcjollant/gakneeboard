@@ -1,4 +1,5 @@
 # User Experience updates
+## 09/05/2025 - 5367 - New Flight Debrief Page - Removed format selection
 ## 09/05/2025 - 5366 - EULA Acceptance status
 ## 09/04/2025 - 5361 - Cover page Title and subtitle are now conditional which allows for full page image
 ## 09/04/2025 - 5362 - fixed mulitple rendering
