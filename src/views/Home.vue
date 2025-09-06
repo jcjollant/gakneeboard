@@ -51,6 +51,7 @@ import Menu from '../components/menu/Menu.vue'
 import PlaceHolder from '../components/shared/PlaceHolder.vue'
 import TemplateSelector from '../components/templates/TemplateSelector.vue'
 import Toast from 'primevue/toast'
+import { TemplateFormat } from '../model/TemplateFormat';
 
 class DemoSelector {
     name: string
@@ -125,7 +126,14 @@ function onDemoSelection(name:string) {
 
 function onNewTemplate() {
     // Instead of creating a template directly, navigate to format selection
-    router.push('/format-selector');
+    // router.push('/format-selector');
+
+    const templateData = getTemplateBlank();
+    templateData.name = 'New Template';
+    templateData.format = TemplateFormat.Kneeboard;
+  
+    // Save template data to localstore and navigate to template editor
+    routeToLocalTemplate(router, templateData);
 }
 
 function onPohSelection(poh:Poh) {
