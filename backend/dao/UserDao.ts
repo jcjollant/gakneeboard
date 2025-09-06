@@ -95,6 +95,7 @@ export class UserDao extends Dao<User> {
         user.setPrintCredits(row.print_credit || 0)
         user.setCreateDate(row.create_time)
         user.setCustomerId(row.customer_id)
+        user.setEula(row.eula)
 
         return user
     }

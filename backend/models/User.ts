@@ -14,6 +14,7 @@ export class User {
     customerId:string|undefined;
     printCredits:number
     createDate:Date|undefined;
+    eula:number;
 
     constructor( id:number, sha256:string) {
         this.id = id;
@@ -27,6 +28,7 @@ export class User {
         this.customerId = undefined;
         this.printCredits = 0;
         this.createDate = undefined;
+        this.eula = 0;
     }
 
 
@@ -72,5 +74,9 @@ export class User {
 
     public setCreateDate(date:Date|undefined) {
         this.createDate = date;
+    }
+
+    public setEula(eula:number) {
+        this.eula = eula;
     }
 }

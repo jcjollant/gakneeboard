@@ -30,6 +30,7 @@ export class Business {
     static MAX_TEMPLATE_STUDENT: number = 2;
     static MAX_TEMPLATE_PRIVATE: number = 10;
     static MAX_TEMPLATE_BETA: number = 10;
+    static latestEula:number = 20250821;
 
     public static calculatePrintCredits(user:User):number {
         return Math.max( user.printCredits, Business.getQuotas(user).prints)
