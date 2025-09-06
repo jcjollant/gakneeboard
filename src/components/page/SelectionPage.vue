@@ -3,7 +3,7 @@
         <Header :title="'New Page Selection'" :replace="false" :clickable="false"></Header>
         <div class="list">
             <template v-for="section in filteredSections">
-                <Separator :name="section.name" />
+                <Separator :name="section.name" class="separator" />
                 <FAButton v-for="page in section.pages" :label="page.name" :title="page.tooltip" :icon="page.icon"
                     @click="replacePage(page.type)"/>
             </template>
@@ -33,6 +33,7 @@ enum Section {
     composable = 'Composable',
     navigation = 'Navigation',
     charts = 'Charts',
+    debrief = 'Post Flight',
     cosmetics = 'Cosmetics'
 }
 
@@ -78,6 +79,7 @@ const sections = ref([
     Section.composable,
     Section.navigation,
     Section.charts,
+    Section.debrief,
     Section.cosmetics,
 ])
 
@@ -89,9 +91,10 @@ const allPages = ref([
     new PageItem('Paper Navlog', PageType.paperNavlog, 'route', 'A Blank Template for hand built navlogs', Section.navigation, true, true),
     new PageItem('Airport Diagram', PageType.diagram, 'road-circle-check', 'Airport Diagram (FAA)', Section.charts, true, false),
     new PageItem('Instrument Approach', PageType.approach, 'plane-arrival', 'Instrument Approach Plates (FAA)', Section.charts, true, false),
+    new PageItem('Flight Debrief', PageType.flightDebrief, 'pen-to-square', 'Debrief your flights per topic', Section.debrief, true, false),
+    new PageItem('Notes', PageType.notes, 'pen-to-square', 'A blank page to write down instructions', Section.debrief, true, false),
     new PageItem('Cover', PageType.cover, 'image', 'A cover page for your stylish templates', Section.cosmetics, true, false),
-    new PageItem('Notes', PageType.notes, 'pen-to-square', 'A blank page to write down instructions', Section.cosmetics, true, false),
-    new PageItem('Blank', PageType.none, 'file', 'A blank page', Section.cosmetics, false, false)
+    new PageItem('Blank', PageType.none, 'file', 'A blank page', Section.cosmetics, true, false)
 ])
 
 // Filter sections based on format
@@ -121,5 +124,9 @@ function replacePage(type:PageType) {
     padding: 10px;
     gap:10px;
     /* padding-top: 50px; */
+}
+.separator {
+    font-weight: bold;
+    color: black;
 }
 </style>

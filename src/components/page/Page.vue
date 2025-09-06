@@ -17,6 +17,8 @@
     <DiagramPage v-else-if="type==PageType.diagram" :data="pageData"
         @replace="onReplace" @update="onUpdate"  />
     <LoadingPage v-else-if="type==PageType.loading" :format="format" />
+    <FlightDebriefPage v-else-if="type==PageType.flightDebrief" :data="pageData"
+        @replace="onReplace" @update="onUpdate"  />
     <FlightNotesPage v-else-if="type==PageType.flightNotes" 
         @replace="onReplace" />
     <StripPage v-else-if="type==PageType.strips" :data="pageData"
@@ -46,6 +48,7 @@ import TilePage from '../tiles/TilePage.vue'
 import { useConfirm } from 'primevue/useconfirm'
 import LoadingPage from './LoadingPage.vue'
 import { Template } from '../../model/Template'
+import FlightDebriefPage from '../notes/FlightDebriefPage.vue'
 
 const confirm = useConfirm()
 const emits = defineEmits(['update'])

@@ -4,7 +4,8 @@ export class PageType {
   static checklist = 'checklist';
   static cover = 'cover';
   static diagram = 'diagram';
-  static flightNotes = 'flightnotes'
+  static flightDebrief = 'debrief';
+  static flightNotes = 'flightnotes';
   static loading = 'loading';
   static navLog = 'navlog';
   static notes = 'notes';

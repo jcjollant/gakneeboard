@@ -19,6 +19,7 @@ import {
     faUser,
     faVideo, faWalkieTalkie, faXmark,
 } from '@fortawesome/free-solid-svg-icons';
+import { faFaceFrown, faFaceMeh, faFaceSmile } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import 'primeicons/primeicons.css';
 import PrimeView from 'primevue/config';
@@ -46,6 +47,7 @@ library.add(
     faTowerCell, faTowerObservation, faTrash, faTruckFast,
     faUser,
     faVideo, faWalkieTalkie, faWordpress, faXmark, faYoutube)
+library.add(faFaceFrown, faFaceMeh, faFaceSmile)
 
 createApp(App)
     .use(PrimeView)
