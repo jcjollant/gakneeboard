@@ -1,4 +1,5 @@
 export const version = 5365
+export const eulaVersion = 20250821
 import axios from 'axios'
 import { Airport } from '../model/Airport.ts'
 import { Backend } from './Backend.ts'
@@ -309,6 +310,21 @@ export async function getSunlight( from, to=null, date=null, night=false) {
 function getSunlightDate(date) {
   return date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate()
 }
+
+export async function postEula() {
+  const url = GApiUrl.root + 'eula'
+  const config = { headers: {'Content-Type':'application/json', 'user': currentUser.sha256 }}
+  const payload = { version: eulaVersion}
+  return axios.post(url, payload, config)
+    .then( response => {
+      return response.data
+    })
+    .catch( error => {
+      reportError( '[data.postEula] error ' + JSON.stringify(error))
+      return null
+    })
+}
+
 
 export async function postPrint(id, options) {
   const url = GApiUrl.root + 'print'
