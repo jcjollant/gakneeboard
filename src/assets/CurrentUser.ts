@@ -15,6 +15,7 @@ export class CurrentUser {
   listeners:{(user: CurrentUser):void}[];
   accountType:AccountType;
   printCredits:number;
+  eulaCurrent:boolean;
 
   static noUser() { return new  CurrentUser()}
 
@@ -29,6 +30,7 @@ export class CurrentUser {
     this.maxTemplateCount = 0;
     this.accountType = AccountType.unknown
     this.printCredits = 0;
+    this.eulaCurrent = false;
 
     this.listeners = [];
   }
@@ -107,9 +109,10 @@ export class CurrentUser {
         this.templates = data.templates ? data.templates.map(Template.parse) : [];
         this.sortTemplates()
         this.pageCount = this.templates.reduce((a, t) => a + t.pages, 0 )
-        this.maxPageCount = Number(data.maxPages ? data.maxPages : 0);
-        this.maxTemplateCount = Number(data.maxTemp ? data.maxTemp : 0);
-        this.printCredits = Number(data.printCredits ? data.printCredits : 0)
+        this.maxPageCount = Number(data.maxPages || 0);
+        this.maxTemplateCount = Number(data.maxTemp || 0);
+        this.printCredits = Number(data.printCredits || 0)
+        this.eulaCurrent = data.eulaCurrent || false
 
         // save new user data
         localStorage.setItem(LocalStore.user, JSON.stringify(data))

@@ -3,6 +3,7 @@
     <About v-model:visible="showAbout" @close="showAbout=false" />
     <Maintenance v-model:visible="showMaintenance" @close="showMaintenance=false" />
     <Maxed v-model:visible="showMaxed" @close="showMaxed=false" />
+    <Eula v-model:visible="showEula" @close="showEula=false" />
     <Toast />
     <ConfirmDialog />
     <div class="application">
@@ -39,10 +40,12 @@ import MenuButton from './components/menu/MenuButton.vue';
 import Session from './components/menu/Session.vue'
 import Toast from 'primevue/toast'
 import Maxed from './components/menu/Maxed.vue';
+import Eula from './components/menu/Eula.vue';
 
 const route = useRoute()
 const router = useRouter()
 const showAbout = ref(false)
+const showEula = ref(false)
 const showFeedback = ref(false)
 const showMaintenance = ref(false)
 const showMaxed = ref(false)
@@ -61,7 +64,9 @@ onBeforeMount( () => {
       // console.log('[App.onBeforeMount]', currentUser)
       // console.log('[App.onBeforeMount] pages ', currentUser.pageCount, currentUser.maxPageCount)
       // console.log('[App.onBeforeMount] tempaltes ', currentUser.templates.length, currentUser.maxTemplateCount)
-      if(currentUser.pageCount > currentUser.maxPageCount || currentUser.templates.length > currentUser.maxTemplateCount) {
+      if(currentUser.loggedIn && !currentUser.eulaCurrent) {
+        showEula.value = true
+      } else if(currentUser.pageCount > currentUser.maxPageCount || currentUser.templates.length > currentUser.maxTemplateCount) {
         showMaxed.value = true
       }
     })
