@@ -1,13 +1,11 @@
 # User Experience updates
-## 9/04/2025
-1) 5361 Cover page Title and subtitle are now conditional which allows for full page image
-2) 5362 fixed mulitple rendering
-3) 5363 fixed unsave title and image size
-4) 5364 fixed image ratio
-5) 5365 fixed preview margin
-## 8/30/2025
-1) 5360
-* PaperNavlog small format
+## 09/05/2025 - 5366 - EULA Acceptance status
+## 09/04/2025 - 5361 - Cover page Title and subtitle are now conditional which allows for full page image
+## 09/04/2025 - 5362 - fixed mulitple rendering
+## 09/04/2025 - 5363 - fixed unsave title and image size
+## 09/04/2025 - 5364 - fixed image ratio
+## 09/04/2025 - 5365 - fixed preview margin
+## 08/30/2025 - 5360 - PaperNavlog small format
 ## 8/28/2025
 1) 5357
 * Reworked about box
@@ -577,23 +575,3 @@
 * Fixed invalid offset on editor delete sheet
 * Editor reset button updated to Replace with Eject button to match tiles
 2) Boosted max log to 15
-## 9/05/2024
-* Delete template confirmation
-* Fixed template deletion bug
-* Fixed editor mask size
-## 9/04/2024
-1) User can print multiple pages at once
-2) Enlarged tiles for better aspect ratio
-## 9/03/2024
-* Fixed get publication bug
-* Fixed page number issue
-## 9/02/2024
-* Load Template shows "Fetching..." when fetching
-* Radio Flows formats frequency upon selection
-* You can now rename templates when saving
-* You can now have more than two pages per template
-* Editor mode now shows a grey overlay
-## 9/01/2024
-* Refreshed Warning with banner
-* Leg and CHeckpoint have their own editor
-* Leg editor has built in calculations
