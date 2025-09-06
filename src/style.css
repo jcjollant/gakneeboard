@@ -112,6 +112,7 @@ body {
   background:white;
   width: var(--page-width);
   height: var(--page-height);
+  overflow: hidden;
 }
 
 .contentPage.fullpage {
