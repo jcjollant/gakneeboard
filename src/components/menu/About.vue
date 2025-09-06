@@ -52,6 +52,7 @@
       <div class="actionDialog gap-2">
         <Button label="Privacy" @click="openUrl(UserUrl.privacy)" link></Button>
         <Button label="License" @click="openUrl(UserUrl.eula)" link></Button>
+        <Button label="Accept EULA" @click="acceptEula" link></Button>
         <!-- <Button label="How Does It Work?" @click="emits('hdiw')" link></Button> -->
         <Button label="Got it" @click="emits('close')"></Button>
       </div>
@@ -67,6 +68,7 @@ import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import FAButton from "../shared/FAButton.vue";
 import OneChoice from "../shared/OneChoice.vue";
+import { postEula } from "../../assets/data";
 
 const emits = defineEmits(["close","hdiw"]);
 
@@ -84,6 +86,11 @@ const activeTopic = ref(topicAbout)
 
 function openUrl(url) {
   window.open(url, '_blank')
+}
+
+async function acceptEula() {
+  // console.debug('[About.acceptEula] accepted')
+  await postEula()
 }
 
 </script>
