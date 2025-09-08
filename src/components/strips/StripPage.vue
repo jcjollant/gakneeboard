@@ -4,7 +4,8 @@
         <div class="stripContainer">
             <div class="stripList" >
                 <template v-if="strips.length" v-for="(s,index) in strips" >
-                    <AtisStrip v-if="s == StripType.atis" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
+                    <AtisStrip v-if="s == StripType.atis" :edit="editMode" :header="!index || strips[index-1] != StripType.atis"
+                        @action="action(index, $event)" :class="'strip'+index"/>
                     <CraftStrip v-if="s == StripType.craft" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
                     <NotesStrip v-if="s == StripType.notes" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
                     <TaxiStrip v-if="s == StripType.taxi" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>

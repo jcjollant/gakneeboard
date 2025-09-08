@@ -1,25 +1,31 @@
 <template>
-    <div class="stripContent weather">
-        <div class="top">INFO</div>
-        <div class="top">WIND</div>
-        <div class="top" title="Visibility">VIS</div>
-        <div class="top" title="Sky Condition">SKY</div>
-        <div class="top" title="Temperature / Dew Point">T°/DP</div>
-        <div class="top" title="Altimeter Setting">ALT</div>
-        <div class="top" title="Approach in Use">APCH</div>
-        <div class="top" title="Runway in Use">RWY</div>
-        <div class="infoBox stripBox"></div>
-        <div class="stripBox inline">
-            <div v-for="letter in ['Clm','Vrb','Gst']">{{ letter }}</div>
+    <div class="stripContent">
+        <div v-if="header" class="weather">
+            <div class="top" v-if="header">INFO</div>
+            <div class="top" v-if="header">WIND</div>
+            <div class="top" v-if="header" title="Visibility">VIS</div>
+            <div class="top" v-if="header" title="Sky Condition">SKY</div>
+            <div class="top" v-if="header" title="Temperature / Dew Point">T°/DP</div>
+            <div class="top" v-if="header" title="Altimeter Setting">ALT</div>
+            <div class="top" v-if="header" title="Approach in Use">APCH</div>
+            <div class="top" v-if="header" title="Runway in Use">RWY</div>
         </div>
-        <div class="stripBox"></div>
-        <div class="stripBox inline">
-            <div v-for="letter in ['Fw','Sc','Br','Ov']">{{ letter }}</div>
+        <div class="weather fields">
+            <div class="infoBox stripBox"></div>
+            <div class="stripBox inline">
+                <div v-for="letter in ['Clm','Vrb','Gst']" class="wtrmrk">{{ letter }}</div>
+            </div>
+            <div class="stripBox inline"><div class="wtrmrk">10+</div></div>
+            <div class="stripBox inline">
+                <div v-for="letter in ['Fw','Sc','Br','Ov']" class="wtrmrk">{{ letter }}</div>
+            </div>
+            <div class="stripBox"></div>
+            <div class="stripBox inline">
+                <div v-for="letter in ['28','29','30']" class="wtrmrk">{{ letter }}</div>
+            </div>
+            <div class="stripBox"></div>
+            <div class="stripBox"></div>
         </div>
-        <div class="stripBox"></div>
-        <div class="stripBox"></div>
-        <div class="stripBox"></div>
-        <div class="stripBox"></div>
         <StripActions v-if="edit" @action="emits('action', $event)" />
     </div>
 </template>
@@ -31,7 +37,8 @@ import StripActions from '../strips/StripActions.vue';
 const emits = defineEmits(['action'])
 const edit = ref(false)
 const props = defineProps({
-    edit: { type: Boolean, required: false, default: false }
+    edit: { type: Boolean, required: false, default: false },
+    header: { type: Boolean, required: false, default: true }
 })
 
 onMounted(() => {
@@ -52,7 +59,6 @@ watch(props, () => {
     position: relative;
     display: grid;
     grid-template-columns: 1.5fr 5fr 2fr 4fr 4fr 4fr 3fr 3fr;
-    grid-template-rows: 1rem 40px;
     width: 100%;
     border-right: none;
     font-size: 11px;
@@ -76,9 +82,11 @@ watch(props, () => {
     display: flex;
     justify-content: space-around;
     font-weight: bolder;
-    color: darkgrey;
 }
 .stripBox {
     position: relative;
+}
+.fields {
+    height: 40px;
 }
 </style>
