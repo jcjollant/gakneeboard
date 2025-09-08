@@ -524,9 +524,6 @@ function saveConfig() {
 .wtrmrk {
     position: absolute;
     display: flex;
-    font-size: 10px;
-    font-weight: 600;
-    opacity: 0.3;
     bottom: 0;
     justify-content: space-between;
     width: 100%;

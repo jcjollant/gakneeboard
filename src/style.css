@@ -287,6 +287,12 @@ body {
   padding: 5px;
 }
 
+.wtrmrk {
+  font-size: 10px;
+  font-weight: 600;
+  opacity: 0.3;
+}
+
 @media print {
   @page {
     margin: 0.25in;
