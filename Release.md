@@ -1,4 +1,5 @@
 # User Experience updates
+## 09/07/2025 - 5370 - ATIS strip stack better
 ## 09/05/2025 - 5367 - New Flight Debrief Page - Removed format selection
 ## 09/05/2025 - 5366 - EULA Acceptance status
 ## 09/04/2025 - 5361 - Cover page Title and subtitle are now conditional which allows for full page image
@@ -7,9 +8,7 @@
 ## 09/04/2025 - 5364 - fixed image ratio
 ## 09/04/2025 - 5365 - fixed preview margin
 ## 08/30/2025 - 5360 - PaperNavlog small format
-## 8/28/2025
-1) 5357
-* Reworked about box
+## 08/28/2025 - 5357 - Reworked about box
 ## 8/26/2025
 1) 5356
 * New Cover page image behavior with Blob
