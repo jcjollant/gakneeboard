@@ -1,5 +1,5 @@
-import { StripType } from "./StripType";
+import { StripSetting } from "../model/StripSetting";
 
 export class StripPageData {
-    list: StripType[] = [];
+    list: StripSetting[] = [];
 }
