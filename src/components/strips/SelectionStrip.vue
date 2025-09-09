@@ -16,9 +16,9 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { StripType } from '@/assets/StripType'
+import { StripType } from '../../model/StripType'
 import Button from 'primevue/button'
-import { UserUrl } from '@/lib/UserUrl';
+import { UserUrl } from '../../lib/UserUrl';
 
 const emits = defineEmits(['selection','done'])
 const strips = ref([
