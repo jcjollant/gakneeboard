@@ -1,8 +1,5 @@
-# WiP
-Save Configured airport in page data
-Open Airport selection on click
-Restore selected airport on open
 # User Experience updates
+## 09/09/2025 - 5371 - Radio Strip supports airport code
 ## 09/07/2025 - 5370 - ATIS strip stack better
 ## 09/05/2025 - 5367 - New Flight Debrief Page - Removed format selection
 ## 09/05/2025 - 5366 - EULA Acceptance status
