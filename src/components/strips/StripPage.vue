@@ -4,12 +4,15 @@
         <div class="stripContainer">
             <div class="stripList" >
                 <template v-if="strips.length" v-for="(s,index) in strips" >
-                    <AtisStrip v-if="s == StripType.atis" :edit="editMode" :header="!index || strips[index-1] != StripType.atis"
-                        @action="action(index, $event)" :class="'strip'+index"/>
-                    <CraftStrip v-if="s == StripType.craft" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
-                    <NotesStrip v-if="s == StripType.notes" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
-                    <TaxiStrip v-if="s == StripType.taxi" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
-                    <RadioStrip v-if="s == StripType.radio" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
+                    <AtisStrip v-if="s.type == StripType.atis" :class="'strip'+index"
+                        :edit="editMode" :header="!index || strips[index-1].type != StripType.atis"
+                        @action="action(index, $event)"/>
+                    <CraftStrip v-if="s.type == StripType.craft" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
+                    <NotesStrip v-if="s.type == StripType.notes" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
+                    <TaxiStrip v-if="s.type == StripType.taxi" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
+                    <RadioStrip v-if="s.type == StripType.radio" :edit="editMode" @action="action(index, $event)" 
+                        :data="strips[index].data"
+                        @update="onUpdate(index, $event)"/>
                 </template>
                 <PlaceHolder v-else :title="'No Strip'" :subtitle="editMode ? 'Add New Strips Below' : 'Click Header to Configure'"/>
             </div>
@@ -21,7 +24,8 @@
 import { onMounted, ref, watch } from 'vue';
 import { StripAction } from '../../assets/StripAction';
 import { StripPageData } from '../../assets/StripPageData';
-import { StripType } from '../../assets/StripType';
+import { StripSetting } from '../../model/StripSetting.ts';
+import { StripType } from '../../model/StripType';
 
 import AtisStrip from '../atis/AtisStrip.vue';
 import CraftStrip from './CraftStrip.vue';
@@ -35,7 +39,7 @@ import RadioStrip from '../radios/RadioStrip.vue';
 const editMode = ref(false)
 const emits = defineEmits(['replace','update'])
 const props = defineProps<{data:StripPageData}>()
-const strips = ref<StripType[]>([])
+const strips = ref<StripSetting[]>([])
 
 onMounted(() => {
     // console.log('[StripPage.onMounted]', props.data)
@@ -48,7 +52,7 @@ watch(props, () => {
 
 
 function addStrip(type: StripType) {
-    strips.value.push(type)
+    strips.value.push(new StripSetting(type))
     update()
 }
 
@@ -76,18 +80,26 @@ function action(itemId:number, param:any) {
 }
 
 function loadProps(props: any) {
-    strips.value = props.data?.list || []
+    if('list' in props.data) {
+        // console.log('[StripPage.loadProps]', props.data)
+        strips.value = props.data.list.map((s:StripType) => new StripSetting(s))
+    } else {
+        strips.value = props.data
+    }
+    // switch to edit mode if there is nothing in the list
     if(strips.value.length == 0) {
         editMode.value = true
     }
 }
 
+function onUpdate(index: number, data: any) {
+    // console.debug('[StripPage.onUpdate]', index, data)
+    strips.value[index].data = data
+    update()
+}
 // Send an update to parent for storage
 function update() {
-    const data:StripPageData = {
-        list: strips.value
-    }
-    emits('update', data)
+    emits('update', strips.value)
 }
 
 </script>
