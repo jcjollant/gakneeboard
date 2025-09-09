@@ -132,7 +132,7 @@ function onRecentAirport(airportCode:string) {
 }
 
 function refreshAirportList(newAirports) {
-    airports.value =  LocalStore.airportRecentsGet().reverse();
+    airports.value =  LocalStore.airportRecentsGet().sort();
 }
 
 </script>
