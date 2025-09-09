@@ -44,17 +44,21 @@ export class Formatter {
      */
     static frequency(freq:any):string {
         // console.log('[Formatter.frequency]', typeof freq, JSON.stringify(freq))
-        let output = Formatter.noFrequency
-        if(freq == null || freq == undefined) return output;
-        if(typeof freq === "number") {
-            if(freq > 0) output = Number(freq).toFixed(3)
-        }
-        else if((freq['mhz']) || (freq['freq'])) {
-            const value = freq['mhz'] ? freq['mhz'] : (freq['freq'] ? freq['freq'] : freq);
-            output = Number(value).toFixed(3)
+        let textValue = Formatter.noFrequency
+        if(freq == null || freq == undefined) return textValue;
+        if(typeof freq === "number" && freq > 0) {
+            return freq.toFixed(3)
+        } else if( freq['mhz']) {
+            textValue = freq['mhz']
+        } else if( freq['freq']) {
+            textValue = freq['freq']
+        } else if( freq['value']) {
+            textValue = freq['value']
+        } else {
+            return textValue
         }
         // console.log('[Formatter.frequency] output', output)
-        return output;
+        return Number(textValue).toFixed(3);
     }
 
     static fuel(fuel:any) {
