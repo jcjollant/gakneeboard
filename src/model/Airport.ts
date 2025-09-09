@@ -288,6 +288,12 @@ export class Airport {
         this.rwys.push(...runways);
     }
 
+    getAnyFrequency(patterns:string[]) {
+        // test wether freq.name contains any of the patterns
+        return this.freq.find((freq) => (patterns.some(p => freq.name.includes(p))))
+
+    }
+
     // returns a number
     getFreq(name:string):number|undefined {
         return this.freq.find((freq) => freq.name == name)?.mhz
@@ -327,9 +333,7 @@ export class Airport {
     }
 
     getFreqWeather():AirportFrequency|undefined {
-        const patterns = ['ATIS','ASOS','AWOS','Weather']
-        // test wether freq.name contains any of the patterns
-        return this.freq.find((freq) => (patterns.some(p => freq.name.includes(p))))
+        return this.getAnyFrequency(['ATIS','ASOS','AWOS','Weather'])
     }
 
     isValid():boolean {
