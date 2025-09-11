@@ -1,4 +1,5 @@
 # User Experience updates
+## 09/11/2025 - 5372 - Fixed wrong edit mode on Airport Diagram
 ## 09/09/2025 - 5371 - Radio Strip supports airport code
 ## 09/07/2025 - 5370 - ATIS strip stack better
 ## 09/05/2025 - 5367 - New Flight Debrief Page - Removed format selection
