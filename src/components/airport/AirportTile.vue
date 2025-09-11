@@ -123,6 +123,7 @@ function loadProps(newProps:any) {
 
     if( params.code) {
         propsConfig.code = params.code
+        editMode.value = false
     } else { // Force edit mode if we don't have an airport yet
         title.value = defaultTitle
         editMode.value = true
