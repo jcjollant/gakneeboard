@@ -22,7 +22,7 @@
             <li>Make your templates public for community's benefit,</li>
             <li>Test the app and report issues,</li>
           </ol>
-          And of course, purchase a <a href="./plans">subscription</a>!
+          And of course, purchase a <a href="/plans">subscription</a>!
         </div>
       </div>
       <div v-else-if="activeTopic.value==topicWarning.value" class="warning-content mb-5">
