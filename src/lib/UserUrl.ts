@@ -22,7 +22,7 @@ export class UserUrl {
     static editorVideo:string = 'https://youtu.be/v9C5Eyr_A3E'
     static ffExportVideo:string = 'https://youtu.be/BNRY8u1hNmo'
     static noteTilesVideo:string = 'https://youtu.be/nqgDI-CpFUU'
-    static stripPageVideo:string = 'https://youtu.be/l0Ea1awGHZQ'
+    static stripPageVideo:string = 'https://youtu.be/So5kDcN-vKc'
 
     // other external link
     static dtpp:string = 'https://aeronav.faa.gov/d-tpp/'
