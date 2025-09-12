@@ -63,9 +63,9 @@ watch( props, async() => {
     loadProps(props)
 })
 
-watch( displayMode, (newMode) => {
+watch( displayMode, (newValue, oldValue) => {
     displaySelection.value = false;
-    if( newMode != displayMode.value) {
+    if( newValue != oldValue) {
         saveConfig()
     } 
 })
