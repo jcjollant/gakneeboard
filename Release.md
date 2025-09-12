@@ -1,4 +1,5 @@
 # User Experience updates
+## 09/11/2025 - 5374 - Fixed blank strip would not add
 ## 09/11/2025 - 5373 - Fixed IfrDisplay mode not working
 ## 09/11/2025 - 5372 - Fixed wrong edit mode on Airport Diagram
 ## 09/09/2025 - 5371 - Radio Strip supports airport code
