@@ -80,16 +80,20 @@ function action(itemId:number, param:any) {
 }
 
 function loadProps(props: any) {
+    // console.log('[StripPage.loadProps]', props)
     if('list' in props.data) {
         // console.log('[StripPage.loadProps]', props.data)
         strips.value = props.data.list.map((s:StripType) => new StripSetting(s))
-    } else {
+    } else if(props.data && props.data.length > 0 ) {
         strips.value = props.data
+    } else {
+        strips.value = []
     }
     // switch to edit mode if there is nothing in the list
     if(strips.value.length == 0) {
         editMode.value = true
     }
+    // console.log('[StripPage.loadProps] strips', strips.value)
 }
 
 function onUpdate(index: number, data: any) {
