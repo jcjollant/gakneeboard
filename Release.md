@@ -1,4 +1,5 @@
 # User Experience updates
+## 09/11/2025 - 5373 - Fixed IfrDisplay mode not working
 ## 09/11/2025 - 5372 - Fixed wrong edit mode on Airport Diagram
 ## 09/09/2025 - 5371 - Radio Strip supports airport code
 ## 09/07/2025 - 5370 - ATIS strip stack better
@@ -507,73 +508,3 @@
 ## 10/01/2024
 * Localstore cleanup
 * Replaced Navlog Video link with Plylist
-## 9/29/2024
-* Added file upload button in NavlogEdit
-* Airport Tile List mode uses correct format for Weather Frequency
-* Fixed altitute bug when editing checkpoint
-## 9/28/2024
-* Fixed publication request without user error
-* Fixed Load and Save without user
-* Added publication tests
-## 9/27/2024
-* Confirmation before editor copy to page
-* Checklist page does not cancel edits on header click
-* Refreshed About with Patreon link
-## 9/25/2024
-* Showing the list of public templates
-## 9/23/2024
-* Added video link to NavLog editor
-## 9/22/2024
-* Fixed small text bug on two colums checklist
-* Added description to Templates
-* Changed Load Template dialog to split own and community
-* All demos are not available under Menu>"Demo" 
-# 9/20/2024
-* Fixed unselect on Print, Checklist, About, Template Sharing, Navlog creation
-* Added page eject for Navlog, Checklist and Cover pages
-* Fixed From/To width in Navlog Editor
-* Fixed checklist edit rendering on Mac
-# 9/19/2024
-* New HDIW
-* Airport codes are blanked on reset
-## 9/18/2024
-* Toggle true course and magnetic
-* Apply and Next leg
-* calculation value in hints
-* Fixed Navlog tile overflow
-## 9/16/2024
-* Added calculator to Leg Editor
-## 9/15/2024
-* Fixed header behavior for checklist
-## 9/14/2024
-* Added privacy policy
-* NavLog tile is active
-* New replace behavior (mouse over)
-* Headings now include ° symbol
-* Navlog demo now has NavLog tile
-* Fixed Navlog eject button opacity
-## 9/12/2024
-* Facebook login
-## 9/11/2024
-* Tile selection and page selection use Font Awesome icons
-* New Navlog tile (not functional)
-* Airport Tile defaults to edit mode when no code is present
-## 9/10/2024
-1) Refreshed checklist tile and page placeholder and height with new values
-2) Fixed Checklist height discrepenacy with section headers
-## 9/09/2024
-* Bigger checlist to match page
-* Fixed Navlog continued page descirption
-* Added page count to template description
-## 9/08/2024
-* Editor is now able to copy from left to right
-* Leg Editor is now only showing relevant variables
-* navlog now supports continued mode
-* navlog page now show fuel recap
-* Navlog support cruise GPH, TAS, descent GPH and FPM
-## 9/06/2024
-1) 
-* Fixed missing confirmation on Editor Delete sheet
-* Fixed invalid offset on editor delete sheet
-* Editor reset button updated to Replace with Eject button to match tiles
-2) Boosted max log to 15
