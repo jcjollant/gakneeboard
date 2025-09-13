@@ -85,7 +85,7 @@ watch( props, async (newP, oldP) => {
     loadProps(props)
 })
 
-function loadProps( props) {
+function loadProps( props:any) {
     state = JSON.parse( JSON.stringify(props.tile));
     // console.debug( 'Tile loadProps ' + JSON.stringify(state  ))
     tile.value = props.tile
@@ -115,7 +115,7 @@ function onReplace(newName = TileType.selection, mode=undefined) {
 
 // when a tile notifies us of an update, we notify the parent to save values
 function onUpdate(newState:TileData) {
-    // console.debug('[Tile.onUpdate]', newState)
+    console.debug('[Tile.onUpdate]', newState)
     state = newState
     emits('update',state)
 }

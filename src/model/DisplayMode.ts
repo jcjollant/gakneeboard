@@ -28,6 +28,7 @@ export enum DisplayModeNotes {
 }
 
 export enum DisplayModeIfr {
+    Unknown = '?',
     Approach = 'apch',
     Alternate = 'alt',
     BoxV = 'boxV',
@@ -39,6 +40,7 @@ export enum DisplayModeIfr {
 }
 
 export enum DisplayModeAtis {
+    Unknown = '?',
     FullATIS = '',
     CompactATIS = 'compact',
     Categories = 'categories',
@@ -46,6 +48,7 @@ export enum DisplayModeAtis {
 }
 
 export enum DisplayModeRadios {
+    Unknown = '?',
     FreqList = '',
     LostComms = 'nordo',
     LostCommsIFR = 'lost-comms-ifr',

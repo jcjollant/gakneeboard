@@ -31,24 +31,22 @@ import { onMounted, ref, watch } from 'vue'
 
 import { PageType } from '../../assets/PageType'
 import { TemplateFormat } from '../../model/TemplateFormat'
+import { useConfirm } from 'primevue/useconfirm'
 
 import ApproachPage from '../charts/ApproachPage.vue'
 import BlankPage from './BlankPage.vue'
 import ChecklistPage from '../checklist/ChecklistPage.vue'
 import CoverPage from '../cover/CoverPage.vue'
 import DiagramPage from '../charts/DiagramPage.vue'
+import FlightDebriefPage from '../notes/FlightDebriefPage.vue'
 import FlightNotesPage from '../clearance/FlightNotesPage.vue'
+import LoadingPage from './LoadingPage.vue'
 import NavlogPage from '../navlog/NavlogPage.vue'
 import NotesPage from '../notes/NotesPage.vue'
 import PaperNavlogPage from '../navlog/PaperNavlogPage.vue'
 import SelectionPage from './SelectionPage.vue'
 import StripPage from '../strips/StripPage.vue'
 import TilePage from '../tiles/TilePage.vue'
-
-import { useConfirm } from 'primevue/useconfirm'
-import LoadingPage from './LoadingPage.vue'
-import { Template } from '../../model/Template'
-import FlightDebriefPage from '../notes/FlightDebriefPage.vue'
 
 const confirm = useConfirm()
 const emits = defineEmits(['update'])
@@ -60,7 +58,7 @@ const props = defineProps({
     format: { type: String, default: TemplateFormat.Kneeboard},
 })
 
-function loadProps(props) {
+function loadProps(props:any) {
     // console.log('[Page.loadProps]', JSON.stringify(props.data))
     if(!props.data) {
         type.value = PageType.none
@@ -105,8 +103,8 @@ function onReplace(newType:string|undefined=undefined) {
  * Page Data has been updated
  * @param newData 
  */
-function onUpdate( newData) {
-    // console.debug('[Page.onUpdate]', JSON.stringify(newData))
+function onUpdate( newData:any) {
+    console.debug('[Page.onUpdate]', JSON.stringify(newData))
     // enrich page data with type and index
     const newPageData = {type:type.value,data:newData}
     emits('update', newPageData)

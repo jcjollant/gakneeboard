@@ -53,7 +53,7 @@ import PlaceHolder from '../shared/PlaceHolder.vue'
 import Textarea from 'primevue/textarea';
 import ServiceVolumes from './ServiceVolumes.vue';
 
-const displayMode = ref(DisplayModeRadios.FreqList) // active display mode
+const displayMode = ref(DisplayModeRadios.Unknown) // active display mode
 const displaySelection = ref(false)
 const emits = defineEmits(['replace','update'])
 const expanded = ref(false)
@@ -84,8 +84,9 @@ onMounted(() => {
 })
 
 watch(displayMode, (newValue, oldValue) => {
+    // console.debug('[RadioTile.watch] displayMode', newValue, oldValue)
     displaySelection.value = false
-    if( newValue == oldValue) return;
+    if( newValue == oldValue || oldValue == DisplayModeRadios.Unknown) return;
     saveConfig()
 })
 watch( props, async() => {
@@ -94,7 +95,7 @@ watch( props, async() => {
 })
 
 watch( serviceVolume, (newValue) => {
-    // console.log('[RadioTile.watch] serviceVolume changed', serviceVolume.value)
+    // console.debug('[RadioTile.watch] serviceVolume changed', serviceVolume.value)
     if(newValue != serviceVolume.value) saveConfig()
 })
 
@@ -119,7 +120,6 @@ function boxSize() {
         if(frequencies.value.length <= 8) return 'medium';
         return 'small';
     }
-    return boxColumns() ? 'small' : 'large'
 }
 
 function getTitle() {
@@ -162,7 +162,7 @@ function loadData(data:any) {
     // Restore display mode
     if(data && 'mode' in data) {
         displayMode.value = data.mode
-    } else {
+    } else { // defaulting to frequency list
         displayMode.value = DisplayModeRadios.FreqList
     }
 
@@ -220,6 +220,7 @@ function onEditMode() {
 }
 
 function onExpand(newValue:boolean) {
+    // console.debug('[RadioTile.onExpand]')
     expanded.value = newValue
     saveConfig()
 }
@@ -233,6 +234,7 @@ function onLookup() {
 }
 
 function saveConfig() {
+    // console.debug('[RadioTile.saveConfig]')
     const data = {'mode':displayMode.value,'list':frequencies.value,'sv':serviceVolume}
     emits('update', new TileData( TileType.radios, data, expanded.value));
 }

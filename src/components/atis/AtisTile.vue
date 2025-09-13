@@ -170,7 +170,7 @@ import { TileData } from '../../model/TileData';
 // Enum with display modes
 
 const emits = defineEmits(['replace','update'])
-const defaultMode = DisplayModeAtis.FullATIS
+const defaultMode = DisplayModeAtis.Unknown
 const displayMode = ref(defaultMode)
 const displaySelection = ref(false)
 const expanded = ref(false)
@@ -214,9 +214,9 @@ watch( props, async() => {
 
 watch(displayMode, (newValue, oldValue) => {
     // console.log('[Atis.watch] displayMode changed to ' + newMode)
-    if(newValue == oldValue) return;
-
     displaySelection.value = false;
+
+    if(newValue == oldValue || oldValue == DisplayModeAtis.Unknown) return;
     saveConfig()
 })
 

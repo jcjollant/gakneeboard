@@ -38,7 +38,7 @@ import RadioStrip from '../radios/RadioStrip.vue';
 
 const editMode = ref(false)
 const emits = defineEmits(['replace','update'])
-const props = defineProps<{data:StripPageData}>()
+const props = defineProps<{data:any}>()
 const strips = ref<StripSetting[]>([])
 
 onMounted(() => {

@@ -41,7 +41,7 @@ const noAirport = new Airport()
 const airport = ref(noAirport)
 const emits = defineEmits(['replace','update'])
 const defaultMode = DisplayModeIfr.BoxV
-const displayMode=ref(defaultMode)
+const displayMode=ref(DisplayModeIfr.Unknown)
 const editMode = ref(false)
 const props = defineProps({
     params: { type: Object, default: null},
@@ -65,9 +65,8 @@ watch( props, async() => {
 
 watch( displayMode, (newValue, oldValue) => {
     displaySelection.value = false;
-    if( newValue != oldValue) {
-        saveConfig()
-    } 
+    if( newValue == oldValue || oldValue == DisplayModeIfr.Unknown) return;
+    saveConfig()
 })
 
 function loadProps(props:any) {
