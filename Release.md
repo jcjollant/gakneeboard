@@ -1,4 +1,5 @@
 # User Experience updates
+## 09/12/2025 - 5376 - Fixed feedback logic
 ## 09/12/2025 - 5375 - Flight Debrief: User defined categories - Strips : New addition bar
 ## 09/11/2025 - 5374 - Fixed blank strip would not add
 ## 09/11/2025 - 5373 - Fixed IfrDisplay mode not working
