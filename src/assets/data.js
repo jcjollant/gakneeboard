@@ -415,10 +415,7 @@ export function routeToLocalTemplate(router, template) {
 export async function sendFeedback(text,contactMe=true) {
   // console.log( '[data] feedback ' + JSON.stringify(data))
   const url = GApiUrl.root + 'feedback'
-  const payload = {version:version,feedback:text}
-  if( contactMe) {
-    payload.user = currentUser.sha256;
-  }
+  const payload = {version:version,feedback:text, user: currentUser.sha256, contact: contactMe}
 
   axios.post( url, payload, contentTypeJson)
   // axios.post( url, JSON.stringify(payload), contentTypeTextPlain)
