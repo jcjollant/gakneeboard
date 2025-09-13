@@ -7,10 +7,10 @@ export class FeedbackDao {
         return result.rows[0].count
     }
 
-    public static async save(version:string,feedback:string,user:string) {
+    public static async save(version:string,feedback:string,user:string, contact:boolean) {
         const userId = await UserDao.getIdFromHash(user)
         // console.log( '[FeedbackDao.save]', JSON.stringify(data), userId)
-        await sql`INSERT INTO Feedback (Version,Text,user_id) VALUES (${version},${feedback},${userId})`;
+        await sql`INSERT INTO Feedback (Version,Text,user_id, contact) VALUES (${version},${feedback},${userId}, ${contact})`;
     }
 
 }

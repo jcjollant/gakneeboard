@@ -101,7 +101,7 @@ export class GApi {
     }
 
     public static async feedbackSave(payload:any):Promise<void> {
-        return FeedbackDao.save(payload.version, payload.feedback, payload.user).then( async ()=>{
+        return FeedbackDao.save(payload.version, payload.feedback, payload.user, payload.contact).then( async ()=>{
             await Email.send(payload.feedback,EmailType.Feedback)
         })
     }

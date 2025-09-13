@@ -1,4 +1,6 @@
-## 9/05/2025 Dev
+## 09/12/2025 Dev + Prod
+ALTER TABLE feedback ADD COLUMN contact BOOLEAN default false;
+## 9/05/2025 Dev + Prod
 ALTER TABLE users ADD COLUMN eula INT default 0;
 ALTER TYPE usagetype ADD VALUE 'eula'
 
