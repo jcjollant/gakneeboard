@@ -188,7 +188,7 @@ const thisTile=ref<HTMLElement | null>(null)
 
 
 function loadProps(props:any) {
-    console.debug('[AtisTile.loadProps]', props)
+    // console.debug('[AtisTile.loadProps]', props)
     const newMode = props.params.mode
     // load mode from params but defaults to full
     if( newMode && newMode != DisplayModeAtis.Unknown) {
@@ -213,7 +213,7 @@ watch( props, async() => {
 // End of Props management
 
 watch(displayMode, (newValue, oldValue) => {
-    console.debug('[AtisTile.watch] displayMode changed to ', newValue)
+    // console.debug('[AtisTile.watch] displayMode changed to ', newValue)
     displaySelection.value = false;
 
     if(newValue == oldValue || oldValue == DisplayModeAtis.Unknown) return;

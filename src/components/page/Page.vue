@@ -104,7 +104,7 @@ function onReplace(newType:string|undefined=undefined) {
  * @param newData 
  */
 function onUpdate( newData:any) {
-    console.debug('[Page.onUpdate]', JSON.stringify(newData))
+    // console.debug('[Page.onUpdate]', JSON.stringify(newData))
     // enrich page data with type and index
     const newPageData = {type:type.value,data:newData}
     emits('update', newPageData)
