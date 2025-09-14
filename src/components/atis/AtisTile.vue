@@ -170,8 +170,8 @@ import { TileData } from '../../model/TileData';
 // Enum with display modes
 
 const emits = defineEmits(['replace','update'])
-const defaultMode = DisplayModeAtis.Unknown
-const displayMode = ref(defaultMode)
+const defaultMode = DisplayModeAtis.FullATIS
+const displayMode = ref(DisplayModeAtis.Unknown)
 const displaySelection = ref(false)
 const expanded = ref(false)
 const modesList = ref([
@@ -188,10 +188,10 @@ const thisTile=ref<HTMLElement | null>(null)
 
 
 function loadProps(props:any) {
-    // console.log('ATIS loadProps ' + JSON.stringify(props))
+    console.debug('[AtisTile.loadProps]', props)
     const newMode = props.params.mode
     // load mode from params but defaults to full
-    if( newMode) {
+    if( newMode && newMode != DisplayModeAtis.Unknown) {
         displayMode.value = newMode
     } else {
         displayMode.value = defaultMode
@@ -213,7 +213,7 @@ watch( props, async() => {
 // End of Props management
 
 watch(displayMode, (newValue, oldValue) => {
-    // console.log('[Atis.watch] displayMode changed to ' + newMode)
+    console.debug('[AtisTile.watch] displayMode changed to ', newValue)
     displaySelection.value = false;
 
     if(newValue == oldValue || oldValue == DisplayModeAtis.Unknown) return;
