@@ -126,7 +126,7 @@ body {
 }
 
 .stripAction {
-  position:absolute;
+  position: absolute;
   display: flex;
   gap: 2px;
   top: 2px;
