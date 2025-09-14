@@ -77,9 +77,6 @@ function loadAirport(code: string) {
 
 function onPick() {
     showSelection.value = true
-    // const airportCode = 'KBFI'
-    // loadAirport(airportCode)
-    // emits('update',{code: airportCode})
 }
 
 function onValidCode(a: Airport) {
