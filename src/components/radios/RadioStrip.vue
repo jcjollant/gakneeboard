@@ -1,24 +1,28 @@
 <template>
     <AirportSelectionDialog v-model:visible="showSelection" @valid="onValidCode"/>
-    <div class="stripContent radio">
-        <div class="top">AIRPORT</div>
-        <div class="top">ATIS</div>
-        <div class="top">GROUND</div>
-        <div class="top">CLEARANCE</div>
-        <div class="top">TOWER</div>
-        <div class="top">FLTPL</div>
-        <Button v-if="edit" :label="airport ? airport.code : 'Pick'" @click="onPick" class="btnPick" />
-        <div v-else-if="airport" class="frequency">{{ airport.code }}</div>
-        <div v-else class="stripBox"></div>
-        <div v-if="airport" class="frequency">{{ freqWeather }}</div>
-        <div v-else class="stripBox"></div>
-        <div v-if="airport" class="frequency">{{ freqGround }}</div>
-        <div v-else class="stripBox"></div>
-        <div v-if="airport" class="frequency">{{ freqClearance }}</div>
-        <div v-else class="stripBox"></div>
-        <div v-if="airport" class="frequency">{{ freqTower }}</div>
-        <div v-else class="stripBox"></div>
-        <div class="checkBox"></div>
+    <div class="stripContent">
+        <div v-if="header" class="radio header">
+            <div class="top">AIRPORT</div>
+            <div class="top">ATIS</div>
+            <div class="top">GROUND</div>
+            <div class="top">CLEARANCE</div>
+            <div class="top">TOWER</div>
+            <div class="top">FLTPL</div>
+        </div>
+        <div class="radio" :class="{tight: airport}">
+            <Button v-if="edit" :label="airport ? airport.code : 'Pick'" @click="onPick" class="btnPick" />
+            <div v-else-if="airport" class="frequency">{{ airport.code }}</div>
+            <div v-else class="stripBox"></div>
+            <div v-if="airport" class="frequency">{{ freqWeather }}</div>
+            <div v-else class="stripBox"></div>
+            <div v-if="airport" class="frequency">{{ freqGround }}</div>
+            <div v-else class="stripBox"></div>
+            <div v-if="airport" class="frequency">{{ freqClearance }}</div>
+            <div v-else class="stripBox"></div>
+            <div v-if="airport" class="frequency">{{ freqTower }}</div>
+            <div v-else class="stripBox"></div>
+            <div class="checkBox"><div class="inner"></div></div>
+        </div>
         <StripActions v-if="edit" @action="emits('action', $event)" />
     </div>
 </template>
@@ -41,19 +45,17 @@ const freqClearance = ref('')
 const freqTower = ref('')
 const props = defineProps({
     edit: { type: Boolean, required: false, default: false },
-    data: { type: Object, required: false, default: null }
+    data: { type: Object, required: false, default: null },
+    header: { type: Boolean, default: true},
 })
 const showSelection = ref(false)
 
 onMounted(() => {
-    edit.value = props.edit
-    if(props.data && props.data.code && props.data.code.length > 0) {
-        loadAirport(props.data.code)
-    }
+    loadProps(props)
 })
 
 watch(props, () => {
-    edit.value = props.edit
+    loadProps(props)
 })
 
 function applyAirport(a: Airport) {
@@ -75,6 +77,13 @@ function loadAirport(code: string) {
     })
 }
 
+function loadProps(props:any) {
+    edit.value = props.edit
+    if(props.data && props.data.code && props.data.code.length > 0) {
+        loadAirport(props.data.code)
+    }
+}
+
 function onPick() {
     showSelection.value = true
 }
@@ -89,21 +98,33 @@ function onValidCode(a: Airport) {
 
 <style scoped>
 .checkBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.inner {
   border: 1px solid #ccc;
   border-radius: 5px;
   background: white;
-  margin: 8px 5px;
+  width: 20px;
+  height: 20px;
 }
 .radio {
     position: relative;
     display: grid;
     grid-template-columns: 2fr 3fr 3fr 3fr 3fr 2rem;
-    grid-template-rows: 1rem 40px;
     width: 100%;
     border-right: none;
     font-size: 11px;
     gap: 2px;
+    height: 40px;
 } 
+.radio.header {
+    height: 1rem;
+}
+.radio.tight {
+    height: 24px;
+}
 .top {
     text-align: center;
     line-height: 1rem;
@@ -111,7 +132,6 @@ function onValidCode(a: Airport) {
 .frequency {
     text-align: center;
     font-size: 20px;
-    line-height: 40px;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 .btnPick {

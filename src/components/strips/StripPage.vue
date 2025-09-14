@@ -11,7 +11,7 @@
                     <NotesStrip v-if="s.type == StripType.notes" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
                     <TaxiStrip v-if="s.type == StripType.taxi" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
                     <RadioStrip v-if="s.type == StripType.radio" :edit="editMode" @action="action(index, $event)" 
-                        :data="strips[index].data"
+                        :data="strips[index].data" :header="!index || strips[index-1].type != StripType.radio"
                         @update="onUpdate(index, $event)"/>
                 </template>
                 <PlaceHolder v-else :title="'No Strip'" :subtitle="editMode ? 'Add New Strips Below' : 'Click Header to Configure'"/>
@@ -57,7 +57,7 @@ function addStrip(type: StripType) {
 }
 
 function action(itemId:number, param:any) {
-    // console.log('[StripPage.action]', itemId, param)
+    // console.debug('[StripPage.action]', itemId, param)
     if(param == StripAction.remove) {
         strips.value.splice(itemId, 1)
     } else if( param == StripAction.moveUp) {
@@ -73,7 +73,7 @@ function action(itemId:number, param:any) {
             strips.value[itemId] = tmp
         }
     } else {
-        console.log('Unknown action', param)
+        console.warn('Unknown action', param)
         return
     }
     update()
