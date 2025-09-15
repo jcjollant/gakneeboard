@@ -1,4 +1,5 @@
 # User Experience updates
+## 09/14/2025 - 5383 - Vertical Info Bar can now show only version number
 ## 09/13/2025 - 5382 - Radio Strip Dynamic header, height and removed default code
 ## 09/13/2025 - 5381 - Fixed ATIS default mode
 ## 09/13/2025 - 5380 - Fixed unwanted saveConfig during display mode init causing modified template on load 
