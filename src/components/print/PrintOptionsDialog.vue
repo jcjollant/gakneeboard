@@ -17,7 +17,7 @@
           <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]" @change="onNewOptions" />
 
           <div class="pageOptionLabel">Vertical Info Bar</div>
-          <OneChoice v-model="showSideBar" :choices="[showOption, hideOption]" @change="onNewOptions" />
+          <OneChoice v-model="vibSelected" :choices="verticalInfoBarOptions" @change="onNewOptions" />
         </template>
         
         <template v-else>
@@ -65,6 +65,7 @@ import FieldSet from 'primevue/fieldset'
 import PageSelection from './PageSelection.vue';
 import { currentUser } from '../../assets/data';
 import { AccountType } from '../../model/AccounType';
+import { VerticalInfoBarOption } from '../../model/VerticalInfoBarOption';
 
 const emits = defineEmits(["print","options",'close']);
 
@@ -72,18 +73,20 @@ const onePage = new OneChoiceValue('One', 1)
 const twoPages = new OneChoiceValue('Two', 2)
 const normalOrientation = new OneChoiceValue('Normal', false)
 const flippedOrientation = new OneChoiceValue('Flipped', true, 'You can read back page without unclipping')
-const showOption = new OneChoiceValue('Show', true, 'Show Version Number, Tail # and Date')
-const hideOption = new OneChoiceValue('Hide', false, 'Hide Version Number, Tail # and Date')
 
 const pagePerSheet = ref(twoPages)
 const flipBackPage = ref(normalOrientation)
 const pageSelection = ref<boolean[]>([true, true, true])
-const showSideBar = ref(showOption)
 const simmer = ref(true)
 const upgrade = ref(false)
 // Computed property to check if the format is fullpage
 const isFullPageFormat = computed(() => props.format === 'fullpage')
 const router = useRouter()
+const vibAll = new OneChoiceValue('All', VerticalInfoBarOption.all, 'Show Version Number, Tail # and Date')
+const vibVersion = new OneChoiceValue('Version', VerticalInfoBarOption.version, 'Show Version Number')
+const vibHide = new OneChoiceValue('Hide', VerticalInfoBarOption.hide, 'Hide vertical info bar')
+const vibSelected = ref(vibAll)
+const verticalInfoBarOptions = ref([vibAll, vibVersion, vibHide])
 
 //---------------------
 // Props management
@@ -128,7 +131,7 @@ function getOptions():PrintOptions|undefined {
     flipBackPage.value?.value,
     isFullPageFormat.value ? 1 : pagePerSheet.value.value,
     pageSelection.value,
-    showSideBar.value.value
+    vibSelected.value.value
   )
 }
 
@@ -140,10 +143,10 @@ function onNewOptions() {
   const options = getOptions()
   // console.debug('[PrintOptions.onNewOptions]', options)
   if(options) {
-    if( simmer.value) {
+    if( simmer.value) { // free acounts cannot change options
       const unselected = options.pageSelection.find( (p:boolean) => !p)
       // user need to upgrade if they changed any default settings
-      upgrade.value = options.flipBackPage || !options.showSidebar || (unselected === false)
+      upgrade.value = options.flipBackPage || !options.vibOption || (unselected === false)
     }
     emits('options', options)
   } 

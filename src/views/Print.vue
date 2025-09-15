@@ -16,7 +16,7 @@
       </div>
       <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages">
         <Page :data="page.front" :format="template.format"/>
-        <SideBar v-if="printSideBar" class="sidebar" :ver="template.ver" />
+        <SideBar v-if="printVibOption != VerticalInfoBarOption.hide" class="sidebar" :ver="template.ver" :option="printVibOption" />
         <Page v-if="page.back" :data="page.back" :format="template.format" :class="{flipMode:printFlipMode}" />
       </div>
     </div>
@@ -38,7 +38,7 @@ import { PrintOptions } from '../components/print/PrintOptions.js';
 import Page from '../components/page/Page.vue';
 import PrintOptionsDialog from '../components/print/PrintOptionsDialog.vue';
 import SideBar from '../components/print/SideBar.vue';
-import BlankPage from '../components/page/BlankPage.vue';
+import { VerticalInfoBarOption } from '../model/VerticalInfoBarOption.js';
 
 interface PrintSheet {
   front: TemplatePage,
@@ -49,7 +49,7 @@ const pages = ref<PrintSheet[]>([]) // pages that will be printed
 const pageSelection = ref<boolean[]>([])
 const printFlipMode = ref(false)
 const printSingles = ref(false)
-const printSideBar = ref(true)
+const printVibOption = ref(VerticalInfoBarOption.all)
 const template = ref<Template|undefined>(undefined)
 const templateModified = ref(false)
 const route = useRoute()
@@ -102,7 +102,7 @@ function onOptionsUpdate(options:PrintOptions) {
       printFlipMode.value = options.flipBackPage;
       printSingles.value = (options.pagePerSheet == 1)
       pageSelection.value = options.pageSelection
-      printSideBar.value = options.showSidebar
+      printVibOption.value = options.vibOption
       
       // Ensure full page templates always use one page per sheet
       if (template.value && template.value.format === TemplateFormat.FullPage) {

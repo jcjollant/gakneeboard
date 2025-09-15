@@ -1,28 +1,42 @@
 <template>
     <div class="sideBar">
         <div class="tailDate">
-            <div v-if="version > 0">[v{{ version }}]</div>
-            <div>Tail#</div>
-            <div class="tailBox"></div>
-            <div>Date</div>
+            <div v-if="showVersion">[v{{ version }}]</div>
+            <div v-if="showTail">Tail#</div>
+            <div v-if="showTail" class="tailBox"></div>
+            <div v-if="showDate">Date</div>
         </div>
-        <div class="brand">Kneeboard.ga</div>
+        <div v-if="showBrand" class="brand">Kneeboard.ga</div>
     </div>
 </template>
 <script lang="ts" setup>
 import { ref, defineProps, onMounted, watch } from 'vue'
+import { VerticalInfoBarOption } from '../../model/VerticalInfoBarOption'
+
 const props = defineProps({
+    option: { type: String, default: VerticalInfoBarOption.all},
     ver: { type: Number, default: 0},
 })
+const showVersion = ref(true)
+const showTail = ref(true)
+const showDate = ref(true)
+const showBrand = ref(true)
 const version = ref(0)
 
 onMounted(() => {
-    version.value = props.ver
+    loadProps( props)
 })
 
 watch(props, () => {
-    version.value = props.ver
+    loadProps( props)
 })
+
+function loadProps(props:any) {
+    version.value = props.ver
+    showVersion.value = props.option != VerticalInfoBarOption.hide && version.value > 0
+    showTail.value = props.option == VerticalInfoBarOption.all
+    showDate.value = props.option == VerticalInfoBarOption.all
+}
 
 </script>
 <style scoped>

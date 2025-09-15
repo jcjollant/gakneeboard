@@ -1,13 +1,15 @@
+import { VerticalInfoBarOption } from "../../model/VerticalInfoBarOption";
+
 export class PrintOptions {
     flipBackPage:boolean;
     pagePerSheet:number;
     pageSelection:boolean[]
-    showSidebar:boolean;
+    vibOption:VerticalInfoBarOption;
 
-    constructor(flipBackPage:boolean, pagePerSheet:number, pageSelection:boolean[], showSidebar:boolean) {
+    constructor(flipBackPage:boolean, pagePerSheet:number, pageSelection:boolean[], vibo:VerticalInfoBarOption) {
         this.flipBackPage = flipBackPage;
         this.pagePerSheet = pagePerSheet;
         this.pageSelection = pageSelection;
-        this.showSidebar = showSidebar;
+        this.vibOption = vibo;
     }
 }
