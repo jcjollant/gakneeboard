@@ -53,7 +53,6 @@ export class HealthCheck {
         if( missingSketchesCount > 0) {
             missingSketches.fail("Found " + missingSketchesCount + " airports missing sketches")
         } else {
-            missingSketches.pass( "No airports missing sketches")
         }
         return [dupeCheck, missingSketches]
     }
@@ -85,8 +84,8 @@ export class HealthCheck {
 
                 check.pass("Matching " + rentonDb.effectiveDate)
             } catch(e) {
-                console.log('[HealthCheck.effectiveDateCheck] ' + e)
-                check.fail(JSON.stringify(e))
+                console.log('[HealthCheck.effectiveDateCheck] ' + e.message)
+                check.fail(JSON.stringify(e.message))
             }
         })
         return check    
