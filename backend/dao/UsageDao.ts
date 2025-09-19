@@ -6,6 +6,7 @@ export enum UsageType {
     Eula = 'eula',
     Export = 'export',
     Print = 'print',
+    Refill = 'refill',
     Save = 'save',
     Session = 'session'
 }

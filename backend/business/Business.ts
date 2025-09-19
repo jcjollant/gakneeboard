@@ -1,4 +1,5 @@
 import { SubscriptionDao } from "../dao/SubscriptionDao";
+import { UsageDao, UsageType } from "../dao/UsageDao";
 import { UserDao } from "../dao/UserDao";
 import { Email, EmailType } from "../Email";
 import { AccountType } from "../models/AccountType";
@@ -116,7 +117,7 @@ export class Business {
     }
 
     /**
-     * Refills account if we are on the first day of the month
+     * Refills account if we are on the first day of the month or force is true
      * @param userDao
      * @param force If true, refills even if it's not the first day of the month
      * @returns A map of updated counts
@@ -129,8 +130,13 @@ export class Business {
         const privateRefills = await userDao.refill( this.PRINT_CREDIT_PRIVATE, AccountType.private)
 
         // combine both arrays into refills
-        // const refills = simmerRefills.concat(privateRefills)
         const refills = [...simmerRefills, ...privateRefills]
+
+        // create a usage record for each refill
+        for(const refill of refills) {
+            const data = {from: refill.previousCount, to: refill.newCount}
+            await UsageDao.create(UsageType.Refill, refill.userId, JSON.stringify(data))
+        }
 
         return refills;
     }
