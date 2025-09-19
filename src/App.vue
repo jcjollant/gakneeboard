@@ -4,6 +4,7 @@
     <Maintenance v-model:visible="showMaintenance" @close="showMaintenance=false" />
     <Maxed v-model:visible="showMaxed" @close="showMaxed=false" />
     <Eula v-model:visible="showEula" @close="showEula=false" />
+    <Version v-model:visible="showVersion" @close="showVersion=false" :front="versionFront" :back="backend.version" />
     <Toast />
     <ConfirmDialog />
     <div class="application">
@@ -16,7 +17,7 @@
       @click="showFeedback=!showFeedback" />
     <MenuButton v-if="route.name!='Print'" icon="circle-info" class="aboutButton" label="About GA Kneeboard"
       @click="showAbout=true" />
-    <div v-if="route.name!='Print'" class="versionDialog" :title="'Frontend/Backend versions ' + versionText" >{{ versionText }}
+    <div v-if="route.name!='Print'" class="versionDialog" title="Version Number. Click for details." @click="showVersion=true">v{{ versionFront }}
       <span class="maintenanceButton" v-show="true"
         @click="showMaintenance=true" @close="showMaintenance=false">&nbsp</span></div>
 </template>
@@ -41,6 +42,7 @@ import Session from './components/menu/Session.vue'
 import Toast from 'primevue/toast'
 import Maxed from './components/menu/Maxed.vue';
 import Eula from './components/menu/Eula.vue';
+import Version from './components/menu/Version.vue';
 
 const route = useRoute()
 const router = useRouter()
@@ -49,7 +51,8 @@ const showEula = ref(false)
 const showFeedback = ref(false)
 const showMaintenance = ref(false)
 const showMaxed = ref(false)
-const versionText = ref('')
+const showVersion = ref(false)
+const versionFront = ref(0)
 const toaster = useToaster( useToast())
 
 // Before the app starts, we request backend information, load user and potentially show how does it work
@@ -59,7 +62,7 @@ onBeforeMount( () => {
 
     getBackend().then(() => {
       // Build version text
-      versionText.value = version + '/' + backend.version
+      versionFront.value = version
       LocalStore.cleanUp()
       // console.log('[App.onBeforeMount]', currentUser)
       // console.log('[App.onBeforeMount] pages ', currentUser.pageCount, currentUser.maxPageCount)
@@ -159,5 +162,6 @@ function feedbackSubmitted() {
   font-size: 8px;
   margin:auto;
   color: darkslategrey;
+  cursor: pointer;
 }
 </style>
