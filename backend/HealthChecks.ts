@@ -1,11 +1,8 @@
-import { sql } from  "@vercel/postgres";
 import { Airport } from "./models/Airport";
 import { Adip } from './adip/Adip'
 import { AirportDao } from "./AirportDao";
-import { Email, EmailType } from './Email'
 import { PublicationDao } from './PublicationDao'
 import { UserDao } from "./dao/UserDao";
-import { TemplateDao } from "./TemplateDao";
 import { User } from "./models/User";
 
 import dotenv from 'dotenv'
@@ -113,13 +110,6 @@ export class HealthCheck {
         check.pass( 'Found ' + envVars.length + ' variables')
         return check
     }
-
-    // static async feedbackCheck():Promise<Check> {
-    //     const check:Check = new Check('feedback')
-    //     const feedbackCount:number = await FeedbackDao.count()
-    //     check.pass( "We have " + feedbackCount + " feedbacks")
-    //     return check
-    // }
 
     static async availablePublicationsCheck():Promise<Check> {
         const check:Check = new Check('publications')
