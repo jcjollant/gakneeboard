@@ -35,7 +35,7 @@
                     </div>
                     <div class="wtrmrk clear">CLR</div>
                 </div>
-                <div class="tempEx br">
+                <div class="tempEx br">/
                     <div class="tileBoxLabel">T°/DP</div>
                 </div>
                 <div class="altEx br">
@@ -90,7 +90,7 @@
                 </div>
                 <div class="wtrmrk clear">CLR</div>
             </div>
-            <div class="temperature bb">
+            <div class="temperature bb">/
                 <div class="tileBoxLabel">T°/DP</div>
             </div>
             <div class="altimeter">
@@ -478,6 +478,10 @@ function saveConfig() {
     grid-row: 3;
     grid-column: 1 / span 2;
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: x-large;
 }
 .altimeter {
     position: relative;
@@ -513,6 +517,10 @@ function saveConfig() {
     flex: 4 1 0px;
 }
 .tempEx {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: x-large;
     flex: 3 1 0px;
 }
 .altEx {
