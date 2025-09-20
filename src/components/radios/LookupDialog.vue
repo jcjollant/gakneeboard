@@ -54,8 +54,9 @@ class LookupAtcGroup {
     constructor(g:AtcGroup) {
         this.name = g.name;
         this.items = g.atcs.map(atc => {
-            const value = Formatter.frequency(atc.value)
-            let label = value + ' ' + atc.name;
+            // console.debug('[LookupDialog.constructor]', atc)
+            const value = Formatter.frequency(atc)
+            let label = value + ' : ' + atc.name;
             // replace frequency name with group name
             const frequency:Frequency = new Frequency(value, g.name, atc.type)
             return new FrequencyLabelled( frequency, label)
@@ -90,13 +91,13 @@ function formatLabel(label:string) {
 function formatAirportFrequency(airport:Airport, freq:AirportFrequency):FrequencyLabelled {
     const value = Formatter.frequency(freq.mhz)
     const name = airport.code + ' ' + freq.name
-    const label = value + ' ' + freq.name
+    const label = value + ' : ' + freq.name
     return new FrequencyLabelled( new Frequency( value, name, Frequency.typeFromString(freq.name)), label)
 }
 
 function formatNavaid(navaid:Navaid):FrequencyLabelled {
     const value = Formatter.frequency(navaid.freq)
-    const label = value + ' ' + navaid.id + ' ' + navaid.type
+    const label = value + ' : ' + navaid.id + ' ' + navaid.type
     const frequency = new Frequency(value, navaid.id + ' ' + navaid.type, FrequencyType.navaid)
     return   new FrequencyLabelled( frequency, label)
 }
