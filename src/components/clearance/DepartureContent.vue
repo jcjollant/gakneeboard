@@ -12,7 +12,6 @@
                     <div class="direct">D></div>
                     <div>AF</div>
                 </div>
-                <!-- <div class="watermrk">R</div> -->
             </div>
         </div>
         <div class="row bb">
@@ -20,11 +19,12 @@
                 <FrequencyBox :freq="freqClearance"/>
             </div>
             <div v-else class="atc tileBoxLabel br">Clearance</div>
-            <div class="boxAltitudes box br">
+            <div class="boxAltitudes box br slash">/
                 <div class="tileBoxLabel">Alt/Exp</div>
-                <div class="watermrk topRight">SID</div>
+                <div class="watermrk bottomLeft">SID</div>
+                <div class="watermrk bottomRight">+10</div>
             </div>
-            <div class="boxFrequency box">
+            <div class="boxFrequency box freq">
                 <div class="tileBoxLabel">Freq</div>
                 <div class="freqValue">
                     <div class="fNumber">1</div>
@@ -45,7 +45,7 @@
             <div class="boxTransponder box br">
                 <div class="tileBoxLabel">XPDR</div>
                 <div class="xpdrValue">
-                    <div class="digit xDigit"></div>
+                    <div class="digit xDigit">&nbsp;</div>
                     <div class="digit xDigit"></div>
                     <div class="digit xDigit"></div>
                     <div class="digit xDigit"></div>
@@ -158,6 +158,12 @@ watch(props, async() => {
     flex: 1 1 0px;
 }
 
+.boxTransponder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .atis, .atc, .twr, .gnd {
     flex: 0.9 1 0px;
 }
@@ -169,17 +175,20 @@ watch(props, async() => {
 .watermrk {
     line-height: 1;
     font-weight:600;
-    font-size: 15px;
+    font-size: 10px;
     position:absolute;
-    left: 2px;
-    bottom: 2px;
+    left: 0;
+    bottom: 0;
     opacity: 0.3;
+    padding: 2px 4px;
 }
 
 .tileBoxLabel {
     text-align: start;
-    padding: 2px;
-    position: relative;
+    padding: 2px 4px;
+    position: absolute;
+    left: 0;
+    top: 0;
 }
 
 .freqValue {
@@ -196,34 +205,50 @@ watch(props, async() => {
 }
 .xpdrValue {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    align-items: flex-end;
     font-size: 20px;
-    padding: 0 1px;
+    gap: 2px;
+    height: 100%;
+    padding-bottom: 5px;;
 }
 
 .xDigit {
-    width: 25%;
+    width: 18px;
 }
 
 .topRight {
     text-align: right;
     top: 0;
     right: 0;
-    font-size: 10px;
     padding: 2px 4px;
+}
+
+.bottomLeft {
+    text-align: left;
+    bottom: 0;
+    left: 0;
 }
 
 .bottomRight {
     display: flex;
     bottom: 0;    
     right: 0;
-    font-size: 12px;
     gap: 14px;
     padding: 2px 4px;
     justify-content: end;
 }
 .direct {
     text-decoration: line-through;
+}
+.slash {
+    display: flex;
+    font-size: x-large;
+    align-items: center;
+    justify-content: center;
+}
+.freq {
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 5px;
 }
 </style>
