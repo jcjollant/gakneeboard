@@ -5,6 +5,7 @@ import { Email, EmailType } from "../Email";
 import { AccountType } from "../models/AccountType";
 import { Refill } from "../models/Refill";
 import { User } from "../models/User";
+import { Ticket } from "../Ticket";
 
 class Quota {
     prints:number;
@@ -126,16 +127,10 @@ export class Business {
         const dayOfTheMonth = new Date().getDate()
         if(!force && dayOfTheMonth != 1) return []
 
-        const simmerRefills = await userDao.refill( this.PRINT_CREDIT_SIMMER, AccountType.simmer)
-        const privateRefills = await userDao.refill( this.PRINT_CREDIT_PRIVATE, AccountType.private)
-
-        // combine both arrays into refills
-        const refills = [...simmerRefills, ...privateRefills]
-
+        const refills = await userDao.refill( this.PRINT_CREDIT_SIMMER, AccountType.simmer)
         // create a usage record for each refill
         for(const refill of refills) {
-            const data = {from: refill.previousCount, to: refill.newCount}
-            await UsageDao.create(UsageType.Refill, refill.userId, JSON.stringify(data))
+            await UsageDao.refill(refill.userId, refill.previousCount, refill.newCount)
         }
 
         return refills;
@@ -182,10 +177,14 @@ export class Business {
         // Refresh account type
         await Business.updateAccountType(user, newAccountType, userDao)
 
-        // New subscription may need print refill
-        if(sub.isBrandNew()) {
+        // update print credits
+        try {
+            const previousPrintCredits = user.printCredits
             user.printCredits = Business.calculatePrintCredits(user)
             await userDao.updatePrintCredit(user)
+            await UsageDao.refill(user.id, previousPrintCredits, user.printCredits)
+        } catch( e) {
+            Ticket.create(2, 'Failed to update print credits ' + e)
         }
     }
 
