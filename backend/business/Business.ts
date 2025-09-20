@@ -181,8 +181,10 @@ export class Business {
         try {
             const previousPrintCredits = user.printCredits
             user.printCredits = Business.calculatePrintCredits(user)
-            await userDao.updatePrintCredit(user)
-            await UsageDao.refill(user.id, previousPrintCredits, user.printCredits)
+            if(previousPrintCredits != user.printCredits) {
+                await userDao.updatePrintCredit(user)
+                await UsageDao.refill(user.id, previousPrintCredits, user.printCredits)
+            }
         } catch( e) {
             Ticket.create(2, 'Failed to update print credits ' + e)
         }
@@ -194,6 +196,7 @@ export class Business {
         const quotas = this.getQuotas(user)
         user.maxTemplates = quotas.templates
         user.maxPages = quotas.pages
+        user.printCredits = quotas.prints
 
         await userDao.updateType(user)
 
