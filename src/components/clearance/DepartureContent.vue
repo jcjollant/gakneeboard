@@ -1,66 +1,56 @@
 <template>
     <div class="tileContent departure">
-        <div class="row bb">
-            <div v-if="airportMode" class="airportFreq preWeather">
-                <FrequencyBox :freq="freqWeather"/>
-            </div>
-            <div v-else class="atis tileBoxLabel br">Weather</div>
-            <div class="boxRoute box">
-                <div class="tileBoxLabel">Route</div>
-                <div class="watermrk bottomRight">
-                    <div>RV</div>
-                    <div class="direct">D></div>
-                    <div>AF</div>
-                </div>
+        <div v-if="airportMode" class="leftColumn airportFreq">
+            <FrequencyBox :freq="freqWeather" class="preWeather"/>
+            <FrequencyBox :freq="freqClearance"  class="preAtc"/>
+            <FrequencyBox :freq="freqGround" class="preGround"/>
+            <FrequencyBox :freq="freqTower" class="preTower"/>
+        </div>
+        <div v-else class="leftColumn">
+            <div class="atis box br bb"><div class="tileBoxLabel">Weather</div></div>
+            <div class="atc box br bb"><div class="tileBoxLabel">Clearance</div></div>
+            <div class="gnd box br bb"><div class="tileBoxLabel">Ground</div></div>
+            <div class="twr box br"><div class="tileBoxLabel">Tower / CTAF</div></div>
+        </div>
+        <div class="boxRoute box bb">
+            <div class="tileBoxLabel">Route</div>
+            <div class="watermrk bottomRight">
+                <div>RV</div>
+                <div class="direct">D></div>
+                <div>AF</div>
             </div>
         </div>
-        <div class="row bb">
-            <div v-if="airportMode" class="airportFreq preAtc">
-                <FrequencyBox :freq="freqClearance"/>
-            </div>
-            <div v-else class="atc tileBoxLabel br">Clearance</div>
-            <div class="boxAltitudes box br slash">/
-                <div class="tileBoxLabel">Alt/Exp</div>
-                <div class="watermrk bottomLeft">SID</div>
-                <div class="watermrk bottomRight">+10</div>
-            </div>
-            <div class="boxFrequency box freq">
-                <div class="tileBoxLabel">Freq</div>
-                <div class="freqValue">
-                    <div class="fNumber">1</div>
-                    <div class="digit fDigit"></div>
-                    <div class="digit fDigit"></div>
-                    <div class="fNumber">.</div>
-                    <div class="digit fDigit"></div>
-                    <div class="digit fDigit"></div>
-                </div>
-                <!-- <div class="watermrk">F</div> -->
-            </div>
+        <div class="boxAltitudes box br slash bb">/
+            <div class="tileBoxLabel">Alt/Exp</div>
+            <div class="watermrk bottomLeft">SID</div>
+            <div class="watermrk bottomRight">+10</div>
         </div>
-        <div class="row bb">
-            <div v-if="airportMode" class="airportFreq preGround">
-                <FrequencyBox :freq="freqGround"/>
+        <div class="boxFrequency box freq bb">
+            <div class="tileBoxLabel">Freq</div>
+            <div class="freqValue">
+                <div class="fNumber">1</div>
+                <div class="digit fDigit"></div>
+                <div class="digit fDigit"></div>
+                <div class="fNumber">.</div>
+                <div class="digit fDigit"></div>
+                <div class="digit fDigit"></div>
             </div>
-            <div v-else class="gnd tileBoxLabel br">Ground</div>
-            <div class="boxTransponder box br">
-                <div class="tileBoxLabel">XPDR</div>
-                <div class="xpdrValue">
-                    <div class="digit xDigit">&nbsp;</div>
-                    <div class="digit xDigit"></div>
-                    <div class="digit xDigit"></div>
-                    <div class="digit xDigit"></div>
-                </div>
-                <!-- <div class="watermrk">T</div> -->
+            <!-- <div class="watermrk">F</div> -->
+        </div>
+        <div class="boxTransponder box br bb">
+            <div class="tileBoxLabel">XPDR</div>
+            <div class="xpdrValue">
+                <div class="digit xDigit">&nbsp;</div>
+                <div class="digit xDigit"></div>
+                <div class="digit xDigit"></div>
+                <div class="digit xDigit"></div>
             </div>
-            <div class="boxTaxi box">
-                <div class="tileBoxLabel">Taxi</div>
-            </div>
+            <!-- <div class="watermrk">T</div> -->
+        </div>
+        <div class="boxTaxi box bb">
+            <div class="tileBoxLabel">Taxi</div>
         </div>
         <div class="row">
-            <div v-if="airportMode" class="airportFreq preTower">
-                <FrequencyBox :freq="freqTower"/>
-            </div>
-            <div v-else class="twr tileBoxLabel br">Tower / CTAF</div>
             <div class="boxNotes box">
                 <div class="tileBoxLabel">Notes</div>
             </div>
@@ -126,6 +116,13 @@ watch(props, async() => {
 .departure {
     display: grid;
     grid-template-rows: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.leftColumn {
+    grid-row: 1 / span 4;
+    display: flex;
+    flex-flow: column;
 }
 
 .row {
@@ -138,13 +135,9 @@ watch(props, async() => {
 
 .airportFreq {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-grow: 1;
-    gap: 5px;
+    justify-content: space-between;
     padding: 5px;
     background-color: lightgrey;
-    flex: 0.9 1 0px;
 }
 .bb {
     border-bottom: 1px dashed darkgrey;
@@ -154,7 +147,7 @@ watch(props, async() => {
     border-right: 1px dashed darkgrey;
 }
 
-.boxClearedTo, .boxAltitudes, .boxFrequency, .boxTaxi, .boxTransponder {
+.boxAltitudes, .boxFrequency, .boxTaxi, .boxTransponder {
     flex: 1 1 0px;
 }
 
@@ -169,7 +162,8 @@ watch(props, async() => {
 }
 
 .boxRoute, .boxNotes {
-    flex: 2 1 0px;
+    position: relative;
+    grid-column: 2 / span 2;
 }
 
 .watermrk {

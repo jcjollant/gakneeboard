@@ -2,7 +2,7 @@
     <div class="tile">
         <Header :title="getTitle()" :left="displayMode==DisplayModeIfr.Departure" :showReplace="displaySelection" :showDisplayMode="true"
             @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
-        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" />
+        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" @keep="displaySelection=false" />
         <div v-else-if="editMode" class="editMode">
             <AirportInput v-model="airport" :expanded="true" @valid="onAirportUpdate"/>
             <ActionBar :actions="[{action:'cancel',label:'Manual'}]" :showApply="false" @cancel="editMode=false" @action="onManual"/>
