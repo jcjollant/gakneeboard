@@ -97,4 +97,9 @@ export class UsageDao extends Dao<Usage> {
         return usage
     }
 
+    static async refill(userId: number, previousCount: number, newCount: number) {
+        const data = {from: previousCount, to: newCount}
+        await UsageDao.create(UsageType.Refill, userId, JSON.stringify(data))
+    }
+
 }
