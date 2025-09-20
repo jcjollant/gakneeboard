@@ -1,8 +1,7 @@
 
 import {describe, expect, test} from '@jest/globals';
-import { Airport, versionInvalid } from "../backend/models/Airport.ts"; 
-import { AirportDao } from '../backend/AirportDao.ts'
-import { jcUserId } from './constants.ts';
+import { Airport, versionInvalid } from "../backend/models/Airport"; 
+import { AirportDao } from '../backend/AirportDao'
 
 require('dotenv').config();
 

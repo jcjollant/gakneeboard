@@ -11,6 +11,9 @@ jest.mock('../backend/dao/UserDao');
 jest.mock('../backend/dao/SubscriptionDao');
 jest.mock('../backend/Email');
 
+require('dotenv').config();
+
+
 describe('Business', () => {
 
     const mockEmail = jest.spyOn(Email, 'send').mockResolvedValue(true);
@@ -340,15 +343,39 @@ describe('Business', () => {
 
             expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_SIMMER)
             expect(user.maxPages).toEqual(Business.MAX_PAGES_SIMMER)
+            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_SIMMER)
 
             await Business.updateAccountType(user, AccountType.beta, mockUserDao)
 
             expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_BETA)
             expect(user.maxPages).toEqual(Business.MAX_PAGES_BETA)
+            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_BETA)
 
             expect(mockUserDao.updateType).toHaveBeenCalledTimes(1);
             expect(Email.send).toHaveBeenCalledTimes(1);
         })
+
+        it('should refill print credit for student pilots', async() => {
+            const user = newTestUser(0, AccountType.simmer)
+            const mockUserDao = getMockUserDao(user)
+
+            await Business.updateAccountType(user, AccountType.student, mockUserDao)
+            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_STUDENT)
+
+            // use a few prints
+            user.printCredits -= 2
+            await Business.updateAccountType(user, AccountType.student, mockUserDao)
+            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_STUDENT)
+
+            // one month without usage
+            await Business.updateAccountType(user, AccountType.student, mockUserDao)
+            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_STUDENT)
+
+            // then downgrades to sim
+            await Business.updateAccountType(user, AccountType.simmer, mockUserDao)
+            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_SIMMER)
+        })
+
     })
 
     describe('printRefills', () => {
@@ -360,8 +387,8 @@ describe('Business', () => {
 
             const refills = await Business.printRefills(mockUserDao)
 
-            expect(mockUserDao.refill).toHaveBeenCalledTimes(2)
-            expect(refills).toHaveLength(8)
+            expect(mockUserDao.refill).toHaveBeenCalledTimes(1)
+            expect(refills).toHaveLength(4)
         })
 
         it('doesn\'t do anything on the second day of the month', async () => {
@@ -379,8 +406,8 @@ describe('Business', () => {
 
             const refills = await Business.printRefills(mockUserDao, true)
 
-            expect(mockUserDao.refill).toHaveBeenCalledTimes(2)
-            expect(refills).toHaveLength(8)
+            expect(mockUserDao.refill).toHaveBeenCalledTimes(1)
+            expect(refills).toHaveLength(4)
         })
     })
 });
