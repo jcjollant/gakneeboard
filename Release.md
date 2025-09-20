@@ -1,4 +1,5 @@
 # User Experience updates
+## 09/20/2025 - 5390 - Fixed IFR Depature layout
 ## 09/19/2025 - 5386 - Added / to temperature. Added / and +10 to Alt
 ## 09/19/2025 - 5385 - Fixed tracon frequency bug and added ' : ' to freq lookup
 ## 09/18/2025 - 5384 - Version popup
