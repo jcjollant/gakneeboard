@@ -1,5 +1,5 @@
 <template>
-    <div class="vorrange">
+    <div>
         <img :src="source" class="imageContent" />
     </div>
 </template>
