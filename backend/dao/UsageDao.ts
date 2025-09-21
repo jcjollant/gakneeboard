@@ -6,6 +6,7 @@ export enum UsageType {
     Eula = 'eula',
     Export = 'export',
     Print = 'print',
+    Refill = 'refill',
     Save = 'save',
     Session = 'session'
 }
@@ -94,6 +95,11 @@ export class UsageDao extends Dao<Usage> {
         const usage = new Usage(row.user_id, row.data, row.usage_type)
 
         return usage
+    }
+
+    static async refill(userId: number, previousCount: number, newCount: number) {
+        const data = {from: previousCount, to: newCount}
+        await UsageDao.create(UsageType.Refill, userId, JSON.stringify(data))
     }
 
 }

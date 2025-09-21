@@ -5,11 +5,12 @@ dotenv.config()
 //================
 // Metrics
 //================
-import { Metrics } from "../backend/Metrics";
-Metrics.perform().then( metrics => {
-    for(const metric of metrics)
-        console.log(metric.name, metric.value)
-})
+// import { Metrics } from "../backend/Metrics";
+// Metrics.perform().then( metrics => {
+//     for(const metric of metrics)
+//         console.log(metric.name, metric.value)
+// })
+
 // Metrics.airports().then(metrics => {
 //     for(const metric of metrics)
 //         console.log(metric.name, metric.value)
@@ -97,3 +98,13 @@ Metrics.perform().then( metrics => {
 // import { Adip } from "../backend/adip/Adip";
 // import { AirportDao } from "../backend/AirportDao";
 // AirportDao.readCurrent(Adip.currentEffectiveDate()).then(list => console.log(list.map(a => a.code).join(',')))
+
+
+//================================
+// Manually refill user tokens
+//================================
+import { Business } from '../backend/business/Business';
+import { UserDao } from '../backend/dao/UserDao';
+Business.printRefills(new UserDao(), true).then( r => {
+    console.log('Refilled ' + r.length + ' users')
+})

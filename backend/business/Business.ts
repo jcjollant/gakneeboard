@@ -1,9 +1,11 @@
 import { SubscriptionDao } from "../dao/SubscriptionDao";
+import { UsageDao, UsageType } from "../dao/UsageDao";
 import { UserDao } from "../dao/UserDao";
 import { Email, EmailType } from "../Email";
 import { AccountType } from "../models/AccountType";
 import { Refill } from "../models/Refill";
 import { User } from "../models/User";
+import { Ticket } from "../Ticket";
 
 class Quota {
     prints:number;
@@ -116,7 +118,7 @@ export class Business {
     }
 
     /**
-     * Refills account if we are on the first day of the month
+     * Refills account if we are on the first day of the month or force is true
      * @param userDao
      * @param force If true, refills even if it's not the first day of the month
      * @returns A map of updated counts
@@ -125,12 +127,11 @@ export class Business {
         const dayOfTheMonth = new Date().getDate()
         if(!force && dayOfTheMonth != 1) return []
 
-        const simmerRefills = await userDao.refill( this.PRINT_CREDIT_SIMMER, AccountType.simmer)
-        const privateRefills = await userDao.refill( this.PRINT_CREDIT_PRIVATE, AccountType.private)
-
-        // combine both arrays into refills
-        // const refills = simmerRefills.concat(privateRefills)
-        const refills = [...simmerRefills, ...privateRefills]
+        const refills = await userDao.refill( this.PRINT_CREDIT_SIMMER, AccountType.simmer)
+        // create a usage record for each refill
+        for(const refill of refills) {
+            await UsageDao.refill(refill.userId, refill.previousCount, refill.newCount)
+        }
 
         return refills;
     }
@@ -176,10 +177,16 @@ export class Business {
         // Refresh account type
         await Business.updateAccountType(user, newAccountType, userDao)
 
-        // New subscription may need print refill
-        if(sub.isBrandNew()) {
+        // update print credits
+        try {
+            const previousPrintCredits = user.printCredits
             user.printCredits = Business.calculatePrintCredits(user)
-            await userDao.updatePrintCredit(user)
+            if(previousPrintCredits != user.printCredits) {
+                await userDao.updatePrintCredit(user)
+                await UsageDao.refill(user.id, previousPrintCredits, user.printCredits)
+            }
+        } catch( e) {
+            Ticket.create(2, 'Failed to update print credits ' + e)
         }
     }
 
@@ -189,6 +196,7 @@ export class Business {
         const quotas = this.getQuotas(user)
         user.maxTemplates = quotas.templates
         user.maxPages = quotas.pages
+        user.printCredits = quotas.prints
 
         await userDao.updateType(user)
 

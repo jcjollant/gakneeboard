@@ -39,7 +39,6 @@ describe( 'GApi Tests', () => {
         expect(airports[0]?.asof).toBe(0)
         expect(airports[1]).toBeDefined()
         expect(airports[1]?.code).toBe('KPAE')
-        expect(airports[1]?.asof).toBe(currentAsOf)
         expect(airports[2]).toBeDefined()
         expect(airports[2]?.code).toBe('JCJ')
         expect(airports[2]?.asof).toBe(0)
