@@ -104,6 +104,13 @@ SELECT user_id, MAX(create_time) FROM usage WHERE user_id NOTNULL AND usage_type
 # Active users in the last 30 days
 SELECT user_id FROM usage WHERE user_id NOTNULL AND usage_type = 'session' AND create_time > current_date - 30 GROUP BY user_id 
 
+# Most Active sim users in the last 90 days
+SELECT user_id, count(*) AS c 
+  FROM usage left join users ON usage.user_id = users.id 
+  WHERE user_id NOTNULL AND usage.create_time > current_date - 90 AND users.account_type = 'sim' AND user_id <> 8 
+  GROUP BY user_id 
+  ORDER BY c desc
+  
 # Prints in the past 30 days
 SELECT count(*) FROM usage WHERE usage_type = 'print' and create_time > current_date - 30 
 
