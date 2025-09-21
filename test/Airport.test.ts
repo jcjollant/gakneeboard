@@ -11,7 +11,7 @@ describe('Airport', () => {
         const gndFrequency = airport.getFreqGround()
         expect(gndFrequency).toBeDefined()
         expect(gndFrequency?.name).toBe("Ground")
-        expect(gndFrequency?.mhz).toBe(121.800)
+        expect(gndFrequency?.value).toBe("121.800")
         expect(gndFrequency?.type).toBe(FrequencyType.ground)
     })
 

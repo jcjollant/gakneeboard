@@ -29,14 +29,19 @@ export const departureTitle = 'Depart @'
 export const approachTitle = 'Apch'
 export const pageNameCover = 'Cover'
 export const pageNameInstrumentApproach = 'Instrument Approach'
-export const pageNameNavlog = 'NavLog'
 export const pageNameNotes = 'Notes'
+
+export class PageTypeLabel {
+    static navlog = 'NavLog'
+    static tiles = 'Tiles'
+}
 
 export class TileTypeLabel {
     static notes = 'Notes'
     static radios = 'Radios'
     static navlog = 'Navlog'
     static atis = 'Weather'
+    static IFR = 'IFR'
 }
 
 export const expectedDemos = [ 
@@ -132,6 +137,15 @@ export function newTemplate() {
     // both pages should be in selection mode
     cy.get('.page0 > .headerTitle').contains('Page Selection')
     cy.get('.page1 > .headerTitle').contains('Page Selection')
+
+}
+
+export function newTemplateWithTile(type = undefined) {
+    newTemplate()
+    cy.get(`.page0 [aria-label="${PageTypeLabel.tiles}"]`).click()
+
+    // select the provided tile
+    if(type) cy.get(`.page0 .tile0 [aria-label="${type}"]`).click()
 }
 
 export function replacePage(pageNum, newPage=undefined, replaceButton=true) {

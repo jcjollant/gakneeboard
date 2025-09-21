@@ -1,4 +1,4 @@
-import { placeHolderSubtitle, visitSkipBanner, newTemplate, replacePage, pageNameNavlog, expectToast, waitOneAirport } from './shared'
+import { placeHolderSubtitle, visitSkipBanner, newTemplate, replacePage, expectToast, waitOneAirport, PageTypeLabel } from './shared'
 import { replaceBy } from './shared'
 
 function checkBlankState() {
@@ -335,8 +335,8 @@ describe('navlog Page', () => {
     visitSkipBanner()
     newTemplate()
     // set both pages to Navlog
-    cy.get(`.page0 [aria-label="${pageNameNavlog}"]`).click()
-    cy.get(`.page1 [aria-label="${pageNameNavlog}"]`).click()
+    cy.get(`.page0 [aria-label="${PageTypeLabel.navlog}"]`).click()
+    cy.get(`.page1 [aria-label="${PageTypeLabel.navlog}"]`).click()
 
     // configure page two as a continuer
     cy.get('.page1 .headerTitle').click()

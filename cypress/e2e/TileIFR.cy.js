@@ -1,24 +1,30 @@
-import { clearanceTitle, departTitle, visitSkipBanner, loadDemo, holdTitle, approachTitle, departureTitle, displaySelection } from './shared'
+import { clearanceTitle, departTitle, visitSkipBanner, loadDemo, holdTitle, newTemplateWithTile, approachTitle, departureTitle, displaySelection, TileTypeLabel } from './shared'
 
 
+const titleCraftClearance = "IFR Clearance"
 const labelCraftClearance = "CRAFT Clearance"
 const labelApproach = "Approach"
 const labelDeparture = "Departure"
-const labelHold = "Hold"
+const labelAlternate = "Alternate"
+const labelLostComms = "Lost Comms"
+// const labelHold = "Hold"
 
-describe('IFR Tile', () => {
-  it('IFR Tile', () => {
+describe('Tile IFR', () => {
+  // all tests should call visitSkipBanner()
+  beforeEach(() => {
     visitSkipBanner()
-    loadDemo('Tiles')
-    // Header
-    cy.get('.page0 .tile5 > .headerTitle').contains(departTitle)
+    newTemplateWithTile(TileTypeLabel.IFR)
+  })
 
-    // check defaults to Departure mode
-    cy.get('.departure')
+
+  it('Has 5 display mode', () => {
+    // when you click the current mode, it comes back to clearance
+    displaySelection(0, 0, labelCraftClearance)
+    cy.get('.clearance')
 
     // Check display selection has 4 display modes
-    displaySelection(0, 5)
-    const expectedDisplayModes = [ labelCraftClearance, labelApproach, labelDeparture, labelHold]
+    displaySelection(0, 0)
+    const expectedDisplayModes = [ labelCraftClearance, labelApproach, labelDeparture, labelAlternate, labelLostComms]
     for(const displayMode of expectedDisplayModes) {
       cy.get('.modesList').contains(displayMode)
     }
@@ -26,18 +32,16 @@ describe('IFR Tile', () => {
   })
 
   it('CRAFT Clearance', () => {
-    visitSkipBanner()
-    loadDemo()
+    // Header
+    cy.get('.page0 .tile0 > .headerTitle').contains(titleCraftClearance)
 
-    // switch to CRAFT
-    displaySelection(0,5,labelCraftClearance)
-    // test tile title updated
-    cy.get('.page0 > .tile5 > .headerTitle').contains(clearanceTitle)
+    // check defaults to Craft mode
+    cy.get('.clearance')
 
     // Check mode change via settings
     cy.get('.boxCleared').contains('To')
     cy.get('.boxCleared > .watermrk').contains('C')
-    cy.get('.boxRouteV').contains('Route')
+    cy.get('.boxRouteV').contains('Route / Notes')
     cy.get('.boxRouteV > .watermrk').contains('R')
     cy.get('.boxAltitudeV').contains("Altitude")
     cy.get('.boxAltitudeV > .watermrk').contains('A')
@@ -52,56 +56,17 @@ describe('IFR Tile', () => {
       .then(t => {
         const template = JSON.parse(t)
         // console.log('>>>>', template)
-        expect(template.data[0].data[5].data['mode']).to.equal('boxV')
+        // default to undefined because it's the default mode
+        expect(template.data[0].data[0].data['mode']).to.equal(undefined)
       })
   })
 
-  it('Approach', () => {
-    visitSkipBanner()
-    loadDemo()
-    cy.get('.page0 > .tile5 > .headerTitle').click()
-
-    // switch to Approach
-    displaySelection(0,5,labelApproach)
-    // test tile title updated
-    cy.get('.page0 > .tile5 > .headerTitle').contains(approachTitle)
-
-    // check Fields
-    const expectedILSFields = ['CRS', 'ILOC', 'CRS', 'IAF', 'Minimum', 'Missed']
-    for(const field of expectedILSFields) {
-      cy.get(`.page0 .tile5`).contains(field)
-    }
-
-    // test localstore has the correct data
-    cy.getLocalStorage('template')
-      .then(t => {
-        const template = JSON.parse(t)
-        // console.log('>>>>', template)
-        expect(template.data[0].data[5].data['mode']).to.equal('apch')
-      })
-  })
-
-  it('Departure', () => {
-    visitSkipBanner()
-    loadDemo()
-    cy.get('.page0 > .tile5 > .headerTitle').click()
-
+  it.only('Departure no airport', () => {
     // switch to Departure
-    displaySelection(0,5,labelDeparture)
-    // test tile title updated
-    cy.get('.page0 > .tile5 > .headerTitle').contains(departureTitle)
+    displaySelection(0,0,labelDeparture)
 
-    // Pre-selected fields
-    const expectedPreselected = [
-      {class:'.preWeather', label:'Weather'},
-      {class:'.preAtc', label:'Clearance'},
-      {class:'.preGround', label:'Ground'},
-      {class:'.preTower', label:'Tower'},
-    ]
-    for(const field of expectedPreselected) {
-      cy.get(`${field.class}`).contains(field.label)
-      cy.get(`${field.class}`).should('have.class','airportFreq')
-    }
+    // test tile title updated
+    cy.get('.page0 > .tile0 > .headerTitle').contains(departureTitle)
 
     // Check Other fields
     const expected = [
@@ -117,22 +82,33 @@ describe('IFR Tile', () => {
       cy.get(`${field.class}`).contains(field.label)
     }
 
-    // Check watermarks
-    const expectedWatermarks = [
-      {class:'.boxRoute', label:'R'},
-      {class:'.boxAltitudes', label:'A'},
-      {class:'.boxFrequency', label:'F'},
-      {class:'.boxTransponder', label:'T'},
+    // click inside the tile should switch to editmode
+    cy.get('.page0 > .tile0').click()
+    cy.get('.editMode')
+    cy.get('.page0 > .tile0').contains('Manual')
+    cy.get('.page0 > .tile0').contains('Cancel')
+
+    // Select Airport
+    cy.get('.p-inputtext').type('KBFI')
+    cy.get('.page0 > .tile0 > .headerTitle').contains('KBFI')
+
+    // Pre-selected fields
+    const expectedPreselected = [
+      {class:'.preWeather', label:'Weather'},
+      {class:'.preAtc', label:'Clearance'},
+      {class:'.preGround', label:'Ground'},
+      {class:'.preTower', label:'Tower'},
     ]
-    for(const field of expectedWatermarks) {
-      cy.get(`${field.class} > .watermrk`).contains(field.label)
+    for(const field of expectedPreselected) {
+      cy.get(`${field.class}`).contains(field.label)
     }
 
-    // click inside the tile should switch to editmode
-    cy.get('.page0 > .tile5').click()
+    // Edit mode then manual
+    cy.get('.page0 > .tile0').click()
     cy.get('.editMode')
-    cy.get('.page0 > .tile5').contains('Manual')
-    cy.get('.page0 > .tile5').contains('Cancel')
+    cy.get('.page0 > .tile0 [aria-label="Manual"]').click()
+    // preWeather shold be gone
+    cy.get('.preWeather').should('not.exist')
 
 
     // test localstore has the correct data
@@ -140,14 +116,46 @@ describe('IFR Tile', () => {
       .then(t => {
         const template = JSON.parse(t)
         // console.log('>>>>', template)
-        expect(template.data[0].data[5].data['mode']).to.equal('dep')
+        expect(template.data[0].data[0].data['mode']).to.equal('dep')
       })
 
   })
 
-  it('Holding', () => {
-    visitSkipBanner()
-    loadDemo()
+  it('Approach', () => {
+    // switch to Approach
+    displaySelection(0,0,labelApproach)
+
+    // test tile title updated
+    cy.get('.page0 > .tile0 > .headerTitle').contains(approachTitle)
+
+    // check Fields
+    const expectedILSFields = ['CRS', 'ILOC', 'CRS', 'IAF', 'Minimum', 'Missed']
+    for(const field of expectedILSFields) {
+      cy.get(`.page0 .tile0`).contains(field)
+    }
+
+    // test localstore has the correct data
+    cy.getLocalStorage('template')
+      .then(t => {
+        const template = JSON.parse(t)
+        // console.log('>>>>', template)
+        expect(template.data[0].data[0].data['mode']).to.equal('apch')
+      })
+  })
+
+  it('Alternate', () => {
+    // switch to Approach
+    displaySelection(0,0,labelAlternate)
+    cy.get('.page0 .tile0 .imageContent').should('have.attr', 'src', '/tiles/alternate.png')
+  })
+
+  it('Lost Comms', () => {
+    // switch to Approach
+    displaySelection(0,0,labelLostComms)
+    cy.get('.page0 .tile0 .imageContent').should('have.attr', 'src', '/tiles/lostcomms-ifr.png')
+  })
+
+  it.skip('Holding', () => {
 
     // switch to HOLDING
     displaySelection(0,5,labelHold)

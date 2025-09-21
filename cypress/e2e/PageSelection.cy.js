@@ -1,4 +1,4 @@
-import { visitSkipBanner, newTemplate, pageNameCover, pageNameNavlog, pageNameNotes, pageNameInstrumentApproach, replacePage } from './shared'
+import { visitSkipBanner, newTemplate, pageNameCover, pageNameNotes, pageNameInstrumentApproach, replacePage } from './shared'
 
 function ejectAndConfirm() {
 
