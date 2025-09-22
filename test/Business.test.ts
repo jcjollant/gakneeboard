@@ -410,6 +410,26 @@ describe('Business', () => {
             expect(refills).toHaveLength(4)
         })
     })
+
+    describe('active customers', () => {
+        it('correclly classified account types', () => {
+            // Test all AccountType values
+            const userBeta = newTestUser(0, AccountType.beta)
+            expect(Business.isActiveCustomer(userBeta)).toBe(true)
+
+            const userPrivate = newTestUser(0, AccountType.private)
+            expect(Business.isActiveCustomer(userPrivate)).toBe(true)
+
+            const userStudent = newTestUser(0, AccountType.student)
+            expect(Business.isActiveCustomer(userStudent)).toBe(true)
+
+            const userSimmer = newTestUser(0, AccountType.simmer)
+            expect(Business.isActiveCustomer(userSimmer)).toBe(false)
+
+            const userUnknown = newTestUser(0, AccountType.unknown)
+            expect(Business.isActiveCustomer(userUnknown)).toBe(false)
+        })
+    })
 });
 
 

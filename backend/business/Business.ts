@@ -51,6 +51,10 @@ export class Business {
         }
     }
 
+    static isActiveCustomer(user:User):boolean {
+        return user.accountType == AccountType.beta || user.accountType == AccountType.private || user.accountType == AccountType.student;
+    }
+
     static maxTemplates(user:User):number {
         return this.maxTemplatesFromAccountType(user.accountType)
     }
