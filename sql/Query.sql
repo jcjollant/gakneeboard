@@ -26,6 +26,9 @@ SELECT count(*) FROM Unknowns
 # Users table
 SELECT COUNT(*) FROM Users
 
+# Users by account_type
+SELECT COUNT(*) as count, account_type FROM Users GROUP BY account_type
+
 SELECT * FROM Users
 
 # Particular user : JC
@@ -57,7 +60,10 @@ SELECT data,name,description FROM sheets WHERE id=0 AND user_id=1
 SELECT COUNT(*) FROM sheets WHERE user_Id=1
 
 # Templates per user
-SELECT COUNT(*) as count, user_id FROM sheets GROUP BY user_id ORDER BY count DESC
+SELECT COUNT(*) as count, user_id
+    FROM sheets
+    GROUP BY user_id
+    ORDER BY count DESC
 
 # Who are Sheet creators
 SELECT COUNT(*) as count, user_id FROM sheets GROUP BY user_id ORDER BY count DESC
@@ -133,5 +139,12 @@ SELECT *
 
 # Prints in the last 30 days
 SELECT count(*) FROM usage WHERE usage_type = 'print' and create_time > current_date - 30 
+
+# Usage by type in the past 90 days
+SELECT count(*) as count, usage_type 
+    FROM usage 
+    WHERE create_time > current_date - 90 
+    GROUP BY usage_type
+    ORDER BY count DESC
 
 SELECT users.id, COUNT(sheets.*) FROM users LEFT JOIN sheets ON sheets.user_id = users.id GROUP BY users.id ORDER BY COUNT DESC 
