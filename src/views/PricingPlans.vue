@@ -52,7 +52,7 @@
                 </svg>
               </span>
               <span v-else-if="typeof value === 'number'">
-                <svg v-if="value==2" class="icon check" viewBox="0 0 24 24">
+                <svg v-if="value > 0 && value < 50" class="icon check" viewBox="0 0 24 24">
                   <path d="M20 6L9 17L4 12"></path>
                 </svg>
                 <svg v-else class="icon check" viewBox="0 0 24 24">
@@ -63,7 +63,7 @@
                 <path d="M20 6L9 17L4 12"></path>
               </svg>
               <span class="feature-text">
-                {{ feature }} {{ typeof value === 'boolean' ? '' : ': ' + value }}
+                {{ feature }} {{ (typeof value === 'boolean' || value == -1) ? '' : ': ' + value }}
               </span>
             </li>
           </ul>
@@ -108,7 +108,7 @@ const plans = ref([
     monthly: false,
     description: "Best to Try it out",
     features: {
-      "4 Prints per Month": false,
+      "Prints per Month": 4,
       "Advanced Print Options": false,
       "Templates": 2,
       "Pages": 2,
@@ -124,7 +124,7 @@ const plans = ref([
     subtitle: "No Commitment",
     description: "Best for Occasional Use",
     features: {
-      "8 Prints per Month": true,
+      "Prints per Month": 8,
       "Advanced Print Options": true,
       "Templates": 2,
       "Pages": 4,
@@ -156,7 +156,7 @@ const plans = ref([
     subtitle: "Charged $41.88/year",
     description: "Expires Sep 30th",
     features: {
-      "Unlimited Prints": true,
+      "Unlimited Prints": -1,
       "Advanced Print Options": true,
       "Templates": 10,
       "Pages": 50,
@@ -172,7 +172,7 @@ const plans = ref([
     subtitle: "Charged $53.88/year",
     description: "This is our regular price",
     features: {
-      "Unlimited Prints": true,
+      "Unlimited Prints": -1,
       "Advanced Print Options": true,
       "Templates": 10,
       "Pages": 50,
