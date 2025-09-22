@@ -12,6 +12,7 @@ import { UserDao } from "./dao/UserDao"
 import { UserTemplateData } from "./models/UserTemplateData";
 import { UserTools } from './UserTools' 
 import { UserUsage } from "./models/UserUsage";
+import { Business } from "./business/Business";
 
 export class Metric {
     name:string;
@@ -33,7 +34,8 @@ export enum MetricKey {
     airportsTotal = 'airports-total',
     airportsValid = 'airports-valid',
     airportsCurrent = 'airports-current',
-    customers = 'customers',
+    customers = 'cust-assigned',
+    customersActive = 'cust-active',
     exports = 'exports',
     export7 = 'exports-7d',
     export28 = 'exports-28d',
@@ -142,6 +144,8 @@ export class Metrics {
         allMetrics.push(onboarded28)
         const customers = new Metric(MetricKey.customers)
         allMetrics.push(customers)
+        const activeCustomers = new Metric(MetricKey.customersActive)
+        allMetrics.push(activeCustomers)
 
         const now = Date.now()
 
@@ -165,6 +169,9 @@ export class Metrics {
 
             if( user.customerId) {
                 customers.addOne()
+            }
+            if( Business.isActiveCustomer( user)) {
+                activeCustomers.addOne()
             }
         }
 
