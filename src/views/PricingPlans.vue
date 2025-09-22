@@ -127,7 +127,7 @@ const plans = ref([
       "8 Prints per Month": true,
       "Advanced Print Options": true,
       "Templates": 2,
-      "Pages": 2,
+      "Pages": 4,
     },
     popular: false,
     active: true,
