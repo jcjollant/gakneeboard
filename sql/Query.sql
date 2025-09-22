@@ -110,8 +110,28 @@ SELECT user_id, count(*) AS c
   WHERE user_id NOTNULL AND usage.create_time > current_date - 90 AND users.account_type = 'sim' AND user_id <> 8 
   GROUP BY user_id 
   ORDER BY c desc
-  
-# Prints in the past 30 days
+
+# Usage for a particular user in the past 90 days
+SELECT user_id, usage_type, count(*) 
+    FROM usage 
+    WHERE user_id IN(189,46,187,192,21) AND create_time > current_date - 90 
+    -- WHERE user_id IN(193,116,113,73,181) AND create_time > current_date - 90 
+    GROUP BY user_id, usage_type 
+    ORDER BY user_id
+
+# Detailed information from that group
+SELECT * 
+    FROM users
+    WHERE id IN(189,46,187,192,21)
+    ORDER BY id
+
+# Sheets for that user group
+SELECT * 
+    FROM sheets 
+    WHERE user_id IN(190,116,113,73,181) 
+    ORDER BY user_id
+
+# Prints in the last 30 days
 SELECT count(*) FROM usage WHERE usage_type = 'print' and create_time > current_date - 30 
 
 SELECT users.id, COUNT(sheets.*) FROM users LEFT JOIN sheets ON sheets.user_id = users.id GROUP BY users.id ORDER BY COUNT DESC 
