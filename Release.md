@@ -1,4 +1,5 @@
 # User Experience updates
+## 09/26/2025 - 5392 - New VFR Tile / New VFR Altitudes / New Click and Print section
 ## 09/21/2025 - 5391 - Fixed student pages count
 ## 09/20/2025 - 5390 - Fixed IFR Depature layout
 ## 09/19/2025 - 5386 - Added / to temperature. Added / and +10 to Alt
