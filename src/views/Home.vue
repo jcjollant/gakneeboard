@@ -18,7 +18,14 @@
             </div>
         </div>
         <div class="section demoSection">
-            <div class="header" @click="onDemoSelection(SheetName.default)">Demos</div>
+            <div class="header" title="Template your can just print and use right away">Click and Print</div>
+            <div class="templateList">
+                <TemplateSelector v-for="(ds,index) in clickAndPrint" :template="ds.template" :demo="true" :src="'/thumbnails/'+ds.src" :class="'cnp'+index"
+                    @selection="onDemoSelection(ds.name)" />
+            </div>
+        </div>
+        <div class="section demoSection">
+            <div class="header" @click="onDemoSelection(SheetName.default)" title="Templates you could use as a source for your own">Try and Customize</div>
             <div class="templateList">
                 <TemplateSelector v-for="(ds,index) in demos" :template="ds.template" :demo="true" :src="'/thumbnails/'+ds.src" :class="'demo'+index"
                     @selection="onDemoSelection(ds.name)" />
@@ -68,13 +75,15 @@ const demos = ref<DemoSelector[]>([
     new DemoSelector(SheetName.skyhawk, 'vfrflight.png', 'VFR Flight', 'VFR Flight Demo Template'),
     new DemoSelector(SheetName.ifrflight, 'ifrflight.png', 'IFR Flight','IFR Flight Demo Template'),
     new DemoSelector(SheetName.checklist, 'checklist.png', 'Checklist','Checklists syntax Showcase'),
-    new DemoSelector(SheetName.acronyms, 'acronyms.png', 'Acronyms', 'Popular VFR and IFR acronyms'),
     new DemoSelector(SheetName.tiles, 'tiles.png', 'Tiles','Tiles Gallery'),
     new DemoSelector(SheetName.navlog, 'navlog.png', 'NavLog', 'Navlog page and companion tiles'),
     new DemoSelector(SheetName.charts, 'charts.png', 'Charts','Airport Diagram and Instrument Approach'),
-    new DemoSelector(SheetName.holds, 'holds.png', 'Holds Practice','Full sheet of Holds and Compasses'),
-    new DemoSelector(SheetName.ifrstrips, 'strips.png', 'IFR Strips','Strips for IFR flights notekeeping'),
     new DemoSelector(SheetName.seattle, 'seattle.png', 'Seattle Airports', '24 GA Airports in the Seattle Area'),
+])
+const clickAndPrint = ref<DemoSelector[]>([
+    new DemoSelector(SheetName.acronyms, 'acronyms.png', 'Acronyms', 'Popular VFR and IFR acronyms'),
+    new DemoSelector(SheetName.ifrstrips, 'strips.png', 'IFR Strips','Strips for IFR flights notekeeping'),
+    new DemoSelector(SheetName.holds, 'holds.png', 'Holds Practice','Full sheet of Holds and Compasses'),
     new DemoSelector(SheetName.paperNavlog, 'paper-navlog.png', 'Paper NavLog', 'Printable Template for Paper Navlog'),
 ])
 interface Poh {
@@ -156,7 +165,7 @@ function onPohSelection(poh:Poh) {
 }
 
 
-function onTemplateSelection(index) {
+function onTemplateSelection(index:number) {
     router.push( '/template/' + index)
 }
 
