@@ -28,6 +28,8 @@
         @replace="onReplace" @update="onUpdate" />
     <SunLight v-else-if="tile.name==TileType.sunlight" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" />
+    <VfrTile v-else-if="tile.name==TileType.vfr" :params="tile.data"
+        @replace="onReplace" @update="onUpdate" />
 </template>
 
 <script setup lang="ts">
@@ -48,6 +50,7 @@ import FuelBug from '../fuel/FuelBug.vue';
 import FAButton from '../shared/FAButton.vue'
 import NavlogTile from '../navlog/NavlogTile.vue';
 import NotesTile from '../notes/NotesTile.vue';
+import VfrTile from '../vfr/VfrTile.vue';
 
 const emits = defineEmits(['update'])
 
@@ -63,9 +66,10 @@ const knownTiles = ref([
     {name:'Weather',tile:TileType.atis, class:'', icon:'cloud-sun-rain', tooltip:'Write down ATIS information'},
     {name:'Radios',tile:TileType.radios, class:'', icon:'headset',  tooltip:'Radio frequencies'},
     {name:'IFR',tile:TileType.clearance, class:'', icon:'plane-circle-check', tooltip:'Instrument Flying'},
-    {name:'Sunlight',tile:TileType.sunlight, class:'', icon:'sun',  tooltip:'Sunrise, Sunset, Civil Twilight...'},
+    {name:'VFR',tile:TileType.vfr, class:'', icon:'sun',  tooltip:'Visual Flying Rules'},
     {name:'Fuel',tile:TileType.fuel, class:'', icon:'gas-pump', tooltip:'Track your fuel consumption'},
-    {name:'Navlog',tile:TileType.navlog, class:'', icon:'route',  tooltip:'Companion Tile to the Navlog Page'},
+    {name:'Sun times',tile:TileType.sunlight, class:'', icon:'clock',  tooltip:'Sunrise, Sunset, Civil Twilight...'},
+    // {name:'Navlog',tile:TileType.navlog, class:'', icon:'route',  tooltip:'Companion Tile to the Navlog Page'},
 ])
 const selectionTile = new TileData(TileType.selection)
 const tile = ref(selectionTile)

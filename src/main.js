@@ -3,7 +3,7 @@ import { faFacebookF, faGoogle, faWordpress, faYoutube } from '@fortawesome/free
 import {
     faArrowDown, faArrowUp,
     faBan, faBars, faBorderAll, faBuilding,
-    faCamera, faCheck, faChevronRight, faCircleInfo, faClone, faCloud, faCloudSunRain, faComments,
+    faCamera, faCheck, faChevronRight, faCircleInfo, faClock, faClone, faCloud, faCloudSunRain, faComments,
     faDisplay,
     faEject, faExclamationTriangle,
     faFileExport, faFile,
@@ -34,7 +34,7 @@ import './style.css';
 library.add( 
     faArrowDown, faArrowUp,
     faBan, faBars, faBorderAll, faBuilding,
-    faCamera, faCheck, faChevronRight, faCircleInfo, faClone, faCloud, faCloudSunRain, faComments, 
+    faCamera, faCheck, faChevronRight, faCircleInfo, faClock, faClone, faCloud, faCloudSunRain, faComments, 
     faDisplay,
     faEject, faExclamationTriangle,
     faFacebookF, faFileExport, faFile, faGoogle, 

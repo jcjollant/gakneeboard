@@ -39,6 +39,14 @@ export enum DisplayModeIfr {
     LostComms = 'lostcomms',
 }
 
+export enum DisplayModeVfr {
+    Unknown = '?',
+    Altitudes = 'alt',
+    CloudClearance = 'clouds',
+    LostComms = 'nordo',
+}
+
+
 export enum DisplayModeAtis {
     Unknown = '?',
     FullATIS = '',
