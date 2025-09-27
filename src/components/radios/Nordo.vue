@@ -93,11 +93,11 @@
 
 .nordo {
     position: relative;
-    height: 100%;
     font-size: 0.8rem;
     display: flex;
     flex-flow: column;
     justify-content: space-between;
+    color: black;
 }
 .nordoCaution {
     grid-column: 2 / span 2
