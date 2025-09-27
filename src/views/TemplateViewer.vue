@@ -21,7 +21,7 @@
             @click="onSave(false)"/>
           <MenuButton id="btnDuplicate" v-if="activeTemplate.ver > 0" icon="clone" title="Save as a duplicate new template" label="Duplicate" @click="onSave(true)" />
           <MenuButton id="btnEditor"
-            icon="screwdriver-wrench" title="Toggle Editor mode" label="Editor" :active="showEditor"
+            icon="screwdriver-wrench" title="Toggle Editor mode" label="Page Editor" :active="showEditor"
             :class="{'editorButtonActive':showEditor}" class="editorButton" 
             @click="onEditor"/>
           <MenuButton id="btnExport" icon="file-export" title="Export Template to Various Formats" label="Export"
