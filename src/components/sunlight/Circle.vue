@@ -36,7 +36,7 @@ function draw() {
     const center = referenceSize / 2
     const radius = center - 15
     const twilightColor = 'blue'
-    const dayColor = 'yellow'
+    const dayColor = '#46B1E1'
     const nightColor = 'black'
 
     // Bottom Portion
