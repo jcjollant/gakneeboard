@@ -42,6 +42,7 @@ export class TileTypeLabel {
     static navlog = 'Navlog'
     static atis = 'Weather'
     static IFR = 'IFR'
+    static sunlight = 'Sunlight'
 }
 
 export const expectedDemos = [ 
@@ -54,6 +55,10 @@ export const expectedDemos = [
     {i:6, l:'IFR Flight', t:'Full sheet of Holds and Compasses',c:['pageStrips','pageStrips']},
 ]
 
+
+export function checkImageContent( src, page=0, tile=0) {
+    cy.get(`.page${page} .tile${tile} .imageContent`).should('have.attr', 'src', src)
+}
 
 export function checkTileSpan(page, tile, spanned=true) {
     const condition = spanned ? 'have.class' : 'not.have.class'
@@ -166,7 +171,7 @@ export function replacePage(pageNum, newPage=undefined, replaceButton=true) {
  */
 export function replaceTile(pageNum, tileNum, label=undefined) {
     cy.get(`.page${pageNum} > .tile${tileNum} .replaceButton`).click({force: true})
-    if(label) cy.get(`[aria-label="${label}"]`).click()
+    if(label) cy.get(`.page${pageNum} > .tile${tileNum} [aria-label="${label}"]`).click()
 
 }
 

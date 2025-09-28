@@ -1,4 +1,4 @@
-import { clearanceTitle, departTitle, visitSkipBanner, loadDemo, holdTitle, newTemplateWithTile, approachTitle, departureTitle, displaySelection, TileTypeLabel } from './shared'
+import { visitSkipBanner, holdTitle, newTemplateWithTile, approachTitle, departureTitle, displaySelection, TileTypeLabel, checkImageContent } from './shared'
 
 
 const titleCraftClearance = "IFR Clearance"
@@ -146,13 +146,13 @@ describe('Tile IFR', () => {
   it('Alternate', () => {
     // switch to Approach
     displaySelection(0,0,labelAlternate)
-    cy.get('.page0 .tile0 .imageContent').should('have.attr', 'src', '/tiles/alternate.png')
+    checkImageContent('/tiles/altnernate.png')
   })
 
   it('Lost Comms', () => {
     // switch to Approach
     displaySelection(0,0,labelLostComms)
-    cy.get('.page0 .tile0 .imageContent').should('have.attr', 'src', '/tiles/lostcomms-ifr.png')
+    checkImageContent('/tiles/lostcomms-ifr.png')
   })
 
   it.skip('Holding', () => {
