@@ -56,7 +56,7 @@ watch( displayMode, (newValue, oldValue) => {
 })
 
 function loadProps(props:any) {
-    console.debug('[VfrTile.loadProps]', props)
+    // console.debug('[VfrTile.loadProps]', props)
     displayMode.value = defaultMode
     if( props.params) {
         console.debug('[VfrTile.loadProps] params', props.params)
