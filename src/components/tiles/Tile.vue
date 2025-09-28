@@ -68,7 +68,7 @@ const knownTiles = ref([
     {name:'IFR',tile:TileType.clearance, class:'', icon:'plane-circle-check', tooltip:'Instrument Flying'},
     {name:'VFR',tile:TileType.vfr, class:'', icon:'sun',  tooltip:'Visual Flying Rules'},
     {name:'Fuel',tile:TileType.fuel, class:'', icon:'gas-pump', tooltip:'Track your fuel consumption'},
-    {name:'Sun times',tile:TileType.sunlight, class:'', icon:'clock',  tooltip:'Sunrise, Sunset, Civil Twilight...'},
+    {name:'Sunlight',tile:TileType.sunlight, class:'', icon:'clock',  tooltip:'Sunrise, Sunset, Civil Twilight...'},
     // {name:'Navlog',tile:TileType.navlog, class:'', icon:'route',  tooltip:'Companion Tile to the Navlog Page'},
 ])
 const selectionTile = new TileData(TileType.selection)
@@ -119,7 +119,7 @@ function onReplace(newName = TileType.selection, mode=undefined) {
 
 // when a tile notifies us of an update, we notify the parent to save values
 function onUpdate(newState:TileData) {
-    console.debug('[Tile.onUpdate]', newState)
+    // console.debug('[Tile.onUpdate]', newState)
     state = newState
     emits('update',state)
 }

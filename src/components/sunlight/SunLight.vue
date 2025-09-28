@@ -1,13 +1,36 @@
 <template>
     <div class="tile">
-        <Header title="Sun Light" :showReplace="mode=='edit'" :displayMode="false"
-            @replace="emits('replace')" @click="onClick" >
+        <Header :title="getTitle()" 
+            @replace="emits('replace')" @display="displayModeSelection=true" >
         </Header>
-        <div class="tileContent sunlight" v-if="mode==''" @click="onClick">
+        <DisplayModeSelection v-if="displayModeSelection" :modes="displayModesList" v-model="displayMode"
+            @keep="displayModeSelection=false" />
+
+        <div v-else-if="editMode" class="content">
+            <div class="settings">
+                <AirportInput :code="airportFromCode" label="From" :auto="true"
+                    @valid="onAirportFrom" />
+                <AirportInput :code="airportToCode" label="To" :auto="true"
+                    @valid="onAirportTo"   />
+                <InputGroup>
+                    <InputGroupAddon class="airportCodeLabel">Date</InputGroupAddon>
+                    <Calendar v-model="dateFrom" showIcon />
+                </InputGroup>
+                <div class="nightFlight">
+                    <Checkbox v-model="nightFlight" inputId="nightFlight" binary/>
+                    <label for="nightFlight" class="ml-2">Overnight Flight</label>
+                </div> 
+            </div>
+            <ActionBar @cancel="onClick" @apply="onApply" :help="UserUrl.sunlightTileGuide" />
+        </div>
+        <div v-else-if="displayMode == DisplayModeSunlight.Reference">
+            <ImageContent src="nights.png"/>
+        </div>
+        <div v-else class="tileContent sunlight" @click="onClick">
             <div v-if="airportFromCode">
                 <Circle :time="circleKey" :night="nightFlight" />
                 <div v-if="loading" class="loading">Fetching...</div>
-                <div v-else class="text">
+                <div v-else class="legend">
                     <div v-if="nightFlight">
                         <div><span class="pr2">{{civilTwilightPm}}</span><span>{{civilTwilightAm}}</span></div>
                         <div class="pb1">Civil Twilight</div>
@@ -32,48 +55,32 @@
                 <div v-if="nightFlight" class="date">Night Flight</div>
                 <div v-else class="date" :title="dateFrom ? dateFrom.toDateString() : '?'">{{ dateFrom ? dateFrom.toLocaleString('en-US', dateFormatBottom) : '?' }}</div>
             </div>
-            <PlaceHolder v-else title="No Airport" />
-        </div>
-        <div v-else class="content">
-            <div class="settings">
-                <AirportInput :code="airportFromCode" label="From" :auto="true"
-                    @valid="onAirportFrom" />
-                <AirportInput :code="airportToCode" label="To" :auto="true"
-                    @valid="onAirportTo"   />
-                <InputGroup>
-                    <InputGroupAddon class="airportCodeLabel">Date</InputGroupAddon>
-                    <Calendar v-model="dateFrom" showIcon />
-                </InputGroup>
-                <div class="nightFlight">
-                    <Checkbox v-model="nightFlight" inputId="nightFlight" binary/>
-                    <label for="nightFlight" class="ml-2">Overnight Flight</label>
-                </div> 
-            </div>
-            <ActionBar @cancel="onClick" @apply="onApply" :help="UserUrl.sunlightTileGuide" />
+            <PlaceHolder v-else title="No Airport" subtitle="Click here to Configure" />
         </div>
     </div>    
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { getAirport, getSunlight } from '@/assets/data'
+import { getSunlight } from '@/assets/data'
 import { UserUrl } from '@/lib/UserUrl'
+import { TileType } from '../../model/TileType'
+import { TileData } from '../../model/TileData'
+import { DisplayModeChoice, DisplayModeSunlight } from '../../model/DisplayMode'
 
 import ActionBar from '../shared/ActionBar.vue'
 import AirportInput from '../shared/AirportInput.vue'
 import Circle from './Circle.vue'
 import CornerStatic from '../shared/CornerStatic.vue'
+import DisplayModeSelection from '../shared/DisplayModeSelection.vue'
 import Header from '../shared/Header.vue'
 import PlaceHolder from '../shared/PlaceHolder.vue'
-
+import ImageContent from '../shared/ImageContent.vue'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import Calendar from 'primevue/calendar'
 import Checkbox from 'primevue/checkbox'
-import { TileType } from '../../model/TileType'
-import { TileData } from '../../model/TileData'
 
-const mode = ref('')
 const airportFromCode = ref('')
 const airportToCode = ref('')
 const circleKey = ref()
@@ -83,6 +90,14 @@ const dateFrom = ref(null)
 const dateTo = ref(null)
 const dateFormatBottom = {weekday: 'short', month: 'short', day: 'numeric'}
 const dateFormatCorner = {month: 'short', day: 'numeric'}
+const displayModeDefault = DisplayModeSunlight.Unknown
+const displayMode = ref(displayModeDefault)
+const displayModesList = ref([
+    new DisplayModeChoice('Flight Sunlight', DisplayModeSunlight.Flight, true),
+    new DisplayModeChoice('Definitions of Night', DisplayModeSunlight.Reference),
+])
+const displayModeSelection = ref(false)
+const editMode = ref(false)
 const goldenHour = ref('-')
 const loading = ref(false)
 const solarNoon = ref('-')
@@ -106,11 +121,19 @@ onMounted(() => {
 })
 
 watch( props, async() => {
-    mode.value = ''
     loadProps(props)
 })
 
+watch(displayMode, (newValue, oldValue) => {
+    // console.debug('[SunLight.watch] displayMode', oldValue, '=>', newValue)
+    displayModeSelection.value = false
+    editMode.value = false
+    state.mode = newValue
+    saveConfig()
+})
+
 function loadProps(newProps) {
+    // console.debug('[SunLight.loadProps]', props)
     state = newProps.params
     airportFromCode.value = state.from
     airportToCode.value = state.to ? state.to : state.from
@@ -120,8 +143,13 @@ function loadProps(newProps) {
     dateFrom.value = now
     nightFlight.value = state.night
     // console.debug('[SunLight.loadProps] from', JSON.stringify(dateFrom.value), "to", JSON.stringify(dateTo.value))
+    displayMode.value = state.mode ? state.mode : displayModeDefault
+    state.mode = displayMode.value
+    displayModeSelection.value = displayMode.value == DisplayModeSunlight.Unknown
 
-    getData(false)
+    if( displayMode.value == DisplayModeSunlight.Flight) {
+        getData(false)
+    }
 }
 
 // End of Props Section
@@ -169,6 +197,8 @@ function getData( update=true) {
     getSunlight( airportFromCode.value, airportToCode.value, dateFrom.value, nightFlight.value).then( sunlightData => {
         // console.debug('[Sunlight.getData] data received', JSON.stringify(sunlightData))
         loading.value = false
+        displayMode.value = DisplayModeSunlight.Flight
+        editMode.value = false
         if( sunlightData) {
             sunriseTime.value = formatTime(sunlightData, 'sunrise')
             sunsetTime.value = formatTime(sunlightData, 'sunset')
@@ -195,6 +225,18 @@ function getData( update=true) {
             civilTwilightPm.value = '-'
         }
     })
+}
+
+function getTitle() {
+    if( displayModeSelection.value) {
+        return 'Sunlight Display Mode'
+    } else if( editMode.value) {
+        return 'Sunlight Settings'
+    } else if( displayMode.value == DisplayModeSunlight.Flight) {
+        return 'Sunlight'
+    } else {
+        return 'Definitions of Night'
+    }
 }
 
 function onAirportFrom( airport) {
@@ -224,9 +266,8 @@ function onApply() {
 
 // Toggle between edit mode and current mode
 function onClick() {
-    const edit = mode.value == 'edit'
-    mode.value = (edit ? '' : 'edit')
-    if(edit) circleKey.value = Date.now()
+    editMode.value = !editMode.value
+    if(editMode.value) circleKey.value = Date.now()
 }    
 
 function saveConfig() {
@@ -268,7 +309,7 @@ function saveConfig() {
     line-height: 160px;
     width:100%;
 }
-.text {
+.legend {
     width: 100%;
     height: 100%;
     display: flex;
@@ -306,7 +347,7 @@ function saveConfig() {
 .airportCodeLabel {
     width: 3rem;
 }
-:deep(.p-component), :deep(.p-inputgroup-addon) {
+:deep(.p-inputgroup-addon) {
     font-size: 0.8rem;
 }
 .date {
