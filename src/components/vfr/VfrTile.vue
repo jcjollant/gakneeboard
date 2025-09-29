@@ -59,7 +59,7 @@ function loadProps(props:any) {
     // console.debug('[VfrTile.loadProps]', props)
     displayMode.value = defaultMode
     if( props.params) {
-        console.debug('[VfrTile.loadProps] params', props.params)
+        // console.debug('[VfrTile.loadProps] params', props.params)
          if( props.params.mode) {
             // for compatibility with old versions
             if(props.params.mode=="") {
@@ -79,7 +79,7 @@ function loadProps(props:any) {
             })
          }
     } else {
-        console.debug('[VfrTile] show display selection')
+        // console.debug('[VfrTile] show display selection')
         displaySelection.value = true
     }
 }
