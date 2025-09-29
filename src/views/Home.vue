@@ -81,6 +81,7 @@ const demos = ref<DemoSelector[]>([
     new DemoSelector(SheetName.seattle, 'seattle.png', 'Seattle Airports', '24 GA Airports in the Seattle Area'),
 ])
 const clickAndPrint = ref<DemoSelector[]>([
+    new DemoSelector(SheetName.reference, 'reference.png', 'Reference', 'Handy Reference Visuals'),
     new DemoSelector(SheetName.acronyms, 'acronyms.png', 'Acronyms', 'Popular VFR and IFR acronyms'),
     new DemoSelector(SheetName.ifrstrips, 'strips.png', 'IFR Strips','Strips for IFR flights notekeeping'),
     new DemoSelector(SheetName.holds, 'holds.png', 'Holds Practice','Full sheet of Holds and Compasses'),

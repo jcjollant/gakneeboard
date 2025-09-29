@@ -16,6 +16,7 @@ export class SheetName {
   static ifrflight = 'gak-ifrflight'
   static ifrstrips = 'gak-ifrstrips'
   static acronyms = 'gak-acronyms'
+  static reference = 'gak-reference'
   static seattle = 'gak-seattle'
   static paperNavlog = 'gak-paper-navlog'
 }

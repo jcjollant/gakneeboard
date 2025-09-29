@@ -162,6 +162,27 @@ export class DemoData {
         { "id": 5, name: "navlog", data: {} }
     ])
 
+
+
+    static page0DemoReference = new TemplatePage(PageType.tiles, 'Reference 1', [
+        {name:"vfr",data:{mode:"clouds","airport":""}},
+        {name:"atis",data:{mode:"categories"}},
+        {name:"vfr",data:{mode:"alt","airport":""}},
+        {name:"sunlight",data:{mode:"ref"}},
+        {name:"vfr",data:{mode:"nordo","airport":""}},
+        {name:"checklist",data:{name:"Checklist","items":[{"c":"Vne","r":"163"},{"c":"Vno","r":"129"},{"c":"Va @ 2,550","r":"105"},{"c":"Va @ 2,200","r":"98"},{"c":"Va @ 1,900","r":"90"},{"c":"Vy","r":"74"},{"c":"Vg","r":"68"},{"c":"Vx","r":"62"},{"c":"Vs1","r":"48"},{"c":"Vs0","r":"40"}],"theme":"blue"}}
+    ])
+
+    static page1DemoReference = new TemplatePage(PageType.tiles, 'Reference 2', [
+        {name:"clearance","data":{mode:"alt","airport":""}},
+        {name:"checklist","data":{name:"IFR Reporting","items":[{"c":"Missed","r":"M"},{"c":"Airspeed ±10kts ","r":"A"},{"c":"Reaching Fix","r":"R"},{"c":"Vacating Altitude","r":"V"},{"c":"ETA ±2min","r":"E"},{"c":"Leaving Hold","r":"L"},{"c":"Outer Marker","r":"O"},{"c":"Unforecasted Weather","r":"U"},{"c":"Safety of flight","r":"S"},{"c":"VFR on Top","r":"V"},{"c":"Final Approach Fix","r":"F"}],"theme":"yellow"}},
+        {name:"clearance","data":{mode:"lostcomms","airport":""}},
+        {name:"checklist","data":{name:"Continued","items":[{"c":"Radio nav Equip. Failure","r":"R"},{"c":"Compulsory Reporting","r":"C"},{"c":"Unable to hold 500fpm","r":"500"},{"s":" Do Not Fly a PT"},{"c":"Straight In Approach","r":"S"},{"c":"Hold in lieu of PT","r":"H"},{"c":"DME Arc","r":"A"},{"c":"Radar Vector to FAF","r":"R"},{"c":"No PT on chart","r":"P"},{"c":"Timed Apch from Hold","r":"T"},{"c":"Teardrop Course Rev.","r":"T"}],"theme":"yellow"}},
+        {name:"radios","data":{mode:"sv","list":[],"sv":"h"}},
+        {name:"radios","data":{mode:"sv","list":[],"sv":"vh"}}
+    ])
+
+
     static page0Acronyms = new TemplatePage(PageType.checklist, 'Acronyms 1',
         {
             name: "Acronyms 1",
@@ -303,6 +324,8 @@ export class DemoData {
             return DemoData.ifrflight()
         } else if (name == SheetName.ifrstrips) {
             return DemoData.ifrstrips()
+        } else if(name == SheetName.reference) {
+            return DemoData.reference()
         } else if(name == SheetName.seattle) {
             return DemoData.seattleAirports()
         } else if(name == SheetName.paperNavlog) {
@@ -326,6 +349,10 @@ export class DemoData {
 
     static navlog(): Template {
         return new Template('Navlog Demo', 'Navlog page along with six tiles', false, [DemoData.page0DemoNavlog, DemoData.page1DemoNavlog])
+    }
+
+    static reference(): Template {
+        return new Template('Reference Tiles', 'Two Pages of Reference Tiles', false, [DemoData.page0DemoReference, DemoData.page1DemoReference])
     }
 
     static seattleAirports(): Template {
