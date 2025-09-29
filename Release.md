@@ -1,4 +1,5 @@
 # User Experience updates
+## 09/28/2025 - 5401 - New Click and Print Reference Card
 ## 09/28/2025 - 5400 - New Definitions of night mode for sunlight tile
 ## 09/26/2025 - 5392 - New VFR Tile / New VFR Altitudes / New Click and Print section
 ## 09/21/2025 - 5391 - Fixed student pages count
