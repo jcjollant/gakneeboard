@@ -5,14 +5,14 @@
         <OneChoice v-model="activeTopic" :choices="topics" class="mb-2" />
       </div>
       <div v-if="activeTopic.value==topicAbout.value">
-        <div class="mb-2 justify"><strong>GA Kneeboard</strong> was created to save our bacon when the iPad fails. Its sheer convenience made it a primary source of flight information.</div>
+        <div class="mb-2 justify"><strong>GA Kneeboard</strong> has evoled a LOT thanks to pilots like you. Keep suggestions coming!</div>
         <div class="allButtons">
           <div v-for="guide in guides">
             <FAButton iconclass="fab" :icon="guide.icon" :label="guide.name" @click="openUrl(guide.url)" :link="true" class="oneButton" />
             <div class="buttonDesc">{{ guide.subtitle }}</div>
           </div>
         </div>
-        <div class="justify"><strong>Special Thanks</strong> to Ash, Jason, Steve and Stewart whom have contributed invaluable feedback and suggestions since Day 1</div>
+        <div class="justify"><strong>Thanks</strong> to Ash, Jason, Steve and Stewart whom have contributed feedback since Day 1</div>
       </div>
       <div v-else-if="activeTopic.value==topicGuide.value" class="mb-5">
         <div class="mb-2 justify"><strong>You can help</strong> in many ways : 
@@ -32,8 +32,8 @@
           <i class='pi pi-exclamation-triangle bigIcon'></i>
         </div>
         <div class="topWarning">
-        <div class="topSub">Always take time to confirm all data points as a good preflight</div>
-        </div>        
+          <div class="topSub">Always take time to confirm all data points as a good preflight</div>
+        </div>
         <div class="warning-item mr-3">Information Currency</div>
         <div>FAA refreshes data every 28 days. The app may not be current.</div>
         <div class="warning-item mr-3">Pattern Altitudes</div>
@@ -47,11 +47,12 @@
         <div class="warning-item mr-3">Radio Flow Frequencies</div>
         <div>Are user defined (by you) and are not updated with data refresh.</div>
         <div class="warning-item mr-3">Magnetic Headings</div>
-        <div>Are calculated with FAA variation data which can be quite old at some locations</div>
-      </div>    
+        <div>Always take time to confirm all data points as a good preflight</div>
+      </div>
+      <div class="bottom">GA Kneeboard Original artwork is copyrighted by Aviates Software LLC</div>
       <div class="actionDialog gap-2">
-        <Button label="Privacy" @click="openUrl(UserUrl.privacy)" link></Button>
-        <Button label="License" @click="openUrl(UserUrl.eula)" link></Button>
+        <Button label="Privacy Policy" @click="openUrl(UserUrl.privacy)" link></Button>
+        <Button label="End User License Agreement" @click="openUrl(UserUrl.eula)" link></Button>
         <Button label="Accept EULA" @click="acceptEula" link></Button>
         <!-- <Button label="How Does It Work?" @click="emits('hdiw')" link></Button> -->
         <Button label="Got it" @click="emits('close')"></Button>
@@ -73,9 +74,9 @@ import { postEula } from "../../assets/data";
 const emits = defineEmits(["close","hdiw"]);
 
 const guides = [
-  {name:'',icon:'wordpress',subtitle:'Updates blog', url:UserUrl.blog},
-  {name:'',icon:'youtube',subtitle:'Demo Videos', url:UserUrl.youTubeChannel},
-  {name:'',icon:'facebook-f',subtitle:'Socialize', url:UserUrl.facebookProfile},
+  {name:'',icon:'wordpress',subtitle:'Updates', url:UserUrl.blog},
+  {name:'',icon:'youtube',subtitle:'Demos', url:UserUrl.youTubeChannel},
+  {name:'',icon:'facebook-f',subtitle:'Dopamine', url:UserUrl.facebookProfile},
 ]
 
 const topicAbout = {label:'About',value:'about'}
@@ -103,6 +104,11 @@ async function acceptEula() {
 .bigIcon {
   font-size: 2rem;
 }
+
+.bottom {
+  grid-column: 1 / span 2;
+}
+
 .guides {
   display: grid;
   grid-template-columns: auto auto auto auto auto;
