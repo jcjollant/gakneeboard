@@ -352,7 +352,7 @@ export class DemoData {
     }
 
     static reference(): Template {
-        return new Template('Reference Tiles', 'Two Pages of Reference Tiles', false, [DemoData.page0DemoReference, DemoData.page1DemoReference])
+        return new Template('Reference Card', 'Two Pages of References Tiles', false, [DemoData.page0DemoReference, DemoData.page1DemoReference])
     }
 
     static seattleAirports(): Template {
