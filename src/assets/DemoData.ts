@@ -343,8 +343,11 @@ export class DemoData {
     }
 
     static ifrstrips(): Template {
-        const pageIFRStrips = new TemplatePage(PageType.strips, 'Strips', { list: ['radio', 'atis', 'craft', 'notes', 'radio', 'atis', 'craft', 'notes'] })
-        return new Template('IFR Flight', 'Two pages of Strips for IFR Flights', false, [pageIFRStrips, pageIFRStrips])
+        const page0 = new TemplatePage(PageType.strips, 'IFR Training Strips', [
+            { type: 'radio'}, {type: 'craft'}, {type: 'atis'}, {type: 'atis'}, {type: 'atis'}, {type: 'atis'}, {type: 'atis'}, {type: 'notes'}] )
+        const page1 = new TemplatePage(PageType.flightDebrief, "IFR Training Debrief")
+
+        return new Template('IFR Training', 'Use it for multiple approaches in one flight', false, [page0, page1])
     }
 
     static navlog(): Template {
