@@ -7,12 +7,13 @@
                     <AtisStrip v-if="s.type == StripType.atis" :class="'strip'+index"
                         :edit="editMode" :header="!index || strips[index-1].type != StripType.atis"
                         @action="action(index, $event)"/>
-                    <CraftStrip v-if="s.type == StripType.craft" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
-                    <NotesStrip v-if="s.type == StripType.notes" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
-                    <TaxiStrip v-if="s.type == StripType.taxi" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
-                    <RadioStrip v-if="s.type == StripType.radio" :edit="editMode" @action="action(index, $event)" 
+                    <CraftStrip v-else-if="s.type == StripType.craft" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
+                    <NotesStrip v-else-if="s.type == StripType.notes" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
+                    <TaxiStrip v-else-if="s.type == StripType.taxi" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
+                    <RadioStrip v-else-if="s.type == StripType.radio" :edit="editMode" @action="action(index, $event)" 
                         :data="strips[index].data" :header="!index || strips[index-1].type != StripType.radio"
                         @update="onUpdate(index, $event)"/>
+                    <div v-else> Unknown Type {{s.type}}</div>
                 </template>
                 <PlaceHolder v-else :title="'No Strip'" :subtitle="editMode ? 'Add New Strips Below' : 'Click Header to Configure'"/>
             </div>
@@ -23,7 +24,6 @@
 <script lang="ts" setup>
 import { onMounted, ref, watch } from 'vue';
 import { StripAction } from '../../assets/StripAction';
-import { StripPageData } from '../../assets/StripPageData';
 import { StripSetting } from '../../model/StripSetting.ts';
 import { StripType } from '../../model/StripType';
 
