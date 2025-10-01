@@ -18,14 +18,14 @@
             </div>
         </div>
         <div class="section demoSection">
-            <div class="header" title="Template your can just print and use right away">Click and Print</div>
+            <div class="header" title="Template your can just print and use right away">Ready to Print</div>
             <div class="templateList">
                 <TemplateSelector v-for="(ds,index) in clickAndPrint" :template="ds.template" :demo="true" :src="'/thumbnails/'+ds.src" :class="'cnp'+index"
                     @selection="onDemoSelection(ds.name)" />
             </div>
         </div>
         <div class="section demoSection">
-            <div class="header" @click="onDemoSelection(SheetName.default)" title="Templates you could use as a source for your own">Try and Customize</div>
+            <div class="header" @click="onDemoSelection(SheetName.default)" title="Templates you could use as a source for your own">Kneeboard Inspiration</div>
             <div class="templateList">
                 <TemplateSelector v-for="(ds,index) in demos" :template="ds.template" :demo="true" :src="'/thumbnails/'+ds.src" :class="'demo'+index"
                     @selection="onDemoSelection(ds.name)" />
