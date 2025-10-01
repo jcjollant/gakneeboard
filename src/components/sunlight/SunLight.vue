@@ -129,7 +129,7 @@ watch(displayMode, (newValue, oldValue) => {
     displayModeSelection.value = false
     editMode.value = false
     state.mode = newValue
-    saveConfig()
+    if(oldValue != DisplayModeSunlight.Unknown) saveConfig()
 })
 
 function loadProps(newProps) {

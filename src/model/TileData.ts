@@ -2,7 +2,7 @@ import { TileType } from "./TileType";
 
 export class TileData {
     name: string
-    data: Object
+    data: any
     span2: boolean
     hide: boolean
 
