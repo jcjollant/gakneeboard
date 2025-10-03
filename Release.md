@@ -1,4 +1,5 @@
 # User Experience updates
+## 10/03/2025 - 5405 - Fixed IFR Training thumbnail
 ## 10/03/2025 - 5404 - Radio Frequency lookup improvments
 ## 09/30/2025 - 5403 - New Ready to Print / Renamed Home Screen sections to "Ready to Print" and "Kneeboard Inspiration"
 ## 09/29/2025 - 5402 - Removed unneccessary save of sunlight displayMode
