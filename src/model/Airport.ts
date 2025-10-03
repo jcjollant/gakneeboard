@@ -1,3 +1,4 @@
+import { Formatter } from "../lib/Formatter";
 import { Frequency, FrequencyType } from "./Frequency";
 
 const modelVersion:number = 10;
@@ -20,7 +21,7 @@ export enum TrafficPattern {
 
 export class RunwayEnd {
     name: string;
-    mag: number;
+    mag: number = 0;
     tp: TrafficPattern; 
     /**
      * @param name This runway end name, should start with RP if this is a Right pattern 
@@ -291,7 +292,6 @@ export class Airport {
     getAnyFrequency(patterns:string[]) {
         // test wether freq.name contains any of the patterns
         return this.freq.find((freq) => (patterns.some(p => freq.name.includes(p))))
-
     }
 
     // returns a number
@@ -332,8 +332,9 @@ export class Airport {
         return list.sort( (f1,f2) => f2.mhz - f1.mhz)[0].mhz;
     }
 
-    getFreqWeather():AirportFrequency|undefined {
-        return this.getAnyFrequency(['ATIS','ASOS','AWOS','Weather'])
+    getFreqWeather():Frequency|undefined {
+        const af = this.getAnyFrequency(['ATIS','ASOS','AWOS','Weather'])
+        return af ? new Frequency(Formatter.frequency(af.mhz), af.name, FrequencyType.weather) : undefined
     }
 
     isValid():boolean {
