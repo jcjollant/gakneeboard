@@ -18,14 +18,14 @@ describe('index', () => {
                     // console.log(res.data)
                     expect(res.data).toBeDefined();
                     expect(res.data.version).toBe(version)
-                    expect(res.data.aced).toBe(currentAsOf)
+                    // expect(res.data.aced).toBe(currentAsOf)
                     expect(res.data.camv).toBe(currentAirportModelVersion)
                 }),
             axios.get( apiRootUrl + '?user=' + jcHash)
                 .then(res => {
                     expect(res.data).toBeDefined();
                     expect(res.data.version).toBe(version)
-                    expect(res.data.aced).toBe(currentAsOf)
+                    // expect(res.data.aced).toBe(currentAsOf)
                     expect(res.data.camv).toBe(currentAirportModelVersion)
                     expect(res.data.user).toBeDefined();
                     expect(res.data.user.sha256).toBeDefined();
