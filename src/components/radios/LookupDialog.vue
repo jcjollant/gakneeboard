@@ -1,67 +1,80 @@
 <template>
     <Dialog modal header="Frequency Lookup" style="width:45rem" class="lookupDialog">
-        <FieldSet legend="Airport">
-            <AirportInput :auto="true" @valid="onAirport" class="mb-2"></AirportInput>
-            <!-- <div class="listAirports">
-                <Button v-for="airport in airports" @click="onAirport(airport)">{{airport.code}}</Button>
-            </div> -->
+        <FieldSet legend="Route">
+            <AirportInput :auto="true" @valid="onAirport" class="mb-2" :expanded="true"/>
+            <div class="listAirports">
+                <FAButton v-for="airport in airports" title="Click to remove Airport" :label="airport.code"
+                    icon="times" class="selectedAirport"
+                    @click="onRemoveAirport(airport)" />
+            </div>
         </FieldSet>
-        <div class="mt-2 tip">{{selectedAirport ? 'Click on any frequency below to add them to your Radio Flow':'Pick an airport above to see associated frequencies'}}</div>
-        <div v-if="selectedAirport" class="airportSpecific">
-            <FieldSet :legend="selectedAirport['code'] + ' Local Frequencies'">
+        <div v-if="airports.length > 0" class="airportSpecific">
+            <FieldSet legend="Weather">
                 <div class="listLocal">
-                    <Button v-for="f in localFrequencies" :label="f.label" @click="addFrequency(f)" class="freqButton" link></Button>
+                    <FrequencyBox v-for="fna in weatherFrequencies" :freq="fna.freq" :title="fna.freq.name" class="clickable"
+                        @click="addFrequency(fna.freq)" />
                 </div>
             </FieldSet>
-            <FieldSet :legend="selectedAirport['code'] + ' Navaids'" class="listNavaids">
-                <Button v-for="f in navaidFrequencies" :label="f.label" @click="addFrequency(f)" class="freqButton" link></Button>
+            <FieldSet legend="Tower, CTAF & GND">
+                <div class="listLocal">
+                    <FrequencyBox v-for="fna in towerCtafGndFrequencies" :freq="fna.freq" :title="fna.freq.name" class="clickable"
+                        @click="addFrequency(fna.freq)" />
+                </div>
             </FieldSet>
-            <FieldSet v-for="group in atcGroups" :legend="group['name']" >
-                <div class="listAtc">
-                    <Button v-for="f in group.items" :label="formatLabel(f.label)" @click="addFrequency(f)" class="freqButton left" link :title="f.label"></Button>
+            <FieldSet legend="Approach Control">
+                <div class="listLocal">
+                    <FrequencyBox v-for="fag in approachFrequencies" :freq="fag.freq" :title="fag.freq.name" class="clickable"
+                        @click="addFrequency(fag.freq)" />
                 </div>
             </FieldSet>
         </div>
+        <div v-else class="tip mt-5">Select Airports along your route</div>
     </Dialog>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
-import { sessionAirports } from '../../assets/data'
+import { ref, watch } from 'vue'
 import { AtcGroup } from '../../model/AtcGroup.ts'
-import { Frequency, FrequencyType, FrequencyLabelled } from '../../model/Frequency'
-import { Formatter } from '../../lib/Formatter.ts'
+import { Frequency, FrequencyType } from '../../model/Frequency'
 
-import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
+import FAButton from '../shared/FAButton.vue'
 import FieldSet from 'primevue/fieldset'
 
 import AirportInput from '../shared/AirportInput.vue'
-import { Airport, AirportFrequency, Navaid } from '../../model/Airport'
+import { Airport } from '../../model/Airport'
+import FrequencyBox from '../shared/FrequencyBox.vue'
 
 const emits = defineEmits(["add"]);
 const airports = ref<Airport[]>([])
+const approachFrequencies = ref<FrequencyGroupAirport[]>([])
 const noAirport = new Airport()
 const selectedAirport = ref(noAirport)
-const localFrequencies = ref<FrequencyLabelled[]>([])
-const navaidFrequencies = ref<FrequencyLabelled[]>([])
-const atcGroups = ref<LookupAtcGroup[]>([])
-const maxLabelLength = 70;
+const weatherFrequencies = ref<FrequencyAndAirport[]>([])
+const towerCtafGndFrequencies = ref<FrequencyAndAirport[]>([])
 
-class LookupAtcGroup {
-    name:string;
-    items:FrequencyLabelled[];
-    constructor(g:AtcGroup) {
-        this.name = g.name;
-        this.items = g.atcs.map(atc => {
-            // console.debug('[LookupDialog.constructor]', atc)
-            const value = Formatter.frequency(atc)
-            let label = value + ' : ' + atc.name;
-            // replace frequency name with group name
-            const frequency:Frequency = new Frequency(value, g.name, atc.type)
-            return new FrequencyLabelled( frequency, label)
-        })
+class FrequencyAndAirport {
+    freq:Frequency
+    airport:Airport
+    constructor(freq:Frequency, airport:Airport) {
+        const name = airport.code + ' ' + freq.name
+        freq.name = name
+        this.freq = freq
+        this.airport = airport
     }
+}
+
+class FrequencyGroupAirport {
+    freq:Frequency
+    group:AtcGroup
+    airport:Airport
+    constructor(freq:Frequency, group:AtcGroup, airport:Airport) {
+        const name = group.name + ' ' + freq.name
+        freq.name = name
+        this.freq = freq
+        this.group = group
+        this.airport = airport
+    }    
 }
 
 //--------------------------------
@@ -70,60 +83,65 @@ const props = defineProps({
   time: { type: Number, default: 0},
 })
 
-onMounted( () => {
-    sessionAirports.addListener(refreshAirportList)
-}) 
-
 watch(props, () => {
     // refreshAirportList()
 })
 //--------------------------------
 
-function addFrequency(item:FrequencyLabelled) {
-    emits('add', item.freq)
+function addFrequency(item:Frequency) {
+    emits('add', item)
 }
-
-function formatLabel(label:string) {
-    if(label.length > maxLabelLength) return label.substring(0,maxLabelLength) + '...'
-    return label
-}
-
-function formatAirportFrequency(airport:Airport, freq:AirportFrequency):FrequencyLabelled {
-    const value = Formatter.frequency(freq.mhz)
-    const name = airport.code + ' ' + freq.name
-    const label = value + ' : ' + freq.name
-    return new FrequencyLabelled( new Frequency( value, name, Frequency.typeFromString(freq.name)), label)
-}
-
-function formatNavaid(navaid:Navaid):FrequencyLabelled {
-    const value = Formatter.frequency(navaid.freq)
-    const label = value + ' : ' + navaid.id + ' ' + navaid.type
-    const frequency = new Frequency(value, navaid.id + ' ' + navaid.type, FrequencyType.navaid)
-    return   new FrequencyLabelled( frequency, label)
-}
-
 
 function onAirport(airport:Airport) {
     selectedAirport.value = airport
 
     if( !airport) return;
-    
-    const local = airport.freq.map( f => formatAirportFrequency(airport,f))
-    localFrequencies.value = local;
-    const navaids = airport.navaids.map( formatNavaid)
-    navaidFrequencies.value = navaids;
+
+    // do we already have this airport in the list?
+    const found = airports.value.find( a => a.code == airport.code)
+    if(found) return;
+
     const groupList = AtcGroup.parse(airport)
-    // console.log('[LookupDialog.onAirport]', groupList)
-    // atcGroups.value = groupList.map(g => {return new LookupAtcGroup(g)});
-    atcGroups.value = groupList.map(g => new LookupAtcGroup(g));
-    // console.log('[LookupDialog.onAirport]', atcGroups.value)
+
+    // add this airport to the list
+    airports.value.push(airport)
+
+    // add weather frequency
+    const weatherFreq = airport.getFreqWeather()
+    if(weatherFreq) weatherFrequencies.value.push(new FrequencyAndAirport(weatherFreq, airport)) 
+
+    // tower ctaf ground
+    const towerFreq = airport.getFreqTowerIfr()
+    if(towerFreq) 
+        towerCtafGndFrequencies.value.push( new FrequencyAndAirport( Frequency.fromType(towerFreq, FrequencyType.tower), airport))
+    // CTAF frequency
+    const ctafFreq = airport.getFreqCtaf()
+    if(ctafFreq) 
+        towerCtafGndFrequencies.value.push( new FrequencyAndAirport( Frequency.fromType(ctafFreq, FrequencyType.ctaf), airport))
+    // GND frequency
+    const gndFreq = airport.getFreqGround()
+    if(gndFreq && gndFreq.value != '') 
+        towerCtafGndFrequencies.value.push( new FrequencyAndAirport( gndFreq, airport))
+
+    // Approach control
+    groupList.forEach( g => {
+        g.atcs.forEach( atc => {
+            approachFrequencies.value.push( new FrequencyGroupAirport( atc, g, airport))
+        })
+    })
+    // atcGroups.forEach(g => {
+    //     g.items.forEach( item => approachFrequencies.value.push( item.freq))
+    // })
 }
 
-function refreshAirportList(newAirports:Airport[]) {
-    // keep airports that have frequencies
-    airports.value =  newAirports.filter(a => a.freq.length > 0);
-    // console.log('[LookupDialog.refreshAirportList]', JSON.stringify(airports.value))
+function onRemoveAirport(airport:Airport) {
+    // remove airport from list
+    airports.value = airports.value.filter(a => a.code != airport.code)
+    weatherFrequencies.value = weatherFrequencies.value.filter(fna => fna.airport.code != airport.code)
+    towerCtafGndFrequencies.value = towerCtafGndFrequencies.value.filter(fna => fna.airport.code != airport.code)
+    approachFrequencies.value = approachFrequencies.value.filter(fga => fga.airport.code != airport.code)
 }
+
 </script>
 
 <style scoped>
@@ -151,6 +169,7 @@ function refreshAirportList(newAirports:Airport[]) {
 
 .listLocal, .listNavaids {
     display: flex;
+    gap: 5px;
     flex-flow: wrap;
 }
 
@@ -168,5 +187,8 @@ function refreshAirportList(newAirports:Airport[]) {
 }
 :deep(.p-fieldset-content) {
     padding: 0;
+}
+.selectedAirport {
+    background-color: darkgrey;
 }
 </style>
