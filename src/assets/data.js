@@ -226,28 +226,6 @@ export function getFrequency(freqList, name) {
   return freqList.find( f => f.name.includes(name))
 }
 
-export function getFreqCtaf(freqList) {
-  return getFrequency(freqList, 'CTAF')
-}
-
-export function getFreqGround(freqList) {
-  return getFrequency(freqList, 'GND')
-}
-
-/**
- * Look for a weather frequency in the list
- * @param {*} freqList 
- * @returns corresponding frequency object (with name and mhz)
- */
-export function getFreqWeather(freqList) {
-  // match names that containt either 'ATIS', 'ASOS' or 'AWOS'
-  return freqList.find( f => f.name.includes('ATIS') 
-    || f.name.includes('ASOS') 
-    || f.name.includes('AWOS')
-    || f.name.includes('Weather')
-  )
-}
-
 /**
  * Request maintenance with a code
  * @param {*} code 
