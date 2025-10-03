@@ -149,7 +149,7 @@ function loadProps(newProps:any) {
         // console.debug('AirportTile loading default cornerFields')
         cornerFields = defaultCornerFields;
     } 
-    cornerFields.forEach( (field, index) => {
+    cornerFields.forEach( (field:any, index:number) => {
         // console.debug('[AirportTile.loadProps]', index)
         corners.value[index] = field
     })
@@ -303,7 +303,7 @@ function showAirport( airport:Airport) {
     // title.value = airport.code + ":" + airport.name
     title.value = airport.name
     const weather = airport.getFreqWeather()
-    weatherFreq.value = Formatter.frequency(weather)
+    weatherFreq.value = weather ? weather.value : '-'
     weatherType.value = weather ? weather.name : '-'
 
     // If traffic is runway specific, it will be overriden by showRunway
