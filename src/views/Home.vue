@@ -83,7 +83,7 @@ const demos = ref<DemoSelector[]>([
 const clickAndPrint = ref<DemoSelector[]>([
     new DemoSelector(SheetName.reference, 'reference.png', 'Reference Card', 'Handy Reference Visuals'),
     new DemoSelector(SheetName.acronyms, 'acronyms.png', 'Acronyms', 'Popular VFR and IFR acronyms'),
-    new DemoSelector(SheetName.ifrstrips, 'strips.png', 'IFR Training','Typical IFR Training Flight'),
+    new DemoSelector(SheetName.ifrstrips, 'ifr-training.png', 'IFR Training','Typical IFR Training Flight'),
     new DemoSelector(SheetName.holds, 'holds.png', 'Holds Practice','Full sheet of Holds and Compasses'),
     new DemoSelector(SheetName.paperNavlog, 'paper-navlog.png', 'Paper NavLog', 'Printable Template for Paper Navlog'),
 ])
