@@ -120,6 +120,10 @@ export class UserTools {
         return user
     }
 
+    static isAdmin(requester: number) {
+        return requester == 1
+    }
+
     /**
      * Finds a user from a request (if provided)
      * @param req Inbound request to parse

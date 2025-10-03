@@ -10,6 +10,7 @@ import { ThumbnailData } from "./models/ThumbnailData"
 import { PublicationDao } from "./PublicationDao"
 import { TemplateDao } from "./TemplateDao"
 import { put } from "@vercel/blob"
+import { UserTools } from "./UserTools"
 
 
 export class TemplateStatus {
@@ -45,11 +46,12 @@ export class GApiTemplate {
     /**
      * Gets a sheet by id and user id
      * @param templateId 
-     * @param userId 
+     * @param requester 
      * @returns 
      * @throws 404 if not found
      */
-    public static async get(templateId:number,userId:number):Promise<TemplateView|undefined> {
+    public static async get(templateId:number,requester:number):Promise<TemplateView|undefined> {
+        const userId = UserTools.isAdmin(requester) ? undefined : requester;
         const template:Template|undefined = await TemplateDao.readByIdStatic(templateId, userId)
         // console.log( '[GApiTemplate.get] ' + sheetId + ' -> ' + output)
         if( !template) return undefined;
