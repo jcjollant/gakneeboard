@@ -167,7 +167,7 @@ function showField( field:string) {
                 const weather =  airport.getFreqWeather()
                 // console.log('[Corner.showField] weather', airport, weather)
                 label.value = weather ? weather.name : ''
-                value.value = weather ? Formatter.frequency(weather.mhz) : '?'
+                value.value = weather ? weather.value : '?'
                 currentFrequencyType.value = FrequencyType.weather
                 break
             case 'twr':
@@ -202,7 +202,7 @@ function showField( field:string) {
                 break
             case 'gnd':
                 const ground =  airport.getFreqGround()
-                value.value = Formatter.frequency(ground)
+                value.value = ground.value
                 label.value = 'GND'
                 currentFrequencyType.value = FrequencyType.ground
                 break;
