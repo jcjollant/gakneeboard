@@ -1,4 +1,4 @@
-import { db, sql, VercelPoolClient } from "@vercel/postgres";
+import { sql } from "@vercel/postgres";
 import { Dao } from "./Dao";
 import { Usage } from "../models/Usage";
 import { UsageCount } from "../models/UsageCount";
