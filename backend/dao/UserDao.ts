@@ -51,17 +51,15 @@ export class UserDao extends Dao<User> {
     }
 
     public async getFromHash(userSha: string): Promise<User|undefined> {
-        const result = await sql`SELECT * FROM users WHERE sha256=${userSha}`;
-        if( result.rowCount == 0) return undefined
-        return this.parseRow(result.rows[0])
+        return this.queryWhere(`sha256='${userSha}'`)
     }
 
     public getFromCustomerId(customerId:string):Promise<User> {
         const dao = new UserDao()
         return new Promise<User>(async (resolve, reject) => {
-            const result = await this.db.query(`SELECT * FROM ${this.tableName} WHERE customer_id='${customerId}'`);
-            if( result.rowCount != 1) return reject('Unexpected user count ' + result.rowCount + ' customer_id' + customerId)
-            resolve(dao.parseRow(result.rows[0]))
+            const user = await dao.queryWhere(`customer_id='${customerId}'`)
+            if( !user) return reject('User not found with customer_id' + customerId)
+            resolve(user)
         })
     }
 
