@@ -92,7 +92,7 @@ function loadProps(props:any) {
         // tower frequency will be tower or ctaf
         freqTower.value = twrFreq ? Frequency.fromType(twrFreq,FrequencyType.tower) : ( ctafFreq ? Frequency.fromType(ctafFreq,FrequencyType.ctaf) : noFreq)
         const weatherFreq = airport.getFreqWeather()
-        freqWeather.value = weatherFreq ? Frequency.fromType(weatherFreq.mhz, FrequencyType.weather) : noFreq
+        freqWeather.value = weatherFreq || noFreq
     } else {
         airportMode.value = false
         freqClearance.value = noFreq
