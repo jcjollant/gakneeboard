@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
+
+import Admin from '../views/Admin.vue';
 import Home from '../views/Home.vue';
 import PricingPlans from '../views/PricingPlans.vue';
 import Print from '../views/Print.vue';
@@ -8,6 +10,7 @@ import FTUX from '../views/FTUX.vue';
 import FormatSelector from '../components/templates/FormatSelector.vue';
 
 export const RouterNames = {
+    Admin: 'Admin',
     Home: 'Home',
     Plans: 'Plans',
     ThankYou: 'Thank you',
@@ -19,12 +22,14 @@ export const RouterNames = {
 
 const routes = [
     { path: '/', name: RouterNames.Home, component: Home },
+    { path: '/admin', name: RouterNames.Admin, component: Admin },
     { path: '/plans', name: RouterNames.Plans, component: PricingPlans },
     { path: '/thankyou', name: RouterNames.ThankYou, component: ThankYou },
     { path: '/print/:id', name: RouterNames.Print, component: Print },
     { path: '/ftux', name: RouterNames.FTUX, component: FTUX},
     { path: '/template/:id', name: RouterNames.Template, component: TemplateViewer },
     { path: '/format-selector', name: RouterNames.FormatSelector, component: FormatSelector },
+
 ]
 
 
