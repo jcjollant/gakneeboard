@@ -317,7 +317,7 @@ export class Metrics {
         return output
     }
 
-    public static async perform(commit:boolean=true, sendMail:boolean=true):Promise<Metric[]> {
+    public static async perform():Promise<Metric[]> {
         // return everything into one array
         const output = (await Promise.all([
                 Metrics.users(),

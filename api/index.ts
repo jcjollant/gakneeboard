@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express"
 import cors from "cors";
 import multer from "multer"
+import { Admin } from "../backend/Admin"
 import { GApi } from '../backend/GApi'
 import { StripeClient } from '../backend/business/Stripe'
 import { UserTools } from '../backend/UserTools'
@@ -298,15 +299,15 @@ app.post('/stripe/webhook', async (req:Request, res:Response) => {
  * Get a specific template
  */
 app.get('/template/:id', async (req:Request, res:Response) => {
-    const userId = await UserTools.userIdFromRequest(req)
+    const requester = await UserTools.userIdFromRequest(req)
     try {
         // console.log( "[index] GET template " + req.params.id + " userId " + userId);
-        if(!userId) {
+        if(!requester) {
             throw new GApiError(401, 'Unauthorized')
         }
         // console.log( "[index] GET template " + req.params.id + " userId " + userId
         const templateId = Number(req.params.id)
-        let template = await GApiTemplate.get(templateId, userId);
+        let template = await GApiTemplate.get(templateId, requester);
         if(template) {
             res.send(template)
         } else {
@@ -389,6 +390,19 @@ app.get('/sunlight/:from/:to/:dateFrom/:dateTo?', async (req:Request, res:Respon
         console.log(e)
         catchError(res, e, 'GET /sunlight/:from/:to/:date')
     }        
+})
+
+app.get('/user/profile/:userId', async (req:Request, res:Response) => {
+    try {
+        const requester = await UserTools.userIdFromRequest(req)
+        if(!UserTools.isAdmin(requester)) {
+            throw new GApiError(401, 'Unauthorized')
+        }
+        const userProfile = await Admin.getUserProfile(Number(req.params.userId))
+        res.send(userProfile)
+    } catch(e) {
+        catchError(res, e, 'GET /user/profile')
+    }
 })
 
 app.post('/userImage', async (req:Request, res:Response) => {

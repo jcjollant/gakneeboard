@@ -42,4 +42,18 @@ export abstract class Dao<T> {
 
     // Return a new instance of the child class
     public abstract parseRow(row:any):T;
+
+    /**
+     * Performs the SELECT query with a specific WHERE clause
+     * @param where 
+     * @returns 
+     */
+    protected async queryWhere(where:string):Promise<T|undefined> {
+        const query = `SELECT * FROM ${this.tableName} WHERE ${where}`
+        const result = await this.db.query(query)
+        if( result.rowCount == 0) return undefined
+        return this.parseRow(result.rows[0])
+    }
+
+
 }

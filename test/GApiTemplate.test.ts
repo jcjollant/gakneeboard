@@ -1,5 +1,5 @@
 import { describe, expect, it, jest} from '@jest/globals';
-import { jcHash, jcUserId, jcTestTemplateData, jcTestTemplateName, jcTestTemplateDescription } from './constants'
+import { jcHash, jcUserId, jcTestTemplateData, jcTestTemplateName, jcTestTemplateDescription, adminUserId, asUserId, nonAdminUserId } from './constants'
 import { TemplateDao } from '../backend/TemplateDao';
 import { PublicationDao } from '../backend/PublicationDao';
 import { Publication } from '../backend/models/Publication';
@@ -73,6 +73,22 @@ describe( 'GApiTemplate Tests', () => {
 
             const t2 = await GApiTemplate.get(0,jcUserId)
             expect(t2?.publish).toBeTruthy()
+        })
+        it('Request template without userId for admin user', async() => {
+            const template = new Template( 0, asUserId, jcTestTemplateData, TemplateFormat.Kneeboard, jcTestTemplateName, undefined, 1, 2)
+            jest.spyOn(TemplateDao, 'readByIdStatic').mockResolvedValue(template)
+
+            const templateId = 0
+            const tv = await GApiTemplate.get( templateId,adminUserId)
+            expect(TemplateDao.readByIdStatic).toBeCalledWith( templateId, undefined)
+        })
+        it('Request template with userId for non admin user', async() => {
+            const template = new Template(0, jcUserId, jcTestTemplateData, TemplateFormat.Kneeboard, jcTestTemplateName, undefined, 1, 2)
+            jest.spyOn(TemplateDao, 'readByIdStatic').mockResolvedValue(template)
+
+            const templateId = 0
+            const tv = await GApiTemplate.get(templateId, nonAdminUserId)
+            expect(TemplateDao.readByIdStatic).toBeCalledWith(templateId, nonAdminUserId)
         })
     })
 

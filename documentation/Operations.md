@@ -18,7 +18,6 @@ Adip is returning effective data in getAirportCurrentEffectiveDate() which is re
 * Refresh EFFECTIVE_DATE in Vercel environment variables for ga-api
 * Refresh cycle constant in [manualSketchUpdate.ts](../housekeeping/manualSketchUpdate.ts)
 * Refresh Adip.defaultEffectiveDate in [Adip.ts](../backend/adip/Adip.ts) (starting date)
-* Refresh currentAsOf in test/constants.ts
 
 ## Checks
 Effective date is checked by Willie every day

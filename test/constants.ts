@@ -1,7 +1,9 @@
 export const jcHash = 'bfaa2eb49bf63f41c05a016e03653fe2d7f8bf196ba6fb3f3340d3dcd7016770'
 export const jcHash2 = '357c3920bbfc6eefef7e014ca49ef12c78bb875c0826efe90194c9978303a8d3'
 export const jcUserId = 1
+export const adminUserId = jcUserId
 export const asUserId = 2
+export const nonAdminUserId = asUserId
 export const jcName = 'JC'
 const jcTestPageFront = {type:'tiles',data:[{"id":0,"name":"airport","data":{"code":"knrt","rwy":"16-34"}},{"id":1,"name":"atis","data":{}},{"id":2,"name":"airport","data":{"code":"KBFI","rwy":"14L-32R","rwyOrientation":"vertical","corners":["weather","twr","field","tpa"]}},{"id":3,"name":"airport","data":{"code":"0W0","rwy":"18W-36W","rwyOrientation":"vertical","corners":["weather","twr","field","tpa"]}},{"id":4,"name":"notes","data":{}},{"id":5,"name":"atis","data":{}}]}
 const jcTestPageBack = {type:'tiles',data:[{"id":0,"name":"airport","data":{"code":"ktta","rwy":"03-21","pattern":2}},{"id":1,"name":"airport","data":{"code":"kawo","rwy":"all"}},{"id":2,"name":"airport","data":{"code":"s43","rwy":"15R-33L","rwyOrientation":"magnetic"}},{"id":3,"name":"fuel"},{"id":4,"name":"notes","data":{}},{"id":5,"name":"radios","data":[{"target":"NAV1","freq":"116.8","name":"SEA VOR"},{"target":"NAV2","freq":"124.7","name":"OLM VOR"},{"target":"COM1","freq":"124.7","name":"RNT TWR"},{"target":"COM2","freq":"126.95","name":"RNT ATIS"},{"target":"COM1","freq":"123.0","name":"S43 CTAF"},{"target":"COM2","freq":"128.65","name":"PAE ATIS"},{"target":"COM1","freq":"120.2","name":"PAE TWR 34R"},{"target":"COM1","freq":"132.95","name":"PAE TWR 34L"}]}]}

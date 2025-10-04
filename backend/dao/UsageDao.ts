@@ -1,6 +1,7 @@
-import { db, sql, VercelPoolClient } from "@vercel/postgres";
+import { sql } from "@vercel/postgres";
 import { Dao } from "./Dao";
 import { Usage } from "../models/Usage";
+import { UsageCount } from "../models/UsageCount";
 
 export enum UsageType {
     Eula = 'eula',
@@ -102,4 +103,16 @@ export class UsageDao extends Dao<Usage> {
         await UsageDao.create(UsageType.Refill, userId, JSON.stringify(data))
     }
 
+    public async userUsageCountSince(userId:number, days:number):Promise<UsageCount[]> {
+        return new Promise<UsageCount[]>(async (resolve, reject) => {
+            this.db.query(`SELECT usage_type, COUNT(*) FROM ${this.tableName} WHERE user_id=${userId} AND create_time > current_date - ${days} GROUP BY usage_type`)
+                .then( res => {
+                    const output = res.rows.map( countRow => {
+                        return new UsageCount(countRow.usage_type, countRow.count)
+                    })
+                    resolve(output)
+                })
+                .catch( err => reject(err))
+        })
+    }
 }

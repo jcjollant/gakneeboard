@@ -52,7 +52,7 @@ export class Maintenance {
      * Waylon performs metring
      */
      static async waylon(sendEmail:boolean=true, commit:boolean=true):Promise<string> {
-        return Metrics.perform(false, false).then( async metrics => {
+        return Metrics.perform().then( async metrics => {
             const data:any = {}
             for(const metric of metrics) {
                 // if we received an array, flatten it
@@ -65,10 +65,14 @@ export class Maintenance {
                 }
             }
             const dataString:string = JSON.stringify(data)
-            const emailString = ['users=' + data[MetricKey.users],
-                'feedbacks=' + data[MetricKey.feedbacks] ,
-                'templates=' + data[MetricKey.templates] ,
-                'pages=' + data[MetricKey.pagesTotal]].join(', ') + '\n'
+            const emailString = [
+                'u=' + data[MetricKey.users],
+                't=' + data[MetricKey.templates],
+                'pg=' + data[MetricKey.pagesTotal],
+                'ac=' + data[MetricKey.customersActive],
+                'p7=' + data[MetricKey.print7],
+                's7=' + data[MetricKey.save7]
+            ].join(', ') + '\n'
             if(sendEmail) {
                 // console.log('[Maintenance.waylon] sending email')
                 await Email.send( emailString + dataString, EmailType.Metrics)
