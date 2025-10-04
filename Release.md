@@ -1,4 +1,5 @@
 # User Experience updates
+## 10/04/2025 - 5410 - New Admin page
 ## 10/03/2025 - 5405 - Fixed IFR Training thumbnail
 ## 10/03/2025 - 5404 - Radio Frequency lookup improvments
 ## 09/30/2025 - 5403 - New Ready to Print / Renamed Home Screen sections to "Ready to Print" and "Kneeboard Inspiration"
@@ -513,17 +514,3 @@
 * Feedback button has been extracted from menu
 * Editor Button is using new control
 * Speed up initial load
-## 10/04/2024
-* Notes Page (new)
-* Fixed missing checklist syntax link in Checklist Tile
-* Removed HDIW from About
-## 10/03/2024
-1) Created EULA
-* Added links to EULA and Privacy to About
-2) Added link to Airport Tile Video
-## 10/02/2024
-* Checklist blank lines always have a white background
-* Airport Edit rwy orientation laves more space for runway list
-## 10/01/2024
-* Localstore cleanup
-* Replaced Navlog Video link with Plylist
