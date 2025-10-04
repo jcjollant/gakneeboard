@@ -43,7 +43,12 @@ export class UserTools {
         const savedUser = await userDao.save(user);
         
         // Send email notification as Ned for new user signup
-        const emailMessage = `New user signed up!\n\nName: ${user.name}\nEmail: ${user.email}\nSource: ${user.source}\nAccount Type: ${user.accountType}`;
+        const emailMessage = `New user signed up!` +
+            `Name: ${user.name}` +
+            `Email: ${user.email}` +
+            `Source: ${user.source}` +
+            `Account Type: ${user.accountType}` +
+            `Id: ${savedUser.id}`;
         await Email.send(emailMessage, EmailType.Feedback);
         
         return savedUser;
