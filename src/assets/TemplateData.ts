@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { contentTypeJson, getUrlWithUser, currentUser, reportError } from './data.js'
+import { contentTypeJson, currentUser, reportError } from './data.js'
 import { isDefaultName } from './sheetData.js'
 import { GApiUrl } from '../lib/GApiUrl.js'
 import { PageType } from './PageType.js'
@@ -100,7 +100,7 @@ export class TemplateData {
      */
     static getPublications():any {
         const url = GApiUrl.publications()
-        return getUrlWithUser( url)
+        return currentUser.getUrl( url)
             .then( response => response.data)
             .catch( error => {
                 reportError( '[Templates.getPublications] error ' + JSON.stringify(error))
@@ -140,7 +140,7 @@ export class TemplateData {
     static async get(id:number):Promise<Template> {
         const url = GApiUrl.template(id)
         return new Promise( async (resolve, reject) => {
-            getUrlWithUser(url).then( response => {
+            currentUser.getUrl(url).then( response => {
                 // console.log('[data.sheetGetById]', JSON.stringify(response))
                 const template = Template.parse(response.data)
                 resolve( template);

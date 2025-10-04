@@ -1,3 +1,4 @@
+import axios, { AxiosResponse } from "axios";
 import { duplicate } from "./data";
 import { LocalStore } from "../lib/LocalStore";
 import { User } from "../model/User";
@@ -40,6 +41,21 @@ export class CurrentUser {
     this.listeners.push(listener)
     // console.log('[CurrentUser.addListener] added a listener', this.listeners.length)
   }
+
+  /**
+  * Add user information to request header if user is known
+  * @param {*} url 
+  * @returns 
+  */
+  async getUrl(url:string):Promise<AxiosResponse<any, any>> {
+    // console.log('[data.getUrlWithUser]', JSON.stringify(currentUser))
+    if( this.loggedIn) {
+      return axios.get(url,{ headers: {'user': this.sha256 }})
+    } else {
+      return axios.get(url)
+    }
+  }
+
 
   login(data:any) {
     // console.log('[CurrentUser.login] logging in')

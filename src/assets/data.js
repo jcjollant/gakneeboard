@@ -52,20 +52,6 @@ export function duplicate(source) {
 }
 
 /**
- * Add user information to request header if user is known
- * @param {*} url 
- * @returns 
- */
-export async function getUrlWithUser(url) {
-  // console.log('[data.getUrlWithUser]', JSON.stringify(currentUser))
-  if( currentUser.loggedIn) {
-    return axios.get(url,{ headers: {'user': currentUser.sha256 }})
-  } else {
-    return axios.get(url)
-  }
-}
-
-/**
  * Query airport data backend
  * @param {*} codeParam airport code, case doesn't matter
  * @param {*} group whether this request should be grouped with others
@@ -183,7 +169,7 @@ export async function getAirport( codeParam, group = false) {
  */
 export async function getBackend() {
   backend.promise = new Promise( (resolve) => {
-    getUrlWithUser(GApiUrl.root)
+    currentUser.getUrl(GApiUrl.root)
       .then( response => {
         // console.log('[data.getBackend]', JSON.stringify(response.data))
         if( !response || !response.data) {
@@ -331,7 +317,7 @@ export function reportError(message) {
 async function requestAllAirports( codes) {
   // console.log( 'perform group request for ' + codes.length)
   const url = GApiUrl.root + 'airports/' + codes.join('-');
-  await getUrlWithUser(url)
+  await currentUser.getUrl(url)
     .then( response => {
         // console.log( JSON.stringify(response.data))
         const airportList = response.data
@@ -362,7 +348,7 @@ async function requestOneAirport( code) {
   let airport = null
 
   const url = GApiUrl.root + 'airport/' + code;
-  await getUrlWithUser(url)
+  await currentUser.getUrl(url)
     .then( response => {
         // console.log( '[data.requestOneAirport] received', JSON.stringify(response.data))
         airport = response.data
