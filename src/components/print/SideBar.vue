@@ -10,7 +10,7 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { ref, defineProps, onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { VerticalInfoBarOption } from '../../model/VerticalInfoBarOption'
 
 const props = defineProps({
