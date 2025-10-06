@@ -1,4 +1,5 @@
 # User Experience updates
+## 10/06/2025 - 5411 - New page selection layout
 ## 10/04/2025 - 5410 - New Admin page
 ## 10/03/2025 - 5405 - Fixed IFR Training thumbnail
 ## 10/03/2025 - 5404 - Radio Frequency lookup improvments
