@@ -41,7 +41,7 @@ const demos = ref<Demo[]>([
     new Demo('VFR Flight', 'vfrflight.png', 'A good starting point for VFR Flights', SheetName.skyhawk),
     new Demo('Checklists', 'checklist.png', 'Three checklists using different formats', SheetName.checklist),
     new Demo('Charts', 'charts.png', 'An Airport Diagrams and Instrument plates', SheetName.charts),
-    new Demo('IFR Flight', 'ifr-training.png', 'A strips based template', SheetName.ifrstrips),
+    new Demo('IFR Flight', 'ifrflight.png', 'A good starting point for IFR Flights', SheetName.ifrflight),
 ])
 const router = useRouter()
 
