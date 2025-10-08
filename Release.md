@@ -1,4 +1,5 @@
 # User Experience updates
+## 10/08/2025 - 5412 - Fixed IFR Flight Demo and VFR Sunlight tile mode
 ## 10/06/2025 - 5411 - New page selection layout
 ## 10/04/2025 - 5410 - New Admin page
 ## 10/03/2025 - 5405 - Fixed IFR Training thumbnail
