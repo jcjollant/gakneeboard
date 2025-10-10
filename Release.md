@@ -1,3 +1,4 @@
+## 10/10/2025 - 5411 - Fixed sign up notification email
 ## 10/04/2025 - 5410 - User Id in creation email / test users at test.gak
 ## 10/03/2025 - 5401 - New API for user profile / Waylon tells active customers
 ## 10/02/2025 - 5400 - Refreshed effective date
