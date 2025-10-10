@@ -82,6 +82,7 @@ function onSelection() {
     border: 3px solid var(--bg);
     width: 106px;
     cursor: pointer;
+    background-color: white;
 }
 .templateSelector.demo {
     border: 3px solid #607D8B;

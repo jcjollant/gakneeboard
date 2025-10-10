@@ -642,6 +642,7 @@ function updateThumbnail(template:Template) {
   flex-flow: column;
   gap: var(--main-gap);
   min-height: 100vh;
+  
 }
 
 .pageGroup {

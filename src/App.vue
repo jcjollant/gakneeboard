@@ -139,6 +139,8 @@ function feedbackSubmitted() {
 .application {
   display: flex;
   flex-flow: column;
+  background-color: black;
+  background-image: url('/assets/halloween.png');
 }
 .feedbackButton {
   position: fixed;
