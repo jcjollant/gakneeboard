@@ -140,7 +140,10 @@ function feedbackSubmitted() {
   display: flex;
   flex-flow: column;
   background-color: black;
-  background-image: url('/assets/halloween.png');
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  background-size: 600px 400px;
+  background-image: url('/assets/halloween-skyhawk.png');
 }
 .feedbackButton {
   position: fixed;
