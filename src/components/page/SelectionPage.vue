@@ -1,12 +1,12 @@
 <template>
     <div class="contentPage" :class="{'fullpage': isFullPage}">
-        <Header :title="'New Page Selection'" :replace="false" :clickable="false"></Header>
+        <Header :title="'Pick Your Page Style'" :replace="false" :clickable="false"></Header>
         <div class="topTwo">
-            <div class="clickable" @click="replacePage(PageType.tiles)" :title="allPages[0].tooltip">
+            <div class="clickable preview" @click="replacePage(PageType.tiles)" :title="allPages[0].tooltip">
                 <div>Tiles</div>
                 <img src="/thumbnails/vfrflight.png"></img>
             </div>
-            <div class="clickable" @click="replacePage(PageType.checklist)"  :title="allPages[2].tooltip">
+            <div class="clickable preview" @click="replacePage(PageType.checklist)"  :title="allPages[2].tooltip">
                 <div>Checklist</div>
                 <img src="/thumbnails/page-checklist.png"></img>
             </div>
@@ -150,5 +150,24 @@ function replacePage(type:PageType) {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
+}
+.preview {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 3px solid var(--bg);
+    background-color: #f0f0f0;
+    font-weight: bold;
+    color: black;
+}
+.preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
 }
 </style>
