@@ -185,6 +185,7 @@ function userUpdate() {
     padding-top: 10px;
     padding-left: 20px;
     padding-bottom: 5px;
+    color: white;
 }
 .home {
     display: flex;

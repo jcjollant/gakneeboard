@@ -542,18 +542,20 @@ function onNewSettings(settings:TemplateSettings) {
   // Hide settings
   showSettings.value = false;
 
-  if( settingsTemplate.value.name != settings.name 
-    || settingsTemplate.value.desc != settings.desc 
-    || settingsTemplate.value.publish != settings.publish) {
-    settingsTemplate.value.name = settings.name
-    settingsTemplate.value.desc = settings.desc
-    settingsTemplate.value.publish = settings.publish
-    activeTemplate.value = settingsTemplate.value
-    // We consider the template as modified if it's a cloud template
-    templateModified.value = settingsTemplate.value.id > 0
-    saveTemplateToLocalStore()
-    doSave()
+  if( settingsTemplate.value.name == settings.name 
+    && settingsTemplate.value.desc == settings.desc 
+    && settingsTemplate.value.publish == settings.publish) {
+    toaster.warning('Repeat Last Transmission','Nothing to save, settings unchanged')
+    return;
   }
+  settingsTemplate.value.name = settings.name
+  settingsTemplate.value.desc = settings.desc
+  settingsTemplate.value.publish = settings.publish
+  activeTemplate.value = settingsTemplate.value
+  // We consider the template as modified if it's a cloud template
+  templateModified.value = settingsTemplate.value.id > 0
+  saveTemplateToLocalStore()
+  doSave()
 }
 
 function saveTemplateToLocalStore() {
@@ -640,6 +642,7 @@ function updateThumbnail(template:Template) {
   flex-flow: column;
   gap: var(--main-gap);
   min-height: 100vh;
+  
 }
 
 .pageGroup {

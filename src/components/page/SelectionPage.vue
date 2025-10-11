@@ -1,11 +1,31 @@
 <template>
     <div class="contentPage" :class="{'fullpage': isFullPage}">
         <Header :title="'New Page Selection'" :replace="false" :clickable="false"></Header>
+        <div class="topTwo">
+            <div class="clickable" @click="replacePage(PageType.tiles)" :title="allPages[0].tooltip">
+                <div>Tiles</div>
+                <img src="/thumbnails/vfrflight.png"></img>
+            </div>
+            <div class="clickable" @click="replacePage(PageType.checklist)"  :title="allPages[2].tooltip">
+                <div>Checklist</div>
+                <img src="/thumbnails/page-checklist.png"></img>
+            </div>
+        </div>
+
         <div class="list">
+            <div class="section wide">
+                <Separator :name="Section.composable" class="separator" />
+                <div class="grid">
+                    <FAButton v-for="page in [0,1,2]" :label="allPages[page].name" :title="allPages[page].tooltip" :icon="allPages[page].icon" class="grow"
+                        @click="replacePage(allPages[page].type)"/>
+                </div>
+            </div>
             <template v-for="section in filteredSections">
-                <Separator :name="section.name" class="separator" />
-                <FAButton v-for="page in section.pages" :label="page.name" :title="page.tooltip" :icon="page.icon"
-                    @click="replacePage(page.type)"/>
+                <div class="section">
+                    <Separator :name="section.name" class="separator" />
+                    <FAButton v-for="page in section.pages" :label="page.name" :title="page.tooltip" :icon="page.icon"
+                        @click="replacePage(page.type)"/>
+                </div>
             </template>
         </div>
     </div>
@@ -56,27 +76,8 @@ class PageItem {
     }
 }
 
-const group1 = ref([
-    {name:'Tiles',type:PageType.tiles, icon:'border-all', tooltip:'A 2x3 grid of customizable tiles like Airport, ATIS, Radios, ...'},
-    {name:'Strips',type:PageType.strips, icon:'bars', tooltip:'Customizable horizontal strips'},
-    {name:'Checklist',type:PageType.checklist, icon:'list-check', tooltip:'A customizable checklist'},
-])
-const group2 = ref([
-    {name:'NavLog',type:PageType.navLog, icon:'route', tooltip:'A Navigation Log with checkpoints and headings'},
-    // {name:'IFR Flight Notes',type:PageType.flightNotes, icon:'pen-to-square', tooltip:'Aviation101 IFR flight notes page'},
-])
-const group3 = ref([
-    {name:'Airport Diagram',type:PageType.diagram, icon:'road-circle-check',tooltip:'Airport Diagram (FAA)'},
-    {name:'Instrument Approach',type:PageType.approach, icon:'plane-arrival', tooltip:'Instrument Approach Plates (FAA)'},
-])
-const group4 = ref([
-    {name:'Cover',type:PageType.cover, icon:'image', tooltip:'A cover page for your stylish templates'},
-    {name:'Notes',type:PageType.notes, icon:'pen-to-square', tooltip:'A blank page to write down instructions'},
-    {name:'Blank',type:PageType.none, icon:'file', tooltip:'A blank page'},
-])
-
 const sections = ref([
-    Section.composable,
+    // Section.composable,
     Section.navigation,
     Section.charts,
     Section.debrief,
@@ -119,8 +120,8 @@ function replacePage(type:PageType) {
 
 <style scoped>
 .list {
-    display: flex;
-    flex-flow: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     padding: 10px;
     gap:10px;
     /* padding-top: 50px; */
@@ -128,5 +129,26 @@ function replacePage(type:PageType) {
 .separator {
     font-weight: bold;
     color: black;
+}
+.topTwo {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-around;
+    padding: 10px;
+    font-weight: bold;
+    color: black;
+}
+.section {
+    display: flex;
+    flex-flow: column;
+    gap: 10px;
+}
+.section.wide {
+    grid-column: 1 / span 2;
+}
+.section.wide .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
 }
 </style>

@@ -210,6 +210,9 @@ function redirectToPlansPage() {
 </script>
 
 <style scoped>
+.print {
+  background-color: white;
+}
 .flipMode {
   transform: scale(-1,-1);
 }

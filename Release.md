@@ -1,4 +1,8 @@
 # User Experience updates
+## 10/10/2025 - 5414 - Halloween Theme
+## 10/09/2025 - 5413 - Refreshed night time logo
+## 10/08/2025 - 5412 - Fixed IFR Flight Demo and VFR Sunlight tile mode
+## 10/06/2025 - 5411 - New page selection layout
 ## 10/04/2025 - 5410 - New Admin page
 ## 10/03/2025 - 5405 - Fixed IFR Training thumbnail
 ## 10/03/2025 - 5404 - Radio Frequency lookup improvments

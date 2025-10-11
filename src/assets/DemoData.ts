@@ -1,4 +1,4 @@
-import { DisplayModeAtis, DisplayModeRadios } from "../model/DisplayMode"
+import { DisplayModeAtis, DisplayModeRadios, DisplayModeSunlight } from "../model/DisplayMode"
 import { FrequencyType } from "../model/Frequency"
 import { Template, TemplatePage } from "../model/Template"
 import { TemplateFormat } from "../model/TemplateFormat"
@@ -45,7 +45,7 @@ export class DemoData {
         [
             { name: TileType.checklist, data: { name: 'Power OFF stalls', items: [{ c: "Clearing Turns+Calls", r: "Made" }, { c: "Visual Reference", r: "Bugged" }, { c: "Altitude", r: "3,000" }, { c: "Power=1,600 Flaps > Full" }, { c: "Hold 65 3s, Level off until stall" }, { c: "Full Power + Right Rudder" }, { c: "Flaps 20 > 10 > 0" }, { c: "ACS HDG/Bank", r: "±10°/20°" }], theme: "blue" } },
             { name: TileType.airport, data: { code: 'kawo', mode: 'list' } },
-            { name: TileType.sunlight, data: { 'from': 'KRNT', 'to': 'KSFF' } },
+            { name: TileType.sunlight, data: { from: 'KRNT', to: 'KSFF', mode: DisplayModeSunlight.Flight } },
             { name: TileType.fuel },
             { name: TileType.notes, data: {} },
             { name: TileType.radios, data: DemoData.demoRadioData },
@@ -117,7 +117,7 @@ export class DemoData {
         { name: TileType.checklist, data: { name: "Limits", items: [{ c: "Vne", r: "163" }, { c: "Va @ 2,550/2,200", r: "105/98" }, { c: "Vno", r: "129" }, { c: "Vfe 10/20", r: "110/85" }, { c: "Vg", r: "68" }, { c: "Vs0/1", r: "40/48" }, { c: "Max XWind", r: "15kts" }, { c: "Landing", r: " 1,300ft" }, { c: "TOW", r: "2,550" }, { s: "", t: "blank" }], "theme": "purple" } },
         { name: TileType.airport, data: { code: "KBFI", rwy: "14L-32R", rwyOrientation: "vertical", corners: ["weather", "twr", "field", "tpa"] } },
         { name: TileType.radios, data: { mode: DisplayModeRadios.LostComms, list: [] } },
-        { name: TileType.sunlight, data: { from: "0S9", to: "0S9" } },
+        { name: TileType.sunlight, data: { from: "0S9", to: "0S9", mode: DisplayModeSunlight.Flight } },
         { name: TileType.atis, data: { mode: DisplayModeAtis.Categories } },
         { name: TileType.atis, data: { mode: DisplayModeAtis.CloudClearance } }
     ]
@@ -173,11 +173,13 @@ export class DemoData {
         {name:"checklist",data:{name:"Checklist","items":[{"c":"Vne","r":"163"},{"c":"Vno","r":"129"},{"c":"Va @ 2,550","r":"105"},{"c":"Va @ 2,200","r":"98"},{"c":"Va @ 1,900","r":"90"},{"c":"Vy","r":"74"},{"c":"Vg","r":"68"},{"c":"Vx","r":"62"},{"c":"Vs1","r":"48"},{"c":"Vs0","r":"40"}],"theme":"blue"}}
     ])
 
+    static ifrReportingList0 = [{"c":"Missed","r":"M"},{"c":"Airspeed ±10kts ","r":"A"},{"c":"Reaching Fix","r":"R"},{"c":"Vacating Altitude","r":"V"},{"c":"ETA ±2min","r":"E"},{"c":"Leaving Hold","r":"L"},{"c":"Outer Marker","r":"O"},{"c":"Unforecasted Weather","r":"U"},{"c":"Safety of flight","r":"S"},{"c":"VFR on Top","r":"V"},{"c":"Final Approach Fix","r":"F"}]
+    static ifrReportingList1 = [{"c":"Radio nav Equip. Failure","r":"R"},{"c":"Compulsory Reporting","r":"C"},{"c":"Unable to hold 500fpm","r":"500"},{"s":" Do Not Fly a PT"},{"c":"Straight In Approach","r":"S"},{"c":"Hold in lieu of PT","r":"H"},{"c":"DME Arc","r":"A"},{"c":"Radar Vector to FAF","r":"R"},{"c":"No PT on chart","r":"P"},{"c":"Timed Apch from Hold","r":"T"},{"c":"Teardrop Course Rev.","r":"T"}]
     static page1DemoReference = new TemplatePage(PageType.tiles, 'Reference 2', [
         {name:"clearance","data":{mode:"alt","airport":""}},
-        {name:"checklist","data":{name:"IFR Reporting","items":[{"c":"Missed","r":"M"},{"c":"Airspeed ±10kts ","r":"A"},{"c":"Reaching Fix","r":"R"},{"c":"Vacating Altitude","r":"V"},{"c":"ETA ±2min","r":"E"},{"c":"Leaving Hold","r":"L"},{"c":"Outer Marker","r":"O"},{"c":"Unforecasted Weather","r":"U"},{"c":"Safety of flight","r":"S"},{"c":"VFR on Top","r":"V"},{"c":"Final Approach Fix","r":"F"}],"theme":"yellow"}},
+        {name:"checklist","data":{name:"IFR Reporting","items":this.ifrReportingList0,"theme":"yellow"}},
         {name:"clearance","data":{mode:"lostcomms","airport":""}},
-        {name:"checklist","data":{name:"Continued","items":[{"c":"Radio nav Equip. Failure","r":"R"},{"c":"Compulsory Reporting","r":"C"},{"c":"Unable to hold 500fpm","r":"500"},{"s":" Do Not Fly a PT"},{"c":"Straight In Approach","r":"S"},{"c":"Hold in lieu of PT","r":"H"},{"c":"DME Arc","r":"A"},{"c":"Radar Vector to FAF","r":"R"},{"c":"No PT on chart","r":"P"},{"c":"Timed Apch from Hold","r":"T"},{"c":"Teardrop Course Rev.","r":"T"}],"theme":"yellow"}},
+        {name:"checklist","data":{name:"Continued","items":this.ifrReportingList1,"theme":"yellow"}},
         {name:"radios","data":{mode:"sv","list":[],"sv":"h"}},
         {name:"radios","data":{mode:"sv","list":[],"sv":"vh"}}
     ])
@@ -232,8 +234,8 @@ export class DemoData {
 
     static page1IFRFlight = new TemplatePage(PageType.tiles, 'Tile 2',
         [
-            {name:"checklist",data:{name:"IFR Reporting","items":[{"c":"Missed","r":"M"},{"c":"Airspeed ±10kts ","r":"A"},{"c":"Reaching Fix","r":"R"},{"c":"Vacating Altitude","r":"V"},{"c":"ETA ±2min","r":"E"},{"c":"Leaving Hold","r":"L"},{"c":"Outer Marker","r":"O"},{"c":"Unforecasted Weather","r":"U"},{"c":"Safety of flight","r":"S"},{"c":"VFR on Top","r":"V"},{"c":"Final Approach Fix","r":"F"}],"theme":"yellow"},"span2":false,"hide":false},
-            {name:"checklist",data:{name:"IFR Reporting Cont'd","items":[{"c":"Radio nav Equip. Failure","r":"R"},{"c":"Compulsory Reporting","r":"C"},{"c":"Unable to hold 500fpm","r":"500"},{"s":" Do Not Fly a PT"},{"c":"Straight In Approach","r":"S"},{"c":"Hold in lieu of PT","r":"H"},{"c":"DME Arc","r":"A"},{"c":"Radar Vector to FAF","r":"R"},{"c":"No PT on chart","r":"P"},{"c":"Timed Apch from a Hold","r":"T"},{"c":"Teardrop Course Reversal","r":"T"}],"theme":"yellow"},"span2":false,"hide":false},
+            {name:"checklist",data:{name:"IFR Reporting","items":this.ifrReportingList0,"theme":"yellow"},"span2":false,"hide":false},
+            {name:"checklist",data:{name:"IFR Reporting Cont'd","items":this.ifrReportingList1,"theme":"yellow"},"span2":false,"hide":false},
             {name:"airport",data:{code:"KAWO","rwy":"11-29","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
             {name:"clearance",data:{"mode":"alt"}},
             {name:"notes",data:{"mode":"word","word":"WARNMM"},"span2":true,"hide":false},
