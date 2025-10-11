@@ -1,4 +1,5 @@
 # User Experience updates
+## 10/11/2025 - 5420 - Fixed Halloween layout
 ## 10/10/2025 - 5414 - Halloween Theme
 ## 10/09/2025 - 5413 - Refreshed night time logo
 ## 10/08/2025 - 5412 - Fixed IFR Flight Demo and VFR Sunlight tile mode
