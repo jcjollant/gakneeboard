@@ -139,11 +139,10 @@ function feedbackSubmitted() {
 .application {
   display: flex;
   flex-flow: column;
-  background-color: black;
   background-repeat: no-repeat;
   background-position: right bottom;
-  background-size: 600px 400px;
-  background-image: url('/assets/halloween-skyhawk.png');
+  /* background-size: 600px 400px; */
+  background-image: url('/assets/halloween.png');
 }
 .feedbackButton {
   position: fixed;
