@@ -141,8 +141,7 @@ function feedbackSubmitted() {
   flex-flow: column;
   background-repeat: no-repeat;
   background-position: right bottom;
-  /* background-size: 600px 400px; */
-  background-image: url('/assets/halloween.png');
+  /* background-image: url('/assets/halloween.png'); */
 }
 .feedbackButton {
   position: fixed;
