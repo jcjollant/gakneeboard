@@ -31,6 +31,13 @@ export class UserUrl {
     static garminAce:string = 'https://www8.garmin.com/support/download_details.jsp?id=5075'
     static patreon:string = 'https://patreon.com/GAKneeboard'
 
+    // Regulations
+    static regAircraftLights:string = 'https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-91/subpart-C/section-91.209'
+    static regBasicVFRWeatherMin:string = 'https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-91/subpart-B/section-91.155'
+    static regFar1_1:string = 'https://www.ecfr.gov/current/title-14/chapter-I/subchapter-A/part-1/section-1.1'
+    static regRecentFlightExperiencePic: string = 'https://www.ecfr.gov/current/title-14/chapter-I/subchapter-D/part-61/subpart-A/section-61.57'
+    static regVfrAltitudes: string = 'https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-91/subpart-B/section-91.159'
+
     static open(url:string) {
         window.open( url, '_blank');
     }

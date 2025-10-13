@@ -25,6 +25,7 @@
         </div>
         <div v-else-if="displayMode == DisplayModeSunlight.Reference">
             <ImageContent src="nights.png"/>
+            <Regulations :regs="regs" />
         </div>
         <div v-else class="tileContent sunlight" @click="onClick">
             <div v-if="airportFromCode">
@@ -67,6 +68,7 @@ import { UserUrl } from '@/lib/UserUrl'
 import { TileType } from '../../model/TileType'
 import { TileData } from '../../model/TileData'
 import { DisplayModeChoice, DisplayModeSunlight } from '../../model/DisplayMode'
+import { Regulation } from '../../model/Regulation'
 
 import ActionBar from '../shared/ActionBar.vue'
 import AirportInput from '../shared/AirportInput.vue'
@@ -80,6 +82,7 @@ import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import Calendar from 'primevue/calendar'
 import Checkbox from 'primevue/checkbox'
+import Regulations from '../shared/Regulations.vue'
 
 const airportFromCode = ref('')
 const airportToCode = ref('')
@@ -100,6 +103,7 @@ const displayModeSelection = ref(false)
 const editMode = ref(false)
 const goldenHour = ref('-')
 const loading = ref(false)
+const regs = ref([Regulation.RecentFlightExperiencePic,Regulation.Far1_1,Regulation.AircraftLights])
 const solarNoon = ref('-')
 const sunriseTime = ref('-')
 const sunsetTime = ref('-')

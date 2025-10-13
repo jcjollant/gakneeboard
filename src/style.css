@@ -191,6 +191,16 @@ body {
   text-align: justify;
 }
 
+.regulations {
+  position: absolute;
+  display: flex;
+  flex-flow: column;
+  align-items: flex-end;
+  font-size: 11px;
+  right: 0;
+  bottom: 0;
+}
+
 .left {
   text-align:left;
 }

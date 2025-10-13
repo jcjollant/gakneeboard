@@ -3,7 +3,10 @@
         <Header :title="getTitle()" :showReplace="displaySelection" :showDisplayMode="true"
             @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" @keep="displaySelection=false" />
-        <ImageContent v-else-if="displayMode==DisplayModeVfr.Altitudes" src="vfr-altitudes.png" /> 
+        <div v-else-if="displayMode==DisplayModeVfr.Altitudes" >
+            <ImageContent src="vfr-altitudes.png" /> 
+            <Regulations :regs="[Regulation.VfrAltitudes]" />
+        </div>
         <Nordo v-else-if="displayMode==DisplayModeVfr.LostComms" />
         <CloudClearance v-else />
     </div>
@@ -23,6 +26,8 @@ import { TileData } from '../../model/TileData.ts';
 import { TileType } from '../../model/TileType.ts';
 import Nordo from '../radios/Nordo.vue';
 import CloudClearance from '../atis/CloudClearance.vue';
+import Regulations from '../shared/Regulations.vue';
+import { Regulation } from '../../model/Regulation.ts';
 
 // Enum with display modes
 

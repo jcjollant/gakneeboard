@@ -1,6 +1,5 @@
 <template>
     <div class="tileContent cloudClear">
-        <!-- 14 CFR 103.23 -->
         <div v-for="c in ['B','C','D']" class="className towered" :title="'Class ' + c + ' Airspace'">{{ c }}</div>
         <div class="className untowered" title="Class E Airspace">E</div>
         <div class="className untowered" title="Class G Airspace at Night">Gn</div>
@@ -21,8 +20,17 @@
         <div class="classGLow req" title="1sm visibility and Clear of Clouds">1:cc<span class="altMax" title="Below 1,200ft AGL">1k2 AGL</span></div>
         <!-- <font-awesome-icon icon="fa-solid fa-link" class="link" @click="showRegulation" title="Show Regulation" /> -->
         <div class="svfr req" title="Special VFR 1sm visibility and Clear of Clouds">SVFR 1:cc</div>
+        <Regulations :regs="[Regulation.BasicVFRWeatherMiniums]" />
     </div>
 </template>
+
+<script setup lang="ts">
+import { Regulation } from '../../model/Regulation';
+
+import Regulations from '../shared/Regulations.vue';
+
+</script>
+
 <style scoped>
 .cloudClear {
     display: grid;
