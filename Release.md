@@ -1,4 +1,5 @@
 # User Experience updates
+## 10/20/2025 - 5430 - Added regulations to IFR Alternate and Lost Comms
 ## 10/13/2025 - 5423 - Removed pumpkin
 ## 10/12/2025 - 5422 - New Regulation component
 ## 10/11/2025 - 5421 - Updated new page style
