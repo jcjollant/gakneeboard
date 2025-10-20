@@ -11,8 +11,14 @@
             @click="editMode=true" />
         <DepartureContent v-else-if="displayMode==DisplayModeIfr.Departure" :airport="airport" class="clickable"
             @click="editMode=true" />
-        <ImageContent v-else-if="displayMode==DisplayModeIfr.Alternate" src="alternate.png" /> 
-        <ImageContent v-else-if="displayMode==DisplayModeIfr.LostComms" src="lostcomms-ifr.png" /> 
+        <div v-else-if="displayMode==DisplayModeIfr.Alternate">
+            <ImageContent src="alternate.png" /> 
+            <Regulations :regs="[Regulation.IFRFlightPlanInformation]" />
+        </div>
+        <div v-else-if="displayMode==DisplayModeIfr.LostComms" >
+            <ImageContent src="lostcomms-ifr.png" /> 
+            <Regulations :regs="[Regulation.IFRTwoWayRadioFailure]" />
+        </div>
         <CraftBoxedContent v-else />
     </div>
 
@@ -23,6 +29,9 @@ import { onMounted, ref, watch } from 'vue'
 import { Airport } from '../../model/Airport.ts';
 import { DisplayModeChoice, DisplayModeIfr } from '../../model/DisplayMode.ts';
 import { getAirport } from '../../assets/data.js';
+import { TileData } from '../../model/TileData.ts';
+import { TileType } from '../../model/TileType.ts';
+import { Regulation } from '../../model/Regulation.ts';
 
 import ActionBar from '../shared/ActionBar.vue';
 import ApproachContent from './ApproachContent.vue';
@@ -32,8 +41,7 @@ import Header from '../shared/Header.vue';
 import ImageContent from '../shared/ImageContent.vue';
 import AirportInput from '../shared/AirportInput.vue';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
-import { TileData } from '../../model/TileData.ts';
-import { TileType } from '../../model/TileType.ts';
+import Regulations from '../shared/Regulations.vue';
 
 // Enum with display modes
 

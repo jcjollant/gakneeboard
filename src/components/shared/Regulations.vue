@@ -37,6 +37,10 @@ onMounted(() => {
                 return new Reg(reg, UserUrl.regAircraftLights, 'Aircraft Lights')
             case Regulation.BasicVFRWeatherMiniums:
                 return new Reg(reg, UserUrl.regBasicVFRWeatherMin, 'Basic VFR Weather Requirements')
+            case Regulation.IFRFlightPlanInformation:
+                return new Reg(reg, UserUrl.regIFRFlightPlanInfo, 'IFR Flight Plan: Information Required')
+            case Regulation.IFRTwoWayRadioFailure:
+                return new Reg(reg, UserUrl.regIFRTwoWayRadioFailure, 'IFR operations: Two-way radio communications failure')
             case Regulation.Far1_1:
                 return new Reg(reg, UserUrl.regFar1_1, 'General Definitions') 
             case Regulation.RecentFlightExperiencePic:

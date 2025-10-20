@@ -37,7 +37,9 @@ export class UserUrl {
     static regFar1_1:string = 'https://www.ecfr.gov/current/title-14/chapter-I/subchapter-A/part-1/section-1.1'
     static regRecentFlightExperiencePic: string = 'https://www.ecfr.gov/current/title-14/chapter-I/subchapter-D/part-61/subpart-A/section-61.57'
     static regVfrAltitudes: string = 'https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-91/subpart-B/section-91.159'
-
+    static regIFRFlightPlanInfo: string = 'https://www.ecfr.gov/current/title-14/part-91/section-91.169'
+    static regIFRTwoWayRadioFailure: string = 'https://www.ecfr.gov/current/title-14/part-91/section-91.185'
+    
     static open(url:string) {
         window.open( url, '_blank');
     }
