@@ -68,3 +68,9 @@ export enum DisplayModeRadios {
     LostCommsIFR = 'lost-comms-ifr',
     ServiceVolumes = 'sv',
 }
+
+export enum DisplayModeRegulations {
+    Unknown = '?',
+    Night = 'night',
+    Oxygen = 'oxygen',
+}

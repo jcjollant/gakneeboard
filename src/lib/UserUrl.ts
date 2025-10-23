@@ -39,6 +39,7 @@ export class UserUrl {
     static regVfrAltitudes: string = 'https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-91/subpart-B/section-91.159'
     static regIFRFlightPlanInfo: string = 'https://www.ecfr.gov/current/title-14/part-91/section-91.169'
     static regIFRTwoWayRadioFailure: string = 'https://www.ecfr.gov/current/title-14/part-91/section-91.185'
+    static regSupplementalOxygen: string = 'https://www.ecfr.gov/current/title-14/part-91/section-91.211'
     
     static open(url:string) {
         window.open( url, '_blank');

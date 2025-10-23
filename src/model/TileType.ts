@@ -12,4 +12,5 @@ export class TileType {
     static radios:string = 'radios';
     static sunlight:string = 'sunlight';
     static vfr:string = 'vfr';
+    static regulations:string = 'regulations';
 }
