@@ -25,7 +25,7 @@
         </div>
         <div v-else-if="displayMode == DisplayModeSunlight.Reference">
             <ImageContent src="nights.png"/>
-            <Regulations :regs="regs" />
+            <RegLink :regs="regs" />
         </div>
         <div v-else class="tileContent sunlight" @click="onClick">
             <div v-if="airportFromCode">
@@ -82,7 +82,7 @@ import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import Calendar from 'primevue/calendar'
 import Checkbox from 'primevue/checkbox'
-import Regulations from '../shared/Regulations.vue'
+import RegLink from '../shared/RegLink.vue'
 
 const airportFromCode = ref('')
 const airportToCode = ref('')

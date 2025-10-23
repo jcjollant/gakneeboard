@@ -20,14 +20,14 @@
         <div class="classGLow req" title="1sm visibility and Clear of Clouds">1:cc<span class="altMax" title="Below 1,200ft AGL">1k2 AGL</span></div>
         <!-- <font-awesome-icon icon="fa-solid fa-link" class="link" @click="showRegulation" title="Show Regulation" /> -->
         <div class="svfr req" title="Special VFR 1sm visibility and Clear of Clouds">SVFR 1:cc</div>
-        <Regulations :regs="[Regulation.BasicVFRWeatherMiniums]" />
+        <RegLink :regs="[Regulation.BasicVFRWeatherMiniums]" />
     </div>
 </template>
 
 <script setup lang="ts">
 import { Regulation } from '../../model/Regulation';
 
-import Regulations from '../shared/Regulations.vue';
+import RegLink from '../shared/RegLink.vue';
 
 </script>
 

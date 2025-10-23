@@ -13,11 +13,11 @@
             @click="editMode=true" />
         <div v-else-if="displayMode==DisplayModeIfr.Alternate">
             <ImageContent src="alternate.png" /> 
-            <Regulations :regs="[Regulation.IFRFlightPlanInformation]" />
+            <RegLink :regs="[Regulation.IFRFlightPlanInformation]" />
         </div>
         <div v-else-if="displayMode==DisplayModeIfr.LostComms" >
             <ImageContent src="lostcomms-ifr.png" /> 
-            <Regulations :regs="[Regulation.IFRTwoWayRadioFailure]" />
+            <RegLink :regs="[Regulation.IFRTwoWayRadioFailure]" />
         </div>
         <CraftBoxedContent v-else />
     </div>
@@ -41,7 +41,7 @@ import Header from '../shared/Header.vue';
 import ImageContent from '../shared/ImageContent.vue';
 import AirportInput from '../shared/AirportInput.vue';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
-import Regulations from '../shared/Regulations.vue';
+import RegLink from '../shared/RegLink.vue';
 
 // Enum with display modes
 
