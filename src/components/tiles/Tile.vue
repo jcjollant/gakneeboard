@@ -18,7 +18,7 @@
     <IfrTile v-else-if="tile.name==TileType.clearance" :params="tile.data"
         @replace="onReplace" @update="onUpdate"/>
     <Dummy v-else-if="tile.name==TileType.dummy" :params="tile.data"  />
-    <FuelBug v-else-if="tile.name==TileType.fuel" :params="tile.data"
+    <RegulationsTile v-else-if="tile.name==TileType.regulations" :params="tile.data"
         @replace="onReplace" @update="onUpdate"/>
     <Hold v-else-if="tile.name==TileType.hold" @replace="onReplace" @update="onUpdate" />
     <NavlogTile v-else-if="tile.name==TileType.navlog" @replace="onReplace" />
@@ -46,7 +46,7 @@ import Dummy from './Dummy.vue';
 import Hold from '../clearance/HoldTile.vue'
 import RadioTile from '../radios/RadioTile.vue';
 import SunLight from '../sunlight/SunLight.vue';
-import FuelBug from '../fuel/FuelBug.vue';
+import RegulationsTile from '../regulations/RegulationsTile.vue';
 import FAButton from '../shared/FAButton.vue'
 import NavlogTile from '../navlog/NavlogTile.vue';
 import NotesTile from '../notes/NotesTile.vue';
@@ -67,7 +67,7 @@ const knownTiles = ref([
     {name:'Radios',tile:TileType.radios, class:'', icon:'headset',  tooltip:'Radio frequencies'},
     {name:'IFR',tile:TileType.clearance, class:'', icon:'plane-circle-check', tooltip:'Instrument Flying'},
     {name:'VFR',tile:TileType.vfr, class:'', icon:'sun',  tooltip:'Visual Flying Rules'},
-    {name:'Fuel',tile:TileType.fuel, class:'', icon:'gas-pump', tooltip:'Track your fuel consumption'},
+    {name:'Regs',tile:TileType.regulations, class:'', icon:'gavel', tooltip:'Aviation regulations and requirements'},
     {name:'Sunlight',tile:TileType.sunlight, class:'', icon:'clock',  tooltip:'Sunrise, Sunset, Civil Twilight...'},
     // {name:'Navlog',tile:TileType.navlog, class:'', icon:'route',  tooltip:'Companion Tile to the Navlog Page'},
 ])
