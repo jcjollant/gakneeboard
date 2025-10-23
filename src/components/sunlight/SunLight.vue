@@ -82,7 +82,7 @@ import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import Calendar from 'primevue/calendar'
 import Checkbox from 'primevue/checkbox'
-import RegLink from '../shared/RegLink.vue'
+import RegLink from '../regulations/RegLink.vue'
 
 const airportFromCode = ref('')
 const airportToCode = ref('')

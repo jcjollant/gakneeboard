@@ -26,7 +26,7 @@ import { TileData } from '../../model/TileData.ts';
 import { TileType } from '../../model/TileType.ts';
 import Nordo from '../radios/Nordo.vue';
 import CloudClearance from '../atis/CloudClearance.vue';
-import RegLink from '../shared/RegLink.vue';
+import RegLink from '../regulations/RegLink.vue';
 import { Regulation } from '../../model/Regulation.ts';
 
 // Enum with display modes

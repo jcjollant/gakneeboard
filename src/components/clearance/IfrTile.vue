@@ -41,7 +41,7 @@ import Header from '../shared/Header.vue';
 import ImageContent from '../shared/ImageContent.vue';
 import AirportInput from '../shared/AirportInput.vue';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
-import RegLink from '../shared/RegLink.vue';
+import RegLink from '../regulations/RegLink.vue';
 
 // Enum with display modes
 

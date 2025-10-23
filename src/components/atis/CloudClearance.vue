@@ -27,7 +27,7 @@
 <script setup lang="ts">
 import { Regulation } from '../../model/Regulation';
 
-import RegLink from '../shared/RegLink.vue';
+import RegLink from '../regulations/RegLink.vue';
 
 </script>
 
