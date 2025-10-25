@@ -1,11 +1,34 @@
 <template>
     <div class="admin-container">
-        <div>
-            <h1>User Id</h1>
-            <input type="text" v-model="inputValue" />
-            <button type="submit" @click="handleSubmit">Submit</button>
+        <div class="api-selector">
+            <h1>Admin API Dashboard</h1>
+            <div class="api-cards">
+                <div class="api-card" :class="{ active: selectedApi === 'profile' }" @click="selectApi('profile')">
+                    <div class="api-icon">👤</div>
+                    <h3>User Profile</h3>
+                    <p>View individual user details and usage history</p>
+                </div>
+                <div class="api-card" :class="{ active: selectedApi === 'active' }" @click="selectApi('active')">
+                    <div class="api-icon">📊</div>
+                    <h3>Active Users</h3>
+                    <p>Monitor currently active users and system usage</p>
+                </div>
+            </div>
         </div>
-        <div v-if="userId > 0">
+        
+        <div v-if="selectedApi === 'profile'" class="input-section">
+            <h2>User Profile Lookup</h2>
+            <div class="input-group">
+                <input type="text" v-model="inputValue" placeholder="Enter User ID" />
+                <button type="submit" @click="handleSubmit" :disabled="!inputValue">Lookup User</button>
+            </div>
+        </div>
+        
+        <div v-if="selectedApi === 'active'" class="input-section">
+            <h2>Active Users</h2>
+            <button @click="fetchActiveUsers" :disabled="loadingActive">{{ loadingActive ? 'Loading...' : 'Refresh Active Users' }}</button>
+        </div>
+        <div v-if="selectedApi === 'profile' && userId > 0">
             <h2>Properties</h2>
             <div class="props">
                 <div class="prop-name">Id</div>
@@ -30,6 +53,11 @@
             <h2>Raw JSON Data</h2>
             <pre class="json-display">{{ JSON.stringify(rawJsonData, null, 2) }}</pre>
         </div>
+        
+        <div v-if="selectedApi === 'active' && Object.keys(activeUsersRaw).length > 0">
+            <h2>Active Users API Response</h2>
+            <pre class="json-display">{{ JSON.stringify(activeUsersRaw, null, 2) }}</pre>
+        </div>
     </div>
 </template>
 
@@ -49,6 +77,9 @@ const userAccountType = ref('')
 const userEula = ref(0)
 const usage = ref<Usage[]>([])
 const rawJsonData = ref({})
+const selectedApi = ref('profile')
+const activeUsersRaw = ref({})
+const loadingActive = ref(false)
 
 class Usage {
     type: string
@@ -56,6 +87,18 @@ class Usage {
     constructor(type: string, count: number) {
         this.type = type
         this.count = count
+    }
+}
+
+
+
+function selectApi(api: string) {
+    selectedApi.value = api
+    if (api === 'profile') {
+        activeUsersRaw.value = {}
+    } else {
+        userId.value = 0
+        rawJsonData.value = {}
     }
 }
 
@@ -74,35 +117,169 @@ function handleSubmit() {
         toaster.error('Failed', err.message)
     })
 }
+
+function fetchActiveUsers() {
+    loadingActive.value = true
+    console.debug('[Admin.fetchActiveUsers]')
+    currentUser.getUrl(GApiUrl.root + 'usage/active').then(res => {
+        activeUsersRaw.value = res.data
+        loadingActive.value = false
+    }).catch(err => {
+        toaster.error('Failed to fetch active users', err.message)
+        loadingActive.value = false
+    })
+}
+
+
 </script>
 
 <style scoped>
 .admin-container {
-    border: 10px solid red;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-flow: column;
+    flex-direction: column;
+    gap: 2rem;
 }
+
+.api-selector h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+}
+
+.api-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.api-card {
+    background: white;
+    border: 2px solid #e1e8ed;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.api-card:hover {
+    border-color: #3498db;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.api-card.active {
+    border-color: #3498db;
+    background: #f8fbff;
+}
+
+.api-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.api-card h3 {
+    color: #2c3e50;
+    margin: 0 0 0.5rem 0;
+}
+
+.api-card p {
+    color: #7f8c8d;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.input-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.input-section h2 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+.input-group {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.input-group input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.input-group button, .input-section > button {
+    padding: 0.75rem 1.5rem;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+}
+
+.input-group button:hover, .input-section > button:hover {
+    background: #2980b9;
+}
+
+.input-group button:disabled, .input-section > button:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+}
+
 .props {
     display: grid;
     grid-template-columns: 1fr 3fr;
+    gap: 0.5rem;
+    background: white;
+    padding: 1rem;
+    border-radius: 6px;
+    margin: 1rem 0;
 }
+
 .prop-name {
     font-weight: bold;
+    color: #2c3e50;
 }
+
 .usage {
     display: grid;
     grid-template-columns: 1fr 1fr;
-}
-.json-display {
-    background-color: #f5f5f5;
+    gap: 0.5rem;
+    background: white;
     padding: 1rem;
-    border-radius: 4px;
+    border-radius: 6px;
+    margin: 1rem 0;
+}
+
+
+
+.json-display {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
     white-space: pre-wrap;
     word-wrap: break-word;
     max-width: 100%;
     overflow-x: auto;
     text-align: left;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    border: 1px solid #e9ecef;
+    max-height: 300px;
+    overflow-y: auto;
 }
 </style>
