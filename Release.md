@@ -1,3 +1,4 @@
+## 10/24/2025 - 5430 - Added template count and page count to user profile API
 ## 10/10/2025 - 5411 - Fixed sign up notification email
 ## 10/04/2025 - 5410 - User Id in creation email / test users at test.gak
 ## 10/03/2025 - 5401 - New API for user profile / Waylon tells active customers
@@ -155,24 +156,3 @@
 * New Metrics for Approach page, Users and Prints
 ## 11/01/2024
 * Instrument Approaches in airport
-## 10/31/2024
-* New Effective date
-## 10/27/2024
-* Prints table
-* Added Sessions to metrics
-## 10/26/2024
-* Apple Authentication
-## 10/19/2024
-* New Sessions table
-## 10/15/2024
-* Template version is increasing upon update
-## 10/11/2024
-* New Export API to generate ACE files from checklists
-## 10/10/2024
-* Fixed missing staleTemplateCount
-## 10/07/2024
-* Metrics count notepage
-## 10/03/2024
-* Data refresh
-## 10/02/2024
-* Changed data format to support larger airports
