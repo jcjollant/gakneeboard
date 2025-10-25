@@ -1,3 +1,4 @@
+## 10/24/2025 - 5431 - Added usage/active API to get active users in past 24h (admin only)
 ## 10/24/2025 - 5430 - Added template count and page count to user profile API
 ## 10/10/2025 - 5411 - Fixed sign up notification email
 ## 10/04/2025 - 5410 - User Id in creation email / test users at test.gak
