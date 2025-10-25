@@ -13,6 +13,7 @@ import { GApiTemplate } from "../backend/GApiTemplate";
 import { GApiError } from "../backend/GApiError";
 import { UserImage } from "../backend/UserImage";
 import { UserDao } from "../backend/dao/UserDao";
+import { UsageDao } from "../backend/dao/UsageDao";
 const port:number = 3000
 const app = express();
 
@@ -402,6 +403,20 @@ app.get('/user/profile/:userId', async (req:Request, res:Response) => {
         res.send(userProfile)
     } catch(e) {
         catchError(res, e, 'GET /user/profile')
+    }
+})
+
+app.get('/usage/active', async (req:Request, res:Response) => {
+    try {
+        const requester = await UserTools.userIdFromRequest(req)
+        if(!UserTools.isAdmin(requester)) {
+            throw new GApiError(401, 'Unauthorized')
+        }
+        const usageDao = new UsageDao()
+        const activeUserIds = await usageDao.getActiveUsersLast24Hours()
+        res.send(activeUserIds)
+    } catch(e) {
+        catchError(res, e, 'GET /usage/active')
     }
 })
 
