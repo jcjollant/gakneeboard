@@ -26,7 +26,10 @@
         
         <div v-if="selectedApi === 'active'" class="input-section">
             <h2>Active Users</h2>
-            <button @click="fetchActiveUsers" :disabled="loadingActive">{{ loadingActive ? 'Loading...' : 'Refresh Active Users' }}</button>
+            <div class="input-group">
+                <input type="number" v-model="daysValue" placeholder="Days" min="1" />
+                <button @click="fetchActiveUsers" :disabled="loadingActive || !daysValue">{{ loadingActive ? 'Loading...' : 'Fetch Active Users' }}</button>
+            </div>
         </div>
         <div v-if="selectedApi === 'profile' && userId > 0">
             <h2>Properties</h2>
@@ -80,6 +83,7 @@ const rawJsonData = ref({})
 const selectedApi = ref('profile')
 const activeUsersRaw = ref({})
 const loadingActive = ref(false)
+const daysValue = ref(1)
 
 class Usage {
     type: string
@@ -120,8 +124,8 @@ function handleSubmit() {
 
 function fetchActiveUsers() {
     loadingActive.value = true
-    console.debug('[Admin.fetchActiveUsers]')
-    currentUser.getUrl(GApiUrl.root + 'usage/active').then(res => {
+    console.debug('[Admin.fetchActiveUsers]', daysValue.value)
+    currentUser.getUrl(GApiUrl.root + 'usage/active?days=' + daysValue.value).then(res => {
         activeUsersRaw.value = res.data
         loadingActive.value = false
     }).catch(err => {
