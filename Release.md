@@ -1,6 +1,7 @@
 # User Experience updates
 # Format is {today's date} - {version number} - {change description}
 
+## 10/25/2025 - 5434 - TemplateSelector supports multiple thumbnails side by side
 ## 10/25/2025 - 5433 - Admin Active Users API now accepts days parameter
 ## 10/24/2025 - 5432 - Admin API selector for User Profile and Active Users endpoints
 ## 10/22/2025 - 5431 - Added Regulations tile with Supplemental Oxygen
