@@ -412,8 +412,9 @@ app.get('/usage/active', async (req:Request, res:Response) => {
         if(!UserTools.isAdmin(requester)) {
             throw new GApiError(401, 'Unauthorized')
         }
+        const numberOfDays = req.query.days ? Number(req.query.days) : 1
         const usageDao = new UsageDao()
-        const activeUserIds = await usageDao.getActiveUsersLast24Hours()
+        const activeUserIds = await usageDao.getActiveUsersLastDays(numberOfDays)
         res.send(activeUserIds)
     } catch(e) {
         catchError(res, e, 'GET /usage/active')

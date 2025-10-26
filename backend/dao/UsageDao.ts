@@ -116,9 +116,9 @@ export class UsageDao extends Dao<Usage> {
         })
     }
 
-    public async getActiveUsersLast24Hours():Promise<number[]> {
+    public async getActiveUsersLastDays(numberOfDays: number = 1):Promise<number[]> {
         return new Promise<number[]>(async (resolve, reject) => {
-            this.db.query(`SELECT DISTINCT user_id FROM ${this.tableName} WHERE user_id IS NOT NULL AND create_time > current_timestamp - interval '24 hours'`)
+            this.db.query(`SELECT DISTINCT user_id FROM ${this.tableName} WHERE user_id IS NOT NULL AND create_time > current_timestamp - interval '${numberOfDays} days'`)
                 .then( res => {
                     const userIds = res.rows.map(row => Number(row.user_id))
                     resolve(userIds)
