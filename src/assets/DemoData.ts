@@ -1,4 +1,4 @@
-import { DisplayModeAtis, DisplayModeRadios, DisplayModeSunlight } from "../model/DisplayMode"
+import { DisplayModeAtis, DisplayModeRadios, DisplayModeSunlight, DisplayModeVfr } from "../model/DisplayMode"
 import { FrequencyType } from "../model/Frequency"
 import { Template, TemplatePage } from "../model/Template"
 import { TemplateFormat } from "../model/TemplateFormat"
@@ -46,7 +46,7 @@ export class DemoData {
             { name: TileType.checklist, data: { name: 'Power OFF stalls', items: [{ c: "Clearing Turns+Calls", r: "Made" }, { c: "Visual Reference", r: "Bugged" }, { c: "Altitude", r: "3,000" }, { c: "Power=1,600 Flaps > Full" }, { c: "Hold 65 3s, Level off until stall" }, { c: "Full Power + Right Rudder" }, { c: "Flaps 20 > 10 > 0" }, { c: "ACS HDG/Bank", r: "±10°/20°" }], theme: "blue" } },
             { name: TileType.airport, data: { code: 'kawo', mode: 'list' } },
             { name: TileType.sunlight, data: { from: 'KRNT', to: 'KSFF', mode: DisplayModeSunlight.Flight } },
-            { name: TileType.fuel },
+            { name: TileType.vfr, data: { mode: DisplayModeVfr.LostComms } },
             { name: TileType.notes, data: {} },
             { name: TileType.radios, data: DemoData.demoRadioData },
         ]
