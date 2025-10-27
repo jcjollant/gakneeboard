@@ -13,6 +13,7 @@ import { UserTemplateData } from "./models/UserTemplateData";
 import { UserTools } from './UserTools' 
 import { UserUsage } from "./models/UserUsage";
 import { Business } from "./business/Business";
+import { SubscriptionDao } from "./dao/SubscriptionDao";
 
 export class Metric {
     name:string;
@@ -36,6 +37,8 @@ export enum MetricKey {
     airportsCurrent = 'airports-current',
     customers = 'cust-assigned',
     customersActive = 'cust-active',
+    customersChurn30d = 'cust-churn-30d',
+    customersNew30d = 'cust-new-30d',
     exports = 'exports',
     export7 = 'exports-7d',
     export28 = 'exports-28d',
@@ -56,6 +59,7 @@ export enum MetricKey {
     print28 = 'prints-28d',
     printUser7 = 'printUsers-7d',
     printUser28 = 'printUsers-28d',
+    revenueARPA = 'revenue-arpa',
     save7 = 'save-7d',
     save28 = 'save-28d',
     sessions = 'sessions',
@@ -146,6 +150,7 @@ export class Metrics {
         allMetrics.push(customers)
         const activeCustomers = new Metric(MetricKey.customersActive)
         allMetrics.push(activeCustomers)
+        let monthlyRevenue = 0
 
         const now = Date.now()
 
@@ -171,9 +176,13 @@ export class Metrics {
                 customers.addOne()
             }
             if( Business.isActiveCustomer( user)) {
+                monthlyRevenue += Business.monthlyRevenue(user)
                 activeCustomers.addOne()
             }
         }
+
+        // compute the average monthly revenue
+        allMetrics.push( new Metric(MetricKey.revenueARPA, monthlyRevenue / activeCustomers.value))
 
         return allMetrics
     }
@@ -187,6 +196,19 @@ export class Metrics {
         const templateDao = new TemplateDao();
         const templateCount:number = await templateDao.count()
         return [new Metric(MetricKey.templates, templateCount)]
+    }
+
+    static async business():Promise<Metric[]> {
+        const subscriptionDao = new SubscriptionDao();
+        const businessMetrics:Metric[] = []
+        
+        const newCustomers = await subscriptionDao.getNewCustomersLast30Days()
+        businessMetrics.push(new Metric(MetricKey.customersNew30d, newCustomers))
+        
+        const churnCount = await subscriptionDao.getChurnLast30Days()
+        businessMetrics.push(new Metric(MetricKey.customersChurn30d, churnCount))
+        
+        return businessMetrics
     }
 
     static async templateDetails():Promise<Metric[]> {
@@ -324,6 +346,7 @@ export class Metrics {
                 Metrics.feedbacks(),
                 Metrics.templateDetails(),
                 Metrics.usage(),
+                Metrics.business(),
                 Metrics.usersPerAccountCategory(),
                 Metrics.publicationsCheck(),
                 Metrics.templates(),
