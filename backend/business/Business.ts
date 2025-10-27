@@ -1,5 +1,5 @@
 import { SubscriptionDao } from "../dao/SubscriptionDao";
-import { UsageDao, UsageType } from "../dao/UsageDao";
+import { UsageDao } from "../dao/UsageDao";
 import { UserDao } from "../dao/UserDao";
 import { Email, EmailType } from "../Email";
 import { AccountType } from "../models/AccountType";
@@ -70,6 +70,17 @@ export class Business {
         }
     }
     
+    static monthlyRevenue(user: User):number {
+        switch(user.accountType) {
+            case AccountType.private: return 4.49;
+            case AccountType.beta:    return 3.49;
+            case AccountType.student: return 2.99;
+            case AccountType.simmer:
+            default:
+                return 0;
+        }
+    }
+
     /**
      * Decides what to do when a User wants to consume one print
      * @param user 

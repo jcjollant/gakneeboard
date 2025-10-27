@@ -430,6 +430,25 @@ describe('Business', () => {
             expect(Business.isActiveCustomer(userUnknown)).toBe(false)
         })
     })
+
+    describe('monthlyRevenue', () => {
+        it('should return correct revenue for each account type', () => {
+            const userPrivate = newTestUser(0, AccountType.private)
+            expect(Business.monthlyRevenue(userPrivate)).toBe(4.49)
+
+            const userBeta = newTestUser(0, AccountType.beta)
+            expect(Business.monthlyRevenue(userBeta)).toBe(3.49)
+
+            const userStudent = newTestUser(0, AccountType.student)
+            expect(Business.monthlyRevenue(userStudent)).toBe(2.99)
+
+            const userSimmer = newTestUser(0, AccountType.simmer)
+            expect(Business.monthlyRevenue(userSimmer)).toBe(0)
+
+            const userUnknown = newTestUser(0, AccountType.unknown)
+            expect(Business.monthlyRevenue(userUnknown)).toBe(0)
+        })
+    })
 });
 
 
