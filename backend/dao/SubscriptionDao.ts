@@ -55,4 +55,33 @@ export class SubscriptionDao extends Dao<Subscription> {
         return new Subscription(row.id, row.customer_id, row.plan_id, row.period_end, row.ended_at)
     }
 
+    /**
+     * Get count of new customers in the past 30 days
+     * @returns Promise<number>
+     */
+    public async getNewCustomersLast30Days():Promise<number> {
+        const result = await this.db.query(`
+            SELECT DISTINCT u.*
+            FROM users u
+            JOIN subscriptions s ON u.customer_id = s.customer_id
+            WHERE u.account_type != 'sim'
+            AND s.create_time >= NOW() - INTERVAL '30 days'
+        `);
+        return result.rowCount || 0;
+    }
+
+    /**
+     * Get count of churned customers in the past 30 days
+     * @returns Promise<number>
+     */
+    public async getChurnLast30Days():Promise<number> {
+        const result = await this.db.query(`
+            SELECT *
+            FROM subscriptions
+            WHERE cancel_at >= EXTRACT(EPOCH FROM NOW() - INTERVAL '120 days')
+            AND cancel_at IS NOT NULL
+        `);
+        return result.rowCount || 0;
+    }
+
 }
