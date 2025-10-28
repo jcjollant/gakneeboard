@@ -10,9 +10,11 @@
     <div class="application">
         <router-view ></router-view>
     </div>
+    <!-- Session component disabled - functionality moved to Menu.vue
     <div class="session">
       <Session v-if="route.name!=RouterNames.Print && route.name!=RouterNames.ThankYou" />
     </div>
+    -->
     <MenuButton v-if="route.name!='Print'" icon="comments" class="feedbackButton" label="Give Feedback"
       @click="showFeedback=!showFeedback" />
     <MenuButton v-if="route.name!='Print'" icon="circle-info" class="aboutButton" label="About GA Kneeboard"
@@ -38,7 +40,7 @@ import ConfirmDialog from 'primevue/confirmdialog';
 import Feedback from './components/dialog/Feedback.vue'
 import Maintenance from './components/menu/Maintenance.vue'
 import MenuButton from './components/menu/MenuButton.vue';
-import Session from './components/menu/Session.vue'
+// import Session from './components/menu/Session.vue' // Disabled - functionality moved to Menu.vue
 import Toast from 'primevue/toast'
 import Maxed from './components/menu/Maxed.vue';
 import Eula from './components/menu/Eula.vue';
