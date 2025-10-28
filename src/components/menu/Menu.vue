@@ -1,4 +1,6 @@
 <template>
+    <AccountDetails v-model:visible="showAccountDetails" :user="currentUser" @signout="onSignOut" @close="showAccountDetails=false" />
+    <SignIn v-model:visible="showSignIn" @close="showSignIn=false" @authentication="onAuthentication" />
     <div class="menu" >
         <div class="left">
             <Logo :hasTemplate="!!name" @click="router.push('/')" />
@@ -6,8 +8,18 @@
             <div v-if="name" title="Active Template Name" class="templateName">{{name}}</div>
             <div v-if="test" class="test">Test Backend</div>
         </div>
-        <div class="right" @click="router.push('/plans')">
-            Plans
+        <div class="right">
+            <div v-if="!currentUser.loggedIn" class="session-item" @click="showSignIn=true">
+                Sign In
+            </div>
+            <div v-else class="session-info">
+                <div class="session-item" @click="router.push('/plans')">
+                    Plans
+                </div>
+                <div class="user-name" @click="showAccountDetails=true" title="Account Details">
+                    {{ currentUser.name }}
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -16,20 +28,54 @@
 // import { ref } from 'vue'
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router'
+import { useConfirm } from 'primevue/useconfirm';
+import { useToast } from 'primevue/usetoast';
+import { useToaster } from '../../assets/Toaster';
 import { GApiUrl } from '../../lib/GApiUrl';
+import { currentUser } from '../../assets/data';
+import AccountDetails from './AccountDetails.vue';
 import Logo from './Logo.vue';
+import SignIn from '../signin/SignIn.vue';
 
 const emits = defineEmits(['about'])
 const props = defineProps({
     name: String, default: null
 })
+const confirm = useConfirm()
 const router = useRouter()
+const showAccountDetails = ref(false)
+const showSignIn = ref(false)
 const test = ref(false)
+const toaster = useToaster(useToast())
 
 onMounted(() => {
     test.value = GApiUrl.isTest()
-    // console.log('[Menu.onMounted]')
 })
+
+function onAuthentication(newUser:any) {
+    showSignIn.value = false
+    if(newUser) {
+        toaster.success('Clear', 'Welcome ' + newUser.name)
+        router.push({name:'Home',query:{_r:Date.now()}})
+    } else {
+        toaster.warning('Engine Roughness', 'Authentication failed')
+    }
+}
+
+function onSignOut() {
+    showAccountDetails.value = false
+    confirm.require({
+        message: 'You will loose access to your custom content.',
+        header: 'Close Session',
+        rejectLabel: 'Stay in',
+        acceptLabel: 'Sign Out',
+        accept: () => {
+            currentUser.logout()
+            toaster.info('Signed Out', 'Log back in to access your templates')
+            router.push({name:'Home',query:{_r:Date.now()}})
+        }
+    })
+}
 
 </script>
 
@@ -73,17 +119,44 @@ onMounted(() => {
 }
 .right {
     display: flex;
-    padding-right: 100px;
+    align-items: center;
+    gap: 15px;
+}
+
+.session-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.session-item {
     cursor: pointer;
     color: #666;
     padding: 4px 10px;
-    margin-right: 100px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
 }
 
-.right:hover {
+.session-item:hover {
     color: white;
-    border-radius: 4px;;
     background-color: var(--bg);
+}
+
+.user-name {
+    cursor: pointer;
+    color: #333;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-name:hover {
+    background-color: #f0f0f0;
 }
 
 /* Adjust template name display on narrow screens */
@@ -92,8 +165,12 @@ onMounted(() => {
         max-width: 200px;
     }
     
-    .right {
-        display: none;
+    .session-info {
+        gap: 10px;
+    }
+    
+    .user-name {
+        max-width: 100px;
     }
 }
 </style>
