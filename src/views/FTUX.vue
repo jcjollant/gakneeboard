@@ -30,11 +30,11 @@
                 <div class="hero-visual">
                     <div class="visual-split">
                         <div class="visual-before">
-                            <h4>Before: Cluttered Cockpit</h4>
-                            <div class="scattered-items">📱📋📄</div>
+                            <h4>Flying on an iPad and a prayer is stressful</h4>
+                            <div class="scattered-items">📱🙏</div>
                         </div>
                         <div class="visual-after">
-                            <h4>After: Organized Kneeboard</h4>
+                            <h4>Organized Kneeboard Never Fails You</h4>
                             <div class="organized-board">📋✅</div>
                         </div>
                     </div>
@@ -87,7 +87,7 @@
                     </div>
                     <div class="testimonial">
                         <div class="avatar">👩‍✈️</div>
-                        <p>"I capture clearance way faster than my old CRAFT (at first pass)"</p>
+                        <p>"I capture clearance way faster than my old CRAFT (on first pass)"</p>
                         <cite>- Instrument Pilot</cite>
                     </div>
                 </div>
@@ -102,9 +102,9 @@
                         <h3>The Problem</h3>
                         <div class="problem-icon">🤹</div>
                         <ul>
-                            <li>Scattered information</li>
-                            <li>Multiple apps during flight</li>
-                            <li>Unprofessional appearance</li>
+                            <li>iPads are cluttered when they don't fail</li>
+                            <li>The data you want is somewhere, right?</li>
+                            <li>Was that a 0 or a 6?</li>
                         </ul>
                     </div>
                     <div class="solution">
@@ -112,20 +112,20 @@
                         <div class="solution-icon">📋</div>
                         <ul>
                             <li>Everything in one place</li>
-                            <li>Custom for your aircraft</li>
-                            <li>Professional cockpit organization</li>
+                            <li>Paper Never Runs out of battery</li>
+                            <li>Write things down faster and cleaner</li>
                         </ul>
                     </div>
                 </div>
                 <div class="benefits">
                     <div class="benefit">
-                        <h4>Custom Checklists for Your Aircraft</h4>
+                        <h4>Checklists That Work For You</h4>
                     </div>
                     <div class="benefit">
-                        <h4>Airport Data When You Need It</h4>
+                        <h4>The Right Data At The Right Time</h4>
                     </div>
                     <div class="benefit">
-                        <h4>Professional Cockpit Appearance</h4>
+                        <h4>Optimized Notepads</h4>
                     </div>
                 </div>
             </div>
@@ -134,9 +134,9 @@
         <!-- Pricing -->
         <section id="pricing" class="pricing">
             <div class="container">
-                <div class="urgency-banner">
+                <!-- <div class="urgency-banner">
                     <span>Q4 Launch Special - Lock in founder pricing before rates increase!</span>
-                </div>
+                </div> -->
                 <h2>Our Plans</h2>
                 <div class="pricing-grid">
                     <div class="pricing-card">
