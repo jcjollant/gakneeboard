@@ -149,22 +149,7 @@ const plans = ref([
   //   popular: false,
   //   code: {monthly: Pricing.instrumentMonthly, annual: Pricing.instrumentAnnual}
   // },
-  {
-    name: "The Beta Deal",
-    price: 3.49,
-    monthly: true,
-    subtitle: "Charged $41.88/year",
-    description: "Expires Sep 30th",
-    features: {
-      "Unlimited Prints": -1,
-      "Advanced Print Options": true,
-      "Templates": 10,
-      "Pages": 50,
-    },
-    popular: true,
-    active: true,
-    code: Pricing.betaDeal
-  },
+
   {
     name: "Private Pilot",
     price: 4.49,
@@ -172,12 +157,12 @@ const plans = ref([
     subtitle: "Charged $53.88/year",
     description: "This is our regular price",
     features: {
-      "Unlimited Prints": -1,
+      "Prints per Month": 16,
       "Advanced Print Options": true,
-      "Templates": 10,
-      "Pages": 50,
+      "Templates": 5,
+      "Pages": 20,
     },
-    popular: false,
+    popular: true,
     active: true,
     code: Pricing.privatePilot
   }
@@ -267,7 +252,12 @@ function onPlan(code:Pricing) {
 }
 
 .pricing-container {
-  padding: 3rem 1rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    color: #1e3a8a;
+    background: #f8fafc;
+    min-height: 100vh;
+    padding: 2rem 0;
 }
 
 .pricing-header {
@@ -276,10 +266,10 @@ function onPlan(code:Pricing) {
 }
 
 .pricing-header h2 {
-  font-size: 1.875rem;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  margin-bottom: 1rem;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #1e3a8a;
+    margin-bottom: 1rem;
 }
 
 .pricing-header p {
@@ -296,7 +286,7 @@ function onPlan(code:Pricing) {
 
 @media (min-width: 768px) {
   .pricing-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -308,11 +298,15 @@ function onPlan(code:Pricing) {
 }
 
 .plan-card {
-  border: 1px solid lightgrey;
-  border-radius: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  position: relative;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .plan-card.yours {
@@ -320,18 +314,24 @@ function onPlan(code:Pricing) {
 }
 
 .plan-card.popular {
-  border: 2px solid orange;
+    border: 3px solid #f97316;
+    transform: scale(1.05);
 }
 .plan-card.unpopular {
     padding-top: 1.70rem;
 }
 
 .popular-badge {
-  background-color: orange;
-  color: black;
-  text-align: center;
-  padding: 0.25rem;
-  font-size: 0.875rem;
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f97316;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
 }
 
 .yours-badge {
