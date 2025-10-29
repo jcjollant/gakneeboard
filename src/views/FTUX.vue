@@ -3,7 +3,10 @@
         <!-- Navigation -->
         <nav class="navbar">
             <div class="nav-container">
-                <div class="nav-logo">GA Kneeboard</div>
+                <div class="nav-logo">
+                    <img src="/favicon.png" class="nav-logo-img" alt="GA Kneeboard">
+                    GA Kneeboard
+                </div>
                 <div class="nav-menu" :class="{ active: mobileMenuOpen }">
                     <a href="#features" class="nav-link">Features</a>
                     <a href="#pricing" class="nav-link">Pricing</a>
@@ -19,10 +22,10 @@
         <section class="hero">
             <div class="hero-container">
                 <div class="hero-content">
-                    <h1 class="hero-title">Stop Juggling Apps During Critical Flight Phases</h1>
-                    <p class="hero-subtitle">Create professional pilot kneeboards in minutes. Built by a pilot pursuing ratings, for pilots who want confidence in the cockpit.</p>
-                    <button class="cta-primary" @click="loadDemo(demos[0].page)">Create Your First Template Free</button>
-                    <p class="trust-indicator">Join 145+ pilots using GA Kneeboard</p>
+                    <h1 class="hero-title">Make Your Kneeboard Work For You</h1>
+                    <p class="hero-subtitle">Improve your situational awareness and confidence with a custom kneeboard template that gives you exactly what you want when you need it.</p>
+                    <button class="cta-primary" @click="scrollToFeatures">Create Your First Template Free</button>
+                    <p class="trust-indicator">Join 150+ pilots using GA Kneeboard</p>
                 </div>
                 <div class="hero-visual">
                     <div class="visual-split">
@@ -42,7 +45,7 @@
         <!-- Demo Section -->
         <section id="features" class="demo-section">
             <div class="container">
-                <h2>See It In Action</h2>
+                <h2>Get Started For Free</h2>
                 <div class="demo-grid">
                     <div v-for="(demo,index) in demos" :key="index" class="demo-card" @click="loadDemo(demo.page)">
                         <img :src="'/thumbnails/' + demo.img" :alt="demo.title" />
@@ -73,19 +76,19 @@
                 <h2>Pilots Love GA Kneeboard</h2>
                 <div class="testimonial-grid">
                     <div class="testimonial">
-                        <div class="avatar">👨‍✈️</div>
-                        <p>"I used to fumble with my phone during approach, now everything's on one page"</p>
+                        <div class="avatar">👨‍🎓</div>
+                        <p>"Custom Checklists save my bacon multiple times a flight"</p>
                         <cite>- Student Pilot</cite>
                     </div>
                     <div class="testimonial">
-                        <div class="avatar">👩‍✈️</div>
-                        <p>"Reduced my workload during IFR flights significantly"</p>
-                        <cite>- Instrument Pilot</cite>
+                        <div class="avatar">👨‍✈️</div>
+                        <p>"Traffic patterns visualization is a blessing for non towered airports"</p>
+                        <cite>- Private Pilot</cite>
                     </div>
                     <div class="testimonial">
-                        <div class="avatar">👨‍🎓</div>
-                        <p>"Professional appearance that instructors appreciate"</p>
-                        <cite>- PPL Student</cite>
+                        <div class="avatar">👩‍✈️</div>
+                        <p>"I capture clearance way faster than my old CRAFT (at first pass)"</p>
+                        <cite>- Instrument Pilot</cite>
                     </div>
                 </div>
             </div>
@@ -135,42 +138,45 @@
                     <span>Q4 Launch Special - Lock in founder pricing before rates increase!</span>
                     <div class="countdown">{{ countdown }}</div>
                 </div>
-                <h2>Choose Your Plan</h2>
+                <h2>Our Plans</h2>
                 <div class="pricing-grid">
                     <div class="pricing-card">
-                        <h3>Free</h3>
+                        <h3>Flight Simmer</h3>
                         <div class="price">$0</div>
-                        <p>Try It Out</p>
+                        <p>Just Free - Try it out</p>
                         <ul>
-                            <li>Basic features</li>
+                            <li>4 prints per month</li>
                             <li>2 templates</li>
+                            <li>2 pages</li>
                         </ul>
-                        <button class="btn-secondary" @click="skipDemo">Start Free</button>
+                        <button class="btn-secondary" @click="loadDemo(demos[0].page)">Start Free</button>
+                    </div>
+                    <div class="pricing-card">
+                        <h3>Student Pilot</h3>
+                        <div class="price">$2.99<span>/month</span></div>
+                        <p>No Commitment - Occasional Use</p>
+                        <ul>
+                            <li>8 prints per month</li>
+                            <li>Advanced print options</li>
+                            <li>2 templates</li>
+                            <li>4 pages</li>
+                        </ul>
+                        <button class="btn-primary" @click="loadDemo(demos[0].page)">Start Free</button>
                     </div>
                     <div class="pricing-card popular">
                         <div class="badge">Most Popular</div>
-                        <h3>Pro</h3>
-                        <div class="price">$9<span>/month</span></div>
+                        <h3>Private Pilot</h3>
+                        <div class="price">$4.49<span>/month</span></div>
+                        <p>Charged $53.88/year - Normal Use</p>
                         <ul>
-                            <li>Unlimited templates</li>
-                            <li>Premium features</li>
-                            <li>Priority support</li>
+                            <li>16 prints per month</li>
+                            <li>Advanced print options</li>
+                            <li>5 templates</li>
+                            <li>20 pages</li>
                         </ul>
-                        <button class="btn-primary" @click="skipDemo">Start Free Trial</button>
-                    </div>
-                    <div class="pricing-card">
-                        <div class="badge">Best Value</div>
-                        <h3>Annual</h3>
-                        <div class="price">$89<span>/year</span></div>
-                        <p>Save 20%</p>
-                        <ul>
-                            <li>Everything in Pro</li>
-                            <li>Beta pricing</li>
-                        </ul>
-                        <button class="btn-secondary" @click="skipDemo">Start Free Trial</button>
+                        <button class="btn-primary" @click="loadDemo(demos[0].page)">Start Free</button>
                     </div>
                 </div>
-                <p class="guarantee">30-day money-back guarantee • Free trial, no credit card required</p>
             </div>
         </section>
     </div>
@@ -232,6 +238,14 @@ function skipDemo() {
     LocalStore.popupHide(3)
 }
 
+function goToPlans() {
+    router.push('/plans')
+}
+
+function scrollToFeatures() {
+    document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })
+}
+
 function startCountdown() {
     const endDate = new Date()
     endDate.setDate(endDate.getDate() + 30)
@@ -278,6 +292,14 @@ function startCountdown() {
     font-size: 1.5rem;
     font-weight: bold;
     color: #1e3a8a;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-logo-img {
+    width: 30px;
+    height: 30px;
 }
 
 .nav-menu {
@@ -930,5 +952,20 @@ h2 {
         flex-direction: column;
         gap: 1rem;
     }
+}
+
+.pricing-card {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+}
+
+.pricing-card .btn-primary,
+.pricing-card .btn-secondary {
+    margin-top: auto !important;
+}
+
+.pricing-card ul {
+    text-align: left !important;
 }
 </style>
