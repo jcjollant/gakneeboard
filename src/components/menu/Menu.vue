@@ -2,22 +2,24 @@
     <AccountDetails v-model:visible="showAccountDetails" :user="currentUser" @signout="onSignOut" @close="showAccountDetails=false" />
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" @authentication="onAuthentication" />
     <div class="menu" >
-        <div class="left">
-            <Logo :hasTemplate="!!name" @click="router.push('/')" />
-            <font-awesome-icon v-if="name" class="icon" icon="fa-chevron-right" />
-            <div v-if="name" title="Active Template Name" class="templateName">{{name}}</div>
-            <div v-if="test" class="test">Test Backend</div>
-        </div>
-        <div class="right">
-            <div v-if="!currentUser.loggedIn" class="session-item" @click="showSignIn=true">
-                Sign In
+        <div>
+            <div class="left">
+                <Logo :hasTemplate="!!name" @click="router.push('/')" />
+                <font-awesome-icon v-if="name" class="icon" icon="fa-chevron-right" />
+                <div v-if="name" title="Active Template Name" class="templateName">{{name}}</div>
+                <div v-if="test" class="test">Test Backend</div>
             </div>
-            <div v-else class="session-info">
-                <div class="session-item" @click="router.push('/plans')">
-                    Plans
+            <div class="right">
+                <div v-if="!currentUser.loggedIn" class="session-item" @click="showSignIn=true">
+                    Sign In
                 </div>
-                <div class="user-name" @click="showAccountDetails=true" title="Account Details">
-                    {{ currentUser.name }}
+                <div v-else class="session-info">
+                    <div class="session-item" @click="router.push('/plans')">
+                        Plans
+                    </div>
+                    <div class="user-name" @click="showAccountDetails=true" title="Account Details">
+                        {{ currentUser.name }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -93,15 +95,24 @@ function onSignOut() {
     gap: 10px;
     font-size: var(--logo-font-size);
     font-weight: bold;
+    color: #1e3a8a;
 }
 .menu {
-    height: var(--menu-height);
+    background: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+}
+
+.menu > div {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 10px;
-    width: 100%;
-    background-color: lightgrey;
 }
 .templateName {
     white-space: nowrap;
@@ -120,35 +131,37 @@ function onSignOut() {
 .right {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 2rem;
 }
 
 .session-info {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 2rem;
 }
 
 .session-item {
     cursor: pointer;
-    color: #666;
-    padding: 4px 10px;
-    border-radius: 4px;
-    transition: all 0.3s ease;
+    background: var(--bg);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: background 0.3s;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .session-item:hover {
-    color: white;
-    background-color: var(--bg);
+    background: var(--bg-hover);
 }
 
 .user-name {
     cursor: pointer;
-    color: #333;
+    color: #64748b;
     font-weight: 500;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: all 0.3s ease;
+    transition: color 0.3s;
     max-width: 150px;
     white-space: nowrap;
     overflow: hidden;
@@ -156,7 +169,7 @@ function onSignOut() {
 }
 
 .user-name:hover {
-    background-color: #f0f0f0;
+    color: #1e3a8a;
 }
 
 /* Adjust template name display on narrow screens */
