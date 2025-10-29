@@ -2,7 +2,6 @@
     <div class="logo" :class="{'template-loaded': hasTemplate}">
         <img src="/favicon.png" class="logo-img" alt="GA Kneeboard">
         <div class="logo-name">GA Kneeboard</div>
-        <div class="logo-beta">BETA</div>
     </div>
 </template>
 
@@ -16,22 +15,23 @@ defineProps({
 .logo {
     display: flex;
     align-items: center;
-    justify-content: center;
     cursor: pointer;
-    color: #444;
+    color: #1e3a8a;
+    font-size: 1.5rem;
+    font-weight: bold;
+    gap: 0.5rem;
 }
 .logo:hover {
-    color: black;
+    color: #1e3a8a;
 }
 .logo-img {
     width: 30px;
     height: 30px;
 }
 .logo-name {
-    font-size: var(--logo-font-size);
-    font-weight: bold;
-    padding-left: 10px;
-    line-height: 30px;
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
 }
 .logo-beta {
     font-size: calc(var(--logo-font-size) / 2);
