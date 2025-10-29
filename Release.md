@@ -1,6 +1,7 @@
 # User Experience updates
 # Format is {today's date} - {version number} - {change description}
 
+## 10/29/2025 - 5441 - UX changed, removed beta
 ## 10/29/2025 - 5440 - Revamed Landing page
 ## 10/25/2025 - 5434 - TemplateSelector supports multiple thumbnails side by side
 ## 10/25/2025 - 5433 - Admin Active Users API now accepts days parameter
