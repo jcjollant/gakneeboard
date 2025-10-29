@@ -10,7 +10,7 @@
                 <div class="nav-menu" :class="{ active: mobileMenuOpen }">
                     <a href="#features" class="nav-link">Features</a>
                     <a href="#pricing" class="nav-link">Pricing</a>
-                    <button class="nav-btn" @click="skipDemo">Get Started</button>
+                    <button class="nav-btn" @click="scrollToFeatures">Get Started</button>
                 </div>
                 <div class="hamburger" @click="mobileMenuOpen = !mobileMenuOpen">
                     <span></span><span></span><span></span>
@@ -136,7 +136,6 @@
             <div class="container">
                 <div class="urgency-banner">
                     <span>Q4 Launch Special - Lock in founder pricing before rates increase!</span>
-                    <div class="countdown">{{ countdown }}</div>
                 </div>
                 <h2>Our Plans</h2>
                 <div class="pricing-grid">
@@ -212,16 +211,7 @@ const demos = ref<Demo[]>([
 
 const router = useRouter()
 const mobileMenuOpen = ref(false)
-const countdown = ref('')
-let countdownInterval: number
 
-onMounted(() => {
-    startCountdown()
-})
-
-onUnmounted(() => {
-    if (countdownInterval) clearInterval(countdownInterval)
-})
 
 function loadDemo(page: string) {
     const templateData = DemoData.fromName(page)
@@ -246,21 +236,7 @@ function scrollToFeatures() {
     document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })
 }
 
-function startCountdown() {
-    const endDate = new Date()
-    endDate.setDate(endDate.getDate() + 30)
-    
-    countdownInterval = setInterval(() => {
-        const now = new Date().getTime()
-        const distance = endDate.getTime() - now
-        
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24))
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
-        
-        countdown.value = `${days}d ${hours}h ${minutes}m`
-    }, 60000)
-}
+
 
 </script>
 <style scoped>
