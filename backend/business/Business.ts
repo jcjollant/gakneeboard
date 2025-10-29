@@ -20,20 +20,25 @@ class Quota {
 
 export class Business {
     static PRINT_PER_PURCHASE: number = 10;
-    static PRINT_CREDIT_SIMMER: number = 4;
-    static PRINT_CREDIT_STUDENT: number = 8;
-    static PRINT_CREDIT_PRIVATE:number = -1;
-    static PRINT_CREDIT_BETA:number = -1;
-    static MAX_PAGES_SIMMER: number = 4;
-    static MAX_PAGES_STUDENT: number = 4;
-    static MAX_PAGES_PRIVATE: number = 50;
-    static MAX_PAGES_BETA: number = 50;
-    static MAX_TEMPLATE_SIMMER: number = 2;
-    static MAX_TEMPLATE_STUDENT: number = 2;
-    static MAX_TEMPLATE_PRIVATE: number = 10;
-    static MAX_TEMPLATE_BETA: number = 10;
-    static latestEula:number = 20250821;
 
+    static PRINT_CREDIT_SIMMER: number = 4;
+    static MAX_PAGES_SIMMER: number = 4;
+    static MAX_TEMPLATE_SIMMER: number = 2;
+
+    static PRINT_CREDIT_STUDENT: number = 8;
+    static MAX_PAGES_STUDENT: number = 4;
+    static MAX_TEMPLATE_STUDENT: number = 2;
+
+    static PRINT_CREDIT_PRIVATE:number = 16;
+    static MAX_PAGES_PRIVATE: number = 20;
+    static MAX_TEMPLATE_PRIVATE: number = 5;
+
+    static PRINT_CREDIT_BETA:number = -1;
+    static MAX_PAGES_BETA: number = 50;
+    static MAX_TEMPLATE_BETA: number = 10;
+    
+    static latestEula:number = 20250821;
+    
     public static calculatePrintCredits(user:User):number {
         return Math.max( user.printCredits, Business.getQuotas(user).prints)
     }
