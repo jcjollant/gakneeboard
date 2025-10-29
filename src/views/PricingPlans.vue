@@ -110,7 +110,7 @@ const plans = ref([
     features: {
       "Prints per Month": 4,
       "Advanced Print Options": false,
-      "Templates": 2,
+      "Templates": 1,
       "Pages": 2,
     },
     popular: false,

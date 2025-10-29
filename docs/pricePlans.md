@@ -5,7 +5,7 @@ Best to Try it out
 
 Prints per Month : 4
 Advanced Print Options No
-Templates : 2
+Templates : 1
 Pages : 2
 
 ### Student Pilot
