@@ -1,3 +1,4 @@
+## 10/29/2025 - 5441 - Adjusted values for business limits
 ## 10/27/2025 - 5440 - Added business metrics for new customers and churn tracking with monthly revenue test
 ## 10/25/2025 - 5432 - Enhanced usage/active API with numberOfDays parameter and added 404 handling for user/profile
 ## 10/24/2025 - 5431 - Added usage/active API to get active users in past 24h (admin only)
