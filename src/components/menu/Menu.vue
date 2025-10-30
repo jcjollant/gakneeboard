@@ -15,7 +15,7 @@
                 </div>
                 <div v-else class="session-info">
                     <div class="session-item" @click="router.push('/plans')">
-                        Plans
+                        {{ currentUser.accountType === AccountType.simmer ? 'Upgrade' : 'Plans' }}
                     </div>
                     <div class="user-name" @click="showAccountDetails=true" title="Account Details">
                         <span class="pilot-icon">👨‍✈️</span>
@@ -39,6 +39,7 @@ import { currentUser } from '../../assets/data';
 import AccountDetails from './AccountDetails.vue';
 import Logo from './Logo.vue';
 import SignIn from '../signin/SignIn.vue';
+import { AccountType } from '../../model/AccounType';
 
 const emits = defineEmits(['about'])
 const props = defineProps({
