@@ -3,11 +3,10 @@
       <div class="mb-5">
         <span>Signing In will enable the following features:</span>
         <span>
-          <ul>
-            <li>Multiple Templates</li>
-            <li>Use and create community templates</li>
-            <li>Custom Airports Data</li>
-            <li>Feedback follow up</li>
+          <ul class="benefits-list">
+            <li>💾 Save custom templates</li>
+            <li>🖨️ Print your creations</li>
+            <li>📝 Feedback follow up</li>
           </ul>
         </span>
       </div>
@@ -76,6 +75,16 @@ function onGoogleSuccess( response:any) {
 }
 .pending {
   text-align: center;
+}
+
+.benefits-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.benefits-list li {
+  margin-bottom: 0.5rem;
+  margin-left: 1rem;
 }
 </style>
   
