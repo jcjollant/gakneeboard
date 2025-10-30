@@ -18,6 +18,7 @@
                         Plans
                     </div>
                     <div class="user-name" @click="showAccountDetails=true" title="Account Details">
+                        <span class="pilot-icon">👨‍✈️</span>
                         {{ currentUser.name }}
                     </div>
                 </div>
@@ -166,10 +167,17 @@ function onSignOut() {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .user-name:hover {
     color: #1e3a8a;
+}
+
+.pilot-icon {
+    font-size: 1rem;
 }
 
 /* Adjust template name display on narrow screens */
