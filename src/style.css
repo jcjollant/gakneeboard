@@ -62,6 +62,8 @@ body {
   --text-ctaf: #990099;
   --text-navaid: #006666;
   --text-weather: #666600;
+  --tile-button-bg: #1e40af;
+  --tile-button-hover: #1e3a8a;
   --tile-content-height: 240px;
   --tile-content-width: 247px;
   --tile-height: 265px;
