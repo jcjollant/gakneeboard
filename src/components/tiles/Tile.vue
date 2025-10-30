@@ -3,7 +3,7 @@
         <Header :title="title" :replace="restorable" :clickable="restorable" :displayMode="false"
             @replace="tile=previousTile"></Header>
         <div class="tileContent list">
-            <FAButton v-for="tile in knownTiles"
+            <FAButton v-for="tile in knownTiles" class="tileButton"
                 :icon="tile.icon" 
                 :label="tile.name" :class="tile.class" :title="tile.tooltip"
                 @click="onReplace(tile.tile)"/>
@@ -147,4 +147,11 @@ function onUpdate(newState:TileData) {
     display: flex;
     flex-flow: column;
 }
+.tileButton {
+    background-color: var(--tile-button-bg);
+}
+.tileButton:hover {
+    background-color: var(--tile-button-hover);
+}
+
 </style>
