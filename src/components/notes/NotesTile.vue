@@ -113,7 +113,7 @@ watch(displayMode, (newValue, oldValue) => {
 
 function saveConfig() {
     // save non default data
-    const data = {}
+    const data: any = {}
     if(displayMode.value != DisplayModeNotes.Blank) data['mode'] = displayMode.value
     if(word.value.length) data['word'] = word.value
     if(compassHeading.value != true) data['comp'] = compassHeading.value
