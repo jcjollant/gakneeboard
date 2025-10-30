@@ -1,6 +1,7 @@
 # User Experience updates
 # Format is {today's date} - {version number} - {change description}
 
+## 10/29/2025 - 5443 - Added pilot emoji next to user name when signed in
 ## 10/29/2025 - 5442 - Darker blue for tile selection. Added titles to note tile display mode.
 ## 10/29/2025 - 5441 - UX changed, removed beta
 ## 10/29/2025 - 5440 - Revamed Landing page
