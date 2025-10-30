@@ -54,11 +54,12 @@ let compassHeadingBeforeEdit = true
 const displayMode = ref(DisplayModeNotes.Unknown)
 const emits = defineEmits(['replace','update'])
 const displaySelection = ref(false)
+const word = ref('CRAFT')
 const displayModes = [
-    new DisplayModeChoice('Blank', DisplayModeNotes.Blank, true),
-    new DisplayModeChoice('W O R D',DisplayModeNotes.Word),
-    new DisplayModeChoice('Compass',DisplayModeNotes.Compass),
-    new DisplayModeChoice('Grid',DisplayModeNotes.Grid),
+    new DisplayModeChoice('Blank', DisplayModeNotes.Blank, true, "Well, A blank Tile"),
+    new DisplayModeChoice( word.value,DisplayModeNotes.Word, true, "A configurable word on the left side"),
+    new DisplayModeChoice('Compass',DisplayModeNotes.Compass, true, "A blank compass with numerical headings"),
+    new DisplayModeChoice('Grid',DisplayModeNotes.Grid, true, "A blank grid to organize things"),
 ]
 const editMode = ref(false)
 // Props management
@@ -67,7 +68,6 @@ const props = defineProps({
     span2: { type: Boolean, default: false}
 })
 const expanded = ref(false)
-const word = ref('CRAFT')
 let wordBeforeEdit = ''
 
 function loadProps(props:any) {
