@@ -8,7 +8,7 @@ import { sql } from "@vercel/postgres";
 import { AirportSketch } from "../backend/AirportSketch";
 import { AirportDao } from "../backend/AirportDao";
 
-const cycle = '2510'
+const cycle = '2511'
 
 // declare and execute
 async function doIt() {
