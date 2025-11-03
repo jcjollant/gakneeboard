@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date
 
+## 11/03/2025 - 5450 - Fixed Tiles demo (KAWO) and thumbnail
 ## 10/30/2025 - 5444 - Plans button shows "Upgrade" for Sim users. Improved SignIn dialog styling
 ## 10/29/2025 - 5443 - Added pilot emoji next to user name when signed in
 ## 10/29/2025 - 5442 - Darker blue for tile selection. Added titles to note tile display mode.
