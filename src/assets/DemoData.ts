@@ -44,7 +44,7 @@ export class DemoData {
     static page1DemoTiles = new TemplatePage(PageType.tiles, "Tiles",
         [
             { name: TileType.checklist, data: { name: 'Power OFF stalls', items: [{ c: "Clearing Turns+Calls", r: "Made" }, { c: "Visual Reference", r: "Bugged" }, { c: "Altitude", r: "3,000" }, { c: "Power=1,600 Flaps > Full" }, { c: "Hold 65 3s, Level off until stall" }, { c: "Full Power + Right Rudder" }, { c: "Flaps 20 > 10 > 0" }, { c: "ACS HDG/Bank", r: "±10°/20°" }], theme: "blue" } },
-            { name: TileType.airport, data: { code: 'kawo', mode: 'list' } },
+            { name: TileType.airport, data: { code: 'kawo', rwy: '16-34' } },
             { name: TileType.sunlight, data: { from: 'KRNT', to: 'KSFF', mode: DisplayModeSunlight.Flight } },
             { name: TileType.vfr, data: { mode: DisplayModeVfr.LostComms } },
             { name: TileType.notes, data: {} },
