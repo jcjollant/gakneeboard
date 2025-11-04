@@ -54,7 +54,6 @@
 <script setup lang="ts">
 import {ref, onMounted, watch} from 'vue';
 import { getAirport } from '../../assets/data.js'
-import { Formatter } from '../../lib/Formatter.ts'
 import { DisplayModeAirport, DisplayModeChoice } from '../../model/DisplayMode';
 import { Airport, Runway } from '../../model/Airport.ts';
 import { AirportTileConfig } from './AirportTileConfig.ts';
@@ -184,7 +183,7 @@ function loadProps(newProps:any) {
             return
         } 
 
-        a.promise.then((outcome) => {
+        a.promise.then((outcome: any) => {
             // console.debug( '[AirportTile.loadProps] outcome', JSON.stringify(outcome))
             // if data was not current, load new version
             if(!outcome.current && outcome.airport){
@@ -228,7 +227,7 @@ watch(displayMode, (newValue,oldValue) => {
  * Corner edition is being invoked, show the panel
  * @param index Corder
  */
-function onCornerEdit(index:number, event) {
+function onCornerEdit(index:number, event: any) {
     // console.debug('[AirportTile.onCornerEdit]', index, event)
     cornerConfigEvent.value = event
     cornerConfigIndex.value = index
