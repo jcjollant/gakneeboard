@@ -1,5 +1,5 @@
 <template>
-    <div class="frequencyBox" :class="[size]" :title="getTitle(freq)">
+    <div class="frequencyBox" :class="[size, {inverted: inverted}, getClass(freq)]" :title="getTitle(freq)">
         <div class="name" :class="[size]">{{freq.name}}</div>
         <div class="freq" :class="[size,getClass(freq)]">
             <font-awesome-icon v-if="size!='small' && iconClass.length" :icon="iconClass" class="freqType" :class="[size]"/>
@@ -18,6 +18,7 @@ const iconClass = ref<string[]>([])
 const props = defineProps({
     freq: { type: Frequency, default: null},
     size: { type: String, default: 'small'},
+    inverted: { type: Boolean, default: false},
 })
 
 function getClass(frequency:Frequency) {
@@ -33,7 +34,7 @@ function getClass(frequency:Frequency) {
         case FrequencyType.weather: css = 'weather'; break;
         case FrequencyType.ground: css = 'ground'; break;
         case FrequencyType.phone: css = 'phone'; break;
-        default: css = '';
+        default: css = 'plain';
     }
     return css
 }
@@ -162,6 +163,43 @@ onMounted(() => {
 }
 .weather {
     color: var(--text-weather);
+}
+
+/* Inverted mode styles */
+.frequencyBox.inverted {
+    color: white;
+}
+
+.frequencyBox.inverted.ctaf {
+    background-color: var(--text-ctaf);
+}
+
+.frequencyBox.inverted.navaid {
+    background-color: var(--text-navaid);
+}
+
+.frequencyBox.inverted.tower,
+.frequencyBox.inverted.tracon {
+    background-color: var(--text-atc);
+}
+
+.frequencyBox.inverted.weather {
+    background-color: var(--text-weather);
+}
+
+.frequencyBox.inverted .freqType {
+    color: white;
+}
+
+.frequencyBox.inverted .freq {
+    color: white;
+}
+
+.frequencyBox.inverted.ground,
+.frequencyBox.inverted.phone,
+.frequencyBox.inverted.blank,
+.frequencyBox.inverted.plain {
+    background-color: black;
 }
 
 </style>
