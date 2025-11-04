@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date
 
+## 11/04/2025 - 5452 - Larger labels for Airport Mode corners
 ## 11/03/2025 - 5451 - Updated oxygen requirement layout
 ## 11/03/2025 - 5450 - Fixed Tiles demo (KAWO) and thumbnail
 ## 10/30/2025 - 5444 - Plans button shows "Upgrade" for Sim users. Improved SignIn dialog styling
