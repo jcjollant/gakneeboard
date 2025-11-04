@@ -247,8 +247,8 @@ function unknownValues() {
     height: 19px;
 }
 .small .label {
-    font-size:9px;
-    height: 10px;
+    font-size:12px;
+    height: 12px;
 }
 .big .label {
     font-size:15px;
