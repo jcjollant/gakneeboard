@@ -30,12 +30,12 @@
                 <div class="hero-visual">
                     <div class="visual-split">
                         <div class="visual-before">
-                            <h4>Flying on an iPad and a prayer is stressful</h4>
-                            <div class="scattered-items">📱🙏</div>
+                            <h4>Replace Confusion</h4>
+                            <img src="/assets/renton-sectional.png" alt="Sectional chart" class="visual-image" />
                         </div>
                         <div class="visual-after">
-                            <h4>Organized Kneeboard Never Fails You</h4>
-                            <div class="organized-board">📋✅</div>
+                            <h4>By Clear Visuals</h4>
+                            <img src="/assets/renton-tile.png" alt="Organized kneeboard" class="visual-image" />
                         </div>
                     </div>
                 </div>
@@ -145,7 +145,7 @@
                         <p>Just Free - Try it out</p>
                         <ul>
                             <li>4 prints per month</li>
-                            <li>2 templates</li>
+                            <li>1 template</li>
                             <li>2 pages</li>
                         </ul>
                         <button class="btn-secondary" @click="loadDemo(demos[0].page)">Start Free</button>
@@ -153,7 +153,7 @@
                     <div class="pricing-card">
                         <h3>Student Pilot</h3>
                         <div class="price">$2.99<span>/month</span></div>
-                        <p>No Commitment - Occasional Use</p>
+                        <p>Occasional Use</p>
                         <ul>
                             <li>8 prints per month</li>
                             <li>Advanced print options</li>
@@ -166,7 +166,7 @@
                         <div class="badge">Most Popular</div>
                         <h3>Private Pilot</h3>
                         <div class="price">$4.49<span>/month</span></div>
-                        <p>Charged $53.88/year - Normal Use</p>
+                        <p>Normal Use</p>
                         <ul>
                             <li>16 prints per month</li>
                             <li>Advanced print options</li>
@@ -385,7 +385,7 @@ function scrollToFeatures() {
 }
 
 .visual-before, .visual-after {
-    padding: 2rem;
+    padding: 1rem;
     border-radius: 12px;
     background: white;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -402,6 +402,13 @@ function scrollToFeatures() {
 .scattered-items, .organized-board {
     font-size: 2rem;
     margin-top: 1rem;
+}
+
+.visual-image {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    border-radius: 8px;
 }
 
 /* Sections */
