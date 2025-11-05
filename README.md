@@ -38,8 +38,8 @@ Call http://localhost:3000/checkout with user and product
 
 ## Refreshing Sketch Data
 1. Set database to prod
-2. Run ga-api on port 3000
-3. Run gak-sketcher on port 3001
+2. Run ga-api on port 3000 (vercel dev)
+3. Run gak-sketcher on port 3001 (vercel dev)
 4. Run ts-node housekeeping/manualSketchUpdate.ts
 
 ## Authentication
@@ -51,5 +51,3 @@ Sign In with Apple > Configure > Website URLs.
 * https://console.cloud.google.com/apis/credentials?pli=1&project=kneeboard
 Client ID : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent.com
 
-## TODO
-* 
