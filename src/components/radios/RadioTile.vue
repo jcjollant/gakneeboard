@@ -12,17 +12,28 @@
             <div v-else-if="displayMode==DisplayModeRadios.FreqList" class="main">
                 <div v-if="listEditMode" class="edit">
                     <div class="lookupList">
-                        <Textarea class='list' rows="12" cols="24" v-model="textData"
+                        <Textarea class='list' rows="9" cols="24" v-model="textData"
                             placeholder="Enter up to 15 freq."></Textarea>
                         <Button icon="pi pi-search" title="Frequency Lookup" link
                             @click="onLookup" class="lookupBtn"></Button>
+                    </div>
+                    <div class="colorSchemeSelector">
+                        <div class="schemeOption" :class="{selected: colorScheme === 'light'}" @click="colorScheme = 'light'">
+                            <FrequencyBox :freq="{name: 'Light', value: '123.45', type: FrequencyType.ctaf}" size="small" colorScheme="light" />
+                        </div>
+                        <div class="schemeOption" :class="{selected: colorScheme === 'shade'}" @click="colorScheme = 'shade'">
+                            <FrequencyBox :freq="{name: 'Shade', value: '123.45', type: FrequencyType.ctaf}" size="small" colorScheme="shade" />
+                        </div>
+                        <div class="schemeOption" :class="{selected: colorScheme === 'dark'}" @click="colorScheme = 'dark'">
+                            <FrequencyBox :freq="{name: 'Dark', value: '123.45', type: FrequencyType.ctaf}" size="small" colorScheme="dark" />
+                        </div>
                     </div>
                     <ActionBar @apply="onApply" @cancel="onCancel" :help="UserUrl.radioTileGuide" />
                 </div>
                 <div v-else class="clickable" @click="onEditMode">
                     <PlaceHolder v-if="frequencies.length==0" title="No Radios" subtitle="Click Here to Add Frequencies" />
                     <div v-else class="freqList" :class="[boxColumns()]" >
-                        <FrequencyBox v-for="(freq,index) in frequencies" :freq="freq" :size="boxSize()" :class="['freq'+index]" />
+                        <FrequencyBox v-for="(freq,index) in frequencies" :freq="freq" :size="boxSize()" :class="['freq'+index]" :colorScheme="colorScheme" />
                     </div>
                 </div>
             </div>
@@ -33,7 +44,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { DisplayModeChoice, DisplayModeRadios } from '../../model/DisplayMode';
-import { Frequency } from '../../model/Frequency';
+import { Frequency, FrequencyType } from '../../model/Frequency';
 import { ServiceVolume} from '../../model/ServiceVolume'
 import { UserUrl } from '../../lib/UserUrl';
 import { useToast } from 'primevue/usetoast';
@@ -61,6 +72,7 @@ const noFreq:Frequency[] = []
 const frequencies = ref(noFreq)
 let listBeforeEdit:Frequency[] = []
 const listEditMode = ref(false) // toggle list into edit mode
+const colorScheme = ref('light')
 const lookupTime = ref(0)
 const maxFreqCount = 15
 const modesList = ref([
@@ -156,6 +168,8 @@ function loadData(data:any) {
 
         // restote service volume
         if('sv' in data) serviceVolume.value = data.sv
+        // restore color scheme
+        if('colorScheme' in data) colorScheme.value = data.colorScheme
     } else {
         frequencies.value = []
     }
@@ -235,7 +249,7 @@ function onLookup() {
 
 function saveConfig() {
     // console.debug('[RadioTile.saveConfig]')
-    const data = {'mode':displayMode.value,'list':frequencies.value,'sv':serviceVolume}
+    const data = {'mode':displayMode.value,'list':frequencies.value,'sv':serviceVolume,'colorScheme':colorScheme.value}
     emits('update', new TileData( TileType.radios, data, expanded.value));
 }
 
@@ -255,7 +269,7 @@ function updateTextarea() {
     display: flex;
     flex-flow: column;
     padding: 5px;
-    gap: 5px;
+    gap: 2px;
 }
 .freqList {
     padding: 5px;
@@ -303,6 +317,8 @@ function updateTextarea() {
     font-weight: 600;
     width:100%;
     flex-grow: 1;
+    white-space: nowrap;
+    overflow-x: auto;
 }
 .lookup {
     display: flex;
@@ -345,6 +361,21 @@ function updateTextarea() {
     display: grid;
     grid-template-columns: auto auto;
     grid-template-rows: auto auto auto auto;
-    height: 203px;
+    height: 170px;
+}
+.colorSchemeSelector {
+    display: flex;
+    gap: 1px;
+    justify-content: center;
+    padding: 2px 0;
+}
+.schemeOption {
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    padding: 1px;
+}
+.schemeOption.selected {
+    border-color: #007bff;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <div class="frequencyBox" :class="[size, {inverted: inverted}, getClass(freq)]" :title="getTitle(freq)">
+    <div class="frequencyBox" :class="[size, colorScheme, getClass(freq)]" :title="getTitle(freq)">
         <div class="name" :class="[size]">{{freq.name}}</div>
         <div class="freq" :class="[size,getClass(freq)]">
             <font-awesome-icon v-if="size!='small' && iconClass.length" :icon="iconClass" class="freqType" :class="[size]"/>
@@ -18,7 +18,7 @@ const iconClass = ref<string[]>([])
 const props = defineProps({
     freq: { type: Frequency, default: null},
     size: { type: String, default: 'small'},
-    inverted: { type: Boolean, default: false},
+    colorScheme: { type: String, default: 'light'},
 })
 
 function getClass(frequency:Frequency) {
@@ -51,7 +51,6 @@ function getIcon():Array<string> {
         case FrequencyType.tower: icon = 'tower-observation'; break;
         case FrequencyType.tracon: icon = 'route'; break;
         case FrequencyType.weather: icon = 'cloud-sun-rain'; break;
-        // case FrequencyType.phone: icon = 'phone'; break;
     }
     return icon ? ["fas", icon] : []
 }
@@ -165,41 +164,74 @@ onMounted(() => {
     color: var(--text-weather);
 }
 
-/* Inverted mode styles */
-.frequencyBox.inverted {
+/* Dark mode styles */
+.frequencyBox.dark {
     color: white;
 }
 
-.frequencyBox.inverted.ctaf {
+.frequencyBox.dark.ctaf {
     background-color: var(--text-ctaf);
 }
 
-.frequencyBox.inverted.navaid {
+.frequencyBox.dark.navaid {
     background-color: var(--text-navaid);
 }
 
-.frequencyBox.inverted.tower,
-.frequencyBox.inverted.tracon {
+.frequencyBox.dark.tower,
+.frequencyBox.dark.tracon {
     background-color: var(--text-atc);
 }
 
-.frequencyBox.inverted.weather {
+.frequencyBox.dark.weather {
     background-color: var(--text-weather);
 }
 
-.frequencyBox.inverted .freqType {
+.frequencyBox.dark .freqType {
     color: white;
 }
 
-.frequencyBox.inverted .freq {
+.frequencyBox.dark .freq {
     color: white;
 }
 
-.frequencyBox.inverted.ground,
-.frequencyBox.inverted.phone,
-.frequencyBox.inverted.blank,
-.frequencyBox.inverted.plain {
+.frequencyBox.dark.ground,
+.frequencyBox.dark.phone,
+.frequencyBox.dark.blank,
+.frequencyBox.dark.plain {
     background-color: black;
+}
+
+/* Shade mode styles */
+.frequencyBox.shade {
+    color: black;
+}
+
+.frequencyBox.shade.ctaf {
+    background-color: color-mix(in srgb, var(--text-ctaf) 30%, white);
+}
+
+.frequencyBox.shade.navaid {
+    background-color: color-mix(in srgb, var(--text-navaid) 30%, white);
+}
+
+.frequencyBox.shade.tower,
+.frequencyBox.shade.tracon {
+    background-color: color-mix(in srgb, var(--text-atc) 30%, white);
+}
+
+.frequencyBox.shade.weather {
+    background-color: color-mix(in srgb, var(--text-weather) 30%, white);
+}
+
+.frequencyBox.shade .freqType {
+    color: darkgrey;
+}
+
+.frequencyBox.shade.ground,
+.frequencyBox.shade.phone,
+.frequencyBox.shade.blank,
+.frequencyBox.shade.plain {
+    background-color: #f0f0f0;
 }
 
 </style>
