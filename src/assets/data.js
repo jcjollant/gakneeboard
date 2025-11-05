@@ -1,4 +1,4 @@
-export const version = 5452
+export const version = 5453
 export const eulaVersion = 20250821
 import axios from 'axios'
 import { Airport } from '../model/Airport.ts'
