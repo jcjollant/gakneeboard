@@ -5,7 +5,7 @@
         </template>
     </Menu>
     <Dialog v-model:visible="showCustom" modal header="Custom Corner Value" :style="{ width: '35rem' }">
-        <div>
+        <div class="dialog-content">
             <div class="properties">
                 <InputGroup class="pageName">
                     <InputGroupAddon>Label</InputGroupAddon>
@@ -146,4 +146,15 @@ function onSelection(value: string) {
 
 </script>
 
-<style scoped></style>
+<style scoped>
+.dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.properties {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+</style>
