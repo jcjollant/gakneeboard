@@ -44,22 +44,20 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
-import { currentUser, routeToLocalTemplate } from '../assets/data';
-import { useRouter } from 'vue-router';
-import { getTemplateBlank, SheetName } from '../assets/sheetData';
-import { Template } from '../model/Template';
-import { Airport } from '../model/Airport';
 import { useToast } from 'primevue/usetoast';
-import { useToaster } from '../assets/Toaster';
-import { DemoData } from '../assets/DemoData';
+import { onMounted, onUnmounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { currentUser, routeToLocalTemplate } from '../assets/data';
+import { getTemplateBlank, SheetName } from '../assets/sheetData';
 import { TemplateData } from '../assets/TemplateData';
-import { UserUrl } from '../lib/UserUrl'
+import { useToaster } from '../assets/Toaster';
+import { UserUrl } from '../lib/UserUrl';
+import { Template } from '../model/Template';
 
-import Menu from '../components/menu/Menu.vue'
-import PlaceHolder from '../components/shared/PlaceHolder.vue'
-import TemplateSelector from '../components/templates/TemplateSelector.vue'
-import Toast from 'primevue/toast'
+import Toast from 'primevue/toast';
+import Menu from '../components/menu/Menu.vue';
+import PlaceHolder from '../components/shared/PlaceHolder.vue';
+import TemplateSelector from '../components/templates/TemplateSelector.vue';
 import { TemplateFormat } from '../model/TemplateFormat';
 
 
@@ -78,10 +76,9 @@ const demos = ref<DemoSelector[]>([
     new DemoSelector(SheetName.vfrflight, ['vfrflight.png','vfrflight-1.png'], 'VFR Flight', 'VFR Flight Demo Template'),
     new DemoSelector(SheetName.ifrflight, ['ifrflight.png','ifrflight-1.png'], 'IFR Flight','IFR Flight Demo Template'),
     new DemoSelector(SheetName.checklist, ['checklist.png','checklist-1.png'], 'Checklist','Checklists syntax Showcase'),
-    new DemoSelector(SheetName.tiles, ['tiles.png','tiles-1.png'], 'Tiles','Tiles Gallery'),
     new DemoSelector(SheetName.navlog, ['navlog.png','navlog-1.png'], 'NavLog', 'Navlog page and companion tiles'),
     new DemoSelector(SheetName.charts, ['charts.png','charts-1.png'], 'Charts','Airport Diagram and Instrument Approach'),
-    new DemoSelector(SheetName.seattle, ['seattle.png'], 'Seattle Airports', '24 GA Airports in the Seattle Area'),
+    // new DemoSelector(SheetName.seattle, ['seattle.png'], 'Seattle Airports', '24 GA Airports in the Seattle Area'),
 ])
 const clickAndPrint = ref<DemoSelector[]>([
     new DemoSelector(SheetName.reference, ['reference-0.png','reference-1.png'], 'Reference Card', 'Handy Reference Visuals'),
