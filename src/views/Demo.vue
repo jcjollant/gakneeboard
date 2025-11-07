@@ -29,7 +29,7 @@ const toast = useToast()
 const toaster = useToaster(toast)
 
 onMounted(() => {
-  if (demoName === SheetName.vfrflight) {
+  if (demoName === SheetName.vfrflight || demoName == SheetName.ifrflight) {
     showFlightDialog.value = true
   } else {
     loadDemo()
@@ -46,13 +46,25 @@ function loadDemo() {
   router.replace('/template/local')
 }
 
+function setAirportTile(templateData: any, airport: Airport, pageNumber: number, tileNumber: number) {
+  if (templateData.data[pageNumber]?.data?.[tileNumber]) {
+    templateData.data[pageNumber].data[tileNumber].data = {code: airport.code, rwy: airport.rwys[0].name}
+  }
+}
+
+function setRadioTile(templateData: any, frequencies: Frequency[], pageNumber: number, tileNumber: number) {
+  if (templateData.data[pageNumber]?.data?.[tileNumber] && frequencies.length > 0) {
+    templateData.data[pageNumber].data[tileNumber].data = {list: frequencies}
+  }
+}
+
 function onCancel() {
   router.push('/')
 }
 
 function onFlightConfirm(airports: {from: Airport | null, to: Airport | null, alternate: Airport | null}) {
   showFlightDialog.value = false
-  const templateData = DemoData.fromName(SheetName.vfrflight)
+  const templateData = DemoData.fromName(demoName)
   if (!templateData) {
     toaster.error('Load Demo', 'Unknown Demo Template')
     return
@@ -72,20 +84,31 @@ function onFlightConfirm(airports: {from: Airport | null, to: Airport | null, al
   })
   frequencies.sort((a,b) => a.type.localeCompare(b.type))
   
-  if (templateData.data.length >= 2) {
-    if (templateData.data[0]?.data?.[0] && airports.from) {
-      templateData.data[0].data[0].data = {code: airports.from.code, rwy: airports.from.rwys[0].name}
-      templateData.data[1].data[3].data = {from: airports.from.code, to: airports.from.code, mode: DisplayModeSunlight.Flight}
+  try {
+    if( demoName == SheetName.vfrflight) {
+      if (airports.from) {
+        setAirportTile(templateData, airports.from, 0, 0)
+        templateData.data[1].data[3].data = {from: airports.from.code, to: airports.from.code, mode: DisplayModeSunlight.Flight}
+      }
+      if (airports.to) {
+        setAirportTile(templateData, airports.to, 0, 4)
+      }
+      if (airports.alternate) {
+        setAirportTile(templateData, airports.alternate, 1, 1)
+      }
+      setRadioTile(templateData, frequencies, 0, 2)
+    } else if( demoName == SheetName.ifrflight) {
+      // replace alternate airport
+      if(airports.alternate) {
+        setAirportTile(templateData, airports.alternate, 1, 2)
+      }
+      // refresh frequencies
+      setRadioTile(templateData, frequencies, 0, 1)
     }
-    if (templateData.data[0]?.data?.[4] && airports.to) {
-      templateData.data[0].data[4].data = {code: airports.to.code, rwy: airports.to.rwys[0].name}
-    }
-    if (templateData.data[1]?.data?.[1] && airports.alternate) {
-      templateData.data[1].data[1].data = {code: airports.alternate.code, rwy: airports.alternate.rwys[0].name}
-    }
-    if (templateData.data[0]?.data?.[2] && frequencies.length > 0) {
-      templateData.data[0].data[2].data = {list: frequencies}
-    }
+  } catch (e) {
+    toaster.error('Load Demo', 'Error loading demo data')
+    console.error( '[Demo.onFlightConfirm]' + e)
+    return
   }
   
   LocalStore.saveTemplate(templateData)
