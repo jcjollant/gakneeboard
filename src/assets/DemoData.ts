@@ -316,15 +316,15 @@ export class DemoData {
             return DemoData.navlog()
         } else if (name == SheetName.new) {
             return DemoData.blank()
-        } else if (name == SheetName.vfrflight) {
+        } else if (name == SheetName.vfrFlight) {
             return DemoData.skyhawk()
         } else if (name == SheetName.charts) {
             return DemoData.charts()
         } else if (name == SheetName.holds) {
             return DemoData.holds()
-        } else if (name == SheetName.ifrflight) {
+        } else if (name == SheetName.ifrFlight) {
             return DemoData.ifrflight()
-        } else if (name == SheetName.ifrstrips) {
+        } else if (name == SheetName.ifrStrips) {
             return DemoData.ifrstrips()
         } else if(name == SheetName.reference) {
             return DemoData.reference()

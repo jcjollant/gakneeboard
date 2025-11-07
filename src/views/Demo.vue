@@ -29,7 +29,7 @@ const toast = useToast()
 const toaster = useToaster(toast)
 
 onMounted(() => {
-  if (demoName === SheetName.vfrflight || demoName == SheetName.ifrflight) {
+  if (demoName === SheetName.vfrFlight || demoName == SheetName.ifrFlight) {
     showFlightDialog.value = true
   } else {
     loadDemo()
@@ -85,7 +85,7 @@ function onFlightConfirm(airports: {from: Airport | null, to: Airport | null, al
   frequencies.sort((a,b) => a.type.localeCompare(b.type))
   
   try {
-    if( demoName == SheetName.vfrflight) {
+    if( demoName == SheetName.vfrFlight) {
       if (airports.from) {
         setAirportTile(templateData, airports.from, 0, 0)
         templateData.data[1].data[3].data = {from: airports.from.code, to: airports.from.code, mode: DisplayModeSunlight.Flight}
@@ -97,7 +97,7 @@ function onFlightConfirm(airports: {from: Airport | null, to: Airport | null, al
         setAirportTile(templateData, airports.alternate, 1, 1)
       }
       setRadioTile(templateData, frequencies, 0, 2)
-    } else if( demoName == SheetName.ifrflight) {
+    } else if( demoName == SheetName.ifrFlight) {
       // replace alternate airport
       if(airports.alternate) {
         setAirportTile(templateData, airports.alternate, 1, 2)

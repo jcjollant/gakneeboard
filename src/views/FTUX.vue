@@ -201,10 +201,10 @@ class Demo {
 }
 
 const demos = ref<Demo[]>([
-    new Demo('VFR Flight', 'vfrflight.png', 'Perfect starting point for VFR flights', SheetName.vfrflight),
+    new Demo('VFR Flight', 'vfrflight.png', 'Perfect starting point for VFR flights', SheetName.vfrFlight),
     new Demo('Checklists', 'checklist.png', 'Professional checklists in multiple formats', SheetName.checklist),
     new Demo('Charts', 'charts.png', 'Airport diagrams and instrument plates', SheetName.charts),
-    new Demo('IFR Flight', 'ifrflight.png', 'Complete IFR flight organization', SheetName.ifrflight),
+    new Demo('IFR Flight', 'ifrflight.png', 'Complete IFR flight organization', SheetName.ifrFlight),
 ])
 
 const router = useRouter()
