@@ -244,7 +244,7 @@ export class DemoData {
     )
 
     static page2IFRFlight = new TemplatePage(PageType.approach, "Approach 1", {"airport":"S43","pdf":0})
-    static page3IFRFlight = new TemplatePage(PageType.approach, "Approach 2", {"airport":"KAWO","pdf":1})
+    // static page3IFRFlight = new TemplatePage(PageType.approach, "Approach 2", {"airport":"KAWO","pdf":1})
 
     static page0SeattleAirports = new TemplatePage(PageType.tiles, 'Page1',
         [
@@ -341,7 +341,7 @@ export class DemoData {
     }
 
     static ifrflight(): Template {
-        return new Template('IFR Flight', 'IFR Reference Template', false, [DemoData.page0IFRFlight, DemoData.page1IFRFlight, DemoData.page2IFRFlight, DemoData.page3IFRFlight])
+        return new Template('IFR Flight', 'IFR Reference Template', false, [DemoData.page0IFRFlight, DemoData.page1IFRFlight, DemoData.page2IFRFlight])
     }
 
     static ifrstrips(): Template {
