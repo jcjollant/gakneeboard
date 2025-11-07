@@ -17,7 +17,7 @@ import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../assets/Toaster'
 import FlightInfoDialog from '../components/shared/FlightInfoDialog.vue'
 import { Airport } from '../model/Airport'
-import { DisplayModeSunlight } from '../model/DisplayMode'
+import { DisplayModeIfr, DisplayModeSunlight } from '../model/DisplayMode'
 import { Frequency, FrequencyType } from '../model/Frequency'
 import { Formatter } from '../lib/Formatter'
 
@@ -58,6 +58,18 @@ function setRadioTile(templateData: any, frequencies: Frequency[], pageNumber: n
   }
 }
 
+function setTileData(templateData: any, pageNumber: number, tileNumber: number, tileData: any) {
+  if (templateData.data[pageNumber]?.data?.[tileNumber]) {
+    templateData.data[pageNumber].data[tileNumber].data = tileData
+  }
+}
+
+function setPageData(templateData: any, pageNumber: number, pageData: any) {
+  if (templateData.data[pageNumber]) {
+    templateData.data[pageNumber].data = pageData
+  }
+}
+
 function onCancel() {
   router.push('/')
 }
@@ -88,7 +100,7 @@ function onFlightConfirm(airports: {from: Airport | null, to: Airport | null, al
     if( demoName == SheetName.vfrFlight) {
       if (airports.from) {
         setAirportTile(templateData, airports.from, 0, 0)
-        templateData.data[1].data[3].data = {from: airports.from.code, to: airports.from.code, mode: DisplayModeSunlight.Flight}
+        setTileData(templateData, 1, 3, {from: airports.from.code, to: airports.from.code, mode: DisplayModeSunlight.Flight})
       }
       if (airports.to) {
         setAirportTile(templateData, airports.to, 0, 4)
@@ -98,6 +110,15 @@ function onFlightConfirm(airports: {from: Airport | null, to: Airport | null, al
       }
       setRadioTile(templateData, frequencies, 0, 2)
     } else if( demoName == SheetName.ifrFlight) {
+      // replace destination airport
+      if(airports.from) {
+        setTileData( templateData, 0, 0, {  mode: DisplayModeIfr.Departure,  airport: airports.from.code} )
+      }
+
+      if( airports.to) {
+        setPageData( templateData, 2, { airport: airports.to, "pdf": 0 })
+      }
+
       // replace alternate airport
       if(airports.alternate) {
         setAirportTile(templateData, airports.alternate, 1, 2)
