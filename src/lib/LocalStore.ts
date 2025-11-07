@@ -15,6 +15,7 @@ export class LocalStore {
     static templateOld = 'sheet'
     static templateOlder = 'page1'
     static thumbnailPrefix = 'tthumb-'
+    static flightInfo = 'flightInfo'
     static MAX_AIRPORTS = 30
     static MAX_APPROACHES = 5
     static LEAN_AIRPORTS = 24
