@@ -42,7 +42,7 @@ const noAirport:string[] = []
 const invalidAirport:Airport = new Airport()
 const airports = ref(noAirport)
 const code = ref()
-const model = defineModel()
+const model = defineModel<Airport>()
 const name = ref('')
 const valid = ref(false)
 let pendingCode:string|undefined = undefined // used during the short delay between code update and actual request
@@ -51,9 +51,9 @@ const toaster = useToaster( useToast())
 function loadProps(props:any) {
     // console.log('[AirportInput.loadProps]', props)
     if(model.value) {
-        const airport = model.value;
-        code.value = airport['code']
-        name.value = airport['name']
+        const airport = model.value as Airport;
+        code.value = airport.code
+        name.value = airport.name
         valid.value = true
     } else {
         code.value = props.code
@@ -66,7 +66,7 @@ onMounted(() => {
     // get this airport data from parameters
     loadProps(props)
     sessionAirports.addListener(refreshAirportList)
-    refreshAirportList(null)
+    refreshAirportList()
 })
 
 watch( props, async() => {
@@ -131,7 +131,7 @@ function onRecentAirport(airportCode:string) {
     }
 }
 
-function refreshAirportList(newAirports) {
+function refreshAirportList() {
     airports.value =  LocalStore.airportRecentsGet().sort();
 }
 
