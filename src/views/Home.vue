@@ -73,8 +73,8 @@ class DemoSelector {
 }
 
 const demos = ref<DemoSelector[]>([
-    new DemoSelector(SheetName.vfrflight, ['vfrflight.png','vfrflight-1.png'], 'VFR Flight', 'VFR Flight Demo Template'),
-    new DemoSelector(SheetName.ifrflight, ['ifrflight.png','ifrflight-1.png'], 'IFR Flight','IFR Flight Demo Template'),
+    new DemoSelector(SheetName.vfrFlight, ['vfrflight.png','vfrflight-1.png'], 'VFR Flight', 'VFR Flight Demo Template'),
+    new DemoSelector(SheetName.ifrFlight, ['ifrflight.png','ifrflight-1.png'], 'IFR Flight','IFR Flight Demo Template'),
     new DemoSelector(SheetName.checklist, ['checklist.png','checklist-1.png'], 'Checklist','Checklists syntax Showcase'),
     new DemoSelector(SheetName.navlog, ['navlog.png','navlog-1.png'], 'NavLog', 'Navlog page and companion tiles'),
     new DemoSelector(SheetName.charts, ['charts.png','charts-1.png'], 'Charts','Airport Diagram and Instrument Approach'),
@@ -83,7 +83,7 @@ const demos = ref<DemoSelector[]>([
 const clickAndPrint = ref<DemoSelector[]>([
     new DemoSelector(SheetName.reference, ['reference-0.png','reference-1.png'], 'Reference Card', 'Handy Reference Visuals'),
     new DemoSelector(SheetName.acronyms, ['acronyms.png','acronyms-1.png'], 'Acronyms', 'Popular VFR and IFR acronyms'),
-    new DemoSelector(SheetName.ifrstrips, ['ifr-training.png','ifr-training-1.png'], 'IFR Training','Typical IFR Training Flight'),
+    new DemoSelector(SheetName.ifrStrips, ['ifr-training.png','ifr-training-1.png'], 'IFR Training','Typical IFR Training Flight'),
     new DemoSelector(SheetName.holds, ['holds.png','holds.png'], 'Holds Practice','Full sheet of Holds and Compasses'),
     new DemoSelector(SheetName.paperNavlog, ['paper-navlog.png','paper-navlog-1.png'], 'Paper NavLog', 'Printable Template for Paper Navlog'),
 ])
