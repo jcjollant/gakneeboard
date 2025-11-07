@@ -182,12 +182,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref } from 'vue'
 import { SheetName } from '../assets/sheetData'
-import { routeToLocalTemplate } from '../assets/data'
 import { useRouter } from 'vue-router'
 import { LocalStore } from '../lib/LocalStore'
-import { DemoData } from '../assets/DemoData'
 
 class Demo {
     title: string
@@ -203,7 +201,7 @@ class Demo {
 }
 
 const demos = ref<Demo[]>([
-    new Demo('VFR Flight', 'vfrflight.png', 'Perfect starting point for VFR flights', SheetName.skyhawk),
+    new Demo('VFR Flight', 'vfrflight.png', 'Perfect starting point for VFR flights', SheetName.vfrflight),
     new Demo('Checklists', 'checklist.png', 'Professional checklists in multiple formats', SheetName.checklist),
     new Demo('Charts', 'charts.png', 'Airport diagrams and instrument plates', SheetName.charts),
     new Demo('IFR Flight', 'ifrflight.png', 'Complete IFR flight organization', SheetName.ifrflight),
@@ -214,12 +212,7 @@ const mobileMenuOpen = ref(false)
 
 
 function loadDemo(page: string) {
-    const templateData = DemoData.fromName(page)
-    if(!templateData)  {
-        console.log('[FTUX.loadDemo] Unknown Demo Template')
-        return;
-    }
-    routeToLocalTemplate(router, templateData);
+    router.push(`/demo/${page}`)
     LocalStore.popupHide(3)
 }
 

@@ -8,6 +8,7 @@ import TemplateViewer from '../views/TemplateViewer.vue';
 import ThankYou from '../views/ThankYou.vue';
 import FTUX from '../views/FTUX.vue';
 import FormatSelector from '../components/templates/FormatSelector.vue';
+import Demo from '../views/Demo.vue';
 
 export const RouterNames = {
     Admin: 'Admin',
@@ -18,6 +19,7 @@ export const RouterNames = {
     Template: 'Template',
     FTUX: 'First Time',
     FormatSelector: 'Format Selector',
+    Demo: 'Demo',
 }
 
 const routes = [
@@ -29,6 +31,7 @@ const routes = [
     { path: '/ftux', name: RouterNames.FTUX, component: FTUX},
     { path: '/template/:id', name: RouterNames.Template, component: TemplateViewer },
     { path: '/format-selector', name: RouterNames.FormatSelector, component: FormatSelector },
+    { path: '/demo/:name', name: RouterNames.Demo, component: Demo },
 
 ]
 
