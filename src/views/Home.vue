@@ -1,6 +1,7 @@
 <template>
     <div class="home">
         <Toast />
+        <FlightInfoDialog v-model:visible="showFlightDialog" @cancel="showFlightDialog = false" @confirm="onFlightConfirm" />
         <Menu></Menu>
         <div class="section templateSection">
             <div class="header">My Templates</div>
@@ -48,6 +49,7 @@ import { currentUser, routeToLocalTemplate } from '../assets/data';
 import { useRouter } from 'vue-router';
 import { getTemplateBlank, SheetName } from '../assets/sheetData';
 import { Template } from '../model/Template';
+import { Airport } from '../model/Airport';
 import { useToast } from 'primevue/usetoast';
 import { useToaster } from '../assets/Toaster';
 import { DemoData } from '../assets/DemoData';
@@ -59,6 +61,7 @@ import PlaceHolder from '../components/shared/PlaceHolder.vue'
 import TemplateSelector from '../components/templates/TemplateSelector.vue'
 import Toast from 'primevue/toast'
 import { TemplateFormat } from '../model/TemplateFormat';
+import FlightInfoDialog from '../components/shared/FlightInfoDialog.vue'
 
 class DemoSelector {
     name: string
@@ -103,6 +106,7 @@ const router = useRouter()
 const templates = ref<Template[]>([])
 const toast = useToast()
 const toaster = useToaster(toast)
+const showFlightDialog = ref(false)
 
 onMounted( () => {
     // console.log('[Home.onMounted] templates', currentUser.templates.length)
@@ -125,6 +129,11 @@ function onChecklistHelp() {
 }
 
 function onDemoSelection(name:string) {
+    if(name === SheetName.skyhawk) {
+        // console.debug('[Home.onDemoSelection] skyhawk')
+        showFlightDialog.value = true
+        return
+    }
     const templateData = DemoData.fromName(name)
     if(!templateData) {
         toaster.error('Load Demo', 'Unknown Demo Template')
@@ -168,6 +177,34 @@ function onPohSelection(poh:Poh) {
 
 function onTemplateSelection(index:number) {
     router.push( '/template/' + index)
+}
+
+function onFlightConfirm(airports: {from: Airport | null, to: Airport | null, alternate: Airport | null}) {
+    showFlightDialog.value = false
+    const templateData = DemoData.fromName(SheetName.skyhawk)
+    if(!templateData) {
+        toaster.error('Load Demo', 'Unknown Demo Template')
+        return
+    }
+    
+    // Modify template for selected airports
+    // console.debug('[Home.onFlightConfirm] data length', templateData.data.length)
+    if(templateData.data.length >= 2) {
+        // Page 0 tile 0 - From airport
+        if(templateData.data[0]?.data?.[0] && airports.from) {
+            templateData.data[0].data[0].data = {code: airports.from.code, rwy: airports.from.rwys[0].name}
+        }
+        // Page 0 tile 4 - To airport  
+        if(templateData.data[0]?.data?.[4] && airports.to) {
+            templateData.data[0].data[4].data = {code: airports.to.code, rwy: airports.to.rwys[0].name}
+        }
+        // Page 1 tile 1 - Alternate airport
+        if(templateData.data[1]?.data?.[1] && airports.alternate) {
+            templateData.data[1].data[1].data = {code: airports.alternate.code, rwy: airports.alternate.rwys[0].name}
+        }
+    }
+    
+    routeToLocalTemplate(router, templateData)
 }
 
 function userUpdate() {
