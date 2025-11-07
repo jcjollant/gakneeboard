@@ -62,6 +62,9 @@ import TemplateSelector from '../components/templates/TemplateSelector.vue'
 import Toast from 'primevue/toast'
 import { TemplateFormat } from '../model/TemplateFormat';
 import FlightInfoDialog from '../components/shared/FlightInfoDialog.vue'
+import { DisplayModeSunlight } from '../model/DisplayMode';
+import { Frequency, FrequencyType } from '../model/Frequency';
+import { Formatter } from '../lib/Formatter';
 
 class DemoSelector {
     name: string
@@ -187,12 +190,32 @@ function onFlightConfirm(airports: {from: Airport | null, to: Airport | null, al
         return
     }
     
+    // Build frequency list from all airports
+    const frequencies: Frequency[] = []
+    const airportList = [airports.from, airports.to, airports.alternate].filter(a => a !== null) as Airport[]
+    
+    airportList.forEach(airport => {
+        airport.freq.forEach(freq => {
+            const freqType = Frequency.typeFromString(freq.name)
+            if (freqType === FrequencyType.weather || freqType === FrequencyType.tower || 
+                freqType === FrequencyType.ctaf || freqType === FrequencyType.ground) {
+                frequencies.push(new Frequency(Formatter.frequency(freq), `${airport.code} ${freq.name}`, freqType))
+            }
+        })
+    })
+    frequencies.sort((a,b) => a.type.localeCompare(b.type))
+
+    console.debug('[Home.onFlightConfirm] frequencies', frequencies)
+    
     // Modify template for selected airports
     // console.debug('[Home.onFlightConfirm] data length', templateData.data.length)
     if(templateData.data.length >= 2) {
         // Page 0 tile 0 - From airport
         if(templateData.data[0]?.data?.[0] && airports.from) {
+            // First Tile switches to from airport
             templateData.data[0].data[0].data = {code: airports.from.code, rwy: airports.from.rwys[0].name}
+            // Sunlight goes to the same airport
+            templateData.data[1].data[3].data = {from: airports.from.code, to: airports.from.code, mode: DisplayModeSunlight.Flight}
         }
         // Page 0 tile 4 - To airport  
         if(templateData.data[0]?.data?.[4] && airports.to) {
@@ -201,6 +224,11 @@ function onFlightConfirm(airports: {from: Airport | null, to: Airport | null, al
         // Page 1 tile 1 - Alternate airport
         if(templateData.data[1]?.data?.[1] && airports.alternate) {
             templateData.data[1].data[1].data = {code: airports.alternate.code, rwy: airports.alternate.rwys[0].name}
+        }
+        
+        // Add frequencies to radio tile (assuming it's at page 0 tile 2)
+        if(templateData.data[0]?.data?.[2] && frequencies.length > 0) {
+            templateData.data[0].data[2].data = {list: frequencies}
         }
     }
     
