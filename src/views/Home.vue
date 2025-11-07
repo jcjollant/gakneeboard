@@ -78,7 +78,7 @@ class DemoSelector {
 }
 
 const demos = ref<DemoSelector[]>([
-    new DemoSelector(SheetName.skyhawk, ['vfrflight.png','vfrflight-1.png'], 'VFR Flight', 'VFR Flight Demo Template'),
+    new DemoSelector(SheetName.vfrflight, ['vfrflight.png','vfrflight-1.png'], 'VFR Flight', 'VFR Flight Demo Template'),
     new DemoSelector(SheetName.ifrflight, ['ifrflight.png','ifrflight-1.png'], 'IFR Flight','IFR Flight Demo Template'),
     new DemoSelector(SheetName.checklist, ['checklist.png','checklist-1.png'], 'Checklist','Checklists syntax Showcase'),
     new DemoSelector(SheetName.tiles, ['tiles.png','tiles-1.png'], 'Tiles','Tiles Gallery'),
@@ -132,7 +132,7 @@ function onChecklistHelp() {
 }
 
 function onDemoSelection(name:string) {
-    if(name === SheetName.skyhawk) {
+    if(name === SheetName.vfrflight) {
         // console.debug('[Home.onDemoSelection] skyhawk')
         showFlightDialog.value = true
         return
@@ -184,7 +184,7 @@ function onTemplateSelection(index:number) {
 
 function onFlightConfirm(airports: {from: Airport | null, to: Airport | null, alternate: Airport | null}) {
     showFlightDialog.value = false
-    const templateData = DemoData.fromName(SheetName.skyhawk)
+    const templateData = DemoData.fromName(SheetName.vfrflight)
     if(!templateData) {
         toaster.error('Load Demo', 'Unknown Demo Template')
         return
