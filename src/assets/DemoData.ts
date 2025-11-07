@@ -92,7 +92,7 @@ export class DemoData {
     )
 
     // Skyhawk
-    static page0DemoSkyhawk = new TemplatePage(PageType.tiles, 'C172 Reference',
+    static page0DemoVFR = new TemplatePage(PageType.tiles, 'C172 Reference',
         [
             { name: TileType.airport, data: { code: "0S9", rwy: "09-27", rwyOrientation: "magnetic", corners: ["weather", "twr", "field", "tpa"] } },
             { name: TileType.atis, data: { mode: DisplayModeAtis.CompactATIS } },
@@ -113,7 +113,7 @@ export class DemoData {
             { name: TileType.notes, data: {} }
         ]
     )
-    static page1DemoSkyhawk = new TemplatePage(PageType.tiles, 'Back Page', [
+    static page1DemoVFR = new TemplatePage(PageType.tiles, 'Back Page', [
         { name: TileType.checklist, data: { name: "Limits", items: [{ c: "Vne", r: "163" }, { c: "Va @ 2,550/2,200", r: "105/98" }, { c: "Vno", r: "129" }, { c: "Vfe 10/20", r: "110/85" }, { c: "Vg", r: "68" }, { c: "Vs0/1", r: "40/48" }, { c: "Max XWind", r: "15kts" }, { c: "Landing", r: " 1,300ft" }, { c: "TOW", r: "2,550" }, { s: "", t: "blank" }], "theme": "purple" } },
         { name: TileType.airport, data: { code: "KBFI", rwy: "14L-32R", rwyOrientation: "vertical", corners: ["weather", "twr", "field", "tpa"] } },
         { name: TileType.radios, data: { mode: DisplayModeRadios.LostComms, list: [] } },
@@ -365,7 +365,7 @@ export class DemoData {
     }
 
     static skyhawk(): Template {
-        return new Template('VFR Flight', 'VFR Reference Template', false, [DemoData.page0DemoSkyhawk, DemoData.page1DemoSkyhawk])
+        return new Template('VFR Flight', 'VFR Reference Template', false, [DemoData.page0DemoVFR, DemoData.page1DemoVFR])
     }
 
     static tiles(): Template {
