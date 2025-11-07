@@ -1,7 +1,7 @@
 <template>
     <div class="home">
         <Toast />
-        <FlightInfoDialog v-model:visible="showFlightDialog" @cancel="showFlightDialog = false" @confirm="onFlightConfirm" />
+
         <Menu></Menu>
         <div class="section templateSection">
             <div class="header">My Templates</div>
@@ -61,10 +61,7 @@ import PlaceHolder from '../components/shared/PlaceHolder.vue'
 import TemplateSelector from '../components/templates/TemplateSelector.vue'
 import Toast from 'primevue/toast'
 import { TemplateFormat } from '../model/TemplateFormat';
-import FlightInfoDialog from '../components/shared/FlightInfoDialog.vue'
-import { DisplayModeSunlight } from '../model/DisplayMode';
-import { Frequency, FrequencyType } from '../model/Frequency';
-import { Formatter } from '../lib/Formatter';
+
 
 class DemoSelector {
     name: string
@@ -109,7 +106,7 @@ const router = useRouter()
 const templates = ref<Template[]>([])
 const toast = useToast()
 const toaster = useToaster(toast)
-const showFlightDialog = ref(false)
+
 
 onMounted( () => {
     // console.log('[Home.onMounted] templates', currentUser.templates.length)
@@ -132,18 +129,7 @@ function onChecklistHelp() {
 }
 
 function onDemoSelection(name:string) {
-    if(name === SheetName.vfrflight) {
-        // console.debug('[Home.onDemoSelection] skyhawk')
-        showFlightDialog.value = true
-        return
-    }
-    const templateData = DemoData.fromName(name)
-    if(!templateData) {
-        toaster.error('Load Demo', 'Unknown Demo Template')
-        return;
-    }
-    // Save demo data to localstore
-    routeToLocalTemplate(router, templateData);
+    router.push(`/demo/${name}`)
 }
 
 function onNewTemplate() {
@@ -179,61 +165,10 @@ function onPohSelection(poh:Poh) {
 
 
 function onTemplateSelection(index:number) {
-    router.push( '/template/' + index)
+    router.push(`/template/${index}`)
 }
 
-function onFlightConfirm(airports: {from: Airport | null, to: Airport | null, alternate: Airport | null}) {
-    showFlightDialog.value = false
-    const templateData = DemoData.fromName(SheetName.vfrflight)
-    if(!templateData) {
-        toaster.error('Load Demo', 'Unknown Demo Template')
-        return
-    }
-    
-    // Build frequency list from all airports
-    const frequencies: Frequency[] = []
-    const airportList = [airports.from, airports.to, airports.alternate].filter(a => a !== null) as Airport[]
-    
-    airportList.forEach(airport => {
-        airport.freq.forEach(freq => {
-            const freqType = Frequency.typeFromString(freq.name)
-            if (freqType === FrequencyType.weather || freqType === FrequencyType.tower || 
-                freqType === FrequencyType.ctaf || freqType === FrequencyType.ground) {
-                frequencies.push(new Frequency(Formatter.frequency(freq), `${airport.code} ${freq.name}`, freqType))
-            }
-        })
-    })
-    frequencies.sort((a,b) => a.type.localeCompare(b.type))
 
-    console.debug('[Home.onFlightConfirm] frequencies', frequencies)
-    
-    // Modify template for selected airports
-    // console.debug('[Home.onFlightConfirm] data length', templateData.data.length)
-    if(templateData.data.length >= 2) {
-        // Page 0 tile 0 - From airport
-        if(templateData.data[0]?.data?.[0] && airports.from) {
-            // First Tile switches to from airport
-            templateData.data[0].data[0].data = {code: airports.from.code, rwy: airports.from.rwys[0].name}
-            // Sunlight goes to the same airport
-            templateData.data[1].data[3].data = {from: airports.from.code, to: airports.from.code, mode: DisplayModeSunlight.Flight}
-        }
-        // Page 0 tile 4 - To airport  
-        if(templateData.data[0]?.data?.[4] && airports.to) {
-            templateData.data[0].data[4].data = {code: airports.to.code, rwy: airports.to.rwys[0].name}
-        }
-        // Page 1 tile 1 - Alternate airport
-        if(templateData.data[1]?.data?.[1] && airports.alternate) {
-            templateData.data[1].data[1].data = {code: airports.alternate.code, rwy: airports.alternate.rwys[0].name}
-        }
-        
-        // Add frequencies to radio tile (assuming it's at page 0 tile 2)
-        if(templateData.data[0]?.data?.[2] && frequencies.length > 0) {
-            templateData.data[0].data[2].data = {list: frequencies}
-        }
-    }
-    
-    routeToLocalTemplate(router, templateData)
-}
 
 function userUpdate() {
     // console.log('[Home.userUpdate]')
