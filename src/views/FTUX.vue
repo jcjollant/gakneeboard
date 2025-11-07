@@ -459,7 +459,7 @@ h2 {
 
 .demo-card img {
     width: 100%;
-    height: 150px;
+    height: 350px;
     object-fit: cover;
     border-radius: 8px;
     margin-bottom: 1rem;
