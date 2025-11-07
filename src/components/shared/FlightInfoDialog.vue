@@ -1,5 +1,5 @@
 <template>
-    <Dialog modal header="Flight Information" :style="{ width: '35rem' }">
+    <Dialog modal header="Flight Information" :style="{ width: '17.5rem' }">
         <div class="flight-dialog">
             <AirportInput :code="fromCode" label="From" @valid="onFromValid" @invalid="onFromInvalid" />
             <AirportInput :code="toCode" label="To" @valid="onToValid" @invalid="onToInvalid" />
