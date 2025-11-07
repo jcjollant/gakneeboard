@@ -1,7 +1,14 @@
 # User Experience updates
 # Format is {today's date} - {version number} - {change description}
-# REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date
+# REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 11/06/2025 - 5454 
+- Added Demo page with route parameter support
+- Flight info dialog moved to Demo page with cancel navigation
+- Demo route removes history to prevent back navigation
+- Extracted tile data manipulation methods (setAirportTile, setRadioTile, setTileData)
+- Reduced FlightInfoDialog width by half
+- Added loading spinner to Demo page
 ## 11/05/2025 - 5453 - New color schemes for Radio Tile
 ## 11/04/2025 - 5452 - Larger labels for Airport Mode corners
 ## 11/03/2025 - 5451 - Updated oxygen requirement layout
