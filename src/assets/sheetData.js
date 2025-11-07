@@ -10,7 +10,7 @@ export class SheetName {
   static tiles = 'gak-tiles'
   static new = 'gak-new'
   static reset = 'gak-reset'
-  static skyhawk = 'gak-skyhawk'
+  static vfrflight = 'gak-vfrflight'
   static charts = 'gak-charts'
   static holds = 'gak-holds'
   static ifrflight = 'gak-ifrflight'

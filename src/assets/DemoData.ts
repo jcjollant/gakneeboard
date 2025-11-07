@@ -316,7 +316,7 @@ export class DemoData {
             return DemoData.navlog()
         } else if (name == SheetName.new) {
             return DemoData.blank()
-        } else if (name == SheetName.skyhawk) {
+        } else if (name == SheetName.vfrflight) {
             return DemoData.skyhawk()
         } else if (name == SheetName.charts) {
             return DemoData.charts()
