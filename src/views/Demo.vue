@@ -1,8 +1,9 @@
 <template>
   <div class="demo">
-    <FlightInfoDialog v-model:visible="showFlightDialog" @cancel="showFlightDialog = false" @confirm="onFlightConfirm" />
-    <h1>Demo Page</h1>
-    <p>Demo: {{ demoName }}</p>
+    <FlightInfoDialog v-model:visible="showFlightDialog" @cancel="onCancel" @confirm="onFlightConfirm" />
+    <div class="spinner"></div>
+    <h1>Loading Demo...</h1>
+    <p>{{ demoName }}</p>
   </div>
 </template>
 
@@ -11,7 +12,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { SheetName } from '../assets/sheetData'
 import { DemoData } from '../assets/DemoData'
-import { routeToLocalTemplate } from '../assets/data'
+import { LocalStore } from '../lib/LocalStore'
 import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../assets/Toaster'
 import FlightInfoDialog from '../components/shared/FlightInfoDialog.vue'
@@ -41,7 +42,12 @@ function loadDemo() {
     toaster.error('Load Demo', 'Unknown Demo Template')
     return
   }
-  routeToLocalTemplate(router, templateData)
+  LocalStore.saveTemplate(templateData)
+  router.replace('/template/local')
+}
+
+function onCancel() {
+  router.push('/')
 }
 
 function onFlightConfirm(airports: {from: Airport | null, to: Airport | null, alternate: Airport | null}) {
@@ -82,12 +88,29 @@ function onFlightConfirm(airports: {from: Airport | null, to: Airport | null, al
     }
   }
   
-  routeToLocalTemplate(router, templateData)
+  LocalStore.saveTemplate(templateData)
+  router.replace('/template/local')
 }
 </script>
 
 <style scoped>
 .demo {
   padding: 20px;
+  text-align: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>
