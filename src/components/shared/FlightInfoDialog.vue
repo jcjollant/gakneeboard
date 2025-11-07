@@ -43,6 +43,29 @@ function loadFromStorage() {
             fromCode.value = flightInfo.from || 'KBFI'
             toCode.value = flightInfo.to || 'KPAE'
             alternateCode.value = flightInfo.alternate || 'KRNT'
+            
+            // Fetch airport data if codes are present
+            if (flightInfo.from) {
+                try {
+                    fromAirport.value = LocalStore.airportGet(flightInfo.from)
+                } catch (e) {
+                    // Airport not in local store, will be fetched by AirportInput
+                }
+            }
+            if (flightInfo.to) {
+                try {
+                    toAirport.value = LocalStore.airportGet(flightInfo.to)
+                } catch (e) {
+                    // Airport not in local store, will be fetched by AirportInput
+                }
+            }
+            if (flightInfo.alternate) {
+                try {
+                    alternateAirport.value = LocalStore.airportGet(flightInfo.alternate)
+                } catch (e) {
+                    // Airport not in local store, will be fetched by AirportInput
+                }
+            }
         }
     } catch (e) {
         console.warn('Failed to load flight info from storage:', e)
