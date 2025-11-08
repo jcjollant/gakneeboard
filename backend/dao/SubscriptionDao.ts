@@ -1,7 +1,5 @@
-import { sql } from "@vercel/postgres"
 import { Subscription } from "../models/Subscription"
 import { Dao } from "./Dao";
-import { table } from "console";
 
 export class SubscriptionDao extends Dao<Subscription> {
     protected tableName: string = 'subscriptions';
@@ -33,22 +31,24 @@ export class SubscriptionDao extends Dao<Subscription> {
         })
     }
 
-    // public async updateEndedAt(subscriptionId:string, endedAt:number|null):Promise<Subscription> {
-    //     return new Promise<Subscription>(async (resolve, reject) => {
-    //         try {
-    //             const result = await sql`SELECT * FROM subscriptions WHERE id=${subscriptionId}`
-    //             if(result.rowCount == 0) {
-    //                 reject('Subscription not found')
-    //             }
-    //             await sql`UPDATE subscriptions SET ended_at=${endedAt} WHERE id=${subscriptionId}`
-    //             const subscription = this.parseRow(result.rows[0]);
-    //             subscription.setEnededAt(endedAt ? endedAt : 0)
-    //             resolve( subscription)
-    //         } catch(e) {
-    //             reject(e)
-    //         }
-    //     })
-    // }
+    // Record cancel_at and ended_at for an existing subscription
+    public async updateCancellation(subscriptionId:string, cancelAt:number|null, endedAt:number|null):Promise<Subscription> {
+        return new Promise<Subscription>(async (resolve, reject) => {
+            try {
+                const result = await this.db.query(`SELECT * FROM subscriptions WHERE id=${subscriptionId}`)
+                if(result.rowCount == 0) {
+                    reject('Subscription not found')
+                }
+                await this.db.query(`UPDATE subscriptions SET cancel_at=${cancelAt}, ended_at=${endedAt} WHERE id=${subscriptionId}`)
+                const subscription = this.parseRow(result.rows[0]);
+                subscription.setBrandNew(false)
+                subscription.setEnededAt(endedAt ? endedAt : 0)
+                resolve( subscription)
+            } catch(e) {
+                reject(e)
+            }
+        })
+    }
 
     // create a Subscription from a result row (*)
     public parseRow(row:any):Subscription {
@@ -71,14 +71,15 @@ export class SubscriptionDao extends Dao<Subscription> {
     }
 
     /**
-     * Get count of churned customers in the past 30 days
+     * Get count of churned customers in the past N days
+     * @param days Number of days to look back
      * @returns Promise<number>
      */
-    public async getChurnLast30Days():Promise<number> {
+    public async getChurnLastDays(days: number = 30):Promise<number> {
         const result = await this.db.query(`
             SELECT *
             FROM subscriptions
-            WHERE cancel_at >= EXTRACT(EPOCH FROM NOW() - INTERVAL '120 days')
+            WHERE cancel_at >= EXTRACT(EPOCH FROM NOW() - INTERVAL '${days} days')
             AND cancel_at IS NOT NULL
         `);
         return result.rowCount || 0;

@@ -205,7 +205,7 @@ export class Metrics {
         const newCustomers = await subscriptionDao.getNewCustomersLast30Days()
         businessMetrics.push(new Metric(MetricKey.customersNew30d, newCustomers))
         
-        const churnCount = await subscriptionDao.getChurnLast30Days()
+        const churnCount = await subscriptionDao.getChurnLastDays(30)
         businessMetrics.push(new Metric(MetricKey.customersChurn30d, churnCount))
         
         return businessMetrics
