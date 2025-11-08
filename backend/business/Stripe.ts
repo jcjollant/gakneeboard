@@ -132,12 +132,13 @@ export class StripeClient {
                     const endedAt = event.data.object.ended_at
                     const userDao = new UserDao()
                     if(event.type == SUB_DELETE) {
-                        await Business.subscriptionStop(subscriptionId, customerId, userDao)
+                        await Business.subscriptionStop(subscriptionId, customerId, userDao, cancelAt, endedAt)
                     } else {
                         const subscriptionDao = new SubscriptionDao()
                         const accountType = this.accountTypeFromPrice(priceId)
                         await Business.subscriptionUpdate(subscriptionId, customerId, priceId, accountType, periodEnd, cancelAt, endedAt, userDao, subscriptionDao)
                     }
+                    // save event for future reference
                     await sql`INSERT INTO stripe_events (type, stripe_id, data) VALUES (${event.type}, ${subscriptionId}, ${JSON.stringify(event.data.object)})`
                 } else if(event.type == CHECKOUT_COMPLETE) {
                     // console.log('[Stripe.webhook]', JSON.stringify(event.data))

@@ -157,13 +157,19 @@ export class Business {
     }
 
     // revert the acount back to simmer
-    static async subscriptionStop(subscriptionId: string, customerId: string, userDao:UserDao):Promise<User> {
+    static async subscriptionStop(subscriptionId: string, customerId: string, userDao:UserDao, cancelAt:number, endedAt:number):Promise<User> {
         return new Promise( async (resolve, reject) => {
             if(!subscriptionId) return reject('Subscription Id is required');
             if(!customerId) return reject('Customer Id is required');
 
             const user = await userDao.getFromCustomerId(customerId)
-            await Business.updateAccountType(user, AccountType.simmer, userDao)
+            // update cancellation
+            const subscriptionDao = new SubscriptionDao()
+            // call both concurrently
+            await Promise.all([
+                Business.updateAccountType(user, AccountType.simmer, userDao),
+                subscriptionDao.updateCancellation(subscriptionId, cancelAt, endedAt)
+            ])
 
             resolve(user)
         })
