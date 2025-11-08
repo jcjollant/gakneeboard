@@ -1,3 +1,4 @@
+## 11/07/2025 - 5450 - Fixed churn method and subscription cancel
 ## 10/31/2025 - 5442 - Data refresh
 ## 10/29/2025 - 5441 - Adjusted values for business limits
 ## 10/27/2025 - 5440 - Added business metrics for new customers and churn tracking with monthly revenue test
