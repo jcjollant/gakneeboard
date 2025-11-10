@@ -98,6 +98,7 @@ export class HealthCheck {
             'STRIPE_PP1_PRICE',
             'STRIPE_PP2_PRICE', 
             'STRIPE_BD1_PRICE',
+            'STRIPE_LD1_PRICE',
             'EFFECTIVE_DATE']
 
         const check:Check = new Check("Environment Variables")

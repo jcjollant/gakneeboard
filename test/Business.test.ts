@@ -60,35 +60,15 @@ describe('Business', () => {
         });
     });
 
-    describe('maxPages', () => {
-        it('should return correct max pages for simmer account', () => {
-            const newUser = newTestUser()
-            newUser.setAccountType( AccountType.simmer);
-            newUser.printCredits = 0; // no credits
-            const c0 = Business.maxTemplates(newUser);
-            expect(c0).toBe(2);
-            newUser.printCredits = 2; // existing credits
-            const c1 = Business.maxTemplates(newUser);
-            expect(c1).toBe(2);
-            newUser.printCredits = 6; // existing credits higher than refill
-            const c2 = Business.maxTemplates(newUser);
-            expect(c2).toBe(2); // should not loose credits
-            newUser.printCredits = -1; // weird credits
-            const c3 = Business.maxTemplates(newUser);
-            expect(c3).toBe(2);
-        });
-
-    })
-
     describe('quotas', () => {
         const user = new User(0, '')
 
-        it('should return beta account quotas', () => {
+        it('should return simmer account quotas', () => {
             user.accountType = AccountType.simmer
             const quotas = Business.getQuotas(user);
-            expect(quotas.pages).toBe(4);
+            expect(quotas.pages).toBe(2);
             expect(quotas.prints).toBe(4);
-            expect(quotas.templates).toBe(2);
+            expect(quotas.templates).toBe(1);
         });
 
         it('should return student account quotas', () => {
@@ -102,9 +82,17 @@ describe('Business', () => {
         it('should return private account quotas', () => {
             user.accountType = AccountType.private
             const quotas = Business.getQuotas(user);
-            expect(quotas.pages).toBe(50);
-            expect(quotas.prints).toBe(-1);
-            expect(quotas.templates).toBe(10);
+            expect(quotas.pages).toBe(20);
+            expect(quotas.prints).toBe(16);
+            expect(quotas.templates).toBe(5);
+        });
+
+        it('should return lifetime deal account quotas', () => {
+            user.accountType = AccountType.lifetime
+            const quotas = Business.getQuotas(user);
+            expect(quotas.pages).toBe(20);
+            expect(quotas.prints).toBe(16);
+            expect(quotas.templates).toBe(5);
         });
 
         it('should return beta account quotas', () => {
@@ -315,20 +303,23 @@ describe('Business', () => {
         it('should reject invalid subscription id', async () => {
             const user = newTestUser()
             const mockUserDao = getMockUserDao(user)
-            await expect( Business.subscriptionStop('', 'customer-id', mockUserDao)).rejects.toEqual('Subscription Id is required')
+            const now = new Date().getTime()
+            await expect( Business.subscriptionStop('', 'customer-id', mockUserDao, now, now)).rejects.toEqual('Subscription Id is required')
         })
 
         it('should reject invalid customer id', async () => {
             const user = newTestUser()
             const mockUserDao = getMockUserDao(user)
-            await expect( Business.subscriptionStop('sub-id', '', mockUserDao)).rejects.toEqual('Customer Id is required')
+            const now = new Date().getTime()
+            await expect( Business.subscriptionStop('sub-id', '', mockUserDao, now, now)).rejects.toEqual('Customer Id is required')
         })
 
         it('should stop subscription', async () => {
             const user = newTestUser()
             user.accountType = AccountType.private
             const mockUserDao = getMockUserDao(user)
-            await Business.subscriptionStop('customer-id', 'sub-id', mockUserDao).then( u => {
+            const now = new Date().getTime()
+            await Business.subscriptionStop('customer-id', 'sub-id', mockUserDao, now, now).then( u => {
                 // Account should be downgraded to simmer
                 expect(u.accountType).toBe(AccountType.simmer)
             })

@@ -13,6 +13,7 @@ const pp1Price = process.env.STRIPE_PP1_PRICE;
 const pp2Price = process.env.STRIPE_PP2_PRICE;
 const hh1Price = process.env.STRIPE_HH1_PRICE;
 const bd1Price = process.env.STRIPE_BD1_PRICE;
+const ld1Price = process.env.STRIPE_LD1_PRICE;
 const ff1Price = 'free';
 const SUB_UPDATE = 'customer.subscription.updated';
 const SUB_DELETE = 'customer.subscription.deleted';
@@ -181,6 +182,7 @@ export class StripeClient {
             case pp1Price: return AccountType.student;
             case pp2Price: return AccountType.private;
             case ff1Price: return AccountType.simmer;
+            case ld1Price: return AccountType.lifetime;
             default: return AccountType.unknown;
         }
     }
@@ -193,6 +195,7 @@ export class StripeClient {
             case 'pp2': return new Price( pp2Price, true);
             case 'hh1': return new Price( hh1Price, false);
             case 'bd1': return new Price( bd1Price, true);
+            case 'ld1': return new Price( ld1Price, true);
             default: throw new Error('Product not found : ' + product);
         }
     }

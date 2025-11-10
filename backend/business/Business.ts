@@ -48,39 +48,37 @@ export class Business {
             case AccountType.student: 
                 return new Quota(this.PRINT_CREDIT_STUDENT, this.MAX_PAGES_STUDENT, this.MAX_TEMPLATE_STUDENT)
             case AccountType.private: 
+            case AccountType.lifetime: // shares the same limit as private
                 return new Quota(this.PRINT_CREDIT_PRIVATE, this.MAX_PAGES_PRIVATE, this.MAX_TEMPLATE_PRIVATE)
             case AccountType.beta: 
                 return new Quota(this.PRINT_CREDIT_BETA, this.MAX_PAGES_BETA, this.MAX_TEMPLATE_BETA)
+            case AccountType.unknown:
+                return new Quota(0, 0, 0)
+            case AccountType.simmer:
             default:
                 return new Quota(this.PRINT_CREDIT_SIMMER, this.MAX_PAGES_SIMMER, this.MAX_TEMPLATE_SIMMER)
         }
     }
 
     static isActiveCustomer(user:User):boolean {
-        return user.accountType == AccountType.beta || user.accountType == AccountType.private || user.accountType == AccountType.student;
+        return user.accountType != AccountType.simmer && user.accountType != AccountType.unknown;
     }
 
     static maxTemplates(user:User):number {
-        return this.maxTemplatesFromAccountType(user.accountType)
+        const quota = this.getQuotas(user)
+        return quota.templates
     }
 
-    static maxTemplatesFromAccountType(accountType:AccountType):number {
-        switch(accountType) {
-            case AccountType.private: return this.MAX_TEMPLATE_PRIVATE;
-            case AccountType.beta:    return this.MAX_TEMPLATE_BETA;
-            case AccountType.simmer:  return this.MAX_TEMPLATE_SIMMER;
-            case AccountType.student: return this.MAX_TEMPLATE_STUDENT;
-            default:
-                return 0;
-        }
-    }
-    
     static monthlyRevenue(user: User):number {
         switch(user.accountType) {
-            case AccountType.private: return 4.49;
-            case AccountType.beta:    return 3.49;
-            case AccountType.student: return 2.99;
+            case AccountType.private: 
+                return 4.49;
+            case AccountType.beta:    
+                return 3.49;
+            case AccountType.student: 
+                return 2.99;
             case AccountType.simmer:
+            case AccountType.lifetime:
             default:
                 return 0;
         }
