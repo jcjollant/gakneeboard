@@ -24,7 +24,8 @@
     "nodemailer": "^6.9.14",
     "pdfjs-dist": "^5.1.91",
     "postgres": "^3.4.4",
-    "stripe": "^17.6.0"
+    "stripe": "^17.6.0",
+    "vercel": "^48.9.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.7",
