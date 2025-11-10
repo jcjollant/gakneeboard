@@ -126,4 +126,18 @@ export class UsageDao extends Dao<Usage> {
                 .catch( err => reject(err))
         })
     }
+
+    public async getCustomerHapinessIndex():Promise<{userId: number, count: number}[]> {
+        return new Promise<{userId: number, count: number}[]>(async (resolve, reject) => {
+            this.db.query(`SELECT user_id, count(*) pc FROM ${this.tableName} WHERE usage_type = 'print' AND create_time > current_date - 30 GROUP BY user_id ORDER BY pc DESC`)
+                .then( res => {
+                    const output = res.rows.map(row => ({
+                        userId: Number(row.user_id),
+                        count: Number(row.pc)
+                    }))
+                    resolve(output)
+                })
+                .catch( err => reject(err))
+        })
+    }
 }

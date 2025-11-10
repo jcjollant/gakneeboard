@@ -421,6 +421,20 @@ app.get('/usage/active', async (req:Request, res:Response) => {
     }
 })
 
+app.get('/usage/chi', async (req:Request, res:Response) => {
+    try {
+        const requester = await UserTools.userIdFromRequest(req)
+        if(!UserTools.isAdmin(requester)) {
+            throw new GApiError(401, 'Unauthorized')
+        }
+        const usageDao = new UsageDao()
+        const chiList = await usageDao.getCustomerHapinessIndex()
+        res.send(chiList)
+    } catch(e) {
+        catchError(res, e, 'GET /usage/chi')
+    }
+})
+
 app.post('/userImage', async (req:Request, res:Response) => {
     try {
         const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
