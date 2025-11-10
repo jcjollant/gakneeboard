@@ -1,3 +1,4 @@
+## 11/10/2025 - 5460 - Added CHI API
 ## 11/09/2025 - 5451 - Added lifetime deal
 ## 11/07/2025 - 5450 - Fixed churn method and subscription cancel
 ## 10/31/2025 - 5442 - Data refresh
