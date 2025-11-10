@@ -4,6 +4,7 @@ export enum AccountType {
     instrument = 'ip',
     simmer='sim',
     hobbs= 'hob',
+    lifetime = 'lt',
     unknown = "?"
 }
 
@@ -14,6 +15,7 @@ export function parseAccountType(from:string):AccountType {
         case 'ip': return AccountType.instrument;
         case 'sim': return AccountType.simmer;
         case 'hob': return AccountType.hobbs;
+        case 'lt': return AccountType.lifetime;
         default: return AccountType.unknown;
     }
 }

@@ -9,6 +9,7 @@ export class Pricing {
     static privatePilot = 'pp2';
     static hobbs = 'hh1';
     static betaDeal = 'bd1';
+    static lifetimeDeal = 'ltd1'
 }
 
 export class Checkout {
@@ -28,6 +29,8 @@ export class Checkout {
                 return AccountType.beta;
             case Pricing.hobbs:
                 return AccountType.hobbs;
+            case Pricing.lifetimeDeal:
+                return AccountType.lifetime;
             default:
                 return AccountType.unknown;
         }

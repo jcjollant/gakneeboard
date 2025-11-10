@@ -101,22 +101,6 @@ const showOutOfCreditsBanner = computed(() => {
 })
 
 const plans = ref([
-{
-    name: "Flight Simmer",
-    subtitle: "Just Free",
-    price: 0,
-    monthly: false,
-    description: "Best to Try it out",
-    features: {
-      "Prints per Month": 4,
-      "Advanced Print Options": false,
-      "Templates": 1,
-      "Pages": 2,
-    },
-    popular: false,
-    active: true,
-    code: Pricing.simmer
-  },
   {
     name: "Student Pilot",
     price: 2.99,
@@ -133,23 +117,6 @@ const plans = ref([
     active: true,
     code: Pricing.studentPilot
   },
-  // {
-  //   name: "Instrument Pilot",
-  //   monthly: 8.99,
-  //   monthly: 7.99,
-  //   description: "For power users",
-  //   features: {
-  //     "25 Templates of 10 pages": true,
-  //     "Any Pages": true,
-  //     "Unlimited Tiles": true,
-  //     "Airport Diagrams": true,
-  //     "Instrument Approaches": true,
-  //     "Exports": true
-  //   },
-  //   popular: false,
-  //   code: {monthly: Pricing.instrumentMonthly, annual: Pricing.instrumentAnnual}
-  // },
-
   {
     name: "Private Pilot",
     price: 4.49,
@@ -162,9 +129,25 @@ const plans = ref([
       "Templates": 5,
       "Pages": 20,
     },
-    popular: true,
+    popular: false,
     active: true,
     code: Pricing.privatePilot
+  },
+  {
+    name: "Lifetime Deal",
+    price: 59,
+    monthly: false,
+    subtitle: "Pay once, use forever!",
+    description: "Grab it before it's gone",
+    features: {
+      "Prints per Month": 16,
+      "Advanced Print Options": true,
+      "Templates": 5,
+      "Pages": 20,
+    },
+    popular: true,
+    active: true,
+    code: Pricing.lifetimeDeal
   }
 ])
 const router = useRouter()
@@ -323,7 +306,7 @@ function onPlan(code:Pricing) {
 
 .popular-badge {
     position: absolute;
-    top: -10px;
+    top: -20px;
     left: 50%;
     transform: translateX(-50%);
     background: #f97316;
