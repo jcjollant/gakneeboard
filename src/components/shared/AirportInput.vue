@@ -48,16 +48,25 @@ const valid = ref(false)
 let pendingCode:string|undefined = undefined // used during the short delay between code update and actual request
 const toaster = useToaster( useToast())
 
-function loadProps(props:any) {
+async function loadProps(props:any) {
     // console.log('[AirportInput.loadProps]', props)
+    let airport:Airport|undefined = undefined
     if(model.value) {
         const airport = model.value as Airport;
+    } else {
+        code.value = props.code
+        try {
+            airport = await getAirport(code.value)
+        } catch (e) {
+            // Airport not in local store, will be fetched by AirportInput
+        }
+    }
+
+    // did we get anything from that code?
+    if( airport) {
         code.value = airport.code
         name.value = airport.name
         valid.value = true
-    } else {
-        code.value = props.code
-        valid.value = false
     }
 }
 

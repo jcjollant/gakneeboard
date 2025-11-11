@@ -15,11 +15,12 @@ import { DemoData } from '../assets/DemoData'
 import { LocalStore } from '../lib/LocalStore'
 import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../assets/Toaster'
-import FlightInfoDialog from '../components/shared/FlightInfoDialog.vue'
 import { Airport } from '../model/Airport'
 import { DisplayModeIfr, DisplayModeSunlight } from '../model/DisplayMode'
 import { Frequency, FrequencyType } from '../model/Frequency'
 import { Formatter } from '../lib/Formatter'
+
+import FlightInfoDialog from '../components/airport/DemoAirportSelection.vue'
 
 const route = useRoute()
 const router = useRouter()
