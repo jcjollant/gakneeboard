@@ -5,7 +5,7 @@
             <div class="key">Name</div><div class="value accountName">{{user.name}}</div>
             <div class="key">Account Type</div>
             <div class="value accountType">
-              <div>{{Formatter.accountType(user.accountType)}}</div>
+              <div :class="{unlimited: user.accountType == AccountType.lifetime}">{{Formatter.accountType(user.accountType)}}</div>
               <UpdateButton @click="onUpdateAccount" :manage="user.accountType != AccountType.simmer"/>
             </div>
             <div class="key">Templates</div>

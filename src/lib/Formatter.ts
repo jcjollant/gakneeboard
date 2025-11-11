@@ -9,10 +9,11 @@ export class Formatter {
 
     static accountType(at:AccountType):string {
         switch(at) {
-            case AccountType.beta: return 'Beta Deal'; break;
-            case AccountType.private: return 'Private Pilot'; break
-            case AccountType.instrument: return 'Instrument Pilot'; break;
-            case AccountType.simmer: return 'Flight Simmer';
+            case AccountType.beta: return 'Beta Deal';
+            case AccountType.private: return 'Private Pilot';
+            case AccountType.instrument: return 'Instrument Pilot';
+            case AccountType.simmer: return 'Flight Simmer'; 
+            case AccountType.lifetime: return 'Lifetime Deal';
             default: return '?';
         }
     }

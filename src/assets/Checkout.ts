@@ -9,7 +9,7 @@ export class Pricing {
     static privatePilot = 'pp2';
     static hobbs = 'hh1';
     static betaDeal = 'bd1';
-    static lifetimeDeal = 'ltd1'
+    static lifetimeDeal = 'ld1'
 }
 
 export class Checkout {

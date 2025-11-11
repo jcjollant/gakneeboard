@@ -4,7 +4,7 @@ export enum AccountType {
     instrument = 'ip',
     simmer='sim',
     hobbs= 'hob',
-    lifetime = 'lt',
+    lifetime = 'ld',
     unknown = "?"
 }
 
