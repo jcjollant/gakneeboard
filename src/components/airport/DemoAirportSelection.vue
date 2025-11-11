@@ -16,7 +16,7 @@
 import { ref, onMounted } from 'vue'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
-import AirportInput from './AirportInput.vue'
+import AirportInput from '../shared/AirportInput.vue'
 import { Airport } from '../../model/Airport'
 import { LocalStore } from '../../lib/LocalStore'
 
@@ -43,29 +43,6 @@ function loadFromStorage() {
             fromCode.value = flightInfo.from || 'KBFI'
             toCode.value = flightInfo.to || 'KPAE'
             alternateCode.value = flightInfo.alternate || 'KRNT'
-            
-            // Fetch airport data if codes are present
-            if (flightInfo.from) {
-                try {
-                    fromAirport.value = LocalStore.airportGet(flightInfo.from)
-                } catch (e) {
-                    // Airport not in local store, will be fetched by AirportInput
-                }
-            }
-            if (flightInfo.to) {
-                try {
-                    toAirport.value = LocalStore.airportGet(flightInfo.to)
-                } catch (e) {
-                    // Airport not in local store, will be fetched by AirportInput
-                }
-            }
-            if (flightInfo.alternate) {
-                try {
-                    alternateAirport.value = LocalStore.airportGet(flightInfo.alternate)
-                } catch (e) {
-                    // Airport not in local store, will be fetched by AirportInput
-                }
-            }
         }
     } catch (e) {
         console.warn('Failed to load flight info from storage:', e)
