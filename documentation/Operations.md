@@ -20,7 +20,10 @@ Adip is returning effective data in getAirportCurrentEffectiveDate() which is re
 * Refresh Adip.defaultEffectiveDate in [Adip.ts](../backend/adip/Adip.ts) (starting date)
 
 ## Checks
-Effective date is checked by Willie every day
+Effective date is checked by Willie every day which invokes HealthChecks.perform()
+
+## Monthly refills 
+Willie cron job triggers Maintenance.willie() which calls Business.printRefills() to identify users needing credit refills by account type. UserDao.refill() updates print_credit column for qualifying users below threshold. UsageDao.refill() logs refill events. Refills target specific account types (Student, Private) with predetermined credit amounts based on subscription tiers.
 
 ## Tests
 [constants.ts](../test/constants.ts) defines currentAsOf as a constant which is used to check API return value
