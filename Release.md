@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 11/10/2025 - 5460 - Activated lifetime deal
 ## 11/06/2025 - 5454 
 - Added Demo page with route parameter support
 - Flight info dialog moved to Demo page with cancel navigation
