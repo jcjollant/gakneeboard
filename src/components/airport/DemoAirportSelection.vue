@@ -1,9 +1,9 @@
 <template>
     <Dialog modal header="Enter Your Airports" :style="{ width: '17.5rem' }">
         <div class="flight-dialog">
-            <AirportInput :code="fromCode" label="From" @valid="onFromValid" @invalid="onFromInvalid" />
-            <AirportInput :code="toCode" label="To" @valid="onToValid" @invalid="onToInvalid" />
-            <AirportInput :code="alternateCode" label="Alter." @valid="onAlternateValid" @invalid="onAlternateInvalid" />
+            <AirportInput :code="fromCode" v-model="fromAirport" label="From" @invalid="onFromInvalid" />
+            <AirportInput :code="toCode" v-model="toAirport" label="To" @invalid="onToInvalid" />
+            <AirportInput :code="alternateCode" v-model="alternateAirport" label="Alter." @invalid="onAlternateInvalid" />
             <div class="dialog-actions">
                 <Button label="Cancel" @click="onCancel" link />
                 <Button label="Confirm" @click="onConfirm" />
@@ -22,9 +22,9 @@ import { LocalStore } from '../../lib/LocalStore'
 
 const emits = defineEmits(['cancel', 'confirm'])
 
-const fromAirport = ref<Airport | null>(null)
-const toAirport = ref<Airport | null>(null)
-const alternateAirport = ref<Airport | null>(null)
+const fromAirport = ref<Airport | undefined>(undefined)
+const toAirport = ref<Airport | undefined>(undefined)
+const alternateAirport = ref<Airport | undefined>(undefined)
 const fromCode = ref('KBFI')
 const toCode = ref('KPAE')
 const alternateCode = ref('KRNT')
@@ -50,6 +50,7 @@ function loadFromStorage() {
 }
 
 function saveToStorage() {
+    // console.debug('[DemoAirportSelection.saveToStorage] ', fromAirport.value?.code, toAirport.value?.code, alternateAirport.value?.code)
     try {
         const flightInfo: FlightInfo = {
             from: fromAirport.value?.code || fromCode.value,
@@ -66,28 +67,16 @@ onMounted(() => {
     loadFromStorage()
 })
 
-function onFromValid(airport: Airport) {
-    fromAirport.value = airport
-}
-
 function onFromInvalid() {
-    fromAirport.value = null
-}
-
-function onToValid(airport: Airport) {
-    toAirport.value = airport
+    fromAirport.value = undefined
 }
 
 function onToInvalid() {
-    toAirport.value = null
-}
-
-function onAlternateValid(airport: Airport) {
-    alternateAirport.value = airport
+    toAirport.value = undefined
 }
 
 function onAlternateInvalid() {
-    alternateAirport.value = null
+    alternateAirport.value = undefined
 }
 
 function onCancel() {

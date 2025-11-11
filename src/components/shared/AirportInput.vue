@@ -42,7 +42,7 @@ const noAirport:string[] = []
 const invalidAirport:Airport = new Airport()
 const airports = ref(noAirport)
 const code = ref()
-const model = defineModel<Airport>()
+const model = defineModel<Airport|undefined>()
 const name = ref('')
 const valid = ref(false)
 let pendingCode:string|undefined = undefined // used during the short delay between code update and actual request
@@ -56,18 +56,11 @@ async function loadProps(props:any) {
     } else {
         code.value = props.code
         try {
-            airport = await getAirport(code.value)
-            emits('valid', airport)
+            fetchAirport()
         } catch (e) {
             // Airport not in local store, will be fetched by AirportInput
+            console.log(`[AirportInput.loadProps] Airport ${props.code} not found`, e)
         }
-    }
-
-    // did we get anything from that code?
-    if( airport) {
-        code.value = airport.code
-        name.value = airport.name
-        valid.value = true
     }
 }
 
@@ -92,6 +85,7 @@ function fetchAirport() {
             const airport = Airport.copy(a)
             // console.log('[AirportInput.fetchAirport] copied', airport)
             if( airport.isValid()) {
+                // console.debug('[AirportInput.fetchAirport] valid', airport)
                 name.value = airport.name
                 code.value = airport.code
                 valid.value = true
