@@ -107,15 +107,16 @@ function showField( field:string) {
         // #R -> Radial
         // #A -> ATC
         if(field[1] == 'F' && airport.freq) { // Frequency
-            // RadioFrequencies use the '#F' prefix
+            // RadioFrequencies use the '#F' prefix. For Example #FUNICOM#122.950
             const freqName = field.substring(2)
             // console.log('[Corner.showField]', freqName)
-            if(freqName.length > 4 && freqName[3] == '#') {
-                // Value is already formatter. For Example #F#TWR#120.600
-                value.value = freqName.substring(4)
-                const labelValue = freqName.substring(0, 3)
+            const separator = freqName.indexOf('#')
+            if(separator > 0) {
+                // Value is already formatted. For Example #FTWR#120.600
+                value.value = freqName.substring(separator + 1)
+                const labelValue = freqName.substring(0, separator)
                 label.value = labelValue
-            } else {
+            } else { // its only the frequency name
                 const freqValue = getFrequency( airport.freq, freqName)                
                 value.value = Formatter.frequency(freqValue)
                 label.value = freqName
