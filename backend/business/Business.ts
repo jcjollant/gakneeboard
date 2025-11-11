@@ -143,6 +143,8 @@ export class Business {
      */
     static async printRefills(userDao:UserDao, force:boolean=false):Promise<Refill[]> {
         const dayOfTheMonth = new Date().getDate()
+
+        // onyl refill on the first day of the month or when forced by parameter
         if(!force && dayOfTheMonth != 1) return []
 
         const refills = await userDao.refill( this.PRINT_CREDIT_SIMMER, AccountType.simmer)
@@ -199,6 +201,10 @@ export class Business {
             userDao.getFromCustomerId(customerId)])
 
         // Refresh account type
+        await Business.upgradeUser(user, newAccountType, userDao)
+    }
+
+    static async upgradeUser(user: User, newAccountType: AccountType, userDao: UserDao) {
         await Business.updateAccountType(user, newAccountType, userDao)
 
         // update print credits
