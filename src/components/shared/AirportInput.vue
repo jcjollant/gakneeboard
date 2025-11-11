@@ -57,6 +57,7 @@ async function loadProps(props:any) {
         code.value = props.code
         try {
             airport = await getAirport(code.value)
+            emits('valid', airport)
         } catch (e) {
             // Airport not in local store, will be fetched by AirportInput
         }
