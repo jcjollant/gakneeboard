@@ -238,7 +238,7 @@ function onCornerEdit(index:number, event: any) {
  * @param {*} data 
  */
 function onCornerUpdate( field:string) {
-    // console.debug( 'onCornerUpdate ' + JSON.stringify(data))
+    // console.debug( '[AirportTile.onCornerUpdate] ', field)
     // prevent event processing in the component
     cornerConfigEvent.value = undefined
     if( field) {
