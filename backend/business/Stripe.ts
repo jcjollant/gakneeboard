@@ -154,14 +154,20 @@ export class StripeClient {
                         await this.stripe.checkout.sessions.listLineItems(sessionId).then( async (li)=> {
                             const priceId = li.data[0].price?.id
                             console.log('[Stripe.webhook] priceId', priceId)
-                            if( priceId == hh1Price) {
-                                const printCount = Business.PRINT_PER_PURCHASE
-                                const userDao = new UserDao()
-                                await Business.printPurchase(customerId, printCount, userDao).catch( (err) => {
-                                    Ticket.create( 2, `Customer ${customerId}, Failed to purchase ${printCount} prints. Stripe ${stripeId}`)
-                                })
-                            } else {
-                                console.log('[Stripe.webhook] unexpected priceId', priceId)
+                            const userDao = new UserDao()
+                            switch(priceId) {
+                                case hh1Price:
+                                    const printCount = Business.PRINT_PER_PURCHASE
+                                    await Business.printPurchase(customerId, printCount, userDao).catch( (err) => {
+                                        Ticket.create( 2, `Customer ${customerId}, Failed to purchase ${printCount} prints. Stripe ${stripeId}`)
+                                    });
+                                    break;
+                                case ld1Price: // Lifetime Deal
+                                    const user = await userDao.getFromCustomerId(customerId)
+                                    await Business.upgradeUser(user, AccountType.lifetime, userDao);
+                                    break;
+                                default:
+                                    console.log('[Stripe.webhook] unexpected priceId', priceId)
                             }
                         })
                     }
@@ -195,7 +201,7 @@ export class StripeClient {
             case 'pp2': return new Price( pp2Price, true);
             case 'hh1': return new Price( hh1Price, false);
             case 'bd1': return new Price( bd1Price, true);
-            case 'ld1': return new Price( ld1Price, true);
+            case 'ld1': return new Price( ld1Price, false);
             default: throw new Error('Product not found : ' + product);
         }
     }
