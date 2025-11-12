@@ -1,4 +1,4 @@
-import { loadDemo, visitSkipBanner } from './shared'
+import { loadDemo, visitSkipBanner } from '../shared'
 
 describe('Fuel Bug Tile', () => {
   it('Fuel Bug Tile', () => {

@@ -1,4 +1,4 @@
-import { placeHolderSubtitle, visitSkipBanner, loadDemo } from './shared'
+import { placeHolderSubtitle, visitSkipBanner, loadDemo } from '../shared'
 
 describe('Checklist Tile', () => {
   it('Checklist Tile', () => {

@@ -1,0 +1,87 @@
+{
+  "name": "radios",
+  "data": {
+    "mode": "",
+    "list": [
+      {
+        "value": "127.750",
+        "name": "KBFI ATIS",
+        "type": "w"
+      },
+      {
+        "value": "120.600",
+        "name": "KBFI Tower",
+        "type": "tw"
+      },
+      {
+        "value": "121.900",
+        "name": "KBFI Ground",
+        "type": "g"
+      },
+      {
+        "value": "119.2",
+        "name": "SEATTLE-TACOMA APPROACH CONTROL Apch Dep(028-160 SEA RWY 14)",
+        "type": "?"
+      },
+      {
+        "value": "120.1",
+        "name": "SEATTLE-TACOMA APPROACH CONTROL Apch Dep(223-301 SEA",
+        "type": "?"
+      },
+      {
+        "value": "120.4",
+        "name": "SEATTLE-TACOMA APPROACH CONTROL Apch Dep(301-340 SEA. RWY 32)",
+        "type": "?"
+      },
+      {
+        "value": "123.9",
+        "name": "SEATTLE-TACOMA APPROACH CONTROL GLASR STAR",
+        "type": "tr"
+      },
+      {
+        "value": "125.6",
+        "name": "SEATTLE-TACOMA APPROACH CONTROL JAWBN STAR",
+        "type": "?"
+      },
+      {
+        "value": "125.9",
+        "name": "SEATTLE-TACOMA APPROACH CONTROL Apch Dep(290-315 SEA",
+        "type": "?"
+      },
+      {
+        "value": "126.5",
+        "name": "SEATTLE-TACOMA APPROACH CONTROL Apch Dep(161-222 SEA RWY 14)",
+        "type": "?"
+      },
+      {
+        "value": "128.5",
+        "name": "SEATTLE-TACOMA APPROACH CONTROL Apch Dep(302-016 SEA",
+        "type": "?"
+      },
+      {
+        "value": "127.750",
+        "name": "KBFI ATIS",
+        "type": "w"
+      },
+      {
+        "value": "118.375",
+        "name": "KELN ASOS",
+        "type": "w"
+      },
+      {
+        "value": "120.600",
+        "name": "KBFI Tower",
+        "type": "tw"
+      },
+      {
+        "value": "121.900",
+        "name": "Bottom Left",
+        "type": "g"
+      }
+    ],
+    "sv": "t",
+    "colorScheme": "light"
+  },
+  "span2": false,
+  "hide": false
+}

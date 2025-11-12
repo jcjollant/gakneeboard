@@ -1,4 +1,4 @@
-import { visitSkipBanner, holdTitle, newTemplateWithTile, approachTitle, departureTitle, displaySelection, TileTypeLabel, checkImageContent } from './shared'
+import { visitSkipBanner, holdTitle, newTemplateWithTile, approachTitle, departureTitle, displaySelection, TileTypeLabel, checkImageContent } from '../shared'
 
 
 const titleCraftClearance = "IFR Clearance"

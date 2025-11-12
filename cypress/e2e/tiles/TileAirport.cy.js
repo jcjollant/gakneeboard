@@ -1,5 +1,5 @@
-import { bellinghamTitle, boeingTitle, checkTileSpan, checkTileTitle, checkTileVisible, loadDemo, maintenanceMode, rentonTitle, visitSkipBanner, waitForAirports, waitOneAirport } from './shared'
-import { displaySelection, displaySelectionExpand, viewport } from './shared'
+import { bellinghamTitle, boeingTitle, checkTileSpan, checkTileTitle, checkTileVisible, loadDemo, maintenanceMode, rentonTitle, visitSkipBanner, waitForAirports, waitOneAirport } from '../shared'
+import { displaySelection, displaySelectionExpand, viewport } from '../shared'
 
 function checkCorner(page, tile, corner, label, value) {
     cy.get(`.page${page} > .tile${tile} > .tileContent ${corner} .label`).contains(label)

@@ -1,0 +1,11 @@
+{
+  "name": "radios",
+  "data": {
+    "mode": "nordo",
+    "list": [],
+    "sv": "t",
+    "colorScheme": "light"
+  },
+  "span2": false,
+  "hide": false
+}

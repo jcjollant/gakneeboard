@@ -1,4 +1,4 @@
-import { titleAtis, visitSkipBanner, loadDemo, TileTypeLabel, displaySelection, replaceTile, checkTileSpan, checkTileVisible, checkTileTitle, departTitle, atisTitle, displaySelectionExpand } from './shared'
+import { titleAtis, visitSkipBanner, loadDemo, TileTypeLabel, displaySelection, replaceTile, checkTileSpan, checkTileVisible, checkTileTitle, departTitle, atisTitle, displaySelectionExpand } from '../shared'
 
 const labelFullATIS = "Full Size ATIS"
 const labelCloudCleance = "Cloud Clearance"

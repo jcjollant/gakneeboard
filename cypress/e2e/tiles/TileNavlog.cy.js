@@ -1,4 +1,4 @@
-import { displaySelection, loadDemo, maintenanceMode, replaceTile, TileTypeLabel, visitSkipBanner } from './shared'
+import { displaySelection, loadDemo, maintenanceMode, replaceTile, TileTypeLabel, visitSkipBanner } from '../shared'
 
 describe('Navlog Tile', () => {
   it('Navlog Tile', () => {

@@ -1,4 +1,4 @@
-import { replaceTile, visitSkipBanner, TileTypeLabel, checkHeader, displaySelection, checkImageContent, newTemplateWithTile, checkTileTitle, waitForAirports, waitOneAirport, notesTitle } from './shared'
+import { replaceTile, visitSkipBanner, TileTypeLabel, checkHeader, displaySelection, checkImageContent, newTemplateWithTile, checkTileTitle, waitForAirports, waitOneAirport, notesTitle } from '../shared'
 
 class Header {
   static displaySelection = "Sunlight Display Mode"

@@ -1,4 +1,4 @@
-import { displaySelection, loadDemo, lostCommsTitle, notesTitle, radioTitle, serviceVolumeTitle, TileTypeLabel, visitSkipBanner, replaceTile, viewport } from './shared'
+import { displaySelection, loadDemo, lostCommsTitle, notesTitle, radioTitle, serviceVolumeTitle, TileTypeLabel, visitSkipBanner, replaceTile, viewport } from '../../shared'
 
 const labelFrequencies = 'Frequencies'
 const labelLostComms = 'Lost Comms'
@@ -111,34 +111,6 @@ describe('Radios Tile', () => {
     // check we have the placeholder
     cy.get('.placeHolder').contains('No Radios')
     cy.get('.placeHolder').contains('Click Here to Add Frequencies')
-  })
-
-  it('Lost Comms', () => {
-    visitSkipBanner()
-    loadDemo('Tiles')
-
-    // switch to Lost comms
-    displaySelection(1,5,labelLostComms)
-    // test tile title updated
-    cy.get('.page1 > .tile5 > .headerTitle').contains(lostCommsTitle)
-
-    // check Nordo Fields
-    cy.get('[title="Unlawful Interference (aka Hijack)"]')
-    cy.get('[title="Lost Communications"]')
-    cy.get('[title="Declare Emergency"]')
-
-    const expectedLostCommsFields = ['Signal', 'Ground', 'Air', 'T/O', 'Land', 'Taxi', 'STOP', 'Give Way', 'Taxi Off Rwy', 'Use Extreme Caution', 'Start', '7500', '7600', '7700']
-    for(const field of expectedLostCommsFields) {
-      cy.get(`.page1 .tile5`).contains(field)
-    }
-
-    // test localstore has the correct data
-    cy.getLocalStorage('template')
-      .then(t => {
-        const template = JSON.parse(t)
-        // console.log('>>>>', template)
-        expect(template.data[1].data[5].data['mode']).to.equal('nordo')
-      })
   })
 
   it( 'Is Responsive', () => {

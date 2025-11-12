@@ -1,4 +1,4 @@
-import { loadDemo, notesTitle, visitSkipBanner, replaceTile, TileTypeLabel, displaySelection, checkTileSpan, checkTileVisible, checkTileTitle, radioTitle } from './shared'
+import { loadDemo, notesTitle, visitSkipBanner, replaceTile, TileTypeLabel, displaySelection, checkTileSpan, checkTileVisible, checkTileTitle, radioTitle } from '../shared'
 
 const labelBlank = "Blank"
 const labelWORD = "W O R D"
