@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 11/12/2025 - 5466 - Radio Tile defaulting to Display Mode Selection
 ## 11/11/2025 - 5465 - Double Vertical info bar
 ## 11/11/2025 - 5464 - Added test page, fixed radio padding issue
 ## 11/11/2025 - 5463 - Fixed invalid code toast
