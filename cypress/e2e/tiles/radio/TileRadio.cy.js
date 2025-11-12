@@ -5,6 +5,44 @@ const labelLostComms = 'Lost Comms'
 const labelVORSV = 'VOR Service Volumes'
 
 describe('Radios Tile', () => {
+
+  let lostCommsTileData
+
+  before(() => {
+    cy.fixture('radioTileVFRLostComms').then(data => lostCommsTileData = data)
+  })
+
+  it('Loads display mode selection by default', () => {
+    cy.visit('/?test=tile')
+    // Open radio tile
+    cy.get('[aria-label="Radios"]').click()
+
+    // test tile title updated
+    cy.get('.headerTitle').contains('Radios Tile Mode')
+
+  })
+
+  it('Displays Lost Comms', () => {
+    const radioTileDataString = JSON.stringify(lostCommsTileData)
+    // console.debug(radioTileDataString)
+    cy.setLocalStorage('test-tile', radioTileDataString)
+    cy.visit('/?test=tile')
+
+    // test tile title updated
+    cy.get('.headerTitle').contains(lostCommsTitle)
+
+    // check Nordo Fields
+    cy.get('[title="Unlawful Interference (aka Hijack)"]')
+    cy.get('[title="Lost Communications"]')
+    cy.get('[title="Declare Emergency"]')
+
+    const expectedLostCommsFields = ['Signal', 'Ground', 'Air', 'T/O', 'Land', 'Taxi', 'STOP', 'Give Way', 'Taxi Off Rwy', 'Use Extreme Caution', 'Start', '7500', '7600', '7700']
+    for(const field of expectedLostCommsFields) {
+      cy.get(`.tile`).contains(field)
+    }
+  })
+
+
   it('Radio Tile', () => {
     visitSkipBanner()
     loadDemo('Tiles')
