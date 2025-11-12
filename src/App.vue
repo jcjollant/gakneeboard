@@ -103,12 +103,14 @@ onMounted( () => {
                 console.log('[App.onMounted] publication fetch failed', e)
             }) 
         })
-    } else if( urlParams.has('d')){
+    } else if( urlParams.has('d')){ // this is a demo
       const name = urlParams.get('d');
       const template = DemoData.fromName( 'gak-' + name )
       if( template) {
         routeToLocalTemplate(router, template)
       }
+    } else if( urlParams.has('test')) { // this is a test
+      router.push({path: 'test/' + urlParams.get('test')})
     } else if( LocalStore.popupShow(3)) {
       router.push({name: RouterNames.FTUX})
     }
