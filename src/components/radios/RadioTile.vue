@@ -277,11 +277,14 @@ function updateTextarea() {
     gap: 5px;
     overflow: hidden;
     grid-template-columns: 1fr 1fr;
+    place-items: center;
 }
 .freqList.one {
     grid-template-columns: 1fr;
 }
 .freqList.three {
+    padding: 3px;
+    gap: 3px;
     grid-template-columns: repeat(3, 1fr);
 }
 .freqList.four {
