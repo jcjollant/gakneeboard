@@ -17,6 +17,7 @@
       <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages">
         <Page :data="page.front" :format="template.format"/>
         <SideBar v-if="printVibOption != VerticalInfoBarOption.hide" class="sidebar" :ver="template.ver" :option="printVibOption" />
+        <SideBar v-if="printVibOption != VerticalInfoBarOption.hide" class="sidebar back" :ver="template.ver" :option="printVibOption" />
         <Page v-if="page.back" :data="page.back" :format="template.format" :class="{flipMode:printFlipMode}" />
       </div>
     </div>
@@ -258,12 +259,18 @@ function redirectToPlansPage() {
 .sidebar {
   padding: 0 5px;
   position: absolute;
-  left: calc( var(--page-width) + var(--pages-gap));
+  left: calc( var(--page-width) + var(--pages-gap) / 2);
   top: 0;
   width: var(--page-height);
-  height: var(--pages-gap);
+  height: calc( var(--pages-gap) / 2);
   /* border: 1px solid blue; */
   transform: rotate(90deg);
   transform-origin: top left;
+}
+.sidebar.back {
+  transform: rotate(-90deg);
+  /* left: calc( var(--page-width) + var(--pages-gap) / 2); */
+  top:unset;
+  bottom:-1.5rem;
 }
 </style>
