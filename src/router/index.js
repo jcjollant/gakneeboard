@@ -34,7 +34,7 @@ const routes = [
     { path: '/template/:id', name: RouterNames.Template, component: TemplateViewer },
     { path: '/format-selector', name: RouterNames.FormatSelector, component: FormatSelector },
     { path: '/demo/:name', name: RouterNames.Demo, component: Demo },
-    { path: '/tile-test', name: RouterNames.TileTest, component: TileTest },
+    { path: '/test/tile', name: RouterNames.TileTest, component: TileTest },
 
 ]
 

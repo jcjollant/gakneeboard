@@ -4,9 +4,7 @@
       <Tile :tile="testTile" @update="onTileUpdate" />
     </div>
     <div class="controls">
-      <button @click="saveTile" class="save-btn">Save to LocalStorage</button>
       <button @click="clearTile" class="clear-btn">Clear</button>
-      <button @click="loadDefaultTile" class="load-btn">Load Selection Tile</button>
       <button @click="copyToClipboard" class="copy-btn">Copy Tile Data</button>
     </div>
   </div>
@@ -17,8 +15,11 @@ import { ref, onMounted } from 'vue'
 import { TileData } from '../model/TileData'
 import { TileType } from '../model/TileType'
 import Tile from '../components/tiles/Tile.vue'
+import { useToaster } from '../assets/Toaster'
+import { useToast } from 'primevue/usetoast'
 
 const testTile = ref<TileData>(new TileData(TileType.selection))
+const toaster = useToaster(useToast())
 
 onMounted(() => {
   loadTileFromStorage()
@@ -26,16 +27,17 @@ onMounted(() => {
 
 function loadTileFromStorage() {
   const storedTile = localStorage.getItem('test-tile')
+  // console.debug('[TileTest.loadTileFromStorage] ', storedTile)
   if (storedTile) {
     try {
       const tileData = JSON.parse(storedTile)
       testTile.value = TileData.copy(tileData)
     } catch (error) {
       console.error('Failed to parse stored tile data:', error)
-      loadDefaultTile()
+      testTile.value = new TileData(TileType.selection)
     }
   } else {
-    loadDefaultTile()
+    testTile.value = new TileData(TileType.selection)
   }
 }
 
@@ -50,15 +52,12 @@ function saveTile() {
 
 function clearTile() {
   localStorage.removeItem('test-tile')
-  loadDefaultTile()
-}
-
-function loadDefaultTile() {
   testTile.value = new TileData(TileType.selection)
 }
 
 function copyToClipboard() {
   navigator.clipboard.writeText(JSON.stringify(testTile.value, null, 2))
+  toaster.success('Copied', 'Tile data copied to clipboard')
 }
 </script>
 
@@ -82,7 +81,7 @@ function copyToClipboard() {
   gap: 10px;
 }
 
-.save-btn, .clear-btn, .load-btn, .copy-btn {
+.clear-btn, .copy-btn {
   padding: 8px 16px;
   border: none;
   border-radius: 4px;
@@ -90,31 +89,13 @@ function copyToClipboard() {
   font-size: 14px;
 }
 
-.save-btn {
-  background-color: #4CAF50;
-  color: white;
-}
-
 .clear-btn {
   background-color: #f44336;
   color: white;
 }
 
-.load-btn {
-  background-color: #2196F3;
-  color: white;
-}
-
-.save-btn:hover {
-  background-color: #45a049;
-}
-
 .clear-btn:hover {
   background-color: #da190b;
-}
-
-.load-btn:hover {
-  background-color: #0b7dda;
 }
 
 .copy-btn {
