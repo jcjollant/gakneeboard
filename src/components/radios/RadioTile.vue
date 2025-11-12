@@ -176,6 +176,10 @@ function loadData(data:any) {
     // Restore display mode
     if(data && 'mode' in data) {
         displayMode.value = data.mode
+    } else if (frequencies.value.length === 0) {
+        // Show display mode selection when no content
+        displayMode.value = DisplayModeRadios.Unknown
+        displaySelection.value = true
     } else { // defaulting to frequency list
         displayMode.value = DisplayModeRadios.FreqList
     }
