@@ -33,3 +33,6 @@ Google API CliendId : 864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleu
 ## Basic Navigation
 When opening a shared template App.vue will try to resolve the code then save as local template
 template will read from localstorage when template Id is 0
+
+## Documentation
+[Toast Notifications](docs/toast-notifications.md)
