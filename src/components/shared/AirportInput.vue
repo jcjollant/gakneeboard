@@ -78,7 +78,9 @@ watch( props, async() => {
 })
 
 function fetchAirport() {
-    // console.log('[AirportInput.fetchAirport]', code.value)
+    // console.log('[AirportInput.fetchAirport]', code.value, code.value.length)
+    if(!code.value || code.value.length < 3) return
+
     getAirport( code.value)
         .then( a => {
             // console.log('[AirportInput.fetchAirport] received', a)
