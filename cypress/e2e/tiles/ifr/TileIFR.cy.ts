@@ -1,13 +1,14 @@
-import { holdTitle, approachTitle, displaySelection, TileTypeLabel, checkImageContent, loadTestTile, displayModesCheck, displaySelectionTestTile, loadTestTileWithData, checkImageContentTestTile } from '../../shared'
+import { IfrTileDisplayModeLabels } from '../../../../src/components/clearance/IfrTileDisplayModeLabel'
+import { holdTitle, approachTitle, displaySelection, TileTypeLabel, checkImageContent, loadTestTile, displayModesCheck, displaySelectionTestTile, loadTestTileWithData, checkImageContentTestTile } from '../../shared.js'
 
 
 const titleCraftClearance = "IFR Flight"
 const titleDisplayMode = "IFR Tile Mode"
-const labelCraftClearance = "CRAFT Clearance"
-const labelApproach = "Approach"
-const labelDeparture = "Departure"
-const labelAlternate = "Alternate"
-const labelLostComms = "Lost Comms"
+const labelCraftClearance = IfrTileDisplayModeLabels.craft
+const labelApproach = IfrTileDisplayModeLabels.appraoch
+const labelDeparture = IfrTileDisplayModeLabels.departure
+const labelAlternate = IfrTileDisplayModeLabels.alternate
+const labelLostComms = IfrTileDisplayModeLabels.lostComms
 // const labelHold = "Hold"
 
 const expectedDepartureFields = [
@@ -168,29 +169,4 @@ describe('Tile IFR', () => {
     loadTestTileWithData(dataLostComms)
     checkImageContentTestTile('/tiles/lostcomms-ifr.png')
   })
-
-  it.skip('Holding', () => {
-
-    // switch to HOLDING
-    displaySelection(0,5,labelHold)
-    // test tile title updated
-    cy.get('.page0 > .tile5 > .headerTitle').contains(holdTitle)
-
-    // check Fields
-    const expectedHoldFields = ['Established', 'RAD/CRS', 'EFC', 'CRS', 'WCA', 'HDG']
-    for(const field of expectedHoldFields) {
-      cy.get(`.page0 .tile5`).contains(field)
-    }
-
-    // test localstore has the correct data
-    cy.getLocalStorage('template')
-      .then(t => {
-        const template = JSON.parse(t)
-        // console.log('>>>>', template)
-        expect(template.data[0].data[5].data['mode']).to.equal('hold')
-      })
-
-  })
-
-
 })
