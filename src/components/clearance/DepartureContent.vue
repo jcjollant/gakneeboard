@@ -12,18 +12,22 @@
             <div class="gnd box br bb"><div class="tileBoxLabel">Ground</div></div>
             <div class="twr box br"><div class="tileBoxLabel">Tower / CTAF</div></div>
         </div>
+        <div class="boxFiled bb">
+            <div class="tileBoxLabel">Filed</div>
+        </div> 
         <div class="boxRoute box bb">
-            <div class="tileBoxLabel">Route</div>
-            <div class="watermrk bottomRight">
-                <div>RV</div>
-                <div class="direct">D></div>
+            <div class="tileBoxLabel">Cleared to</div>
+            <div class="watermrk topRight">
                 <div>AF</div>
+            </div>
+            <div class="watermrk bottomRight">
+                <div class="direct">D></div>
             </div>
         </div>
         <div class="boxAltitudes box br slash bb">/
             <div class="tileBoxLabel">Alt/Exp</div>
-            <div class="watermrk bottomLeft">SID</div>
-            <div class="watermrk bottomRight">+10</div>
+            <div class="watermrk topRight">SID</div>
+            <div class="watermrk bottomRight">+5/10</div>
         </div>
         <div class="boxFrequency box freq bb">
             <div class="tileBoxLabel">Freq</div>
@@ -37,7 +41,7 @@
             </div>
             <!-- <div class="watermrk">F</div> -->
         </div>
-        <div class="boxTransponder box br bb">
+        <div class="boxTransponder box br">
             <div class="tileBoxLabel">XPDR</div>
             <div class="xpdrValue">
                 <div class="digit xDigit">&nbsp;</div>
@@ -47,14 +51,9 @@
             </div>
             <!-- <div class="watermrk">T</div> -->
         </div>
-        <div class="boxTaxi box bb">
+        <div class="boxTaxi box">
             <div class="tileBoxLabel">Taxi</div>
         </div>
-        <div class="row">
-            <div class="boxNotes box">
-                <div class="tileBoxLabel">Notes</div>
-            </div>
-        </div> 
     </div>
 </template>
 
@@ -161,7 +160,7 @@ watch(props, async() => {
     flex: 0.9 1 0px;
 }
 
-.boxRoute, .boxNotes {
+.boxRoute, .boxFiled {
     position: relative;
     grid-column: 2 / span 2;
 }
