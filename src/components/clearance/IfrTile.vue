@@ -74,9 +74,10 @@ watch( props, async() => {
 
 watch( displayMode, (newValue, oldValue) => {
     // console.debug('[Clearance.displayMode]', newValue, oldValue)
+    if( newValue != oldValue && displaySelection.value) {
+        saveConfig()
+    }
     displaySelection.value = false;
-    if( newValue == oldValue) return;
-    saveConfig()
 })
 
 function loadProps(props:any) {
@@ -93,6 +94,7 @@ function loadProps(props:any) {
                 displayMode.value = props.params.mode
             }
          } else {
+            // we don't have a mode, so we need to display the selection
             displaySelection.value = true
          }
          if( props.params.airport) {
@@ -105,6 +107,7 @@ function loadProps(props:any) {
     } else {
         displaySelection.value = true
     }
+
 }
 
 function saveConfig() {
