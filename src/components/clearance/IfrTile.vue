@@ -1,6 +1,6 @@
 <template>
     <div class="tile">
-        <Header :title="getTitle()" :left="displayMode==DisplayModeIfr.Departure" :showReplace="displaySelection" :showDisplayMode="true"
+        <Header :title="getTitle()" :showReplace="displaySelection" :showDisplayMode="true"
             @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" @keep="displaySelection=false" />
         <div v-else-if="editMode" class="editMode">
@@ -72,14 +72,15 @@ watch( props, async() => {
 })
 
 watch( displayMode, (newValue, oldValue) => {
+    // console.debug('[Clearance.displayMode]', newValue, oldValue)
     displaySelection.value = false;
-    if( newValue == oldValue || oldValue == DisplayModeIfr.Unknown) return;
+    if( newValue == oldValue) return;
     saveConfig()
 })
 
 function loadProps(props:any) {
     // console.debug('[Clearance.loadProps]', JSON.stringify(props))
-    displayMode.value = defaultMode
+    // displayMode.value = defaultMode
     if( props.params) {
          if( props.params.mode) {
             // for compatibility with old versions
@@ -100,6 +101,8 @@ function loadProps(props:any) {
                 }
             })
          }
+    } else {
+        displaySelection.value = true
     }
 }
 
@@ -113,31 +116,20 @@ function getTitle() {
     if( displaySelection.value) return "IFR Tile Mode"
     let title:string;
     let airportPosition:string = 'none';
+    const airportCode = airport.value.code || ''
     if( displayMode.value==DisplayModeIfr.Approach) {
-        title =  'Apch'
+        title =  `${airportCode} Apch`
         airportPosition = 'prepend'
     } else if( displayMode.value==DisplayModeIfr.Alternate) {
         title = 'IFR Alternate'
     } else if( displayMode.value==DisplayModeIfr.LostComms) {
         title = 'IFR Lost Comms'
     } else if( displayMode.value==DisplayModeIfr.Departure) {
-        title = 'Depart @'
-        airportPosition = 'append'
+        title = airportCode.length ? `Depart ${airportCode} IFR` : 'IFR Departure'
     } else {
-        title = 'IFR Clearance'
+        title = 'IFR Flight'
     }
 
-    // Should we bake airport code into the title?
-    if( airport.value.code) {
-        // append for all modes except approach which is prepend
-        if( airportPosition == 'prepend') {
-            title = airport.value.code + ' ' + title
-        } else if(airportPosition == 'append') {
-            title += ' ' + airport.value.code
-            // Departure gets an additional 'to'
-             if(displayMode.value == DisplayModeIfr.Departure) title += ' to'
-        }
-    }
     return title
 }
 
