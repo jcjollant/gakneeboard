@@ -1,0 +1,9 @@
+{
+  "name": "clearance",
+  "data": {
+    "mode": "lostcomms",
+    "airport": ""
+  },
+  "span2": false,
+  "hide": false
+}

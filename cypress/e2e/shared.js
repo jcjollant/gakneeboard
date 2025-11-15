@@ -60,6 +60,10 @@ export function checkImageContent( src, page=0, tile=0) {
     cy.get(`.page${page} .tile${tile} .imageContent`).should('have.attr', 'src', src)
 }
 
+export function checkImageContentTestTile( src) {
+    cy.get(`.tile .imageContent`).should('have.attr', 'src', src)
+}
+
 export function checkTileSpan(page, tile, spanned=true) {
     const condition = spanned ? 'have.class' : 'not.have.class'
     cy.get(`.page${page} > .tile${tile}`).should(condition,'span-2')
@@ -87,6 +91,19 @@ export function demoTilesOnPage(page) {
     for(let index = 0; index < 6; index++) {
         checkTileTitle(page, index, expectedTitles[index])
     }
+}
+
+export function loadTestTile(name) {
+    cy.visit('/?test=tile')
+    // Open radio tile
+    cy.get(`[aria-label="${name}"]`).click()
+}
+
+export function loadTestTileWithData(data) {
+    const stringData = JSON.stringify(data)
+    // console.debug(radioTileDataString)
+    cy.setLocalStorage('test-tile', stringData)
+    cy.visit('/?test=tile')
 }
 
 export function visitAndCloseBanner() {
@@ -175,11 +192,27 @@ export function replaceTile(pageNum, tileNum, label=undefined) {
 
 }
 
+export function displayModesCheck(list, expandable) {
+    for(const displayMode of list) {
+      cy.get('.modesList').contains(displayMode)
+    }
+    // modesList class should only have the expected children count
+
+    cy.get('.modesList').children().should('have.length', list.length + (expandable ? 1 : 0))
+}
+
 export function displaySelection(pageNum, tileNum, mode=undefined) {
     cy.get(`.page${pageNum} > .tile${tileNum} .displayButton`).click({force: true})
     if( mode) cy.get(`[aria-label="${mode}"]`).click()
 
 }
+
+export function displaySelectionTestTile(mode=undefined) {
+    cy.get(`.tile .displayButton`).click({force: true})
+    if( mode) cy.get(`[aria-label="${mode}"]`).click()
+
+}
+
 
 export function displaySelectionExpand(pageNum, tileNum, modeNumber, accept=true) {
     cy.get(`.page${pageNum} > .tile${tileNum} .displayButton`).click({force: true})

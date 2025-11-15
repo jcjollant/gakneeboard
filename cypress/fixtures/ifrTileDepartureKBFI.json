@@ -1,0 +1,9 @@
+{
+  "name": "clearance",
+  "data": {
+    "mode": "dep",
+    "airport": "KBFI"
+  },
+  "span2": false,
+  "hide": false
+}

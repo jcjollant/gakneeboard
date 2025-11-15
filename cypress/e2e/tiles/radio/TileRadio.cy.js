@@ -1,7 +1,8 @@
-import { displaySelection, loadDemo, lostCommsTitle, notesTitle, radioTitle, serviceVolumeTitle, TileTypeLabel, visitSkipBanner, replaceTile, viewport } from '../../shared'
+import { displaySelection, loadDemo, lostCommsTitle, notesTitle, radioTitle, serviceVolumeTitle, TileTypeLabel, visitSkipBanner, replaceTile, viewport, loadTestTileWithData, loadTestTile, displayModesCheck } from '../../shared'
 
 const labelFrequencies = 'Frequencies'
-const labelLostComms = 'Lost Comms'
+const labelLostCommsVFR = 'Lost Comms VFR'
+const labelLostCommsIFR = 'Lost Comms IFR'
 const labelVORSV = 'VOR Service Volumes'
 
 describe('Radios Tile', () => {
@@ -12,21 +13,19 @@ describe('Radios Tile', () => {
     cy.fixture('radioTileVFRLostComms').then(data => lostCommsTileData = data)
   })
 
-  it('Loads display mode selection by default', () => {
-    cy.visit('/?test=tile')
-    // Open radio tile
-    cy.get('[aria-label="Radios"]').click()
+  it.only('Has correct display mode selection', () => {
+    loadTestTile(TileTypeLabel.radios)
 
     // test tile title updated
     cy.get('.headerTitle').contains('Radios Tile Mode')
 
+    const expectedDisplayModes = [ labelFrequencies, labelLostCommsVFR, labelLostCommsIFR, labelVORSV]
+    displayModesCheck(expectedDisplayModes, true)
+
   })
 
   it('Displays Lost Comms', () => {
-    const radioTileDataString = JSON.stringify(lostCommsTileData)
-    // console.debug(radioTileDataString)
-    cy.setLocalStorage('test-tile', radioTileDataString)
-    cy.visit('/?test=tile')
+    loadTestTileWithData(lostCommsTileData)
 
     // test tile title updated
     cy.get('.headerTitle').contains(lostCommsTitle)
@@ -65,10 +64,6 @@ describe('Radios Tile', () => {
 
     // Switch to Display mode selection
     displaySelection(1, 5)
-    const expectedDisplayModes = [ labelFrequencies, labelLostComms, labelVORSV]
-    for(const displayMode of expectedDisplayModes) {
-      cy.get('.modesList').contains(displayMode)
-    }
 
     // bring back normal mode
     displaySelection(1, 5)
