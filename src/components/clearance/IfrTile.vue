@@ -32,6 +32,7 @@ import { getAirport } from '../../assets/data.js';
 import { TileData } from '../../model/TileData.ts';
 import { TileType } from '../../model/TileType.ts';
 import { Regulation } from '../../model/Regulation.ts';
+import { IfrTileDisplayModeLabels } from './IfrTileDisplayModeLabel.ts';
 
 import ActionBar from '../shared/ActionBar.vue';
 import ApproachContent from './ApproachContent.vue';
@@ -56,11 +57,11 @@ const props = defineProps({
 })
 const displaySelection=ref(false)
 const displayModes = [
-    new DisplayModeChoice( 'CRAFT Clearance', DisplayModeIfr.BoxV),
-    new DisplayModeChoice( 'Departure', DisplayModeIfr.Departure),
-    new DisplayModeChoice( 'Approach', DisplayModeIfr.Approach),
-    new DisplayModeChoice( 'Alternate', DisplayModeIfr.Alternate),
-    new DisplayModeChoice( 'Lost Comms', DisplayModeIfr.LostComms),
+    new DisplayModeChoice( IfrTileDisplayModeLabels.craft, DisplayModeIfr.BoxV),
+    new DisplayModeChoice( IfrTileDisplayModeLabels.departure, DisplayModeIfr.Departure),
+    new DisplayModeChoice( IfrTileDisplayModeLabels.appraoch, DisplayModeIfr.Approach),
+    new DisplayModeChoice( IfrTileDisplayModeLabels.alternate, DisplayModeIfr.Alternate),
+    new DisplayModeChoice( IfrTileDisplayModeLabels.lostComms, DisplayModeIfr.LostComms),
 ]
 
 onMounted(() => {   
