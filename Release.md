@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 11/15/2025 - 5472 - Fixed modified bug
 ## 11/15/2025 - 5471 - Renamed IFR Display modes
 ## 11/14/2025 - 5470 - IFR Departure redesign. Tile defaults to display mode
 ## 11/12/2025 - 5466 - Radio Tile defaulting to Display Mode Selection
