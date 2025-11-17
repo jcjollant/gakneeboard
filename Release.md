@@ -1,3 +1,4 @@
+## 11/16/2025 - 5470 - Fixed upgrade print credits
 ## 11/10/2025 - 5461 - Fixed lifetime deal logic
 ## 11/10/2025 - 5460 - Added CHI API
 ## 11/09/2025 - 5451 - Added lifetime deal
