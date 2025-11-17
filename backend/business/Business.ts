@@ -205,11 +205,11 @@ export class Business {
     }
 
     static async upgradeUser(user: User, newAccountType: AccountType, userDao: UserDao) {
+        const previousPrintCredits = user.printCredits
         await Business.updateAccountType(user, newAccountType, userDao)
 
         // update print credits
         try {
-            const previousPrintCredits = user.printCredits
             user.printCredits = Business.calculatePrintCredits(user)
             if(previousPrintCredits != user.printCredits) {
                 await userDao.updatePrintCredit(user)
