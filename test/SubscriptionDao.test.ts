@@ -34,17 +34,17 @@ describe('SubscriptionDao', () => {
         });
     });
 
-    describe('getChurnLast30Days', () => {
+    describe('getChurnLastDays', () => {
         it('should return count of churned customers', async () => {
             const mockResult = { rowCount: 3, rows: [] } as any;
             const mockQuery = jest.fn().mockResolvedValue(mockResult);
             const subscriptionDao = new TestableSubscriptionDao();
             subscriptionDao.setDb({ query: mockQuery });
 
-            const count = await subscriptionDao.getChurnLast30Days();
+            const count = await subscriptionDao.getChurnLastDays(30);
 
             expect(count).toBe(3);
-            expect(mockQuery).toHaveBeenCalledWith(expect.stringContaining("cancel_at >= EXTRACT(EPOCH FROM NOW() - INTERVAL '120 days')"));
+            expect(mockQuery).toHaveBeenCalledWith(expect.stringContaining("cancel_at >= EXTRACT(EPOCH FROM NOW() - INTERVAL '30 days')"));
             expect(mockQuery).toHaveBeenCalledWith(expect.stringContaining("cancel_at IS NOT NULL"));
         });
 
@@ -54,7 +54,7 @@ describe('SubscriptionDao', () => {
             const subscriptionDao = new TestableSubscriptionDao();
             subscriptionDao.setDb({ query: mockQuery });
 
-            const count = await subscriptionDao.getChurnLast30Days();
+            const count = await subscriptionDao.getChurnLastDays(30);
 
             expect(count).toBe(0);
         });

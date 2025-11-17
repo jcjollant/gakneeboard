@@ -5,6 +5,7 @@ import { Business } from '../backend/business/Business';
 import { getMockBrandNewSubscription, getMockSubscriptionDao, getMockUserDao, newTestUser } from './common';
 import { Email } from '../backend/Email';
 import { User } from '../backend/models/User';
+import { UsageDao } from '../backend/dao/UsageDao';
 
 // Mock the dependencies
 jest.mock('../backend/dao/UserDao');
@@ -17,6 +18,8 @@ require('dotenv').config();
 describe('Business', () => {
 
     const mockEmail = jest.spyOn(Email, 'send').mockResolvedValue(true);
+    const mockUsage = jest.spyOn(UsageDao, 'refill').mockResolvedValue();
+    
     const testUser = newTestUser();
     const testUserDao = getMockUserDao(testUser);
     const testSubsciption = getMockBrandNewSubscription()
@@ -439,6 +442,76 @@ describe('Business', () => {
             const userUnknown = newTestUser(0, AccountType.unknown)
             expect(Business.monthlyRevenue(userUnknown)).toBe(0)
         })
+    })
+
+    describe('User upgrade', () => {
+        it( 'from Simmer to Student', async() => {
+            const user = newTestUser()
+            const mockUserDao = getMockUserDao(user)
+            mockEmail.mockReset()
+            mockUsage.mockReset()
+
+            expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_SIMMER)
+            expect(user.maxPages).toEqual(Business.MAX_PAGES_SIMMER)
+            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_SIMMER)
+
+            await Business.upgradeUser(user, AccountType.student, mockUserDao)
+
+            expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_STUDENT)
+            expect(user.maxPages).toEqual(Business.MAX_PAGES_STUDENT)
+            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_STUDENT)
+
+            expect(mockUserDao.updateType).toHaveBeenCalledTimes(1);
+            expect(mockUserDao.updatePrintCredit).toHaveBeenCalledTimes(1);
+            expect(Email.send).toHaveBeenCalledTimes(1);
+            expect(UsageDao.refill).toHaveBeenCalledTimes(1);
+        })
+
+        it( 'from Simmer to Private', async() => {
+            const user = newTestUser()
+            const mockUserDao = getMockUserDao(user)
+            mockEmail.mockReset()
+            mockUsage.mockReset()
+
+            expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_SIMMER)
+            expect(user.maxPages).toEqual(Business.MAX_PAGES_SIMMER)
+            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_SIMMER)
+
+            await Business.upgradeUser(user, AccountType.private, mockUserDao)
+
+            expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_PRIVATE)
+            expect(user.maxPages).toEqual(Business.MAX_PAGES_PRIVATE)
+            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_PRIVATE)
+
+            expect(mockUserDao.updateType).toHaveBeenCalledTimes(1);
+            expect(mockUserDao.updatePrintCredit).toHaveBeenCalledTimes(1);
+            expect(Email.send).toHaveBeenCalledTimes(1);
+            expect(UsageDao.refill).toHaveBeenCalledTimes(1);
+        })
+
+        it( 'from Simmer to Lifetime', async() => {
+            const user = newTestUser()
+            const mockUserDao = getMockUserDao(user)
+            mockEmail.mockReset()
+            mockUsage.mockReset()
+
+            expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_SIMMER)
+            expect(user.maxPages).toEqual(Business.MAX_PAGES_SIMMER)
+            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_SIMMER)
+
+            await Business.upgradeUser(user, AccountType.lifetime, mockUserDao)
+
+            expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_PRIVATE)
+            expect(user.maxPages).toEqual(Business.MAX_PAGES_PRIVATE)
+            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_PRIVATE)
+
+            expect(mockUserDao.updateType).toHaveBeenCalledTimes(1);
+            expect(mockUserDao.updatePrintCredit).toHaveBeenCalledTimes(1);
+            expect(Email.send).toHaveBeenCalledTimes(1);
+            expect(UsageDao.refill).toHaveBeenCalledTimes(1);
+        })
+
+
     })
 });
 
