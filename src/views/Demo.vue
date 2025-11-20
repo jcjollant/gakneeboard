@@ -87,7 +87,8 @@ function onFlightConfirm(airports: {from: Airport | null, to: Airport | null, al
   const airportList = [airports.from, airports.to, airports.alternate].filter(a => a !== null) as Airport[]
   
   airportList.forEach(airport => {
-    airport.freq.forEach(freq => {
+    // console.debug('[Demo.onFlightConfirm]', airport)
+    airport?.freq?.forEach(freq => {
       const freqType = Frequency.typeFromString(freq.name)
       if (freqType === FrequencyType.weather || freqType === FrequencyType.tower || 
           freqType === FrequencyType.ctaf || freqType === FrequencyType.ground) {
