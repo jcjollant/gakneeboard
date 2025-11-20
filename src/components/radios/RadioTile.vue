@@ -6,7 +6,7 @@
         <div class="tileContent" :class="{'expanded':expanded}">
             <DisplayModeSelection v-if="displaySelection" :modes="modesList" v-model="displayMode" :expandable="true" :expanded="expanded"
                 @expand="onExpand" @keep="displaySelection=false" />
-            <ServiceVolumes v-else-if="displayMode==DisplayModeRadios.ServiceVolumes" v-model="serviceVolume"/>
+            <ImageContent v-else-if="displayMode==DisplayModeRadios.ServiceVolumes" src="service-volumes.png" /> 
             <Nordo v-else-if="displayMode==DisplayModeRadios.LostComms" />
             <ImageContent v-else-if="displayMode==DisplayModeRadios.LostCommsIFR" src="lostcomms-ifr.png" /> 
             <div v-else-if="displayMode==DisplayModeRadios.FreqList" class="main">
@@ -45,7 +45,6 @@
 import { onMounted, ref, watch } from 'vue'
 import { DisplayModeChoice, DisplayModeRadios } from '../../model/DisplayMode';
 import { Frequency, FrequencyType } from '../../model/Frequency';
-import { ServiceVolume} from '../../model/ServiceVolume'
 import { UserUrl } from '../../lib/UserUrl';
 import { useToast } from 'primevue/usetoast';
 import { useToaster } from '../../assets/Toaster'
@@ -62,7 +61,6 @@ import LookupDialog from './LookupDialog.vue'
 import Nordo from './Nordo.vue';
 import PlaceHolder from '../shared/PlaceHolder.vue'
 import Textarea from 'primevue/textarea';
-import ServiceVolumes from './ServiceVolumes.vue';
 
 const displayMode = ref(DisplayModeRadios.Unknown) // active display mode
 const displaySelection = ref(false)
@@ -79,13 +77,12 @@ const modesList = ref([
     new DisplayModeChoice('Frequencies', DisplayModeRadios.FreqList, true),
     new DisplayModeChoice('Lost Comms VFR', DisplayModeRadios.LostComms),
     new DisplayModeChoice('Lost Comms IFR', DisplayModeRadios.LostCommsIFR),
-    new DisplayModeChoice('VOR Service Volumes', DisplayModeRadios.ServiceVolumes),
+    new DisplayModeChoice('Service Volumes', DisplayModeRadios.ServiceVolumes),
 ])
 const props = defineProps({
     params: { type: Object, default: null}, // expecting a list of radio {'target':'COM1', 'freq':'-.-', 'name':'-'}
     span2 : { type: Boolean, default: false },
 })
-const serviceVolume=ref(ServiceVolume.Terminal)
 const showLookup = ref(false)
 const textData = ref('')
 const toaster = useToaster(useToast())
@@ -96,19 +93,14 @@ onMounted(() => {
 })
 
 watch(displayMode, (newValue, oldValue) => {
-    // console.debug('[RadioTile.watch] displayMode', newValue, oldValue)
-    displaySelection.value = false
-    if( newValue == oldValue || oldValue == DisplayModeRadios.Unknown) return;
-    saveConfig()
+    if( newValue != oldValue && displaySelection.value) {
+        saveConfig()
+    }
+    displaySelection.value = false;
 })
 watch( props, async() => {
     // console.log('Radio watch ' + JSON.stringify(props.params))
     loadProps(props);
-})
-
-watch( serviceVolume, (newValue) => {
-    // console.debug('[RadioTile.watch] serviceVolume changed', serviceVolume.value)
-    if(newValue != serviceVolume.value) saveConfig()
 })
 
 function boxColumns() {
@@ -139,7 +131,7 @@ function getTitle() {
     switch(displayMode.value) {
         case DisplayModeRadios.LostComms: return 'Lost Comms VFR';
         case DisplayModeRadios.LostCommsIFR: return 'Lost Comms IFR';
-        case DisplayModeRadios.ServiceVolumes: return 'VOR Service Volumes';
+        case DisplayModeRadios.ServiceVolumes: return 'Service Volumes';
         default: return 'Radios';
     }
 }
@@ -166,8 +158,6 @@ function loadData(data:any) {
         frequencies.value = list
         updateTextarea()
 
-        // restote service volume
-        if('sv' in data) serviceVolume.value = data.sv
         // restore color scheme
         if('colorScheme' in data) colorScheme.value = data.colorScheme
     } else {
@@ -253,7 +243,7 @@ function onLookup() {
 
 function saveConfig() {
     // console.debug('[RadioTile.saveConfig]')
-    const data = {'mode':displayMode.value,'list':frequencies.value,'sv':serviceVolume,'colorScheme':colorScheme.value}
+    const data = {'mode':displayMode.value,'list':frequencies.value, 'colorScheme':colorScheme.value}
     emits('update', new TileData( TileType.radios, data, expanded.value));
 }
 
