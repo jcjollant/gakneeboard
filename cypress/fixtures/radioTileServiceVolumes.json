@@ -1,0 +1,10 @@
+{
+  "name": "radios",
+  "data": {
+    "mode": "sv",
+    "list": [],
+    "colorScheme": "light"
+  },
+  "span2": false,
+  "hide": false
+}

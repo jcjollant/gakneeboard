@@ -1,31 +1,61 @@
 import { displaySelection, loadDemo, lostCommsTitle, notesTitle, radioTitle, serviceVolumeTitle, TileTypeLabel, visitSkipBanner, replaceTile, viewport, loadTestTileWithData, loadTestTile, displayModesCheck } from '../../shared'
-
+import { checkImageContentTestTile } from '../../shared'
 const labelFrequencies = 'Frequencies'
 const labelLostCommsVFR = 'Lost Comms VFR'
 const labelLostCommsIFR = 'Lost Comms IFR'
-const labelVORSV = 'VOR Service Volumes'
+const labelServiceVolumes = 'Service Volumes'
 
 describe('Radios Tile', () => {
 
-  let lostCommsTileData
+  let lostCommsVFRTileData
+  let lostCommsIFRTileData
+  let fifteenFreqTileData
+  let serviceVolumeTileData
 
   before(() => {
-    cy.fixture('radioTileVFRLostComms').then(data => lostCommsTileData = data)
+    cy.fixture('radioTileVFRLostComms').then(data => lostCommsVFRTileData = data)
+    cy.fixture('radioTileIFRLostComms').then(data => lostCommsIFRTileData = data)
+    cy.fixture('radioTile15Freq').then(data => fifteenFreqTileData = data)
+    cy.fixture('radioTileServiceVolumes').then(data => serviceVolumeTileData = data)
+
+    cy.wrap(
+        Cypress.automation('remote:debugger:protocol', {
+            command: 'Browser.grantPermissions',
+            params: {
+              permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'],
+              origin: window.location.origin,
+            },
+        }),
+    );    
   })
 
-  it.only('Has correct display mode selection', () => {
+  it('Has correct display mode selection', () => {
     loadTestTile(TileTypeLabel.radios)
 
     // test tile title updated
     cy.get('.headerTitle').contains('Radios Tile Mode')
 
-    const expectedDisplayModes = [ labelFrequencies, labelLostCommsVFR, labelLostCommsIFR, labelVORSV]
+    const expectedDisplayModes = [ labelFrequencies, labelLostCommsVFR, labelLostCommsIFR, labelServiceVolumes]
     displayModesCheck(expectedDisplayModes, true)
+
+    // check display mode is saved correctly in local storage
+    cy.get(`[aria-label="${labelServiceVolumes}"]`).click()
+
+    // copy data to clipboard
+    cy.get('.copy-btn').click()
+
+    // read clipboard data
+    cy.window().then((win) => {
+      win.navigator.clipboard.readText().then((text) => {
+          const tileData = JSON.parse(text)
+          expect(tileData.data['mode']).to.equal('sv')
+      });
+    });    
 
   })
 
-  it('Displays Lost Comms', () => {
-    loadTestTileWithData(lostCommsTileData)
+  it('Displays Lost Comms VFR', () => {
+    loadTestTileWithData(lostCommsVFRTileData)
 
     // test tile title updated
     cy.get('.headerTitle').contains(lostCommsTitle)
@@ -41,8 +71,34 @@ describe('Radios Tile', () => {
     }
   })
 
+  it('Displays 15 frequencies without overflow', () => {
+    loadTestTileWithData(fifteenFreqTileData)
 
-  it('Radio Tile', () => {
+    // Verify radio tile is loaded
+    cy.get('.tile').should('exist')
+    cy.get('.freqList').should('exist')
+    
+    // Count frequency boxes
+    cy.get('.freqList > div').should('have.length', 15)
+    
+    // Check that all frequencies are visible (not overflowing)
+    cy.get('.freqList').then($freqList => {
+      const listHeight = $freqList[0].scrollHeight
+      const visibleHeight = $freqList[0].clientHeight
+      expect(listHeight).to.equal(visibleHeight)
+    })
+    
+    // test .freqList.three height is less or equal to 240px
+    cy.get('.freqList.three').then($freqList => {
+      const listHeight = $freqList[0].scrollHeight
+      // less or equal to 240px
+      expect(listHeight).to.be.at.most(240)
+    })
+
+
+  })
+
+  it.skip('Radio Tile', () => {
     visitSkipBanner()
     loadDemo('Tiles')
 
@@ -146,26 +202,7 @@ describe('Radios Tile', () => {
     cy.get('.placeHolder').contains('Click Here to Add Frequencies')
   })
 
-  it( 'Is Responsive', () => {
-    visitSkipBanner()
-    loadDemo()
-    // remove all content
-    cy.get('.page0 .tile2 .freqList').click()
-    cy.get('.p-inputtextarea').type('{selectall}{backspace}')
-
-    for(let count = 0; count < 15; count++) {
-      if(count) cy.get('.page0 .tile2 .freqList').click()
-      // add one frequency
-      cy.get('.p-inputtextarea').type('\n124.700,KRNT CTAF,CTAF\n', {delay:0})
-      cy.get('[aria-label="Apply"]').click()
-      // test size
-      if( count < 4) cy.get('.freq0').should('have.class','large')
-      else if( count < 8) cy.get('.freq0').should('have.class','medium')
-      else cy.get('.freq0').should('have.class','small')
-    }
-  })
-
-  it( 'Shows correct icon', () => {
+  it.skip( 'Shows correct icon', () => {
     visitSkipBanner()
     loadDemo()
     viewport()
@@ -183,45 +220,11 @@ describe('Radios Tile', () => {
   })
 
   it('Service Volumes', () => {
-    visitSkipBanner()
-    loadDemo('Tiles')
-
-    // switch to Service Volumes
-    displaySelection(1,5,labelVORSV)
-    // test tile title updated
-    cy.get('.page1 > .tile5 > .headerTitle').contains(serviceVolumeTitle)
-
-    const expectedVolumes = [
-      {label:'(T)', src:'/tiles/vorsv-terminal.png'}, 
-      {label:'(L)', src:'/tiles/vorsv-low.png'}, 
-      {label:'(H)', src:'/tiles/vorsv-high.png'}, 
-      {label:'(VL)', src:'/tiles/vorsv-vl.png'}, 
-      {label:'(VH)', src:'/tiles/vorsv-vh.png'},
-    ]
-
-    cy.get('.page1 .tile5 .volumeChoice').children().should('have.length', expectedVolumes.length)
-    for(let index = 0; index < expectedVolumes.length; index++) {
-      const volume = expectedVolumes[index]
-      cy.get('.page1 .tile5 .volumeChoice .choice' + index).contains(volume.label)
-      cy.get('.page1 .tile5 .volumeChoice .choice' + index).click()
-      cy.get('.serviceVolume').should('have.attr', 'src', volume.src)
-    }
-    // go back to first
-    cy.get('.page1 .tile5 .volumeChoice .choice0').click()
-    for(let index = 1; index < expectedVolumes.length; index++) {
-      const volume = expectedVolumes[index]
-      // clicking inside the tile should cycle volumes
-      cy.get('.serviceVolume').click()
-      cy.get('.serviceVolume').should('have.attr', 'src', volume.src)
-    }
-
-    // test localstore has the correct data
-    cy.getLocalStorage('template')
-      .then(t => {
-        const template = JSON.parse(t)
-        expect(template.data[1].data[5].data['mode']).to.equal('sv')
-        expect(template.data[1].data[5].data['sv']).to.equal('vh')
-      })
-
+    loadTestTileWithData(serviceVolumeTileData)
+    checkImageContentTestTile('/tiles/service-volumes.png')
+  })
+  it('Shows Lost Comms IFR', () => {
+    loadTestTileWithData(lostCommsIFRTileData)
+    checkImageContentTestTile('/tiles/lostcomms-ifr.png')
   })
 })

@@ -1,0 +1,10 @@
+{
+  "name": "radios",
+  "data": {
+    "mode": "lost-comms-ifr",
+    "list": [],
+    "colorScheme": "light"
+  },
+  "span2": false,
+  "hide": false
+}
