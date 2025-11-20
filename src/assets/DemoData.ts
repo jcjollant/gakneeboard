@@ -176,14 +176,13 @@ export class DemoData {
     static ifrReportingList0 = [{c:"Missed","r":"M"},{c:"Airspeed ±10kts ","r":"A"},{c:"Reaching Fix","r":"R"},{c:"Vacating Altitude","r":"V"},{c:"ETA ±2min","r":"E"},{c:"Leaving Hold","r":"L"},{c:"Outer Marker","r":"O"},{c:"Unforecasted Weather","r":"U"},{c:"Safety of flight","r":"S"},{c:"VFR on Top","r":"V"},{c:"Final Approach Fix","r":"F"}]
     static ifrReportingList1 = [{c:"Radio nav Equip. Failure","r":"R"},{c:"Compulsory Reporting","r":"C"},{c:"Unable to hold 500fpm","r":"500"},{s:" Do Not Fly a PT"},{c:"Straight In Approach","r":"S"},{c:"Hold in lieu of PT","r":"H"},{c:"DME Arc","r":"A"},{c:"Radar Vector to FAF","r":"R"},{c:"No PT on chart","r":"P"},{c:"Timed Apch from Hold","r":"T"},{c:"Teardrop Course Rev.","r":"T"}]
     static page1DemoReference = new TemplatePage(PageType.tiles, 'Reference 2', [
-        {name:"clearance","data":{mode:"alt","airport":""}},
-        {name:"checklist","data":{name:"IFR Reporting","items":this.ifrReportingList0,"theme":"yellow"}},
-        {name:"clearance","data":{mode:"lostcomms","airport":""}},
-        {name:"checklist","data":{name:"Continued","items":this.ifrReportingList1,"theme":"yellow"}},
-        {name:"radios","data":{mode:"sv","list":[],"sv":"h"}},
-        {name:"radios","data":{mode:"sv","list":[],"sv":"vh"}}
+        {name:"clearance",data:{mode:"alt","airport":""}},
+        {name:"checklist",data:{name:"IFR Reporting","items":this.ifrReportingList0,"theme":"yellow"}},
+        {name:"clearance",data:{mode:"lostcomms","airport":""}},
+        {name:"checklist",data:{name:"Continued","items":this.ifrReportingList1,"theme":"yellow"}},
+        {name:"radios",data:{mode:"sv","list":[]}},
+        {name: "regulations",data: { mode: "oxygen"}, "span2": false, "hide": false}
     ])
-
 
     static page0Acronyms = new TemplatePage(PageType.checklist, 'Acronyms 1',
         {
