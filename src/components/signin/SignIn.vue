@@ -5,7 +5,7 @@
         <span>
           <ul class="benefits-list">
             <li>💾 Save custom templates</li>
-            <li>🖨️ Print your creations</li>
+            <li>🖨️ Print your creations or Ready to Print templates</li>
             <li>📝 Feedback follow up</li>
           </ul>
         </span>

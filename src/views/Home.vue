@@ -126,6 +126,14 @@ function onChecklistHelp() {
 }
 
 function onDemoSelection(name:string) {
+    // Check if this is a ready-to-print template
+    const isReadyToPrint = clickAndPrint.value.some(item => item.name === name)
+    
+    if (isReadyToPrint && !currentUser.loggedIn) {
+        toaster.warning('Sign In Required', 'Please sign in to access Ready to Print templates')
+        return
+    }
+    
     router.push(`/demo/${name}`)
 }
 
