@@ -49,9 +49,10 @@ watch(props, async() => {
 })
 
 watch(displayMode, (newValue, oldValue) => {
-    displaySelection.value = false
-    if(newValue == oldValue || oldValue == DisplayModeRegulations.Unknown) return
-    saveConfig()
+    if( newValue != oldValue && displaySelection.value) {
+        saveConfig()
+    }
+    displaySelection.value = false;
 })
 
 function loadProps(props: any) {
