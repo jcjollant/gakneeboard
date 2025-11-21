@@ -3,7 +3,7 @@ export async function exportToPDF(elements:NodeListOf<Element>, landscape:boolea
 
     const [{ jsPDF }, html2canvasModule] = await Promise.all([
       import('jspdf'),
-      import('html2canvas')
+      import('html2canvas-pro')
     ]);
   
     const html2canvas = html2canvasModule.default;
