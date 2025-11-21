@@ -19,13 +19,13 @@
                     </div>
                     <div class="colorSchemeSelector">
                         <div class="schemeOption" :class="{selected: colorScheme === 'light'}" @click="colorScheme = 'light'">
-                            <FrequencyBox :freq="{name: 'Light', value: '123.45', type: FrequencyType.ctaf}" size="small" colorScheme="light" />
+                            <FrequencyBox :freq="freqLight" size="small" colorScheme="light" />
                         </div>
                         <div class="schemeOption" :class="{selected: colorScheme === 'shade'}" @click="colorScheme = 'shade'">
-                            <FrequencyBox :freq="{name: 'Shade', value: '123.45', type: FrequencyType.ctaf}" size="small" colorScheme="shade" />
+                            <FrequencyBox :freq="freqShade" size="small" colorScheme="shade" />
                         </div>
                         <div class="schemeOption" :class="{selected: colorScheme === 'dark'}" @click="colorScheme = 'dark'">
-                            <FrequencyBox :freq="{name: 'Dark', value: '123.45', type: FrequencyType.ctaf}" size="small" colorScheme="dark" />
+                            <FrequencyBox :freq="freqDark" size="small" colorScheme="dark" />
                         </div>
                     </div>
                     <ActionBar @apply="onApply" @cancel="onCancel" :help="UserUrl.radioTileGuide" />
@@ -68,6 +68,10 @@ const emits = defineEmits(['replace','update'])
 const expanded = ref(false)
 const noFreq:Frequency[] = []
 const frequencies = ref(noFreq)
+const freqLight = new Frequency('Light', '123.45', FrequencyType.ctaf)
+const freqShade = new Frequency('Light', '123.45', FrequencyType.ctaf)
+const freqDark = new Frequency('Light', '123.45', FrequencyType.ctaf)
+
 let listBeforeEdit:Frequency[] = []
 const listEditMode = ref(false) // toggle list into edit mode
 const colorScheme = ref('light')
