@@ -72,7 +72,7 @@ import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../assets/Toaster.ts'
 
 // Components
-import html2canvas from 'html2canvas'
+import html2canvas from 'html2canvas-pro'
 import Menu from '../components/menu/Menu.vue'
 import MenuButton from '../components/menu/MenuButton.vue'
 import LoadingPage from '../components/page/LoadingPage.vue'
