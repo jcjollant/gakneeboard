@@ -69,6 +69,20 @@
             </div>
         </section>
 
+        <!-- Ready To Print -->
+        <section class="ready-to-print">
+            <div class="container">
+                <h2>Ready To Print</h2>
+                <div class="template-grid">
+                    <div v-for="(template, index) in readyToPrintTemplates" :key="index" class="template-card" @click="loadDemo(template.page)">
+                        <img :src="'/thumbnails/' + template.img" :alt="template.title" />
+                        <h3>{{template.title}}</h3>
+                        <p>{{template.description}}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Testimonials -->
         <section class="testimonials">
             <div class="container">
@@ -180,7 +194,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { SheetName } from '../assets/sheetData'
+import { SheetName, ThumbnailImage } from '../assets/sheetData'
 import { useRouter } from 'vue-router'
 import { LocalStore } from '../lib/LocalStore'
 
@@ -202,6 +216,13 @@ const demos = ref<Demo[]>([
     new Demo('Checklists', 'checklist.png', 'Professional checklists in multiple formats', SheetName.checklist),
     new Demo('Charts', 'charts.png', 'Airport diagrams and instrument plates', SheetName.charts),
     new Demo('IFR Flight', 'ifrflight.png', 'Complete IFR flight organization', SheetName.ifrFlight),
+])
+
+const readyToPrintTemplates = ref<Demo[]>([
+    new Demo('Paper Navlog', ThumbnailImage.paperNavlog0, 'Traditional navigation log for flight planning', SheetName.paperNavlog),
+    new Demo('Reference Card', ThumbnailImage.reference0, 'Quick reference for important information', SheetName.reference),
+    new Demo('Acronyms', ThumbnailImage.acronyms0, 'Aviation acronyms and abbreviations', SheetName.acronyms),
+    new Demo('IFR Training', ThumbnailImage.ifrTraining, 'Instrument training aids and procedures', SheetName.ifrStrips),
 ])
 
 const router = useRouter()
@@ -506,7 +527,52 @@ h2 {
     margin-bottom: 1rem;
 }
 
+/* Ready To Print */
+.ready-to-print {
+    background: white;
+}
+
+.template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.template-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.template-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+.template-card img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.template-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #1e3a8a;
+}
+
 /* Problem/Solution */
+.problem-solution {
+    background: #f8fafc;
+}
+
 .solution-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
