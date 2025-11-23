@@ -48,7 +48,7 @@ import { useToast } from 'primevue/usetoast';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { currentUser, routeToLocalTemplate } from '../assets/data';
-import { getTemplateBlank, SheetName } from '../assets/sheetData';
+import { getTemplateBlank, SheetName, ThumbnailImage } from '../assets/sheetData';
 import { TemplateData } from '../assets/TemplateData';
 import { useToaster } from '../assets/Toaster';
 import { UserUrl } from '../lib/UserUrl';
@@ -81,11 +81,11 @@ const demos = ref<DemoSelector[]>([
     // new DemoSelector(SheetName.seattle, ['seattle.png'], 'Seattle Airports', '24 GA Airports in the Seattle Area'),
 ])
 const clickAndPrint = ref<DemoSelector[]>([
-    new DemoSelector(SheetName.reference, ['reference-0.png','reference-1.png'], 'Reference Card', 'Handy Reference Visuals'),
-    new DemoSelector(SheetName.acronyms, ['acronyms.png','acronyms-1.png'], 'Acronyms', 'Popular VFR and IFR acronyms'),
-    new DemoSelector(SheetName.ifrStrips, ['ifr-training.png','ifr-training-1.png'], 'IFR Training','Typical IFR Training Flight'),
-    new DemoSelector(SheetName.holds, ['holds.png','holds.png'], 'Holds Practice','Full sheet of Holds and Compasses'),
-    new DemoSelector(SheetName.paperNavlog, ['paper-navlog.png','paper-navlog-1.png'], 'Paper NavLog', 'Printable Template for Paper Navlog'),
+    new DemoSelector(SheetName.reference, [ThumbnailImage.reference0, ThumbnailImage.reference1], 'Reference Card', 'Handy Reference Visuals'),
+    new DemoSelector(SheetName.acronyms, [ThumbnailImage.acronyms0, ThumbnailImage.acronyms1], 'Acronyms', 'Popular VFR and IFR acronyms'),
+    new DemoSelector(SheetName.ifrStrips, [ThumbnailImage.ifrTraining, ThumbnailImage.ifrTraining1], 'IFR Training','Typical IFR Training Flight'),
+    new DemoSelector(SheetName.holds, [ThumbnailImage.holds, ThumbnailImage.holds], 'Holds Practice','Full sheet of Holds and Compasses'),
+    new DemoSelector(SheetName.paperNavlog, [ThumbnailImage.paperNavlog0, ThumbnailImage.paperNavlog1], 'Paper NavLog', 'Printable Template for Paper Navlog'),
 ])
 interface Poh {
     code: string

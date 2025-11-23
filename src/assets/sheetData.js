@@ -21,6 +21,18 @@ export class SheetName {
   static paperNavlog = 'gak-paper-navlog'
 }
 
+export class ThumbnailImage {
+  static reference0 = 'reference-0.png'
+  static reference1 = 'reference-1.png'
+  static acronyms0 = 'acronyms.png'
+  static acronyms1 = 'acronyms-1.png'
+  static ifrTraining = 'ifr-training.png'
+  static ifrTraining1 = 'ifr-training-1.png'
+  static holds = 'holds.png'
+  static paperNavlog0 = 'paper-navlog.png'
+  static paperNavlog1 = 'paper-navlog-1.png'
+}
+
 import { duplicate } from './data'
 import { TemplateFormat } from '../model/TemplateFormat'
 
