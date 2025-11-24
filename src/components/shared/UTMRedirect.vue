@@ -21,7 +21,7 @@ onMounted(() => {
     utm_campaign: 'short_link'
   })
   
-  // Redirect to home with UTM parameters
-  window.location.href = `/?${params.toString()}`
+  // Redirect to first time user experience with UTM parameters
+  window.location.href = `/ftux?${params.toString()}`
 })
 </script>
