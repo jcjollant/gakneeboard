@@ -10,6 +10,7 @@ import FTUX from '../views/FTUX.vue';
 import FormatSelector from '../components/templates/FormatSelector.vue';
 import Demo from '../views/Demo.vue';
 import TileTest from '../views/TileTest.vue';
+import UTMRedirect from '../components/shared/UTMRedirect.vue';
 
 export const RouterNames = {
     Admin: 'Admin',
@@ -26,9 +27,9 @@ export const RouterNames = {
 
 const routes = [
     { path: '/', name: RouterNames.Home, component: Home },
-    { path: '/yt', redirect: '/?utm_source=youtube' },
-    { path: '/fb', redirect: '/?utm_source=facebook' },
-    { path: '/ig', redirect: '/?utm_source=instagram' },
+    { path: '/yt', component: UTMRedirect, props: { source: 'youtube' } },
+    { path: '/fb', component: UTMRedirect, props: { source: 'facebook' } },
+    { path: '/ig', component: UTMRedirect, props: { source: 'instagram' } },
     { path: '/admin', name: RouterNames.Admin, component: Admin },
     { path: '/plans', name: RouterNames.Plans, component: PricingPlans },
     { path: '/thankyou', name: RouterNames.ThankYou, component: ThankYou },
