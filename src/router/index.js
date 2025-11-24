@@ -26,6 +26,9 @@ export const RouterNames = {
 
 const routes = [
     { path: '/', name: RouterNames.Home, component: Home },
+    { path: '/yt', redirect: '/?utm_source=youtube' },
+    { path: '/fb', redirect: '/?utm_source=facebook' },
+    { path: '/ig', redirect: '/?utm_source=instagram' },
     { path: '/admin', name: RouterNames.Admin, component: Admin },
     { path: '/plans', name: RouterNames.Plans, component: PricingPlans },
     { path: '/thankyou', name: RouterNames.ThankYou, component: ThankYou },
