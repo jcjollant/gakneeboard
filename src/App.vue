@@ -79,7 +79,7 @@ onBeforeMount( () => {
 
 onMounted( () => {
 
-    console.debug( '[App.onMounted]', JSON.stringify(window.location.search), router.currentRoute.value)
+    // console.debug( '[App.onMounted]', JSON.stringify(window.location.search), router.currentRoute.value)
 
     // test current route name
     if(window.location.pathname == '/') {
