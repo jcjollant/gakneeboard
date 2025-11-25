@@ -10,7 +10,6 @@ import FTUX from '../views/FTUX.vue';
 import FormatSelector from '../components/templates/FormatSelector.vue';
 import Demo from '../views/Demo.vue';
 import TileTest from '../views/TileTest.vue';
-import UTMRedirect from '../components/shared/UTMRedirect.vue';
 
 export const RouterNames = {
     Admin: 'Admin',
@@ -27,9 +26,10 @@ export const RouterNames = {
 
 const routes = [
     { path: '/', name: RouterNames.Home, component: Home },
-    { path: '/yt', component: UTMRedirect, props: { source: 'youtube' } },
-    { path: '/fb', component: UTMRedirect, props: { source: 'facebook' } },
-    { path: '/ig', component: UTMRedirect, props: { source: 'instagram' } },
+    // redirect route to FTUX with youtube utm parameters
+    { path: '/y', redirect: {name:RouterNames.FTUX, query : { utm_source : 'youtube', utm_medium : 'comment', utm_campaign : 'weekly'}}},
+    { path: '/i', redirect: {name:RouterNames.FTUX, query : { utm_source : 'instagran', utm_medium : 'comment', utm_campaign : 'weekly'}}},
+    { path: '/f', redirect: {name:RouterNames.FTUX, query : { utm_source : 'facebook', utm_medium : 'comment', utm_campaign : 'weekly'}}},
     { path: '/admin', name: RouterNames.Admin, component: Admin },
     { path: '/plans', name: RouterNames.Plans, component: PricingPlans },
     { path: '/thankyou', name: RouterNames.ThankYou, component: ThankYou },

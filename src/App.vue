@@ -79,42 +79,75 @@ onBeforeMount( () => {
 
 onMounted( () => {
 
-    // console.log( '[App.onMounted]', JSON.stringify(window.location.search))
-    // Do we have anything to load from URL?
-    let urlParams = new URLSearchParams(window.location.search);
-    // do we have a template
-    const code = urlParams.get('t')
-    if( code) {
-        // console.log('[App.onMounted] publication code', code)
+    console.debug( '[App.onMounted]', JSON.stringify(window.location.search), router.currentRoute.value)
 
-        // Get that publication data
-        new Promise( (resolve, reject) => {
-            TemplateData.getPublication(code).then( (template: any) => {
-                // console.log('[App.onMounted] publication found ', template)
-                if(template) {
-                    routeToLocalTemplate(router, template)
-                } else {
-                    // template not found?
-                    toaster.error('Load Template','Code not found ' + code)
-                }
-            }).catch((e: any) => {
-                // Get publication failed
-                toaster.error('Load Template','Error fetching template ' + code)
-                console.log('[App.onMounted] publication fetch failed', e)
-            }) 
-        })
-    } else if( urlParams.has('d')){ // this is a demo
-      const name = urlParams.get('d');
-      const template = DemoData.fromName( 'gak-' + name )
-      if( template) {
-        routeToLocalTemplate(router, template)
+    // test current route name
+    if(window.location.pathname == '/') {
+      // Do we have anything to load from URL?
+      let urlParams = new URLSearchParams(window.location.search);
+  
+      // do we have a template
+      const templateCode = urlParams.get('t')
+      const demoCode = urlParams.get('d')
+      const testCode = urlParams.get('test')
+      if( templateCode) {
+          // console.log('[App.onMounted] publication code', code)
+
+          // Get that publication data
+          new Promise( (resolve, reject) => {
+              TemplateData.getPublication(templateCode).then( (template: any) => {
+                  // console.log('[App.onMounted] publication found ', template)
+                  if(template) {
+                      routeToLocalTemplate(router, template)
+                  } else {
+                      // template not found?
+                      toaster.error('Load Template','Code not found ' + templateCode)
+                  }
+              }).catch((e: any) => {
+                  // Get publication failed
+                  toaster.error('Load Template','Error fetching template ' + templateCode)
+                  console.log('[App.onMounted] publication fetch failed', e)
+              }) 
+          })
+      } else if( demoCode){ // this is a demo
+        const template = DemoData.fromName( 'gak-' + demoCode )
+        if( template) {
+          routeToLocalTemplate(router, template)
+        }
+      } else if( testCode) { // this is a test
+        router.push({path: 'test/' + testCode})
       }
-    } else if( urlParams.has('test')) { // this is a test
-      router.push({path: 'test/' + urlParams.get('test')})
-    } else if( LocalStore.popupShow(3)) {
-      router.push({name: RouterNames.FTUX})
-    }
+      if( templateCode) {
+          // console.log('[App.onMounted] publication code', code)
 
+          // Get that publication data
+          new Promise( (resolve, reject) => {
+              TemplateData.getPublication(templateCode).then( (template: any) => {
+                  // console.log('[App.onMounted] publication found ', template)
+                  if(template) {
+                      routeToLocalTemplate(router, template)
+                  } else {
+                      // template not found?
+                      toaster.error('Load Template','Code not found ' + templateCode)
+                  }
+              }).catch((e: any) => {
+                  // Get publication failed
+                  toaster.error('Load Template','Error fetching template ' + templateCode)
+                  console.log('[App.onMounted] publication fetch failed', e)
+              }) 
+          })
+      } else if( demoCode){ // this is a demo
+        const template = DemoData.fromName( 'gak-' + demoCode )
+        if( template) {
+          routeToLocalTemplate(router, template)
+        }
+      } else if( testCode) { // this is a test
+        router.push({path: 'test/' + testCode})
+      } else if( LocalStore.popupShow(3)) {
+        // change route to FTUX but preserve url parameters
+        router.push({name: RouterNames.FTUX})
+      }
+    }
     showMaintenance.value = false;
 })
 
