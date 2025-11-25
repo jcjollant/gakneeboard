@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 11/24/2025 - 5483 - Third attempt at shorthand redirect
 ## 11/24/2025 - 5481 - Second attempt at shorthand redirect with dedicated view
 ## 11/24/2025 - 5480 - Implemented shorthand redirect
 ## 11/22/2025 - 5477 - Added Ready to print to FTUX
