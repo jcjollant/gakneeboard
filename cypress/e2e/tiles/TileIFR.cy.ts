@@ -1,5 +1,5 @@
-import { IfrTileDisplayModeLabels } from '../../../../src/components/clearance/IfrTileDisplayModeLabel'
-import { holdTitle, approachTitle, displaySelection, TileTypeLabel, checkImageContent, loadTestTile, displayModesCheck, displaySelectionTestTile, loadTestTileWithData, checkImageContentTestTile } from '../../shared.js'
+import { IfrTileDisplayModeLabels } from '../../../src/components/clearance/IfrTileDisplayModeLabel'
+import { approachTitle, TileTypeLabel, loadTestTile, displayModesCheck, displaySelectionTestTile, loadTestTileWithData, checkImageContentTestTile } from '../shared.js'
 
 
 const titleCraftClearance = "IFR Flight"
@@ -35,12 +35,12 @@ const expectedDepartureManual = [
 describe('Tile IFR', () => {
   // all tests should call visitSkipBanner()
 
-  let dataDepartureWithAirport
-  let dataDepartureNoAirport
-  let dataCraftClearance
-  let dataApproach
-  let dataAlternate
-  let dataLostComms
+  let dataDepartureWithAirport:any
+  let dataDepartureNoAirport:any
+  let dataCraftClearance:any
+  let dataApproach:any
+  let dataAlternate:any
+  let dataLostComms:any
 
   before(() => {
     cy.fixture('ifrTileDepartureKBFI').then(data => dataDepartureWithAirport = data)
