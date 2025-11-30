@@ -4,20 +4,26 @@
             @replace="emits('replace')" @display="displaySelection=!displaySelection"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList" :expandable="true" :expanded="expanded"
             @expand="onExpand" @keep="displaySelection=false" />
-        <div v-else-if="displayMode==DisplayModeAtis.FullATIS && expanded" class="tileContent">
-            <div v-for="n in 4" class="expanded" :class="{'bb': n < 4}">
+        <div v-else-if="expanded && (displayMode==DisplayModeAtis.FullATIS || displayMode==DisplayModeAtis.CompactATIS)" class="tileContentEx">
+            <div class="flex atisHeader">
+                <div class="infoEx">Info</div>
+                <div class="windEx">Wind</div>
+                <div class="visEx">Vis</div>
+                <div class="skyEx">Sky</div>
+                <div class="tempEx">T°/DP</div>
+                <div class="altEx">Alt</div>
+                <div class="rwyEx">Rwy</div>
+            </div>
+            <div v-for="n in 5" class="expanded bt">
                 <div class="infoEx br">
-                    <div class="tileBoxLabel">Info</div>
                 </div>
                 <div class="windEx br">
-                    <div class="tileBoxLabel">Wind</div>
-                    <div class="at">@</div>
+                    <div class="at atEx">@</div>
                     <div class="wtrmrk"><div>Vrb</div></div>
                     <div class="wtrmrk clear">Calm</div>
                     <div class="wtrmrk gust">G</div>
                 </div>
                 <div class="visEx br">
-                    <div class="tileBoxLabel">Vis</div>
                     <div class="wtrmrk">
                         <div>Ra</div>
                         <div>Fg</div>
@@ -26,7 +32,6 @@
                     <div class="wtrmrk clear">10+</div>
                 </div>
                 <div class="skyEx br">
-                    <div class="tileBoxLabel">Sky</div>
                     <div class="wtrmrk">
                         <div>Fw</div>
                         <div>Sc</div>
@@ -35,11 +40,10 @@
                     </div>
                     <div class="wtrmrk clear">CLR</div>
                 </div>
-                <div class="tempEx br">/
-                    <div class="tileBoxLabel">T°/DP</div>
+                <div class="tempEx br">
+                    <div class="tempText">/</div>
                 </div>
                 <div class="altEx br">
-                    <div class="tileBoxLabel">Alt</div>
                     <div class="wtrmrk">
                         <div>28</div>
                         <div>29</div>
@@ -47,7 +51,6 @@
                     </div>
                 </div>
                 <div class="rwyEx">
-                    <div class="tileBoxLabel">Rwy</div>
                 </div>
             </div>
         </div>
@@ -140,6 +143,7 @@ import { ref,onMounted, watch } from 'vue'
 import { DisplayModeAtis, DisplayModeChoice } from '../../model/DisplayMode';
 import { TileType } from '../../model/TileType';
 import { TileData } from '../../model/TileData';
+import { AtisTileDisplayModeLabels } from './AtisTileDisplayModeLabel';
 
 import CloudClearance from './CloudClearance.vue';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
@@ -154,10 +158,10 @@ const displayMode = ref(DisplayModeAtis.Unknown)
 const displaySelection = ref(false)
 const expanded = ref(false)
 const modesList = ref([
-    new DisplayModeChoice('Full Size', DisplayModeAtis.FullATIS, true),
-    new DisplayModeChoice('Compact (4 rows)', DisplayModeAtis.CompactATIS),
-    new DisplayModeChoice('Flight Categories', DisplayModeAtis.Categories, true),
-    new DisplayModeChoice('Cloud Clearance', DisplayModeAtis.CloudClearance, true),
+    new DisplayModeChoice(AtisTileDisplayModeLabels.fullATIS, DisplayModeAtis.FullATIS, true),
+    new DisplayModeChoice(AtisTileDisplayModeLabels.compactATIS, DisplayModeAtis.CompactATIS),
+    new DisplayModeChoice(AtisTileDisplayModeLabels.categories, DisplayModeAtis.Categories, true),
+    new DisplayModeChoice(AtisTileDisplayModeLabels.cloudClearance, DisplayModeAtis.CloudClearance, true),
 ])
 const props = defineProps({
     params: { type: Object, default: null}, // expects {'mode':'compact'}
@@ -211,10 +215,12 @@ function cycleMode() {
 function getTitle() {
     if( displaySelection.value) return "Weather Tile Mode"
     switch(displayMode.value) {
-        case DisplayModeAtis.CompactATIS: return 'ATIS';
         case DisplayModeAtis.Categories: return 'Flight Categories';
         case DisplayModeAtis.CloudClearance: return 'Cloud Clearance';
-        default: return 'ATIS @';
+        case DisplayModeAtis.FullATIS: 
+            if( !expanded.value) return 'Weather @';
+//        case DisplayModeAtis.CompactATIS:
+        default: return 'Weather';
     }
 }
 
@@ -236,6 +242,11 @@ function saveConfig() {
     display: grid;
     grid-template-rows: repeat( 4, 1fr);
     width: 100%;
+}
+.tileContentEx {
+    display: grid;
+    grid-template-rows: 0.5fr 2fr 2fr 2fr 2fr 2fr;
+    height: var(--tile-content-height);
 }
 .expanded {
     display: flex;
@@ -397,11 +408,13 @@ function saveConfig() {
     flex: 4 1 0px;
 }
 .tempEx {
+    flex: 3 1 0px;
+}
+.tempText {
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: x-large;
-    flex: 3 1 0px;
 }
 .altEx {
     flex: 4 1 0px;
@@ -431,7 +444,12 @@ function saveConfig() {
     font-size: 15px;
     font-weight: bolder;
     padding-left: 55px;
-    padding-top: 20px;
+    padding-top: 10px;
     opacity: 0.3;
+}
+.atisHeader {
+    font-size: 10px;
+    font-weight: bold;
+    line-height: 12px;
 }
 </style>
