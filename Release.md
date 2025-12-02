@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 12/02/2025 - 5491 - Personal Minimums page
 ## 11/29/2025 - 5490 - Added one line in Weather tile compact mode. Compact expnaded is now the same as Full expanded
 ## 11/24/2025 - 5483 - Third attempt at shorthand redirect
 ## 11/24/2025 - 5481 - Second attempt at shorthand redirect with dedicated view
