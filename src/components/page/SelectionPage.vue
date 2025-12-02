@@ -14,11 +14,11 @@
 
         <div class="list">
             <div class="section wide">
-                <Separator :name="Section.composable" class="separator" />
-                <div class="grid">
+                <!-- <Separator name="More Choices" class="separator" /> -->
+                <!-- <div class="grid">
                     <FAButton v-for="page in [0,1,2]" :label="allPages[page].name" :title="allPages[page].tooltip" :icon="allPages[page].icon" class="grow"
                         @click="replacePage(allPages[page].type)"/>
-                </div>
+                </div> -->
             </div>
             <template v-for="section in filteredSections">
                 <div class="section">
@@ -53,7 +53,7 @@ enum Section {
     composable = 'Composable',
     navigation = 'Navigation',
     charts = 'Charts',
-    debrief = 'Post Flight',
+    debrief = 'Pre/Post Flight',
     cosmetics = 'Cosmetics'
 }
 
@@ -86,12 +86,13 @@ const sections = ref([
 
 const allPages = ref([
     new PageItem('Tiles', PageType.tiles, 'border-all', 'A 2x3 grid of customizable tiles like Airport, ATIS, Radios, ...', Section.composable, true, true),
-    new PageItem('Strips', PageType.strips, 'bars', 'Customizable horizontal strips', Section.composable, true, false),
+    new PageItem('Strips', PageType.strips, 'bars', 'Customizable horizontal strips', Section.cosmetics, true, false),
     new PageItem('Checklist', PageType.checklist, 'list-check', 'A customizable checklist', Section.composable, true, true),
     new PageItem('Calculated NavLog', PageType.navLog, 'route', 'A Navigation Log with automated calculations', Section.navigation, true, false),
     new PageItem('Paper Navlog', PageType.paperNavlog, 'route', 'A Blank Template for hand built navlogs', Section.navigation, true, true),
     new PageItem('Airport Diagram', PageType.diagram, 'road-circle-check', 'Airport Diagram (FAA)', Section.charts, true, false),
     new PageItem('Instrument Approach', PageType.approach, 'plane-arrival', 'Instrument Approach Plates (FAA)', Section.charts, true, false),
+    new PageItem('Personal Minimums', PageType.minimums, 'shield', 'Personal Minimums', Section.debrief, true, false),
     new PageItem('Flight Debrief', PageType.flightDebrief, 'pen-to-square', 'Debrief your flights per topic', Section.debrief, true, false),
     new PageItem('Notes', PageType.notes, 'pen-to-square', 'A blank page to write down instructions', Section.debrief, true, false),
     new PageItem('Cover', PageType.cover, 'image', 'A cover page for your stylish templates', Section.cosmetics, true, false),

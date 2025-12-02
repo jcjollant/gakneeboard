@@ -21,6 +21,8 @@
         @replace="onReplace" @update="onUpdate"  />
     <FlightNotesPage v-else-if="type==PageType.flightNotes" 
         @replace="onReplace" />
+    <PersonalMinimumsPage v-else-if="type==PageType.minimums" :data="pageData"
+        @replace="onReplace" @update="onUpdate" />
     <StripPage v-else-if="type==PageType.strips" :data="pageData"
         @replace="onReplace" @update="onUpdate" />
     <SelectionPage v-else @replace="onReplace" :format="format" />
@@ -44,6 +46,7 @@ import LoadingPage from './LoadingPage.vue'
 import NavlogPage from '../navlog/NavlogPage.vue'
 import NotesPage from '../notes/NotesPage.vue'
 import PaperNavlogPage from '../navlog/PaperNavlogPage.vue'
+import PersonalMinimumsPage from './PersonalMinimumsPage.vue'
 import SelectionPage from './SelectionPage.vue'
 import StripPage from '../strips/StripPage.vue'
 import TilePage from '../tiles/TilePage.vue'

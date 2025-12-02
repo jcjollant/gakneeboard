@@ -7,6 +7,7 @@ export class PageType {
   static flightDebrief = 'debrief';
   static flightNotes = 'flightnotes';
   static loading = 'loading';
+  static minimums = 'minimums';
   static navLog = 'navlog';
   static notes = 'notes';
   static paperNavlog = 'papernavlog'
