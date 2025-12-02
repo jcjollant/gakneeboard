@@ -14,7 +14,7 @@ import {
     faRoadCircleCheck,
     faRotateLeft,
     faRoute,
-    faSave, faScrewdriverWrench, faStarOfLife, faSun,
+    faSave, faScrewdriverWrench, faShield, faStarOfLife, faSun,
     faTowerCell, faTowerObservation, faTrash, faTruckFast,
     faUser,
     faVideo, faWalkieTalkie, faXmark,
@@ -43,7 +43,7 @@ library.add(
     faPenToSquare, faPhone, faPlane, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, faPrint, 
     faQuestion, 
     faRoadCircleCheck, faRotateLeft, faRoute, 
-    faSave, faScrewdriverWrench, faStarOfLife, faSun, 
+    faSave, faScrewdriverWrench, faShield, faStarOfLife, faSun, 
     faTowerCell, faTowerObservation, faTrash, faTruckFast,
     faUser,
     faVideo, faWalkieTalkie, faWordpress, faXmark, faYoutube)
