@@ -605,7 +605,7 @@ function updateThumbnail(template:Template) {
   if(element == null) return;
 
   // Capture page 0 into an image
-  html2canvas(element).then( async (canvas) => {
+  html2canvas(element, { logging: false}).then( async (canvas) => {
     // scale image to fit the thumbnail
     const scaledCanvas = document.createElement('canvas')
     const scaleFactor = 200 / canvas.width;
