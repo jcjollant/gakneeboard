@@ -31,7 +31,7 @@ function loadProps(props:any) {
 <style scoped>
 .imageContent {
     width: var(--tile-width);
-    height: var(--tile-content-height);
+    height: calc( var(--tile-content-height) - 2px);
     object-fit: contain;
 }
 </style>
