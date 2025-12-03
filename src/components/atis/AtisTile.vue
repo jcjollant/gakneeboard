@@ -125,13 +125,7 @@
             </div>
         </div>
         <div v-else-if="displayMode==DisplayModeAtis.Categories" class="tileContent categories">
-            <div class="vfrLeft vfr">VFR<span class="alt">3,000ft</span></div>
-            <div class="vfrRight vfr">&nbsp;<span class="vis">5sm</span></div>
-            <div class="mvfrLeft mvfr">MVFR<span class="alt">1,000ft</span></div>
-            <div class="mvfrRight mvfr">&nbsp;<span class="vis">3sm</span></div>
-            <div class="ifrLeft ifr">IFR<span class="alt">500ft</span></div>
-            <div class="ifrRight ifr">&nbsp;<span class="vis">1sm</span></div>
-            <div class="lifr">LIFR</div>
+            <ImageContent src="flight-categories.png" />
         </div>
         <CloudClearance v-else-if="displayMode==DisplayModeAtis.CloudClearance" />
         <NoSettings v-else />
@@ -148,6 +142,7 @@ import { AtisTileDisplayModeLabels } from './AtisTileDisplayModeLabel';
 import CloudClearance from './CloudClearance.vue';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../shared/Header.vue';
+import ImageContent from '../shared/ImageContent.vue';
 import NoSettings from '../shared/NoSettings.vue'
 
 // Enum with display modes
@@ -253,75 +248,9 @@ function saveConfig() {
     position: relative;
 }
 .categories {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(4, 1fr);
-    font-weight: 600;
-    font-size: optional;
-}
-.categories div {
-    position: relative;
-    text-align: end;
-    padding: 5px;
-}
-.categories .alt {
-    position: absolute;
-    left: 2px;
-    bottom: 2px;
-    font-size: 1rem;
-    font-weight: normal;
-}
-.categories .ifr {
-    /* color: white; */
-    /* background-color: #E33; */
-    color: #600;
-    border-right: 1px solid #600;
-}
-.categories .ifrLeft {
-    grid-column: 1 / span 2;
-    grid-row: 3;
-    border-top: 1px solid #600;
-}
-.categories .ifrRight {
-    grid-column: 2;
-    grid-row: 4;
-}
-.categories .lifr {
-    color: white;
-    background-color: #E3E;
-}
-.categories .mvfr {
-    /* color: white; */
-    /* background-color: #66E; */
-    color: #006;
-    border-right: 1px solid #006;
-}
-.categories .mvfrLeft {
-    border-top: 1px solid #006;
-    grid-column: 1 / span 3;
-}
-.categories .mvfrRight {
-    grid-column: 3;
-    grid-row: 3 / span 2;
-}
-.categories .vfr {
-    color: #000
-    /* background-color: #6E6; */
-}
-.categories .vfrLeft {
-    grid-column: 1 / span 4;
-}
-.categories .vfrRight {
-    grid-column: 4;
-    grid-row: 2 / span 3;
-}
-.categories .vis {
-    position: absolute;
-    left: 0;
-    bottom: 2px;
-    writing-mode: vertical-lr;
-    font-size: 1rem;
-    font-weight: normal;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .list {
     display: grid;
