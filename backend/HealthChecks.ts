@@ -46,10 +46,12 @@ export class HealthCheck {
         }
 
         const missingSketchesCount = await AirportDao.countMissingSketches()
+        const validCount = await AirportDao.countValid()
         const missingSketches:Check = new Check('airportMissingSketches')
         if( missingSketchesCount > 0) {
-            missingSketches.fail("Found " + missingSketchesCount + " airports missing sketches")
+            missingSketches.fail(`Found ${missingSketchesCount}/${validCount} airports missing sketches`)
         } else {
+            missingSketches.pass(`${validCount} airports have valid sketches`)
         }
         return [dupeCheck, missingSketches]
     }
