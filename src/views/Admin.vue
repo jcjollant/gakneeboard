@@ -27,7 +27,7 @@
         <div v-if="selectedApi === 'active'" class="input-section">
             <h2>Active Users</h2>
             <div class="input-group">
-                <input type="number" v-model="daysValue" placeholder="Days" min="1" />
+                <input type="number" v-model="daysValue" placeholder="Days" min="1" @keyup.enter="fetchActiveUsers" />
                 <button @click="fetchActiveUsers" :disabled="loadingActive || !daysValue">{{ loadingActive ? 'Loading...' : 'Fetch Active Users' }}</button>
             </div>
         </div>
@@ -58,6 +58,15 @@
         </div>
         
         <div v-if="selectedApi === 'active' && Object.keys(activeUsersRaw).length > 0">
+            <h2>Active Users List</h2>
+            <div class="user-id-list">
+                <router-link v-for="id in activeUsersRaw" 
+                    :key="id" 
+                    class="user-id-chip" 
+                    :to="{ query: { userId: id } }">
+                    {{ id }}
+                </router-link>
+            </div>
             <h2>Active Users API Response</h2>
             <pre class="json-display">{{ JSON.stringify(activeUsersRaw, null, 2) }}</pre>
         </div>
@@ -65,12 +74,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { currentUser } from '../assets/data'
 import { GApiUrl } from '../lib/GApiUrl'
 import { useToaster } from '../assets/Toaster';
 import { useToast } from 'primevue/usetoast';
+import { useRoute, useRouter } from 'vue-router';
 
+const route = useRoute()
+const router = useRouter()
 const inputValue = ref('')
 const toaster = useToaster(useToast())
 const userEmail = ref('')
@@ -99,6 +111,11 @@ class Usage {
 function selectApi(api: string) {
     selectedApi.value = api
     if (api === 'profile') {
+        // activeUsersRaw.value = {} // Commented out to preserve list if switching back and forth? 
+        // Actually, existing code clears it. Let's keep it consistent with previous logic or adapt.
+        // If I want to keep the list visible when I click back?
+        // The original code cleared it: activeUsersRaw.value = {}
+        // Let's stick to original behavior for now, but be careful.
         activeUsersRaw.value = {}
     } else {
         userId.value = 0
@@ -106,8 +123,10 @@ function selectApi(api: string) {
     }
 }
 
+
 function handleSubmit() {
     console.debug('[Admin.handleSubmit]', inputValue.value)
+    // Avoid re-fetching if already same ID? No, explicit refresh is good.
     currentUser.getUrl(GApiUrl.root + 'user/profile/' + inputValue.value).then(res => {
         const userProfile = res.data
         userId.value = userProfile.id
@@ -123,6 +142,7 @@ function handleSubmit() {
 }
 
 function fetchActiveUsers() {
+    if (loadingActive.value || !daysValue.value) return
     loadingActive.value = true
     console.debug('[Admin.fetchActiveUsers]', daysValue.value)
     currentUser.getUrl(GApiUrl.root + 'usage/active?days=' + daysValue.value).then(res => {
@@ -133,6 +153,35 @@ function fetchActiveUsers() {
         loadingActive.value = false
     })
 }
+
+function openUserProfile(id: any) {
+    // This function is still used by the template in my previous edit.
+    // I will replace the usage in template with router-link, but keep this for safety or change it.
+    router.push({ query: { userId: id } })
+}
+
+const handleRouteParams = () => {
+    const qUserId = route.query.userId
+    if (qUserId) {
+        // We set selectedApi to 'profile'
+        // Note: selectApi('profile') clears activeUsersRaw. 
+        // If we want to support "Back" button to see the list again, clearing it might be annoying, 
+        // but 'Active Users' page requires hitting 'Fetch' again anyway in current impl.
+        selectApi('profile')
+        inputValue.value = String(qUserId)
+        handleSubmit()
+    }
+}
+
+watch(() => route.query.userId, () => {
+    handleRouteParams()
+})
+
+onMounted(() => {
+    handleRouteParams()
+})
+
+
 
 
 </script>
@@ -285,5 +334,31 @@ function fetchActiveUsers() {
     border: 1px solid #e9ecef;
     max-height: 300px;
     overflow-y: auto;
+}
+
+.user-id-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.user-id-chip {
+    padding: 0.5rem 1rem;
+    background: #e1e8ed;
+    border-radius: 20px;
+    font-weight: 500;
+    color: #2c3e50;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none; /* added for router-link */
+    display: inline-block; /* router-link is inline by default */
+}
+
+.user-id-chip:hover {
+    background: #3498db;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 </style>
