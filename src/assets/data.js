@@ -415,16 +415,3 @@ async function waitForAirportData(code) {
   // console.log( 'done waiting for ' + code)
   return sessionAirports.get(code)
 }
-
-export async function saveCustomAirport(airport) {
-  const url = GApiUrl.root + 'airport'
-  const payload = { user: currentUser.sha256, airport: airport }
-  await axios.post(url, payload, contentType)
-    .then(response => {
-      // console.log( '[data] custom airport saved', airport.code)
-    })
-    .catch(error => {
-      reportError('[data.saveCustomAirport] custom airport save error ' + JSON.stringify(error))
-    })
-
-}
