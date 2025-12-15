@@ -6,7 +6,7 @@
         <div class="tileContent" :class="{'expanded':expanded}">
             <DisplayModeSelection v-if="displaySelection" :modes="modesList" v-model="displayMode" :expandable="true" :expanded="expanded"
                 @expand="onExpand" @keep="displaySelection=false" />
-            <ImageContent v-else-if="displayMode==DisplayModeRadios.ServiceVolumes" src="service-volumes.png" /> 
+            <VorServiceVolumes v-else-if="displayMode==DisplayModeRadios.ServiceVolumes" />
             <Nordo v-else-if="displayMode==DisplayModeRadios.LostComms" />
             <ImageContent v-else-if="displayMode==DisplayModeRadios.LostCommsIFR" src="lostcomms-ifr.png" /> 
             <div v-else-if="displayMode==DisplayModeRadios.FreqList" class="main">
@@ -61,6 +61,7 @@ import LookupDialog from './LookupDialog.vue'
 import Nordo from './Nordo.vue';
 import PlaceHolder from '../shared/PlaceHolder.vue'
 import Textarea from 'primevue/textarea';
+import VorServiceVolumes from './VorServiceVolumes.vue';
 
 const displayMode = ref(DisplayModeRadios.Unknown) // active display mode
 const displaySelection = ref(false)

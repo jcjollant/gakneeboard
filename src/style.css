@@ -1,8 +1,7 @@
-
 #app {
   /* max-width: 1280px; */
   min-width: var(--min-width);
-  width:100%;
+  width: 100%;
   min-height: 100vh;
   margin: 0 auto;
   text-align: center;
@@ -16,7 +15,7 @@
 
 body {
   margin: 0;
-  min-height: 100vh; 
+  min-height: 100vh;
 }
 
 @media (max-width: 500px) {
@@ -32,7 +31,7 @@ body {
   --bg-choice-active: #b4c6e7;
   --bg-secondary: #607D8B;
   --bg-secondary-hover: #587583;
-  
+
   --bg-hover: #0D89EC;
   --bg-public: #689F38;
   --bg-strip: #eef;
@@ -45,16 +44,16 @@ body {
   --main-gap: 1rem;
   --menu-border-offset: 10px;
   --menu-height: 2rem;
-  
+
   /* Kneeboard format (5.5x8.5) */
   --page-width: 500px;
   --page-width-two: 1050px;
   --page-height: 800px;
-  
+
   /* Full page format (8.5x11) */
   --fullpage-width: 750px;
   --fullpage-height: 1050px;
-  
+
   --page-content: calc(var(--page-height) - var(--header-height) - 1px);
   --fullpage-content: calc(var(--fullpage-height) - var(--header-height) - 1px);
   --pages-gap: 50px;
@@ -76,7 +75,7 @@ body {
 }
 
 .flex {
-  display:flex;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
@@ -91,14 +90,16 @@ body {
   font-family: Verdana, sans-serif;
   height: var(--tile-height);
   background: white;
-  width: var(--tile-width); 
+  width: var(--tile-width);
   overflow: hidden;
 }
 
-.content, .tileContent {
-  width: calc(var(--tile-width) - 2px); 
+.content,
+.tileContent {
+  width: calc(var(--tile-width) - 2px);
   height: var(--tile-content-height);
-  position: relative; /* Needed for absolute positioning fo children */
+  position: relative;
+  /* Needed for absolute positioning fo children */
 }
 
 .tileBoxLabel {
@@ -111,7 +112,7 @@ body {
 .contentPage {
   position: relative;
   border: 1px solid darkgray;
-  background:white;
+  background: white;
   width: var(--page-width);
   height: var(--page-height);
   overflow: hidden;
@@ -146,6 +147,7 @@ body {
   position: relative;
   font-size: 13px;
 }
+
 .stripHeader {
   border-bottom: 1px dashed grey;
 }
@@ -158,11 +160,11 @@ body {
 
 
 .actionBar {
-  position:absolute;
+  position: absolute;
   display: flex;
   justify-content: center;
   bottom: 5px;
-  gap:5px;
+  gap: 5px;
   height: 1.5rem;
   width: 100%;
 }
@@ -193,23 +195,16 @@ body {
   text-align: justify;
 }
 
-.regulations {
-  position: absolute;
-  display: flex;
-  flex-flow: column;
-  align-items: flex-end;
-  font-size: 11px;
-  right: 0;
-  bottom: 0;
-}
+
 
 .left {
-  text-align:left;
+  text-align: left;
 }
 
 .ml-2 {
   margin-left: 0.5rem;
 }
+
 .ml-5 {
   margin-left: 2rem;
 }
@@ -217,6 +212,7 @@ body {
 .mr-2 {
   margin-right: 0.5rem;
 }
+
 .mr-3 {
   margin-right: 1rem;
 }
@@ -224,9 +220,11 @@ body {
 .mb-2 {
   margin-bottom: 0.5rem;
 }
+
 .mb-5 {
   margin-bottom: 2rem;
 }
+
 .mt-2 {
   margin-top: 0.5rem;
 }
@@ -234,6 +232,7 @@ body {
 .mt-4 {
   margin-top: 1.5rem;
 }
+
 .mt-5 {
   margin-top: 2rem;
 }
@@ -241,12 +240,15 @@ body {
 .bb {
   border-bottom: 1px dashed darkgrey;
 }
+
 .bl {
   border-left: 1px dashed darkgrey;
 }
+
 .br {
   border-right: 1px dashed darkgrey;
 }
+
 .bt {
   border-top: 1px dashed darkgrey;
 }
@@ -256,43 +258,50 @@ body {
 }
 
 .attClimb {
-    color: red;
+  color: red;
 }
+
 .attCruise {
-    color: darkgray;
+  color: darkgray;
 }
+
 .attDesc {
-    color: green;
+  color: green;
 }
 
 .attClimb {
-    color: #400;
-    background-color: rgba(255, 0, 0, 0.1);
+  color: #400;
+  background-color: rgba(255, 0, 0, 0.1);
 }
+
 .attCruise {
-    color: #004;
-    background-color: rgba(0, 0, 255, 0.1);
+  color: #004;
+  background-color: rgba(0, 0, 255, 0.1);
 }
+
 .attDescent {
-    color: #040;
-    background-color: rgba(0, 255, 0, 0.1);
+  color: #040;
+  background-color: rgba(0, 255, 0, 0.1);
 }
 
 .font-medium {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .font-small {
-    font-size: 13px;
+  font-size: 13px;
 }
+
 .font-smaller {
-    font-size: 12px;
+  font-size: 12px;
 }
+
 .font-large {
-    font-size: 15px;
+  font-size: 15px;
 }
+
 .font-larger {
-    font-size: 17px;
+  font-size: 17px;
 }
 
 .pad5 {
@@ -309,6 +318,7 @@ body {
   @page {
     margin: 0.25in;
   }
+
   .printPageBreak {
     page-break-before: always;
     page-break-after: always;
@@ -317,16 +327,18 @@ body {
     page-break-inside: avoid;
     break-inside: avoid;
   }
+
   .printOnePage {
     display: inline-block;
     width: 100%;
     height: 100%;
     page-break-inside: avoid;
-  }  
+  }
+
   .printTwoPages {
     display: inline-block;
     width: 100%;
     height: 100%;
     page-break-inside: avoid;
-  }  
+  }
 }
