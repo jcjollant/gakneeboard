@@ -1,5 +1,5 @@
 import {describe, expect, test} from '@jest/globals';
-import { Frequency, FrequencyType } from '../src/model/Frequency';
+import { Frequency, FrequencyType } from '../src/models/Frequency';
 
 describe('Frequency', () => {
     test( 'typeFromString', () => {

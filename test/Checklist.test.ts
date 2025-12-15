@@ -1,5 +1,5 @@
 import {describe, expect} from '@jest/globals';
-import { Checklist, ChecklistItem, ItemType } from "../src/model/Checklist"
+import { Checklist, ChecklistItem, ItemType } from "../src/models/Checklist"
 
 describe( 'Checklist', () => {
     it('Is parsing from editor', () => {
