@@ -1,22 +1,27 @@
 <template>
-    <Dialog modal header="Version Numbers" style="width: 600px">
-        <div class="both">
-            <div class="one">
-                <div>Interface</div>
-                <font-awesome-icon icon="fa-solid fa-display" class="icon"/>
-                <div class="number">{{ frontendVersion }}</div>
+    <Dialog modal header="Version Numbers">
+        <div class="version-popup">
+            <div class="versions-container mb-5">
+                <div class="version-item">
+                    <div class="mb-2 font-bold text-lg">Interface</div>
+                    <font-awesome-icon icon="fa-solid fa-display" class="large-icon mb-2"/>
+                    <div class="text-3xl">{{ frontendVersion }}</div>
+                </div>
+                <div class="version-item">
+                    <div class="mb-2 font-bold text-lg">Backend</div>
+                    <font-awesome-icon icon="fa-solid fa-cloud" class="large-icon mb-2" />
+                    <div class="text-3xl">{{ backendVersion }}</div>
+                </div>
             </div>
-            <div class="one">
-                <div>Backend</div>
-                <font-awesome-icon icon="fa-solid fa-cloud" class="icon" />
-                <div class="number">{{ backendVersion }}</div>
+            
+            <div class="info-box mb-5">
+                <div class="font-bold mb-1">Stay Current</div>
+                <div>We publish updates on a regular basis. Check <a :href="UserUrl.blog" target="_blank" class="no-underline text-primary">GA Kneeboard blog</a> for the most current posts.</div>
             </div>
-        </div>
-        <p class="highlight mb-1"><b>Stay Current</b><br/>
-        We publish updates on a regular basis. Check <a :href="UserUrl.blog" target="_blank">GA Kneeboard blog</a> for the most current posts.
-        </p>
-        <div class="actionDialog gap-2">
-            <Button label="Dismiss" @click="emits('close')"></Button>
+
+            <div class="actionDialog gap-2">
+                <Button label="Dismiss" @click="emits('close')"></Button>
+            </div>
         </div>
     </Dialog>
 </template>
@@ -54,31 +59,31 @@ function loadProps(props) {
 </script>
 
 <style scoped>
-p {
-    line-height: 1.5rem;
+.version-popup {
+    width: 40rem;
 }
-.highlight {
-    background-color: lightblue;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    border: 1px solid darkblue
-}
-.both {
+
+.versions-container {
     display: flex;
     justify-content: center;
-    gap: 100px;
-    margin-bottom: 1rem;
+    gap: 5rem;
 }
-.one {
+
+.version-item {
     display: flex;
-    flex-flow: column;
-    gap: 10px;
+    flex-direction: column;
     align-items: center;
 }
-.icon {
+
+.large-icon {
     font-size: 3rem;
+    color: var(--primary-color);
 }
-.number {
-    font-size: 2rem;
+
+.info-box {
+    background-color: var(--surface-100);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--primary-color);
 }
 </style>
