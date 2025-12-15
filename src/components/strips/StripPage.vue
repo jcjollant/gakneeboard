@@ -24,8 +24,8 @@
 <script lang="ts" setup>
 import { onMounted, ref, watch } from 'vue';
 import { StripAction } from '../../assets/StripAction';
-import { StripSetting } from '../../model/StripSetting.ts';
-import { StripType } from '../../model/StripType';
+import { StripSetting } from '../../models/StripSetting.ts';
+import { StripType } from '../../models/StripType';
 
 import AtisStrip from '../atis/AtisStrip.vue';
 import CraftStrip from './CraftStrip.vue';

@@ -11,7 +11,7 @@
 <script setup lang="ts">
 
 import { onMounted, ref } from 'vue';
-import { Frequency, FrequencyType } from '../../model/Frequency';
+import { Frequency, FrequencyType } from '../../models/Frequency';
 
 const iconClass = ref<string[]>([])
 

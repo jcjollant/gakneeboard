@@ -30,16 +30,16 @@ import { onMounted, ref, watch } from 'vue';
 import { LocalStore } from '../lib/LocalStore';
 import { useRoute, useRouter } from 'vue-router';
 import { postPrint, currentUser } from '../assets/data.js';
-import { Template, TemplatePage } from '../model/Template';
+import { Template, TemplatePage } from '../models/Template';
 import { exportToPDF } from '../assets/pdf'
 import { PageType } from '../assets/PageType.js';
-import { TemplateFormat } from '../model/TemplateFormat.js';
-import { AccountType } from '../model/AccounType.js';
+import { TemplateFormat } from '../models/TemplateFormat.js';
+import { AccountType } from '../models/AccounType.js';
 import { PrintOptions } from '../components/print/PrintOptions.js';
 import Page from '../components/page/Page.vue';
 import PrintOptionsDialog from '../components/print/PrintOptionsDialog.vue';
 import SideBar from '../components/print/SideBar.vue';
-import { VerticalInfoBarOption } from '../model/VerticalInfoBarOption.js';
+import { VerticalInfoBarOption } from '../models/VerticalInfoBarOption.js';
 
 interface PrintSheet {
   front: TemplatePage,

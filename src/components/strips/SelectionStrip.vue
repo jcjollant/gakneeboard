@@ -23,7 +23,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { StripType } from '../../model/StripType'
+import { StripType } from '../../models/StripType'
 import Button from 'primevue/button'
 import { UserUrl } from '../../lib/UserUrl';
 

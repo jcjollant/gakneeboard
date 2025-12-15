@@ -1,9 +1,9 @@
 import axios, { AxiosResponse } from "axios";
 import { duplicate } from "./data";
 import { LocalStore } from "../lib/LocalStore";
-import { User } from "../model/User";
-import { AccountType } from "../model/AccounType";
-import { Template } from "../model/Template";
+import { User } from "../models/User";
+import { AccountType } from "../models/AccounType";
+import { Template } from "../models/Template";
 
 export class CurrentUser {
   loggedIn:boolean

@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { Template } from '../../model/Template';
+import { Template } from '../../models/Template';
 
 const emits = defineEmits(['selection'])
 const props = defineProps({ 

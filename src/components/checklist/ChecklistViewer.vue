@@ -14,7 +14,7 @@
 <script setup lang="ts">
 
 import { onMounted, ref, watch } from 'vue'
-import { Checklist, ChecklistItem } from '../../model/Checklist'
+import { Checklist, ChecklistItem } from '../../models/Checklist'
 
 import PlaceHolder from '../shared/PlaceHolder.vue';
 

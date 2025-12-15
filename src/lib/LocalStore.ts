@@ -1,6 +1,6 @@
-import { Airport } from '../model/Airport'
-import { User } from "../model/User"
-import { Template } from "../model/Template"
+import { Airport } from '../models/Airport'
+import { User } from "../models/User"
+import { Template } from "../models/Template"
 
 export class LocalStore {
     static airportPrefix:string = 'airport-'

@@ -1,7 +1,7 @@
 import { PageType} from './PageType'
-import { Template, TemplatePage } from '../model/Template'
-import { TileType } from '../model/TileType'
-import { TileData } from '../model/TileData'
+import { Template, TemplatePage } from '../models/Template'
+import { TileType } from '../models/TileType'
+import { TileData } from '../models/TileData'
 
 export class SheetName {
   static default = 'gak-default'
@@ -34,7 +34,7 @@ export class ThumbnailImage {
 }
 
 import { duplicate } from './data'
-import { TemplateFormat } from '../model/TemplateFormat'
+import { TemplateFormat } from '../models/TemplateFormat'
 
 // used to check if a sheet name is already taken by defaults
 const defaultNames = [SheetName.default, SheetName.tiles, SheetName.checklist, SheetName.reset]

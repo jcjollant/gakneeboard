@@ -33,9 +33,9 @@
 
 <script setup lang="ts">
 import { onMounted, watch, ref } from 'vue'
-import { DisplayModeChoice, DisplayModeNotes } from '../../model/DisplayMode'; 
-import { TileType } from '../../model/TileType';
-import { TileData } from '../../model/TileData';
+import { DisplayModeChoice, DisplayModeNotes } from '../../models/DisplayMode'; 
+import { TileType } from '../../models/TileType';
+import { TileData } from '../../models/TileData';
 
 import WordContent from './WordContent.vue';
 import CompassContent from './CompassContent.vue';

@@ -1,4 +1,4 @@
-import { VerticalInfoBarOption } from "../../model/VerticalInfoBarOption";
+import { VerticalInfoBarOption } from "../../models/VerticalInfoBarOption";
 
 export class PrintOptions {
     flipBackPage:boolean;

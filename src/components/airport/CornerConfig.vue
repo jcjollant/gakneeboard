@@ -26,7 +26,7 @@
 
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
-import { Airport, Runway } from '../../model/Airport';
+import { Airport, Runway } from '../../models/Airport';
 import { Formatter } from '../../lib/Formatter';
 
 import Button from 'primevue/button';

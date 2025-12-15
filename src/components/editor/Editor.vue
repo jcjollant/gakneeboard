@@ -39,7 +39,7 @@ import { duplicate } from '../../assets/data'
 import Button from 'primevue/button'
 import Overlay from './Overlay.vue'
 import VerticalActionBar from './VerticalActionBar.vue'
-import { Template, TemplatePage } from '../../model/Template'
+import { Template, TemplatePage } from '../../models/Template'
 
 const emits = defineEmits(['update','offset'])
 const confirm = useConfirm()

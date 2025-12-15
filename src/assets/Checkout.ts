@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { CurrentUser } from './CurrentUser'
 import { GApiUrl } from '../lib/GApiUrl'
-import { AccountType } from '../model/AccounType'
+import { AccountType } from '../models/AccounType'
 
 export class Pricing {
     static simmer = 'fs1';

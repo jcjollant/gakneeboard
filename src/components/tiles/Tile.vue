@@ -34,8 +34,8 @@
 
 <script setup lang="ts">
 import {onMounted, ref, watch} from 'vue';
-import { TileType } from '../../model/TileType'
-import { TileData } from '../../model/TileData';
+import { TileType } from '../../models/TileType'
+import { TileData } from '../../models/TileData';
 
 import Header from '../shared/Header.vue';
 import AirportTile from '../airport/AirportTile.vue';

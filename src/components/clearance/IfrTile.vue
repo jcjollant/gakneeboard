@@ -26,12 +26,12 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { Airport } from '../../model/Airport.ts';
-import { DisplayModeChoice, DisplayModeIfr } from '../../model/DisplayMode.ts';
+import { Airport } from '../../models/Airport.ts';
+import { DisplayModeChoice, DisplayModeIfr } from '../../models/DisplayMode.ts';
 import { getAirport } from '../../assets/data.js';
-import { TileData } from '../../model/TileData.ts';
-import { TileType } from '../../model/TileType.ts';
-import { Regulation } from '../../model/Regulation.ts';
+import { TileData } from '../../models/TileData.ts';
+import { TileType } from '../../models/TileType.ts';
+import { Regulation } from '../../models/Regulation.ts';
 import { IfrTileDisplayModeLabels } from './IfrTileDisplayModeLabel.ts';
 
 import ActionBar from '../shared/ActionBar.vue';

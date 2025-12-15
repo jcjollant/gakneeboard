@@ -1,8 +1,8 @@
 export const version = 5510
 export const eulaVersion = 20250821
 import axios from 'axios'
-import { Airport } from '../model/Airport.ts'
-import { Backend } from './Backend.ts'
+import { Airport } from '../models/Airport.ts'
+// import { Backend } from './Backend.ts'
 import { CurrentUser } from './CurrentUser.ts'
 import { GApiUrl } from '../lib/GApiUrl.ts'
 import { SessionAirports } from './SessionAirports.ts'
@@ -14,7 +14,13 @@ export const contentTypeJson = { headers: { 'Content-Type': 'application/json' }
 const contentType = contentTypeJson;
 let pendingCodes = []
 let sunlightCache = {}
-export const backend = new Backend()
+export const backend = {
+  version: '',
+  promise: null,
+  airportModelVersion: 0,
+  airportEffectiveDate: 0,
+  ready: false
+}
 export const currentUser = new CurrentUser()
 export const navlogQueue = new NavlogQueue()
 export const sessionAirports = new SessionAirports()
@@ -175,7 +181,7 @@ export async function getBackend() {
         if (!response || !response.data) {
           resolve(null)
         } else {
-          backend.version = Number(response.data.version)
+          backend.version = response.data.version
           backend.airportEffectiveDate = Number(response.data.aced)
           backend.airportModelVersion = Number(response.data.camv)
           backend.ready = true;

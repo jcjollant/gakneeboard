@@ -53,7 +53,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { UserUrl } from '../../lib/UserUrl';
-import { OneChoiceValue } from '../../model/OneChoiceValue';
+import { OneChoiceValue } from '../../models/OneChoiceValue';
 import { PrintOptions } from './PrintOptions';
 import { useRouter } from 'vue-router';
 
@@ -64,8 +64,8 @@ import Dialog from 'primevue/dialog'
 import FieldSet from 'primevue/fieldset'
 import PageSelection from './PageSelection.vue';
 import { currentUser } from '../../assets/data';
-import { AccountType } from '../../model/AccounType';
-import { VerticalInfoBarOption } from '../../model/VerticalInfoBarOption';
+import { AccountType } from '../../models/AccounType';
+import { VerticalInfoBarOption } from '../../models/VerticalInfoBarOption';
 
 const emits = defineEmits(["print","options",'close']);
 

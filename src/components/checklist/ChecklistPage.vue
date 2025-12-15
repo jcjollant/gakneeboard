@@ -40,10 +40,10 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { Checklist } from '../../model/Checklist'
-import { ChecklistPage } from '../../model/ChecklistPage'
+import { Checklist } from '../../models/Checklist'
+import { ChecklistPage } from '../../models/ChecklistPage'
 import { UserUrl } from '../../lib/UserUrl'
-import { TemplateFormat } from '../../model/TemplateFormat'
+import { TemplateFormat } from '../../models/TemplateFormat'
 
 import ActionBar from '../shared/ActionBar.vue'
 import ChecklistViewer from './ChecklistViewer.vue'

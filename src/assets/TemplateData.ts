@@ -3,7 +3,7 @@ import { contentTypeJson, currentUser, reportError } from './data.js'
 import { isDefaultName } from './sheetData.js'
 import { GApiUrl } from '../lib/GApiUrl.js'
 import { PageType } from './PageType.js'
-import { Template } from '../model/Template.js'
+import { Template } from '../models/Template.js'
 
 export class ExportOutput {
     filename:string;

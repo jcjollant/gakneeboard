@@ -25,7 +25,7 @@ import { UserUrl } from '../../lib/UserUrl';
 
 import Button from 'primevue/button';
 import Fieldset from 'primevue/fieldset';
-import { OneChoiceValue } from '../../model/OneChoiceValue';
+import { OneChoiceValue } from '../../models/OneChoiceValue';
 
 const emits = defineEmits(['close','export'])
 

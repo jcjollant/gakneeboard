@@ -1,8 +1,8 @@
-import { DisplayModeAtis, DisplayModeRadios, DisplayModeSunlight, DisplayModeVfr } from "../model/DisplayMode"
-import { FrequencyType } from "../model/Frequency"
-import { Template, TemplatePage } from "../model/Template"
-import { TemplateFormat } from "../model/TemplateFormat"
-import { TileType } from "../model/TileType"
+import { DisplayModeAtis, DisplayModeRadios, DisplayModeSunlight, DisplayModeVfr } from "../models/DisplayMode"
+import { FrequencyType } from "../models/Frequency"
+import { Template, TemplatePage } from "../models/Template"
+import { TemplateFormat } from "../models/TemplateFormat"
+import { TileType } from "../models/TileType"
 import { PageType } from "./PageType"
 import { SheetName } from "./sheetData"
 

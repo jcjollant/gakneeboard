@@ -35,7 +35,7 @@
 import { computed, ref } from 'vue'
 
 import { PageType } from '../../assets/PageType'
-import { TemplateFormat } from '../../model/TemplateFormat'
+import { TemplateFormat } from '../../models/TemplateFormat'
 
 import Header from '../shared/Header.vue'
 import FAButton from '../shared/FAButton.vue'

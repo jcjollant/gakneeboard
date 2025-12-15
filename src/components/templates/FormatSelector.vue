@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { TemplateFormat } from '../../model/TemplateFormat';
+import { TemplateFormat } from '../../models/TemplateFormat';
 import { getTemplateBlank } from '../../assets/sheetData';
 import { useRouter } from 'vue-router';
 import { routeToLocalTemplate } from '../../assets/data';

@@ -1,4 +1,4 @@
-import { Runway } from "../../model/Airport";
+import { Runway } from "../../models/Airport";
 import { RunwayOrientation } from "./RunwayOrientation";
 
 export class RunwayViewSettings {

@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { Regulation } from '../../model/Regulation';
+import { Regulation } from '../../models/Regulation';
 import { UserUrl } from '../../lib/UserUrl';
 
 class Reg {

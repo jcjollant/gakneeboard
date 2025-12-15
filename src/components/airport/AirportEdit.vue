@@ -42,11 +42,11 @@ import AirportInput from '../shared/AirportInput.vue'
 import EitherOr from '../shared/EitherOr.vue';
 import OneChoice from '../shared/OneChoice.vue'
 
-import { OneChoiceValue } from '../../model/OneChoiceValue.ts'
+import { OneChoiceValue } from '../../models/OneChoiceValue.ts'
 import { UserUrl } from '../../lib/UserUrl.ts';
-import { DisplayModeAirport } from '../../model/DisplayMode';
-import { Airport } from '../../model/Airport.ts';
-import { Runway as AirportRunway } from '../../model/Airport.ts';
+import { DisplayModeAirport } from '../../models/DisplayMode';
+import { Airport } from '../../models/Airport.ts';
+import { Runway as AirportRunway } from '../../models/Airport.ts';
 import { AirportTileConfig } from './AirportTileConfig.ts';
 import { RunwayOrientation } from './RunwayOrientation.ts';
 

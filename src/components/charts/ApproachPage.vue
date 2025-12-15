@@ -23,7 +23,7 @@
 import { onMounted, ref, watch } from 'vue'
 import { getAirport } from '../../assets/data';
 import { UserUrl } from '../../lib/UserUrl';
-import { Airport } from '../../model/Airport';
+import { Airport } from '../../models/Airport';
 import AirportInput from '../shared/AirportInput.vue';
 import ApproachPlate from './Diagram.vue';
 import Header from '../shared/Header.vue';

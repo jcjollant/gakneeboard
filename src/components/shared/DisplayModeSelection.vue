@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { DisplayModeChoice } from '../../model/DisplayMode'
+import { DisplayModeChoice } from '../../models/DisplayMode'
 import Button from 'primevue/button'
 import EitherOr from './EitherOr.vue'
 

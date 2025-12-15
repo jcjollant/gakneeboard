@@ -59,8 +59,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { Airport } from '../../model/Airport'
-import { Frequency, FrequencyType } from '../../model/Frequency'
+import { Airport } from '../../models/Airport'
+import { Frequency, FrequencyType } from '../../models/Frequency'
 
 import FrequencyBox from '../shared/FrequencyBox.vue'
 

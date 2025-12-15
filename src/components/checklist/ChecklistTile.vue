@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { Checklist } from '../../model/Checklist'
+import { Checklist } from '../../models/Checklist'
 import { onMounted, ref, watch } from 'vue'
 import { UserUrl } from '../../lib/UserUrl'
 
@@ -35,8 +35,8 @@ import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
-import { TileData } from '../../model/TileData'
-import { TileType } from '../../model/TileType'
+import { TileData } from '../../models/TileData'
+import { TileType } from '../../models/TileType'
 
 const editMode = ref(false)
 const emits = defineEmits(['replace','update'])

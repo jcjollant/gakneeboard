@@ -43,13 +43,13 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { DisplayModeChoice, DisplayModeRadios } from '../../model/DisplayMode';
-import { Frequency, FrequencyType } from '../../model/Frequency';
+import { DisplayModeChoice, DisplayModeRadios } from '../../models/DisplayMode';
+import { Frequency, FrequencyType } from '../../models/Frequency';
 import { UserUrl } from '../../lib/UserUrl';
 import { useToast } from 'primevue/usetoast';
 import { useToaster } from '../../assets/Toaster'
-import { TileData } from '../../model/TileData';
-import { TileType } from '../../model/TileType';
+import { TileData } from '../../models/TileData';
+import { TileType } from '../../models/TileType';
 
 import ActionBar from '../shared/ActionBar.vue'
 import Button from 'primevue/button'

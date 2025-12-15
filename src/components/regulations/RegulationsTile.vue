@@ -16,10 +16,10 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { DisplayModeChoice, DisplayModeRegulations } from '../../model/DisplayMode.ts'
-import { TileData } from '../../model/TileData.ts'
-import { TileType } from '../../model/TileType.ts'
-import { Regulation } from '../../model/Regulation.ts'
+import { DisplayModeChoice, DisplayModeRegulations } from '../../models/DisplayMode.ts'
+import { TileData } from '../../models/TileData.ts'
+import { TileType } from '../../models/TileType.ts'
+import { Regulation } from '../../models/Regulation.ts'
 
 import Header from '../shared/Header.vue'
 import ImageContent from '../shared/ImageContent.vue'

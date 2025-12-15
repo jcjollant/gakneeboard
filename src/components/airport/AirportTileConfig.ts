@@ -1,4 +1,4 @@
-import { DisplayModeAirport } from "../../model/DisplayMode";
+import { DisplayModeAirport } from "../../models/DisplayMode";
 import { RunwayOrientation } from "./RunwayOrientation";
 
 export class AirportTileConfig {

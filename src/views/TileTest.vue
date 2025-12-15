@@ -12,8 +12,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { TileData } from '../model/TileData'
-import { TileType } from '../model/TileType'
+import { TileData } from '../models/TileData'
+import { TileType } from '../models/TileType'
 import Tile from '../components/tiles/Tile.vue'
 import { useToaster } from '../assets/Toaster'
 import { useToast } from 'primevue/usetoast'

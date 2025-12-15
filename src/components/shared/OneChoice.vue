@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { OneChoiceValue } from '../../model/OneChoiceValue';
+import { OneChoiceValue } from '../../models/OneChoiceValue';
 
 
 const props = defineProps({

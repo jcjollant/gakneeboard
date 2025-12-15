@@ -34,15 +34,15 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { AtcGroup } from '../../model/AtcGroup.ts'
-import { Frequency, FrequencyType } from '../../model/Frequency'
+import { AtcGroup } from '../../models/AtcGroup.ts'
+import { Frequency, FrequencyType } from '../../models/Frequency'
 
 import Dialog from 'primevue/dialog'
 import FAButton from '../shared/FAButton.vue'
 import FieldSet from 'primevue/fieldset'
 
 import AirportInput from '../shared/AirportInput.vue'
-import { Airport } from '../../model/Airport'
+import { Airport } from '../../models/Airport'
 import FrequencyBox from '../shared/FrequencyBox.vue'
 
 const emits = defineEmits(["add"]);

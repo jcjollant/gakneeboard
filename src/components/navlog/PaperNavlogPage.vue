@@ -79,7 +79,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { TemplateFormat } from '../../model/TemplateFormat'
+import { TemplateFormat } from '../../models/TemplateFormat'
 import { useToaster } from '../../assets/Toaster';
 import { useToast } from 'primevue/usetoast';
 

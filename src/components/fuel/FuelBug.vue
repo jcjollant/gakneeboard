@@ -25,8 +25,8 @@ import FuelGauge from './FuelGauge.vue';
 import FuelEdit from './FuelEdit.vue';
 import { onMounted } from 'vue';
 import { watch } from 'vue';
-import { TileData } from '../../model/TileData';
-import { TileType } from '../../model/TileType';
+import { TileData } from '../../models/TileData';
+import { TileType } from '../../models/TileType';
 
 const emits = defineEmits(['replace','update'])
 const props = defineProps({

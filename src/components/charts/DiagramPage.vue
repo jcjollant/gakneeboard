@@ -40,7 +40,7 @@ import FAButton from '../shared/FAButton.vue';
 import Header from '../shared/Header.vue';
 import { getAirport, sessionAirports } from '../../assets/data';
 import { UserUrl } from '../../lib/UserUrl';
-import { Airport } from '../../model/Airport';
+import { Airport } from '../../models/Airport';
 
 const noAirport = new Airport()
 const airport = ref(noAirport)

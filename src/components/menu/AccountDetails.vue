@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { AccountType } from '../../model/AccounType';
+import { AccountType } from '../../models/AccounType';
 import { Checkout } from '../../assets/Checkout'
 import { CurrentUser } from '../../assets/CurrentUser';
 import { Formatter } from '../../lib/Formatter';

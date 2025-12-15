@@ -14,8 +14,8 @@
 import { ref, onMounted, watch } from 'vue';
 import { getFrequency, getNavaid } from '../../assets/data';
 import { Formatter } from '../../lib/Formatter';
-import { Airport, Runway } from '../../model/Airport';
-import { Frequency, FrequencyType } from '../../model/Frequency';
+import { Airport, Runway } from '../../models/Airport';
+import { Frequency, FrequencyType } from '../../models/Frequency';
 
 enum DisplayMode {
     small, 

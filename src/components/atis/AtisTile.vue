@@ -134,9 +134,9 @@
 
 <script setup lang="ts">
 import { ref,onMounted, watch } from 'vue'
-import { DisplayModeAtis, DisplayModeChoice } from '../../model/DisplayMode';
-import { TileType } from '../../model/TileType';
-import { TileData } from '../../model/TileData';
+import { DisplayModeAtis, DisplayModeChoice } from '../../models/DisplayMode';
+import { TileType } from '../../models/TileType';
+import { TileData } from '../../models/TileData';
 import { AtisTileDisplayModeLabels } from './AtisTileDisplayModeLabel';
 
 import CloudClearance from './CloudClearance.vue';

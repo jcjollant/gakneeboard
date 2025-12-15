@@ -52,13 +52,13 @@ import { getTemplateBlank, SheetName, ThumbnailImage } from '../assets/sheetData
 import { TemplateData } from '../assets/TemplateData';
 import { useToaster } from '../assets/Toaster';
 import { UserUrl } from '../lib/UserUrl';
-import { Template } from '../model/Template';
+import { Template } from '../models/Template';
 
 import Toast from 'primevue/toast';
 import Menu from '../components/menu/Menu.vue';
 import PlaceHolder from '../components/shared/PlaceHolder.vue';
 import TemplateSelector from '../components/templates/TemplateSelector.vue';
-import { TemplateFormat } from '../model/TemplateFormat';
+import { TemplateFormat } from '../models/TemplateFormat';
 
 
 class DemoSelector {

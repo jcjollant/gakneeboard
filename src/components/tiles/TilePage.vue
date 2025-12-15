@@ -9,8 +9,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useConfirm } from "primevue/useconfirm";
-import { TileData } from '../../model/TileData';
-import { TemplateFormat } from '../../model/TemplateFormat';
+import { TileData } from '../../models/TileData';
+import { TemplateFormat } from '../../models/TemplateFormat';
 
 import Tile from './Tile.vue'
 

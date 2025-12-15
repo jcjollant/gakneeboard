@@ -54,13 +54,13 @@
 <script setup lang="ts">
 import {ref, onMounted, watch} from 'vue';
 import { getAirport } from '../../assets/data.js'
-import { DisplayModeAirport, DisplayModeChoice } from '../../model/DisplayMode';
-import { Airport, Runway } from '../../model/Airport.ts';
+import { DisplayModeAirport, DisplayModeChoice } from '../../models/DisplayMode';
+import { Airport, Runway } from '../../models/Airport.ts';
 import { AirportTileConfig } from './AirportTileConfig.ts';
 import { RunwayOrientation } from './RunwayOrientation.ts';
 import { RunwayViewSettings } from './RunwayViewSettings.ts';
-import { TileData } from '../../model/TileData.ts';
-import { TileType } from '../../model/TileType.ts';
+import { TileData } from '../../models/TileData.ts';
+import { TileType } from '../../models/TileType.ts';
 
 import AirportEdit from './AirportEdit.vue';
 import Corner from './Corner.vue';

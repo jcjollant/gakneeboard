@@ -17,7 +17,7 @@ import { ref, onMounted } from 'vue'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import AirportInput from '../shared/AirportInput.vue'
-import { Airport } from '../../model/Airport'
+import { Airport } from '../../models/Airport'
 import { LocalStore } from '../../lib/LocalStore'
 
 const emits = defineEmits(['cancel', 'confirm'])

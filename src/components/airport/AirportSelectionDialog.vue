@@ -5,7 +5,7 @@
     </Dialog>
 </template>
 <script setup lang="ts">
-import { Airport } from '../../model/Airport';
+import { Airport } from '../../models/Airport';
 import AirportInput from '../shared/AirportInput.vue';
 import Dialog from 'primevue/dialog';
 

@@ -11,7 +11,7 @@
 </template>
 <script lang="ts" setup>
 import { ref, onMounted, watch } from 'vue'
-import { VerticalInfoBarOption } from '../../model/VerticalInfoBarOption'
+import { VerticalInfoBarOption } from '../../models/VerticalInfoBarOption'
 
 const props = defineProps({
     option: { type: String, default: VerticalInfoBarOption.all},
