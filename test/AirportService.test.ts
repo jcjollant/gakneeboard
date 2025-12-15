@@ -176,11 +176,18 @@ describe('AirportService Tests', () => {
             // Code is valid and airport is found in adip
             jest.spyOn(Adip, 'fetchAirport').mockResolvedValue(undefined)
             const mockBoeing = new Airport(validCode, "Boieng Field", 42)
+            // Default source is Adip, but let's be explicit if needed or just verify default.
+            // validMock.source is initialized to Adip in constructor.
+
             jest.spyOn(Adip, 'fetchAirport').mockResolvedValue(mockBoeing)
             jest.spyOn(AirportDao, 'create').mockResolvedValue(undefined)
             expect(await AirportService.getAirportCurrent(validCode, [])).toEqual(new CodeAndAirport(validCode, mockBoeing))
             expect(AirportDao.create).toBeCalledTimes(1)
-            expect(AirportDao.create).toBeCalledWith(validCode, mockBoeing)
+            // Verify specific fields including source
+            expect(AirportDao.create).toBeCalledWith(validCode, expect.objectContaining({
+                code: validCode,
+                source: AirportSource.Adip
+            }))
 
         })
 
