@@ -7,7 +7,7 @@ import { Maintenance } from '../../backend/Maintenance';
 import { GApiTemplate } from '../../backend/GApiTemplate';
 import { UserTools } from '../../backend/UserTools';
 import { Ticket } from '../../backend/Ticket';
-import { version } from '../../backend/constants';
+import { version } from '../../package.json';
 import { currentAirportModelVersion, jcHash } from '../constants';
 import { TemplateView } from '../../backend/models/TemplateView';
 

@@ -5,7 +5,7 @@ import { Business } from './business/Business'
 import { Email, EmailType } from './Email'
 import { Exporter } from './Exporter'
 import { UserTools } from './UserTools'
-import { version } from './constants'
+import { version } from '../package.json'
 import { UsageDao, UsageType } from './dao/UsageDao'
 import { UserDao } from './dao/UserDao'
 import { Airport } from './models/Airport' // Removed versionInvalid

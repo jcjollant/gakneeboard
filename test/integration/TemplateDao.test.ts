@@ -1,5 +1,5 @@
 
-import { describe, expect, it} from '@jest/globals';
+import { describe, expect, it } from '@jest/globals';
 import { TemplateDao } from '../../backend/TemplateDao'
 import { jcUserId, jcTestTemplateName, jcTestTemplateData } from '../constants';
 import { sql } from '@vercel/postgres';
@@ -17,7 +17,7 @@ describe('Custom Templates', () => {
     describe('countForUser', () => {
         it('Can CountForUser', async () => {
             const result = await sql`SELECT user_id, COUNT(*) FROM sheets GROUP BY user_id`
-            for( const row of result.rows) {
+            for (const row of result.rows) {
                 const count = await TemplateDao.countForUserStatic(row.user_id)
                 expect(count).toBe(Number(row.count))
             }
@@ -27,9 +27,9 @@ describe('Custom Templates', () => {
             expect(count).toBe(0)
         })
     })
-    
+
     describe('createOrUpdate', () => {
-        it( 'fails on invalid template or user Id', async() => {
+        it('fails on invalid template or user Id', async () => {
             const tv1 = new TemplateView(-1, "name", jcTestTemplateData, TemplateFormat.Kneeboard, "description", 1)
 
             // tv has invalid template, jcUserId is valid
@@ -41,21 +41,21 @@ describe('Custom Templates', () => {
             const tv2 = new TemplateView(row.id, row.name, row.data, TemplateFormat.Kneeboard, row.description, 2)
 
             // tv2 has valid template id, 0 is invalid for userId
-            expect(TemplateDao.createOrUpdateViewStatic(tv2, 0)).rejects.toThrow( new Error('Invalid template or user id'))
+            expect(TemplateDao.createOrUpdateViewStatic(tv2, 0)).rejects.toThrow(new Error('Invalid template or user id'))
         })
 
-        it( 'creates a new template', async() => {
+        it('creates a new template', async () => {
             const tv1 = new TemplateView(0, "name1", jcTestTemplateData, TemplateFormat.Kneeboard, "description1", 1, true, undefined, 2)
- 
+
             const t1 = await TemplateDao.createOrUpdateViewStatic(tv1, jcUserId)
             expect(t1.id).toBeGreaterThan(0)
             expect(t1.pages).toBe(2)
 
             const r = await TemplateDao.deleteStatic(t1.id, jcUserId)
-            expect(r).toBe(t1.id)        
+            expect(r).toBe(t1.id)
         })
 
-        it( 'updates an existing template', async() => {
+        it('updates an existing template', async () => {
             let version = 1
             const name1 = "name1"
             const name2 = "name2"
@@ -66,7 +66,7 @@ describe('Custom Templates', () => {
             const pages1 = 2
             const pages2 = 0
             const tv1 = new TemplateView(0, name1, data1, TemplateFormat.Kneeboard, desc1, version, true, undefined, pages1)
- 
+
             const t1 = await TemplateDao.createOrUpdateViewStatic(tv1, jcUserId)
             expect(t1.id).toBeGreaterThan(0)
             // memorize template id
@@ -99,32 +99,32 @@ describe('Custom Templates', () => {
             expect(t2.pages).toBe(pages2)
 
             const r = await TemplateDao.deleteStatic(t1.id, jcUserId)
-            expect(r).toBe(t1.id)        
+            expect(r).toBe(t1.id)
         })
     })
 
     describe('delete', () => {
         it('Can delete a newly created record', async () => {
             const template = new Template(0, jcUserId, jcTestTemplateData, TemplateFormat.Kneeboard, jcTestTemplateName, "description", 1, 2)
-            const result = await sql `INSERT INTO sheets (name, data, description, pages, version, user_id)
+            const result = await sql`INSERT INTO sheets (name, data, description, pages, version, user_id)
                 VALUES (${template.name}, ${JSON.stringify(template.data)}, ${template.description}, ${template.pages}, 1, ${template.userId})
                 RETURNING id;`
             expect(result.rows.length).toBe(1)
             template.id = Number(result.rows[0].id)
-            
+
             const output = await TemplateDao.deleteStatic(template.id, template.userId)
-    
+
             expect(output).toBe(template.id)
         })
 
         it('Cannot delete with the wrong id', async () => {
             const template = new Template(0, jcUserId, jcTestTemplateData, TemplateFormat.Kneeboard, jcTestTemplateName, "description", 1, 2)
-            const result = await sql `INSERT INTO sheets (name, data, description, pages, version, user_id)
+            const result = await sql`INSERT INTO sheets (name, data, description, pages, version, user_id)
                 VALUES (${template.name}, ${JSON.stringify(template.data)}, ${template.description}, ${template.pages}, 1, ${template.userId})
                 RETURNING id;`
             expect(result.rows.length).toBe(1)
             template.id = Number(result.rows[0].id)
-            
+
             // Invalid user Id, valid template
             const r1 = await TemplateDao.deleteStatic(template.id, 0)
             expect(r1).toBe(0)
@@ -135,7 +135,7 @@ describe('Custom Templates', () => {
 
             // now do a proper deletion
             const r3 = await TemplateDao.deleteStatic(template.id, template.userId)
-    
+
             expect(r3).toBe(template.id)
         })
     })
@@ -150,7 +150,7 @@ describe('Custom Templates', () => {
             const tv1 = new TemplateView(0, "name1", jcTestTemplateData, TemplateFormat.Kneeboard, "description1", 1, true, undefined, 2)
             const tv2 = new TemplateView(0, "name2", jcTestTemplateData, TemplateFormat.Kneeboard, "description2", 1, true, undefined, 2)
             const tv3 = new TemplateView(0, "name3", jcTestTemplateData, TemplateFormat.Kneeboard, "description3", 1, false, undefined, 2)
- 
+
             const t1 = await TemplateDao.createOrUpdateViewStatic(tv1, user.id)
             const pub1 = await PublicationDao.publish(t1.id)
             expect(pub1).toBeDefined()
@@ -160,7 +160,7 @@ describe('Custom Templates', () => {
             const t3 = await TemplateDao.createOrUpdateViewStatic(tv3, user.id)
 
             expect(t1.id).toBeGreaterThan(0)
-            console.log(t1.id)
+            // console.log(t1.id)
             expect(t2.id).toBeGreaterThan(0)
             expect(t3.id).toBeGreaterThan(0)
 
