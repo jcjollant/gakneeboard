@@ -448,7 +448,7 @@ app.post('/userImage', async (req: Request, res: Response) => {
 })
 
 
-if (process.env.__VERCEL_DEV_RUNNING != "1") {
+if (process.env.__VERCEL_DEV_RUNNING != "1" && process.env.NODE_ENV != 'test') {
     app.listen(port, () => console.log("[index] Server ready on port " + port));
 }
 
