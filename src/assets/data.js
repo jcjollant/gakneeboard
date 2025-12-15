@@ -1,6 +1,8 @@
-export const version = 5510
+import { version } from '../../package.json'
+export { version }
 export const eulaVersion = 20250821
 import axios from 'axios'
+import { reactive } from 'vue'
 import { Airport } from '../models/Airport.ts'
 // import { Backend } from './Backend.ts'
 import { CurrentUser } from './CurrentUser.ts'
@@ -14,13 +16,16 @@ export const contentTypeJson = { headers: { 'Content-Type': 'application/json' }
 const contentType = contentTypeJson;
 let pendingCodes = []
 let sunlightCache = {}
-export const backend = {
+
+const INITIAL_BACKEND_STATE = {
   version: '',
   promise: null,
   airportModelVersion: 0,
   airportEffectiveDate: 0,
   ready: false
 }
+
+export const backend = reactive(INITIAL_BACKEND_STATE)
 export const currentUser = new CurrentUser()
 export const navlogQueue = new NavlogQueue()
 export const sessionAirports = new SessionAirports()

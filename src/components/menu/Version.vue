@@ -33,7 +33,7 @@ const backendVersion = ref('')
 const frontendVersion = ref('')
 const emits = defineEmits(['close'])
 const props = defineProps({
-    front: { type: Number, default: 0},
+    front: { type: String, default: ''},
     back: { type: String, default: ''},
 })
 

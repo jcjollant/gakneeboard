@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 12/15/2025 - 5.51.1 - Renamed model to models. Updated version number format
 ## 12/14/2025 - 5510 - Fixed dependancy issues and improved admin page with direct account details links
 ## 12/03/2025 - 5494 - Fine tuned images
 ## 12/03/2025 - 5493 - Refreshed lost comms and flight categories
@@ -523,50 +524,3 @@
 * New Editor Mode
 ## 11/01/2024
 * Approach Page
-## 10/28/2024
-* Fixed Radio flow bug on iPad prints
-## 10/27/2024
-* Print tracking
-* Clearance tile opacity
-## 10/26/2024
-* Apple ID authentication support
-## 10/25/2024
-* Exist print mode by clicking
-* iPad print tow pages works
-* Dmoe and about button secondary
-* Afterprint event for ipad
-## 10/20/2024
-* removed duplicate publications request
-* Version title on mouse over version
-## 10/19/2024
-* Reorders navlog column GS > Dist > Time
-* Added calculations for leg time and leg fuel
-* Changed home page meta description
-## 10/17/2024
-* NavLog tile added hint to no settings
-* Menu shrinks to fit Tablet display / Narrow pages 
-* Removed eval
-* Added localstore tests
-* fixed missing emits
-## 10/13/2024
-1) Below
-* Fixed erronous page number on Editor page copy to clipboard
-* Reactive display
-* Removed page index next to Template name
-* New Insert page replaces add 2 pages
-* Delete individual page
-2) Fixed save bug
-## 10/11/2024
-* Template Export to ACE format
-## 10/10/2024
-1) Added Google Tag for tracking
-2) Fixed airport localstore bug
-## 10/08/2024
-* Editor mode now supports tiles swapping
-## 10/06/2024
-* Shared template now show as green in the load dialog
-* Description includes published status and publication code
-* Fixed template name with *
-* Feedback button has been extracted from menu
-* Editor Button is using new control
-* Speed up initial load
