@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 12/14/2025 - 5510 - Fixed dependancy issues and improved admin page with direct account details links
 ## 12/03/2025 - 5494 - Fine tuned images
 ## 12/03/2025 - 5493 - Refreshed lost comms and flight categories
 ## 12/02/2025 - 5492 - Updated API URL and removed html2canvas log
