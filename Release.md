@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 12/15/2025 - 5.51.2 - VOR Service Volumes reg. RegLink can be left aligned
 ## 12/15/2025 - 5.51.1 - Renamed model to models. Updated version number format
 ## 12/14/2025 - 5510 - Fixed dependancy issues and improved admin page with direct account details links
 ## 12/03/2025 - 5494 - Fine tuned images
