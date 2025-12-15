@@ -1,6 +1,6 @@
 import axios from 'axios'
-import { Adip } from '../backend/adip/Adip'
-import { AirportDao } from './AirportDao'
+import { AirportService } from './AirportService'
+// import { Adip } from '../backend/adip/Adip' // Removed
 import { Business } from './business/Business'
 import { Email, EmailType } from './Email'
 import { Exporter } from './Exporter'
@@ -8,7 +8,7 @@ import { UserTools } from './UserTools'
 import { version } from './constants'
 import { UsageDao, UsageType } from './dao/UsageDao'
 import { UserDao } from './dao/UserDao'
-import { Airport, versionInvalid } from './models/Airport'
+import { Airport } from './models/Airport' // Removed versionInvalid
 import { AirportView } from './models/AirportView'
 import { FeedbackDao } from './FeedbackDao'
 import { Publication } from './models/Publication'
@@ -22,40 +22,40 @@ import { UserMiniView } from './models/UserMiniView'
 import { CodeAndAirport } from './models/CodeAndAirport'
 import { GApiError } from './GApiError'
 import { Template } from './models/Template'
-import { AirportSketch } from './AirportSketch'
+// import { AirportSketch } from './AirportSketch' // Removed
 import { SessionInfo } from './models/SessionInfo'
 
 // Google API key
 
 export class GApi {
-    public static async acceptEula(userId:number, version:number):Promise<boolean> {
+    public static async acceptEula(userId: number, version: number): Promise<boolean> {
         // console.debug('[GApi.acceptEula]', userId)
         try {
             const userDao = new UserDao()
 
             // record a new usage for this acceptance and update the user acceptance date
-            const data = {version: version}
+            const data = { version: version }
             await Promise.all([
                 UsageDao.create(UsageType.Eula, userId, JSON.stringify(data)),
                 userDao.updateEulaAcceptance(userId, version)
             ])
             return true;
-        } catch( e) {
+        } catch (e) {
             console.error('[GApi.acceptEula]', e)
             return false;
         }
     }
 
 
-    public static async authenticate(body:any):Promise<UserMiniView> {
+    public static async authenticate(body: any): Promise<UserMiniView> {
         try {
-            const user:User = await UserTools.authenticate(body);
-            const templates:TemplateView[] = await TemplateDao.getOverviewListForUser(user.id);
-            const output:UserMiniView = new UserMiniView(user, templates);
+            const user: User = await UserTools.authenticate(body);
+            const templates: TemplateView[] = await TemplateDao.getOverviewListForUser(user.id);
+            const output: UserMiniView = new UserMiniView(user, templates);
             return output;
-        } catch(e) {
+        } catch (e) {
             let message = ''
-            if(e instanceof Error) {
+            if (e instanceof Error) {
                 message = e.message
             }
             throw new GApiError(400, message)
@@ -79,218 +79,52 @@ export class GApi {
      * @param format Target format as defined in @class Exporter
      * @returns on Exporter object on success. May also throw a GApiError
      */
-    public static async exportTemplate(templateId:number, userSha256:string, format:string):Promise<Exporter> {
+    public static async exportTemplate(templateId: number, userSha256: string, format: string): Promise<Exporter> {
         // console.log('[gapi.exportTemplate]', templateId, userSha256, format)
         // Fetch user
-        const userId:number|undefined = await UserDao.getIdFromHash(userSha256)
-        if( !userId) throw new GApiError(400, "Invalid User");
+        const userId: number | undefined = await UserDao.getIdFromHash(userSha256)
+        if (!userId) throw new GApiError(400, "Invalid User");
         // Fetch template for user
-        const template:Template|undefined = await TemplateDao.readByIdStatic(templateId, userId)
-        if( !template) throw new GApiError(400, "Invalid Template");
+        const template: Template | undefined = await TemplateDao.readByIdStatic(templateId, userId)
+        if (!template) throw new GApiError(400, "Invalid Template");
 
-        const exportData = {format:format}
+        const exportData = { format: format }
         const templateView = TemplateView.parseTemplate(template)
         // perform export and save usage
         const [exporter, isSaved] = await Promise.all([
             // retrieve this template for this user
-            Exporter.export(templateView, format), 
+            Exporter.export(templateView, format),
             // Save usage
             UsageDao.create(UsageType.Export, userId, JSON.stringify(exportData))
         ])
         return exporter
     }
 
-    public static async feedbackSave(payload:any):Promise<void> {
-        return FeedbackDao.save(payload.version, payload.feedback, payload.user, payload.contact).then( async ()=>{
-            await Email.send(payload.feedback,EmailType.Feedback)
+    public static async feedbackSave(payload: any): Promise<void> {
+        return FeedbackDao.save(payload.version, payload.feedback, payload.user, payload.contact).then(async () => {
+            await Email.send(payload.feedback, EmailType.Feedback)
         })
     }
 
-    public static getAirportCurrentEffectiveDate() {
-        return AirportView.formatAsOf( Adip.currentEffectiveDate())
-    }
-
-    /**
-     * Get an airport either from postgres or ADIP
-     * @param {*} codeParam airport code
-     * @param {*} userId pass a value consider custom airports
-     * @returns airport object or undefined if not found
-     * @throws 400 if code is invalid 
-    */
-    public static async getAirport(codeParam:string,userId: any=undefined):Promise<Airport|undefined> {
-        return new Promise( async (resolve, reject) => {
-            // console.log( "[gapi.getAirport] " + codeParam + ' user=' + userId);
-            // there is only one element and we only care about the airport
-            if(!Airport.isValidCode(codeParam)) return reject( new GApiError(400, "Invalid Airport Code"));
-
-            const codeAndAirportList = (await GApi.getAirportList([codeParam], userId));
-            if(!codeAndAirportList.length) return resolve(undefined)
-            resolve( codeAndAirportList[0].airport)
-        })
-    }
-
-    /**
-     * Evaluates whether an airport needs to be refreshed due to model change or effectiveDate
-     * @param code Clear Airport code
-     * @param airports List of known airports
-     * @returns The corresponding match, which could have an undefined Airport
-     */
-    static async getAirportCurrent(code:string, airports:CodeAndAirport[]):Promise<CodeAndAirport> {
-        // console.log('[GApi.getAirportCurrent]', code)
-        // store the found value [code,airport]
-        const found = airports.find( (codeAndAirport) => codeAndAirport.code == code)
-
-        // Unknown stuff : Invalid Code / Legit New / Unknown valid code
-        if(!found) {
-            // invalid code =>
-            if( !Airport.isValidCode(code)) return CodeAndAirport.undefined(code)
-
-            // First time we see that code => Adip
-            let firstTimer:Airport|undefined = await Adip.fetchAirport(code)
-
-            // unknown airport
-            if(!firstTimer || firstTimer.code == '?') {
-                await AirportDao.createUnknown(code);
-                return CodeAndAirport.undefined(code)
-            }
-            // new airport
-            await AirportDao.create(code, firstTimer);
-            await AirportSketch.resolve(firstTimer, code, true)
-            return new CodeAndAirport(code, firstTimer)
-        }
-
-        // console.log('[GApi.getAirportList] found', found.code)
-        const airport:Airport = found.airport
-
-        // Is this a known unknown?
-        if( !airport || airport.version == versionInvalid) {
-            return CodeAndAirport.undefined(code)
-        } 
-        
-
-        const versionCurrent:boolean = (airport.version == Airport.currentVersion);
-        const dateCurrent:boolean = (airport.effectiveDate == Adip.currentEffectiveDate())
-        // Happy path : data is already current or airport is custom (which we don't update)
-        if( airport.custom || versionCurrent && dateCurrent) { 
-            return new CodeAndAirport(code, airport)
-        } 
-
-        // data needs to be refreshed => Adip
-        let refresher:Airport|undefined = await Adip.fetchAirport(code)
-        if( refresher) {
-            // update this record in the database
-            if( airport.id) { 
-                // update airport data
-                await AirportDao.updateAirport(airport.id, refresher)
-
-                // restore sketch
-                if( airport.sketch) {
-                    refresher.sketch = airport.sketch
-                } else {
-                    // consider refreshing the skecth
-                    await AirportSketch.resolve(refresher, code, true)
-                }
-            } else {
-                console.log('[GApi.getAirportCurrent] Could not update', code, 'due to missing Id')
-            }
-            return new CodeAndAirport(code, refresher)
-        } 
-
-        // well, we tried but there is something fishy as this code was known before but Adip failed
-        console.log('[GApi.getAirportCurrent] Adip could not refresh', code)
-        return new CodeAndAirport(code, airport)
-    }
-
-    /**
-     * Builds a list of airports from a list of codes
-     * @param airportCodes 
-     * @param userId 
-     * @returns 
-     */
-    public static async getAirportList(airportCodes:string[],userId:any=undefined):Promise<(CodeAndAirport)[]> {
-        // clean up airport codes
-        const cleanCodes:string[] = airportCodes.map( code => Airport.cleanupCode(code)) 
-        // Read airports fromDB
-        const knownAirports:CodeAndAirport[] = await AirportDao.readList(cleanCodes, userId)
-        // rebuild the full list along with unknowns(undefined)
-        const output:(Promise<CodeAndAirport>)[] = []
-        for( const code of cleanCodes) {
-            output.push( GApi.getAirportCurrent(code, knownAirports))
-        }
-        return Promise.all(output)
-    }
-
-    public static async getAirportView(codeParam:string, userId: any=undefined):Promise<AirportView> {
-        if( !Airport.isValidCode(codeParam)) throw new GApiError(400, "Invalid Airport Code");
-        const list = await GApi.getAirportViewList([codeParam], userId)
-        if(!list.length) throw new GApiError(404, "Airport not found");
-        return list[0]
-    }    
-
-    /**
-     * 
-     * @param {*} airportCodes A list of airport codes
-     * @returns a list of corresponding airport data, which may be undefined
-    */
-    public static async getAirportViewList(airportCodes:string[],userId=undefined):Promise<AirportView[]> {
-        // console.log('[GApi.getAirportViewList] codes', JSON.stringify(airportCodes), 'user', userId)
-        const airports:(CodeAndAirport)[] = await GApi.getAirportList(airportCodes, userId)
-        // console.log('[GApi.getAirportViewList]', JSON.stringify(airports))
-
-        const output = airports.map( (codeAndAirport) => {
-            // console.log('[GApi.getAirportViewList]', code, airport)
-            return codeAndAirport.airport ? new AirportView(codeAndAirport.airport) : AirportView.getUndefined(codeAndAirport.code)
-        })
-
-        return output
-    }
 
 
-    /**
-     * Turn code into an ICAO code
-     * @param {*} code anything to be turned into an ICAO code
-     * @returns a four letter icao code or null if not valid
-    */
-    public static getIcao(code:string):string|null {
-        const output = null
-        if( Airport.isValidCode(code)) {
-            if( code.length == 3) {
-                return ('K' + code.toUpperCase())
-            } else if( code.length == 4) {
-                return code.toUpperCase()
-            }
-        }
-        return null
-    }
 
-    static getLocId(code:string) {
-        const output = null
 
-        if( Airport.isValidCode(code)) {
-            if( code.length == 3) {
-                return code.toUpperCase()
-            } else if( code.length == 4) {
-                return code.substring(1, 4).toUpperCase()
-            }
-        }
-        return null
-    }
-
-    public static async getSession(req:any):Promise<SessionInfo> {
-        const output:SessionInfo = {
+    public static async getSession(req: any): Promise<SessionInfo> {
+        const output: SessionInfo = {
             version: version,
-            aced: GApi.getAirportCurrentEffectiveDate(),
+            aced: AirportService.getAirportCurrentEffectiveDate(),
             camv: AirportView.currentVersion,
         }
         // Enrich with user data if possible
         const sha = UserTools.userShaFromRequest(req)
-        if( sha) {
-            const user:User|undefined = await UserDao.getUserFromHash(sha)
+        if (sha) {
+            const user: User | undefined = await UserDao.getUserFromHash(sha)
             // console.log('[userTools.userMiniFromRequest] user ' + JSON.stringify(user))
-            if( user) {
+            if (user) {
                 const userMini = await UserTools.userMini(user)
                 output.user = userMini
-                UsageDao.create(UsageType.Session,user.id)
+                UsageDao.create(UsageType.Session, user.id)
             }
         }
         // console.log('[GApi.getSession]', JSON.stringify(output))    
@@ -305,78 +139,74 @@ export class GApi {
      * @param dateFrom is anumber such as 20240624
      * @returns 
      */
-    public static async getSunlight( from:string, to:string, dateFrom:number, dateTo:number|undefined=undefined):Promise<Sunlight|undefined> {
+    public static async getSunlight(from: string, to: string, dateFrom: number, dateTo: number | undefined = undefined): Promise<Sunlight | undefined> {
         // Always get the from data
-        const fromData:any|undefined = await GApi.getSunriseData(from, dateFrom)
+        const fromData: any | undefined = await GApi.getSunriseData(from, dateFrom)
         // console.log('[GApi.getSunlight] fromData', JSON.stringify(fromData))
-        if(!fromData) return undefined
-        if(!dateTo) dateTo = dateFrom
-        if( to == from && dateFrom == dateTo) { // we are going to the same place on the same day
+        if (!fromData) return undefined
+        if (!dateTo) dateTo = dateFrom
+        if (to == from && dateFrom == dateTo) { // we are going to the same place on the same day
             // console.log('[GApi.getSunlight] from = ' + from)
             return new Sunlight(fromData)
         } else { // we are going to a different place or returning on a different date
             // console.log('[GApi.getSunlight] to = ' + to)
-            const toData:any|undefined = await GApi.getSunriseData(to, dateTo)
+            const toData: any | undefined = await GApi.getSunriseData(to, dateTo)
             // console.log('[GApi.getSunlight] toData', JSON.stringify(toData))
             return new Sunlight(fromData, toData, dateFrom != dateTo)
         }
     }
 
-    public static async getSunriseData(airportCode:string, date:number):Promise<any | undefined> {
-        const airport:Airport|undefined = await GApi.getAirport(airportCode)
+    public static async getSunriseData(airportCode: string, date: number): Promise<any | undefined> {
+        const airport: Airport | undefined = await AirportService.getAirport(airportCode)
         // const airportTo:Airport = await GApi.getAirport(to)
         // console.log('[GApi.getSunlight]', airportCode, airport)
-        if( !airport || !airport.location) return undefined
-        const dateString:string = Math.trunc(date / 10000) + '-' + Math.trunc(date / 100 % 100) + '-' + (date % 100)
-        const url:string = 'https://api.sunrisesunset.io/json?lat=' + airport.location.lat + '&lng=' + airport.location.lon + '&date=' + dateString;
+        if (!airport || !airport.location) return undefined
+        const dateString: string = Math.trunc(date / 10000) + '-' + Math.trunc(date / 100 % 100) + '-' + (date % 100)
+        const url: string = 'https://api.sunrisesunset.io/json?lat=' + airport.location.lat + '&lng=' + airport.location.lon + '&date=' + dateString;
         // console.log('[GApi.getSunriseData]', url)
-        let data:any|undefined = undefined
-        await axios.get(url).then( response => {
+        let data: any | undefined = undefined
+        await axios.get(url).then(response => {
             // console.log('[GApi.getSunriseData]', JSON.stringify(response.data))
             data = response.data
-        }).catch( error => {
+        }).catch(error => {
             console.log(error)
         })
         return data
     }
 
-    public static isMilitary(freq:string) {
-        if( freq == null) return false;
-        if( freq =='-.-') return false;
-        return Adip.isMilitary(Number(freq))
-    }
 
-    public static async printRequest(userSha:string|undefined,payload:string):Promise<boolean> {
+
+    public static async printRequest(userSha: string | undefined, payload: string): Promise<boolean> {
         // console.log('[GApi.printSave]', userSha, payload)
         try {
             const userDao = new UserDao()
             let userId = 0
-            if(userSha) {
+            if (userSha) {
                 const user = await userDao.getFromHash(userSha)
-                if(user) {
+                if (user) {
                     userId = user.id
                     Business.printConsume(user, userDao)
                 }
             }
             await UsageDao.create(UsageType.Print, userId, payload)
             return true;
-        } catch( e) {
+        } catch (e) {
             return false;
         }
     }
 
-    public static async publicationGet(code:string):Promise<TemplateView|undefined> {
-        const pub:Publication|undefined = await PublicationDao.findByCode(code)
-        if(!pub || !pub.templateId) throw new GApiError(404, 'Publication not found');
-        const template:Template|undefined = await TemplateDao.readByIdStatic(pub.templateId)
-        if(!template) throw new GApiError(404, 'Template not found for publication ' + code);
+    public static async publicationGet(code: string): Promise<TemplateView | undefined> {
+        const pub: Publication | undefined = await PublicationDao.findByCode(code)
+        if (!pub || !pub.templateId) throw new GApiError(404, 'Publication not found');
+        const template: Template | undefined = await TemplateDao.readByIdStatic(pub.templateId)
+        if (!template) throw new GApiError(404, 'Template not found for publication ' + code);
 
-        return TemplateView.parseTemplate(template,pub)
+        return TemplateView.parseTemplate(template, pub)
     }
 
     // Get a list of published templates
-    public static async publicationGetList():Promise<PublishedTemplate[]> {
-        const pubs:PublishedTemplate[] = await PublicationDao.list()
+    public static async publicationGetList(): Promise<PublishedTemplate[]> {
+        const pubs: PublishedTemplate[] = await PublicationDao.list()
         return pubs
     }
 
@@ -385,7 +215,7 @@ export class GApi {
      * @param sha256 User sha256
      * @returns User Id or undefined if not found
      */
-    public static async userShaToId(sha256:string):Promise<number|undefined> {
+    public static async userShaToId(sha256: string): Promise<number | undefined> {
         return await UserDao.getIdFromHash(sha256)
     }
 }
