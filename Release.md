@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 12/16/2025 - 5.51.4 - User can empty airports cache from Session window
 ## 12/15/2025 - 5.51.3 - Airport creation in Admin page
 ## 12/15/2025 - 5.51.2 - VOR Service Volumes reg. RegLink can be left aligned
 ## 12/15/2025 - 5.51.1 - Renamed model to models. Updated version number format
