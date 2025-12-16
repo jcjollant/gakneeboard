@@ -54,7 +54,7 @@ const showFeedback = ref(false)
 const showMaintenance = ref(false)
 const showMaxed = ref(false)
 const showVersion = ref(false)
-const versionFront = ref(0)
+const versionFront = ref('')
 const toaster = useToaster( useToast())
 
 // Before the app starts, we request backend information, load user and potentially show how does it work
