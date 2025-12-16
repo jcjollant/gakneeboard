@@ -107,12 +107,12 @@ export class Adip {
             let airport: Airport | undefined = undefined
             axios.post('https://adip.faa.gov/agisServices/public-api/getAirportDetails', payload, config)
                 .then(response => {
-                    // console.log( '[Adip.getAirportDetails]', JSON.stringify(response.data))
+                    // console.log( '[Adip.fetchAirportDetails]', JSON.stringify(response.data))
                     try {
                         airport = Adip.parseAirport(response.data)
                         airport.fetchTime = Date.now();
                     } catch (e) {
-                        console.log('[Adip.getAirportDetails] failed to parse data', e)
+                        console.log('[Adip.fetchAirportDetails] failed to parse data', e)
                         airport = undefined
                     }
 
