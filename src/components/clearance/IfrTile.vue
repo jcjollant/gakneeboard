@@ -28,7 +28,7 @@
 import { onMounted, ref, watch } from 'vue'
 import { Airport } from '../../models/Airport.ts';
 import { DisplayModeChoice, DisplayModeIfr } from '../../models/DisplayMode.ts';
-import { getAirport } from '../../assets/data.js';
+import { getAirport } from '../../services/AirportService';
 import { TileData } from '../../models/TileData.ts';
 import { TileType } from '../../models/TileType.ts';
 import { Regulation } from '../../models/Regulation.ts';

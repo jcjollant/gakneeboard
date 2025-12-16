@@ -3,7 +3,7 @@ export { version }
 export const eulaVersion = 20250821
 import axios from 'axios'
 import { reactive } from 'vue'
-import { Airport } from '../models/Airport.ts'
+
 // import { Backend } from './Backend.ts'
 import { CurrentUser } from './CurrentUser.ts'
 import { GApiUrl } from '../lib/GApiUrl.ts'
@@ -14,7 +14,7 @@ import { NavlogQueue } from './NavlogQueue.ts'
 export const contentTypeJson = { headers: { 'Content-Type': 'application/json' } }
 // const contentTypeTextPlain = { headers: {'Content-Type':'text/plain'} }
 const contentType = contentTypeJson;
-let pendingCodes = []
+
 let sunlightCache = {}
 
 const INITIAL_BACKEND_STATE = {
@@ -30,14 +30,7 @@ export const currentUser = new CurrentUser()
 export const navlogQueue = new NavlogQueue()
 export const sessionAirports = new SessionAirports()
 
-function airportCurrent(airport) {
-  if (!backend.ready && !airport) return false;
-  // console.log('[data.airportCurrent', airport.asof, backend.airportEffectiveDate)
-  const dateMatch = airport.asof && backend.airportEffectiveDate && airport.asof == backend.airportEffectiveDate
-  const modelMatch = airport.version && backend.airportModelVersion && airport.version == backend.airportModelVersion
-  // console.log( '[data.airportCurrent] ' + airport.code + ' ' + dateMatch + ' ' + modelMatch )
-  return dateMatch && modelMatch;
-}
+
 
 // Payload should look like {source:'google',token:'some.token'}
 export async function authenticationRequest(payload) {
@@ -62,117 +55,7 @@ export function duplicate(source) {
   return JSON.parse(JSON.stringify(source))
 }
 
-/**
- * Query airport data backend
- * @param {*} codeParam airport code, case doesn't matter
- * @param {*} group whether this request should be grouped with others
- * @returns airport data
- */
-export async function getAirport(codeParam, group = false) {
-  // console.log('[data.getAirport]', codeParam)
-  if (!codeParam) return null;
-  const code = codeParam.toUpperCase()
 
-  // console.log( '[data.getAirport]', code);
-  let airport = null
-
-  // weed out incomplete or invalid codes
-  if (!Airport.isValidCode(code)) {
-    // console.log( '[data.getAirport] invalid code ' + code)
-    return airport
-  }
-
-  // do we already have this airport in memory?
-  if (code in sessionAirports.data) {
-    // return value may by null if the code was not found
-    return sessionAirports.get(code)
-  }
-
-  // if this code is already in the queue we'll just wait for the data
-  if (pendingCodes.includes(code)) {
-    // console.log( '[data.getAirport] already in queue ' + code)
-    return await waitForAirportData(code)
-  }
-
-  try {
-    const localAirport = LocalStore.airportGet(code)
-    // we have local airport information
-    if (backend.ready) {
-      if (airportCurrent(localAirport)) {
-        // console.log('[data.getAirport] localAirport ', code, 'is current')
-        // Airport data is current add to session airports and return it
-        sessionAirports.set(code, localAirport)
-        // console.log('[data.getAirport] localAirport ', code, 'is current')
-        return localAirport;
-      }
-    }
-    // Either airport data is stale or backend is not ready
-    // Add a promise to the localAirport that will return investigation outcome
-    localAirport.promise = new Promise(async (resolve) => {
-      // if backend is ready this will resolve immediately
-      await backend.promise.then(() => {
-        // compare effective date and model version
-        if (airportCurrent(localAirport)) {
-          sessionAirports.set(code, localAirport)
-          // console.log('[data.getAirport] localAirport ', code, 'was current')
-          resolve({ current: true, airport: localAirport })
-        } else {
-          // turn out this data was stale, remove it from localStorage
-          LocalStore.airportRemove(code)
-          getAirport(code, false).then(airport => {
-            sessionAirports.set(code, airport)
-            resolve({ current: false, airport: airport })
-          }).catch((e) => {
-            reportError('[data.getAirport] error getting new airport data' + JSON.stringify(e))
-            resolve({ current: false, airport: null })
-          })
-        }
-      })
-
-    })
-    // we return stale airport with promise
-    return localAirport;
-  } catch (e) {
-    // no local copy
-  }
-
-  // add ourselves to the list of pending queries
-  // console.log( '[data.getAirport] adding to queue', code);
-  pendingCodes.push(code)
-  // console.log( '[data.getAirport]', code, 'enqueued', JSON.stringify(pendingCodes));
-
-  if (group) {
-    // Are we still getting new queries?
-    const beforeCount = pendingCodes.length
-    await new Promise(r => setTimeout(r, 500));
-
-    if (beforeCount == pendingCodes.length) { // no queries withing the last 500 ms
-      // go ahead and place the query
-      await requestAllAirports(pendingCodes)
-    }
-    airport = await waitForAirportData(code)
-
-  } else { // grouping is not allowed
-
-    // wait until the current code is in first position
-    while (pendingCodes.length > 0 && pendingCodes[0] != code) {
-      // console.log( '[data.getAirport] waiting for', pendingCodes[0], pendingCodes.length, maxWait)
-      await new Promise(r => setTimeout(r, 1000));
-    }
-
-    // Request that one code
-    airport = await requestOneAirport(code)
-
-    // remove ourselves from the first position in the queue
-    pendingCodes.shift()
-    // console.log( '[data.getAirport]', code, 'removed from queue', JSON.stringify(pendingCodes))
-  }
-
-  // save this data in local storage
-  if (airport && airport.version != -1) LocalStore.airportAdd(code, airport)
-
-  return airport
-}
 
 /**
  * Request backend information such as version and current effective date
@@ -320,61 +203,7 @@ export function reportError(message) {
   console.error(message);
 }
 
-/**
- * Request a list of airports by code
- * @param {*} codes 
- * @returns 
- */
-async function requestAllAirports(codes) {
-  // console.log( 'perform group request for ' + codes.length)
-  const url = GApiUrl.root + 'airports/' + codes.join('-');
-  await currentUser.getUrl(url)
-    .then(response => {
-      // console.log( JSON.stringify(response.data))
-      const airportList = response.data
-      airportList.forEach(airport => {
-        // memorize this airport
-        sessionAirports.set(airport.code, airport)
-        // remove this code from pending codes
-        pendingCodes.splice(pendingCodes.indexOf(airport.code), 1)
-        // console.log('[data.requestAllAirports]', airport.code,'removed',JSON.stringify(pendingCodes))
-      })
-    })
-    .catch(error => {
-      // this request failed, cache all airports as invalid
-      codes.forEach(code => {
-        sessionAirports.setInvalid(code)
-      })
-      reportError('[data.requestAllAirports] error ' + JSON.stringify(error))
-    })
-}
 
-/**
- * Perform the API request for a single airport code
- * @param {*} code 
- * @returns 
- */
-async function requestOneAirport(code) {
-  // console.log( '[data.requestOneAirport]', code)
-  let airport = null
-
-  const url = GApiUrl.root + 'airport/' + code;
-  await currentUser.getUrl(url)
-    .then(response => {
-      // console.log( '[data.requestOneAirport] received', JSON.stringify(response.data))
-      airport = response.data
-      // add this data to cache
-      sessionAirports.set(code, airport)
-      // console.log( 'added to cache ' + code)
-    })
-    .catch(error => {
-      // cache this airport as invalid
-      sessionAirports.setInvalid(code)
-      pendingCodes = []
-    })
-
-  return airport
-}
 
 export function routeToLocalTemplate(router, template) {
   LocalStore.saveTemplate(template)
@@ -402,16 +231,4 @@ export async function sendFeedback(text, contactMe = true) {
     })
 }
 
-/**
- * Our data has already been requested, we are waiting for it
- * @param {*} code 
- * @returns 
- */
-async function waitForAirportData(code) {
-  // console.log( 'waiting for ' + code) 
-  while (!(code in sessionAirports.data)) {
-    await new Promise(r => setTimeout(r, 250));
-  }
-  // console.log( 'done waiting for ' + code)
-  return sessionAirports.get(code)
-}
+

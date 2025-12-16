@@ -53,7 +53,7 @@
 
 <script setup lang="ts">
 import {ref, onMounted, watch} from 'vue';
-import { getAirport } from '../../assets/data.js'
+import { getAirport } from '../../services/AirportService'
 import { DisplayModeAirport, DisplayModeChoice } from '../../models/DisplayMode';
 import { Airport, Runway } from '../../models/Airport.ts';
 import { AirportTileConfig } from './AirportTileConfig.ts';

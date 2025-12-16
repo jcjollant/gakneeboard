@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { Airport } from '../../models/Airport.ts'
-import { getAirport } from '../../assets/data'
+import { getAirport } from '../../services/AirportService'
 import { LocalStore } from '../../lib/LocalStore'
 import { sessionAirports } from '../../assets/data'
 import { useToast } from 'primevue/usetoast'
