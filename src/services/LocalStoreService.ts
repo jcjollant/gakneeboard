@@ -20,10 +20,24 @@ export class LocalStoreService {
     static MAX_APPROACHES = 5
     static LEAN_AIRPORTS = 24
 
+    static listeners: (() => void)[] = []
+
+    static subscribe(callback: () => void): () => void {
+        LocalStoreService.listeners.push(callback)
+        return () => {
+            LocalStoreService.listeners = LocalStoreService.listeners.filter(l => l !== callback)
+        }
+    }
+
+    static notify() {
+        LocalStoreService.listeners.forEach(l => l())
+    }
+
     static airportAdd(code: string, airport: any) {
         if (!airport) return;
         localStorage.setItem(LocalStoreService.airportPrefix + airport.code, JSON.stringify(airport))
         LocalStoreService.airportRecentsUpdate(code)
+        LocalStoreService.notify()
     }
 
     static airportCleanUp() {
@@ -49,6 +63,7 @@ export class LocalStoreService {
                 const newRecentAirport = airportCodes.join('-')
                 console.log('[LocalStoreService.cleanUp] new recent airports', newRecentAirport)
                 localStorage.setItem(LocalStoreService.recentAirports, newRecentAirport)
+                LocalStoreService.notify()
             }
         }
     }
@@ -101,6 +116,7 @@ export class LocalStoreService {
 
     static airportRemove(code: string) {
         localStorage.removeItem(LocalStoreService.airportPrefix + code)
+        LocalStoreService.notify()
     }
 
     static airportRemoveAll() {
@@ -111,6 +127,7 @@ export class LocalStoreService {
             }
         }
         localStorage.removeItem(LocalStoreService.recentAirports)
+        LocalStoreService.notify()
     }
 
     static approachCleanUp() {

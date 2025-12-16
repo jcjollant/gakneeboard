@@ -23,6 +23,12 @@
             <div v-else class="value">
                 <div class="printCredits" :class="{'maxedOut':user.printCredits == 0 }">{{ user.printCredits }}</div>
             </div>
+            <div style="grid-column: span 2"><hr></div>
+            <div class="key">Airports Cached</div>
+            <div class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                <div class="airportCount">{{ airportCount }}</div>
+                <Button icon="pi pi-trash" text severity="danger" @click="deleteAirports" v-if="airportCount > 0" title="Empty Airports Cache" />
+            </div>
         </div>
         <div class="actions">
           <Button link label="Sign Out" class="btnSignOut" @click="emits('signout')"></Button>
@@ -33,9 +39,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { AccountType } from '../../models/AccounType';
 import { CheckoutService } from '../../services/CheckoutService'
+import { LocalStoreService } from '../../services/LocalStoreService';
 import { CurrentUser } from '../../assets/CurrentUser';
 import { Formatter } from '../../lib/Formatter';
 import { useToast } from 'primevue/usetoast';
@@ -49,6 +56,7 @@ import { currentUser } from '../../assets/data';
 
 
 const emits = defineEmits(['close','signout'])
+const airportCount = ref(0)
 const pagesCount = ref(0)
 const props = defineProps({
   user: {type: CurrentUser, required: true}
@@ -57,8 +65,18 @@ const router = useRouter()
 const toaster = useToaster(useToast())
 const user = ref(currentUser)
 
+const unsubscribe = ref<(() => void) | undefined>(undefined)
+
 onMounted(() => {
     loadProps(props)
+    airportCount.value = LocalStoreService.airportRecentsGet().length
+    unsubscribe.value = LocalStoreService.subscribe(() => {
+        airportCount.value = LocalStoreService.airportRecentsGet().length
+    })
+})
+
+onUnmounted(() => {
+    if (unsubscribe.value) unsubscribe.value()
 })
 
 watch( props, () => {
@@ -94,6 +112,12 @@ function onUpdateAccount() {
   }
 }
 
+function deleteAirports() {
+    LocalStoreService.airportRemoveAll()
+    airportCount.value = 0
+    toaster.success('Local Storage', 'Airports deleted')
+}
+
 </script>
 
 <style scoped>
@@ -101,6 +125,7 @@ function onUpdateAccount() {
   display: grid;
   grid-template-columns: auto auto;
   gap: 10px;
+  align-items: center;
 }
 .accountDialog {
   width: 400px;
