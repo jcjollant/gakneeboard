@@ -1,4 +1,4 @@
-import { AirportService } from "./AirportService";
+import { AirportService } from "./services/AirportService";
 import { GApi } from "./GApi";
 import { NavlogEntry } from "./models/NavlogEntry";
 import { XMLParser, XMLValidator } from 'fast-xml-parser'
