@@ -2,7 +2,7 @@ import request from 'supertest';
 import { describe, expect, it, jest, beforeEach } from '@jest/globals';
 import app from '../../api/index';
 import { GApi } from '../../backend/GApi';
-import { AirportService } from '../../backend/AirportService';
+import { AirportService } from '../../backend/services/AirportService';
 import { Maintenance } from '../../backend/Maintenance';
 import { GApiTemplate } from '../../backend/GApiTemplate';
 import { UserTools } from '../../backend/UserTools';
@@ -13,7 +13,7 @@ import { TemplateView } from '../../backend/models/TemplateView';
 
 // Mock the dependencies
 jest.mock('../../backend/GApi');
-jest.mock('../../backend/AirportService');
+jest.mock('../../backend/services/AirportService');
 jest.mock('../../backend/Maintenance');
 jest.mock('../../backend/GApiTemplate');
 jest.mock('../../backend/UserTools');
@@ -31,7 +31,7 @@ describe('index API', () => {
     });
 
     it('root API returns expected values', async () => {
-        (GApi.getSession as unknown as jest.Mock).mockResolvedValue({
+        (GApi.getSession as unknown as jest.Mock<any>).mockResolvedValue({
             version: version,
             camv: currentAirportModelVersion
         });
@@ -44,7 +44,7 @@ describe('index API', () => {
     });
 
     it('root API with user returns expected values', async () => {
-        (GApi.getSession as unknown as jest.Mock).mockResolvedValue({
+        (GApi.getSession as unknown as jest.Mock<any>).mockResolvedValue({
             version: version,
             camv: currentAirportModelVersion,
             user: { sha256: jcHash }
@@ -64,8 +64,8 @@ describe('index API', () => {
             { id: 'RNT' },
             { id: 'JFK' }
         ];
-        (UserTools.userIdFromRequest as unknown as jest.Mock).mockResolvedValue(123);
-        (AirportService.getAirportViewList as unknown as jest.Mock).mockResolvedValue(mockAirports);
+        (UserTools.userIdFromRequest as unknown as jest.Mock<any>).mockResolvedValue(123);
+        (AirportService.getAirportViewList as unknown as jest.Mock<any>).mockResolvedValue(mockAirports);
 
         const res = await request(app).get('/airports/rnt-jfk');
 
@@ -75,8 +75,8 @@ describe('index API', () => {
     });
 
     it('Invalid Id', async () => {
-        (UserTools.userIdFromRequest as unknown as jest.Mock).mockResolvedValue(123);
-        (AirportService.getAirportView as unknown as jest.Mock).mockRejectedValue({ status: 400, message: 'Invalid Airport' });
+        (UserTools.userIdFromRequest as unknown as jest.Mock<any>).mockResolvedValue(123);
+        (AirportService.getAirportView as unknown as jest.Mock<any>).mockRejectedValue({ status: 400, message: 'Invalid Airport' });
 
         const res = await request(app).get('/airport/ABCDE');
 
@@ -144,16 +144,16 @@ describe('index API', () => {
         (UserTools.userIdFromRequest as unknown as jest.Mock).mockResolvedValue(1);
 
         // Mock GApiTemplate.save
-        (GApiTemplate.save as unknown as jest.Mock).mockResolvedValue({
+        (GApiTemplate.save as unknown as jest.Mock<any>).mockResolvedValue({
             code: 200,
             template: { id: templateId, code: publicationCode }
         });
 
         // Mock GApiTemplate.get
-        (GApiTemplate.get as unknown as jest.Mock).mockResolvedValue({ id: templateId });
+        (GApiTemplate.get as unknown as jest.Mock<any>).mockResolvedValue({ id: templateId });
 
         // Mock GApi.publicationGet
-        (GApi.publicationGet as unknown as jest.Mock).mockResolvedValue({ id: templateId });
+        (GApi.publicationGet as unknown as jest.Mock<any>).mockResolvedValue({ id: templateId });
 
         // Test POST /template
         const postRes = await request(app)

@@ -1,5 +1,5 @@
 import { describe, expect, it, jest, test } from '@jest/globals';
-import { AirportService } from '../backend/AirportService'
+import { AirportService } from '../backend/services/AirportService'
 import { currentAsOf, jcUserId } from './constants';
 import { AirportSketch } from '../backend/AirportSketch';
 import { AirportCreationRequest } from '../backend/models/AirportCreationRequest';
@@ -8,6 +8,7 @@ import { Adip } from '../backend/adip/Adip';
 import { AirportDao } from '../backend/AirportDao';
 import { Airport, AirportSource } from '../backend/models/Airport';
 import { GApiError } from '../backend/GApiError';
+import * as cnf4 from './jsonData/airport/cnf4Creation.json';
 
 describe('AirportService Tests', () => {
 
@@ -264,5 +265,25 @@ describe('AirportService Tests', () => {
                 expect(e.message).toBe("Invalid Airport Code")
             }
         })
+    })
+
+    it('Creates a new airport from fixture', async () => {
+        const request = cnf4 as unknown as AirportCreationRequest;
+        jest.spyOn(Adip, 'currentEffectiveDate').mockReturnValue('20250101')
+        jest.spyOn(AirportDao, 'create').mockResolvedValue(undefined)
+
+        const result = await AirportService.createAirport(request)
+
+        expect(result.code).toBe(cnf4.code)
+        expect(result.name).toBe(cnf4.name)
+        expect(result.elev).toBe(cnf4.elevation)
+        expect(result.tpa).toBe(cnf4.trafficPatternAltitude)
+        expect(result.freq).toEqual(cnf4.frequencies)
+        expect(result.rwys.length).toBe(cnf4.runways.length)
+        expect(result.rwys[0].name).toBe(cnf4.runways[0].name)
+        expect(result.rwys[0].ends.length).toBe(2)
+        expect(result.rwys[0].width).toBe(cnf4.runways[0].width)
+        expect(result.source).toBe(AirportSource.User)
+        expect(AirportDao.create).toHaveBeenCalledWith(cnf4.code, expect.anything())
     })
 })

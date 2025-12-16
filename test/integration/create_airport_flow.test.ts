@@ -1,6 +1,6 @@
 
 import { describe, expect, test, beforeAll, afterAll } from '@jest/globals';
-import { AirportService } from '../../backend/AirportService';
+import { AirportService } from '../../backend/services/AirportService';
 import { AirportDao } from '../../backend/AirportDao';
 import { AirportCreationRequest } from '../../backend/models/AirportCreationRequest';
 import { AirportSource } from '../../backend/models/Airport';
