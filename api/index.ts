@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express"
 import cors from "cors";
 import multer from "multer"
-import { AirportService } from "../backend/AirportService";
+import { AirportService } from "../backend/services/AirportService";
 import { Admin } from "../backend/Admin"
 import { GApi } from '../backend/GApi'
 import { StripeClient } from '../backend/business/Stripe'

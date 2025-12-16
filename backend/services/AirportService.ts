@@ -1,12 +1,12 @@
-
-import { Adip } from './adip/Adip'
-import { Airport, versionInvalid, AirportSource } from './models/Airport'
-import { AirportDao } from './AirportDao'
-import { AirportSketch } from './AirportSketch'
-import { AirportView } from './models/AirportView'
-import { CodeAndAirport } from './models/CodeAndAirport'
-import { GApiError } from './GApiError'
-import { AirportCreationRequest } from './models/AirportCreationRequest'
+import { Adip } from '../adip/Adip'
+import { Airport, versionInvalid, AirportSource } from '../models/Airport'
+import { AirportDao } from '../AirportDao'
+import { AirportSketch } from '../AirportSketch'
+import { AirportView } from '../models/AirportView'
+import { CodeAndAirport } from '../models/CodeAndAirport'
+import { GApiError } from '../GApiError'
+import { AirportCreationRequest } from '../models/AirportCreationRequest'
+import { Runway } from '../models/Runway'
 
 export class AirportService {
 
@@ -29,7 +29,7 @@ export class AirportService {
         const airport = new Airport(request.code, request.name, request.elevation);
         airport.tpa = request.trafficPatternAltitude;
         airport.freq = request.frequencies;
-        airport.rwys = request.runways;
+        airport.rwys = request.runways.map((rwy) => new Runway(rwy.name, rwy.length, rwy.width));
         airport.version = Airport.currentVersion;
         // Set effective date to current to ensure it's picked up
         airport.effectiveDate = Adip.currentEffectiveDate();
