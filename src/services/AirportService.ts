@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { Airport } from '../models/Airport'
+import { AirportCreationRequest } from '../models/AirportCreationRequest'
 import { GApiUrl } from '../lib/GApiUrl'
 import { LocalStore } from '../lib/LocalStore'
 import { backend, sessionAirports, currentUser } from '../assets/data'
@@ -210,15 +211,18 @@ async function requestOneAirport(code: string) {
 
 const contentType = { headers: { 'Content-Type': 'application/json' } }
 
-export async function saveCustomAirport(airport: any) {
+export async function createAirport(request: AirportCreationRequest) {
     const url = GApiUrl.root + 'airport'
-    const payload = { user: currentUser.sha256, airport: airport }
+    const payload = { user: currentUser.sha256, request: request }
+    // console.debug('[AirportService.createAirport] payload', payload)
     await axios.post(url, payload, contentType)
         .then(response => {
-            // console.log( '[data] custom airport saved', airport.code)
+            if (response.data && response.data.code) {
+                sessionAirports.set(response.data.code, response.data)
+            }
         })
         .catch(error => {
-            reportError('[data.saveCustomAirport] custom airport save error ' + JSON.stringify(error))
+            reportError('[AirportService.createAirport] error ' + JSON.stringify(error))
+            throw error
         })
-
 }
