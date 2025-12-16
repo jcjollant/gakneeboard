@@ -1,13 +1,13 @@
 import { Formatter } from "../lib/Formatter";
 import { Frequency, FrequencyType } from "./Frequency";
 
-const modelVersion:number = 10;
+const modelVersion: number = 10;
 
 export class AirportFrequency {
     name: string;
     mhz: number;
     notes: string;
-    constructor(name:string, frequency:number, notes:string='') {
+    constructor(name: string, frequency: number, notes: string = '') {
         this.name = name;
         this.mhz = frequency;
         this.notes = notes;
@@ -22,13 +22,13 @@ export enum TrafficPattern {
 export class RunwayEnd {
     name: string;
     mag: number = 0;
-    tp: TrafficPattern; 
+    tp: TrafficPattern;
     /**
      * @param name This runway end name, should start with RP if this is a Right pattern 
      * @param orientation Magnetic orientation of the runway
      */
-    constructor(name:string, orientation:number) {
-        if( name.startsWith('RP')) {
+    constructor(name: string, orientation: number) {
+        if (name.startsWith('RP')) {
             this.tp = TrafficPattern.right
             this.name = name.substring(2);
         } else {
@@ -38,20 +38,20 @@ export class RunwayEnd {
         this.setMagneticOrientation(orientation);
     }
 
-    setMagneticOrientation(value:number) {
+    setMagneticOrientation(value: number) {
         this.mag = value % 360;
     }
 }
 
 export class RunwaySurface {
-    type:string;
-    cond:string;
-    constructor(type:string, condition:string) {
+    type: string;
+    cond: string;
+    constructor(type: string, condition: string) {
         this.type = type;
         this.cond = condition;
     }
-    static copy(from:any):RunwaySurface|undefined {
-        if(!from) return undefined;
+    static copy(from: any): RunwaySurface | undefined {
+        if (!from) return undefined;
         return new RunwaySurface(from.type, from.cond)
     }
 }
@@ -61,63 +61,64 @@ export class Runway {
     length: number;
     width: number;
     ends: RunwayEnd[];
-    surface: RunwaySurface|undefined;
+    surface: RunwaySurface | undefined;
     freq: number;
 
-    constructor(name:string='', length:number=0, width:number=0) {
+    constructor(name: string = '', length: number = 0, width: number = 0) {
         this.name = name;
         this.length = length;
         this.width = width;
-        const ends:string[] = name.length ? name.split('-') : []
+        const ends: string[] = name.length ? name.split('-') : []
         this.ends = []
-        this.ends.push( ...ends.map( (end) =>  new RunwayEnd(end, parseInt(end)*10) ) ); 
+        this.ends.push(...ends.map((end) => new RunwayEnd(end, parseInt(end) * 10)));
         this.freq = 0;
         this.surface = undefined;
     }
 
-    public getEnd(name:string):RunwayEnd|undefined {
+    public getEnd(name: string): RunwayEnd | undefined {
         return this.ends.find((end) => end.name === name)
     }
 
-    public getEndsName():string[] {
+    public getEndsName(): string[] {
         return this.ends.map((end) => end.name)
     }
 
-    public getOrientation(end:string):number|undefined {
-        const rwyEnd:RunwayEnd|undefined = this.getEnd(end)
+    public getOrientation(end: string): number | undefined {
+        const rwyEnd: RunwayEnd | undefined = this.getEnd(end)
         if (rwyEnd) {
             return rwyEnd.mag
         }
         return undefined
     }
 
-    public getTrafficPattern(end:string):string|undefined {
-        const rwyEnd:RunwayEnd|undefined = this.getEnd(end)
+    public getTrafficPattern(end: string): string | undefined {
+        const rwyEnd: RunwayEnd | undefined = this.getEnd(end)
         if (rwyEnd) {
             return rwyEnd.tp
         }
         return undefined
     }
 
-    public setTrafficPattern(end:string, tp:TrafficPattern) {
-        const rwyEnd:RunwayEnd|undefined = this.getEnd(end)
-        if(rwyEnd) {
+    public setTrafficPattern(end: string, tp: TrafficPattern) {
+        const rwyEnd: RunwayEnd | undefined = this.getEnd(end)
+        if (rwyEnd) {
             rwyEnd.tp = tp;
         } else {
             throw new Error(`Runway end ${end} not found`)
         }
     }
 
-    public setSurface(type:string, condition:string) {
+    public setSurface(type: string, condition: string) {
         this.surface = new RunwaySurface(type, condition)
     }
 
 
-    static copy(from:any):Runway {
-        if(!from) return Runway.noRunway()
+    static copy(from: any): Runway {
+        // console.debug('[Runway.copy]', from)
+        if (!from) return Runway.noRunway()
 
-        const runway:Runway = new Runway(from.name, from.length, from.width)
-        runway.ends = from.ends.map((end:any) => new RunwayEnd(end.name, end.mag))
+        const runway: Runway = new Runway(from.name, from.length, from.width)
+        runway.ends = from.ends.map((end: any) => new RunwayEnd(end.name, end.mag))
         runway.surface = RunwaySurface.copy(from.surface)
         runway.freq = from.freq
         return runway
@@ -127,24 +128,24 @@ export class Runway {
         return new Runway('', 0, 0);
     }
 
-    static isValidEndName(name:string):boolean {
+    static isValidEndName(name: string): boolean {
         // catch too short and too long runway names 
         if (name.length < 2 || name.length > 3) return false
 
-        if( name.length == 3) {
-            const position:string = name.charAt(2)
+        if (name.length == 3) {
+            const position: string = name.charAt(2)
             // position must be L, R or C
-            if( position != 'L' && position != 'R' && position != 'C') return false
+            if (position != 'L' && position != 'R' && position != 'C') return false
         }
 
         // validate runway number
-        const number:number = parseInt(name.substring(0,2))
+        const number: number = parseInt(name.substring(0, 2))
 
         return number > 0 && number < 37
     }
     // this method checks wether a runway name is valid
-    public static isValidName(name:string):boolean {
-        const ends:string[]  = name.split('-')
+    public static isValidName(name: string): boolean {
+        const ends: string[] = name.split('-')
         // we need exactly 2 runway ends
         if (ends.length != 2) return false
         // both ends must be valid
@@ -156,29 +157,29 @@ export class Runway {
 export class Chart {
     name: string;
     pdf: string;
-    constructor(name:string, pdf:string) {
+    constructor(name: string, pdf: string) {
         this.name = name;
         this.pdf = pdf;
     }
-    static copy(chart:any) {
+    static copy(chart: any) {
         return new Chart(chart.name, chart.pdf)
     }
 }
 
 export class Navaid {
-    id:string;
-    freq:number;
-    type:string;
-    dist:number;
-    to:number;
-    constructor(id:string, freq:number, type:string, dist:number, to:number) {
+    id: string;
+    freq: number;
+    type: string;
+    dist: number;
+    to: number;
+    constructor(id: string, freq: number, type: string, dist: number, to: number) {
         this.id = id;
         this.freq = freq;
         this.type = type;
         this.dist = dist;
         this.to = to;
     }
-    static copy(navaid:any):Navaid {
+    static copy(navaid: any): Navaid {
         return new Navaid(navaid.id, navaid.freq, navaid.type, navaid.dist, navaid.to)
     }
 }
@@ -187,39 +188,39 @@ export class Atc {
     mhz: number;
     name: string;
     use: string[];
-    constructor(mhz:number, name:string, use:string[]) {
+    constructor(mhz: number, name: string, use: string[]) {
         this.mhz = mhz;
         this.name = name;
         this.use = use;
     }
-    static copy(atc:any):Atc {
+    static copy(atc: any): Atc {
         return new Atc(atc.mhz, atc.name, atc.use)
     }
 }
 
 export class Airport {
     // copy constructor
-    static currentVersion:number = modelVersion;
-    static invalidVersion:number = -1;
+    static currentVersion: number = modelVersion;
+    static invalidVersion: number = -1;
     static noAirport = new Airport();
     code: string;
     name: string;
     elev: number;
-    tpa: number|undefined;
+    tpa: number | undefined;
     freq: AirportFrequency[];
     rwys: Runway[];
     custom: boolean;
-    version:number;
-    effectiveDate:string;
-    asof:number;
+    version: number;
+    effectiveDate: string;
+    asof: number;
     iap: Chart[];
     dep: Chart[];
-    diagram:string|undefined;
-    navaids:Navaid[];
-    atc:Atc[];
-    sketch:string;
+    diagram: string | undefined;
+    navaids: Navaid[];
+    atc: Atc[];
+    sketch: string;
 
-    constructor(code:string='', name:string='', elevation:number=0) {
+    constructor(code: string = '', name: string = '', elevation: number = 0) {
         this.code = code;
         this.name = name;
         this.elev = elevation;
@@ -239,9 +240,9 @@ export class Airport {
     }
 
     // copy constructor
-    static copy(airport:any) {
-        if(airport instanceof Airport) return airport;
-        if(!airport) return new Airport();
+    static copy(airport: any) {
+        if (airport instanceof Airport) return airport;
+        if (!airport) return new Airport();
 
         const newAirport = new Airport(airport.code, airport.name, airport.elev)
         newAirport.tpa = airport.tpa
@@ -251,33 +252,33 @@ export class Airport {
         newAirport.version = airport.version
         newAirport.effectiveDate = airport.effectiveDate
         newAirport.asof = airport.asof;
-        newAirport.iap = airport.iap.map((chart:any) => Chart.copy(chart))
-        newAirport.dep = airport.iap.map((chart:any) => Chart.copy(chart))
+        newAirport.iap = airport.iap.map((chart: any) => Chart.copy(chart))
+        newAirport.dep = airport.iap.map((chart: any) => Chart.copy(chart))
         newAirport.diagram = airport.diagram ? airport.diagram : airport.diag
-        newAirport.navaids = airport.navaids.map((navaid:any) => Navaid.copy(navaid))
-        newAirport.atc = airport.atc.map((atc:any) => Atc.copy(atc))
+        newAirport.navaids = airport.navaids.map((navaid: any) => Navaid.copy(navaid))
+        newAirport.atc = airport.atc.map((atc: any) => Atc.copy(atc))
         newAirport.sketch = airport.sketch
 
         return newAirport
     }
 
-    public static isValidCode(code:string):boolean {
-        return code != null && ( code.length == 3 || code.length == 4)
+    public static isValidCode(code: string): boolean {
+        return code != null && (code.length == 3 || code.length == 4)
     }
 
-    public static isValidVersion(version:number):boolean {
+    public static isValidVersion(version: number): boolean {
         return version != Airport.invalidVersion
     }
-    
-    addFrequency(name:string, mhz:number, notes:string='') {
-        this.freq.push(new AirportFrequency(name,mhz,notes));
+
+    addFrequency(name: string, mhz: number, notes: string = '') {
+        this.freq.push(new AirportFrequency(name, mhz, notes));
     }
 
     /**
      * Add a single runway to the airport
      * @param runway 
      */
-    addRunway(runway:Runway) {
+    addRunway(runway: Runway) {
         this.rwys.push(runway);
     }
 
@@ -285,70 +286,75 @@ export class Airport {
      * Add multiple runways to the airport
      * @param runways 
      */
-    addRunways(runways:Runway[]) {
+    addRunways(runways: Runway[]) {
         this.rwys.push(...runways);
     }
 
-    getAnyFrequency(patterns:string[]) {
+    getAnyFrequency(patterns: string[]) {
         // test wether freq.name contains any of the patterns
         return this.freq.find((freq) => (patterns.some(p => freq.name.includes(p))))
     }
 
     // returns a number
-    getFreq(name:string):number|undefined {
+    getFreq(name: string): number | undefined {
         return this.freq.find((freq) => freq.name == name)?.mhz
     }
 
     // retuns a Frequency
-    getFrequency(name:string):AirportFrequency|undefined {
+    getFrequency(name: string): AirportFrequency | undefined {
         return this.freq.find((freq) => freq.name == name)
     }
 
-    getFreqClearance():number|undefined {
+    getFreqClearance(): number | undefined {
         return this.getFreq('CD/P')
     }
 
-    getFreqCtaf():number|undefined {
+    getFreqCtaf(): number | undefined {
         return this.getFreq('CTAF');
     }
 
-    getFreqGround():Frequency {
+    getFreqGround(): Frequency {
         const af = this.getFrequency('GND');
-        if( af) {
+        if (af) {
             return Frequency.fromType(af.mhz, FrequencyType.ground)
         }
         const name = Frequency.typeToString(FrequencyType.ground);
-        return  Frequency.noFreq(name, FrequencyType.ground)
+        return Frequency.noFreq(name, FrequencyType.ground)
     }
 
-    getFreqTower():number|undefined {
+    getFreqTower(): number | undefined {
         return this.getFreq('TWR');
     }
 
-    getFreqTowerIfr():number|undefined {
-        const list = this.freq.filter( f => f.name.includes('TWR'))
-        if( list.length == 0) return undefined
+    getFreqTowerIfr(): number | undefined {
+        const list = this.freq.filter(f => f.name.includes('TWR'))
+        if (list.length == 0) return undefined
         // return the first element
-        return list.sort( (f1,f2) => f2.mhz - f1.mhz)[0].mhz;
+        return list.sort((f1, f2) => f2.mhz - f1.mhz)[0].mhz;
     }
 
-    getFreqWeather():Frequency|undefined {
-        const af = this.getAnyFrequency(['ATIS','ASOS','AWOS','Weather'])
+    getFreqWeather(): Frequency | undefined {
+        const af = this.getAnyFrequency(['ATIS', 'ASOS', 'AWOS', 'Weather'])
         return af ? new Frequency(Formatter.frequency(af.mhz), af.name, FrequencyType.weather) : undefined
     }
 
-    isValid():boolean {
-        return Airport.isValidCode(this.code) && Airport.isValidVersion(this.version) && this.rwys.length > 0;
+    isValid(): boolean {
+        const isValidCode = Airport.isValidCode(this.code)
+        const isValidVersion = Airport.isValidVersion(this.version)
+        const isValidRunways = this.rwys.length > 0;
+        // console.debug('[Airport.isValid]', isValidCode, isValidVersion, isValidRunways)
+
+        return isValidCode && isValidVersion && isValidRunways;
     }
 
-    setEffectiveDate(date:string) {
+    setEffectiveDate(date: string) {
         this.effectiveDate = date;
     }
 
-    setRunwayFrequency(rwyName:string, frequency:number) {
+    setRunwayFrequency(rwyName: string, frequency: number) {
         // console.log('[Airport.setRunwayFrequency]', rwyName, frequency)
-        const rwy:Runway|undefined = this.rwys.find((rwy) => rwy.name == rwyName)
-        if( rwy) {
+        const rwy: Runway | undefined = this.rwys.find((rwy) => rwy.name == rwyName)
+        if (rwy) {
             rwy.freq = frequency;
             this.addFrequency('RWY ' + rwyName, frequency)
         }
