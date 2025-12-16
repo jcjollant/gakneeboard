@@ -45,7 +45,7 @@ const code = ref()
 const model = defineModel<Airport|undefined>()
 const name = ref('')
 const valid = ref(false)
-let pendingCode:string|undefined = undefined // used during the short delay between code update and actual request
+let timeoutId:ReturnType<typeof setTimeout>|undefined = undefined
 const toaster = useToaster( useToast())
 
 async function loadProps(props:any) {
@@ -108,17 +108,18 @@ function fetchAirport() {
 function onCodeUpdate() {
     // console.log(airportCode.value)
     // console.log('[AirportEdit.onCodeUpdate]',Date.now())
-    pendingCode = code.value
     name.value = '...'
     valid.value = false
+    
+    if (timeoutId) {
+        clearTimeout(timeoutId)
+        timeoutId = undefined
+    }
+
     // only load the new code after a short delay to avoid sending useless query
-    if( pendingCode && pendingCode.length > 2) {
-        setTimeout( () => {
-            // check if code has not changed
-            if( pendingCode == code.value) {
-                pendingCode = undefined
-                fetchAirport()
-            }
+    if( code.value && code.value.length > 2) {
+        timeoutId = setTimeout( () => {
+            fetchAirport()
         }, 500)
     }
 }
