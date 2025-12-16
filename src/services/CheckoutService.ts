@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { CurrentUser } from './CurrentUser'
+import { CurrentUser } from '../assets/CurrentUser'
 import { GApiUrl } from '../lib/GApiUrl'
 import { AccountType } from '../models/AccounType'
 
@@ -12,10 +12,10 @@ export class Pricing {
     static lifetimeDeal = 'ld1'
 }
 
-export class Checkout {
+export class CheckoutService {
 
-    static accountTypeFromPricing(pricing:Pricing): AccountType {
-        switch(pricing) {
+    static accountTypeFromPricing(pricing: Pricing): AccountType {
+        switch (pricing) {
             // case Pricing.privateMonthly:
             // case Pricing.privateAnnual:
             //     return AccountType.private;
@@ -26,6 +26,7 @@ export class Checkout {
                 return AccountType.simmer;
             case Pricing.betaDeal:
             case Pricing.privatePilot:
+            case Pricing.studentPilot:
                 return AccountType.beta;
             case Pricing.hobbs:
                 return AccountType.hobbs;
@@ -36,23 +37,22 @@ export class Checkout {
         }
     }
 
-    static async manage(user:CurrentUser):Promise<string> {
-        return Checkout.plan('manage', user)
+    static async manage(user: CurrentUser): Promise<string> {
+        return CheckoutService.plan('manage', user)
     }
 
 
-    static async plan(code:Pricing, user:CurrentUser):Promise<string> {
-        return new Promise<string>(async (resolve, reject) => {
+    static async plan(code: string, user: CurrentUser): Promise<string> {
+        try {
             const url = GApiUrl.root + 'stripe/checkout'
-            const payload = {user:user.sha256, product:code, source:window.location.href}
+            const payload = { user: user.sha256, product: code, source: window.location.href }
             // console.log('[Checkout.plan]', payload)
-            const headers = { headers: {'Content-Type':'application/json'} }
-            await axios.post(url, payload, headers).then( response => {
-                resolve(response.data.url)
-            }).catch( error => {
-                console.log(error)
-                reject('/')
-            })
-        })
+            const headers = { headers: { 'Content-Type': 'application/json' } }
+            const response = await axios.post(url, payload, headers)
+            return response.data.url
+        } catch (error) {
+            console.log(error)
+            throw '/'
+        }
     }
 }

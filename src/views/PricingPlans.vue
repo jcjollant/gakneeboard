@@ -83,7 +83,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router';
-import { Checkout, Pricing } from '../assets/Checkout';
+import { CheckoutService, Pricing } from '../services/CheckoutService';
 import { currentUser } from '../assets/data';
 import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../assets/Toaster';
@@ -155,12 +155,12 @@ const router = useRouter()
 function onPlan(code:Pricing) {
   // console.log('[PricingPlans.onPlan]',code)
 
-  if( Checkout.accountTypeFromPricing(code) == AccountType.simmer) {
+  if( CheckoutService.accountTypeFromPricing(code) == AccountType.simmer) {
     // There is no change in type, just go back to the home page
     router.push('/')
   } else {
     toaster.info('Calling Tower', 'Stand By...')
-    Checkout.plan(code, currentUser).then( (url:string) => {
+    CheckoutService.plan(code, currentUser).then( (url:string) => {
       // console.log('[PricingPlans.onPlan]',url)
       window.location.href = url
     }).catch( (err:any) => {

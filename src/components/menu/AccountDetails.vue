@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { AccountType } from '../../models/AccounType';
-import { Checkout } from '../../assets/Checkout'
+import { CheckoutService } from '../../services/CheckoutService'
 import { CurrentUser } from '../../assets/CurrentUser';
 import { Formatter } from '../../lib/Formatter';
 import { useToast } from 'primevue/usetoast';
@@ -83,7 +83,7 @@ function onUpdateAccount() {
     emits('close')
     if(user.value.accountType != AccountType.simmer) {
         toaster.info('Calling Tower', 'Stand By...')
-        Checkout.manage(user.value).then( (url:string) => {
+        CheckoutService.manage(user.value).then( (url:string) => {
         // console.log('[PricingPlans.onPlan]',url)
         window.location.href = url
     }).catch( (err:any) => {
