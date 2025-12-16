@@ -16,6 +16,7 @@ import { UserImage } from "../backend/UserImage";
 import { UserDao } from "../backend/dao/UserDao";
 import { UsageDao } from "../backend/dao/UsageDao";
 import { AirportCreationRequest } from "../backend/models/AirportCreationRequest";
+import { Authorization } from "../backend/services/Authorization";
 const port: number = 3000
 const app = express();
 
@@ -55,12 +56,11 @@ app.get('/', async (req: Request, res: Response) => {
  */
 app.post('/airport', async (req: Request, res: Response) => {
     try {
-        const userId = await UserTools.userIdFromRequest(req)
-        if (!userId || !UserTools.isAdmin(userId)) {
-            throw new GApiError(401, "Unauthorized")
-        }
+        const userId = await Authorization.validateAdmin(req)
 
-        const payload: AirportCreationRequest = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+        // payload is in body.request
+        const payload = req.body.request
+        // const payload: AirportCreationRequest = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
         const airport = await AirportService.createAirport(payload)
         res.status(201).send(airport)
     } catch (e) {
@@ -393,10 +393,8 @@ app.get('/sunlight/:from/:to/:dateFrom/:dateTo?', async (req: Request, res: Resp
 
 app.get('/user/profile/:userId', async (req: Request, res: Response) => {
     try {
-        const requester = await UserTools.userIdFromRequest(req)
-        if (!UserTools.isAdmin(requester)) {
-            throw new GApiError(401, 'Unauthorized')
-        }
+        const requester = await Authorization.validateAdmin(req)
+
         const userProfile = await Admin.getUserProfile(Number(req.params.userId))
         res.send(userProfile)
     } catch (e) {
@@ -406,10 +404,8 @@ app.get('/user/profile/:userId', async (req: Request, res: Response) => {
 
 app.get('/usage/active', async (req: Request, res: Response) => {
     try {
-        const requester = await UserTools.userIdFromRequest(req)
-        if (!UserTools.isAdmin(requester)) {
-            throw new GApiError(401, 'Unauthorized')
-        }
+        const requester = await Authorization.validateAdmin(req)
+
         const numberOfDays = req.query.days ? Number(req.query.days) : 1
         const usageDao = new UsageDao()
         const activeUserIds = await usageDao.getActiveUsersLastDays(numberOfDays)
@@ -421,10 +417,8 @@ app.get('/usage/active', async (req: Request, res: Response) => {
 
 app.get('/usage/chi', async (req: Request, res: Response) => {
     try {
-        const requester = await UserTools.userIdFromRequest(req)
-        if (!UserTools.isAdmin(requester)) {
-            throw new GApiError(401, 'Unauthorized')
-        }
+        const requester = await Authorization.validateAdmin(req)
+
         const usageDao = new UsageDao()
         const chiList = await usageDao.getCustomerHapinessIndex()
         res.send(chiList)
