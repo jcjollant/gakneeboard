@@ -13,6 +13,11 @@
                     <h3>Active Users</h3>
                     <p>Monitor currently active users and system usage</p>
                 </div>
+                <div class="api-card" :class="{ active: selectedApi === 'create-airport' }" @click="selectApi('create-airport')">
+                    <div class="api-icon">🛫</div>
+                    <h3>Create Airport</h3>
+                    <p>Add a new airport to the database</p>
+                </div>
             </div>
         </div>
         
@@ -70,6 +75,10 @@
             <h2>Active Users API Response</h2>
             <pre class="json-display">{{ JSON.stringify(activeUsersRaw, null, 2) }}</pre>
         </div>
+
+        <div v-if="selectedApi === 'create-airport'">
+            <AirportCreationForm />
+        </div>
     </div>
 </template>
 
@@ -80,6 +89,7 @@ import { GApiUrl } from '../lib/GApiUrl'
 import { useToaster } from '../assets/Toaster';
 import { useToast } from 'primevue/usetoast';
 import { useRoute, useRouter } from 'vue-router';
+import AirportCreationForm from '../components/admin/AirportCreationForm.vue';
 
 const route = useRoute()
 const router = useRouter()
@@ -204,7 +214,7 @@ onMounted(() => {
 
 .api-cards {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
 }
