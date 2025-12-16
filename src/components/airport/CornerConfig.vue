@@ -96,7 +96,7 @@ function loadProps(props:any) {
             // build a frequency list with '#F' prefix
             const freqList = airport.freq.map(f => { 
                 const formattedFreq = Formatter.frequency(f.mhz)
-                return new CornerValue('#F' + f.name + '#' + formattedFreq, formattedFreq + ' : ' + f.name + (f.notes.length ? ' (' + f.notes + ')' : ''))
+                return new CornerValue('#F' + f.name + '#' + formattedFreq, formattedFreq + ' : ' + f.name + (f.notes?.length ? ' (' + f.notes + ')' : ''))
             })
             // add a bogus frequency for selected runway
 
