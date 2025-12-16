@@ -1,6 +1,6 @@
 {
   "name": "ga-api",
-  "version": "5.51.1",
+  "version": "5.51.2",
   "description": "run `vercel dev` to run the local service",
   "main": "index.js",
   "scripts": {
