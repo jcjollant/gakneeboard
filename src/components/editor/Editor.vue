@@ -224,7 +224,7 @@ async function onEditorAction(ea:EditorAction) {
     emits('update', index, model.value.data[index]) 
   }
   modified.value = true
-  // LocalStore.saveTemplate(model.value)
+  // LocalStoreService.saveTemplate(model.value)
 }
 
 function pasteTile(params:any) {

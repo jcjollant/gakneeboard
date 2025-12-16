@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { LocalStore } from '../lib/LocalStore';
+import { LocalStoreService } from '../services/LocalStoreService';
 import { useRoute, useRouter } from 'vue-router';
 import { postPrint, currentUser } from '../assets/data.js';
 import { Template, TemplatePage } from '../models/Template';
@@ -67,7 +67,7 @@ onMounted(() => {
     }
     
     // load last template into active template
-    template.value = LocalStore.getTemplate()
+    template.value = LocalStoreService.getTemplate()
     
     // Ensure the format property is correctly set
     if (!template.value.format) {

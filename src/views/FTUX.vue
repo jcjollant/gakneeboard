@@ -196,7 +196,7 @@
 import { ref } from 'vue'
 import { SheetName, ThumbnailImage } from '../assets/sheetData'
 import { useRouter } from 'vue-router'
-import { LocalStore } from '../lib/LocalStore'
+import { LocalStoreService } from '../services/LocalStoreService'
 
 class Demo {
     title: string
@@ -232,12 +232,12 @@ const mobileMenuOpen = ref(false)
 function loadDemo(page?: string) {
     const demoPage = page || demos.value[0].page
     router.push(`/demo/${demoPage}`)
-    LocalStore.popupHide(3)
+    LocalStoreService.popupHide(3)
 }
 
 function skipDemo() {
     router.push('/')
-    LocalStore.popupHide(3)
+    LocalStoreService.popupHide(3)
 }
 
 function goToPlans() {

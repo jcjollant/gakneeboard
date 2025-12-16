@@ -12,7 +12,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { SheetName } from '../assets/sheetData'
 import { DemoData } from '../assets/DemoData'
-import { LocalStore } from '../lib/LocalStore'
+import { LocalStoreService } from '../services/LocalStoreService'
 import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../assets/Toaster'
 import { Airport } from '../models/Airport'
@@ -43,7 +43,7 @@ function loadDemo() {
     toaster.error('Load Demo', 'Unknown Demo Template')
     return
   }
-  LocalStore.saveTemplate(templateData)
+  LocalStoreService.saveTemplate(templateData)
   router.replace('/template/local')
 }
 
@@ -134,7 +134,7 @@ function onFlightConfirm(airports: {from: Airport | null, to: Airport | null, al
     return
   }
   
-  LocalStore.saveTemplate(templateData)
+  LocalStoreService.saveTemplate(templateData)
   router.replace('/template/local')
 }
 </script>

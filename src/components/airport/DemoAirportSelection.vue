@@ -18,7 +18,7 @@ import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import AirportInput from '../shared/AirportInput.vue'
 import { Airport } from '../../models/Airport'
-import { LocalStore } from '../../lib/LocalStore'
+import { LocalStoreService } from '../../services/LocalStoreService'
 
 const emits = defineEmits(['cancel', 'confirm'])
 
@@ -37,7 +37,7 @@ interface FlightInfo {
 
 function loadFromStorage() {
     try {
-        const stored = localStorage.getItem(LocalStore.flightInfo)
+        const stored = localStorage.getItem(LocalStoreService.flightInfo)
         if (stored) {
             const flightInfo: FlightInfo = JSON.parse(stored)
             fromCode.value = flightInfo.from || 'KBFI'
@@ -57,7 +57,7 @@ function saveToStorage() {
             to: toAirport.value?.code || toCode.value,
             alternate: alternateAirport.value?.code || alternateCode.value
         }
-        localStorage.setItem(LocalStore.flightInfo, JSON.stringify(flightInfo))
+        localStorage.setItem(LocalStoreService.flightInfo, JSON.stringify(flightInfo))
     } catch (e) {
         console.warn('Failed to save flight info to storage:', e)
     }

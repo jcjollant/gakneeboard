@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { duplicate } from "./data";
-import { LocalStore } from "../lib/LocalStore";
+import { LocalStoreService } from "../services/LocalStoreService";
 import { User } from "../models/User";
 import { AccountType } from "../models/AccounType";
 import { Template } from "../models/Template";
@@ -61,7 +61,7 @@ export class CurrentUser {
     // console.log('[CurrentUser.login] logging in')
     this.loggedIn = true;
     this.update(data)
-    localStorage.setItem(LocalStore.user, JSON.stringify(data))
+    localStorage.setItem(LocalStoreService.user, JSON.stringify(data))
   }
 
   logout() {
@@ -70,7 +70,7 @@ export class CurrentUser {
     this.sha256 = "";
     this.name = "";
     this.templates = [];
-    localStorage.removeItem(LocalStore.user)
+    localStorage.removeItem(LocalStoreService.user)
     this.notify()
   }
 
@@ -99,7 +99,7 @@ export class CurrentUser {
 
   restore() {
     // attempt to restore user from localstore
-    const lsUser:User|undefined = LocalStore.getUser()
+    const lsUser:User|undefined = LocalStoreService.getUser()
 
     if( lsUser) {
       this.login(lsUser)
@@ -131,7 +131,7 @@ export class CurrentUser {
         this.eulaCurrent = data.eulaCurrent || false
 
         // save new user data
-        localStorage.setItem(LocalStore.user, JSON.stringify(data))
+        localStorage.setItem(LocalStoreService.user, JSON.stringify(data))
 
         // notify listeners
         this.notify()

@@ -27,7 +27,7 @@
 <script setup lang="ts">
 import { onBeforeMount, onMounted, ref } from 'vue';
 import { backend, getBackend, currentUser, routeToLocalTemplate, version } from './assets/data';
-import { LocalStore } from './lib/LocalStore';
+import { LocalStoreService } from './services/LocalStoreService';
 import { TemplateData } from './assets/TemplateData';
 import { useRoute, useRouter } from 'vue-router';
 import { RouterNames } from './router';
@@ -65,7 +65,7 @@ onBeforeMount( () => {
     getBackend().then(() => {
       // Build version text
       versionFront.value = version
-      LocalStore.cleanUp()
+      LocalStoreService.cleanUp()
       // console.log('[App.onBeforeMount]', currentUser)
       // console.log('[App.onBeforeMount] pages ', currentUser.pageCount, currentUser.maxPageCount)
       // console.log('[App.onBeforeMount] tempaltes ', currentUser.templates.length, currentUser.maxTemplateCount)
@@ -143,7 +143,7 @@ onMounted( () => {
         }
       } else if( testCode) { // this is a test
         router.push({path: 'test/' + testCode})
-      } else if( LocalStore.popupShow(3)) {
+      } else if( LocalStoreService.popupShow(3)) {
         // change route to FTUX but preserve url parameters
         router.push({name: RouterNames.FTUX})
       }
@@ -160,13 +160,13 @@ function feedbackSubmitted() {
 
 // function onCloseHowDoesItWork() {
 //   showHowDoesItWork.value =  false
-//   LocalStore.popupHide(1)
+//   LocalStoreService.popupHide(1)
 // }
 
 // function onClosePopup(remember) {
 //   showPopup.value = false
 //   if(remember) {
-//     LocalStore.popupHide(2)
+//     LocalStoreService.popupHide(2)
 //   }
 // }
 

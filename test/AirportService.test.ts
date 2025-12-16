@@ -1,6 +1,6 @@
 import { describe, expect, test, jest, beforeEach } from '@jest/globals';
 import { getAirport, createAirport } from '../src/services/AirportService';
-import { LocalStore } from '../src/lib/LocalStore';
+import { LocalStoreService } from '../src/services/LocalStoreService';
 import { sessionAirports, backend, currentUser, reportError } from '../src/assets/data';
 import axios from 'axios';
 
@@ -33,8 +33,8 @@ const mockBackend = backend as any;
 const mockCurrentUser = currentUser as any;
 const mockReportError = reportError as jest.Mock;
 
-// Mock LocalStore
-jest.mock('../src/lib/LocalStore');
+// Mock LocalStoreService
+jest.mock('../src/services/LocalStoreService');
 
 describe('AirportService', () => {
     const kpae = { "version": 1, "code": "KPAE", "name": "Seattle Paine Fld Intl", "elev": 606.9, "custom": false, "asof": 20230101 };
@@ -73,7 +73,7 @@ describe('AirportService', () => {
             expect(result).toEqual(kpae);
             expect(mockCurrentUser.getUrl).toHaveBeenCalledWith(expect.stringContaining('airport/KPAE'));
             expect(mockSessionAirports.set).toHaveBeenCalledWith('KPAE', kpae);
-            expect(LocalStore.airportAdd).toHaveBeenCalledWith('KPAE', kpae);
+            expect(LocalStoreService.airportAdd).toHaveBeenCalledWith('KPAE', kpae);
         });
 
         test('should handle API errors gracefully', async () => {

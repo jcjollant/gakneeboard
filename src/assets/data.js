@@ -8,7 +8,7 @@ import { reactive } from 'vue'
 import { CurrentUser } from './CurrentUser.ts'
 import { GApiUrl } from '../lib/GApiUrl.ts'
 import { SessionAirports } from './SessionAirports.ts'
-import { LocalStore } from '../lib/LocalStore.ts'
+import { LocalStoreService } from '../services/LocalStoreService.ts'
 import { NavlogQueue } from './NavlogQueue.ts'
 
 export const contentTypeJson = { headers: { 'Content-Type': 'application/json' } }
@@ -206,7 +206,7 @@ export function reportError(message) {
 
 
 export function routeToLocalTemplate(router, template) {
-  LocalStore.saveTemplate(template)
+  LocalStoreService.saveTemplate(template)
   router.push('/template/local')
 }
 

@@ -21,7 +21,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { Airport } from '../../models/Airport.ts'
 import { getAirport } from '../../services/AirportService'
-import { LocalStore } from '../../lib/LocalStore'
+import { LocalStoreService } from '../../services/LocalStoreService'
 import { sessionAirports } from '../../assets/data'
 import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../../assets/Toaster'
@@ -126,7 +126,7 @@ function onCodeUpdate() {
 
 function onRecentAirport(airportCode:string) {
     try {
-        const airport:Airport = LocalStore.airportGet(airportCode)
+        const airport:Airport = LocalStoreService.airportGet(airportCode)
         // console.log('[AirportInput.onRecentAirport]', airportCode, airport)
         code.value = airport.code
         name.value = airport.name
@@ -139,7 +139,7 @@ function onRecentAirport(airportCode:string) {
 }
 
 function refreshAirportList() {
-    airports.value =  LocalStore.airportRecentsGet().sort();
+    airports.value =  LocalStoreService.airportRecentsGet().sort();
 }
 
 </script>

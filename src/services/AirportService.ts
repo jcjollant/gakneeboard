@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Airport } from '../models/Airport'
 import { AirportCreationRequest } from '../models/AirportCreationRequest'
 import { GApiUrl } from '../lib/GApiUrl'
-import { LocalStore } from '../lib/LocalStore'
+import { LocalStoreService } from './LocalStoreService'
 import { backend, sessionAirports, currentUser } from '../assets/data'
 
 // We need to duplicate these from data.js or export them from there if they aren't already
@@ -55,7 +55,7 @@ export async function getAirport(codeParam: string, group = false) {
     }
 
     try {
-        const localAirport = LocalStore.airportGet(code)
+        const localAirport = LocalStoreService.airportGet(code)
         // we have local airport information
         if (backend.ready) {
             if (airportCurrent(localAirport)) {
@@ -79,7 +79,7 @@ export async function getAirport(codeParam: string, group = false) {
                         resolve({ current: true, airport: localAirport })
                     } else {
                         // turn out this data was stale, remove it from localStorage
-                        LocalStore.airportRemove(code)
+                        LocalStoreService.airportRemove(code)
                         getAirport(code, false).then(airport => {
                             sessionAirports.set(code, airport)
                             resolve({ current: false, airport: airport })
@@ -134,7 +134,7 @@ export async function getAirport(codeParam: string, group = false) {
     }
 
     // save this data in local storage
-    if (airport && airport.version != -1) LocalStore.airportAdd(code, airport)
+    if (airport && airport.version != -1) LocalStoreService.airportAdd(code, airport)
 
     return airport
 }

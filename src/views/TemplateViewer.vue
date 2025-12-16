@@ -57,7 +57,7 @@ import { currentUser } from '../assets/data.js'
 import { DemoData } from '../assets/DemoData.ts'
 import { duplicate } from '../assets/data'
 import { EditorAction } from '../assets/EditorAction.ts'
-import { LocalStore } from '../lib/LocalStore.ts'
+import { LocalStoreService } from '../services/LocalStoreService.ts'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { TemplateFormat } from '../models/TemplateFormat.ts'
 import { PageType } from '../assets/PageType.ts'
@@ -122,14 +122,14 @@ onMounted(() =>{
         } else {
           toaster.error( 'Load Template','Invalid Template Id ' + route.params.id)
           // restore last template
-          loadTemplate(LocalStore.getTemplate())
+          loadTemplate(LocalStoreService.getTemplate())
         }
       }).catch( (err) => {
           toaster.error( 'Load Template','Could not reach server')
       })
     } else { 
       // no template id => load local template
-      loadTemplate(LocalStore.getTemplate())
+      loadTemplate(LocalStoreService.getTemplate())
     }
   } catch(e) {
     console.log('[TemplateViewer.onMounted] failed loading template ' + e)
@@ -246,7 +246,7 @@ function loadTemplate(template:Template,saveToLocalStorage:boolean=false) {
     return new Promise( async(resolve, reject) => {
       // save the template to local storage
       if(saveToLocalStorage) {
-        saveTemplateToLocalStore()
+        saveTemplateToLocalStoreService()
       }
       updateThumbnail(template)
       resolve()
@@ -477,7 +477,7 @@ function onPageUpdate(index:number, pageData:TemplatePage) {
   activeTemplate.value.data[index] = pageData
 
   // save template locally
-  saveTemplateToLocalStore()
+  saveTemplateToLocalStoreService()
 }
 
 
@@ -554,13 +554,13 @@ function onNewSettings(settings:TemplateSettings) {
   activeTemplate.value = settingsTemplate.value
   // We consider the template as modified if it's a cloud template
   templateModified.value = settingsTemplate.value.id > 0
-  saveTemplateToLocalStore()
+  saveTemplateToLocalStoreService()
   doSave()
 }
 
-function saveTemplateToLocalStore() {
+function saveTemplateToLocalStoreService() {
   // console.log('[TemplateViewer.saveTemplateToLocaStore]', thumbnail)
-  LocalStore.saveTemplate(activeTemplate.value)
+  LocalStoreService.saveTemplate(activeTemplate.value)
 }
 
 function updateOffsets() {
