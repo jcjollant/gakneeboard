@@ -1,6 +1,6 @@
 <template>
     <div class="tile">
-        <Header title="Fuel Bug" :showReplace="editMode" :displayMode="false"
+        <Header title="Fuel Bug" :showReplace="editMode" :leftButton="''"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <FuelEdit v-if="editMode" :usable="usable" :fuelFlow="fuelFlow" :reserve="reserve"
             @close="onHeaderClick" @update="onSettingsUpdate"/>

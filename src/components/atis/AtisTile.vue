@@ -1,6 +1,6 @@
 <template>
     <div class="tile" ref="thisTile">
-        <Header :title="getTitle()" :left="!displaySelection && displayMode==DisplayModeAtis.FullATIS && !expanded"
+        <Header :title="getTitle()" :leftButton="(!displaySelection && displayMode==DisplayModeAtis.FullATIS && !expanded) ? 'display' : ''" :left="(!displaySelection && displayMode==DisplayModeAtis.FullATIS && !expanded)"
             @replace="emits('replace')" @display="displaySelection=!displaySelection"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList" :expandable="true" :expanded="expanded"
             @expand="onExpand" @keep="displaySelection=false" />

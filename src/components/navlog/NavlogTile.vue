@@ -1,6 +1,6 @@
 <template>
     <div class="navlogTile tile">
-        <Header title="NavLog" :showReplace="mode=='edit'" :displayMode="false"
+        <Header title="NavLog" :showReplace="mode=='edit'" :leftButton="''"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div v-if="mode==''" class="tileContent">
             <div v-if="items">

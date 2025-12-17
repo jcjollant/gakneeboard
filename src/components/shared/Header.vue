@@ -1,9 +1,13 @@
 <template>
     <div class="headerTitle" :class="{ clickable: clickable, left: left, stealth:stealth}">
         <div class="titleText" @click="emits('title')">{{ title }}</div>
-        <div v-if="displayMode" title="Change tile mode" class="displayButton headerButton" 
+        <div v-if="leftButton=='display'" title="Change tile mode" class="displayButton headerButton" 
             @click="emits('display')">
             <font-awesome-icon :icon="['fas','fa-display']" />
+        </div>
+        <div v-if="leftButton=='settings'" title="Change tile settings" class="displayButton headerButton" 
+            @click="emits('settings')">
+            <font-awesome-icon :icon="['fas','fa-cog']" />
         </div>
         <div v-if="replace" :title="'Replace ' + (page ? 'Page' : 'Tile')" class="replaceButton headerButton" 
             @click.stop="emits('replace')">
@@ -15,13 +19,12 @@
 <script setup lang="ts">
 import { onMounted,ref, watch } from 'vue';
 
-const emits = defineEmits(['display','replace','title'])
+const emits = defineEmits(['display','replace','title','settings'])
 
 const props = defineProps({
     clickable: { type: Boolean, default:true},
     left: { type: Boolean, default:false},
-    displayMode : { type: Boolean, default:true},
-    showDisplayMode: { type:Boolean, default:false},
+    leftButton : { type: String, default:'display'},
     replace: { type:Boolean, default:true},
     showReplace: { type:Boolean, default:false},
     stealth: { type: Boolean, default:false},
@@ -40,7 +43,7 @@ onMounted( () => {
     updateProps(props)
 })
 
-function updateProps(props) {
+function updateProps(props:any) {
     // console.log('Heeader update props ' + JSON.stringify(props))
     title.value = props.title
     replace.value = props.replace

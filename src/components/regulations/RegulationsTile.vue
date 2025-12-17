@@ -1,6 +1,6 @@
 <template>
     <div class="tile">
-        <Header :title="getTitle()" :showReplace="displaySelection" :showDisplayMode="true"
+        <Header :title="getTitle()" :showReplace="displaySelection"
             @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" @keep="displaySelection=false" />
         <div v-else-if="displayMode==DisplayModeRegulations.Night">

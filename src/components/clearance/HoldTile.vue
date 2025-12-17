@@ -1,6 +1,6 @@
 <template>
     <div class="tile">
-        <Header title="Hold @" :left="true" :showReplace="true" :showDisplayMode="false"
+        <Header title="Hold @" :left="true" :showReplace="true" :leftButton="''"
             @replace="emits('replace')"></Header>
         <HoldingContent />
     </div>
