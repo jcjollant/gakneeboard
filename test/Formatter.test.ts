@@ -1,4 +1,4 @@
-import {describe, expect} from '@jest/globals';
+import { describe, expect } from '@jest/globals';
 import { Formatter } from '../src/lib/Formatter';
 import { AccountType } from '../src/models/AccounType';
 
@@ -151,6 +151,28 @@ describe('Formatter', () => {
 
     it('should handle undefined speed', () => {
       expect(Formatter.speed(undefined)).toBe(Formatter.noSpeed);
+    });
+  });
+
+
+  describe('feet', () => {
+    it('should format length with thousand separator and suffix', () => {
+      expect(Formatter.feet(5000)).toBe("5,000'");
+    });
+
+    it('should format small length with suffix', () => {
+      expect(Formatter.feet(500)).toBe("500'");
+    });
+
+    it('should format string input', () => {
+      expect(Formatter.feet('5000')).toBe("5,000'");
+    });
+
+    it('should handle null/undefined/NaN', () => {
+      expect(Formatter.feet(null)).toBe('?');
+      expect(Formatter.feet(undefined)).toBe('?');
+      expect(Formatter.feet(NaN)).toBe('?');
+      expect(Formatter.feet('invalid')).toBe('?');
     });
   });
 });
