@@ -3,7 +3,7 @@
         <Tile v-for="(tile,index) in tiles" v-show="!tile.hide" 
           :tile="tile" :class="[{'span-2':tile.span2},`tile${index}`]" 
           @update="onUpdate(index,$event)" 
-          @settings="onSettings(index, $event)"/>
+          @settings="onSettingsOpen(index, $event)"/>
         
         <TileSettings v-if="editingTileIndex >= 0 && editingTileData" 
             :tile="editingTileData" 
@@ -11,11 +11,10 @@
             :index="editingTileIndex"
             :help="tileLinks?.help"
             :video="tileLinks?.video"
-             @close="onCloseSettings" @apply="onApplySettings">
+             @close="onSettingsClose" @apply="onSettingsApply">
             <component :is="settingsComponent" 
                 :tileData="editingTileData" 
-                @update="onSettingsUpdate"
-                @change="onSettingsChange" />
+                @update="onSettingsUpdate" />
         </TileSettings>
     </div>
 </template>
@@ -46,7 +45,6 @@ const tiles=ref<TileData[]>([])
 // Settings State
 const editingTileIndex = ref(-1);
 const editingTileData = ref<TileData | null>(null);
-const pendingConfig = ref<any>(null);
 
 // this is how we pick the correct content
 const settingsComponent = computed(() => {
@@ -103,7 +101,7 @@ watch( props, async() => {
 
 // end of props management
 
-
+// Some tile config has changed
 function onUpdate(index:number, newTileData:TileData) {
   // console.debug('[TilePage.onUpdate]', index, newTileData)
   // update the correct tile
@@ -113,21 +111,19 @@ function onUpdate(index:number, newTileData:TileData) {
   emits('update', tiles.value)
 }
 
-function onSettings(index: number, tileData: TileData) {
+function onSettingsOpen(index: number, tileData: TileData) {
   editingTileIndex.value = index;
   editingTileData.value = TileData.copy(tileData); // Working copy
-  pendingConfig.value = null;
 }
 
-function onCloseSettings() {
+function onSettingsClose() {
   editingTileIndex.value = -1;
   editingTileData.value = null;
-  pendingConfig.value = null;
 }
 
 function onSettingsUpdate(newConfig: any) {
   // this comes from the child component inside the overlay
-  pendingConfig.value = newConfig; // Store temporarily until Apply
+  editingTileData.value = newConfig;
 }
 
 // Help URL Centralized Logic
@@ -144,20 +140,12 @@ const tileLinks = computed(() => {
   return tileUrls[editingTileData.value.name];
 });
 
-function onSettingsChange(change: any) {
-  if (editingTileData.value && change) {
-    if ('expanded' in change) {
-      editingTileData.value.span2 = change.expanded;
-    }
-  }
-}
-
-function onApplySettings(newTileData: TileData) {
-  console.debug('[TilePage.onApplySettings]', editingTileIndex.value, pendingConfig.value, editingTileData.value)
+function onSettingsApply(newTileData: TileData) {
+  // console.debug('[TilePage.onSettingsApply]', editingTileIndex.value, editingTileData.value)
   if(editingTileIndex.value >= 0) {
     onUpdate(editingTileIndex.value, newTileData);
   }
-  onCloseSettings();
+  onSettingsClose();
 }
 
 function resolveMergedTiles() {
