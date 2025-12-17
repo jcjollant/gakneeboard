@@ -22,7 +22,7 @@
             </div>
             <template v-for="section in filteredSections">
                 <div class="section">
-                    <Separator :name="section.name" class="separator" />
+                    <Separator :name="section.name"/>
                     <FAButton v-for="page in section.pages" :label="page.name" :title="page.tooltip" :icon="page.icon"
                         @click="replacePage(page.type)"/>
                 </div>
@@ -39,7 +39,7 @@ import { TemplateFormat } from '../../models/TemplateFormat'
 
 import Header from '../shared/Header.vue'
 import FAButton from '../shared/FAButton.vue'
-import Separator from './Separator.vue'
+import Separator from '../shared/Separator.vue'
 
 const props = defineProps({
     format: { type: String, default: TemplateFormat.Kneeboard }
@@ -126,10 +126,6 @@ function replacePage(type:PageType) {
     padding: 10px;
     gap:10px;
     /* padding-top: 50px; */
-}
-.separator {
-    font-weight: bold;
-    color: black;
 }
 .topTwo {
     display: flex;

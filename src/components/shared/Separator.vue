@@ -11,14 +11,15 @@ defineProps({
 <style scoped>
 .separator {
   display: flex;
-  color: var(--bg);
+  color: var(--bg-secondary);
+  font-weight: bold;
 
   &:before,
   &:after {
     content: "";
     flex: 1;
     height: 1px;
-    margin: 0 1em;
+    margin: 0 1rem;
     background: lightblue;
   }
 
