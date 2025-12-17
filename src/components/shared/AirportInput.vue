@@ -1,5 +1,5 @@
 <template>
-    <div class="airportCode" :class="{page:page}">
+    <div class="airportCode" :class="{page:page, 'expanded-mode': expanded, 'large-mode': large}">
         <InputGroup>
             <InputGroupAddon :class="{page:page}">{{label}}</InputGroupAddon>
             <InputText v-model="code" @input="onCodeUpdate"/>
@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { Airport } from '../../models/Airport.ts'
 import { getAirport } from '../../services/AirportService'
 import { LocalStoreService } from '../../services/LocalStoreService'
@@ -38,6 +38,7 @@ const props = defineProps({
     label: { type: String, default: 'Code'},
     page: {type: Boolean, default: false},
     expanded: {type: Boolean, default: false},
+    large: {type: Boolean, default: false},
 })
 const noAirport:string[] = []
 const invalidAirport:Airport = new Airport()
@@ -48,6 +49,7 @@ const name = ref('')
 const valid = ref(false)
 let timeoutId:ReturnType<typeof setTimeout>|undefined = undefined
 const toaster = useToaster( useToast())
+let unsubscribe: (() => void) | undefined = undefined
 
 async function loadProps(props:any) {
     // console.log('[AirportInput.loadProps]', props)
@@ -71,6 +73,11 @@ onMounted(() => {
     loadProps(props)
     sessionAirports.addListener(refreshAirportList)
     refreshAirportList()
+    unsubscribe = LocalStoreService.subscribe(refreshAirportList)
+})
+
+onUnmounted(() => {
+    if (unsubscribe) unsubscribe()
 })
 
 watch( props, async() => {
@@ -217,5 +224,33 @@ function refreshAirportList() {
     display: flex;
     justify-content: space-between;
     height: 22px;
+}
+
+/* Expanded Mode Styles */
+.airportCode.large-mode {
+    grid-template-columns: 150px auto;
+}
+
+.airportCode.large-mode .nameGroup {
+    height: 2.5rem;
+    align-items: center;
+}
+
+.airportCode.large-mode .airportName {
+    font-size: 1.2rem;
+    line-height: 1.2;
+    height: auto;
+}
+
+.airportCode.large-mode :deep(.p-component),
+.airportCode.large-mode :deep(.p-inputgroup-addon) {
+    font-size: 1.2rem;
+    height: 2.5rem;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.airportCode.large-mode :deep(.p-inputgroup-addon) {
+    width: auto;
+    min-width: 3rem; 
 }
 </style>
