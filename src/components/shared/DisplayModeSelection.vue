@@ -45,8 +45,8 @@ function onChoose(mode:string) {
 <style scoped>
 .modesList {
     display: flex;
-    flex-flow: column;
-    align-items: center;
+    flex-flow: row wrap;
+    justify-content: center;
     padding: 10px;
     gap: 5px;
 }
@@ -58,7 +58,8 @@ function onChoose(mode:string) {
     display: flex;
     gap: 5px;
     align-items: center;
-    width: 100%;
+    width: auto;
+    flex: 1 0 auto;
 }
 .expandable {
     cursor: pointer;
@@ -76,6 +77,7 @@ function onChoose(mode:string) {
     background-color: var(--bg-secondary-hover);
 }
 .eitherOr {
-    width: 150px;
+    width: auto;
+    flex: 0 0 auto;
 }
 </style>

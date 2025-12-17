@@ -1,42 +1,35 @@
 <template>
     <div class="airport-settings">
-        <!-- Display Mode Section -->
-        <div class="section-title">Display Mode</div>
-        <DisplayModeSelection v-model="currentMode" :modes="modesList" :expandable="true" :expanded="expanded"
-            @expand="onExpand" />
-
         <!-- Airport Section -->
-        <div class="section-title">Airport</div>
+        <Separator name="Airport" />
         <div class="airport-selection">
-            <AirportInput :code="airportCode" :auto="true" :expanded="!runwaySelection" @valid="loadAirportData"
+            <AirportInput :code="airportCode" :auto="true" :expanded="true"
+                @valid="loadAirportData"
                 @invalid="onInvalidAirport" />
-            
-            <div class="recent-airports" v-if="recentAirports.length > 0">
-                <span class="recent-label">Recent:</span>
-                <div class="recent-list">
-                    <Button v-for="code in recentAirports" :key="code" :label="code" class="p-button-sm p-button-outlined"
-                        @click="selectRecent(code)" />
-                </div>
-            </div>
         </div>
 
         <ProgressSpinner v-if="loading" class="spinner"></ProgressSpinner>
         
         <!-- Runway & Pattern Section -->
-        <div v-else-if="validAirport && runwaySelection" class="rwyChoices">
-            <div class="miniSection">Runway</div>
-            <div class="rwySelector" title="Select 1 or 2 runways">
-                <Button v-for="rwy in rwyList" :key="rwy.name" :label="rwy.name" class="sign"
-                    :severity="selectedRwyNames.includes(rwy.name) ? 'primary' : 'secondary'"
-                    @click="selectRunway(rwy.name)"></Button>
+        <div v-else class="rwyChoices">
+            <Separator name="Runway(s)" />
+            <div v-if="validAirport">
+                <div class="rwySelector" title="Select 1 or 2 runways">
+                    <Button v-for="rwy in rwyList" :key="rwy.name" :label="rwy.name" class="sign"
+                        :severity="selectedRwyNames.includes(rwy.name) ? 'primary' : 'secondary'"
+                        @click="selectRunway(rwy.name)"></Button>
+                <div class="rwyOrientation">
+                    <EitherOr v-if="validAirport" v-model="verticalOrientation" either="Vertical" or="Magnetic"
+                        class="eoOrientation" />
+                </div>
+                </div>
+            </div>
+            <div v-else class="centered">
+                <span>Select Airport to view runways</span>
             </div>
             
-            <div class="rwyOrientation">
-                <EitherOr v-if="validAirport" v-model="verticalOrientation" either="Vertical" or="Magnetic"
-                    class="eoOrientation" />
-            </div>
             
-            <div class="miniSection">Traffic Pattern</div>
+            <Separator name="Traffic Pattern" />
             <OneChoice v-if="validAirport" v-model="patternChoice" :choices="patternChoices" :thinpad="true"
                 class="ocTP" />
             
@@ -45,17 +38,23 @@
                     class="eoHeadings" />
             </div>
         </div>
+        <!-- Display Mode Section -->
+        <Separator name="Display Mode" class="separator" />
+        <DisplayModeSelection v-model="currentMode" :modes="modesList" :expandable="true" :expanded="expanded"
+            @expand="onExpand" />
+
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed, inject } from 'vue';
 import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import AirportInput from '../shared/AirportInput.vue';
 import EitherOr from '../shared/EitherOr.vue';
 import OneChoice from '../shared/OneChoice.vue';
+import Separator from '../../components/shared/Separator.vue';
 
 import { Airport } from '../../models/Airport';
 import { AirportTileConfig } from './AirportTileConfig';
@@ -63,25 +62,26 @@ import { Runway as AirportRunway } from '../../models/Airport';
 import { OneChoiceValue } from '../../models/OneChoiceValue';
 import { RunwayOrientation } from './RunwayOrientation';
 import { DisplayModeAirport, DisplayModeChoice } from '../../models/DisplayMode';
-import { LocalStoreService } from '../../services/LocalStoreService';
 import { getAirport } from '../../services/AirportService';
+import { TileData } from '../../models/TileData';
 
 const props = defineProps({
-    config: { type: AirportTileConfig, required: true },
-    expanded: { type: Boolean, default: false } // Passed from parent if needed
+    tileData: { type: TileData, required: true },
 });
 
-const emits = defineEmits(['update', 'change']);
+const emits = defineEmits(['update']);
+
+const tileData = ref<TileData>(props.tileData);
 
 // State
 const currentMode = ref(DisplayModeAirport.RunwaySketch);
+const expanded = ref(false);
 const airportCode = ref('');
 const airport = ref<Airport>(new Airport());
 const validAirport = ref(false);
 const loading = ref(false);
 
 // Runway/Pattern State
-const runwaySelection = ref(false);
 const rwyList = ref<AirportRunway[]>([]);
 const selectedRwyNames = ref<string[]>([]);
 const verticalOrientation = ref(true);
@@ -103,45 +103,38 @@ const patternChoices = [
     new OneChoiceValue('None', 5, 'None'),
 ];
 
-const recentAirports = ref<string[]>([]);
-
 // Initialization
 onMounted(() => {
-    loadConfig(props.config);
-    loadRecents();
+    loadFromTileData(props.tileData);
 });
 
-watch(() => props.config, (newConfig) => {
-    loadConfig(newConfig);
-});
+watch(() => props.tileData, (newTileData) => {
+    loadFromTileData(newTileData);
+}, { deep: true });
 
 // Watch for changes to emit update candidates
 watch([currentMode, airportCode, selectedRwyNames, verticalOrientation, showHeadings, patternChoice], () => {
     emitUpdate();
 });
 
-function loadRecents() {
-    recentAirports.value = LocalStoreService.airportRecentsGet().slice(0, 5);
-}
-
-function selectRecent(code: string) {
-    airportCode.value = code;
-    // AirportInput will trigger validation
-}
-
-function loadConfig(config: AirportTileConfig) {
+function loadFromTileData(tile: TileData) {
+    if (!tile) return;
+    const config = tile.data as AirportTileConfig;
     if (!config) return;
 
-    currentMode.value = config.mode;
+    // load config.mode or default to RunwaySketch
+    currentMode.value = config.mode || DisplayModeAirport.RunwaySketch;
+    expanded.value = tile.span2;
+
     airportCode.value = config.code;
-    selectedRwyNames.value = [...config.rwys];
+    // if config.rwys is iterable, convert to array
+    const rwyIterable = config.rwys && Symbol.iterator in Object(config.rwys);
+    selectedRwyNames.value = rwyIterable ? [...config.rwys] : [];
     verticalOrientation.value = config.rwyOrientation === RunwayOrientation.Vertical;
     showHeadings.value = config.headings;
     
     const foundPattern = patternChoices.find(p => p.value === config.pattern);
     if (foundPattern) patternChoice.value = foundPattern;
-
-    runwaySelection.value = config.mode === DisplayModeAirport.RunwaySketch;
 
     if (config.code) {
         // Fetch airport data to populate lists
@@ -157,6 +150,7 @@ function loadConfig(config: AirportTileConfig) {
 
 function loadAirportData(newAirport: Airport) {
     airport.value = newAirport;
+    airportCode.value = newAirport.code;
     rwyList.value = newAirport.rwys;
     validAirport.value = true;
     
@@ -183,31 +177,37 @@ function selectRunway(name: string) {
 }
 
 function onExpand(val: boolean) {
-    // Just pass up if needed, or handle locally if strictly display mode related?
-    // DisplayModeSelection emits check/uncheck of "Wide"
-    // Might need to bubble this up if Config stores expansion state separate from Span2?
-    // TileData has span2. AirportTileConfig doesn't seem to store expanded state directly?
-    // Checking AirportTile.vue: expanded is separate ref. saving config emits TileData with expanded.
-    // So we should probably capture this.
-    emits('change', { expanded: !val }); // DisplayModeSelection logic: notExpanded -> expanded
+    expanded.value = val;
+    emitUpdate(); 
 }
 
 function emitUpdate() {
     // Build new config object
     const orientation = verticalOrientation.value ? RunwayOrientation.Vertical : RunwayOrientation.Magnetic;
     
+    // Check if original corners exist in data, else default
+    const originalCorners = (props.tileData.data as AirportTileConfig)?.corners;
+
     const newConfig = new AirportTileConfig(
         airportCode.value,
         selectedRwyNames.value,
         patternChoice.value.value,
-        props.config.corners, // Preserve corners
+        originalCorners, 
         orientation,
         showHeadings.value,
-        currentMode.value
+        currentMode.value,
     );
 
-    emits('update', newConfig);
+    tileData.value.data = newConfig;
+    tileData.value.span2 = expanded.value;
+
+    if (tileSettingsUpdate) {
+        tileSettingsUpdate(tileData.value);
+    }
 }
+
+const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void) | undefined;
+
 
 </script>
 
@@ -216,12 +216,6 @@ function emitUpdate() {
     display: flex;
     flex-direction: column;
     gap: 15px;
-}
-
-.section-title {
-    font-weight: bold;
-    border-bottom: 1px solid #eee;
-    margin-bottom: 5px;
 }
 
 .airport-selection {
@@ -253,13 +247,6 @@ function emitUpdate() {
     gap: 10px;
 }
 
-.miniSection {
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-align: center;
-    margin-top: 10px;
-}
-
 .rwySelector {
     display: flex;
     flex-wrap: wrap;
@@ -275,5 +262,9 @@ function emitUpdate() {
 .rwyOrientation {
     display: flex;
     justify-content: center;
+}
+
+.centered {
+    text-align: center;
 }
 </style>

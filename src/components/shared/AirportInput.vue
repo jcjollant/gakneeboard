@@ -12,6 +12,7 @@
             <div v-for="a in airports" class="recentAirport" @click="onRecentAirport(a)">{{ a }}</div>
         </div>
         <div v-if="expanded" class="recentAirportList expanded">
+            <span>Recent:</span>
             <div v-for="a in airports" class="recentAirport" @click="onRecentAirport(a)">{{ a }}</div>
         </div>
     </div>
@@ -139,7 +140,7 @@ function onRecentAirport(airportCode:string) {
 }
 
 function refreshAirportList() {
-    airports.value =  LocalStoreService.airportRecentsGet().sort();
+    airports.value =  LocalStoreService.airportRecentsGet(5).sort();
 }
 
 </script>
@@ -168,7 +169,7 @@ function refreshAirportList() {
 .recentAirport {
     border-radius: 3px;
     color: white;
-    background-color: var(--bg);
+    background-color: var(--bg-secondary);
     cursor: pointer;
     padding: 0 5px;
 }
@@ -184,6 +185,9 @@ function refreshAirportList() {
     gap: 5px;
     align-items: center;
     flex-wrap: wrap;
+}
+.recentAirportList.expanded {
+    padding-top: 5px;
 }
 .valid {
     font-weight: bold;

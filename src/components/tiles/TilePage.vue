@@ -9,10 +9,11 @@
             :tile="editingTileData" 
             :canApply="true"
             :index="editingTileIndex"
+            :help="tileLinks?.help"
+            :video="tileLinks?.video"
              @close="onCloseSettings" @apply="onApplySettings">
             <component :is="settingsComponent" 
-                :config="editingTileData.data" 
-                :expanded="editingTileData.span2"
+                :tileData="editingTileData" 
                 @update="onSettingsUpdate"
                 @change="onSettingsChange" />
         </TileSettings>
@@ -25,11 +26,11 @@ import { useConfirm } from "primevue/useconfirm";
 import { TileData } from '../../models/TileData';
 import { TileType } from '../../models/TileType';
 import { TemplateFormat } from '../../models/TemplateFormat';
-import { AirportTileConfig } from '../airport/AirportTileConfig';
 
 import Tile from './Tile.vue'
 import TileSettings from './TileSettings.vue';
 import AirportTileSettings from '../airport/AirportTileSettings.vue';
+import { UserUrl } from '../../lib/UserUrl';
 
 const confirm = useConfirm()
 const emits = defineEmits(['update'])
@@ -47,15 +48,16 @@ const editingTileIndex = ref(-1);
 const editingTileData = ref<TileData | null>(null);
 const pendingConfig = ref<any>(null);
 
+// this is how we pick the correct content
 const settingsComponent = computed(() => {
-    if (!editingTileData.value) return null;
-    switch (editingTileData.value.name) {
-        case TileType.airport:
-            return AirportTileSettings;
-        // add other cases here
-        default:
-            return null;
-    }
+  if (!editingTileData.value) return null;
+  switch (editingTileData.value.name) {
+    case TileType.airport:
+      return AirportTileSettings;
+    // add other cases here
+    default:
+      return null;
+  }
 });
 
 function loadProps(props:any) {
@@ -112,56 +114,50 @@ function onUpdate(index:number, newTileData:TileData) {
 }
 
 function onSettings(index: number, tileData: TileData) {
-    editingTileIndex.value = index;
-    editingTileData.value = TileData.copy(tileData); // Working copy
-    pendingConfig.value = null;
+  editingTileIndex.value = index;
+  editingTileData.value = TileData.copy(tileData); // Working copy
+  pendingConfig.value = null;
 }
 
 function onCloseSettings() {
-    editingTileIndex.value = -1;
-    editingTileData.value = null;
-    pendingConfig.value = null;
+  editingTileIndex.value = -1;
+  editingTileData.value = null;
+  pendingConfig.value = null;
 }
 
 function onSettingsUpdate(newConfig: any) {
-    // this comes from the child component inside the overlay
-    pendingConfig.value = newConfig; // Store temporarily until Apply
+  // this comes from the child component inside the overlay
+  pendingConfig.value = newConfig; // Store temporarily until Apply
 }
+
+// Help URL Centralized Logic
+const tileUrls: Record<string, { help?: string, video?: string }> = {
+    [TileType.airport]: {
+        help: UserUrl.airportTileGuide,
+        video: UserUrl.airportTileVideo
+    },
+}
+
+const tileLinks = computed(() => {
+  // console.debug('[TilePage.tileLinks]', editingTileData.value)
+  if (!editingTileData.value) return undefined;
+  return tileUrls[editingTileData.value.name];
+});
 
 function onSettingsChange(change: any) {
-    if (editingTileData.value && change) {
-        if ('expanded' in change) {
-            editingTileData.value.span2 = change.expanded;
-        }
-        // Handle other changes if necessary
-        // Note: we are not updating the main tiles array yet, so background won't change until Apply.
-        // If live preview is desired, we would need to update tiles[editingTileIndex.value] here,
-        // and handle Revert in onCloseSettings. 
-        // For now, let's keep it safe: changes apply on 'Apply'.
-        // But wait, if we don't update main tiles, the user won't see the effect of 'Wide'
-        // until they hit Apply. This might be confusing for 'Wide' button.
-        // However, standard Apply/Cancel semantics imply this.
+  if (editingTileData.value && change) {
+    if ('expanded' in change) {
+      editingTileData.value.span2 = change.expanded;
     }
+  }
 }
 
-function onApplySettings() {
-    if (editingTileIndex.value >= 0 && (pendingConfig.value || editingTileData.value)) {
-        // Update the tile data with new config
-        const updatedTile = TileData.copy(tiles.value[editingTileIndex.value]);
-        
-        // Merge pending config if any
-        if (pendingConfig.value) {
-            updatedTile.data = pendingConfig.value; 
-        }
-        
-        // Merge changes from editingTileData (like span2)
-        if (editingTileData.value) {
-            updatedTile.span2 = editingTileData.value.span2;
-        }
-        
-        onUpdate(editingTileIndex.value, updatedTile);
-    }
-    onCloseSettings();
+function onApplySettings(newTileData: TileData) {
+  console.debug('[TilePage.onApplySettings]', editingTileIndex.value, pendingConfig.value, editingTileData.value)
+  if(editingTileIndex.value >= 0) {
+    onUpdate(editingTileIndex.value, newTileData);
+  }
+  onCloseSettings();
 }
 
 function resolveMergedTiles() {
