@@ -62,6 +62,7 @@ function onUpdateVisible(val: boolean) {
 
 // Provide a method for children to communicate updates
 function handleChildUpdate(data: TileData) {
+    // Refresh the temporary editing tile data which may or may not be applied
     editingTileData.value = data;
     // console.log('[TileSettings] child update', data);
 }
