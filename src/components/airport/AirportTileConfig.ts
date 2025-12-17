@@ -1,10 +1,11 @@
 import { DisplayModeAirport } from "../../models/DisplayMode";
 import { RunwayOrientation } from "./RunwayOrientation";
+import { TrafficPatternDisplay } from "../../models/TrafficPatternDisplay";
 
 export class AirportTileConfig {
   code: string;
   rwys: string[];
-  pattern: number;
+  pattern: TrafficPatternDisplay;
   corners: string[];
   rwyOrientation: RunwayOrientation;
   headings: boolean;
@@ -13,7 +14,8 @@ export class AirportTileConfig {
   constructor(
     code: string = "",
     rwys: string[] = [],
-    pattern: number = 0,
+    pattern: TrafficPatternDisplay = TrafficPatternDisplay.Entry45,
+
     corners: string[] = [],
     rwyOrientation: RunwayOrientation = RunwayOrientation.Vertical,
     headings: boolean = true,

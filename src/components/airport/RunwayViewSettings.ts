@@ -1,15 +1,16 @@
 import { Runway } from "../../models/Airport";
 import { RunwayOrientation } from "./RunwayOrientation";
+import { TrafficPatternDisplay } from "../../models/TrafficPatternDisplay";
 
 export class RunwayViewSettings {
-    static defaultOrientation:string = 'vertical'
-    runway: Runway|undefined
-    patternMode: number
+    static defaultOrientation: string = 'vertical'
+    runway: Runway | undefined
+    patternMode: TrafficPatternDisplay
     orientation: RunwayOrientation
-    label: string|undefined
+    label: string | undefined
     headings: boolean
 
-    constructor(runway:Runway|undefined = undefined, patternMode:number = 0, orientation:RunwayOrientation = RunwayOrientation.Vertical, label:string|undefined = undefined, headings:boolean = true) {
+    constructor(runway: Runway | undefined = undefined, patternMode: TrafficPatternDisplay = TrafficPatternDisplay.Entry45, orientation: RunwayOrientation = RunwayOrientation.Vertical, label: string | undefined = undefined, headings: boolean = true) {
         this.runway = runway
         this.patternMode = patternMode
         this.orientation = orientation
