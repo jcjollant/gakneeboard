@@ -228,7 +228,7 @@ function refreshAirportList() {
 
 /* Expanded Mode Styles */
 .airportCode.large-mode {
-    grid-template-columns: 150px auto;
+    grid-template-columns: 11rem auto;
 }
 
 .airportCode.large-mode .nameGroup {
