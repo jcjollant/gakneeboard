@@ -1,9 +1,9 @@
 <template>
     <div class="airport-settings">
         <!-- Airport Section -->
-        <Separator name="Airport" />
+        <!-- <Separator name="Airport" /> -->
         <div class="airport-selection">
-            <AirportInput :code="airportCode" :auto="true" :expanded="true"
+            <AirportInput :code="airportCode" :auto="true" :expanded="true" :large="true"
                 @valid="loadAirportData"
                 @invalid="onInvalidAirport" />
         </div>
@@ -15,9 +15,14 @@
             <Separator name="Runway(s)" />
             <div v-if="validAirport">
                 <div class="rwySelector" title="Select 1 or 2 runways">
-                    <Button v-for="rwy in rwyList" :key="rwy.name" :label="rwy.name" class="sign"
+                    <Button v-for="rwy in rwyList" :key="rwy.name" class="sign"
                         :severity="selectedRwyNames.includes(rwy.name) ? 'primary' : 'secondary'"
-                        @click="selectRunway(rwy.name)"></Button>
+                        @click="selectRunway(rwy.name)">
+                        <div class="rwy-btn-content">
+                            <span class="rwy-name">{{ rwy.name }}</span>
+                            <span class="rwy-len">{{ Formatter.feet(rwy.length) }}</span>
+                        </div>
+                    </Button>
                 <div class="rwyOrientation">
                     <EitherOr v-if="validAirport" v-model="verticalOrientation" either="Vertical" or="Magnetic"
                         class="eoOrientation" />
@@ -30,16 +35,17 @@
             
             
             <Separator name="Traffic Pattern" />
-            <OneChoice v-if="validAirport" v-model="patternChoice" :choices="patternChoices" :thinpad="true"
-                class="ocTP" />
-            
-            <div class="rwyOrientation">
-                <EitherOr v-if="validAirport" v-model="showHeadings" either="Show Hdg" or="Hide Hdg"
-                    class="eoHeadings" />
+            <div class="pattern-selector">
+                <Button v-for="option in patternOptions" :key="option.value" 
+                    :severity="patternChoice === option.value ? 'primary' : 'secondary'"
+                    @click="patternChoice = option.value"
+                    class="pattern-btn">
+                    {{ option.label }}
+                </Button>
             </div>
         </div>
         <!-- Display Mode Section -->
-        <Separator name="Display Mode" class="separator" />
+        <Separator name="Display" class="separator" />
         <DisplayModeSelection v-model="currentMode" :modes="modesList" :expandable="true" :expanded="expanded"
             @expand="onExpand" />
 
@@ -53,13 +59,15 @@ import ProgressSpinner from 'primevue/progressspinner';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import AirportInput from '../shared/AirportInput.vue';
 import EitherOr from '../shared/EitherOr.vue';
-import OneChoice from '../shared/OneChoice.vue';
+
 import Separator from '../../components/shared/Separator.vue';
 
 import { Airport } from '../../models/Airport';
 import { AirportTileConfig } from './AirportTileConfig';
 import { Runway as AirportRunway } from '../../models/Airport';
-import { OneChoiceValue } from '../../models/OneChoiceValue';
+import { Formatter } from '../../lib/Formatter';
+
+import { TrafficPatternDisplay, TrafficPatternDisplayLabels } from '../../models/TrafficPatternDisplay';
 import { RunwayOrientation } from './RunwayOrientation';
 import { DisplayModeAirport, DisplayModeChoice } from '../../models/DisplayMode';
 import { getAirport } from '../../services/AirportService';
@@ -86,7 +94,7 @@ const rwyList = ref<AirportRunway[]>([]);
 const selectedRwyNames = ref<string[]>([]);
 const verticalOrientation = ref(true);
 const showHeadings = ref(true);
-const patternChoice = ref<OneChoiceValue>(new OneChoiceValue('T+B', 0, 'Both runways with 45° entries')); // Default
+const patternChoice = ref<TrafficPatternDisplay>(TrafficPatternDisplay.Entry45); // Default
 
 // Lists
 const modesList = ref([
@@ -94,14 +102,10 @@ const modesList = ref([
     new DisplayModeChoice('Airport Diagram', DisplayModeAirport.Diagram, true, "Small Airport Diagram with airport data"),
 ]);
 
-const patternChoices = [
-    new OneChoiceValue('T+B', 0, 'Both runways with 45° entries'),
-    new OneChoiceValue('T/45', 1, 'Top Runway, 45° entry'),
-    new OneChoiceValue('T/M', 2, 'Top Runway, Midfield'),
-    new OneChoiceValue('B/45', 3, 'Bottom Runway, 45° entry'),
-    new OneChoiceValue('B/M', 4, 'Bottom Runway, Midfield'),
-    new OneChoiceValue('None', 5, 'None'),
-];
+const patternOptions = Object.values(TrafficPatternDisplay).map(value => ({
+    label: TrafficPatternDisplayLabels[value],
+    value: value
+}));
 
 // Initialization
 onMounted(() => {
@@ -123,18 +127,33 @@ function loadFromTileData(tile: TileData) {
     if (!config) return;
 
     // load config.mode or default to RunwaySketch
-    currentMode.value = config.mode || DisplayModeAirport.RunwaySketch;
+    const newMode = config.mode || DisplayModeAirport.RunwaySketch;
+    if (currentMode.value !== newMode) {
+        currentMode.value = newMode;
+    }
     expanded.value = tile.span2;
 
     airportCode.value = config.code;
     // if config.rwys is iterable, convert to array
     const rwyIterable = config.rwys && Symbol.iterator in Object(config.rwys);
-    selectedRwyNames.value = rwyIterable ? [...config.rwys] : [];
+    const newRwys = rwyIterable ? [...config.rwys] : [];
+
+    // Check for equality to avoid infinite recursion
+    const isSame = selectedRwyNames.value.length === newRwys.length && 
+                   selectedRwyNames.value.every((v, i) => v === newRwys[i]);
+
+    if (!isSame) {
+        selectedRwyNames.value = newRwys;
+    }
     verticalOrientation.value = config.rwyOrientation === RunwayOrientation.Vertical;
     showHeadings.value = config.headings;
     
-    const foundPattern = patternChoices.find(p => p.value === config.pattern);
-    if (foundPattern) patternChoice.value = foundPattern;
+    const validValues: string[] = Object.values(TrafficPatternDisplay);
+    if (config.pattern && validValues.includes(config.pattern)) {
+        patternChoice.value = config.pattern as TrafficPatternDisplay;
+    } else {
+        patternChoice.value = TrafficPatternDisplay.Entry45;
+    }
 
     if (config.code) {
         // Fetch airport data to populate lists
@@ -191,7 +210,7 @@ function emitUpdate() {
     const newConfig = new AirportTileConfig(
         airportCode.value,
         selectedRwyNames.value,
-        patternChoice.value.value,
+        patternChoice.value,
         originalCorners, 
         orientation,
         showHeadings.value,
@@ -259,6 +278,22 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
     font-size: 0.8rem;
 }
 
+.rwy-btn-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 10px;
+}
+
+.rwy-name {
+    font-size: 1rem;
+}
+
+.rwy-len {
+    font-size: 0.7rem;
+    font-weight: normal;
+}
+
 .rwyOrientation {
     display: flex;
     justify-content: center;
@@ -266,5 +301,17 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
 
 .centered {
     text-align: center;
+}
+
+.pattern-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+}
+
+.pattern-btn {
+    padding: 4px 12px;
+    font-size: 0.9rem;
 }
 </style>
