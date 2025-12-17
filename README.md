@@ -9,7 +9,18 @@ Start on local network (to allow access from other devices on the network). This
 `npm run dev -- --host`
 
 # Testing
+# Testing
 [See Tests Readme](test/Readme.md) 
+
+## Git Hooks
+This project uses a local git hook to run tests before pushing.
+To enable it manually:
+```bash
+printf '#!/bin/sh\nnpm test\n' > .git/hooks/pre-push
+chmod +x .git/hooks/pre-push
+```
+The hook is located in `.git/hooks/pre-push` and is **local to your machine**.
+
 
 # Release
 ## Checklist
