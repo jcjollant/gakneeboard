@@ -15,9 +15,9 @@
                 <div v-else><!-- Runway Sketch(es) -->
                     <div class="airportCode">{{config.code.toUpperCase()}}</div>
                     <div v-if="runwayViews.length==1" class="flex">
-                        <RunwaySketch :settings="runwayViews[0]" class="clickable oneRunway" @click="onHeaderClick()"/>
+                        <RunwaySketch :settings="runwayViews[0]" class="oneRunway"/>
                     </div>
-                    <div v-else-if="runwayViews.length==2" class="clickable twoRunways" @click="onHeaderClick()">
+                    <div v-else-if="runwayViews.length==2" class="twoRunways">
                         <RunwaySketch :settings="runwayViews[0]" :small="true" class="smallRunway"/>
                         <RunwaySketch :settings="runwayViews[1]" :small="true" class="smallRunway"/>
                     </div>
@@ -55,6 +55,7 @@ import { RunwayOrientation } from './RunwayOrientation.ts';
 import { RunwayViewSettings } from './RunwayViewSettings.ts';
 import { TileData } from '../../models/TileData.ts';
 import { TileType } from '../../models/TileType.ts';
+import { TrafficPatternDisplay } from '../../models/TrafficPatternDisplay';
 
 import Corner from './Corner.vue';
 import CornerConfig from './CornerConfig.vue';
@@ -81,8 +82,10 @@ const aptDiagram = ref('')
 const airportData = ref<Airport|undefined>(undefined)
 const runwayViews = ref(<RunwayViewSettings[]>[])
 
+
+
 const defaultCornerFields = ['weather','twr','field','#FGND','#FCD/P','tpa','?Custom?Custom','#FUNICOM']
-const defaultPatternMode = 0
+const defaultPatternMode = TrafficPatternDisplay.Entry45
 const defaultHeadings = true
 const defaultTitle = 'Airport'
 const config = ref<AirportTileConfig>(new AirportTileConfig())
