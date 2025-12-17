@@ -69,4 +69,18 @@ describe('LocalStoreService', () => {
             expect(result).toEqual(['KSEA', 'KPAE', 'KBFI']);
         });
     });
+
+    describe('airportRecentsUpdate', () => {
+        test('notifies listeners', async () => {
+            const listener = jest.fn();
+            const unsubscribe = LocalStoreService.subscribe(listener);
+
+            await LocalStoreService.airportRecentsUpdate('KLAX');
+
+            expect(listener).toHaveBeenCalled();
+
+            unsubscribe();
+        });
+    });
 });
+

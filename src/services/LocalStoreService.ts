@@ -114,6 +114,7 @@ export class LocalStoreService {
             }
             // save the new list
             localStorage.setItem(LocalStoreService.recentAirports, recentAirports)
+            LocalStoreService.notify()
             resolve(true)
         })
     }
