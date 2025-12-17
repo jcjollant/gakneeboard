@@ -1,6 +1,6 @@
 <template>
     <div v-if="!tile || tile.name==''" class="tile">
-        <Header :title="title" :replace="restorable" :clickable="restorable" :displayMode="false"
+        <Header :title="title" :replace="restorable" :clickable="restorable" :leftButton="''"
             @replace="tile=previousTile"></Header>
         <div class="tileContent list">
             <FAButton v-for="tile in knownTiles" class="tileButton"
@@ -10,7 +10,7 @@
         </div>
     </div>
     <AirportTile v-else-if="tile.name==TileType.airport" :params="tile.data" :span2="tile.span2"
-        @replace="onReplace" @update="onUpdate" />
+        @replace="onReplace" @update="onUpdate" @settings="emits('settings',tile)"/>
     <AtisTile v-else-if="tile.name==TileType.atis" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate"/>
     <ChecklistTile v-else-if="tile.name==TileType.checklist" :params="tile.data" 
@@ -52,7 +52,7 @@ import NavlogTile from '../navlog/NavlogTile.vue';
 import NotesTile from '../notes/NotesTile.vue';
 import VfrTile from '../vfr/VfrTile.vue';
 
-const emits = defineEmits(['update'])
+const emits = defineEmits(['update','settings'])
 
 const props = defineProps({
     tile: { type: Object, default: null},

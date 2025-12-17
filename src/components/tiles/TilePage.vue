@@ -2,17 +2,34 @@
     <div class="tiles pageTiles" :class="{'fullpage': isFullPage}">
         <Tile v-for="(tile,index) in tiles" v-show="!tile.hide" 
           :tile="tile" :class="[{'span-2':tile.span2},`tile${index}`]" 
-          @update="onUpdate(index,$event)" />
+          @update="onUpdate(index,$event)" 
+          @settings="onSettings(index, $event)"/>
+        
+        <TileSettings v-if="editingTileIndex >= 0 && editingTileData" 
+            :tile="editingTileData" 
+            :canApply="true"
+            :index="editingTileIndex"
+             @close="onCloseSettings" @apply="onApplySettings">
+            <component :is="settingsComponent" 
+                :config="editingTileData.data" 
+                :expanded="editingTileData.span2"
+                @update="onSettingsUpdate"
+                @change="onSettingsChange" />
+        </TileSettings>
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, shallowRef } from 'vue'
 import { useConfirm } from "primevue/useconfirm";
 import { TileData } from '../../models/TileData';
+import { TileType } from '../../models/TileType';
 import { TemplateFormat } from '../../models/TemplateFormat';
+import { AirportTileConfig } from '../airport/AirportTileConfig';
 
 import Tile from './Tile.vue'
+import TileSettings from './TileSettings.vue';
+import AirportTileSettings from '../airport/AirportTileSettings.vue';
 
 const confirm = useConfirm()
 const emits = defineEmits(['update'])
@@ -25,6 +42,21 @@ const isFullPage = computed(() => props.format === TemplateFormat.FullPage)
 const totalTiles = computed(() => isFullPage.value ? 12 : 6)
 const tiles=ref<TileData[]>([])
 
+// Settings State
+const editingTileIndex = ref(-1);
+const editingTileData = ref<TileData | null>(null);
+const pendingConfig = ref<any>(null);
+
+const settingsComponent = computed(() => {
+    if (!editingTileData.value) return null;
+    switch (editingTileData.value.name) {
+        case TileType.airport:
+            return AirportTileSettings;
+        // add other cases here
+        default:
+            return null;
+    }
+});
 
 function loadProps(props:any) {
   // console.log('[TilePage.loadProps]', typeof props.data, JSON.stringify(props.data))
@@ -77,6 +109,59 @@ function onUpdate(index:number, newTileData:TileData) {
 
   // resolveMergedTiles()
   emits('update', tiles.value)
+}
+
+function onSettings(index: number, tileData: TileData) {
+    editingTileIndex.value = index;
+    editingTileData.value = TileData.copy(tileData); // Working copy
+    pendingConfig.value = null;
+}
+
+function onCloseSettings() {
+    editingTileIndex.value = -1;
+    editingTileData.value = null;
+    pendingConfig.value = null;
+}
+
+function onSettingsUpdate(newConfig: any) {
+    // this comes from the child component inside the overlay
+    pendingConfig.value = newConfig; // Store temporarily until Apply
+}
+
+function onSettingsChange(change: any) {
+    if (editingTileData.value && change) {
+        if ('expanded' in change) {
+            editingTileData.value.span2 = change.expanded;
+        }
+        // Handle other changes if necessary
+        // Note: we are not updating the main tiles array yet, so background won't change until Apply.
+        // If live preview is desired, we would need to update tiles[editingTileIndex.value] here,
+        // and handle Revert in onCloseSettings. 
+        // For now, let's keep it safe: changes apply on 'Apply'.
+        // But wait, if we don't update main tiles, the user won't see the effect of 'Wide'
+        // until they hit Apply. This might be confusing for 'Wide' button.
+        // However, standard Apply/Cancel semantics imply this.
+    }
+}
+
+function onApplySettings() {
+    if (editingTileIndex.value >= 0 && (pendingConfig.value || editingTileData.value)) {
+        // Update the tile data with new config
+        const updatedTile = TileData.copy(tiles.value[editingTileIndex.value]);
+        
+        // Merge pending config if any
+        if (pendingConfig.value) {
+            updatedTile.data = pendingConfig.value; 
+        }
+        
+        // Merge changes from editingTileData (like span2)
+        if (editingTileData.value) {
+            updatedTile.span2 = editingTileData.value.span2;
+        }
+        
+        onUpdate(editingTileIndex.value, updatedTile);
+    }
+    onCloseSettings();
 }
 
 function resolveMergedTiles() {

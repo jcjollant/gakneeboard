@@ -3,18 +3,12 @@
     <div class="tile">
         <CornerConfig :event="cornerConfigEvent" :airport="airportData" :runway="mainRunway" :index="cornerConfigIndex"
             @selection="onCornerUpdate" />
-        <Header :title="title" :showReplace="editMode"
-            @replace="emits('replace')" @display="displaySelection=!displaySelection" @title="onHeaderClick()"></Header>
-        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList" :expandable="true" :expanded="expanded"
-            @expand="onExpand" @keep="displaySelection=false" />
-        <AirportEdit v-else-if="editMode" :airport="airportData" :config="config"
-            @close="onHeaderClick()" @update="onSettingsUpdate" />
-        <!-- <div class="compact" v-else-if="displayMode==DisplayModeAirport.FourRunways">
-            <FourRunways :rwySettings="rwySettings"/>
-        </div> -->
-        <div class="tileContent" v-else> <!-- Runway Sketch or Diagram -->
+        <Header :title="title" :showReplace="editMode" :leftButton="'settings'"
+            @replace="emits('replace')" @settings="emits('settings')" @title="onHeaderClick()"></Header>
+        
+        <div class="tileContent"> <!-- Runway Sketch or Diagram -->
             <div v-if="config?.code">
-                <div v-if="displayMode==DisplayModeAirport.Diagram" class="aptDiagram clickable" @click="onHeaderClick()">
+                <div v-if="config?.mode==DisplayModeAirport.Diagram" class="aptDiagram clickable" @click="onHeaderClick()">
                     <PlaceHolder v-if="!aptDiagram || aptDiagram=='dne'" title="No Diagram" subtitle="Consider sending feedback" />
                     <img v-else class="aptDiagram" :src="aptDiagram" />
                 </div>
@@ -62,18 +56,14 @@ import { RunwayViewSettings } from './RunwayViewSettings.ts';
 import { TileData } from '../../models/TileData.ts';
 import { TileType } from '../../models/TileType.ts';
 
-import AirportEdit from './AirportEdit.vue';
 import Corner from './Corner.vue';
 import CornerConfig from './CornerConfig.vue';
-import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../../components/shared/Header.vue'
 import PlaceHolder from '../../components/shared/PlaceHolder.vue'
 import RunwaySketch from './RunwaySketch.vue'
 
 const defaultMode = DisplayModeAirport.RunwaySketch
-const displayMode = ref(defaultMode)
-const displaySelection = ref(false)
-const emits = defineEmits(['replace','update'])
+const emits = defineEmits(['replace','update', 'settings'])
 const expanded = ref(false)
 const editMode = ref(false)
 const modesList = ref([
@@ -158,9 +148,9 @@ function loadProps(newProps:any) {
     // Rwy orientation
     propsConfig.rwyOrientation = params?.rwyOrientation ?? RunwayOrientation.Vertical;
 
-    // Sisplay mode
+    // Display mode
     propsConfig.mode = params?.mode ?? defaultMode
-    displayMode.value = propsConfig.mode;
+    // displayMode.value = propsConfig.mode;
     // console.debug('[AirportTile.loadProps] displayMode', displayMode.value)
 
     expanded.value = newProps.span2
@@ -206,18 +196,7 @@ watch( props, async() => {
     loadProps(props)
 })
 
-watch(displayMode, (newValue,oldValue) => {
-    // console.debug('[AirportTile.displayMode]', displayMode.value, newValue, oldValue)
-    if(newValue == oldValue) return;
-    
-    displaySelection.value = false;
-    config.value.mode = newValue;
-
-    // Edit mode is only needed when there is no airport
-    editMode.value = !airportData.value
-
-    saveConfig()
-})
+// Removed watch(displayMode) since we don't have local display selection anymore
 
 // End of props management
 //--------------------------
@@ -258,16 +237,9 @@ function onExpand(newValue:boolean) {
 
 // Toggle between edit mode and current mode
 function onHeaderClick() {
-    // do not toggle edit mode during display selection
-    if(displaySelection.value) return;
-
-    if(editMode.value) { // exit edit mode
-        if( airportData.value){
-            airportCode.value = airportData.value.code
-        }
-    }  
-    editMode.value = !editMode.value
-    updateTitle()
+    // Header click logic simplified or removed since we use settings now
+    // Maybe just do nothing or bring up settings?
+        emits('settings')
 }    
 
 // Settings have been updated in edit mode
@@ -347,19 +319,9 @@ function saveConfig() {
     emits( 'update', new TileData( TileType.airport, config.value, expanded.value));
 }
 
-function updateTitle() {
-    if(editMode.value) {
-        if( displayMode.value == DisplayModeAirport.RunwaySketch){
-            title.value = 'Select Airport and Rwy'
-        } else {
-            title.value = "Select Airport"
-        }
-    } else if( airportData.value) {
-        title.value = airportData.value.name
-    } else {
-        title.value = 'Airport ?'
-    }
-}
+// function updateTitle() {
+//    deprecated
+// }
 
 </script>
 <style scoped>
