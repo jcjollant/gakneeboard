@@ -4,7 +4,7 @@
         <!-- <Separator name="Airport" /> -->
         <div class="airport-selection">
             <AirportInput :code="airportCode" :auto="true" :expanded="true" :large="true"
-                @valid="loadAirportData"
+                @valid="onUserSelectAirport"
                 @invalid="onInvalidAirport" />
         </div>
 
@@ -87,7 +87,9 @@ const expanded = ref(false);
 const airportCode = ref('');
 const airport = ref<Airport>(new Airport());
 const validAirport = ref(false);
+
 const loading = ref(false);
+const isInternalUpdate = ref(false);
 
 // Runway/Pattern State
 const rwyList = ref<AirportRunway[]>([]);
@@ -118,7 +120,9 @@ watch(() => props.tileData, (newTileData) => {
 
 // Watch for changes to emit update candidates
 watch([currentMode, airportCode, selectedRwyNames, verticalOrientation, showHeadings, patternChoice], () => {
-    emitUpdate();
+    if (!isInternalUpdate.value) {
+        emitUpdate();
+    }
 });
 
 function loadFromTileData(tile: TileData) {
@@ -167,16 +171,28 @@ function loadFromTileData(tile: TileData) {
     }
 }
 
+
+function onUserSelectAirport(newAirport: Airport) {
+    isInternalUpdate.value = true;
+    loadAirportData(newAirport);
+    
+    // Default to first runway if there is one
+    if (newAirport.rwys.length > 0) {
+        selectedRwyNames.value = [newAirport.rwys[0].name];
+    } else {
+        selectedRwyNames.value = [];
+    }
+    
+    isInternalUpdate.value = false;
+    emitUpdate();
+}
+
 function loadAirportData(newAirport: Airport) {
     airport.value = newAirport;
     airportCode.value = newAirport.code;
+    // selectedRwyNames.value = [];
     rwyList.value = newAirport.rwys;
     validAirport.value = true;
-    
-    // If no runways selected yet (and new airport), default to first
-    if (selectedRwyNames.value.length === 0 && newAirport.rwys.length > 0) {
-        selectedRwyNames.value = [newAirport.rwys[0].name];
-    }
 }
 
 function onInvalidAirport(code: string) {
