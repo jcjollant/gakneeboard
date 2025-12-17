@@ -85,10 +85,14 @@ export class LocalStoreService {
         }
     }
 
-    static airportRecentsGet(): string[] {
+    static airportRecentsGet(count?: number): string[] {
         let recentAirports = localStorage.getItem(LocalStoreService.recentAirports)
         if (recentAirports) {
-            return recentAirports.split('-')
+            const airports = recentAirports.split('-')
+            if (count && count > 0) {
+                return airports.slice(-count)
+            }
+            return airports
         } else {
             return []
         }
