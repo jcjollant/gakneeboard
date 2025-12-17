@@ -92,6 +92,7 @@ watch( props, async() => {
     font-size: 12px;
     border-radius: 2px;
     position:absolute;
+    background-color: white;
 }
 .headerButton:hover {
     background-color: darkblue;
