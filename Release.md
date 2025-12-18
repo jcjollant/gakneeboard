@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 12/17/2025 - 5.51.7 - Display mode selection bug fix
 ## 12/17/2025 - 5.51.6 - Runway selection bug fix
 ## 12/17/2025 - 5.51.5 - New AirportTile settings
 ## 12/16/2025 - 5.51.4 - User can empty airports cache from Session window

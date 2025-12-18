@@ -27,6 +27,10 @@ onMounted(() => {
     notExpanded.value = !props.expanded
 })
 
+watch(() => props.expanded, (newVal) => {
+    notExpanded.value = !newVal
+})
+
 watch(notExpanded, (newVal) => {
     // console.debug('[DisplayModeSelection.watch] expanded', !newVal)
     emits('expand', !newVal)
