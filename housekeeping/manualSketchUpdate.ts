@@ -7,23 +7,45 @@ dotenv.config()
 import { sql } from "@vercel/postgres";
 import { AirportSketch } from "../backend/AirportSketch";
 import { AirportDao } from "../backend/AirportDao";
+import * as fs from 'fs';
 
 const cycle = '2512'
 
 // declare and execute
 async function doIt() {
+    const args = process.argv.slice(2);
+    if (args.length >= 2) {
+        const airportCode = args[0];
+        const filePath = args[1];
+        console.log(`Manual update for ${airportCode} from ${filePath}`);
+
+        if (!fs.existsSync(filePath)) {
+            console.error(`File not found: ${filePath}`);
+            process.exit(1);
+        }
+
+        const buffer = fs.readFileSync(filePath);
+        try {
+            const url = await AirportSketch.save(airportCode, buffer);
+            console.log(`Successfully uploaded sketch for ${airportCode}: ${url}`);
+        } catch (error) {
+            console.error(`Failed to upload sketch for ${airportCode}`, error);
+        }
+        return;
+    }
+
     let updated = 0;
     const response = await sql`select * from airports where sketch ISNULL and version != -1`
     // const response = await sql`SELECT * FROM airports where sketch isnull and version=15`
     console.log('found rows', response.rowCount)
     await new Promise(resolve => setTimeout(resolve, 2000))
-    for(const row of response.rows) {
+    for (const row of response.rows) {
         const airport = AirportDao.parse(row)
         try {
             airport.code = row.code
             console.log('Getting', airport.code)
 
-            if(!airport.iap || airport.iap.length < 1) {
+            if (!airport.iap || airport.iap.length < 1) {
                 await AirportSketch.resolve(airport)
                 continue;
             }
@@ -38,7 +60,7 @@ async function doIt() {
             console.log('updated', updated, 'out of', response.rowCount)
             console.log('Waiting', time, 'ms')
             await new Promise(resolve => setTimeout(resolve, time))
-        } catch(err) {
+        } catch (err) {
             console.log("failed to process ", row.code)
         }
     }
