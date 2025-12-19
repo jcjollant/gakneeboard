@@ -41,6 +41,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { Checklist } from '../../models/Checklist'
+import { ChecklistService } from '../../services/ChecklistService'
 import { ChecklistPage } from '../../models/ChecklistPage'
 import { UserUrl } from '../../lib/UserUrl'
 import { TemplateFormat } from '../../models/TemplateFormat'
@@ -165,16 +166,15 @@ Create sections using '##Section Name':
 
 function onApply() {
     // turn textData into a list of items
-    const newData = { name: page.value.name}
+    const newData: any = { name: page.value.name}
 
     page.value.removeAllLists()
     for(let index = 0; index < columns.value.value; index++) {
-        const checklist = new Checklist()
-        checklist.parseEditor(textData.value[index])
+        const checklist = ChecklistService.parseEditor(textData.value[index])
         page.value.addList(checklist)
         
         const key = 'items' + (index == 0 ? '' : index + 1)
-        newData[key] = page.value.lists[index].toParams()
+        newData[key] = ChecklistService.toParams(page.value.lists[index])
     }
     // simplify values for theme and font
     newData['theme'] = theme.value.replace('theme-', '')
@@ -197,7 +197,7 @@ function onHeaderClick() {
     if(editMode.value) return;
 
     for(let index = 0; index < page.value.lists.length; index++) {
-        textData.value[index] = page.value.lists[index].toEditor()
+        textData.value[index] = ChecklistService.toEditor(page.value.lists[index])
     }
     nameBeforeEdit = page.value.name
     themeBeforeEdit = theme.value
@@ -205,7 +205,7 @@ function onHeaderClick() {
     editMode.value = true
 }
 
-function onThemeChange(newTheme) {
+function onThemeChange(newTheme: string) {
     theme.value = newTheme;
 }
 

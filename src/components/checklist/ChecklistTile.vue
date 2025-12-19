@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
 import { Checklist } from '../../models/Checklist'
+import { ChecklistService } from '../../services/ChecklistService'
 import { onMounted, ref, watch } from 'vue'
 import { UserUrl } from '../../lib/UserUrl'
 
@@ -60,9 +61,8 @@ function loadProps(newProps:any) {
     const params = newProps.params
     if (params) {
         // load params into checlist
-        const newList = new Checklist()
-        newList.parseParams(params.items);
-        checklist.value = newList;
+        // load params into checlist
+        checklist.value = ChecklistService.parseParams(params.items);
         // checklist name
         if (params.name) {
             title.value = params.name
@@ -90,9 +90,9 @@ watch(props, () => {
 function onApply() {
     // console.debug('[ChecklistTile.onApply] not implemented')
     // turn textData into a list of items
-    checklist.value.parseEditor(textData.value)
+    checklist.value = ChecklistService.parseEditor(textData.value)
     // console.debug('[CheclistPage.onApply]', JSON.stringify(items))
-    const newParams = { name: title.value, items: checklist.value.toParams() }
+    const newParams: any = { name: title.value, items: ChecklistService.toParams(checklist.value) }
     if( theme.value.startsWith('theme-')) {
         newParams['theme'] = theme.value.substring(6)
     }
@@ -114,14 +114,14 @@ function onHeaderClick() {
     if( !editMode.value) {
         nameBeforeEdit = title.value;
         themeBeforeEdit = theme.value;
-        textData.value = checklist.value.toEditor()
+        textData.value = ChecklistService.toEditor(checklist.value)
         editMode.value = true
     } else {
         editMode.value = false
     }
 }
 
-function onThemeChange(newTheme) {
+function onThemeChange(newTheme: string) {
     // console.log('[ChecklistTile.onThemeChange]', newTheme)
     theme.value = newTheme
 }
