@@ -92,12 +92,6 @@ describe('AirportService Tests', () => {
         expect(airports[1]?.asof).toBe(0)
     })
 
-    test('ICAOs are valid', () => {
-        expect(AirportService.getIcao('KRNTA')).toBeNull()
-        expect(AirportService.getIcao('KRNT')).toBe('KRNT')
-        expect(AirportService.getIcao('RNT')).toBe('KRNT')
-        expect(AirportService.getIcao('NT')).toBeNull()
-    })
 
     test('locId are valid', () => {
         expect(AirportService.getLocId('KRNTA')).toBeNull()

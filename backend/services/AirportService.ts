@@ -62,7 +62,7 @@ export class AirportService {
 
     /**
      * Evaluates whether an airport needs to be refreshed due to model change or effectiveDate
-     * @param code Clear Airport code
+     * @param code Clean Airport code
      * @param airports List of known airports
      * @returns The corresponding match, which could have an undefined Airport
      */
@@ -186,22 +186,6 @@ export class AirportService {
     }
 
 
-    /**
-     * Turn code into an ICAO code
-     * @param {*} code anything to be turned into an ICAO code
-     * @returns a four letter icao code or null if not valid
-    */
-    public static getIcao(code: string): string | null {
-        const output = null
-        if (AirportService.isValidCode(code)) {
-            if (code.length == 3) {
-                return ('K' + code.toUpperCase())
-            } else if (code.length == 4) {
-                return code.toUpperCase()
-            }
-        }
-        return null
-    }
 
     static getLocId(code: string) {
         const output = null
