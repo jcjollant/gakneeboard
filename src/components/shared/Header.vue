@@ -1,15 +1,17 @@
 <template>
     <div class="headerTitle" :class="{ clickable: clickable, left: left, stealth:stealth}">
         <div class="titleText" @click="emits('title')">{{ title }}</div>
-        <div v-if="leftButton=='display'" title="Change tile mode" class="displayButton headerButton" 
+        <div v-if="leftButton=='display'" :title="`Change ${type} Mode`" class="displayButton headerButton" 
             @click="emits('display')">
             <font-awesome-icon :icon="['fas','fa-display']" />
         </div>
-        <div v-if="leftButton=='settings'" title="Change tile settings" class="displayButton headerButton" 
+        <div v-else-if="leftButton=='settings'" 
+            :title="`Change ${type} Settings`" 
+            class="displayButton headerButton" 
             @click="emits('settings')">
-            <font-awesome-icon :icon="['fas','fa-cog']" />
+            <font-awesome-icon :icon="['fas','fa-gear']" />
         </div>
-        <div v-if="replace" :title="'Replace ' + (page ? 'Page' : 'Tile')" class="replaceButton headerButton" 
+        <div v-if="replace" :title="`Replace ${type}`" class="replaceButton headerButton" 
             @click.stop="emits('replace')">
             <font-awesome-icon :icon="['fas','fa-eject']" />
         </div>
@@ -17,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted,ref, watch } from 'vue';
+import { computed, onMounted,ref, watch } from 'vue';
 
 const emits = defineEmits(['display','replace','title','settings'])
 
@@ -38,6 +40,8 @@ const replace=ref(false)
 const hideReplace=ref(true)
 const left = ref(false)
 const stealth = ref(false)
+
+const type = computed(() => props.page ? 'Page' : 'Tile')
 
 onMounted( () => {
     updateProps(props)
