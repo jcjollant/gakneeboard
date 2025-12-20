@@ -120,8 +120,8 @@ const editorChecklist = computed({
         checklistData.value[choosenEditing.value.value] = val;
     }
 })
-const choiceEditorModeUi = new ChoiceColumnCount('UI', 0, 'UI Mode')
-const choiceEditorModeText = new ChoiceColumnCount('Text', 1, 'Text Mode')
+const choiceEditorModeUi = new ChoiceColumnCount('Visual', 0, 'Visual Editor')
+const choiceEditorModeText = new ChoiceColumnCount('Text', 1, 'Text Editor')
 const choosenEditorMode = ref(choiceEditorModeUi)
 const checklistEditorMode = computed(() => ['ui', 'text'][choosenEditorMode.value.value])
 
