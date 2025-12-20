@@ -22,7 +22,7 @@ export class AirportService {
      * @throws 400 if code is invalid 
     */
     public static async createAirport(request: AirportCreationRequest): Promise<Airport> {
-        if (!Airport.isValidCode(request.code)) {
+        if (!AirportService.isValidCode(request.code)) {
             throw new GApiError(400, "Invalid Airport Code");
         }
 
@@ -39,11 +39,20 @@ export class AirportService {
         return airport;
     }
 
+    /**
+     * Checks if a code is valid (3 or 4 characters)
+     * @param code 
+     * @returns 
+     */
+    public static isValidCode(code: string): boolean {
+        return code != null && (code.length == 3 || code.length == 4)
+    }
+
     public static async getAirport(codeParam: string, userId: any = undefined): Promise<Airport | undefined> {
         return new Promise(async (resolve, reject) => {
             // console.log( "[AirportService.getAirport] " + codeParam + ' user=' + userId);
             // there is only one element and we only care about the airport
-            if (!Airport.isValidCode(codeParam)) return reject(new GApiError(400, "Invalid Airport Code"));
+            if (!AirportService.isValidCode(codeParam)) return reject(new GApiError(400, "Invalid Airport Code"));
 
             const codeAndAirportList = (await AirportService.getAirportList([codeParam], userId));
             if (!codeAndAirportList.length) return resolve(undefined)
@@ -62,10 +71,10 @@ export class AirportService {
         // store the found value [code,airport]
         const found = airports.find((codeAndAirport) => codeAndAirport.code == code)
 
-        // Unknown stuff : Invalid Code / Legit New / Unknown valid code
+        // Possibe cause for Unknown : Invalid Code / New / Unknown valid code
         if (!found) {
             // invalid code =>
-            if (!Airport.isValidCode(code)) return CodeAndAirport.undefined(code)
+            if (!AirportService.isValidCode(code)) return CodeAndAirport.undefined(code)
 
             // First time we see that code => Adip
             let firstTimer: Airport | undefined = await Adip.fetchAirport(code)
@@ -133,7 +142,7 @@ export class AirportService {
     }
 
     /**
-     * Builds a list of airports from a list of codes
+     * Builds a list of airports from a list of codes this is the entry point for getting airports
      * @param airportCodes 
      * @param userId 
      * @returns 
@@ -141,7 +150,7 @@ export class AirportService {
     public static async getAirportList(airportCodes: string[], userId: any = undefined): Promise<(CodeAndAirport)[]> {
         // clean up airport codes
         const cleanCodes: string[] = AirportService.cleanUpCodes(airportCodes)
-        // Read airports fromDB
+        // Read airports from DB
         const knownAirports: CodeAndAirport[] = await AirportDao.readList(cleanCodes, userId)
         // rebuild the full list along with unknowns(undefined)
         const output: (Promise<CodeAndAirport>)[] = []
@@ -152,7 +161,7 @@ export class AirportService {
     }
 
     public static async getAirportView(codeParam: string, userId: any = undefined): Promise<AirportView> {
-        if (!Airport.isValidCode(codeParam)) throw new GApiError(400, "Invalid Airport Code");
+        if (!AirportService.isValidCode(codeParam)) throw new GApiError(400, "Invalid Airport Code");
         const list = await AirportService.getAirportViewList([codeParam], userId)
         if (!list.length) throw new GApiError(404, "Airport not found");
         return list[0]
@@ -184,7 +193,7 @@ export class AirportService {
     */
     public static getIcao(code: string): string | null {
         const output = null
-        if (Airport.isValidCode(code)) {
+        if (AirportService.isValidCode(code)) {
             if (code.length == 3) {
                 return ('K' + code.toUpperCase())
             } else if (code.length == 4) {
@@ -197,7 +206,7 @@ export class AirportService {
     static getLocId(code: string) {
         const output = null
 
-        if (Airport.isValidCode(code)) {
+        if (AirportService.isValidCode(code)) {
             if (code.length == 3) {
                 return code.toUpperCase()
             } else if (code.length == 4) {

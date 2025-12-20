@@ -56,13 +56,6 @@ export class Airport {
     }
 
 
-    public static isValidCode(code: string): boolean {
-        return code != null && (code.length == 3 || code.length == 4)
-    }
-
-    public static isValidVersion(version: number): boolean {
-        return version == Airport.currentVersion
-    }
 
     // add several frequencies at th end of existing frequencies
     addFrequencies(frequencies: Frequency[]) {

@@ -18,6 +18,18 @@ describe('AirportService Tests', () => {
         expect(AirportService.cleanUpCodes(input)).toEqual(expected)
     })
 
+    test('Airport code validation', () => {
+        // too long
+        expect(AirportService.isValidCode("JCJCJ")).toBeFalsy()
+        // just right x 2
+        expect(AirportService.isValidCode("JCJC")).toBeTruthy()
+        expect(AirportService.isValidCode("JCJ")).toBeTruthy()
+        // too short all the way down
+        expect(AirportService.isValidCode("JC")).toBeFalsy()
+        expect(AirportService.isValidCode("J")).toBeFalsy()
+        expect(AirportService.isValidCode("")).toBeFalsy()
+    })
+
     test('Getting multiple Airports', async () => {
         let list = ['rnt', 'jfk']
         jest.spyOn(AirportSketch, 'get').mockResolvedValue(AirportSketch.doesNotExist)

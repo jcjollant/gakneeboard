@@ -14,17 +14,6 @@ describe('Airport', () => {
         expect(airport.version).toBe(Airport.currentVersion)
     })
 
-    test('Airport code validation', () => {
-        // too long
-        expect(Airport.isValidCode("JCJCJ")).toBeFalsy()
-        // just right x 2
-        expect(Airport.isValidCode("JCJC")).toBeTruthy()
-        expect(Airport.isValidCode("JCJ")).toBeTruthy()
-        // too short all the way down
-        expect(Airport.isValidCode("JC")).toBeFalsy()
-        expect(Airport.isValidCode("J")).toBeFalsy()
-        expect(Airport.isValidCode("")).toBeFalsy()
-    })
 
 
     test('Frequencies, ATC', () => {
