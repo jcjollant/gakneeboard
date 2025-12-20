@@ -1,6 +1,6 @@
 {
   "name": "ga-api",
-  "version": "5.51.3",
+  "version": "5.52.0",
   "description": "run `vercel dev` to run the local service",
   "main": "index.js",
   "scripts": {
@@ -11,11 +11,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/cheerio": "^0.22.35",
     "@vercel/blob": "^0.27.3",
     "@vercel/node": "^3.0.27",
     "@vercel/postgres": "^0.8.0",
     "axios": "^1.6.8",
     "canvas": "^3.1.0",
+    "cheerio": "^1.1.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.19.2",

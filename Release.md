@@ -1,7 +1,7 @@
+## 12/20/2025 - 5.52.0 - Added Skyvector as a DataSource
+## 12/15/2025 - 5.51.3 - Manual update of airport diagram
 ## 12/15/2025 - 5.51.2 - Airport creation
 ## 12/15/2025 - 5.51.1 - Fixed empty asosAwos list bug (canadian airports)
-
-## 12/15/2025 - 5.51.3 - Manual update of airport diagram
 ## 12/15/2025 - 5.51.0 - New source field in airport table
 ## 12/01/2025 - 5500 - Added valid airport count to missing sketches
 ## 12/01/2025 - 5490 - Cycle Update 2512
