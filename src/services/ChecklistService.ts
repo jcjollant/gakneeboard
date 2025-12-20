@@ -1,4 +1,4 @@
-import { Checklist, ChecklistItem, ItemType } from "../models/Checklist";
+import { Checklist, ChecklistItem, ChecklistItemType } from "../models/Checklist";
 
 export class ChecklistService {
 
@@ -28,15 +28,15 @@ export class ChecklistService {
                 // Test if it's emergent
                 if (response.length > 1) {
                     // emergency and strong background
-                    if (response[0] == '!') return ChecklistItem.section(response.substring(1), ItemType.emergent)
-                    if (response[0] == '*') return ChecklistItem.section(response.substring(1), ItemType.strong)
+                    if (response[0] == '!') return ChecklistItem.section(response.substring(1), ChecklistItemType.emergent)
+                    if (response[0] == '*') return ChecklistItem.section(response.substring(1), ChecklistItemType.strong)
                 }
                 // section [##Section]
                 return ChecklistItem.section(response)
             }
 
             if (challenge[0] == '!') {
-                return new ChecklistItem(challenge.substring(1), response, '', ItemType.emergent)
+                return new ChecklistItem(challenge.substring(1), response, '', ChecklistItemType.emergent)
             }
             // normal entry
             return new ChecklistItem(challenge, response)
@@ -44,13 +44,13 @@ export class ChecklistService {
         return checklist;
     }
 
-    static parseItemType(source: string): ItemType {
+    static parseItemType(source: string): ChecklistItemType {
         switch (source) {
-            case 'alt': return ItemType.alternate
-            case 'emer': return ItemType.emergent
-            case 'strong': return ItemType.strong
-            case 'blank': return ItemType.blank
-            default: return ItemType.undefined
+            case 'alt': return ChecklistItemType.alternate
+            case 'emer': return ChecklistItemType.emergent
+            case 'strong': return ChecklistItemType.strong
+            case 'blank': return ChecklistItemType.blank
+            default: return ChecklistItemType.undefined
         }
     }
 
@@ -71,14 +71,14 @@ export class ChecklistService {
 
         // translate items into text
         const list = checklist.items.map(item => {
-            if (item.type == ItemType.blank) return ''
-            if (item.type == ItemType.alternate) return '##'
+            if (item.type == ChecklistItemType.blank) return ''
+            if (item.type == ChecklistItemType.alternate) return '##'
             if (item.section.length > 0) {
-                if (item.type == ItemType.emergent) return '##!' + item.section;
-                if (item.type == ItemType.strong) return '##*' + item.section;
+                if (item.type == ChecklistItemType.emergent) return '##!' + item.section;
+                if (item.type == ChecklistItemType.strong) return '##*' + item.section;
                 return '##' + item.section;
             }
-            const challenge = item.type == ItemType.emergent ? '!' + item.challenge : item.challenge
+            const challenge = item.type == ChecklistItemType.emergent ? '!' + item.challenge : item.challenge
             if (item.response.length > 0) return challenge + '##' + item.response
             return challenge
         })
@@ -91,7 +91,7 @@ export class ChecklistService {
             if (item.challenge != '') output['c'] = item.challenge
             if (item.response != '') output['r'] = item.response
             if (item.section != '') output['s'] = item.section
-            if (item.type != ItemType.undefined) output['t'] = item.type
+            if (item.type != ChecklistItemType.undefined) output['t'] = item.type
             return output
         })
     }

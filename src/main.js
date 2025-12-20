@@ -1,15 +1,16 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faFacebookF, faGoogle, faWordpress, faYoutube } from '@fortawesome/free-brands-svg-icons';
 import {
-    faArrowDown, faArrowUp,
+    faArrowDown, faArrowsDownToLine, faArrowsUpToLine, faArrowUp,
     faBan, faBars, faBorderAll, faBuilding,
     faCamera, faCheck, faChevronRight, faCircleInfo, faClock, faClone, faCloud, faCloudSunRain, faComments,
     faDisplay,
     faEject, faExclamationTriangle,
     faFileExport, faFile,
-    faGasPump, faGavel, faGear, faHeadset, faImage, faJetFighter,
+    faFont, faBold,
+    faGasPump, faGavel, faGear, faGripLines, faHeadset, faImage, faJetFighter,
     faLeftRight, faLink, faListCheck,
-    faPenToSquare, faPhone, faPlane, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, faPrint,
+    faPenToSquare, faPhone, faPlane, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, faPlus, faPrint,
     faQuestion,
     faRoadCircleCheck,
     faRotateLeft,
@@ -31,19 +32,19 @@ import App from '@/App.vue';
 import router from './router';
 import './style.css';
 
-library.add( 
-    faArrowDown, faArrowUp,
+library.add(
+    faArrowDown, faArrowsDownToLine, faArrowsUpToLine, faArrowUp,
     faBan, faBars, faBorderAll, faBuilding,
-    faCamera, faCheck, faChevronRight, faCircleInfo, faClock, faClone, faCloud, faCloudSunRain, faComments, 
+    faCamera, faCheck, faChevronRight, faCircleInfo, faClock, faClone, faCloud, faCloudSunRain, faComments,
     faDisplay,
     faEject, faExclamationTriangle,
-    faFacebookF, faFileExport, faFile, faGoogle, 
-    faGasPump, faGavel, faGear, faHeadset, faImage, faJetFighter, 
-    faLeftRight, faLink, faListCheck, 
-    faPenToSquare, faPhone, faPlane, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, faPrint, 
-    faQuestion, 
-    faRoadCircleCheck, faRotateLeft, faRoute, 
-    faSave, faScrewdriverWrench, faShield, faStarOfLife, faSun, 
+    faFacebookF, faFileExport, faFile, faFont, faBold, faGoogle, faGripLines,
+    faGasPump, faGavel, faGear, faHeadset, faImage, faJetFighter,
+    faLeftRight, faLink, faListCheck,
+    faPenToSquare, faPhone, faPlane, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, faPlus, faPrint,
+    faQuestion,
+    faRoadCircleCheck, faRotateLeft, faRoute,
+    faSave, faScrewdriverWrench, faShield, faStarOfLife, faSun,
     faTowerCell, faTowerObservation, faTrash, faTruckFast,
     faUser,
     faVideo, faWalkieTalkie, faWordpress, faXmark, faYoutube)
@@ -57,9 +58,9 @@ createApp(App)
     .component('font-awesome-icon', FontAwesomeIcon)
     .mount('#app')
 
-if(process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production') {
     window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
-    gtag('config', 'G-M7NJWLEVMG'); 
+    gtag('config', 'G-M7NJWLEVMG');
 }

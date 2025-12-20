@@ -1,6 +1,6 @@
 <template>
     <div class="contentPage pageChecklist" :class="{'fullpage': isFullPage}">
-        <Header :title="page.name" :showReplace="editMode" :page="true"
+        <Header :title="page.name" :showReplace="true" :page="true" leftButton="settings"
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div v-if="editMode" class="settings">
             <div class="nameAndCols">
@@ -8,16 +8,24 @@
                     <InputGroupAddon class="checklistNameAddon">Name</InputGroupAddon>
                     <InputText v-model="page.name" />
                 </InputGroup>
-                <div class="columnsChoice">
+                <div class="columnsChoice" title="Number of columns on the checklist page">
+                    <OneChoice v-model="columnsChoice" :choices="[choiceSingle, choiceDouble, choiceTriple]"/>
                     <div>Cols</div>
-                    <OneChoice v-model="columns" :choices="[colSingle, colDouble, colTriple]"/>
                 </div>
             </div>
-            <div class="columns">
-                <Textarea v-for="(checklist, index) in [0,1,2]" v-model="textData[index]" v-show="index < columns.value"
-                    :PlaceHolder="index == 0 ? getPlaceHolder() : ''"
-                    :class="['editList', 'textArea' + (index+1), font]"></Textarea>
+            <div class="editChoice">
+                <OneChoice v-model="choosenEditing" :choices="choicesEditing"/> 
+                <div class="columnsChoice">
+                    <div>Mode</div>
+                    <OneChoice v-model="choosenEditorMode" :choices="[choiceEditorModeUi, choiceEditorModeText]"/>
+                </div>
             </div>
+            <ChecklistEditor 
+                :ref="(el: any) => editorRefs[0] = el"
+                v-model="editorChecklist"
+                :mode="checklistEditorMode"
+                :class="['editList', 'editor']" 
+                @active="onEditorActive(0)" />
             <div class="theme">
                 <div>Theme</div>
                 <ThemeSelector @change="onThemeChange" :theme="theme" />
@@ -31,7 +39,7 @@
         <div v-else class="viewMode">
             <div class="columns">
                 <ChecklistViewer v-for="(checklist,index) in page.lists" :list="checklist" :theme="theme" :font="font"
-                    :size="columns.value" :class="['list','list'+index]" />
+                    :size="columnsChoice.value" :class="['list','list'+index]" />
             </div>
             <!-- <div v-if="version > 0" class="version">v{{version}}</div> -->
         </div>
@@ -47,6 +55,7 @@ import { UserUrl } from '../../lib/UserUrl'
 import { TemplateFormat } from '../../models/TemplateFormat'
 
 import ActionBar from '../shared/ActionBar.vue'
+import ChecklistEditor from './ChecklistEditor.vue'
 import ChecklistViewer from './ChecklistViewer.vue'
 import FontSizeSelector from './FontSizeSelector.vue'
 import Header from '../shared/Header.vue'
@@ -55,24 +64,68 @@ import ThemeSelector from './ThemeSelector.vue'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
-import Textarea from 'primevue/textarea'
 import OneChoice from '../shared/OneChoice.vue'
 
-class Column {
+class ChoiceColumnCount {
     label: string
     value: number
     title: string|undefined
     constructor(label: string, value: number, title: string|undefined = undefined) {
         this.label = label
         this.value = value
-        this.title = title
+        this.title = title ?? 'Use ' + value + ' column(s)'
     }
 }
-const colSingle = new Column('1', 1)
-const colDouble = new Column('2', 2)
-const colTriple = new Column('3', 3)
-const columns = ref<Column>(colSingle)
+const choiceSingle = new ChoiceColumnCount('1', 1)
+const choiceDouble = new ChoiceColumnCount('2', 2)
+const choiceTriple = new ChoiceColumnCount('3', 3)
+const columnsChoice = ref<ChoiceColumnCount>(choiceSingle)
+const columnsCount = computed(() => columnsChoice.value.value)
+
+class ChoiceEditing {
+    label: string
+    value: number
+    title: string|undefined
+    constructor(label: string, value: number, title: string|undefined = undefined) {
+        this.label = label
+        this.value = value
+        this.title = title ?? 'Edit ' + label
+    }
+}
+// default to the first column
+const choosenEditing = ref<ChoiceEditing>(new ChoiceEditing('Left', 0))
+// build a dynamic list of choices based on the number of columns
+const choicesEditing = computed(() => {
+    const choices = [new ChoiceEditing('Left', 0)]
+    if (columnsCount.value === 2) {
+        choices.push(new ChoiceEditing('Right', 1))
+    } else if (columnsCount.value === 3) {
+        choices.push(new ChoiceEditing('Middle', 1))
+        choices.push(new ChoiceEditing('Right', 2))
+    }
+    return choices
+})
+
+watch(columnsCount, () => {
+    choosenEditing.value = choicesEditing.value[0]
+})
+
+const editorChecklist = computed({
+    get: () => { 
+        // console.debug('[ChecklistPage.editorChecklist]', checklistData.value[choosenEditing.value.value]); 
+        return checklistData.value[choosenEditing.value.value] 
+    },
+    set: (val: Checklist) => {
+        checklistData.value[choosenEditing.value.value] = val;
+    }
+})
+const choiceEditorModeUi = new ChoiceColumnCount('UI', 0, 'UI Mode')
+const choiceEditorModeText = new ChoiceColumnCount('Text', 1, 'Text Mode')
+const choosenEditorMode = ref(choiceEditorModeUi)
+const checklistEditorMode = computed(() => ['ui', 'text'][choosenEditorMode.value.value])
+
 const editMode = ref(false)
+
 // Default to medium font
 const font = ref('font-medium')
 let fontBeforeEdit = 'font-medium'
@@ -86,10 +139,21 @@ const props = defineProps({
 })
 
 const isFullPage = computed(() => props.format === TemplateFormat.FullPage)
-const textData = ref(['','',''])
+const checklistData = ref<Checklist[]>([new Checklist(), new Checklist(), new Checklist()])
 const theme = ref('theme-yellow')
 let themeBeforeEdit = 'theme-yellow'
 // const version = ref(props.version)
+
+const editorRefs = ref<any[]>([])
+
+function onEditorActive(activeIndex: number) {
+    editorRefs.value.forEach((editor, index) => {
+        if (index !== activeIndex && editor) {
+             // Access the exposed method
+             editor.stopEditing();
+        }
+    })
+}
 
 // Props management
 function loadProps(newProps:any) {
@@ -108,12 +172,12 @@ function loadProps(newProps:any) {
             newPage.addListFromParams(newProps.data.items2)
             if('items3' in newProps.data) {
                 newPage.addListFromParams(newProps.data.items3)
-                columns.value = colTriple
+                columnsChoice.value = choiceTriple
             } else {
-                columns.value = colDouble
+                columnsChoice.value = choiceDouble
             }
         } else {
-            columns.value = colSingle
+            columnsChoice.value = choiceSingle
         }
         // console.log('[ChecklistPage.loadProps] columns', columns.value)
         // console.log('[ChecklistPage.loadProps] newPage', newPage)
@@ -169,9 +233,10 @@ function onApply() {
     const newData: any = { name: page.value.name}
 
     page.value.removeAllLists()
-    for(let index = 0; index < columns.value.value; index++) {
-        const checklist = ChecklistService.parseEditor(textData.value[index])
-        page.value.addList(checklist)
+    for(let index = 0; index < columnsChoice.value.value; index++) {
+        // const checklist = ChecklistService.parseEditor(textData.value[index])
+        // page.value.addList(checklist)
+        page.value.addList(checklistData.value[index])
         
         const key = 'items' + (index == 0 ? '' : index + 1)
         newData[key] = ChecklistService.toParams(page.value.lists[index])
@@ -191,13 +256,18 @@ function onCancel() {
     page.value.name = nameBeforeEdit;
     theme.value = themeBeforeEdit;
     font.value = fontBeforeEdit;
+    // Back to UI mode by default
+    choosenEditorMode.value = choiceEditorModeUi;
 }
 
 function onHeaderClick() {
     if(editMode.value) return;
 
     for(let index = 0; index < page.value.lists.length; index++) {
-        textData.value[index] = ChecklistService.toEditor(page.value.lists[index])
+        // Clone the checklist to avoid direct mutation
+        // We can use toParams/parseParams to clone
+        const params = ChecklistService.toParams(page.value.lists[index]);
+        checklistData.value[index] = ChecklistService.parseParams(params);
     }
     nameBeforeEdit = page.value.name
     themeBeforeEdit = theme.value
@@ -213,7 +283,7 @@ function onThemeChange(newTheme: string) {
 
 <style scoped>
 .checklistNameAddon {
-    width: 3rem;
+    width: 4rem;
 }
 .centered {
     margin: auto;
@@ -269,7 +339,7 @@ function onThemeChange(newTheme: string) {
     display: grid;
     gap: 5px;
     padding: 5px;
-    grid-template-rows: 2.5rem auto 2rem 2rem 50px;
+    grid-template-rows: 2.5rem 2rem 1fr 2rem 2rem 50px;
 }
 
 .twoLists {
@@ -302,9 +372,13 @@ function onThemeChange(newTheme: string) {
     height: var(--fullpage-content);
 }
 
-.nameAndCols {
+.nameAndCols, .editChoice {
     display: flex;
     gap: 10px;
+    height: 2rem;
+    align-items: center;
+    padding: 5px;
+    justify-content: space-between;
 }
 .theme, .font {
     display: grid;

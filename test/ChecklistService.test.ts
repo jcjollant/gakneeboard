@@ -1,20 +1,20 @@
 import { describe, expect, it } from '@jest/globals';
-import { ChecklistItem, ItemType } from "../src/models/Checklist"
+import { ChecklistItem, ChecklistItemType } from "../src/models/Checklist"
 import { ChecklistService } from "../src/services/ChecklistService"
 
 describe('ChecklistService', () => {
     it('Is parsing from editor', () => {
 
         const input = [
-            { text: '', item: new ChecklistItem('', '', '', ItemType.blank) },
-            { text: '##', item: new ChecklistItem('', '', '', ItemType.alternate) },
-            { text: '##Section', item: new ChecklistItem('', '', 'Section', ItemType.undefined) },
-            { text: '##*Section', item: new ChecklistItem('', '', 'Section', ItemType.strong) },
-            { text: '##!Section', item: new ChecklistItem('', '', 'Section', ItemType.emergent) },
-            { text: 'Challenge##Response', item: new ChecklistItem('Challenge', 'Response', '', ItemType.undefined) },
-            { text: 'Challenge', item: new ChecklistItem('Challenge', '', '', ItemType.undefined) },
-            { text: '!Important', item: new ChecklistItem('Important', '', '', ItemType.emergent) },
-            { text: '!Important##Reply', item: new ChecklistItem('Important', 'Reply', '', ItemType.emergent) },
+            { text: '', item: new ChecklistItem('', '', '', ChecklistItemType.blank) },
+            { text: '##', item: new ChecklistItem('', '', '', ChecklistItemType.alternate) },
+            { text: '##Section', item: new ChecklistItem('', '', 'Section', ChecklistItemType.undefined) },
+            { text: '##*Section', item: new ChecklistItem('', '', 'Section', ChecklistItemType.strong) },
+            { text: '##!Section', item: new ChecklistItem('', '', 'Section', ChecklistItemType.emergent) },
+            { text: 'Challenge##Response', item: new ChecklistItem('Challenge', 'Response', '', ChecklistItemType.undefined) },
+            { text: 'Challenge', item: new ChecklistItem('Challenge', '', '', ChecklistItemType.undefined) },
+            { text: '!Important', item: new ChecklistItem('Important', '', '', ChecklistItemType.emergent) },
+            { text: '!Important##Reply', item: new ChecklistItem('Important', 'Reply', '', ChecklistItemType.emergent) },
         ]
         const inputString = input.map((item) => item.text).join('\n')
         const checklist = ChecklistService.parseEditor(inputString)
@@ -26,7 +26,7 @@ describe('ChecklistService', () => {
 
         // corner case
         const c2 = ChecklistService.parseEditor('Challenge##')
-        expect(c2.items).toEqual([new ChecklistItem('Challenge', '', '', ItemType.undefined)])
+        expect(c2.items).toEqual([new ChecklistItem('Challenge', '', '', ChecklistItemType.undefined)])
         expect(ChecklistService.toEditor(c2)).toEqual('Challenge')
     })
 
@@ -47,10 +47,10 @@ describe('ChecklistService', () => {
         expect(checklist.items[1].section).toBe('Section')
 
         expect(checklist.items[2].section).toBe('Emergent Section')
-        expect(checklist.items[2].type).toBe(ItemType.emergent)
+        expect(checklist.items[2].type).toBe(ChecklistItemType.emergent)
 
         expect(checklist.items[3].challenge).toBe('Important')
-        expect(checklist.items[3].type).toBe(ItemType.emergent)
+        expect(checklist.items[3].type).toBe(ChecklistItemType.emergent)
 
         // Round trip
         const params = ChecklistService.toParams(checklist)

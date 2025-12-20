@@ -4,30 +4,30 @@ export class ChecklistItem {
     challenge: string;
     response: string;
     section: string;
-    type: ItemType;
+    type: ChecklistItemType;
 
-    constructor(challenge: string = '', response: string = '', section: string = '', type: ItemType = ItemType.undefined) {
+    constructor(challenge: string = '', response: string = '', section: string = '', type: ChecklistItemType = ChecklistItemType.undefined) {
         this.challenge = challenge || '';
         this.response = response || '';
         this.section = section || '';
-        this.type = type || ItemType.undefined;
+        this.type = type || ChecklistItemType.undefined;
     }
     static alternate() {
-        return new ChecklistItem('', '', '', ItemType.alternate)
+        return new ChecklistItem('', '', '', ChecklistItemType.alternate)
     }
     static blank() {
-        return new ChecklistItem('', '', '', ItemType.blank)
+        return new ChecklistItem('', '', '', ChecklistItemType.blank)
     }
-    static section(name: string, type: ItemType = ItemType.undefined) {
+    static section(name: string, type: ChecklistItemType = ChecklistItemType.undefined) {
         return new ChecklistItem('', '', name, type)
     }
 }
 
-export enum ItemType {
+export enum ChecklistItemType {
     blank = 'blank',
     alternate = 'alt',
-    emergent = 'emer',
-    strong = 'strong',
+    emergent = 'emer', // Section
+    strong = 'strong', // Section
     undefined = '',
 }
 
