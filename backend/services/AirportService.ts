@@ -124,6 +124,15 @@ export class AirportService {
     }
 
     /**
+     * Cleans up a list of airport codes
+     * @param codes list of airport codes
+     * @returns list of cleaned up codes
+     */
+    public static cleanUpCodes(codes: string[]): string[] {
+        return codes.map(code => code.replace(/[^a-zA-Z0-9]/g, '').trim().toUpperCase())
+    }
+
+    /**
      * Builds a list of airports from a list of codes
      * @param airportCodes 
      * @param userId 
@@ -131,7 +140,7 @@ export class AirportService {
      */
     public static async getAirportList(airportCodes: string[], userId: any = undefined): Promise<(CodeAndAirport)[]> {
         // clean up airport codes
-        const cleanCodes: string[] = airportCodes.map(code => Airport.cleanupCode(code))
+        const cleanCodes: string[] = AirportService.cleanUpCodes(airportCodes)
         // Read airports fromDB
         const knownAirports: CodeAndAirport[] = await AirportDao.readList(cleanCodes, userId)
         // rebuild the full list along with unknowns(undefined)

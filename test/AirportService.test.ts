@@ -12,6 +12,12 @@ import * as cnf4 from './jsonData/airport/cnf4Creation.json';
 
 describe('AirportService Tests', () => {
 
+    test('Clean up codes', () => {
+        const input = ["JCJ", "jCj", " jCj ", " j#Cj ", "JCJ;", "JCJ'"]
+        const expected = ["JCJ", "JCJ", "JCJ", "JCJ", "JCJ", "JCJ"]
+        expect(AirportService.cleanUpCodes(input)).toEqual(expected)
+    })
+
     test('Getting multiple Airports', async () => {
         let list = ['rnt', 'jfk']
         jest.spyOn(AirportSketch, 'get').mockResolvedValue(AirportSketch.doesNotExist)

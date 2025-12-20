@@ -6,8 +6,8 @@ import { Frequency } from '../backend/models/Frequency'
 import { PatternDirection, Runway, RunwayEnd } from '../backend/models/Runway'
 
 describe('Airport', () => {
-    test ('Airport should be an object', () => {
-        const airport = new Airport( "name", "JCJ", 32);
+    test('Airport should be an object', () => {
+        const airport = new Airport("name", "JCJ", 32);
         expect(typeof airport).toBe('object');
         expect(airport.freq.length).toBe(0)
         expect(airport.rwys.length).toBe(0)
@@ -26,53 +26,45 @@ describe('Airport', () => {
         expect(Airport.isValidCode("")).toBeFalsy()
     })
 
-    test('Cleanup code', () => {
-        expect(Airport.cleanupCode("JCJ")).toBe("JCJ")
-        expect(Airport.cleanupCode("jCj")).toBe("JCJ")
-        expect(Airport.cleanupCode(" jCj ")).toBe("JCJ")
-        expect(Airport.cleanupCode(" j#Cj ")).toBe("JCJ")
-        expect(Airport.cleanupCode("JCJ;")).toBe("JCJ")
-        expect(Airport.cleanupCode("JCJ'")).toBe("JCJ")
-    })
 
     test('Frequencies, ATC', () => {
         const airport = new Airport("name", "JCJ", 32);
-        const ctaf:string = "CTAF"
+        const ctaf: string = "CTAF"
         const ctafFreq = 124.7
-        const gnd:string = "GND"
+        const gnd: string = "GND"
         const gndFreq = 121.6
-        airport.addFrequency( ctaf, ctafFreq);
+        airport.addFrequency(ctaf, ctafFreq);
         airport.addFrequency(gnd, gndFreq)
         expect(airport.freq.length).toBe(2)
         // read back
-        expect(airport.getFreq( ctaf)).toBe(ctafFreq)
-        expect(airport.getFreq( gnd)).toBe(gndFreq)
+        expect(airport.getFreq(ctaf)).toBe(ctafFreq)
+        expect(airport.getFreq(gnd)).toBe(gndFreq)
 
-        const atis:string = "ATIS"
+        const atis: string = "ATIS"
         const atisFreq = 126.95
-        const twr:string = "TWR"
+        const twr: string = "TWR"
         const twrFreq = 124.7
-        const f1:Frequency = new Frequency( atis, atisFreq)
-        const f2:Frequency = new Frequency( twr, twrFreq)
-        airport.addFrequencies([f1,f2])
+        const f1: Frequency = new Frequency(atis, atisFreq)
+        const f2: Frequency = new Frequency(twr, twrFreq)
+        airport.addFrequencies([f1, f2])
         expect(airport.freq).toHaveLength(4)
         expect(airport.getFreq(atis)).toBe(atisFreq)
         expect(airport.getFreq(twr)).toBe(twrFreq)
 
 
         // ATC
-        const atc1Freq:number = 123.1
-        const atc1Use:string = 'APCH/P'
-        const atc1Use2:string = 'CD/P'
-        const atc1Name:string = 'name1'
-        const atc1:Atc = new Atc(atc1Freq, atc1Name,atc1Use)
+        const atc1Freq: number = 123.1
+        const atc1Use: string = 'APCH/P'
+        const atc1Use2: string = 'CD/P'
+        const atc1Name: string = 'name1'
+        const atc1: Atc = new Atc(atc1Freq, atc1Name, atc1Use)
         atc1.addUse(atc1Use2)
 
         const atc2Freq = 123.2
         const atc2Use = 'CD/P'
         const atc2Name = 'name2'
-        const atc2:Atc = new Atc(atc2Freq, atc2Name, atc2Use)
-        const atcs = [atc1,atc2]
+        const atc2: Atc = new Atc(atc2Freq, atc2Name, atc2Use)
+        const atcs = [atc1, atc2]
         airport.addAtcs(atcs)
 
         expect(airport.atc.length).toBe(2)
@@ -105,19 +97,19 @@ describe('Airport', () => {
         expect(rwy.getTrafficPattern("34")).toBe(PatternDirection.Right)
 
         // ends name
-        const endsName:string[] = rwy.getEndsName()
+        const endsName: string[] = rwy.getEndsName()
         expect(endsName.length).toBe(2)
         expect(endsName[0]).toBe("16")
         expect(endsName[1]).toBe("34")
 
         // ends
-        const end16:RunwayEnd|undefined = rwy.getEnd('16')
+        const end16: RunwayEnd | undefined = rwy.getEnd('16')
         expect(end16).toBeDefined()
         expect(end16?.mag).toBe(160)
         expect(end16?.name).toBe("16")
         expect(end16?.tp).toBe("L")
 
-        const end34:RunwayEnd|undefined = rwy.getEnd('34')
+        const end34: RunwayEnd | undefined = rwy.getEnd('34')
         expect(end34).toBeDefined()
         expect(end34?.mag).toBe(340)
         expect(end34?.name).toBe("34")
@@ -130,7 +122,7 @@ describe('Airport', () => {
         const rwy2 = new Runway("17-35", 5400, 150)
         const rwy3 = new Runway("18-36", 5400, 150)
         // add multiple runways
-        airport.addRunways([rwy2,rwy3]);
+        airport.addRunways([rwy2, rwy3]);
         expect(airport.rwys.length).toBe(3)
 
         // Ends name

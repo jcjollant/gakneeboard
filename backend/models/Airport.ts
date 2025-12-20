@@ -55,12 +55,6 @@ export class Airport {
         this.source = AirportSource.Adip;
     }
 
-    static cleanupCode(code: string): string {
-        // return the upper case version of the code, 
-        // trimming any leading/trailing whitespace 
-        // remove non alpha numerical characters
-        return code.replace(/[^a-zA-Z0-9]/g, '').trim().toUpperCase()
-    }
 
     public static isValidCode(code: string): boolean {
         return code != null && (code.length == 3 || code.length == 4)
