@@ -1,4 +1,4 @@
-import { Adip } from '../adip/Adip'
+import { AdipService } from './AdipService'
 import { Airport, versionInvalid, AirportSource } from '../models/Airport'
 import { AirportDao } from '../AirportDao'
 import { AirportSketch } from '../AirportSketch'
@@ -11,7 +11,7 @@ import { Runway } from '../models/Runway'
 export class AirportService {
 
     public static getAirportCurrentEffectiveDate() {
-        return AirportView.formatAsOf(Adip.currentEffectiveDate())
+        return AirportView.formatAsOf(AdipService.currentEffectiveDate())
     }
 
     /**
@@ -32,7 +32,7 @@ export class AirportService {
         airport.rwys = request.runways.map((rwy) => new Runway(rwy.name, rwy.length, rwy.width));
         airport.version = Airport.currentVersion;
         // Set effective date to current to ensure it's picked up
-        airport.effectiveDate = Adip.currentEffectiveDate();
+        airport.effectiveDate = AdipService.currentEffectiveDate();
         airport.source = AirportSource.User;
 
         await AirportDao.create(request.code, airport);
@@ -77,7 +77,7 @@ export class AirportService {
             if (!AirportService.isValidCode(code)) return CodeAndAirport.undefined(code)
 
             // First time we see that code => Adip
-            let firstTimer: Airport | undefined = await Adip.fetchAirport(code)
+            let firstTimer: Airport | undefined = await AdipService.fetchAirport(code)
 
             // unknown airport
             if (!firstTimer || firstTimer.code == '?') {
@@ -100,14 +100,14 @@ export class AirportService {
 
 
         const versionCurrent: boolean = (airport.version == Airport.currentVersion);
-        const dateCurrent: boolean = (airport.effectiveDate == Adip.currentEffectiveDate())
+        const dateCurrent: boolean = (airport.effectiveDate == AdipService.currentEffectiveDate())
         // Happy path : data is already current or airport is custom (which we don't update)
         if (airport.custom || versionCurrent && dateCurrent) {
             return new CodeAndAirport(code, airport)
         }
 
         // data needs to be refreshed => Adip
-        let refresher: Airport | undefined = await Adip.fetchAirport(code)
+        let refresher: Airport | undefined = await AdipService.fetchAirport(code)
         if (refresher) {
             // update this record in the database
             if (airport.id) {
@@ -203,7 +203,7 @@ export class AirportService {
     public static isMilitary(freq: string) {
         if (freq == null) return false;
         if (freq == '-.-') return false;
-        return Adip.isMilitary(Number(freq))
+        return AdipService.isMilitary(Number(freq))
     }
 
 }

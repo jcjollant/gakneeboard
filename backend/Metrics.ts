@@ -1,4 +1,4 @@
-import { Adip } from "./adip/Adip";
+import { AdipService } from "./services/AdipService";
 import { AdipDao } from "./adip/AdipDao";
 import { AirportDao } from "./AirportDao";
 import { Email, EmailType } from "./Email";
@@ -10,16 +10,16 @@ import { TemplateDao } from "./TemplateDao";
 import { TemplateView } from "./models/TemplateView";
 import { UserDao } from "./dao/UserDao"
 import { UserTemplateData } from "./models/UserTemplateData";
-import { UserTools } from './UserTools' 
+import { UserTools } from './UserTools'
 import { UserUsage } from "./models/UserUsage";
 import { Business } from "./business/Business";
 import { SubscriptionDao } from "./dao/SubscriptionDao";
 
 export class Metric {
-    name:string;
-    value:number;
+    name: string;
+    value: number;
 
-    constructor(metricName:string, value:number=0) {
+    constructor(metricName: string, value: number = 0) {
         this.name = metricName;
         this.value = value;
     }
@@ -90,39 +90,39 @@ export enum MetricKey {
 
 export class Metrics {
 
-    static async adip():Promise<Metric[]> {
+    static async adip(): Promise<Metric[]> {
         const adipCount = await AdipDao.countSince(28)
         return [new Metric(MetricKey.adip28, adipCount)]
     }
 
-    static async airports():Promise<Metric[]> {
+    static async airports(): Promise<Metric[]> {
         const all = await AirportDao.count()
-        const output:Metric[] = []
-        output.push( new Metric(MetricKey.airportsTotal, await AirportDao.count()))
-        output.push( new Metric(MetricKey.airportsValid, await AirportDao.countValid()))
-        output.push( new Metric(MetricKey.airportsCurrent, (await AirportDao.readCurrent(Adip.currentEffectiveDate())).length))
+        const output: Metric[] = []
+        output.push(new Metric(MetricKey.airportsTotal, await AirportDao.count()))
+        output.push(new Metric(MetricKey.airportsValid, await AirportDao.countValid()))
+        output.push(new Metric(MetricKey.airportsCurrent, (await AirportDao.readCurrent(AdipService.currentEffectiveDate())).length))
         return output
     }
 
-    static async usage():Promise<Metric[]> {
-        const usageMetrics:Metric[] = []
+    static async usage(): Promise<Metric[]> {
+        const usageMetrics: Metric[] = []
         const usageDao = new UsageDao();
-        usageMetrics.push( new Metric(MetricKey.export7, await usageDao.countTypeByUserSince(UsageType.Export, 7)))
-        usageMetrics.push( new Metric(MetricKey.export28, await usageDao.countTypeByUserSince(UsageType.Export, 28)))
-        usageMetrics.push( new Metric(MetricKey.print7, await usageDao.countTypeSince(UsageType.Print, 7)))
-        usageMetrics.push( new Metric(MetricKey.print28, await usageDao.countTypeSince(UsageType.Print, 28)))
-        usageMetrics.push( new Metric(MetricKey.printUser7, await usageDao.countTypeByUserSince(UsageType.Print, 7)))
-        usageMetrics.push( new Metric(MetricKey.printUser28, await usageDao.countTypeByUserSince(UsageType.Print, 28)))
-        usageMetrics.push( new Metric(MetricKey.save7, await usageDao.countTypeSince(UsageType.Save, 7)))
-        usageMetrics.push( new Metric(MetricKey.save28, await usageDao.countTypeSince(UsageType.Save, 28)))
-        usageMetrics.push( new Metric(MetricKey.sessions7, await usageDao.countTypeByUserSince(UsageType.Session, 7)))
-        usageMetrics.push( new Metric(MetricKey.sessions28, await usageDao.countTypeByUserSince(UsageType.Session, 28)))
+        usageMetrics.push(new Metric(MetricKey.export7, await usageDao.countTypeByUserSince(UsageType.Export, 7)))
+        usageMetrics.push(new Metric(MetricKey.export28, await usageDao.countTypeByUserSince(UsageType.Export, 28)))
+        usageMetrics.push(new Metric(MetricKey.print7, await usageDao.countTypeSince(UsageType.Print, 7)))
+        usageMetrics.push(new Metric(MetricKey.print28, await usageDao.countTypeSince(UsageType.Print, 28)))
+        usageMetrics.push(new Metric(MetricKey.printUser7, await usageDao.countTypeByUserSince(UsageType.Print, 7)))
+        usageMetrics.push(new Metric(MetricKey.printUser28, await usageDao.countTypeByUserSince(UsageType.Print, 28)))
+        usageMetrics.push(new Metric(MetricKey.save7, await usageDao.countTypeSince(UsageType.Save, 7)))
+        usageMetrics.push(new Metric(MetricKey.save28, await usageDao.countTypeSince(UsageType.Save, 28)))
+        usageMetrics.push(new Metric(MetricKey.sessions7, await usageDao.countTypeByUserSince(UsageType.Session, 7)))
+        usageMetrics.push(new Metric(MetricKey.sessions28, await usageDao.countTypeByUserSince(UsageType.Session, 28)))
 
         return usageMetrics
     }
 
-    static usageTypeToKey(type:UsageType):string {
-        switch(type) {
+    static usageTypeToKey(type: UsageType): string {
+        switch (type) {
             case UsageType.Export: return MetricKey.exports
             case UsageType.Print: return MetricKey.prints
             case UsageType.Session: return MetricKey.sessions
@@ -130,10 +130,10 @@ export class Metrics {
         // return '?'
     }
 
-    static async users():Promise<Metric[]> {
+    static async users(): Promise<Metric[]> {
         const userDao = new UserDao();
 
-        const allMetrics:Metric[] = []
+        const allMetrics: Metric[] = []
 
         const allUsers = await userDao.getAll()
         allMetrics.push(new Metric(MetricKey.users, allUsers.length))
@@ -154,118 +154,118 @@ export class Metrics {
 
         const now = Date.now()
 
-        for(const user of allUsers) {
-            if(user.source == UserTools.google) {
+        for (const user of allUsers) {
+            if (user.source == UserTools.google) {
                 googleUsers.addOne()
-            } else if( user.source == UserTools.apple) {
+            } else if (user.source == UserTools.apple) {
                 appleUsers.addOne()
-            } else if( user.source == UserTools.facebook) {
+            } else if (user.source == UserTools.facebook) {
                 facebookUsers.addOne()
             } else {
                 // console.log('Unknown source for user ', user.id)
             }
 
-            if( user.createDate) {
+            if (user.createDate) {
                 // console.log('dates', now, user.createDate.getTime())
                 const dateDiff = (now - user.createDate.getTime()) / (1000 * 60 * 60 * 24)
                 // console.log('dateDiff', dateDiff)
-                if(dateDiff <= 28) onboarded28.addOne()
+                if (dateDiff <= 28) onboarded28.addOne()
             }
 
-            if( user.customerId) {
+            if (user.customerId) {
                 customers.addOne()
             }
-            if( Business.isActiveCustomer( user)) {
+            if (Business.isActiveCustomer(user)) {
                 monthlyRevenue += Business.monthlyRevenue(user)
                 activeCustomers.addOne()
             }
         }
 
         // compute the average monthly revenue
-        allMetrics.push( new Metric(MetricKey.revenueARPA, monthlyRevenue / activeCustomers.value))
+        allMetrics.push(new Metric(MetricKey.revenueARPA, monthlyRevenue / activeCustomers.value))
 
         return allMetrics
     }
 
-    static async feedbacks():Promise<Metric[]> {
-        const feedbackCount:number = await FeedbackDao.count()
+    static async feedbacks(): Promise<Metric[]> {
+        const feedbackCount: number = await FeedbackDao.count()
         return [new Metric(MetricKey.feedbacks, feedbackCount)]
     }
 
-    static async templates():Promise<Metric[]> {
+    static async templates(): Promise<Metric[]> {
         const templateDao = new TemplateDao();
-        const templateCount:number = await templateDao.count()
+        const templateCount: number = await templateDao.count()
         return [new Metric(MetricKey.templates, templateCount)]
     }
 
-    static async business():Promise<Metric[]> {
+    static async business(): Promise<Metric[]> {
         const subscriptionDao = new SubscriptionDao();
-        const businessMetrics:Metric[] = []
-        
+        const businessMetrics: Metric[] = []
+
         const newCustomers = await subscriptionDao.getNewCustomersLast30Days()
         businessMetrics.push(new Metric(MetricKey.customersNew30d, newCustomers))
-        
+
         const churnCount = await subscriptionDao.getChurnLastDays(30)
         businessMetrics.push(new Metric(MetricKey.customersChurn30d, churnCount))
-        
+
         return businessMetrics
     }
 
-    static async templateDetails():Promise<Metric[]> {
-        const templates:TemplateView[] = await TemplateDao.getAllTemplateData()
+    static async templateDetails(): Promise<Metric[]> {
+        const templates: TemplateView[] = await TemplateDao.getAllTemplateData()
 
         // build a list of all metrics
-        const metricsKeys:MetricKey[] = [MetricKey.pagesTotal, MetricKey.pageTiles, MetricKey.pageChecklist, MetricKey.pageStrip, MetricKey.pageCover, MetricKey.pageSelection, MetricKey.pageNavlog, MetricKey.pageNotes, MetricKey.pageApproach, MetricKey.pageDiagram,
-            MetricKey.tilesTotal, MetricKey.tileAirport, MetricKey.tileAtis, MetricKey.tileChecklist, MetricKey.tileClearance, MetricKey.tileFuel, MetricKey.tileNavlog, MetricKey.tileNotes, MetricKey.tileRadios, MetricKey.tileSunlight, MetricKey.templatesStale]
+        const metricsKeys: MetricKey[] = [MetricKey.pagesTotal, MetricKey.pageTiles, MetricKey.pageChecklist, MetricKey.pageStrip, MetricKey.pageCover, MetricKey.pageSelection, MetricKey.pageNavlog, MetricKey.pageNotes, MetricKey.pageApproach, MetricKey.pageDiagram,
+        MetricKey.tilesTotal, MetricKey.tileAirport, MetricKey.tileAtis, MetricKey.tileChecklist, MetricKey.tileClearance, MetricKey.tileFuel, MetricKey.tileNavlog, MetricKey.tileNotes, MetricKey.tileRadios, MetricKey.tileSunlight, MetricKey.templatesStale]
         // populate the dictionary with metrics
-        const ml:{[key:string]:Metric} = {}
-        for(const key of metricsKeys) ml[key] = new Metric(key)
+        const ml: { [key: string]: Metric } = {}
+        for (const key of metricsKeys) ml[key] = new Metric(key)
 
-        for(let template of templates) {
-            for(let page of template.data) {
-                if(page.type == PageType.tiles) {
+        for (let template of templates) {
+            for (let page of template.data) {
+                if (page.type == PageType.tiles) {
                     ml[MetricKey.pageTiles].addOne()
                     try {
-                        for(let tile of page.data) {
+                        for (let tile of page.data) {
                             ml[MetricKey.tilesTotal].addOne()
-                            if(tile.name == 'airport') {
+                            if (tile.name == 'airport') {
                                 ml[MetricKey.tileAirport].addOne()
-                            } else if(tile.name == 'atis') {
+                            } else if (tile.name == 'atis') {
                                 ml[MetricKey.tileAtis].addOne()
-                            } else if(tile.name == 'checklist') {
+                            } else if (tile.name == 'checklist') {
                                 ml[MetricKey.tileChecklist].addOne()
-                            } else if(tile.name == 'clearance') {
+                            } else if (tile.name == 'clearance') {
                                 ml[MetricKey.tileClearance].addOne()
-                            } else if(tile.name == 'fuel') {
+                            } else if (tile.name == 'fuel') {
                                 ml[MetricKey.tileFuel].addOne()
-                            } else if(tile.name == 'navlog') {
+                            } else if (tile.name == 'navlog') {
                                 ml[MetricKey.tileNavlog].addOne()
-                            } else if(tile.name == 'notes') {
+                            } else if (tile.name == 'notes') {
                                 ml[MetricKey.tileNotes].addOne()
-                            } else if(tile.name == 'radios') {
+                            } else if (tile.name == 'radios') {
                                 ml[MetricKey.tileRadios].addOne()
-                            } else if(tile.name == 'sunlight') {
+                            } else if (tile.name == 'sunlight') {
                                 ml[MetricKey.tileSunlight].addOne()
                             }
                         }
-                    } catch(err) {
+                    } catch (err) {
                         console.log('[Metrics.templateDetails] could not list tiles', template.id, page.name, page.data)
                     }
-                } else if(page.type == PageType.checklist) {
+                } else if (page.type == PageType.checklist) {
                     ml[MetricKey.pageChecklist].addOne()
-                } else if(page.type == PageType.strips) {
+                } else if (page.type == PageType.strips) {
                     ml[MetricKey.pageStrip].addOne()
-                } else if(page.type == PageType.cover) {
+                } else if (page.type == PageType.cover) {
                     ml[MetricKey.pageCover].addOne()
-                } else if(page.type == PageType.selection) {
+                } else if (page.type == PageType.selection) {
                     ml[MetricKey.pageSelection].addOne()
-                } else if(page.type == PageType.navLog) {
+                } else if (page.type == PageType.navLog) {
                     ml[MetricKey.pageNavlog].addOne()
-                } else if(page.type == PageType.notes) {
+                } else if (page.type == PageType.notes) {
                     ml[MetricKey.pageNotes].addOne()
-                } else if(page.type == PageType.approach) {
+                } else if (page.type == PageType.approach) {
                     ml[MetricKey.pageApproach].addOne()
-                } else if(page.type == PageType.diagram) {
+                } else if (page.type == PageType.diagram) {
                     ml[MetricKey.pageDiagram].addOne()
                 } else {
                     continue
@@ -273,14 +273,14 @@ export class Metrics {
                 ml[MetricKey.pagesTotal].addOne()
             }
             // we assume that 12 data means stale
-            if(template.data.length == 12) {
+            if (template.data.length == 12) {
                 ml[MetricKey.templatesStale].addOne()
             }
         }
-        return metricsKeys.map( (mk:string) => ml[mk])
+        return metricsKeys.map((mk: string) => ml[mk])
     }
 
-    static async publicationsCheck():Promise<Metric[]> {
+    static async publicationsCheck(): Promise<Metric[]> {
         const publicationCount = await PublicationDao.count()
         return [new Metric('publications', publicationCount)]
     }
@@ -291,15 +291,15 @@ export class Metrics {
      * @param data 
      * @returns 
      */
-    static async sendMail(data:any):Promise<boolean> {
+    static async sendMail(data: any): Promise<boolean> {
         const message = 'Here are ' + new Date().toDateString() + ' metrics\n\n' + data;
-        return Email.send( message,EmailType.Metrics)
+        return Email.send(message, EmailType.Metrics)
     }
 
-    public static async pagePerUser():Promise<Map<number,UserUsage>> {
-        const result:UserTemplateData[] = await TemplateDao.getTemplateDataByUser()
+    public static async pagePerUser(): Promise<Map<number, UserUsage>> {
+        const result: UserTemplateData[] = await TemplateDao.getTemplateDataByUser()
         // console.log( 'templates count', result.length)
-        return result.reduce( (acc, utd) => {
+        return result.reduce((acc, utd) => {
             // console.log( entry.id, entry.pages)
             // console.log( utd.userId, templateData.length)
             const usage = acc.get(utd.userId) || new UserUsage()
@@ -307,29 +307,29 @@ export class Metrics {
             acc.set(utd.userId, usage)
             // console.log(entry.id, value)
             return acc
-        }, new Map<number,UserUsage>())
+        }, new Map<number, UserUsage>())
     }
 
-    static async usersPerAccountCategory():Promise<Metric[]> {
-        const output = new Promise<Metric[]>( (resolve, reject) => {
-            Metrics.pagePerUser().then(  async usage => {
+    static async usersPerAccountCategory(): Promise<Metric[]> {
+        const output = new Promise<Metric[]>((resolve, reject) => {
+            Metrics.pagePerUser().then(async usage => {
                 const cat0 = new Metric(MetricKey.userCat0)
                 const cat1 = new Metric(MetricKey.userCat1)
                 const cat5 = new Metric(MetricKey.userCat5)
                 const cat20 = new Metric(MetricKey.userCat20)
                 // reduce UserUsage map to individual metric
-                usage.forEach( (value:UserUsage, key:number) => {
-                    if(value.pages == 0) {
+                usage.forEach((value: UserUsage, key: number) => {
+                    if (value.pages == 0) {
                         cat0.addOne()
-                    } else if(value.pages < 5) {
+                    } else if (value.pages < 5) {
                         cat1.addOne()
-                    } else if(value.pages < 20) {
+                    } else if (value.pages < 20) {
                         cat5.addOne()
                     } else {
                         cat20.addOne()
                     }
                 })
-                if(cat0.value == 0) {
+                if (cat0.value == 0) {
                     const userCount = await new UserDao().count();
                     cat0.value = userCount - cat1.value - cat5.value - cat20.value;
                 }
@@ -339,39 +339,39 @@ export class Metrics {
         return output
     }
 
-    public static async perform():Promise<Metric[]> {
+    public static async perform(): Promise<Metric[]> {
         // return everything into one array
         const output = (await Promise.all([
-                Metrics.users(),
-                Metrics.feedbacks(),
-                Metrics.templateDetails(),
-                Metrics.usage(),
-                Metrics.business(),
-                Metrics.usersPerAccountCategory(),
-                Metrics.publicationsCheck(),
-                Metrics.templates(),
-                Metrics.airports(), 
-                Metrics.adip()
-            ])).reduce( (all,one) => {
-                all.push(...one)
-                return all
-            }, [])
+            Metrics.users(),
+            Metrics.feedbacks(),
+            Metrics.templateDetails(),
+            Metrics.usage(),
+            Metrics.business(),
+            Metrics.usersPerAccountCategory(),
+            Metrics.publicationsCheck(),
+            Metrics.templates(),
+            Metrics.airports(),
+            Metrics.adip()
+        ])).reduce((all, one) => {
+            all.push(...one)
+            return all
+        }, [])
         return output
     }
 
     public static async topAirports() {
-        const templates:TemplateView[] = await TemplateDao.getAllTemplateData()
+        const templates: TemplateView[] = await TemplateDao.getAllTemplateData()
 
         let map = {}
 
         console.log('tempates', templates.length)
-        for(let template of templates) {
-            for(let page of template.data) {
-                if(page.type == PageType.tiles) {
-                    for(let tile of page.data) {
-                        if(tile.name == 'airport') {
+        for (let template of templates) {
+            for (let page of template.data) {
+                if (page.type == PageType.tiles) {
+                    for (let tile of page.data) {
+                        if (tile.name == 'airport') {
                             console.log('airport tile', tile.data.code)
-                            if(!tile.data.code) continue
+                            if (!tile.data.code) continue
                             const code = tile.data.code.toUpperCase()
                             const count = map[code] ?? 0
                             map[code] = count + 1
@@ -381,7 +381,7 @@ export class Metrics {
             }
         }
 
-        for(let key in map) {
+        for (let key in map) {
             console.log(key, map[key])
         }
     }

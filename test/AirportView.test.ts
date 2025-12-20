@@ -1,7 +1,6 @@
 
-
-import {describe, expect, it, test} from '@jest/globals';
-import { Adip } from '../backend/adip/Adip';
+import { describe, expect, it, test } from '@jest/globals';
+import { AdipService } from '../backend/services/AdipService';
 import { Airport } from '../backend/models/Airport';
 import { AirportView } from '../backend/models/AirportView';
 import { PatternDirection } from '../backend/models/Runway'
@@ -11,12 +10,12 @@ import kbfiData from './jsonData/airport/kbfi.json'
 import krntChartData from './jsonData/chart/krnt.json'
 import krntData from './jsonData/airport/krnt.json'
 import { krntAtcs, krntIap } from './constants';
-import { airportFromData } from './Adip.test' 
+import { airportFromData } from './AdipService.test'
 
-function checkAtc(airport:AirportView,expectedAtcs:any) {
+function checkAtc(airport: AirportView, expectedAtcs: any) {
     expect(airport.atc).toHaveLength(expectedAtcs.length)
 
-    for(let index = 0; index < expectedAtcs.length; index++) {
+    for (let index = 0; index < expectedAtcs.length; index++) {
         const atc = airport.atc[index]
         const expected = expectedAtcs[index]
         expect(atc.mhz).toBe(expected.mhz)
@@ -25,7 +24,7 @@ function checkAtc(airport:AirportView,expectedAtcs:any) {
     }
 }
 
-function testUndefined(undefinedView:AirportView, code:string) {
+function testUndefined(undefinedView: AirportView, code: string) {
     expect(undefinedView).toBeDefined()
     expect(undefinedView.code).toBe(code)
     expect(undefinedView.asof).toBe(0)
@@ -38,10 +37,10 @@ function testUndefined(undefinedView:AirportView, code:string) {
     expect(undefinedView.atc).toHaveLength(0)
 }
 
-describe( 'Airport View', () => {
-    it( 'Creates AirportView from Undefined', () => {
+describe('Airport View', () => {
+    it('Creates AirportView from Undefined', () => {
         const undefinedView = new AirportView(undefined)
-        testUndefined(undefinedView,'')
+        testUndefined(undefinedView, '')
     })
 
     it('Creates undefined view for code', () => {
@@ -54,11 +53,11 @@ describe( 'Airport View', () => {
         const airportCode = 'code'
         const airportName = 'name'
         const airportElevation = 1234
-        const airport = new Airport( airportCode, airportName, airportElevation)
+        const airport = new Airport(airportCode, airportName, airportElevation)
         const view = new AirportView(airport)
-        expect(view).toBeDefined() 
+        expect(view).toBeDefined()
         expect(view.asof).toBe(0)
-        expect(view.code).toBe(airportCode) 
+        expect(view.code).toBe(airportCode)
         expect(view.name).toBe(airportName)
         expect(view.freq).toHaveLength(0)
         expect(view.rwys).toHaveLength(0)
@@ -71,13 +70,13 @@ describe( 'Airport View', () => {
     })
 
     test('Boeing View', () => {
-        const view = new AirportView(Adip.parseAirport(kbfiData))
+        const view = new AirportView(AdipService.parseAirport(kbfiData))
         // console.log(v6)
         expect(view).toBeInstanceOf(AirportView)
-        if( view) {
+        if (view) {
             expect(view.rwys.length).toBe(2)
-            const expectedRwys = [{name:'14L-32R',mhz:118.3},{name:'14R-32L',mhz:120.6}]
-            for(let index = 0; index < expectedRwys.length; index++) {
+            const expectedRwys = [{ name: '14L-32R', mhz: 118.3 }, { name: '14R-32L', mhz: 120.6 }]
+            for (let index = 0; index < expectedRwys.length; index++) {
                 const rwy = view.rwys[index]
                 expect(rwy.name).toBe(expectedRwys[index].name)
                 expect(rwy.freq).toBe(expectedRwys[index].mhz)
@@ -94,10 +93,10 @@ describe( 'Airport View', () => {
         expect(view?.asof).toBe(20240613)
         expect(view?.code).toBe('KRNT')
         expect(view?.name).toBe('Renton Muni')
-        const allFreq = [['CTAF','124.7'],['GND','121.6'],['ATIS','126.95'],['TWR','124.7'],['UNICOM','122.95']]
+        const allFreq = [['CTAF', '124.7'], ['GND', '121.6'], ['ATIS', '126.95'], ['TWR', '124.7'], ['UNICOM', '122.95']]
         expect(view.freq).toHaveLength(allFreq.length)
         // Test all frequencies
-        for(const pair of allFreq) {
+        for (const pair of allFreq) {
             // console.log(pair[0])
             const freq = Airport.getFrequencyMhz(view.freq, pair[0])
             expect(freq).toBeDefined()
@@ -120,8 +119,8 @@ describe( 'Airport View', () => {
         expect(end1?.mag).toBe(337)
         expect(end1?.tp).toBe(PatternDirection.Right)
         // check navaids
-        const expectedNavaids = [{id:"SEA",freq:116.8,type:"VORTAC",dist:5.2,to:47.7,},{id:"PAE",freq:110.6,type:"VOR/DME",dist:25.7,to:174.4,},{id:"OLM",freq:113.4,type:"VORTAC",dist:42,to:41.5,},{id:"CVV",freq:117.2,type:"VOR/DME",dist:49.6,to:155.4,}]
-        for(let index = 0; index < expectedNavaids.length; index++) {
+        const expectedNavaids = [{ id: "SEA", freq: 116.8, type: "VORTAC", dist: 5.2, to: 47.7, }, { id: "PAE", freq: 110.6, type: "VOR/DME", dist: 25.7, to: 174.4, }, { id: "OLM", freq: 113.4, type: "VORTAC", dist: 42, to: 41.5, }, { id: "CVV", freq: 117.2, type: "VOR/DME", dist: 49.6, to: 155.4, }]
+        for (let index = 0; index < expectedNavaids.length; index++) {
             const navaid = view.navaids[index]
             expect(navaid.id).toBe(expectedNavaids[index].id)
             expect(navaid.freq).toBe(expectedNavaids[index].freq)
@@ -137,19 +136,19 @@ describe( 'Airport View', () => {
     })
 
     test('1W1 view', () => {
-        const view = new AirportView(Adip.parseAirport(k1w1Data));
+        const view = new AirportView(AdipService.parseAirport(k1w1Data));
         expect(view).toBeDefined()
         expect(view.tpa).toBe(1229)
     })
 
     test('Format as of', () => {
-        expect( AirportView.formatAsOf('bogus')).toBe(0)
+        expect(AirportView.formatAsOf('bogus')).toBe(0)
         // "effectiveDate":"2024-07-11T00:00:00"
-        expect( AirportView.formatAsOf('2024-07-11T00:00:00')).toBe(20240711)
-        expect( AirportView.formatAsOf('2024-07-11T')).toBe(20240711)
-        expect( AirportView.formatAsOf('2024-07-11')).toBe(20240711)
-        expect( AirportView.formatAsOf('2024_07_11')).toBe(0)
+        expect(AirportView.formatAsOf('2024-07-11T00:00:00')).toBe(20240711)
+        expect(AirportView.formatAsOf('2024-07-11T')).toBe(20240711)
+        expect(AirportView.formatAsOf('2024-07-11')).toBe(20240711)
+        expect(AirportView.formatAsOf('2024_07_11')).toBe(0)
         // "effectiveDate":"2024-08-08T00:00:00"
-        expect( AirportView.formatAsOf('2024-08-08T00:00:00')).toBe(20240808)
+        expect(AirportView.formatAsOf('2024-08-08T00:00:00')).toBe(20240808)
     })
 })

@@ -175,6 +175,10 @@ export class AirportDao {
         `
     }
 
+    public static async deleteTest() {
+        await sql`DELETE FROM airports WHERE code='TEST'`;
+    }
+
     public static async countDuplicates(): Promise<number> {
         const result = await sql`SELECT COUNT(*) as count, Code from Airports WHERE creatorid IS NULL GROUP BY Code HAVING COUNT(*) > 1 ORDER BY count DESC`;
         return result.rowCount

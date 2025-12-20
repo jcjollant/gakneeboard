@@ -1,5 +1,5 @@
 
-import { afterAll, beforeAll, describe, expect, it} from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 import { UserDao } from '../../backend/dao/UserDao'
 import { jcUserId, jcHash, jcEmail, jcName, jcSource, jcCustomerId } from '../constants';
 import { AccountType } from '../../backend/models/AccountType';
@@ -12,8 +12,8 @@ import { Business } from '../../backend/business/Business';
 require('dotenv').config();
 
 describe('UserDao', () => {
-    let userDao:UserDao;
-    
+    let userDao: UserDao;
+
     beforeAll(async () => {
         userDao = new UserDao();
     })
@@ -33,6 +33,8 @@ describe('UserDao', () => {
     })
 
     it('getUserFromHash', async () => {
+        // Enforce the state of the database to match our expectations
+        await sql`UPDATE users SET customer_id=${jcCustomerId} WHERE sha256=${jcHash}`
         await UserDao.getUserFromHash(jcHash).then(user => {
             expect(user?.id).toEqual(jcUserId)
             expect(user?.sha256).toEqual(jcHash)
@@ -52,21 +54,21 @@ describe('UserDao', () => {
         const maxTemplates = 10
         const customerId = 'someCustomerId'
         const createDate = '2025-03-10 06:19:07.69087'
-        const data:string = JSON.stringify( {name:name,source:source,email:email,maxTemplates:maxTemplatesData})
+        const data: string = JSON.stringify({ name: name, source: source, email: email, maxTemplates: maxTemplatesData })
         const printCredits = 100
-        const row = { 
-            id:1, 
-            sha256:'sha', 
-            data:data, 
-            account_type:AccountType.beta, 
-            customer_id: customerId, 
-            print_credit: printCredits, 
+        const row = {
+            id: 1,
+            sha256: 'sha',
+            data: data,
+            account_type: AccountType.beta,
+            customer_id: customerId,
+            print_credit: printCredits,
             max_pages: maxPages,
             max_templates: maxTemplates,
-            create_time:createDate
+            create_time: createDate
         }
         const userDao = new UserDao();
-        const user:User = userDao.parseRow(row)
+        const user: User = userDao.parseRow(row)
         expect(user.id).toBe(1)
         expect(user.sha256).toBe('sha')
         expect(user.name).toBe(name)
@@ -83,23 +85,23 @@ describe('UserDao', () => {
     it('Add Prints', async () => {
         // const userDao = new UserDao();
         const addedCredits = 10;
-        await userDao.get(jcUserId).then( async (jc) => {
+        await userDao.get(jcUserId).then(async (jc) => {
             const initialPrintCredits = jc.printCredits;
             expect(jc.id).toBe(jcUserId)
-            await userDao.addPrints(jc, addedCredits).then( async (jc) => {
-                expect(jc.printCredits).toBe(initialPrintCredits+addedCredits)
+            await userDao.addPrints(jc, addedCredits).then(async (jc) => {
+                expect(jc.printCredits).toBe(initialPrintCredits + addedCredits)
             })
         })
     })
 
     it('Save', async () => {
-        const existingUser:User = new User(jcUserId, jcHash)
+        const existingUser: User = new User(jcUserId, jcHash)
         // Saving an existing user without overwrite should fail
         // const userDao = new UserDao()
-        await expect(userDao.save(existingUser)).rejects.toEqual( new Error('Cannot save existing user without overwrite'))
+        await expect(userDao.save(existingUser)).rejects.toEqual(new Error('Cannot save existing user without overwrite'))
 
         const newUser = newTestUser()
-        await userDao.save(newUser).then( (user:User) => {
+        await userDao.save(newUser).then((user: User) => {
             expect(user.id).toBeGreaterThan(0)
             expect(user.email).toBe(newUser.email)
             expect(user.sha256).toBe(newUser.sha256)
@@ -108,7 +110,7 @@ describe('UserDao', () => {
             const userId = user.id
             const newName = 'NewName'
             user.setName(newName);
-            userDao.save(user, true).then( (user:User) => {
+            userDao.save(user, true).then((user: User) => {
                 expect(user.id).toBe(userId)
                 expect(user.name).toBe(newName)
             })
@@ -116,40 +118,46 @@ describe('UserDao', () => {
     })
 
     it('refills', async () => {
-        // clean up
-        await sql`delete from users where account_type = 'test1' OR account_type='test2'`
+        // limit is 8 chars
+        const uniqueId = Math.floor(Math.random() * 99);
+        const testType1 = `t1-${uniqueId}`;
+        const testType2 = `t2-${uniqueId}`;
+
+        // clean up (just in case)
+        await sql`delete from users where account_type = ${testType1} OR account_type=${testType2}`
 
         // create two groups of users
         // fill an array with 4 'test1' and 6 'test2'
         const previous1 = 3;
         const previous2 = 5;
-        for( let index = 0; index < 10; index++) {
+        for (let index = 0; index < 10; index++) {
             const user = newTestUser()
-            const accountType = index < 4 ? 'test1' : 'test2'
+            // console.log( 'user', user.sha256)
+            const accountType = index < 4 ? testType1 : testType2
             const previous = index < 4 ? previous1 : previous2;
             // console.log('['+accountType+']')
             await db.query(`insert into users (sha256,account_type,version, print_credit) values ('${user.sha256}','${accountType}',0, ${previous})`)
         }
 
         const count1 = 10
-        const refill1 = await userDao.refill(count1, 'test1')
+        const refill1 = await userDao.refill(count1, testType1)
         const count2 = 20
-        const refill2 = await userDao.refill(count2, 'test2')
+        const refill2 = await userDao.refill(count2, testType2)
 
-        for(let r of refill1) {
+        for (let r of refill1) {
             expect(r.previousCount).toBe(previous1)
             expect(r.newCount).toBe(count1)
         }
-        for(let r of refill2) {
+        for (let r of refill2) {
             expect(r.previousCount).toBe(previous2)
             expect(r.newCount).toBe(count2)
         }
 
-        await sql`delete from users where account_type = 'test1' OR account_type='test2'`
+        await sql`delete from users where account_type = ${testType1} OR account_type=${testType2}`
     })
 
     it('getAll', async () => {
-        userDao.getAll().then( (users) => {
+        userDao.getAll().then((users) => {
             expect(users.length).toBeGreaterThan(1)
             // some non zero Id
             expect(users[0].id).toBeGreaterThan(0)
@@ -159,7 +167,7 @@ describe('UserDao', () => {
     })
 
     it('updateType', async () => {
-        const existingUser:User = new User(jcUserId, jcHash)
+        const existingUser: User = new User(jcUserId, jcHash)
         existingUser.accountType = AccountType.simmer
         existingUser.maxTemplates = Business.MAX_TEMPLATE_SIMMER
         existingUser.maxPages = Business.MAX_PAGES_SIMMER
@@ -168,7 +176,7 @@ describe('UserDao', () => {
         expect(readUser.id).toBe(jcUserId)
         expect(readUser.maxTemplates).toBe(Business.MAX_TEMPLATE_SIMMER)
         expect(readUser.maxPages).toBe(Business.MAX_PAGES_SIMMER)
-        
+
         // Switch this user to Beta and check wether values are saved
         existingUser.accountType = AccountType.beta
         existingUser.maxTemplates = Business.MAX_TEMPLATE_BETA

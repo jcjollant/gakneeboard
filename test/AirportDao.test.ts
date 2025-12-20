@@ -44,6 +44,8 @@ describe('Custom Airports', () => {
         airportJc.source = AirportSource.User;
         const airportAs: Airport = new Airport(customCode, customNameAS, 1000)
         airportAs.source = AirportSource.User;
+        // Clean up any existing airports with this code (public or custom)
+        await AirportDao.deleteTest()
         await AirportDao.createOrUpdateCustom(airportJc, jcUserId)
         await AirportDao.createOrUpdateCustom(airportAs, userIdAs)
         // Read for JC

@@ -1,5 +1,5 @@
 import { describe, expect, it, test } from '@jest/globals';
-import { Adip } from '../backend/adip/Adip'
+import { AdipService } from '../backend/services/AdipService'
 import { Airport } from '../backend/models/Airport';
 import { PatternDirection, Runway, RunwaySurface } from '../backend/models/Runway'
 import kbffData from './jsonData/airport/kbff.json'
@@ -16,8 +16,8 @@ import { krntAtcs, krntIap, krntApd, krntDep } from './constants';
 
 // combines airport details with chart data
 export function airportFromData(airportDetails: any, airportChartData: any): Airport {
-    const airport: Airport = Adip.parseAirport(airportDetails)
-    const acd = Adip.parseAirportChartData(airportChartData);
+    const airport: Airport = AdipService.parseAirport(airportDetails)
+    const acd = AdipService.parseAirportChartData(airportChartData);
     airport.iap = acd.iap
     airport.dep = acd.dep
     airport.diagram = acd.diagram
@@ -36,66 +36,66 @@ function checkAtc(airport: Airport, expectedAtcs: any) {
     }
 }
 
-describe('Adip', () => {
+describe('AdipService', () => {
 
     it('gets effectiveDate from variables', () => {
         process.env.EFFECTIVE_DATE = "test"
-        expect(Adip.currentEffectiveDate()).toBe("test")
+        expect(AdipService.currentEffectiveDate()).toBe("test")
         // unset environment variable
         delete process.env.EFFECTIVE_DATE
-        expect(Adip.currentEffectiveDate()).toBe(Adip.defaultEffectiveDate)
+        expect(AdipService.currentEffectiveDate()).toBe(AdipService.defaultEffectiveDate)
     })
 
     test('Military frequencies', () => {
-        expect(Adip.isMilitary(123.0)).toBeFalsy()
-        expect(Adip.isMilitary(269.9)).toBeTruthy()
+        expect(AdipService.isMilitary(123.0)).toBeFalsy()
+        expect(AdipService.isMilitary(269.9)).toBeTruthy()
     })
 
     test('Variation should be <0 for East and >0 for west', () => {
         let data = { 'magneticVariation': '15E' }
-        expect(Adip.getVariation(data)).toBe(-15)
+        expect(AdipService.getVariation(data)).toBe(-15)
         data = { 'magneticVariation': '16W' }
-        expect(Adip.getVariation(data)).toBe(16)
+        expect(AdipService.getVariation(data)).toBe(16)
         // no data => defaults to 0
         const data2 = {}
-        expect(Adip.getVariation(data2)).toBe(0)
+        expect(AdipService.getVariation(data2)).toBe(0)
     })
 
     test('Runway surface', () => {
         const data = {}
         const rs1: RunwaySurface = new RunwaySurface('?', '?')
-        expect(Adip.getRunwaySurface(data)).toEqual(rs1)
+        expect(AdipService.getRunwaySurface(data)).toEqual(rs1)
         const data2 = { surfaceType: "type", surfaceCondition: "condition" }
-        const rs2: RunwaySurface = Adip.getRunwaySurface(data2)
+        const rs2: RunwaySurface = AdipService.getRunwaySurface(data2)
         expect(rs2.type).toEqual("type")
         expect(rs2.cond).toEqual("condition")
         const data3 = { surfaceTypeCondition: "typecondition" }
-        const rs3: RunwaySurface = Adip.getRunwaySurface(data3)
+        const rs3: RunwaySurface = AdipService.getRunwaySurface(data3)
         expect(rs3.type).toEqual("typecondition")
         expect(rs3.cond).toEqual("typecondition")
     })
 
     test('Frequency parsing', () => {
-        expect(Adip.parseFrequency('117.1 ;ARR-NE')).toBe(117.1)
-        expect(Adip.parseFrequency('123.0')).toBe(123.0)
-        expect(Adip.parseFrequency('120.2 ;RWY 16L/34R')).toBe(120.2)
+        expect(AdipService.parseFrequency('117.1 ;ARR-NE')).toBe(117.1)
+        expect(AdipService.parseFrequency('123.0')).toBe(123.0)
+        expect(AdipService.parseFrequency('120.2 ;RWY 16L/34R')).toBe(120.2)
 
         const seattleApproachFreq = '119.2 ;017-079 SEA RWY 34'
-        expect(Adip.parseFrequency(seattleApproachFreq)).toBe(119.2)
-        expect(Adip.parseFrequencyNotes(seattleApproachFreq)).toBe('017-079 SEA RWY 34')
+        expect(AdipService.parseFrequency(seattleApproachFreq)).toBe(119.2)
+        expect(AdipService.parseFrequencyNotes(seattleApproachFreq)).toBe('017-079 SEA RWY 34')
     })
 
     test('Runway Frequency', () => {
         const rwy: Runway = new Runway('14L/32R', 3709, 100)
-        expect(Adip.getRunwayFrequency(kbfiData, kbfiData.runways[0])).toBe(118.3)
-        expect(Adip.getRunwayFrequency(kbfiData, kbfiData.runways[1])).toBe(120.6)
+        expect(AdipService.getRunwayFrequency(kbfiData, kbfiData.runways[0])).toBe(118.3)
+        expect(AdipService.getRunwayFrequency(kbfiData, kbfiData.runways[1])).toBe(120.6)
     })
 
     test('Names are capitalized', () => {
         const adip1: any = { name: 'THIS IS A NAME' }
-        expect(Adip.getName(adip1)).toBe('This Is A Name')
+        expect(AdipService.getName(adip1)).toBe('This Is A Name')
         const adip2: any = { name: 'THISISANAME' }
-        expect(Adip.getName(adip2)).toBe('Thisisaname')
+        expect(AdipService.getName(adip2)).toBe('Thisisaname')
     })
 
     test('Renton fields', async () => {
@@ -173,7 +173,7 @@ describe('Adip', () => {
 
     test('S43 fields', () => {
         const before = Date.now()
-        const airport = Adip.parseAirport(s43Data)
+        const airport = AdipService.parseAirport(s43Data)
         expect(airport.code).toBe('S43')
         expect(airport.name).toBe('Harvey Fld')
         expect(airport.elev).toBe(22.8)
@@ -183,7 +183,7 @@ describe('Adip', () => {
     })
 
     test('KBFI fields', () => {
-        const airport = Adip.parseAirport(kbfiData)
+        const airport = AdipService.parseAirport(kbfiData)
         expect(airport.code).toBe('KBFI')
         expect(airport.rwys).toHaveLength(2)
         expect(airport.rwys[0].freq).toBeDefined()
@@ -198,7 +198,7 @@ describe('Adip', () => {
 
     test('KDZJ fields', () => {
         // This data is particular for have AWOS-3PT
-        const airport = Adip.parseAirport(kdzjData)
+        const airport = AdipService.parseAirport(kdzjData)
         expect(airport.code).toBe('KDZJ')
         expect(airport.freq).toHaveLength(3)
         expect(airport.freq[0].name).toBe('CTAF')
@@ -211,7 +211,7 @@ describe('Adip', () => {
 
     test('KCDW fields', () => {
         // This data is particular for having a huge number of VOR
-        const airport = Adip.parseAirport(kcdwData)
+        const airport = AdipService.parseAirport(kcdwData)
         expect(airport.code).toBe('KCDW')
         expect(airport.navaids).toHaveLength(10)
 
@@ -226,27 +226,27 @@ describe('Adip', () => {
     })
 
     test('KBFF data', () => {
-        const airport = Adip.parseAirport(kbffData)
+        const airport = AdipService.parseAirport(kbffData)
         expect(airport.code).toBe('KBFF')
         expect(airport.name).toBe('Western Nebraska Rgnl/wm B Heilig Fld/scottsbluff')
     })
 
     test('Invalid Code', () => {
         try {
-            const airport = Adip.parseAirport({ "error": "noAirportData" })
+            const airport = AdipService.parseAirport({ "error": "noAirportData" })
             expect(true).toBeFalsy()
         } catch (e) {
         }
     })
 
     test('Chart Data', () => {
-        const kpae = Adip.parseAirportChartData(kpaeChartData)
+        const kpae = AdipService.parseAirportChartData(kpaeChartData)
         expect(kpae.iap).toBeDefined()
         expect(kpae.iap).toHaveLength(7)
         expect(kpae.diagram).toBeDefined()
         expect(kpae.dep).toBeDefined()
         expect(kpae.dep).toHaveLength(1)
-        const krnt = Adip.parseAirportChartData(krntChartData)
+        const krnt = AdipService.parseAirportChartData(krntChartData)
         expect(krnt.iap).toBeDefined()
         expect(krnt.iap).toHaveLength(3)
         expect(krnt.diagram).toBeDefined()
@@ -255,7 +255,7 @@ describe('Adip', () => {
     })
 
     test('KPAE Frequencies', () => {
-        const kpae = Adip.parseAirport(kpaeData);
+        const kpae = AdipService.parseAirport(kpaeData);
 
         // We should see frequency notes
         const allFreq = [
@@ -279,7 +279,7 @@ describe('Adip', () => {
         }
     })
     test('CYPQ fields', () => {
-        const airport = Adip.parseAirport(cypqData)
+        const airport = AdipService.parseAirport(cypqData)
         expect(airport.code).toBe('CYPQ')
         expect(airport.name).toBe('Peterborough')
         expect(airport.elev).toBe(628)
@@ -288,6 +288,6 @@ describe('Adip', () => {
         // Robustness check: Ensure missing runwayIdentifier doesn't crash
         const rwyMissingId = { ...cypqData.runways[0], runwayIdentifier: undefined };
         const dataBadRwy = { ...cypqData, runways: [rwyMissingId] };
-        expect(() => Adip.parseAirport(dataBadRwy)).not.toThrow();
+        expect(() => AdipService.parseAirport(dataBadRwy)).not.toThrow();
     })
 })

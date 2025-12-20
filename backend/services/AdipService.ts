@@ -1,4 +1,4 @@
-import { AdipDao } from './AdipDao'
+import { AdipDao } from '../adip/AdipDao'
 import { Airport } from '../models/Airport'
 import { Chart } from '../models/Chart'
 import { Atc } from '../models/Atc'
@@ -11,14 +11,14 @@ import { AirportChartData } from '../models/AirportChartData'
 
 const maxNavaids: number = 10
 
-export class Adip {
+export class AdipService {
     static basicAuth: string = 'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP'
     static defaultEffectiveDate = "2025-10-30T00:00:00"
     public static currentEffectiveDate(): string {
-        // console.log('[Adip.currentEffectiveDate]', process.env.EFFECTIVE_DATE, Adip.defaultEffectiveDate)
+        // console.log('[AdipService.currentEffectiveDate]', process.env.EFFECTIVE_DATE, AdipService.defaultEffectiveDate)
         // return default date if environment variable is not set
 
-        return process.env.EFFECTIVE_DATE || Adip.defaultEffectiveDate
+        return process.env.EFFECTIVE_DATE || AdipService.defaultEffectiveDate
     }
 
     /**
@@ -37,7 +37,7 @@ export class Adip {
                 { query: "autoLookupPublicAirportList", param1: code },
                 {
                     headers: {
-                        'Authorization': Adip.basicAuth,
+                        'Authorization': AdipService.basicAuth,
                         "Content-Type": 'application/json'
                     },
                 })
@@ -60,14 +60,14 @@ export class Adip {
         const payload: string = '{ "locId": "' + fetchCode + '" }'
         const config: any = {
             headers: {
-                'Authorization': Adip.basicAuth,
+                'Authorization': AdipService.basicAuth,
                 "Content-Type": "text/plain"
             },
         }
 
         const [airport, acd] = await Promise.all([
-            Adip.fetchAirportDetails(fetchCode, payload, config, saveRawData),
-            Adip.fetchAirportChartData(payload, config)
+            AdipService.fetchAirportDetails(fetchCode, payload, config, saveRawData),
+            AdipService.fetchAirportChartData(payload, config)
         ])
 
         // enrich airport with approaches if both are defined
@@ -77,7 +77,7 @@ export class Adip {
             // airport.dep = acd.dep
         }
 
-        // console.log('[Adip.fetchAirport]', JSON.stringify(airport))
+        // console.log('[AdipService.fetchAirport]', JSON.stringify(airport))
 
         return airport;
     }
@@ -87,7 +87,7 @@ export class Adip {
         return new Promise<AirportChartData>((resolve, reject) => {
             axios.post('https://adip.faa.gov/agisServices/public-api/getAirportChartData', payload, config)
                 .then((response) => {
-                    const acd = Adip.parseAirportChartData(response.data)
+                    const acd = AdipService.parseAirportChartData(response.data)
                     resolve(acd)
                 })
                 .catch(error => {
@@ -107,12 +107,12 @@ export class Adip {
             let airport: Airport | undefined = undefined
             axios.post('https://adip.faa.gov/agisServices/public-api/getAirportDetails', payload, config)
                 .then(response => {
-                    // console.log( '[Adip.fetchAirportDetails]', JSON.stringify(response.data))
+                    // console.log( '[AdipService.fetchAirportDetails]', JSON.stringify(response.data))
                     try {
-                        airport = Adip.parseAirport(response.data)
+                        airport = AdipService.parseAirport(response.data)
                         airport.fetchTime = Date.now();
                     } catch (e) {
-                        console.log('[Adip.fetchAirportDetails] failed to parse data', e)
+                        console.log('[AdipService.fetchAirportDetails] failed to parse data', e)
                         airport = undefined
                     }
 
@@ -123,7 +123,7 @@ export class Adip {
                             const dataRecap: any = { length: JSON.stringify(response.data).length }
                             AdipDao.save(fetchCode, dataRecap)
                         } catch (e) {
-                            console.log('[Adip.fetchAirportDetails] cannot save Adip data')
+                            console.log('[AdipService.fetchAirportDetails] cannot save Adip data')
                         }
                     }
 
@@ -183,8 +183,8 @@ export class Adip {
         if (adip && adip.facility && adip.facility.frequencies && rwy && rwy.runwayIdentifier) {
             const candidates = adip.facility.frequencies
                 .filter((freq: any) => freq.frequency.includes(rwy.runwayIdentifier))
-                .map((freq: any) => Adip.parseFrequency(freq.frequency))
-                .filter((freq: number) => !Adip.isMilitary(freq))
+                .map((freq: any) => AdipService.parseFrequency(freq.frequency))
+                .filter((freq: number) => !AdipService.isMilitary(freq))
             if (candidates.length > 0) {
                 output = candidates[0]
             }
@@ -238,16 +238,16 @@ export class Adip {
     static parseAirport(adip: any): Airport {
         if (!adip || adip.error == 'noAirportData') throw new Error('No adip data')
         const code: string = ('icaoId' in adip ? adip.icaoId : 'locId' in adip ? adip.locId : '?')
-        const name: string = Adip.getName(adip)
+        const name: string = AdipService.getName(adip)
         const elevation: number = adip.elevation
         const airport = new Airport(code, name, elevation)
 
         // Scan adip.facility.frequencies
         if (adip.ctaf) {
-            airport.addFrequency('CTAF', Adip.parseFrequency(adip.ctaf))
+            airport.addFrequency('CTAF', AdipService.parseFrequency(adip.ctaf))
         }
         if (adip.unicom) {
-            airport.addFrequency('UNICOM', Adip.parseFrequency(adip.unicom))
+            airport.addFrequency('UNICOM', AdipService.parseFrequency(adip.unicom))
         }
         if (adip.effectiveDate) {
             airport.effectiveDate = adip.effectiveDate
@@ -271,11 +271,11 @@ export class Adip {
                 }
                 if (name == 'ATIS') weatherFound = true
                 // Augment the name with Rwy Name
-                return new Frequency(name, Adip.parseFrequency(f.frequency), Adip.parseFrequencyNotes(f.frequency))
+                return new Frequency(name, AdipService.parseFrequency(f.frequency), AdipService.parseFrequencyNotes(f.frequency))
             })
-            // console.log('[Adip.airportFromDetails]',JSON.stringify(frequencies))
+            // console.log('[AdipService.airportFromDetails]',JSON.stringify(frequencies))
             // add frequencies if they are not military
-            airport.addFrequencies(frequencies.filter(f => !Adip.isMilitary(f.mhz)))
+            airport.addFrequencies(frequencies.filter(f => !AdipService.isMilitary(f.mhz)))
         }
         if (!weatherFound && adip.asosAwos && adip.asosAwos.length > 0 && adip.asosAwos[0].frequency) { // second chance to get weather from asosAwos
             airport.addFrequency(adip.asosAwos[0].sensorType, adip.asosAwos[0].frequency)
@@ -289,20 +289,20 @@ export class Adip {
                 const length: number = Number(rwy.length)
                 const width: number = Number(rwy.width)
                 const runway: Runway = new Runway(name, length, width)
-                runway.setRunwaySurface(Adip.getRunwaySurface(rwy))
+                runway.setRunwaySurface(AdipService.getRunwaySurface(rwy))
                 // runway frequency
-                runway.freq = Adip.getRunwayFrequency(adip, rwy)
+                runway.freq = AdipService.getRunwayFrequency(adip, rwy)
                 // ends
-                const magneticVariation: number = Adip.getVariation(adip)
+                const magneticVariation: number = AdipService.getVariation(adip)
                 for (const rwyEnd of [rwy.baseEnd, rwy.reciprocalEnd]) {
-                    const end: RunwayEnd | undefined = Adip.getRunwayEnd(runway, rwyEnd)
+                    const end: RunwayEnd | undefined = AdipService.getRunwayEnd(runway, rwyEnd)
                     if (!end) continue
-                    const orientation: number = Adip.getOrientation(rwyEnd, magneticVariation)
+                    const orientation: number = AdipService.getOrientation(rwyEnd, magneticVariation)
                     end.setMagneticOrientation(orientation)
-                    const tp: PatternDirection = Adip.parseTrafficPattern(rwyEnd)
+                    const tp: PatternDirection = AdipService.parseTrafficPattern(rwyEnd)
                     end.setTrafficPattern(tp)
                     // look for localizers
-                    const ils = Adip.parseIls(rwyEnd, end.name)
+                    const ils = AdipService.parseIls(rwyEnd, end.name)
                     if (ils) {
                         airport.addFrequency('LOC ' + ils.id + ' ' + ils.rwyName, ils.locFreq)
                     }
@@ -324,13 +324,13 @@ export class Adip {
         if (adip.satelliteAirports) {
             // build a raw list without military freq
             const rawList = adip.satelliteAirports.map((sa: any) => {
-                const freq: number = Adip.parseFrequency(sa.frequency);
+                const freq: number = AdipService.parseFrequency(sa.frequency);
                 let use: string = sa.frequencyUse;
                 const name: string = sa.masterAirportName;
-                const notes: string = Adip.parseFrequencyNotes(sa.frequency)
+                const notes: string = AdipService.parseFrequencyNotes(sa.frequency)
                 if (notes.length > 0) use += '(' + notes + ')'
                 return { freq: freq, name: name, use: use }
-            }).filter((elt: any) => !Adip.isMilitary(elt.freq))
+            }).filter((elt: any) => !AdipService.isMilitary(elt.freq))
             // now build the final list with consolidated freq
             const atcs: Atc[] = []
             for (const entry of rawList) {
@@ -392,7 +392,7 @@ export class Adip {
         try {
             return new Ils(rwyEnd.ils.identifier, rwyEnd.ils.localizer.frequency, rwyName)
         } catch (e) {
-            console.log('[Adip.parseIls]', e)
+            console.log('[AdipService.parseIls]', e)
             return undefined;
         }
     }

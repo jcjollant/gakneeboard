@@ -1,10 +1,10 @@
 import { db, sql } from "@vercel/postgres";
-import { Adip } from "./Adip";
+import { AdipService } from "../services/AdipService";
 
 export class AdipDao {
 
     public static async cleanUpStaleData(): Promise<number> {
-        const effectiveDate = Adip.currentEffectiveDate()
+        const effectiveDate = AdipService.currentEffectiveDate()
         const result = await sql`UPDATE adip SET data=NULL WHERE code in (SELECT DISTINCT code FROM adip WHERE create_time > ${effectiveDate}) AND create_time < ${effectiveDate} AND data NOTNULL`
         return Promise.resolve(result.rowCount)
     }

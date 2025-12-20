@@ -4,7 +4,7 @@ import { currentAsOf, jcUserId } from './constants';
 import { AirportSketch } from '../backend/AirportSketch';
 import { AirportCreationRequest } from '../backend/models/AirportCreationRequest';
 import { CodeAndAirport } from '../backend/models/CodeAndAirport';
-import { Adip } from '../backend/adip/Adip';
+import { AdipService } from '../backend/services/AdipService';
 import { AirportDao } from '../backend/AirportDao';
 import { Airport, AirportSource } from '../backend/models/Airport';
 import { GApiError } from '../backend/GApiError';
@@ -155,12 +155,12 @@ describe('AirportService Tests', () => {
     describe('getAirportCurent', () => {
         it('Deals with invalid codes', async () => {
             jest.spyOn(AirportSketch, 'get').mockResolvedValue('')
-            jest.spyOn(Adip, 'fetchAirport').mockResolvedValue(undefined)
+            jest.spyOn(AdipService, 'fetchAirport').mockResolvedValue(undefined)
 
             // invalid code should be undefined
             const invalidCode = 'ABCDEFGH'
             expect(await AirportService.getAirportCurrent(invalidCode, [])).toEqual(new CodeAndAirport(invalidCode))
-            expect(Adip.fetchAirport).toBeCalledTimes(0)
+            expect(AdipService.fetchAirport).toBeCalledTimes(0)
             expect(AirportSketch.get).toBeCalledTimes(0)
         })
 
@@ -170,7 +170,7 @@ describe('AirportService Tests', () => {
 
             // Airport not found in adip
             const validCode = 'RNT'
-            jest.spyOn(Adip, 'fetchAirport').mockResolvedValue(undefined)
+            jest.spyOn(AdipService, 'fetchAirport').mockResolvedValue(undefined)
             jest.spyOn(AirportDao, 'createUnknown').mockResolvedValue(undefined)
             expect(await AirportService.getAirportCurrent(validCode, [])).toEqual(new CodeAndAirport(validCode))
             // Adip should be called once
@@ -187,12 +187,12 @@ describe('AirportService Tests', () => {
 
             const validCode = 'KBFI'
             // Code is valid and airport is found in adip
-            jest.spyOn(Adip, 'fetchAirport').mockResolvedValue(undefined)
+            jest.spyOn(AdipService, 'fetchAirport').mockResolvedValue(undefined)
             const mockBoeing = new Airport(validCode, "Boieng Field", 42)
             // Default source is Adip, but let's be explicit if needed or just verify default.
             // validMock.source is initialized to Adip in constructor.
 
-            jest.spyOn(Adip, 'fetchAirport').mockResolvedValue(mockBoeing)
+            jest.spyOn(AdipService, 'fetchAirport').mockResolvedValue(mockBoeing)
             jest.spyOn(AirportDao, 'create').mockResolvedValue(undefined)
             expect(await AirportService.getAirportCurrent(validCode, [])).toEqual(new CodeAndAirport(validCode, mockBoeing))
             expect(AirportDao.create).toBeCalledTimes(1)
@@ -212,19 +212,19 @@ describe('AirportService Tests', () => {
             const mockCaa = new CodeAndAirport(mockCode, mockCustom)
             const currentCode = "RNT"
             const currentAirport = new Airport(currentCode, "Current Renton", 42)
-            currentAirport.effectiveDate = Adip.currentEffectiveDate()
+            currentAirport.effectiveDate = AdipService.currentEffectiveDate()
             const currentCaa = new CodeAndAirport(currentCode, currentAirport)
             const kuCode = 'KUNK'
             const kuCaa = CodeAndAirport.undefined(kuCode)
             const knownAirports = [mockCaa, currentCaa, kuCaa]
 
-            jest.spyOn(Adip, 'fetchAirport').mockResolvedValue(undefined)
+            jest.spyOn(AdipService, 'fetchAirport').mockResolvedValue(undefined)
             expect(await AirportService.getAirportCurrent(mockCode, knownAirports)).toEqual(mockCaa)
             expect(await AirportService.getAirportCurrent(currentCode, knownAirports)).toEqual(currentCaa)
             expect(await AirportService.getAirportCurrent(kuCode, knownAirports)).toEqual(kuCaa)
-            expect(Adip.fetchAirport).toBeCalledTimes(0)
+            expect(AdipService.fetchAirport).toBeCalledTimes(0)
             expect(await AirportService.getAirportCurrent(kuCode, knownAirports)).toEqual(kuCaa)
-            expect(Adip.fetchAirport).toBeCalledTimes(0)
+            expect(AdipService.fetchAirport).toBeCalledTimes(0)
         })
     })
 
@@ -244,7 +244,7 @@ describe('AirportService Tests', () => {
             expectedAirport.rwys = []
             expectedAirport.version = Airport.currentVersion
 
-            jest.spyOn(Adip, 'currentEffectiveDate').mockReturnValue('20250101')
+            jest.spyOn(AdipService, 'currentEffectiveDate').mockReturnValue('20250101')
             jest.spyOn(AirportDao, 'create').mockResolvedValue(undefined)
 
             const result = await AirportService.createAirport(request)
@@ -281,7 +281,7 @@ describe('AirportService Tests', () => {
 
     it('Creates a new airport from fixture', async () => {
         const request = cnf4 as unknown as AirportCreationRequest;
-        jest.spyOn(Adip, 'currentEffectiveDate').mockReturnValue('20250101')
+        jest.spyOn(AdipService, 'currentEffectiveDate').mockReturnValue('20250101')
         jest.spyOn(AirportDao, 'create').mockResolvedValue(undefined)
 
         const result = await AirportService.createAirport(request)

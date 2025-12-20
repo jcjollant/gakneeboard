@@ -1,17 +1,10 @@
-import { describe, expect, it, jest, test } from '@jest/globals';
-import { GApi } from '../backend/GApi'
-import { jcHash, jcUserId, jcToken, jcName } from './constants'
-import { currentAsOf } from './constants';
+import { describe, expect, test } from '@jest/globals';
+import { GApi } from '../backend/GApi';
 import { UserMiniView } from '../backend/models/UserMiniView';
 import { UserTools } from '../backend/UserTools';
-import { AirportSketch } from '../backend/AirportSketch';
-import { CodeAndAirport } from '../backend/models/CodeAndAirport';
-import { Adip } from '../backend/adip/Adip';
-import { AirportDao } from '../backend/AirportDao';
-import { Airport } from '../backend/models/Airport';
+import { jcHash, jcName, jcToken, jcUserId } from './constants';
 
-import * as dotenv from 'dotenv'
-import { GApiError } from '../backend/GApiError';
+import * as dotenv from 'dotenv';
 dotenv.config()
 
 describe('GApi Tests', () => {
