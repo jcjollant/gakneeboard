@@ -27,14 +27,14 @@ export const RouterNames = {
 const routes = [
     { path: '/', name: RouterNames.Home, component: Home },
     // redirect route to FTUX with youtube utm parameters
-    { path: '/y', redirect: {name:RouterNames.FTUX, query : { utm_source : 'youtube', utm_medium : 'comment', utm_campaign : 'weekly'}}},
-    { path: '/i', redirect: {name:RouterNames.FTUX, query : { utm_source : 'instagran', utm_medium : 'comment', utm_campaign : 'weekly'}}},
-    { path: '/f', redirect: {name:RouterNames.FTUX, query : { utm_source : 'facebook', utm_medium : 'comment', utm_campaign : 'weekly'}}},
+    { path: '/y', redirect: { name: RouterNames.FTUX, query: { utm_source: 'youtube', utm_medium: 'comment', utm_campaign: 'weekly' } } },
+    { path: '/i', redirect: { name: RouterNames.FTUX, query: { utm_source: 'instagran', utm_medium: 'comment', utm_campaign: 'weekly' } } },
+    { path: '/f', redirect: { name: RouterNames.FTUX, query: { utm_source: 'facebook', utm_medium: 'comment', utm_campaign: 'weekly' } } },
     { path: '/admin', name: RouterNames.Admin, component: Admin },
     { path: '/plans', name: RouterNames.Plans, component: PricingPlans },
     { path: '/thankyou', name: RouterNames.ThankYou, component: ThankYou },
     { path: '/print/:id', name: RouterNames.Print, component: Print },
-    { path: '/ftux', name: RouterNames.FTUX, component: FTUX},
+    { path: '/ftux', name: RouterNames.FTUX, component: FTUX },
     { path: '/template/:id', name: RouterNames.Template, component: TemplateViewer },
     { path: '/format-selector', name: RouterNames.FormatSelector, component: FormatSelector },
     { path: '/demo/:name', name: RouterNames.Demo, component: Demo },
