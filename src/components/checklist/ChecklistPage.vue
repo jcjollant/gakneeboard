@@ -14,7 +14,8 @@
                 </div>
             </div>
             <div class="editChoice">
-                <OneChoice v-model="choosenEditing" :choices="choicesEditing"/> 
+                <OneChoice v-if="choicesEditing.length > 1" v-model="choosenEditing" :choices="choicesEditing"/> 
+                <div v-else></div> 
                 <div class="columnsChoice">
                     <div>Mode</div>
                     <OneChoice v-model="choosenEditorMode" :choices="[choiceEditorModeUi, choiceEditorModeText]"/>
