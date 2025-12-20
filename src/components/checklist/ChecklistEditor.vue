@@ -369,7 +369,7 @@ function getItemClass(item: ChecklistItem, index: number) {
 
 .item-edit {
     display: grid;
-    grid-template-columns: 70% 1fr;
+    grid-template-columns: 7fr 3fr;
     gap: 10px;
 }
 
@@ -445,6 +445,7 @@ function getItemClass(item: ChecklistItem, index: number) {
     cursor: pointer;
     min-height: 30px;
     flex-grow: 1; /* Take remaining space */
+    text-wrap: initial;
 }
 .item-display:hover .item-actions {
     visibility: visible;
@@ -452,7 +453,7 @@ function getItemClass(item: ChecklistItem, index: number) {
 
 .item-content {
     display: grid;
-    grid-template-columns: 70% auto;
+    grid-template-columns: 7fr 3fr;
     font-weight: 500;
 }
 .challenge {
