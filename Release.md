@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 12/19/2025 - 5.52.1 - Checklist editor fine tuning
 ## 12/19/2025 - 5.52.0 - New Checklist editor in the checklist page
 ## 12/17/2025 - 5.51.8 - Updated AirportTile help video
 ## 12/17/2025 - 5.51.7 - Display mode selection bug fix
