@@ -11,6 +11,9 @@ This data is available in HTML format at an URL we can resolve with a search que
 Once this HTML page is fetched, we should parse its content and record the airport data in the 'airports' table with a 'skyvector' source
 If this airport search is not known by skyvector (see unsuccessful search below), we should mark this airport as unknonw in the database
 
+## Implementation directions
+SkyVector service should implement AirportDataSource. Airport Service should identify SkyVector as the service when Adip is not a good fit but the code is 4 characters long.
+
 ## Examples
 ### Successful skyvector search output
 The example below shows the initial search query for airport code SUDU and the resulting 301 which contains the HTML location of interest

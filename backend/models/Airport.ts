@@ -9,7 +9,8 @@ import { Runway } from './Runway'
 
 export enum AirportSource {
     Adip = 'adip',
-    User = 'user'
+    User = 'user',
+    SkyVector = 'skyvector'
 }
 
 export class Airport {

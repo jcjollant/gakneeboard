@@ -1,4 +1,5 @@
 import { AdipService } from './AdipService'
+import { SkyvectorService } from './SkyvectorService'
 import { Airport, versionInvalid, AirportSource } from '../models/Airport'
 import { AirportDao } from '../AirportDao'
 import { AirportSketch } from '../AirportSketch'
@@ -200,6 +201,10 @@ export class AirportService {
         // we like codes that have 3 letters or 4 letters starting with K or P  
         if (code.length == 3 || (code.length == 4 && (code.startsWith('K') || code.startsWith('P')))) {
             return new AdipService()
+        }
+        // Fallback for other 4-letter codes (international)
+        if (code.length == 4) {
+            return new SkyvectorService()
         }
         return undefined
     }

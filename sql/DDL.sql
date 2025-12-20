@@ -1,3 +1,6 @@
+## 12/19/2025 Add a new airportsource named 'skyvector' Dev + Prod
+ALTER TYPE airportsource ADD VALUE 'skyvector';
+
 ## 12/15/2025 Dev + Prod
 CREATE TYPE airportsource AS ENUM ('adip', 'user');
 

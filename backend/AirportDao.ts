@@ -142,7 +142,12 @@ export class AirportDao {
             const airport = AirportDao.parse(row, creatorId)
             return new CodeAndAirport(row.code, airport);
         })
+        const foundCodes = new Set(result.rows.map(row => row.code))
+        const missing = (list as string[]).filter(code => !foundCodes.has(code))
+
         const notFound: string[] = result.rows.filter(row => !row.data).map(row => row.code)
+        notFound.push(...missing)
+
         return { found, notFound }
     }
 
