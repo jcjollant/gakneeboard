@@ -2,6 +2,7 @@
 import { describe, expect, test } from '@jest/globals';
 import { Airport, versionInvalid, AirportSource } from "../backend/models/Airport";
 import { AirportDao } from '../backend/AirportDao'
+import { AirportService } from '../backend/services/AirportService'
 
 require('dotenv').config();
 
@@ -49,21 +50,21 @@ describe('Custom Airports', () => {
         await AirportDao.createOrUpdateCustom(airportJc, jcUserId)
         await AirportDao.createOrUpdateCustom(airportAs, userIdAs)
         // Read for JC
-        const listJc = await AirportDao.readList([customCode], jcUserId)
-        expect(listJc.length).toBe(1)
-        expect(listJc[0].airport.name).toBe(customNameJC)
-        expect(listJc[0].airport.source).toBe(AirportSource.User)
+        const listJc = await AirportDao.codesLookup([customCode], jcUserId)
+        expect(listJc.found.length).toBe(1)
+        expect(listJc.found[0].airport.name).toBe(customNameJC)
+        expect(listJc.found[0].airport.source).toBe(AirportSource.User)
         // Read for AS
-        const listAs = await AirportDao.readList([customCode], userIdAs)
-        expect(listAs.length).toBe(1)
-        expect(listAs[0].airport.name).toBe(customNameAS)
-        expect(listAs[0].airport.source).toBe(AirportSource.User)
+        const listAs = await AirportDao.codesLookup([customCode], userIdAs)
+        expect(listAs.found.length).toBe(1)
+        expect(listAs.found[0].airport.name).toBe(customNameAS)
+        expect(listAs.found[0].airport.source).toBe(AirportSource.User)
     })
 
     test('Undefined airport', () => {
-        const undefinedAirport = AirportDao.undefinedAirport('TEST')
-        expect(undefinedAirport.code).toBe('TEST')
-        expect(undefinedAirport.version).toBe(versionInvalid)
+        const undefinedCaa = AirportService.undefinedCodeAndAirport('TEST')
+        expect(undefinedCaa.code).toBe('TEST')
+        expect(undefinedCaa.airport.version).toBe(versionInvalid)
     })
 });
 

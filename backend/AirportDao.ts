@@ -30,9 +30,9 @@ export class AirportDao {
         airport.id = result.rows[0].id;
     }
 
-    public static async createUnknown(code: string) {
+    public static async createUnknown(code: string): Promise<void> {
         // console.log( '[AirportDao.createUnknown] ' + code)
-        return sql`INSERT INTO Airports (Code,Version) VALUES (${code},${versionInvalid})`;
+        await sql`INSERT INTO Airports (Code,Version) VALUES (${code},${versionInvalid})`;
     }
 
     /**
@@ -83,7 +83,6 @@ export class AirportDao {
         const airport: Airport = JSON.parse(row.data);
         // Do we need to salvage the code?
         if (!airport.code) airport.code = row.code;
-        // console.log('[AirportDao.readList] found.creatorId', found.creatorId)
         // It's a custom airport if creatorId matches
         airport.custom = (creatorId ? (creatorId == row.creatorid) : false)
         airport.id = row.id;
@@ -126,10 +125,10 @@ export class AirportDao {
      * Read a list of airports from DB
      * @param list 
      * @param creatorId 
-     * @returns 
+     * @returns two lists, one of CodeAndAirport found, and a list of unknown codes
      */
-    public static async readList(list: any, creatorId: number | undefined = undefined): Promise<CodeAndAirport[]> {
-        // console.log( '[AirportDao.readList] ' + JSON.stringify(list) + ' / ' + creatorId)
+    public static async codesLookup(list: any, creatorId: number | undefined = undefined): Promise<{ found: CodeAndAirport[], notFound: string[] }> {
+        // console.log( '[AirportDao.codesLookup] ' + JSON.stringify(list) + ' / ' + creatorId)
 
         let result: QueryResult;
         if (creatorId) {
@@ -139,20 +138,12 @@ export class AirportDao {
         }
         // console.log( '[AirportDoa.readList] found', result.rowCount, 'entries for', JSON.stringify(list))
 
-        return result.rows.map(row => {
-            if (row.data) {
-                const airport = AirportDao.parse(row, creatorId)
-                return new CodeAndAirport(row.code, airport);
-            } else {
-                return new CodeAndAirport(row.code, AirportDao.undefinedAirport(row.code))
-            }
+        const found: CodeAndAirport[] = result.rows.filter(row => row.data).map(row => {
+            const airport = AirportDao.parse(row, creatorId)
+            return new CodeAndAirport(row.code, airport);
         })
-    }
-
-    static undefinedAirport(code: string): Airport {
-        const airport: Airport = new Airport(code, '', 0)
-        airport.version = versionInvalid;
-        return airport
+        const notFound: string[] = result.rows.filter(row => !row.data).map(row => row.code)
+        return { found, notFound }
     }
 
     static async updateSketch(code: string, url: string) {
@@ -161,10 +152,10 @@ export class AirportDao {
     }
 
 
-    static async updateAirport(id: number, airport: Airport) {
+    static async updateAirport(id: number, airport: Airport): Promise<void> {
         const data: string = JSON.stringify(airport)
         // console.log( '[AirportDao.updateAirport] id =', id, ', data =',  data)
-        return sql`UPDATE Airports SET Data=${data}, Version = ${airport.version} WHERE id=${id}`;
+        await sql`UPDATE Airports SET Data=${data}, Version = ${airport.version} WHERE id=${id}`;
     }
 
 

@@ -8,10 +8,15 @@ import { Navaid } from '../models/Navaid'
 import { Runway, RunwaySurface, RunwayEnd, PatternDirection } from '../models/Runway'
 import axios from 'axios'
 import { AirportChartData } from '../models/AirportChartData'
+import { AirportDataSource } from '../models/AirportDataSource'
 
 const maxNavaids: number = 10
 
-export class AdipService {
+export class AdipService implements AirportDataSource {
+    airportIsStale(airport: Airport): Promise<boolean> {
+        return Promise.resolve(airport.effectiveDate < AdipService.currentEffectiveDate())
+    }
+
     static basicAuth: string = 'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP'
     static defaultEffectiveDate = "2025-10-30T00:00:00"
     public static currentEffectiveDate(): string {
@@ -27,7 +32,7 @@ export class AdipService {
      * @param saveRawData boolean flag indicating whether we should record request data
      * @returns 
      */
-    public static async fetchAirport(code: string, saveRawData: boolean = true): Promise<Airport | undefined> {
+    public async fetchAirport(code: string, saveRawData: boolean = true): Promise<Airport | undefined> {
         let locId: string | undefined = undefined
         // if the code is 4 digits, try to turn it into locId
         if (code.length == 4) {
@@ -403,4 +408,7 @@ export class AdipService {
         return PatternDirection.Left
     }
 
+    public async refreshAirport(airport: Airport): Promise<Airport> {
+        return await this.fetchAirport(airport.code)
+    }
 }

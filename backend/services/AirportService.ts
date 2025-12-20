@@ -7,6 +7,7 @@ import { CodeAndAirport } from '../models/CodeAndAirport'
 import { GApiError } from '../GApiError'
 import { AirportCreationRequest } from '../models/AirportCreationRequest'
 import { Runway } from '../models/Runway'
+import { AirportDataSource } from '../models/AirportDataSource'
 
 export class AirportService {
 
@@ -48,115 +49,125 @@ export class AirportService {
         return code != null && (code.length == 3 || code.length == 4)
     }
 
+    /**
+     * Get one airport, which calls getAirports with a single code. The jey difference is getAirport fails with 400 is the code is invalid
+     * @param codeParam airportCode
+     * @param userId requestorId
+     * @returns airport object or undefined if not found
+     * @throws 400 if code is invalid 
+     */
     public static async getAirport(codeParam: string, userId: any = undefined): Promise<Airport | undefined> {
         return new Promise(async (resolve, reject) => {
             // console.log( "[AirportService.getAirport] " + codeParam + ' user=' + userId);
             // there is only one element and we only care about the airport
             if (!AirportService.isValidCode(codeParam)) return reject(new GApiError(400, "Invalid Airport Code"));
 
-            const codeAndAirportList = (await AirportService.getAirportList([codeParam], userId));
+            const codeAndAirportList = (await AirportService.getAirports([codeParam], userId));
             if (!codeAndAirportList.length) return resolve(undefined)
             resolve(codeAndAirportList[0].airport)
         })
     }
 
-    /**
-     * Evaluates whether an airport needs to be refreshed due to model change or effectiveDate
-     * @param code Clean Airport code
-     * @param airports List of known airports
-     * @returns The corresponding match, which could have an undefined Airport
-     */
-    static async getAirportCurrent(code: string, airports: CodeAndAirport[]): Promise<CodeAndAirport> {
-        // console.log('[AirportService.getAirportCurrent]', code)
-        // store the found value [code,airport]
-        const found = airports.find((codeAndAirport) => codeAndAirport.code == code)
-
-        // Possibe cause for Unknown : Invalid Code / New / Unknown valid code
-        if (!found) {
-            // invalid code =>
-            if (!AirportService.isValidCode(code)) return CodeAndAirport.undefined(code)
-
-            // First time we see that code => Adip
-            let firstTimer: Airport | undefined = await AdipService.fetchAirport(code)
-
-            // unknown airport
-            if (!firstTimer || firstTimer.code == '?') {
-                await AirportDao.createUnknown(code);
-                return CodeAndAirport.undefined(code)
-            }
-            // new airport
-            await AirportDao.create(code, firstTimer);
-            await AirportSketch.resolve(firstTimer, code, true)
-            return new CodeAndAirport(code, firstTimer)
-        }
-
-        // console.log('[AirportService.getAirportList] found', found.code)
-        const airport: Airport = found.airport
-
-        // Is this a known unknown?
-        if (!airport || airport.version == versionInvalid) {
-            return CodeAndAirport.undefined(code)
-        }
-
-
-        const versionCurrent: boolean = (airport.version == Airport.currentVersion);
-        const dateCurrent: boolean = (airport.effectiveDate == AdipService.currentEffectiveDate())
-        // Happy path : data is already current or airport is custom (which we don't update)
-        if (airport.custom || versionCurrent && dateCurrent) {
-            return new CodeAndAirport(code, airport)
-        }
-
-        // data needs to be refreshed => Adip
-        let refresher: Airport | undefined = await AdipService.fetchAirport(code)
-        if (refresher) {
-            // update this record in the database
-            if (airport.id) {
-                // update airport data
-                await AirportDao.updateAirport(airport.id, refresher)
-
-                // restore sketch
-                if (airport.sketch) {
-                    refresher.sketch = airport.sketch
-                } else {
-                    // consider refreshing the skecth
-                    await AirportSketch.resolve(refresher, code, true)
-                }
-            } else {
-                console.log('[AirportService.getAirportCurrent] Could not update', code, 'due to missing Id')
-            }
-            return new CodeAndAirport(code, refresher)
-        }
-
-        // well, we tried but there is something fishy as this code was known before but Adip failed
-        console.log('[AirportService.getAirportCurrent] Adip could not refresh', code)
-        return new CodeAndAirport(code, airport)
-    }
 
     /**
      * Cleans up a list of airport codes
      * @param codes list of airport codes
-     * @returns list of cleaned up codes
+     * @returns two lists of codes, one valid and cleaned, one invalid
      */
-    public static cleanUpCodes(codes: string[]): string[] {
-        return codes.map(code => code.replace(/[^a-zA-Z0-9]/g, '').trim().toUpperCase())
+    public static cleanUpCodes(codes: string[]): { valid: string[], invalid: string[] } {
+        const valid: string[] = []
+        const invalid: string[] = []
+        for (const code of codes) {
+            const cleaned = code.replace(/[^a-zA-Z0-9]/g, '').trim().toUpperCase()
+            if (AirportService.isValidCode(cleaned)) {
+                valid.push(cleaned)
+            } else {
+                invalid.push(code)
+            }
+        }
+        return { valid, invalid }
     }
 
     /**
      * Builds a list of airports from a list of codes this is the entry point for getting airports
-     * @param airportCodes 
-     * @param userId 
-     * @returns 
+     * @param airportCodes a dirty list of codes
+     * @param userId whoever is asking for the airports
+     * @returns a list of CodeAndAirport objects
      */
-    public static async getAirportList(airportCodes: string[], userId: any = undefined): Promise<(CodeAndAirport)[]> {
-        // clean up airport codes
-        const cleanCodes: string[] = AirportService.cleanUpCodes(airportCodes)
-        // Read airports from DB
-        const knownAirports: CodeAndAirport[] = await AirportDao.readList(cleanCodes, userId)
-        // rebuild the full list along with unknowns(undefined)
+    public static async getAirports(airportCodes: string[], userId: any = undefined): Promise<(CodeAndAirport)[]> {
+        // Our objective is to populate the output array with all codes and matching airports when possible otherwise unknown airports 
         const output: (Promise<CodeAndAirport>)[] = []
-        for (const code of cleanCodes) {
-            output.push(AirportService.getAirportCurrent(code, knownAirports))
+        const dbWork: (Promise<void>)[] = []
+
+        // clean up codes
+        const cleanCodes: { valid: string[], invalid: string[] } = AirportService.cleanUpCodes(airportCodes)
+
+        // lookup clean codes in DB
+        const dbCodesLookup: { found: CodeAndAirport[], notFound: string[] } = await AirportDao.codesLookup(cleanCodes.valid, userId)
+
+        // Processing codes that are not in the DB yet
+        for (const newCode of dbCodesLookup.notFound) {
+
+            const dataSource = AirportService.getDataSource(newCode)
+            let newAirport: Airport | undefined = undefined;
+            if (dataSource) {
+                newAirport = await dataSource.fetchAirport(newCode)
+            } else {
+                console.log('[AirportService.getAirports] No data source for', newCode)
+            }
+
+            if (newAirport) {
+                output.push(Promise.resolve(new CodeAndAirport(newCode, newAirport)))
+                // remember this as a valid airport
+                dbWork.push(AirportDao.create(newCode, newAirport))
+                dbWork.push(AirportSketch.resolve(newAirport, newCode, true))
+            } else {
+                output.push(Promise.resolve(CodeAndAirport.undefined(newCode)))
+                // remember this as a known unknown
+                dbWork.push(AirportDao.createUnknown(newCode))
+            }
         }
+
+        // Processing codes that are already in the DB
+        for (const found of dbCodesLookup.found) {
+            // some codes found in the db are known unknowns
+            if (found.airport.version == versionInvalid) {
+                // This is a known unknown
+                output.push(Promise.resolve(CodeAndAirport.undefined(found.code)))
+            } else {
+                const dataSource = AirportService.getDataSource(found.code)
+                const modelIsStale = found.airport.version < Airport.currentVersion
+                // the airport must be refreshed if the model stale or the data source says it is stale and it is not a custom airport
+                const needRefresh = dataSource && (modelIsStale || await dataSource.airportIsStale(found.airport)) && !found.airport.custom
+                if (needRefresh) {
+                    const refresher = await dataSource?.fetchAirport(found.code)
+                    if (refresher) {
+                        // preserve the sketch
+                        refresher.sketch = found.airport.sketch
+                        found.airport = refresher
+                        // update the db record
+                        dbWork.push(AirportDao.updateAirport(found.airport.id, refresher))
+                        // if the sketch was there before, update it
+                        if (found.airport.sketch) {
+                            refresher.sketch = found.airport.sketch
+                        } else {
+                            dbWork.push(AirportSketch.resolve(refresher, found.code, true))
+                        }
+                    }
+                }
+                output.push(Promise.resolve(found))
+            }
+        }
+
+        // Appending dirty codes
+        for (const invalidCode of cleanCodes.invalid) {
+            output.push(Promise.resolve(CodeAndAirport.undefined(invalidCode)))
+            dbWork.push(AirportDao.createUnknown(invalidCode))
+        }
+
+        // housekeeping for db Work
+        await Promise.all(dbWork)
+
         return Promise.all(output)
     }
 
@@ -174,7 +185,7 @@ export class AirportService {
     */
     public static async getAirportViewList(airportCodes: string[], userId = undefined): Promise<AirportView[]> {
         // console.log('[AirportService.getAirportViewList] codes', JSON.stringify(airportCodes), 'user', userId)
-        const airports: (CodeAndAirport)[] = await AirportService.getAirportList(airportCodes, userId)
+        const airports: (CodeAndAirport)[] = await AirportService.getAirports(airportCodes, userId)
         // console.log('[AirportService.getAirportViewList]', JSON.stringify(airports))
 
         const output = airports.map((codeAndAirport) => {
@@ -185,6 +196,13 @@ export class AirportService {
         return output
     }
 
+    static getDataSource(code: string): AirportDataSource | undefined {
+        // we like codes that have 3 letters or 4 letters starting with K or P  
+        if (code.length == 3 || (code.length == 4 && (code.startsWith('K') || code.startsWith('P')))) {
+            return new AdipService()
+        }
+        return undefined
+    }
 
 
     static getLocId(code: string) {
@@ -204,6 +222,12 @@ export class AirportService {
         if (freq == null) return false;
         if (freq == '-.-') return false;
         return AdipService.isMilitary(Number(freq))
+    }
+
+    static undefinedCodeAndAirport(code: string): CodeAndAirport {
+        const airport: Airport = new Airport(code, '', 0)
+        airport.version = versionInvalid;
+        return new CodeAndAirport(code, airport)
     }
 
 }

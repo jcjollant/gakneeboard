@@ -1,4 +1,4 @@
-import { describe, expect, it, jest, test } from '@jest/globals';
+import { describe, expect, it, jest, test, beforeEach, afterAll } from '@jest/globals';
 import { AirportService } from '../backend/services/AirportService'
 import { currentAsOf, jcUserId } from './constants';
 import { AirportSketch } from '../backend/AirportSketch';
@@ -14,7 +14,7 @@ describe('AirportService Tests', () => {
 
     test('Clean up codes', () => {
         const input = ["JCJ", "jCj", " jCj ", " j#Cj ", "JCJ;", "JCJ'"]
-        const expected = ["JCJ", "JCJ", "JCJ", "JCJ", "JCJ", "JCJ"]
+        const expected = { valid: ["JCJ", "JCJ", "JCJ", "JCJ", "JCJ", "JCJ"], invalid: [] }
         expect(AirportService.cleanUpCodes(input)).toEqual(expected)
     })
 
@@ -37,7 +37,7 @@ describe('AirportService Tests', () => {
         // Mock getAirportList
         const rnt = new Airport('KRNT', 'Renton', 42)
         const jfk = new Airport('KJFK', 'Kennedy', 12)
-        jest.spyOn(AirportService, 'getAirportList').mockResolvedValue([
+        jest.spyOn(AirportService, 'getAirports').mockResolvedValue([
             new CodeAndAirport('KRNT', rnt),
             new CodeAndAirport('KJFK', jfk)
         ])
@@ -52,7 +52,7 @@ describe('AirportService Tests', () => {
 
         let list2 = ['jc', 'pae', 'jcj']
 
-        jest.spyOn(AirportService, 'getAirportList').mockResolvedValue([
+        jest.spyOn(AirportService, 'getAirports').mockResolvedValue([
             new CodeAndAirport('JC', new Airport('JC', 'JC Airport', 0)),
             new CodeAndAirport('KPAE', new Airport('KPAE', 'Paine Field', 0)),
             new CodeAndAirport('JCJ', new Airport('JCJ', 'JCJ', 0))
@@ -76,7 +76,7 @@ describe('AirportService Tests', () => {
         let list = ['nt', 'fk']
         jest.spyOn(AirportSketch, 'get').mockResolvedValue(AirportSketch.doesNotExist)
 
-        jest.spyOn(AirportService, 'getAirportList').mockResolvedValue([
+        jest.spyOn(AirportService, 'getAirports').mockResolvedValue([
             new CodeAndAirport('NT', undefined), // Using undefined(code) factory? CodeAndAirport.undefined('NT')
             new CodeAndAirport('FK', undefined)
         ])
@@ -117,7 +117,7 @@ describe('AirportService Tests', () => {
     test('Get Custom airport', async () => {
         jest.spyOn(AirportSketch, 'get').mockResolvedValue(AirportSketch.doesNotExist)
 
-        jest.spyOn(AirportService, 'getAirportList').mockResolvedValue([
+        jest.spyOn(AirportService, 'getAirports').mockResolvedValue([
             new CodeAndAirport('TEST', new Airport('TEST', 'Test Airport', 0))
         ])
 
@@ -140,7 +140,7 @@ describe('AirportService Tests', () => {
         })
 
         it('Handles unknown codes with or w/o user', async () => {
-            jest.spyOn(AirportService, 'getAirportList').mockResolvedValue([])
+            jest.spyOn(AirportService, 'getAirports').mockResolvedValue([])
             const output = await AirportService.getAirport('ABCD')
             expect(output).toBeUndefined()
 
@@ -152,79 +152,210 @@ describe('AirportService Tests', () => {
         })
     })
 
-    describe('getAirportCurent', () => {
-        it('Deals with invalid codes', async () => {
-            jest.spyOn(AirportSketch, 'get').mockResolvedValue('')
-            jest.spyOn(AdipService, 'fetchAirport').mockResolvedValue(undefined)
-
-            // invalid code should be undefined
-            const invalidCode = 'ABCDEFGH'
-            expect(await AirportService.getAirportCurrent(invalidCode, [])).toEqual(new CodeAndAirport(invalidCode))
-            expect(AdipService.fetchAirport).toBeCalledTimes(0)
-            expect(AirportSketch.get).toBeCalledTimes(0)
+    describe('getAirports', () => {
+        beforeEach(() => {
+            jest.restoreAllMocks()
         })
 
-        it('Code is valid but airport doesnt exist', async () => {
-            jest.resetAllMocks()
-            jest.spyOn(AirportSketch, 'get').mockResolvedValue('')
+        afterAll(() => {
+            jest.restoreAllMocks()
+        })
 
-            // Airport not found in adip
-            const validCode = 'RNT'
-            jest.spyOn(AdipService, 'fetchAirport').mockResolvedValue(undefined)
+        it('Handles invalid codes', async () => {
+            jest.resetAllMocks()
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ found: [], notFound: [] })
             jest.spyOn(AirportDao, 'createUnknown').mockResolvedValue(undefined)
-            expect(await AirportService.getAirportCurrent(validCode, [])).toEqual(new CodeAndAirport(validCode))
-            // Adip should be called once
+
+            const invalidCodes = ['AB', 'TOOLONG', 'X']
+            const result = await AirportService.getAirports(invalidCodes)
+
+            expect(result).toHaveLength(3)
+            expect(result[0]).toEqual(CodeAndAirport.undefined('AB'))
+            expect(result[1]).toEqual(CodeAndAirport.undefined('TOOLONG'))
+            expect(result[2]).toEqual(CodeAndAirport.undefined('X'))
+            expect(AirportDao.createUnknown).toBeCalledTimes(3)
+        })
+
+        it('Handles valid codes not found in ADIP', async () => {
+            jest.resetAllMocks()
+            const validCode = 'KXYZ'
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ found: [], notFound: [validCode] })
+            jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(undefined)
+            jest.spyOn(AirportDao, 'createUnknown').mockResolvedValue(undefined)
+            jest.spyOn(AirportDao, 'create').mockResolvedValue(undefined)
+
+            const result = await AirportService.getAirports([validCode])
+
+            expect(result).toHaveLength(1)
+            expect(result[0]).toEqual(CodeAndAirport.undefined(validCode))
             expect(AirportDao.createUnknown).toBeCalledTimes(1)
             expect(AirportDao.createUnknown).toBeCalledWith(validCode)
-            expect(AirportSketch.get).toBeCalledTimes(0)
-
+            expect(AirportDao.create).toBeCalledTimes(0)
         })
 
-        it('Gets a new valid airport', async () => {
+        it('Fetches and saves new valid airports from ADIP', async () => {
             jest.resetAllMocks()
-            jest.spyOn(AirportSketch, 'get').mockResolvedValue('')
+            const validCode = 'KBFI'
+            const mockBoeing = new Airport(validCode, "Boeing Field", 42)
+
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ found: [], notFound: [validCode] })
+            jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(mockBoeing)
+            jest.spyOn(AirportDao, 'create').mockResolvedValue(undefined)
             jest.spyOn(AirportSketch, 'resolve').mockResolvedValue(undefined)
 
-            const validCode = 'KBFI'
-            // Code is valid and airport is found in adip
-            jest.spyOn(AdipService, 'fetchAirport').mockResolvedValue(undefined)
-            const mockBoeing = new Airport(validCode, "Boieng Field", 42)
-            // Default source is Adip, but let's be explicit if needed or just verify default.
-            // validMock.source is initialized to Adip in constructor.
+            const result = await AirportService.getAirports([validCode])
 
-            jest.spyOn(AdipService, 'fetchAirport').mockResolvedValue(mockBoeing)
-            jest.spyOn(AirportDao, 'create').mockResolvedValue(undefined)
-            expect(await AirportService.getAirportCurrent(validCode, [])).toEqual(new CodeAndAirport(validCode, mockBoeing))
+            expect(result).toHaveLength(1)
+            expect(result[0].code).toBe(validCode)
+            expect(result[0].airport).toEqual(mockBoeing)
             expect(AirportDao.create).toBeCalledTimes(1)
-            // Verify specific fields including source
-            expect(AirportDao.create).toBeCalledWith(validCode, expect.objectContaining({
-                code: validCode,
-                source: AirportSource.Adip
-            }))
-
+            expect(AirportDao.create).toBeCalledWith(validCode, mockBoeing)
+            expect(AirportSketch.resolve).toBeCalledTimes(1)
+            expect(AirportSketch.resolve).toBeCalledWith(mockBoeing, validCode, true)
         })
 
-        it('Deals with custom, current and known unknows', async () => {
+        it('Handles custom airports without refresh', async () => {
             jest.resetAllMocks()
-            const mockCode = "CUST"
-            const mockCustom = new Airport(mockCode, "Mock Custom", 42)
-            mockCustom.custom = true
-            const mockCaa = new CodeAndAirport(mockCode, mockCustom)
-            const currentCode = "RNT"
+            const customCode = "CUST"
+            const customAirport = new Airport(customCode, "Custom Airport", 42)
+            customAirport.custom = true
+            const customCaa = new CodeAndAirport(customCode, customAirport)
+
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ found: [customCaa], notFound: [] })
+            jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(undefined)
+
+            const result = await AirportService.getAirports([customCode])
+
+            expect(result).toHaveLength(1)
+            expect(result[0]).toEqual(customCaa)
+            expect(AdipService.prototype.fetchAirport).toBeCalledTimes(0)
+        })
+
+        it('Handles current airports without refresh', async () => {
+            jest.resetAllMocks()
+            const currentCode = "KRNT"
             const currentAirport = new Airport(currentCode, "Current Renton", 42)
             currentAirport.effectiveDate = AdipService.currentEffectiveDate()
+            currentAirport.version = Airport.currentVersion
             const currentCaa = new CodeAndAirport(currentCode, currentAirport)
-            const kuCode = 'KUNK'
-            const kuCaa = CodeAndAirport.undefined(kuCode)
-            const knownAirports = [mockCaa, currentCaa, kuCaa]
 
-            jest.spyOn(AdipService, 'fetchAirport').mockResolvedValue(undefined)
-            expect(await AirportService.getAirportCurrent(mockCode, knownAirports)).toEqual(mockCaa)
-            expect(await AirportService.getAirportCurrent(currentCode, knownAirports)).toEqual(currentCaa)
-            expect(await AirportService.getAirportCurrent(kuCode, knownAirports)).toEqual(kuCaa)
-            expect(AdipService.fetchAirport).toBeCalledTimes(0)
-            expect(await AirportService.getAirportCurrent(kuCode, knownAirports)).toEqual(kuCaa)
-            expect(AdipService.fetchAirport).toBeCalledTimes(0)
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ found: [currentCaa], notFound: [] })
+            jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(undefined)
+            jest.spyOn(AdipService.prototype, 'airportIsStale').mockResolvedValue(false)
+
+            const result = await AirportService.getAirports([currentCode])
+
+            expect(result).toHaveLength(1)
+            expect(result[0]).toEqual(currentCaa)
+            expect(AdipService.prototype.fetchAirport).toBeCalledTimes(0)
+        })
+
+        it('Handles known unknown airports', async () => {
+            jest.resetAllMocks()
+            const unknownCode = 'XYZ'
+            const unknownAirport = new Airport(unknownCode, '', 0)
+            unknownAirport.version = -1 // versionInvalid
+            const unknownCaa = new CodeAndAirport(unknownCode, unknownAirport)
+
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ found: [unknownCaa], notFound: [] })
+            jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(undefined)
+
+            const result = await AirportService.getAirports([unknownCode])
+
+            expect(result).toHaveLength(1)
+            expect(result[0]).toEqual(CodeAndAirport.undefined(unknownCode))
+            expect(AdipService.prototype.fetchAirport).toBeCalledTimes(0)
+        })
+
+        it('Refreshes stale airports and preserves sketches', async () => {
+            jest.resetAllMocks()
+            const staleCode = "KRNT"
+            const staleAirport = new Airport(staleCode, "Stale Renton", 42)
+            staleAirport.effectiveDate = "20200101"
+            staleAirport.version = Airport.currentVersion
+            staleAirport.id = 123
+            staleAirport.sketch = "existing-sketch-url"
+            const staleCaa = new CodeAndAirport(staleCode, staleAirport)
+
+            const refreshedAirport = new Airport(staleCode, "Refreshed Renton", 42)
+            refreshedAirport.effectiveDate = AdipService.currentEffectiveDate()
+
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ found: [staleCaa], notFound: [] })
+            jest.spyOn(AdipService.prototype, 'airportIsStale').mockResolvedValue(true)
+            jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(refreshedAirport)
+            jest.spyOn(AirportDao, 'updateAirport').mockResolvedValue(undefined)
+
+            const result = await AirportService.getAirports([staleCode])
+
+            expect(result).toHaveLength(1)
+            expect(result[0].code).toBe(staleCode)
+            expect(result[0].airport.sketch).toBe("existing-sketch-url")
+            expect(AirportDao.updateAirport).toBeCalledTimes(1)
+            expect(AirportDao.updateAirport).toBeCalledWith(staleCaa.airport.id, expect.objectContaining({
+                code: staleCode,
+                name: "Refreshed Renton"
+            }))
+        })
+
+        it('Updates sketches for refreshed airports without existing sketches', async () => {
+            jest.resetAllMocks()
+            const staleCode = "KRNT"
+            const staleAirport = new Airport(staleCode, "Stale Renton", 42)
+            staleAirport.effectiveDate = "20200101"
+            staleAirport.version = Airport.currentVersion
+            staleAirport.id = 123
+            // No sketch
+            const staleCaa = new CodeAndAirport(staleCode, staleAirport)
+
+            const refreshedAirport = new Airport(staleCode, "Refreshed Renton", 42)
+            refreshedAirport.effectiveDate = AdipService.currentEffectiveDate()
+
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ found: [staleCaa], notFound: [] })
+            jest.spyOn(AdipService.prototype, 'airportIsStale').mockResolvedValue(true)
+            jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(refreshedAirport)
+            jest.spyOn(AirportDao, 'updateAirport').mockResolvedValue(undefined)
+            jest.spyOn(AirportSketch, 'resolve').mockResolvedValue(undefined)
+
+            const result = await AirportService.getAirports([staleCode])
+
+            expect(result).toHaveLength(1)
+            expect(AirportSketch.resolve).toBeCalledTimes(1)
+            expect(AirportSketch.resolve).toBeCalledWith(refreshedAirport, staleCode, true)
+        })
+
+        it('Processes multiple codes in batch', async () => {
+            jest.resetAllMocks()
+            const newCode = 'KBFI'
+            const currentCode = 'KRNT'
+            const invalidCode = 'XY'
+
+            const newAirport = new Airport(newCode, "Boeing Field", 42)
+            const currentAirport = new Airport(currentCode, "Renton", 42)
+            currentAirport.effectiveDate = AdipService.currentEffectiveDate()
+            currentAirport.version = Airport.currentVersion
+            const currentCaa = new CodeAndAirport(currentCode, currentAirport)
+
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({
+                found: [currentCaa],
+                notFound: [newCode]
+            })
+            jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(newAirport)
+            jest.spyOn(AdipService.prototype, 'airportIsStale').mockResolvedValue(false)
+            jest.spyOn(AirportDao, 'create').mockResolvedValue(undefined)
+            jest.spyOn(AirportDao, 'createUnknown').mockResolvedValue(undefined)
+            jest.spyOn(AirportSketch, 'resolve').mockResolvedValue(undefined)
+
+            const result = await AirportService.getAirports([newCode, currentCode, invalidCode])
+
+            expect(result).toHaveLength(3)
+            // New airport
+            expect(result[0].code).toBe(newCode)
+            expect(result[0].airport).toEqual(newAirport)
+            // Current airport
+            expect(result[1].code).toBe(currentCode)
+            expect(result[1].airport).toEqual(currentAirport)
+            // Invalid code
+            expect(result[2]).toEqual(CodeAndAirport.undefined(invalidCode))
         })
     })
 
