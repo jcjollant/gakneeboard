@@ -1,4 +1,11 @@
-import { Static } from "vue";
+
+export class Checklist {
+    items: ChecklistItem[];
+
+    constructor(items: ChecklistItem[] = []) {
+        this.items = items;
+    }
+}
 
 export class ChecklistItem {
     challenge: string;
@@ -31,18 +38,19 @@ export enum ChecklistItemType {
     undefined = '',
 }
 
-export class Checklist {
-    items: ChecklistItem[];
+export enum ChecklistTheme {
+    blue = 'blue',
+    green = 'green',
+    grey = 'grey',
+    purple = 'purple',
+    red = 'red',
+    yellow = 'yellow',
+}
 
-    static EMERGENT = 'emer'
-    static STRONG = 'strong'
-
-    constructor() {
-        this.items = []
-    }
-
-    static empty() {
-        return new Checklist()
-    }
-
+export enum ChecklistFont {
+    smaller = 'smaller',
+    small = 'small',
+    medium = 'medium',
+    large = 'large',
+    larger = 'larger',
 }

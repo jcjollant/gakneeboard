@@ -1,4 +1,5 @@
-import { Checklist, ChecklistItem, ChecklistItemType } from "../models/Checklist";
+import { Checklist, ChecklistItem, ChecklistItemType, ChecklistTheme } from "../models/Checklist";
+import { ChecklistTile } from "../models/ChecklistTile";
 
 export class ChecklistService {
 
@@ -44,6 +45,13 @@ export class ChecklistService {
         return checklist;
     }
 
+    static parseItems(source: any): ChecklistItem[] | undefined {
+        if (!source) return undefined
+        return source.map((item: any) => {
+            return new ChecklistItem(item.c, item.r, item.s, ChecklistService.parseItemType(item.t))
+        })
+    }
+
     static parseItemType(source: string): ChecklistItemType {
         switch (source) {
             case 'alt': return ChecklistItemType.alternate
@@ -54,15 +62,12 @@ export class ChecklistService {
         }
     }
 
-    static parseParams(paramItems: any): Checklist {
-        const checklist = new Checklist();
-        // sanity check
-        if (!paramItems) return checklist;
-        // turn params into ChecklistItems
-        checklist.items = paramItems.map((item: any) => {
-            return new ChecklistItem(item.c, item.r, item.s, ChecklistService.parseItemType(item.t))
-        })
-        return checklist;
+    static parseTile(source: any): ChecklistTile {
+        if (!source) return new ChecklistTile()
+        const name = source.name ?? 'Checklist'
+        const items = ChecklistService.parseItems(source.items)
+        const theme = source.theme ?? ChecklistTheme.blue
+        return new ChecklistTile(name, items, theme)
     }
 
     static toEditor(checklist: Checklist): string {

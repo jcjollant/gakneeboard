@@ -1,3 +1,4 @@
+import { ChecklistFont, ChecklistTheme } from "../models/Checklist"
 import { DisplayModeAtis, DisplayModeRadios, DisplayModeSunlight, DisplayModeVfr } from "../models/DisplayMode"
 import { FrequencyType } from "../models/Frequency"
 import { Template, TemplatePage } from "../models/Template"
@@ -21,11 +22,11 @@ export class DemoData {
 
     static pageHold = new TemplatePage(PageType.tiles, "Holds Practice",
         [
-            { id: 0, name: TileType.hold},
+            { id: 0, name: TileType.hold },
             { id: 1, name: TileType.notes, data: { mode: "compass", comp: false } },
-            { id: 2, name: TileType.hold},
+            { id: 2, name: TileType.hold },
             { id: 3, name: TileType.notes, data: { mode: "compass", comp: false } },
-            { id: 4, name: TileType.hold},
+            { id: 4, name: TileType.hold },
             { id: 5, name: TileType.notes, data: { mode: "compass", comp: false } },
         ]
     )
@@ -66,28 +67,35 @@ export class DemoData {
     static page1DemoDefault = new TemplatePage(PageType.checklist, 'Default',
         {
             name: "Flight",
-            "items": [{ s: "Climb", t: "strong" }, { c: "Power", r: "FULL" }, { c: "Mixture", r: "RICH" }, { c: "Flaps", r: "UP" }, { c: "Engine", r: "GREEN" }, { s: "Approach", t: "strong" }, { c: "Direct", r: "SET" }, { c: "ATIS", r: "GET" }, { c: "Altimeter", r: "SET" }, { c: "RWY HDG", r: "SET" }, { c: "Calls", r: "MADE" }, { c: "Briefing", r: "DONE" }, { s: "Engine FAILURE", t: "emer" }, { c: "Airspeed", r: "68" }, { c: "Fuel Pump", r: "ON" }, { c: "Mixture", r: "RICH" }, { c: "Fuel Shutoff", r: "ON" }, { c: "Fuel Selector", r: "BOTH" }, { s: "Engine FIRE", t: "emer" }, { c: "Mixture", r: "CUTOFF" }, { c: "Fuel Shutoff", r: "OFF" }, { c: "Fuel Pump", r: "OFF" }, { c: "Masters", r: "OFF" }, { c: "Vents, Heat, Air", r: "CLOSED" }, { c: "Emergency Descent", r: "120@30" }, { c: "" }],
-            "items2": [{ s: "Cruise", t: "strong" }, { c: "Power", r: "SET" }, { c: "Flaps", r: "UP" }, { c: "Trim", r: "SET" }, { c: "Heading", r: "BUGGED" }, { s: "Before Landing", t: "strong" }, { c: "Fuel Selector", r: "BOTH" }, { c: "Mixture", r: "RICH" }, { c: "Landing Lights", r: "ON" }, { c: "Safety Belts", r: "ON" }, { c: "Auto Pilot", r: "OFF" }, { c: "Cabin Power", r: "OFF" }, { s: "After Landing" }, { c: "Flaps", r: "UP" }, { c: "Light", r: "TAXI" }, { c: "Mixture", r: "Lean" }, { c: "Trim", r: "T/O" }, { c: "Pitot", r: "OFF" }, { c: "Comms", r: "GND" }, { s: "Shutdown" }, { c: "Avionics", r: "OFF" }, { c: "Mixture", r: "IDLE" }, { c: "Magnetos", r: "OFF" }, { c: "Electrical Equipment", r: "OFF" }, { c: "Hobbs & Tach", r: "RECORD" }, { c: "Master & Stby", r: "OFF" }],
-            "theme": "blue"
+            items: [{ s: "Climb", t: "strong" }, { c: "Power", r: "FULL" }, { c: "Mixture", r: "RICH" }, { c: "Flaps", r: "UP" }, { c: "Engine", r: "GREEN" }, { s: "Approach", t: "strong" }, { c: "Direct", r: "SET" }, { c: "ATIS", r: "GET" }, { c: "Altimeter", r: "SET" }, { c: "RWY HDG", r: "SET" }, { c: "Calls", r: "MADE" }, { c: "Briefing", r: "DONE" }, { s: "Engine FAILURE", t: "emer" }, { c: "Airspeed", r: "68" }, { c: "Fuel Pump", r: "ON" }, { c: "Mixture", r: "RICH" }, { c: "Fuel Shutoff", r: "ON" }, { c: "Fuel Selector", r: "BOTH" }, { s: "Engine FIRE", t: "emer" }, { c: "Mixture", r: "CUTOFF" }, { c: "Fuel Shutoff", r: "OFF" }, { c: "Fuel Pump", r: "OFF" }, { c: "Masters", r: "OFF" }, { c: "Vents, Heat, Air", r: "CLOSED" }, { c: "Emergency Descent", r: "120@30" }, { c: "" }],
+            items2: [{ s: "Cruise", t: "strong" }, { c: "Power", r: "SET" }, { c: "Flaps", r: "UP" }, { c: "Trim", r: "SET" }, { c: "Heading", r: "BUGGED" }, { s: "Before Landing", t: "strong" }, { c: "Fuel Selector", r: "BOTH" }, { c: "Mixture", r: "RICH" }, { c: "Landing Lights", r: "ON" }, { c: "Safety Belts", r: "ON" }, { c: "Auto Pilot", r: "OFF" }, { c: "Cabin Power", r: "OFF" }, { s: "After Landing" }, { c: "Flaps", r: "UP" }, { c: "Light", r: "TAXI" }, { c: "Mixture", r: "Lean" }, { c: "Trim", r: "T/O" }, { c: "Pitot", r: "OFF" }, { c: "Comms", r: "GND" }, { s: "Shutdown" }, { c: "Avionics", r: "OFF" }, { c: "Mixture", r: "IDLE" }, { c: "Magnetos", r: "OFF" }, { c: "Electrical Equipment", r: "OFF" }, { c: "Hobbs & Tach", r: "RECORD" }, { c: "Master & Stby", r: "OFF" }],
+            theme: ChecklistTheme.blue
         }
     )
 
     static page0DemoChecklist = new TemplatePage(PageType.checklist, 'Preflight',
         {
             name: 'Preflight',
-            theme: 'yellow',
-            font: 'large',
-            items: [{ s: 'Cabin', t: "strong" }, { c: 'Docs AR(R)OW', r: 'CHECKED' }, { c: 'Control Wheel Lock + Pitot Cover', r: 'REMOVED' }, { c: 'Kneeboard, Eyewear', r: 'READY' }, { c: 'Headset, iPad', r: 'INSTALLED' }, { c: 'Sentry, Camera, Power Bank', r: 'INSTALLED' }, { c: 'Section 3', r: 'READY' }, { c: 'Fire Extinguisher', r: 'LATCHED' }, { s: 'Panel' }, { c: 'Ignition Switch', r: 'OFF' }, { c: 'Avionics', r: 'OFF' }, { c: 'Master Batt', r: 'ON' }, { c: 'Lights + Pitot Heat', r: 'ON' }, { c: 'Flaps', r: 'FULL' }, { s: 'Walk Around', t: "strong" }, { c: 'All Lights', r: 'CHECKED' }, { c: 'Antenas (Comm, ELT, Nav, GPS, OAT)', r: 'CHECKED' }, { c: 'Wings (Frost, Ice)', r: 'CLEAR' }, { c: 'Windshield', r: 'CLEAN' }, { c: 'Pitot Tube', r: 'HOT' }, { s: 'Panel' }, { c: 'Lights + Pitot Heat', r: 'OFF' }, { c: 'Fuel Quantity', r: 'CHECKED' }, { c: 'Hobbs & Tach', r: 'RECORD' }, { c: 'Master Switches', r: 'OFF' }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: 'Checklist Capacity', t: "strong" }, { c: 'Max Items (Large Font)', r: '30' }]
+            items: [{ s: 'Cabin', t: "strong" }, { c: 'Docs AR(R)OW', r: 'CHECKED' }, { c: 'Control Wheel Lock + Pitot Cover', r: 'REMOVED' }, { c: 'Kneeboard, Eyewear', r: 'READY' }, { c: 'Headset, iPad', r: 'INSTALLED' }, { c: 'Sentry, Camera, Power Bank', r: 'INSTALLED' }, { c: 'Section 3', r: 'READY' }, { c: 'Fire Extinguisher', r: 'LATCHED' }, { s: 'Panel' }, { c: 'Ignition Switch', r: 'OFF' }, { c: 'Avionics', r: 'OFF' }, { c: 'Master Batt', r: 'ON' }, { c: 'Lights + Pitot Heat', r: 'ON' }, { c: 'Flaps', r: 'FULL' }, { s: 'Walk Around', t: "strong" }, { c: 'All Lights', r: 'CHECKED' }, { c: 'Antenas (Comm, ELT, Nav, GPS, OAT)', r: 'CHECKED' }, { c: 'Wings (Frost, Ice)', r: 'CLEAR' }, { c: 'Windshield', r: 'CLEAN' }, { c: 'Pitot Tube', r: 'HOT' }, { s: 'Panel' }, { c: 'Lights + Pitot Heat', r: 'OFF' }, { c: 'Fuel Quantity', r: 'CHECKED' }, { c: 'Hobbs & Tach', r: 'RECORD' }, { c: 'Master Switches', r: 'OFF' }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: 'Checklist Capacity', t: "strong" }, { c: 'Max Items (Large Font)', r: '30' }],
+            theme: ChecklistTheme.yellow,
+            font: ChecklistFont.large,
         }
     )
     static page1DemoChecklist = new TemplatePage(PageType.checklist, 'Flight',
         {
-            name: "Flight", items: [{ s: "Climb", t: "strong" }, { c: "Power", r: "FULL" }, { c: "Mixture", r: "RICH" }, { c: "Flaps", r: "UP" }, { c: "Engine", r: "GREEN" }, { c: "" }, { c: "" }, { s: "Approach", t: "strong" }, { c: "Direct", r: "SET" }, { c: "ATIS", r: "GET" }, { c: "Altimeter", r: "SET" }, { c: "RWY HDG", r: "SET" }, { c: "Calls", r: "MADE" }, { c: "Briefing", r: "DONE" }, { c: "" }, { s: "Engine FAILURE", t: "emer" }, { c: "Airspeed", r: "68" }, { c: "Fuel Pump", r: "ON" }, { c: "Mixture", r: "RICH" }, { c: "Fuel Shutoff", r: "ON" }, { c: "Fuel Selector", r: "BOTH" }, { c: "" }, { s: "Engine FIRE", t: "emer" }, { c: "Mixture", r: "CUTOFF" }, { c: "Fuel Shutoff", r: "OFF" }, { c: "Fuel Pump", r: "OFF" }, { c: "Masters", r: "OFF" }, { c: "Vents, Heat, Air", r: "CLOSED" }, { c: "Emergency Descent", r: "120@30" }, { c: "" }], "items2": [{ s: "Cruise", t: "strong" }, { c: "Power", r: "SET" }, { c: "Flaps", r: "UP" }, { c: "Trim", r: "SET" }, { c: "Heading", r: "BUGGED" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "Before Landing", t: "strong" }, { c: "Fuel Selector", r: "BOTH" }, { c: "Mixture", r: "RICH" }, { c: "Landing Lights", r: "ON" }, { c: "Safety Belts", r: "ON" }, { c: "Auto Pilot", r: "OFF" }, { c: "Cabin Power", r: "OFF" }, { c: "" }, { s: "After Landing" }, { c: "Flaps", r: "UP" }, { c: "Light", r: "TAXI" }, { c: "Mixture", r: "Lean" }, { c: "Trim", r: "T/O" }, { c: "Pitot", r: "OFF" }, { c: "Comms", r: "GND" }, { c: "" }, { s: "Shutdown" }, { c: "Avionics", r: "OFF" }, { c: "Mixture", r: "IDLE" }, { c: "Magnetos", r: "OFF" }, { c: "Electrical Equipment", r: "OFF" }, { c: "Hobbs & Tach", r: "RECORD" }, { c: "Master & Stby", r: "OFF" }, { t: "blank" }, { t: "blank" }, { t: "blank" }, { s: 'Checklist Capacity', t: "strong" }, { c: 'Max Items (Medium)', r: '70' },], "theme": "blue"
+            name: "Flight",
+            items: [{ s: "Climb", t: "strong" }, { c: "Power", r: "FULL" }, { c: "Mixture", r: "RICH" }, { c: "Flaps", r: "UP" }, { c: "Engine", r: "GREEN" }, { c: "" }, { c: "" }, { s: "Approach", t: "strong" }, { c: "Direct", r: "SET" }, { c: "ATIS", r: "GET" }, { c: "Altimeter", r: "SET" }, { c: "RWY HDG", r: "SET" }, { c: "Calls", r: "MADE" }, { c: "Briefing", r: "DONE" }, { c: "" }, { s: "Engine FAILURE", t: "emer" }, { c: "Airspeed", r: "68" }, { c: "Fuel Pump", r: "ON" }, { c: "Mixture", r: "RICH" }, { c: "Fuel Shutoff", r: "ON" }, { c: "Fuel Selector", r: "BOTH" }, { c: "" }, { s: "Engine FIRE", t: "emer" }, { c: "Mixture", r: "CUTOFF" }, { c: "Fuel Shutoff", r: "OFF" }, { c: "Fuel Pump", r: "OFF" }, { c: "Masters", r: "OFF" }, { c: "Vents, Heat, Air", r: "CLOSED" }, { c: "Emergency Descent", r: "120@30" }, { c: "" }], "items2": [{ s: "Cruise", t: "strong" }, { c: "Power", r: "SET" }, { c: "Flaps", r: "UP" }, { c: "Trim", r: "SET" }, { c: "Heading", r: "BUGGED" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "Before Landing", t: "strong" }, { c: "Fuel Selector", r: "BOTH" }, { c: "Mixture", r: "RICH" }, { c: "Landing Lights", r: "ON" }, { c: "Safety Belts", r: "ON" }, { c: "Auto Pilot", r: "OFF" }, { c: "Cabin Power", r: "OFF" }, { c: "" }, { s: "After Landing" }, { c: "Flaps", r: "UP" }, { c: "Light", r: "TAXI" }, { c: "Mixture", r: "Lean" }, { c: "Trim", r: "T/O" }, { c: "Pitot", r: "OFF" }, { c: "Comms", r: "GND" }, { c: "" }, { s: "Shutdown" }, { c: "Avionics", r: "OFF" }, { c: "Mixture", r: "IDLE" }, { c: "Magnetos", r: "OFF" }, { c: "Electrical Equipment", r: "OFF" }, { c: "Hobbs & Tach", r: "RECORD" }, { c: "Master & Stby", r: "OFF" }, { t: "blank" }, { t: "blank" }, { t: "blank" }, { s: 'Checklist Capacity', t: "strong" }, { c: 'Max Items (Medium)', r: '70' },],
+            theme: ChecklistTheme.blue
         }
     )
     static page2DemoChecklist = new TemplatePage(PageType.checklist, 'Checklist',
         {
-            name: "Checklist", "items": [{ s: "Col 1", t: "strong" }, { c: "Challenge1.1", r: "Resp" }], "items2": [{ s: "Col 2", t: "strong" }, { c: "Challenge2.1", r: "Resp" }], "items3": [{ s: "Col 3", t: "strong" }, { c: "Challenge3.1", r: "Resp" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "Checklist Capacity", t: "strong" }, { c: "Max (Small)", r: "138" }], "theme": "purple"
+            name: "Checklist",
+            items: [{ s: "Col 1", t: "strong" }, { c: "Challenge1.1", r: "Resp" }],
+            items2: [{ s: "Col 2", t: "strong" }, { c: "Challenge2.1", r: "Resp" }],
+            items3: [{ s: "Col 3", t: "strong" }, { c: "Challenge3.1", r: "Resp" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "", t: "blank" }, { s: "Checklist Capacity", t: "strong" }, { c: "Max (Small)", r: "138" }],
+            theme: ChecklistTheme.purple,
+            font: ChecklistFont.small,
         }
     )
 
@@ -108,7 +116,7 @@ export class DemoData {
                     { mhz: 118.200, name: 'CHINOOK A MOA' }
                 ]
             },
-            { name: TileType.checklist, data: { name: "Quick Ref", "items": [ { s: "Climb"}, { c: "Power - Mixture - Flaps - Engine" }, { s: "Cruise"}, { c: "Power - Mixture - Trim - Lights" }, { s: "Descent"}, { c: "Wx - Alt - Nav - Land. Lights" }, { c: "Cab Pwr - Mixt - Apch Brief." }, { s: "Before Landing"}, { c: "Fuel Sel. - Mixt - Land. Lights" }, { c: "Seat Blt - AP - Cab Pwr" } ] , "theme": "blue" } },
+            { name: TileType.checklist, data: { name: "Quick Ref", "items": [{ s: "Climb" }, { c: "Power - Mixture - Flaps - Engine" }, { s: "Cruise" }, { c: "Power - Mixture - Trim - Lights" }, { s: "Descent" }, { c: "Wx - Alt - Nav - Land. Lights" }, { c: "Cab Pwr - Mixt - Apch Brief." }, { s: "Before Landing" }, { c: "Fuel Sel. - Mixt - Land. Lights" }, { c: "Seat Blt - AP - Cab Pwr" }], "theme": "blue" } },
             { name: TileType.airport, data: { code: "KRNT", rwy: "16-34", rwyOrientation: "vertical", corners: ["weather", "twr", "field", "tpa"] } },
             { name: TileType.notes, data: {} }
         ]
@@ -165,107 +173,107 @@ export class DemoData {
 
 
     static page0DemoReference = new TemplatePage(PageType.tiles, 'Reference 1', [
-        {name:"vfr",data:{mode:"clouds","airport":""}},
-        {name:"atis",data:{mode:"categories"}},
-        {name:"vfr",data:{mode:"alt","airport":""}},
-        {name:"sunlight",data:{mode:"ref"}},
-        {name:"vfr",data:{mode:"nordo","airport":""}},
-        {name:"checklist",data:{name:"Checklist","items":[{c:"Vne","r":"163"},{c:"Vno","r":"129"},{c:"Va @ 2,550","r":"105"},{c:"Va @ 2,200","r":"98"},{c:"Va @ 1,900","r":"90"},{c:"Vy","r":"74"},{c:"Vg","r":"68"},{c:"Vx","r":"62"},{c:"Vs1","r":"48"},{c:"Vs0","r":"40"}],"theme":"blue"}}
+        { name: "vfr", data: { mode: "clouds", "airport": "" } },
+        { name: "atis", data: { mode: "categories" } },
+        { name: "vfr", data: { mode: "alt", "airport": "" } },
+        { name: "sunlight", data: { mode: "ref" } },
+        { name: "vfr", data: { mode: "nordo", "airport": "" } },
+        { name: "checklist", data: { name: "Checklist", "items": [{ c: "Vne", "r": "163" }, { c: "Vno", "r": "129" }, { c: "Va @ 2,550", "r": "105" }, { c: "Va @ 2,200", "r": "98" }, { c: "Va @ 1,900", "r": "90" }, { c: "Vy", "r": "74" }, { c: "Vg", "r": "68" }, { c: "Vx", "r": "62" }, { c: "Vs1", "r": "48" }, { c: "Vs0", "r": "40" }], "theme": "blue" } }
     ])
 
-    static ifrReportingList0 = [{c:"Missed","r":"M"},{c:"Airspeed ±10kts ","r":"A"},{c:"Reaching Fix","r":"R"},{c:"Vacating Altitude","r":"V"},{c:"ETA ±2min","r":"E"},{c:"Leaving Hold","r":"L"},{c:"Outer Marker","r":"O"},{c:"Unforecasted Weather","r":"U"},{c:"Safety of flight","r":"S"},{c:"VFR on Top","r":"V"},{c:"Final Approach Fix","r":"F"}]
-    static ifrReportingList1 = [{c:"Radio nav Equip. Failure","r":"R"},{c:"Compulsory Reporting","r":"C"},{c:"Unable to hold 500fpm","r":"500"},{s:" Do Not Fly a PT"},{c:"Straight In Approach","r":"S"},{c:"Hold in lieu of PT","r":"H"},{c:"DME Arc","r":"A"},{c:"Radar Vector to FAF","r":"R"},{c:"No PT on chart","r":"P"},{c:"Timed Apch from Hold","r":"T"},{c:"Teardrop Course Rev.","r":"T"}]
+    static ifrReportingList0 = [{ c: "Missed", "r": "M" }, { c: "Airspeed ±10kts ", "r": "A" }, { c: "Reaching Fix", "r": "R" }, { c: "Vacating Altitude", "r": "V" }, { c: "ETA ±2min", "r": "E" }, { c: "Leaving Hold", "r": "L" }, { c: "Outer Marker", "r": "O" }, { c: "Unforecasted Weather", "r": "U" }, { c: "Safety of flight", "r": "S" }, { c: "VFR on Top", "r": "V" }, { c: "Final Approach Fix", "r": "F" }]
+    static ifrReportingList1 = [{ c: "Radio nav Equip. Failure", "r": "R" }, { c: "Compulsory Reporting", "r": "C" }, { c: "Unable to hold 500fpm", "r": "500" }, { s: " Do Not Fly a PT" }, { c: "Straight In Approach", "r": "S" }, { c: "Hold in lieu of PT", "r": "H" }, { c: "DME Arc", "r": "A" }, { c: "Radar Vector to FAF", "r": "R" }, { c: "No PT on chart", "r": "P" }, { c: "Timed Apch from Hold", "r": "T" }, { c: "Teardrop Course Rev.", "r": "T" }]
     static page1DemoReference = new TemplatePage(PageType.tiles, 'Reference 2', [
-        {name:"clearance",data:{mode:"alt","airport":""}},
-        {name:"checklist",data:{name:"IFR Reporting","items":this.ifrReportingList0,"theme":"yellow"}},
-        {name:"clearance",data:{mode:"lostcomms","airport":""}},
-        {name:"checklist",data:{name:"Continued","items":this.ifrReportingList1,"theme":"yellow"}},
-        {name:"radios",data:{mode:"sv","list":[]}},
-        {name: "regulations",data: { mode: "oxygen"}, "span2": false, "hide": false}
+        { name: "clearance", data: { mode: "alt", "airport": "" } },
+        { name: "checklist", data: { name: "IFR Reporting", "items": this.ifrReportingList0, "theme": "yellow" } },
+        { name: "clearance", data: { mode: "lostcomms", "airport": "" } },
+        { name: "checklist", data: { name: "Continued", "items": this.ifrReportingList1, "theme": "yellow" } },
+        { name: "radios", data: { mode: "sv", "list": [] } },
+        { name: "regulations", data: { mode: "oxygen" }, "span2": false, "hide": false }
     ])
 
     static page0Acronyms = new TemplatePage(PageType.checklist, 'Acronyms 1',
         {
             name: "Acronyms 1",
-            items: [{s: "PAVE", t: "strong"}, {c: "Pilot", "r": "P"}, {c: "Aircraft", "r": "A"}, {c: "Environment", "r": "V"}, {c: "External Factors", "r": "E"}, {t: "blank"}, {s: "Pilot Legal", t: "strong"}, {c: "Pilot Certificate", "r": "P"}, {c: "Current Medical", "r": "M"}, {c: "Government ID", "r": "G"}, {t: "blank"}, {s: "Pilot Safe", t: "strong"}, {c: "Illness", "r": "I"}, {c: "Medication", "r": "M"}, {c: "Stress", "r": "S"}, {c: "Alcohol", "r": "A"}, {c: "Fatigue", "r": "F"}, {c: "Emotions", "r": "E"}, {t: "blank"}, {s: "Pilot Current", t: "strong"}, {c: "Flight Review", "r": "24mo"}, {c: "Carry Passengers", "r": "3 T/O"}, {c: "Night Passengers", "r": "Full Stop"}, {s: "Instruments"}, {c: "Instrument Approaches", "r": "6"}, {c: "Hold procedure", "r": "H"}, {c: "Intercept Course", "r": "I"}, {c: "Track Course", "r": "T"}],
-            items2: [{s: "Aircraft Legal", t: "strong"}, {c: "Minimum Equipment List", "r": "M"}, {c: "Airworthiness", "r": "A"}, {c: "Registration", "r": "R"}, {c: "Radio License (Intl)", "r": "R"}, {c: "Operating Handbook", "r": "O"}, {c: "Weight and Balance", "r": "W"}, {c: "Placards", "r": "P"}, {c: "Compass Deviation Card", "r": "C"}, {c: "GPS Manual", "r": "G"}, {s: "Aircraft Current", t: "strong"}, {c: "Airworthiness Directives", "r": "A"}, {c: "VOR: 30d", "r": "V"}, {c: "Inspections: 12mo+100h", "r": "I"}, {c: "Altimeter: 24mo", "r": "A"}, {c: "Transponder: 24mo", "r": "T"}, {c: "ELT: 12mo+1h+Half Batt", "r": "E"}, {c: "Static System: 24mo", "r": "S"}, {s: "Environment", t: "strong"}, {c: "NOTAMs", "r": "N"}, {c: "Weather", "r": "W"}, {c: "Known ATC Delays", "r": "K"}, {c: "Runway Length and Slope", "r": "R"}, {c: "Alternates", "r": "A"}, {c: "Fuel Requirement", "r": "F"}, {c: "T/o and Landing dist.", "r": "T"}, {s: "Aircraft Registration Expiry", t: "strong"}, {c: "30 days post passing", "r": "30"}, {c: "Foreign Export", "r": "F"}, {c: "Transfer", "r": "T"}, {c: "Destruction", "r": "D"}, {c: "US Citizenship revoked", "r": "U"}, {c: "Cancelled", "r": "C"}, {c: "7 Years", "r": "K"}, {t: "blank"}],
-            theme: "grey"
+            items: [{ s: "PAVE", t: "strong" }, { c: "Pilot", "r": "P" }, { c: "Aircraft", "r": "A" }, { c: "Environment", "r": "V" }, { c: "External Factors", "r": "E" }, { t: "blank" }, { s: "Pilot Legal", t: "strong" }, { c: "Pilot Certificate", "r": "P" }, { c: "Current Medical", "r": "M" }, { c: "Government ID", "r": "G" }, { t: "blank" }, { s: "Pilot Safe", t: "strong" }, { c: "Illness", "r": "I" }, { c: "Medication", "r": "M" }, { c: "Stress", "r": "S" }, { c: "Alcohol", "r": "A" }, { c: "Fatigue", "r": "F" }, { c: "Emotions", "r": "E" }, { t: "blank" }, { s: "Pilot Current", t: "strong" }, { c: "Flight Review", "r": "24mo" }, { c: "Carry Passengers", "r": "3 T/O" }, { c: "Night Passengers", "r": "Full Stop" }, { s: "Instruments" }, { c: "Instrument Approaches", "r": "6" }, { c: "Hold procedure", "r": "H" }, { c: "Intercept Course", "r": "I" }, { c: "Track Course", "r": "T" }],
+            items2: [{ s: "Aircraft Legal", t: "strong" }, { c: "Minimum Equipment List", "r": "M" }, { c: "Airworthiness", "r": "A" }, { c: "Registration", "r": "R" }, { c: "Radio License (Intl)", "r": "R" }, { c: "Operating Handbook", "r": "O" }, { c: "Weight and Balance", "r": "W" }, { c: "Placards", "r": "P" }, { c: "Compass Deviation Card", "r": "C" }, { c: "GPS Manual", "r": "G" }, { s: "Aircraft Current", t: "strong" }, { c: "Airworthiness Directives", "r": "A" }, { c: "VOR: 30d", "r": "V" }, { c: "Inspections: 12mo+100h", "r": "I" }, { c: "Altimeter: 24mo", "r": "A" }, { c: "Transponder: 24mo", "r": "T" }, { c: "ELT: 12mo+1h+Half Batt", "r": "E" }, { c: "Static System: 24mo", "r": "S" }, { s: "Environment", t: "strong" }, { c: "NOTAMs", "r": "N" }, { c: "Weather", "r": "W" }, { c: "Known ATC Delays", "r": "K" }, { c: "Runway Length and Slope", "r": "R" }, { c: "Alternates", "r": "A" }, { c: "Fuel Requirement", "r": "F" }, { c: "T/o and Landing dist.", "r": "T" }, { s: "Aircraft Registration Expiry", t: "strong" }, { c: "30 days post passing", "r": "30" }, { c: "Foreign Export", "r": "F" }, { c: "Transfer", "r": "T" }, { c: "Destruction", "r": "D" }, { c: "US Citizenship revoked", "r": "U" }, { c: "Cancelled", "r": "C" }, { c: "7 Years", "r": "K" }, { t: "blank" }],
+            theme: ChecklistTheme.grey
         }
     )
 
     static page1Acronyms = new TemplatePage(PageType.checklist, 'Acronyms 2',
         {
             name: "Acronyms 2",
-            items: [{s: "Equipment List", t: "strong"}, {c: "MEL > Type Cert > AD > SB > KOEL"}, {s: "VFR Day"}, {c: "Airspeed Indicator", "r": "A"}, {c: "Tachometer", "r": "T"}, {c: "Oil Pressure Gauge", "r": "O"}, {c: "Manifold Pressure", "r": "M"}, {c: "Altimeter", "r": "A"}, {c: "Temperature Gauge", "r": "T"}, {c: "Oil Temp Gauge", "r": "O"}, {c: "Fuel Gauge", "r": "F"}, {c: "Landing Gear Indicator", "r": "L"}, {c: "Anti Collision Light", "r": "A"}, {c: "Magnetic Compass", "r": "M"}, {c: "ELT", "r": "E"}, {c: "Safety Belts", "r": "S"}, {s: "VFR Night"}, {c: "Fuses", "r": "F"}, {c: "Landing Lights", "r": "L"}, {c: "Anti Collision Lights", "r": "A"}, {c: "Position Lights", "r": "P"}, {c: "Source of Electricity", "r": "S"}, {s: "IFR"}, {c: "Generator (Alt.)", "r": "G"}, {c: "Radios (VOR, GPS, )", "r": "R"}, {c: "Altimeter", "r": "A"}, {c: "Ball (Turn Coord.)", "r": "B"}, {c: "Clock", "r": "C"}, {c: "Attitude Indicator", "r": "A"}, {c: "Rate of Turn", "r": "R"}, {c: "Directional Gyro", "r": "D"}],
-            items2: [{s: "Types of class E", t: "strong"}, {c: "Surface", "r": "S"}, {c: "Extension", "r": "E"}, {c: "Transition 700 AGL", "r": "T"}, {c: "Victor Airways", "r": "V"}, {c: "Offshore", "r": "O"}, {c: "Domestic Enroute", "r": "D"}, {c: "Above 14,500 or FL 600", "r": "A"}, {s: "VFR Altitudes (91.159)", t: "strong"}, {c: "Winds", "r": "W"}, {c: "Hemispheric Rule", "r": "H"}, {c: "Airspace", "r": "A"}, {c: "Terrain", "r": "T"}, {c: "Gliding Distance", "r": "G"}, {c: "Performance", "r": "P"}, {c: "Trip Length", "r": "T"}, {t: "blank"}, {s: "Pax Briefing", t: "strong"}, {c: "Seat and Belt", "r": "S"}, {c: "Air Vents", "r": "A"}, {c: "Fire Extinguisher", "r": "F"}, {c: "Exit Doors", "r": "E"}, {c: "Talking", "r": "T"}, {c: "Your Questions", "r": "Y"}, {t: "blank"}, {s: "AP minimums", t: "strong"}, {c: "Preflight successful", "r": "P"}, {c: "Audio Panel Operational", "r": "A"}, {c: "Pilot L. Seat+Belt", "r": "P"}, {c: "OFF T/O+Land.", "r": "O"}, {c: "Missed climb rate suff.", "r": "M"}, {c: "Airspeed 70-150", "r": "A"}, {c: "Fuel imb. 90lbs", "r": "F"}, {c: "ILS CAT 1", "r": "I"}, {c: "Alt 200ft Apch / 800ft", "r": "A"}],
-            theme: "blue"
+            items: [{ s: "Equipment List", t: "strong" }, { c: "MEL > Type Cert > AD > SB > KOEL" }, { s: "VFR Day" }, { c: "Airspeed Indicator", "r": "A" }, { c: "Tachometer", "r": "T" }, { c: "Oil Pressure Gauge", "r": "O" }, { c: "Manifold Pressure", "r": "M" }, { c: "Altimeter", "r": "A" }, { c: "Temperature Gauge", "r": "T" }, { c: "Oil Temp Gauge", "r": "O" }, { c: "Fuel Gauge", "r": "F" }, { c: "Landing Gear Indicator", "r": "L" }, { c: "Anti Collision Light", "r": "A" }, { c: "Magnetic Compass", "r": "M" }, { c: "ELT", "r": "E" }, { c: "Safety Belts", "r": "S" }, { s: "VFR Night" }, { c: "Fuses", "r": "F" }, { c: "Landing Lights", "r": "L" }, { c: "Anti Collision Lights", "r": "A" }, { c: "Position Lights", "r": "P" }, { c: "Source of Electricity", "r": "S" }, { s: "IFR" }, { c: "Generator (Alt.)", "r": "G" }, { c: "Radios (VOR, GPS, )", "r": "R" }, { c: "Altimeter", "r": "A" }, { c: "Ball (Turn Coord.)", "r": "B" }, { c: "Clock", "r": "C" }, { c: "Attitude Indicator", "r": "A" }, { c: "Rate of Turn", "r": "R" }, { c: "Directional Gyro", "r": "D" }],
+            items2: [{ s: "Types of class E", t: "strong" }, { c: "Surface", "r": "S" }, { c: "Extension", "r": "E" }, { c: "Transition 700 AGL", "r": "T" }, { c: "Victor Airways", "r": "V" }, { c: "Offshore", "r": "O" }, { c: "Domestic Enroute", "r": "D" }, { c: "Above 14,500 or FL 600", "r": "A" }, { s: "VFR Altitudes (91.159)", t: "strong" }, { c: "Winds", "r": "W" }, { c: "Hemispheric Rule", "r": "H" }, { c: "Airspace", "r": "A" }, { c: "Terrain", "r": "T" }, { c: "Gliding Distance", "r": "G" }, { c: "Performance", "r": "P" }, { c: "Trip Length", "r": "T" }, { t: "blank" }, { s: "Pax Briefing", t: "strong" }, { c: "Seat and Belt", "r": "S" }, { c: "Air Vents", "r": "A" }, { c: "Fire Extinguisher", "r": "F" }, { c: "Exit Doors", "r": "E" }, { c: "Talking", "r": "T" }, { c: "Your Questions", "r": "Y" }, { t: "blank" }, { s: "AP minimums", t: "strong" }, { c: "Preflight successful", "r": "P" }, { c: "Audio Panel Operational", "r": "A" }, { c: "Pilot L. Seat+Belt", "r": "P" }, { c: "OFF T/O+Land.", "r": "O" }, { c: "Missed climb rate suff.", "r": "M" }, { c: "Airspeed 70-150", "r": "A" }, { c: "Fuel imb. 90lbs", "r": "F" }, { c: "ILS CAT 1", "r": "I" }, { c: "Alt 200ft Apch / 800ft", "r": "A" }],
+            theme: ChecklistTheme.blue
         }
     )
 
     static page2Acronyms = new TemplatePage(PageType.checklist, 'Acronyms 3',
         {
             name: "Acronyms 3",
-            items: [{s: "Left Turning Tendencies", t: "strong"}, {c: "Gyroscopic", "r": "G"}, {c: "Asymmetric Thrust", "r": "A"}, {c: "Spiraling Slipstream", "r": "S"}, {c: "Torque", "r": "T"}, {t: "blank"}, {s: "5Ts in a Hold", t: "strong"}, {c: "Turn", "r": "T"}, {c: "Time", "r": "T"}, {c: "Twist", "r": "T"}, {c: "Throttle", "r": "T"}, {c: "Talk", "r": "T"}, {t: "blank"}, {s: "Decide", t: "strong"}, {c: "Detect", "r": "D"}, {c: "Evaluate", "r": "E"}, {c: "Choose Outcome", "r": "C"}, {c: "Identify Action", "r": "I"}, {c: "Do", "r": "D"}, {c: "Evaluate Effect", "r": "E"}, {t: "blank"}, {s: "5Ps", t: "strong"}, {c: "Plan", "r": "P"}, {c: "Programming", "r": "P"}, {c: "Plane", "r": "P"}, {c: "Pilot", "r": "P"}, {c: "Passenger", "r": "P"}],
-            items2: [{s: " Reporting to ATC", t: "strong"}, {c: "Missed", "r": "M"}, {c: "Airspeed ±10kts", "r": "A"}, {c: "Reaching Holding Fix", "r": "R"}, {c: "Vacating Altitude", "r": "V"}, {c: "ETA ±2min", "r": "E"}, {c: "Leaving Hold", "r": "L"}, {c: "Outer Marker", "r": "O"}, {c: "Unforcasted Weather", "r": "U"}, {c: "Safety of Flight", "r": "S"}, {c: "VFR on top", "r": "V"}, {c: "Final Approach Fix", "r": "F"}, {c: "Radial nav Equip. Failure", "r": "R"}, {c: "Compulsory Reporting", "r": "C"}, {c: "Unable to hold 500fpm", "r": "500"}, {t: "blank"}, {s: " Do No Fly A Procedure", t: "strong"}, {s: "Need To Drop VHS Tapes"}, {c: "No PT on chart", "r": "N"}, {c: "Teardrop Course Rev.", "r": "T"}, {c: "DME Arc", "r": "D"}, {c: "Vector to FAF", "r": "V"}, {c: "Hold in lieu of PT", "r": "H"}, {c: "Straight In Approach", "r": "S"}, {c: "Timed Apch from a Hold", "r": "T"}, {t: "blank"}, {s: "Illusions", t: "strong"}, {c: "Inversion", "r": "I"}, {c: "Coriolis", "r": "C"}, {c: "Elevator", "r": "E"}, {c: "False Horizon", "r": "F"}, {c: "Lean", "r": "L"}, {c: "Autokinesis", "r": "A"}, {c: "Graveyard Spin", "r": "G"}, {c: "Somatogravic", "r": "S"}, {t: "blank"}],
-            theme: "yellow"
+            items: [{ s: "Left Turning Tendencies", t: "strong" }, { c: "Gyroscopic", "r": "G" }, { c: "Asymmetric Thrust", "r": "A" }, { c: "Spiraling Slipstream", "r": "S" }, { c: "Torque", "r": "T" }, { t: "blank" }, { s: "5Ts in a Hold", t: "strong" }, { c: "Turn", "r": "T" }, { c: "Time", "r": "T" }, { c: "Twist", "r": "T" }, { c: "Throttle", "r": "T" }, { c: "Talk", "r": "T" }, { t: "blank" }, { s: "Decide", t: "strong" }, { c: "Detect", "r": "D" }, { c: "Evaluate", "r": "E" }, { c: "Choose Outcome", "r": "C" }, { c: "Identify Action", "r": "I" }, { c: "Do", "r": "D" }, { c: "Evaluate Effect", "r": "E" }, { t: "blank" }, { s: "5Ps", t: "strong" }, { c: "Plan", "r": "P" }, { c: "Programming", "r": "P" }, { c: "Plane", "r": "P" }, { c: "Pilot", "r": "P" }, { c: "Passenger", "r": "P" }],
+            items2: [{ s: " Reporting to ATC", t: "strong" }, { c: "Missed", "r": "M" }, { c: "Airspeed ±10kts", "r": "A" }, { c: "Reaching Holding Fix", "r": "R" }, { c: "Vacating Altitude", "r": "V" }, { c: "ETA ±2min", "r": "E" }, { c: "Leaving Hold", "r": "L" }, { c: "Outer Marker", "r": "O" }, { c: "Unforcasted Weather", "r": "U" }, { c: "Safety of Flight", "r": "S" }, { c: "VFR on top", "r": "V" }, { c: "Final Approach Fix", "r": "F" }, { c: "Radial nav Equip. Failure", "r": "R" }, { c: "Compulsory Reporting", "r": "C" }, { c: "Unable to hold 500fpm", "r": "500" }, { t: "blank" }, { s: " Do No Fly A Procedure", t: "strong" }, { s: "Need To Drop VHS Tapes" }, { c: "No PT on chart", "r": "N" }, { c: "Teardrop Course Rev.", "r": "T" }, { c: "DME Arc", "r": "D" }, { c: "Vector to FAF", "r": "V" }, { c: "Hold in lieu of PT", "r": "H" }, { c: "Straight In Approach", "r": "S" }, { c: "Timed Apch from a Hold", "r": "T" }, { t: "blank" }, { s: "Illusions", t: "strong" }, { c: "Inversion", "r": "I" }, { c: "Coriolis", "r": "C" }, { c: "Elevator", "r": "E" }, { c: "False Horizon", "r": "F" }, { c: "Lean", "r": "L" }, { c: "Autokinesis", "r": "A" }, { c: "Graveyard Spin", "r": "G" }, { c: "Somatogravic", "r": "S" }, { t: "blank" }],
+            theme: ChecklistTheme.yellow
         }
     )
 
     static page0IFRFlight = new TemplatePage(PageType.tiles, 'Tile 1',
         [
-            {name:"clearance",data:{"mode":"dep","airport":"KPAE"},"span2":false,"hide":false},
-            {name:"radios",data:{"mode":"","list":[{"value":"135.625",name:"KAWO AWOS-3PT","type":"w"},{"value":"122.725",name:"KAWO CTAF","type":"ct"},{"value":"111.500",name:"KAWO LOC I-AWO 34","type":"n"},{"value":"120.200",name:"KPAE TWR","type":"tw"}],"sv":"t"},"span2":false,"hide":false},
-            {name:"atis",data:{"mode":""},"span2":true,"hide":false},
-            {name:"atis",data:{"mode":""},"span2":false,"hide":true},
-            {name:"notes",data:{"mode":"word","word":"WARNMM"},"span2":true,"hide":false},
-            {name:"notes",data:{"mode":"word","word":"LaWBB","comp":false},"span2":false,"hide":true}
+            { name: "clearance", data: { "mode": "dep", "airport": "KPAE" }, "span2": false, "hide": false },
+            { name: "radios", data: { "mode": "", "list": [{ "value": "135.625", name: "KAWO AWOS-3PT", "type": "w" }, { "value": "122.725", name: "KAWO CTAF", "type": "ct" }, { "value": "111.500", name: "KAWO LOC I-AWO 34", "type": "n" }, { "value": "120.200", name: "KPAE TWR", "type": "tw" }], "sv": "t" }, "span2": false, "hide": false },
+            { name: "atis", data: { "mode": "" }, "span2": true, "hide": false },
+            { name: "atis", data: { "mode": "" }, "span2": false, "hide": true },
+            { name: "notes", data: { "mode": "word", "word": "WARNMM" }, "span2": true, "hide": false },
+            { name: "notes", data: { "mode": "word", "word": "LaWBB", "comp": false }, "span2": false, "hide": true }
         ]
     )
 
     static page1IFRFlight = new TemplatePage(PageType.tiles, 'Tile 2',
         [
-            {name:"checklist",data:{name:"IFR Reporting","items":this.ifrReportingList0,"theme":"yellow"},"span2":false,"hide":false},
-            {name:"checklist",data:{name:"IFR Reporting Cont'd","items":this.ifrReportingList1,"theme":"yellow"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"KAWO","rwy":"11-29","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"clearance",data:{"mode":"alt"}},
-            {name:"notes",data:{"mode":"word","word":"WARNMM"},"span2":true,"hide":false},
-            {name:"notes",data:{"mode":"word","word":"LaWBB","comp":false},"span2":false,"hide":true}
+            { name: "checklist", data: { name: "IFR Reporting", "items": this.ifrReportingList0, "theme": "yellow" }, "span2": false, "hide": false },
+            { name: "checklist", data: { name: "IFR Reporting Cont'd", "items": this.ifrReportingList1, "theme": "yellow" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "KAWO", "rwy": "11-29", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "clearance", data: { "mode": "alt" } },
+            { name: "notes", data: { "mode": "word", "word": "WARNMM" }, "span2": true, "hide": false },
+            { name: "notes", data: { "mode": "word", "word": "LaWBB", "comp": false }, "span2": false, "hide": true }
         ]
     )
 
-    static page2IFRFlight = new TemplatePage(PageType.approach, "Approach 1", {"airport":"S43","pdf":0})
+    static page2IFRFlight = new TemplatePage(PageType.approach, "Approach 1", { "airport": "S43", "pdf": 0 })
     // static page3IFRFlight = new TemplatePage(PageType.approach, "Approach 2", {"airport":"KAWO","pdf":1})
 
     static page0SeattleAirports = new TemplatePage(PageType.tiles, 'Page1',
         [
-            {name:"airport",data:{code:"KBFI","rwy":"14R-32L","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"KBFI","rwy":"14L-32R","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"KRNT","rwy":"16-34","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"KPWT","rwy":"02-20","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"magnetic","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"KTIW","rwy":"17-35","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"0S9","rwy":"09-27","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"KOLM","rwy":"08-26","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"magnetic","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"KOLM","rwy":"17-35","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"magnetic","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"S50","rwy":"17-35","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"KPAE","rwy":"16R-34L","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"KPAE","rwy":"16L-34R","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"S36","rwy":"15-33","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false}
+            { name: "airport", data: { code: "KBFI", "rwy": "14R-32L", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "KBFI", "rwy": "14L-32R", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "KRNT", "rwy": "16-34", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "KPWT", "rwy": "02-20", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "magnetic", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "KTIW", "rwy": "17-35", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "0S9", "rwy": "09-27", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "KOLM", "rwy": "08-26", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "magnetic", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "KOLM", "rwy": "17-35", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "magnetic", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "S50", "rwy": "17-35", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "KPAE", "rwy": "16R-34L", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "KPAE", "rwy": "16L-34R", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "S36", "rwy": "15-33", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false }
         ]
     )
     static page1SeattleAirports = new TemplatePage(PageType.tiles, 'Page2',
         [
-            {name:"airport",data:{code:"KBLI","rwy":"16-34","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"KCLS","rwy":"16-34","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"KFHR","rwy":"16-34","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"magnetic","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"S43","rwy":"15L-33R","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"KPLU","rwy":"17-35","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"KHQM","rwy":"06-24","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"KAWO","rwy":"11-29","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"magnetic","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"KAWO","rwy":"16-34","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"magnetic","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"KELN","rwy":"11-29","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"W10","rwy":"16-34","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"KORS","rwy":"16-34","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false},
-            {name:"airport",data:{code:"74S","rwy":"18-36","pattern":0,"corners":["weather","twr","field","tpa","#FCD/P","#FGND","?Custom?Custom","#FUNICOM"],"rwyOrientation":"vertical","headings":true,"mode":"one"},"span2":false,"hide":false}
+            { name: "airport", data: { code: "KBLI", "rwy": "16-34", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "KCLS", "rwy": "16-34", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "KFHR", "rwy": "16-34", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "magnetic", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "S43", "rwy": "15L-33R", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "KPLU", "rwy": "17-35", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "KHQM", "rwy": "06-24", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "KAWO", "rwy": "11-29", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "magnetic", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "KAWO", "rwy": "16-34", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "magnetic", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "KELN", "rwy": "11-29", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "W10", "rwy": "16-34", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "KORS", "rwy": "16-34", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { code: "74S", "rwy": "18-36", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false }
         ]
     )
 
@@ -316,11 +324,11 @@ export class DemoData {
             return DemoData.ifrflight()
         } else if (name == SheetName.ifrStrips) {
             return DemoData.ifrstrips()
-        } else if(name == SheetName.reference) {
+        } else if (name == SheetName.reference) {
             return DemoData.reference()
-        } else if(name == SheetName.seattle) {
+        } else if (name == SheetName.seattle) {
             return DemoData.seattleAirports()
-        } else if(name == SheetName.paperNavlog) {
+        } else if (name == SheetName.paperNavlog) {
             return DemoData.paperNavlog()
         }
         return undefined;
@@ -336,7 +344,7 @@ export class DemoData {
 
     static ifrstrips(): Template {
         const page0 = new TemplatePage(PageType.strips, 'IFR Training Strips', [
-            { type: 'radio'}, {type: 'craft'}, {type: 'atis'}, {type: 'atis'}, {type: 'atis'}, {type: 'atis'}, {type: 'atis'}, {type: 'notes'}] )
+            { type: 'radio' }, { type: 'craft' }, { type: 'atis' }, { type: 'atis' }, { type: 'atis' }, { type: 'atis' }, { type: 'atis' }, { type: 'notes' }])
         const page1 = new TemplatePage(PageType.flightDebrief, "IFR Training Debrief")
 
         return new Template('IFR Training', 'Use it for multiple approaches in one flight', false, [page0, page1])

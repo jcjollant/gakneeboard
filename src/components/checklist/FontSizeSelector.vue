@@ -10,16 +10,16 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { ref } from 'vue'
+import { ChecklistFont } from '../../models/Checklist'
 
 const model = defineModel()
-const short = ref(false)
 const choices = ref([
-    {name:'XS', value:'font-smaller'},
-    {name:'S', value:'font-small'},
-    {name:'Medium', value:'font-medium'}, 
-    {name:'L', value:'font-large'},
-    {name:'XL', value:'font-larger'},
+    {name:'XS', value:ChecklistFont.smaller},
+    {name:'S', value:ChecklistFont.small},
+    {name:'Medium', value:ChecklistFont.medium}, 
+    {name:'L', value:ChecklistFont.large},
+    {name:'XL', value:ChecklistFont.larger},
 ])
 
 

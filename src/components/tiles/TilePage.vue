@@ -176,9 +176,7 @@ const settingsProps = computed((): any => {
         // Construct params from tile data
         const config = editingTileData.value.data;
         const lists = [
-            config.items ? ChecklistService.parseParams(config.items) : new Checklist(),
-            config.items2 ? ChecklistService.parseParams(config.items2) : new Checklist(),
-            config.items3 ? ChecklistService.parseParams(config.items3) : new Checklist()
+            new Checklist(ChecklistService.parseItems(config.items) ?? []),
         ];
         
         return {

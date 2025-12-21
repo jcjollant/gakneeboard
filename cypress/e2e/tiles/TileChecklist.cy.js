@@ -25,7 +25,7 @@ describe('Checklist Tile', () => {
     cy.get('.p-inputgroup > .p-inputtext').type('{selectall}').type(title3)
 
     // Change theme to Green
-    cy.get('.theme .theme-green').click()
+    cy.get('.theme .green').click()
 
     // Apply
     cy.get('.p-dialog-footer [aria-label="Apply"]').click()
@@ -33,7 +33,7 @@ describe('Checklist Tile', () => {
     // Verify changes
     // Verify changes
     cy.get('.tile .headerTitle').contains(title3)
-    // cy.get('.checklistMain .list').should('have.class', 'theme-green') // ChecklistViewer doesn't have .list or theme class on container
+    // cy.get('.checklistMain .list').should('have.class', 'green') // ChecklistViewer doesn't have .list or theme class on container
 
     // Add items via Editor
     settingsOpen(0)

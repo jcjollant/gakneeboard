@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { ChecklistItem, ChecklistItemType } from "../src/models/Checklist"
+import { ChecklistItem, ChecklistItemType, ChecklistTheme } from "../src/models/Checklist"
 import { ChecklistService } from "../src/services/ChecklistService"
 
 describe('ChecklistService', () => {
@@ -30,34 +30,54 @@ describe('ChecklistService', () => {
         expect(ChecklistService.toEditor(c2)).toEqual('Challenge')
     })
 
-    it('Is parsing params', () => {
+    it('Is parsing items', () => {
         const input = [
             { c: 'Challenge', r: 'Response', s: '', t: undefined },
+            { c: '', r: '', s: 'Section', t: 'strong' },
             { c: '', r: '', s: 'Section', t: undefined },
             { c: '', r: '', s: 'Emergent Section', t: 'emer' },
             { c: 'Important', r: '', s: '', t: 'emer' },
         ]
+        const items = ChecklistService.parseItems(input)
 
-        const checklist = ChecklistService.parseParams(input)
+        expect(items).toBeDefined()
+        if (items) {
+            expect(items).toHaveLength(5)
+            expect(items[0]).toBeInstanceOf(ChecklistItem)
+            expect(items[0].challenge).toBe('Challenge')
+            expect(items[1].section).toBe('Section')
+            expect(items[1].type).toBe(ChecklistItemType.strong)
+            expect(items[3].section).toBe('Emergent Section')
+            expect(items[3].type).toBe(ChecklistItemType.emergent)
+            expect(items[4].challenge).toBe('Important')
+            expect(items[4].type).toBe(ChecklistItemType.emergent)
+        }
 
-        expect(checklist.items).toHaveLength(4)
-        expect(checklist.items[0].challenge).toBe('Challenge')
-        expect(checklist.items[0].response).toBe('Response')
+        const empty = ChecklistService.parseItems(null)
+        expect(empty).toBeUndefined()
+    })
 
-        expect(checklist.items[1].section).toBe('Section')
+    it('Is parsing tile', () => {
+        const data = {
+            name: 'Power OFF stalls',
+            items: [
+                { c: "Clearing Turns+Calls", r: "Made" },
+                { c: "Visual Reference", r: "Bugged" },
+                { c: "Altitude", r: "3,000" },
+                { c: "Power=1,600 Flaps > Full" },
+                { c: "Hold 65 3s, Level off until stall" },
+                { c: "Full Power + Right Rudder" },
+                { c: "Flaps 20 > 10 > 0" },
+                { c: "ACS HDG/Bank", r: "±10°/20°" }
+            ],
+            theme: "blue"
+        }
 
-        expect(checklist.items[2].section).toBe('Emergent Section')
-        expect(checklist.items[2].type).toBe(ChecklistItemType.emergent)
-
-        expect(checklist.items[3].challenge).toBe('Important')
-        expect(checklist.items[3].type).toBe(ChecklistItemType.emergent)
-
-        // Round trip
-        const params = ChecklistService.toParams(checklist)
-        // Note: toParams might optimize/remove empty keys, so exact match might depend on implementation.
-        // Let's verify essential data
-        expect(params).toHaveLength(4)
-        expect(params[0].c).toBe('Challenge')
-        expect(params[2].t).toBe('emer')
+        const tile = ChecklistService.parseTile(data)
+        expect(tile).toBeDefined()
+        expect(tile.name).toBe('Power OFF stalls')
+        expect(tile.items).toHaveLength(8)
+        expect(tile.items[0].challenge).toBe('Clearing Turns+Calls')
+        expect(tile.theme).toBe(ChecklistTheme.blue)
     })
 })

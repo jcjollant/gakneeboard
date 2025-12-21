@@ -1,24 +1,19 @@
-import { Checklist } from "./Checklist";
-import { ChecklistService } from "../services/ChecklistService";
+import { ChecklistFont, ChecklistItem, ChecklistTheme } from "./Checklist";
 
 export class ChecklistPage {
     name: string;
-    lists: Checklist[]
+    items: ChecklistItem[]
+    items2: ChecklistItem[] | undefined
+    items3: ChecklistItem[] | undefined
+    theme: ChecklistTheme;
+    font: ChecklistFont;
 
     constructor(name: string = 'Checklist') {
         this.name = name;
-        this.lists = []
-    }
-    addList(checklist: Checklist) {
-        this.lists.push(checklist)
-    }
-    addListFromParams(params: any) {
-        // sanity check
-        if (!params) return;
-        const newList = ChecklistService.parseParams(params)
-        this.lists.push(newList)
-    }
-    removeAllLists() {
-        this.lists = []
+        this.items = []
+        this.items2 = undefined
+        this.items3 = undefined
+        this.theme = ChecklistTheme.blue
+        this.font = ChecklistFont.medium
     }
 }

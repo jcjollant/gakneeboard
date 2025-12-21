@@ -11,8 +11,9 @@
         </div>
         <div v-else class="viewMode">
             <div class="columns">
-                <ChecklistViewer v-for="(checklist,index) in page.lists" :list="checklist" :theme="getTheme(data)" :font="data?.font ? ('font-' + data.font) : 'font-medium'"
-                    :size="getColumnCount()" :class="['list','list'+index]" />
+                <ChecklistViewer v-for="(checklistView,index) in checklistViews" 
+                    :view="checklistView"
+                    :class="['list','list'+index]" />
             </div>
             <!-- <div v-if="version > 0" class="version">v{{version}}</div> -->
         </div>
@@ -21,96 +22,81 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { ChecklistService } from '../../services/ChecklistService'
-import { ChecklistPage } from '../../models/ChecklistPage'
 import { UserUrl } from '../../lib/UserUrl'
-import { TemplateFormat } from '../../models/TemplateFormat'
+import { ChecklistPage } from '../../models/ChecklistPage'
 import { ChecklistSettingsParams } from '../../models/ChecklistSettingsParams'
+import { TemplateFormat } from '../../models/TemplateFormat'
+import { ChecklistService } from '../../services/ChecklistService'
 
+import { Checklist, ChecklistFont } from '../../models/Checklist'
+import { ChecklistView } from '../../models/ChecklistView'
 import ActionBar from '../shared/ActionBar.vue'
+import Header from '../shared/Header.vue'
 import ChecklistSettings from './ChecklistSettings.vue'
 import ChecklistViewer from './ChecklistViewer.vue'
-import Header from '../shared/Header.vue'
 
 const editMode = ref(false)
 
 // We need a temporary holding place for the updated config before applying
 const pendingUpdate = ref<any>(null)
 
-const font = ref('font-medium')
-let fontBeforeEdit = 'font-medium'
 const emits = defineEmits(['replace','update'])
-const theme = ref('theme-yellow')
 const page = ref<ChecklistPage>(new ChecklistPage())
+const checklistViews = ref<ChecklistView[]>([])
+
 const props = defineProps({
     data: { type: Object, default: null },
-    // version: { type: Number, default: 0 },
     format: { type: String, default: TemplateFormat.Kneeboard }
 })
 
 const isFullPage = computed(() => props.format === TemplateFormat.FullPage)
 
-// Props management
-function getTheme(data: any): string {
-    if (data && data.theme) {
-        return 'theme-' + data.theme
-    }
-    return 'theme-yellow'
-}
-
-function getColumnCount(): number {
-    return page.value.lists.length || 1
-}
-
 function loadProps(newProps:any) {
     // console.log('[ChecklistPage.loadProps]', newProps)
-    const newPage = new ChecklistPage()
+    const newPage:ChecklistPage = new ChecklistPage()
     if (newProps.data) {
-        if(newProps.data.name) {
-            newPage.name = newProps.data.name
-            editMode.value = false
-        } else {
-            editMode.value = true
+        editMode.value = false
+        newPage.name = newProps.data.name
+        newPage.theme = newProps.data.theme
+        newPage.font = newProps.data.font ?? ChecklistFont.medium
+        newPage.items = ChecklistService.parseItems(newProps.data.items) ?? []
+        newPage.items2 = ChecklistService.parseItems(newProps.data.items2)
+        newPage.items3 = ChecklistService.parseItems(newProps.data.items3)
+
+        // console.debug('[ChecklistPage.loadProps] newPage', newPage)
+        // console.debug('[ChecklistPage.loadProps] newPage.theme', newPage.theme, 'from', newProps.data.theme)
+        // console.debug('[ChecklistPage.loadProps] newPage.font', newPage.font, 'from', newProps.data.font)
+
+        const newChecklistViews = []
+        const view1 = new ChecklistView()
+        view1.items = newPage.items
+        view1.font = newPage.font
+        view1.theme = newPage.theme
+        newChecklistViews.push(view1)
+
+        if(newPage.items2) {
+            const view2 = new ChecklistView()
+            view2.items = newPage.items2
+            view2.font = newPage.font
+            view2.theme = newPage.theme
+            newChecklistViews.push(view2)
+        }
+        if(newPage.items3) {
+            const view3 = new ChecklistView()
+            view3.items = newPage.items3
+            view3.font = newPage.font
+            view3.theme = newPage.theme
+            newChecklistViews.push(view3)
         }
 
-        newPage.addListFromParams(newProps.data.items)
-
-        if('items2' in newProps.data) {
-            newPage.addListFromParams(newProps.data.items2)
-            if('items3' in newProps.data) {
-                newPage.addListFromParams(newProps.data.items3)
-                // columnsChoice.value = choiceTriple
-            } else {
-                // columnsChoice.value = choiceDouble
-            }
-        } else {
-            // columnsChoice.value = choiceSingle
-        }
-        // console.log('[ChecklistPage.loadProps] columns', columns.value)
-        // console.log('[ChecklistPage.loadProps] newPage', newPage)
-
-        // Restore theme and font
-        if( 'theme' in newProps.data) {
-            theme.value = 'theme-' + newProps.data.theme
-        } else {
-            theme.value = 'theme-yellow'
-        }
-        if( 'font' in newProps.data) {
-            font.value = 'font-' + newProps.data.font
-        } else {
-            font.value = 'font-medium'
-        }
+        checklistViews.value = newChecklistViews
+    } else {
+        editMode.value = true
     }
     page.value = newPage
     
     if(editMode.value) {
-         settingsData.value = new ChecklistSettingsParams(
-            page.value.name,
-            page.value.lists,
-            theme.value,
-            font.value,
-            false
-        );
+        showSettings()
     }
     // version.value = newProps.version
 }
@@ -124,26 +110,7 @@ watch(props, () => {
     loadProps(props)
 })
 
-// watch(fontSize, () => {
-//     console.log('[CheclistPage.watch fontClass]', fontSize.value)
-// })
-
 // End of props management
-
-function getPlaceHolder() {
-    // Figure out how many items fit in a list from XL to XS starting with KB format
-    const items = [[43,57],[38,51],[35,46],[31,41],[27,36]];
-    const fontSizes = ['font-smaller', 'font-small', 'font-medium', 'font-large', 'font-larger']
-    const fontIndex = Math.max(fontSizes.indexOf(font.value),0)
-    return `Up to ${items[fontIndex][isFullPage.value?1:0]} items will fit vertically.
-
-Separate Challenge and Response with '##':
-Master Switch##ON
-Avionics##OFF
-
-Create sections using '##Section Name':
-##Left Wing`
-}
 
 function onSettingsUpdate(newData: any) {
     // console.log('[ChecklistPage.onSettingsUpdate]', newData)
@@ -158,18 +125,6 @@ function onApply() {
 
     const newData = pendingUpdate.value
 
-    // Apply local changes for immediate feedback if needed, although we are re-emitting
-    // page.value.name = newData.name
-    // theme.value = 'theme-' + newData.theme
-    // font.value = 'font-' + newData.font
-    // ... logic to update page.value.lists based on newData.items ...
-
-    // Actually, onApply usually emits the whole structure to the parent (App or Workspace) to save
-    // transform newData back to expected format if needed
-    // ChecklistSettings emit 'update' with {name, theme, font, items, items2, items3}
-    
-    // We need to ensure we honor the column choice which is embedded in the presence of items2/3
-    
     // Transform ChecklistSettingsParams (lists) to Template format (items, items2, items3)
     const templateData: any = {
         name: newData.name,
@@ -204,18 +159,22 @@ function onCancel() {
 const settingsData = ref<any>(null)
 
 function onHeaderClick() {
-    if(editMode.value) return;
+    if(!editMode.value) showSettings();
+}
 
-    // Prepare data directly compatible with ChecklistSettings
-    // Prepare data directly compatible with ChecklistSettings
+function showSettings() {
+    const listOfItems:Checklist[] = []
+    if(page.value.items) listOfItems.push(new Checklist(page.value.items))
+    if(page.value.items2) listOfItems.push(new Checklist(page.value.items2))
+    if(page.value.items3) listOfItems.push(new Checklist(page.value.items3))
+    
     settingsData.value = new ChecklistSettingsParams(
         page.value.name,
-        page.value.lists,
-        theme.value,
-        font.value,
+        listOfItems,
+        page.value.theme,
+        page.value.font,
         false
     );
-    
     editMode.value = true
 }
 

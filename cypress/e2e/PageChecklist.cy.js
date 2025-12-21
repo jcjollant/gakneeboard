@@ -64,7 +64,7 @@ describe('Checklist Page', () => {
 
     // 5. Verify Theme Change
     cy.get('.pageChecklist > .headerTitle').click()
-    cy.get('.theme-green').click()
+    cy.get('.green').click()
     cy.get('[aria-label="Apply"]').click()
 
     // Check if theme applied (ChecklistViewer applies theme class to items or sections??)

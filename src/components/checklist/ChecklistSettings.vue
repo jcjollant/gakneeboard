@@ -27,7 +27,7 @@
             :class="['editList', 'editor']" />
         <div class="theme">
             <div>Theme</div>
-            <ThemeSelector @change="onThemeChange" :theme="theme" />
+            <ChecklistThemeSelector v-model="theme" />
         </div>
         <div v-if="!isTile" class="font">
             <div>Font</div>
@@ -39,13 +39,13 @@
 
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from 'vue'
-import { Checklist } from '../../models/Checklist'
+import { Checklist, ChecklistFont, ChecklistTheme } from '../../models/Checklist'
 import { ChecklistService } from '../../services/ChecklistService'
 import { ChecklistSettingsParams } from '../../models/ChecklistSettingsParams'
 
 import ChecklistEditor from './ChecklistEditor.vue'
 import FontSizeSelector from './FontSizeSelector.vue'
-import ThemeSelector from './ThemeSelector.vue'
+import ChecklistThemeSelector from './ChecklistThemeSelector.vue'
 
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
@@ -86,8 +86,8 @@ const emits = defineEmits(['update'])
 
 // State
 const localName = ref('')
-const theme = ref('theme-yellow')
-const font = ref('font-medium')
+const theme = ref(ChecklistTheme.yellow)
+const font = ref(ChecklistFont.medium)
 const checklistData = ref<Checklist[]>([new Checklist(), new Checklist(), new Checklist()])
 
 const columnsChoice = ref<ChoiceColumnCount>(choiceSingle)
@@ -151,8 +151,8 @@ function loadFromData(params: ChecklistSettingsParams) {
     // console.log('[ChecklistSettings] loadFromData', params)
 
     localName.value = params.name || ''
-    theme.value = params.theme.startsWith('theme-') ? params.theme : 'theme-' + params.theme
-    font.value = params.font.startsWith('font-') ? params.font : 'font-' + params.font
+    theme.value = params.theme
+    font.value = params.font
 
     // Checklists
     // The model expects lists: Checklist[]
@@ -183,13 +183,8 @@ function loadFromData(params: ChecklistSettingsParams) {
     }
 }
 
-function onThemeChange(newTheme: string) {
-    theme.value = newTheme;
-    emitUpdate()
-}
-
 // Watchers for simple values to emit updates
-watch([localName, font, columnsChoice], () => {
+watch([localName, theme, font, columnsChoice], () => {
     emitUpdate()
 })
 
@@ -208,8 +203,8 @@ function emitUpdate() {
     const newParams = new ChecklistSettingsParams(
         localName.value,
         newLists,
-        theme.value.replace('theme-', ''),
-        font.value.replace('font-', ''),
+        theme.value,
+        font.value,
         isTile.value
     )
     

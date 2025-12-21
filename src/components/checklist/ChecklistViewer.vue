@@ -14,54 +14,55 @@
 <script setup lang="ts">
 
 import { onMounted, ref, watch } from 'vue'
-import { Checklist, ChecklistItem } from '../../models/Checklist'
+import { ChecklistFont, ChecklistItem, ChecklistItemType, ChecklistTheme } from '../../models/Checklist'
 
 import PlaceHolder from '../shared/PlaceHolder.vue';
+import { ChecklistView } from '../../models/ChecklistView';
 
 const props = defineProps({
-    font: { type: String, default: 'font-medium'},
-    list: { type: Checklist, required: true },
-    theme: { type: String, default: 'theme-yellow'},
-    // size: { type: Number, default: 1 },
+    view: { type: ChecklistView, required: true },
 })
 
-const font = ref('font-medium')
-const theme = ref('theme-yellow')
+const font = ref('font-'+ChecklistFont.medium)
+const theme = ref('theme-'+ChecklistTheme.yellow)
+// const items = ref<ChecklistItem[]>([])
 const items = ref<ChecklistItem[]>([])
 
 // Use theme only when item is strong or line is event and theme is not blank
 function getClassSection(item:ChecklistItem) {
     const output = [font.value];
-    if( item.type=='strong') output.push(theme.value+'-strong')
-    else if( item.type=='emer') output.push('emergent')
-    else if( item.type!='blank') output.push('normal')
+    if( item.type==ChecklistItemType.strong) output.push(theme.value+'-strong')
+    else if( item.type==ChecklistItemType.emergent) output.push('emergent')
+    else if( item.type!=ChecklistItemType.blank) output.push('normal')
     return output
 }
 
 function getClassChallenge(item:ChecklistItem, index:number) {
     const output = ['challenge', font.value];
     if(item.response == '') output.push('spanned')
-    if(item.type=='emer') output.push('important')
+    if(item.type==ChecklistItemType.emergent) output.push('important')
     // Every other item has the theme
-    if(index%2 && item.type!='blank') output.push(theme.value)
+    if(index%2 && item.type!=ChecklistItemType.blank) output.push(theme.value)
 
     return output
 }
 
 function getClassResponse(item:ChecklistItem, index:number) {
     const output = ['response', font.value]
-    if(item.type=='emer') output.push('important')
+    if(item.type==ChecklistItemType.emergent) output.push('important')
     // Every other item has the theme
     if(index%2) output.push(theme.value)
     return output
 }
 
 function loadProps(newProps:any) {
-    // console.log('[ChecklistViewer.loadProps]', newProps)
-    if(!newProps) return;
-    font.value = newProps.font;
-    theme.value = newProps.theme;
-    items.value = newProps.list?.items;
+    // console.debug('[ChecklistViewer.loadProps]', newProps)
+    const view:ChecklistView = newProps.view
+    if(!view) return;
+    font.value = 'font-'+view.font;
+    items.value = view.items;
+    theme.value = 'theme-'+view.theme;
+    // console.debug('[ChecklistViewer.loadProps] theme', theme.value, 'from', view.theme)
 }
 
 onMounted(() => {

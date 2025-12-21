@@ -1,17 +1,17 @@
-import { Checklist } from './Checklist';
+import { Checklist, ChecklistFont, ChecklistTheme } from './Checklist';
 
 export class ChecklistSettingsParams {
     name: string;
     lists: Checklist[];
-    theme: string;
-    font: string;
+    theme: ChecklistTheme;
+    font: ChecklistFont;
     isTile: boolean;
 
     constructor(
         name: string = '',
         lists: Checklist[] = [],
-        theme: string = 'theme-yellow',
-        font: string = 'font-medium',
+        theme: ChecklistTheme = ChecklistTheme.yellow,
+        font: ChecklistFont = ChecklistFont.medium,
         isTile: boolean = false
     ) {
         this.name = name;
