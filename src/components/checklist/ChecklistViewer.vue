@@ -34,7 +34,7 @@ function getClassSection(item:ChecklistItem) {
     const output = [font.value];
     if( item.type=='strong') output.push(theme.value+'-strong')
     else if( item.type=='emer') output.push('emergent')
-    else if( item.type!='blank') output.push('normaal')
+    else if( item.type!='blank') output.push('normal')
     return output
 }
 

@@ -14,7 +14,7 @@
     <AtisTile v-else-if="tile.name==TileType.atis" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate"/>
     <ChecklistTile v-else-if="tile.name==TileType.checklist" :params="tile.data" 
-        @replace="onReplace" @update="onUpdate"/>
+        @replace="onReplace" @update="onUpdate" @settings="emits('settings',tile)"/>
     <IfrTile v-else-if="tile.name==TileType.clearance" :params="tile.data"
         @replace="onReplace" @update="onUpdate"/>
     <Dummy v-else-if="tile.name==TileType.dummy" :params="tile.data"  />

@@ -8,7 +8,7 @@ export const titleAtis = "ATIS @"
 export const placeHolderSubtitle = 'Click header to configure'
 
 export const maintenanceLogin = '12b39a0daff8fc144fc678663395f6ce5706c778a259167ebc307144fcc96146'
-export const maintenanceTest ='4d51414ceb16fe67ec67ef5194a76036fc54b59846c9e8da52841717fe4b6247'
+export const maintenanceTest = '4d51414ceb16fe67ec67ef5194a76036fc54b59846c9e8da52841717fe4b6247'
 
 export const atisTitle = 'ATIS @'
 export const bellinghamTitle = 'Bellingham Intl'
@@ -34,6 +34,7 @@ export const pageNameNotes = 'Notes'
 export class PageTypeLabel {
     static navlog = 'NavLog'
     static tiles = 'Tiles'
+    static checklist = 'Checklist'
 }
 
 export class TileTypeLabel {
@@ -43,52 +44,53 @@ export class TileTypeLabel {
     static atis = 'Weather'
     static IFR = 'IFR'
     static sunlight = 'Sunlight'
+    static checklist = 'Checklist'
 }
 
-export const expectedDemos = [ 
-    {i:0, l:'VFR Flight', t:'A sample Skyhawk Reference',c:['pageTiles','pageTiles']}, 
-    {i:1, l:'Checklist',t:'Checklist syntax Showcase',c:['pageChecklist','pageChecklist']}, 
-    {i:2, l:'Tiles', t:'Every Tile Available on GA Kneeboard',c:['pageTiles','pageTiles']}, 
-    {i:3, l:'NavLog', t:'Navlog page along with six tiles',c:['pageNavlog','pageTiles']}, 
-    {i:4, l:'Charts', t:'Airport Diagram and Instrument Approach',c:['approachPage','approachPage']},
-    {i:5, l:'Holds Practice', t:'Full sheet of Holds and Compasses',c:['pageTiles','pageTiles']},
-    {i:6, l:'IFR Flight', t:'Full sheet of Holds and Compasses',c:['pageStrips','pageStrips']},
+export const expectedDemos = [
+    { i: 0, l: 'VFR Flight', t: 'A sample Skyhawk Reference', c: ['pageTiles', 'pageTiles'] },
+    { i: 1, l: 'Checklist', t: 'Checklist syntax Showcase', c: ['pageChecklist', 'pageChecklist'] },
+    { i: 2, l: 'Tiles', t: 'Every Tile Available on GA Kneeboard', c: ['pageTiles', 'pageTiles'] },
+    { i: 3, l: 'NavLog', t: 'Navlog page along with six tiles', c: ['pageNavlog', 'pageTiles'] },
+    { i: 4, l: 'Charts', t: 'Airport Diagram and Instrument Approach', c: ['approachPage', 'approachPage'] },
+    { i: 5, l: 'Holds Practice', t: 'Full sheet of Holds and Compasses', c: ['pageTiles', 'pageTiles'] },
+    { i: 6, l: 'IFR Flight', t: 'Full sheet of Holds and Compasses', c: ['pageStrips', 'pageStrips'] },
 ]
 
 
-export function checkImageContent( src, page=0, tile=0) {
+export function checkImageContent(src, page = 0, tile = 0) {
     cy.get(`.page${page} .tile${tile} .imageContent`).should('have.attr', 'src', src)
 }
 
-export function checkImageContentTestTile( src) {
+export function checkImageContentTestTile(src) {
     cy.get(`.tile .imageContent`).should('have.attr', 'src', src)
 }
 
-export function checkTileSpan(page, tile, spanned=true) {
+export function checkTileSpan(page, tile, spanned = true) {
     const condition = spanned ? 'have.class' : 'not.have.class'
-    cy.get(`.page${page} > .tile${tile}`).should(condition,'span-2')
+    cy.get(`.page${page} > .tile${tile}`).should(condition, 'span-2')
 }
 
 export function checkTileTitle(page, tile, title) {
     cy.get(`.page${page} > .tile${tile} > .headerTitle`).contains(title)
 }
 
-export function checkTileVisible(page, tile, visible=true) {
+export function checkTileVisible(page, tile, visible = true) {
     const condition = visible ? 'not.have.css' : 'have.css'
     cy.get(`.page${page} > .tile${tile}`).should(condition, 'display', 'none')
 }
 
 export function demoChecklistOnPage(index) {
-    cy.get(`.page${index}`).should('have.class','pageChecklist')
+    cy.get(`.page${index}`).should('have.class', 'pageChecklist')
     cy.get(`.page${index} .list0 > :nth-child(13)`).contains('Engine FAILURE')
     cy.get(`.page${index} .list0 > :nth-child(19)`).contains('Engine FIRE')
 }
 
 export function demoTilesOnPage(page) {
-    cy.get(`.page${page}`).should('have.class','pageTiles')
+    cy.get(`.page${page}`).should('have.class', 'pageTiles')
 
     const expectedTitles = [boeingTitle, feltsTitle, radioTitle, notesTitle, atisTitle, departTitle]
-    for(let index = 0; index < 6; index++) {
+    for (let index = 0; index < 6; index++) {
         checkTileTitle(page, index, expectedTitles[index])
     }
 }
@@ -106,6 +108,27 @@ export function loadTestTileWithData(data) {
     cy.visit('/?test=tile')
 }
 
+export function loadTestPage(pageType, data = {}) {
+    const type = pageType.toLowerCase()
+
+    const pageData = {
+        type: type,
+        name: 'Test Page',
+        data: data
+    }
+
+    cy.setLocalStorage('test-page', JSON.stringify(pageData))
+    cy.visit('/test/page')
+}
+
+export function loadTilePage(tileType) {
+    const tile = { name: tileType ? tileType.toLowerCase() : '', data: {} }
+    const empty = { name: '', data: {} }
+    const data = [tile, empty, empty, empty, empty, empty]
+
+    loadTestPage(PageTypeLabel.tiles, data)
+}
+
 export function visitAndCloseBanner() {
     cy.visit(environment)
 
@@ -114,21 +137,21 @@ export function visitAndCloseBanner() {
 }
 
 export function visitSkipBanner() {
-    localStorage.setItem( "popup", "3")
+    localStorage.setItem("popup", "3")
     cy.visit(environment)
 }
 
 export function maintenanceMode() {
     // Open menu
     cy.get('.maintenanceButton').click()
-    
+
     // type code in maintenance window
     cy.wait(500)
     cy.get('.p-dialog-content .p-inputtext:not([disabled])')
-    cy.get('.p-dialog-content .p-inputtext').type(maintenanceLogin,{delay:0})
+    cy.get('.p-dialog-content .p-inputtext').type(maintenanceLogin, { delay: 0 })
 
     // submit
-    cy.intercept({method: 'GET',url: '**/maintenance/**',}).as('getMaintenance')
+    cy.intercept({ method: 'GET', url: '**/maintenance/**', }).as('getMaintenance')
     cy.get('.p-dialog-content .p-button').click()
     cy.wait('@getMaintenance').then(interception => {
         expect(interception.response.statusCode == 200 || interception.response.statusCode == 304).to.be.true
@@ -137,15 +160,15 @@ export function maintenanceMode() {
     cy.get('.p-dialog-content').should('not.exist');
 }
 
-export function loadDemo(index=-1) {
+export function loadDemo(index = -1) {
     // Turn text into index if necessary
-    const demoNames = ['VFR','IFR','Checklist','Acronyms','Tiles', 'NavLog', 'Charts', 'Holds']
-    if(index == -1) {
+    const demoNames = ['VFR', 'IFR', 'Checklist', 'Acronyms', 'Tiles', 'NavLog', 'Charts', 'Holds']
+    if (index == -1) {
         // load default demo
-        cy.get('.demoSection > .header').click()        
+        cy.get('.demoSection > .header').click()
     } else {
         const indexOf = demoNames.indexOf(index)
-        if(indexOf > -1) index = indexOf;
+        if (indexOf > -1) index = indexOf;
         cy.get('.demo' + index).click()
     }
 
@@ -167,57 +190,57 @@ export function newTemplateWithTile(type = undefined) {
     cy.get(`.page0 [aria-label="${PageTypeLabel.tiles}"]`).click()
 
     // select the provided tile
-    if(type) cy.get(`.page0 .tile0 [aria-label="${type}"]`).click()
+    if (type) cy.get(`.page0 .tile0 [aria-label="${type}"]`).click()
 }
 
-export function replacePage(pageNum, newPage=undefined, replaceButton=true) {
+export function replacePage(pageNum, newPage = undefined, replaceButton = true) {
     try {
-        if(replaceButton) {
-            cy.get(`.page${pageNum} .replaceButton`).click({force:true})
+        if (replaceButton) {
+            cy.get(`.page${pageNum} .replaceButton`).click({ force: true })
             cy.get('.p-confirm-dialog-accept').click()
         }
         cy.get('.contentPage > .headerTitle').contains('Page Selection')
-    } catch(e) {
+    } catch (e) {
         // doesn't matter if it's not there
     }
-    if(newPage) cy.get(`.page${pageNum} [aria-label="${newPage}"]`).click()
+    if (newPage) cy.get(`.page${pageNum} [aria-label="${newPage}"]`).click()
 }
 
 /**
     Will replace a tile with a new one if label is provided
  */
-export function replaceTile(pageNum, tileNum, label=undefined) {
-    cy.get(`.page${pageNum} > .tile${tileNum} .replaceButton`).click({force: true})
-    if(label) cy.get(`.page${pageNum} > .tile${tileNum} [aria-label="${label}"]`).click()
+export function replaceTile(pageNum, tileNum, label = undefined) {
+    cy.get(`.page${pageNum} > .tile${tileNum} .replaceButton`).click({ force: true })
+    if (label) cy.get(`.page${pageNum} > .tile${tileNum} [aria-label="${label}"]`).click()
 
 }
 
 export function displayModesCheck(list, expandable) {
-    for(const displayMode of list) {
-      cy.get('.modesList').contains(displayMode)
+    for (const displayMode of list) {
+        cy.get('.modesList').contains(displayMode)
     }
     // modesList class should only have the expected children count
 
     cy.get('.modesList').children().should('have.length', list.length + (expandable ? 1 : 0))
 }
 
-export function displaySelection(pageNum, tileNum, mode=undefined) {
-    cy.get(`.page${pageNum} > .tile${tileNum} .displayButton`).click({force: true})
-    if( mode) cy.get(`[aria-label="${mode}"]`).click()
+export function displaySelection(pageNum, tileNum, mode = undefined) {
+    cy.get(`.page${pageNum} > .tile${tileNum} .displayButton`).click({ force: true })
+    if (mode) cy.get(`[aria-label="${mode}"]`).click()
 
 }
 
-export function displaySelectionTestTile(mode=undefined) {
-    cy.get(`.tile .displayButton`).click({force: true})
-    if( mode) cy.get(`[aria-label="${mode}"]`).click()
+export function displaySelectionTestTile(mode = undefined) {
+    cy.get(`.tile .displayButton`).click({ force: true })
+    if (mode) cy.get(`[aria-label="${mode}"]`).click()
 
 }
 
 
-export function displaySelectionExpand(pageNum, tileNum, modeNumber, accept=true) {
-    cy.get(`.page${pageNum} > .tile${tileNum} .displayButton`).click({force: true})
-    cy.get(`.page${pageNum} > .tile${tileNum} .expand${modeNumber}`).click({force: true})
-    if(accept) cy.get('.p-confirm-dialog-accept').click()
+export function displaySelectionExpand(pageNum, tileNum, modeNumber, accept = true) {
+    cy.get(`.page${pageNum} > .tile${tileNum} .displayButton`).click({ force: true })
+    cy.get(`.page${pageNum} > .tile${tileNum} .expand${modeNumber}`).click({ force: true })
+    if (accept) cy.get('.p-confirm-dialog-accept').click()
     else cy.get('.p-confirm-dialog-reject').click()
 
 }
@@ -229,19 +252,24 @@ export function expectToast(message) {
 }
 
 export function replaceBy(selector, value) {
-    cy.get(selector).type('{selectAll}{backspace}', {delay:0})
-    cy.get(selector).type(value, {delay:0})
+    cy.get(selector).type('{selectAll}{backspace}', { delay: 0 })
+    cy.get(selector).type(value, { delay: 0 })
+}
+
+export function settingsOpen(tileNum) {
+    cy.get(`.tile${tileNum} .settingsButton`).click({ force: true })
 }
 
 
+
 export function viewport() {
-    cy.viewport(1300,1000)
+    cy.viewport(1300, 1000)
 }
 
 export function waitForAirports() {
     cy.intercept({
-      method: 'GET',
-      url: '**/airports/**',
+        method: 'GET',
+        url: '**/airports/**',
     }).as('getAirports');
     cy.wait('@getAirports').then(interception => {
         expect(interception.response.statusCode == 200 || interception.response.statusCode == 304).to.be.true
@@ -250,8 +278,8 @@ export function waitForAirports() {
 
 export function waitOneAirport() {
     cy.intercept({
-      method: 'GET',
-      url: '**/airport/**',
+        method: 'GET',
+        url: '**/airport/**',
     }).as('getOneAirport');
     cy.wait('@getOneAirport').then(interception => {
         expect(interception.response.statusCode == 200 || interception.response.statusCode == 304).to.be.true

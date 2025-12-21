@@ -95,4 +95,11 @@ export class ChecklistService {
             return output
         })
     }
+
+    static clone(checklist: Checklist): Checklist {
+        const newChecklist = new Checklist()
+        // Deep copy items
+        newChecklist.items = checklist.items.map(item => new ChecklistItem(item.challenge, item.response, item.section, item.type))
+        return newChecklist
+    }
 }

@@ -323,12 +323,18 @@ function getItemClass(item: ChecklistItem, index: number) {
     display: flex;
     flex-direction: column;
     gap: 5px;
+    height: 100%;
+    overflow: hidden;
 }
 
 .item-list {
     display: flex;
     flex-direction: column;
     gap: 2px;
+    overflow-y: auto;
+    flex-grow: 1;
+    min-height: 0;
+    padding-right: 5px; /* Space for scrollbar */
 }
 
 .editor-row {
@@ -336,8 +342,9 @@ function getItemClass(item: ChecklistItem, index: number) {
     border: 1px solid transparent; /* For hover effect */
     border-radius: 4px;
     display: flex; /* Flex to include drag handle */
-    align-items: center;
+    align-items: stretch;
     gap: 5px;
+    flex-shrink: 0; /* Prevent shrinking */
 }
 
 .editor-row:hover {
@@ -470,6 +477,7 @@ function getItemClass(item: ChecklistItem, index: number) {
     font-weight: bold;
     text-transform: uppercase;
     padding: 2px 5px;
+    text-align: center;
 }
 .section-strong {
     background: black;
@@ -516,15 +524,17 @@ function getItemClass(item: ChecklistItem, index: number) {
 }
 
 .add-buttons {
-    margin-top: 10px;
+    margin-top: auto; /* Push to bottom if space allows, though flex-grow on list handles it */
+    padding-top: 5px;
     display: flex;
     justify-content: center;
     gap: 10px;
+    flex-shrink: 0;
 }
 .add-buttons button {
     padding: 8px 12px;
     cursor: pointer;
-    background: #007bff;
+    background: var(--bg-secondary);
     color: white;
     border: none;
     border-radius: 4px;
@@ -541,6 +551,8 @@ function getItemClass(item: ChecklistItem, index: number) {
     display: flex;
     flex-grow: 1;
     flex-direction: column;
+    height: 100%;
+    overflow: hidden;
 }
 
 .editor-text textarea {

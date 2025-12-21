@@ -1,21 +1,10 @@
 <template>
     <div class="tile">
-        <Header :title="title" leftButton=""
-            @click="onHeaderClick" @replace="emits('replace')"></Header>
-        <div v-if="editMode" class="settings">
-            <div class="oneLine">
-                <InputGroup>
-                    <InputGroupAddon class="checklistNameAddon">Name</InputGroupAddon>
-                    <InputText v-model="title" />
-                </InputGroup>
-                <ThemeSelector v-show="true" :short="true" :theme="theme" @change="onThemeChange"/>
-            </div>
-            <div class="oneOrTwoLists">
-                <Textarea rows="10" cols="24" v-model="textData" class="editList" placeholder="Up to 10 items will fit vertically."></Textarea>
-            </div>
-            <ActionBar @apply="onApply" @cancel="onCancel" :help="UserUrl.checklistGuide" />
-        </div>
-        <div v-else class="checklistMain" @click="onHeaderClick">
+        <Header :title="title" leftButton="settings"
+            @click="emits('settings')" 
+            @replace="emits('replace')" 
+            @settings="emits('settings')" />
+        <div class="checklistMain">
             <ChecklistViewer :list="checklist" :theme="theme" :size="2" />
         </div>
     </div>
@@ -25,30 +14,15 @@
 import { Checklist } from '../../models/Checklist'
 import { ChecklistService } from '../../services/ChecklistService'
 import { onMounted, ref, watch } from 'vue'
-import { UserUrl } from '../../lib/UserUrl'
 
-import ActionBar from '../shared/ActionBar.vue'
 import ChecklistViewer from './ChecklistViewer.vue'
 import Header from '../shared/Header.vue'
-import ThemeSelector from './ThemeSelector.vue'
 
-import InputGroup from 'primevue/inputgroup'
-import InputGroupAddon from 'primevue/inputgroupaddon'
-import InputText from 'primevue/inputtext'
-import Textarea from 'primevue/textarea'
-import { TileData } from '../../models/TileData'
-import { TileType } from '../../models/TileType'
-
-const editMode = ref(false)
-const emits = defineEmits(['replace','update'])
+const emits = defineEmits(['replace', 'update', 'settings'])
 const title = ref('Checklist')
 const noChecklist = new Checklist()
 const checklist = ref(noChecklist)
-const textData = ref('')
 const theme = ref('theme-blue')
-let nameBeforeEdit = 'Checklist'
-let themeBeforeEdit = 'theme-yellow'
-
 
 //-----------------------
 // Props management
@@ -61,7 +35,6 @@ function loadProps(newProps:any) {
     const params = newProps.params
     if (params) {
         // load params into checlist
-        // load params into checlist
         checklist.value = ChecklistService.parseParams(params.items);
         // checklist name
         if (params.name) {
@@ -73,6 +46,8 @@ function loadProps(newProps:any) {
         }
     } else {
         checklist.value = noChecklist
+        title.value = 'Checklist'
+        theme.value = 'theme-blue'
     }
 }
 
@@ -87,83 +62,11 @@ watch(props, () => {
 // End of props management
 //------------------------
 
-function onApply() {
-    // console.debug('[ChecklistTile.onApply] not implemented')
-    // turn textData into a list of items
-    checklist.value = ChecklistService.parseEditor(textData.value)
-    // console.debug('[CheclistPage.onApply]', JSON.stringify(items))
-    const newParams: any = { name: title.value, items: ChecklistService.toParams(checklist.value) }
-    if( theme.value.startsWith('theme-')) {
-        newParams['theme'] = theme.value.substring(6)
-    }
-    // go back to normal mode
-    editMode.value = false
-    // notify parent of data change
-    emits('update', new TileData( TileType.checklist, newParams))
-}
-
-function onCancel() {
-    // console.debug('[ChecklistTile.onCancel] not implemented')
-    editMode.value = false
-    title.value = nameBeforeEdit;
-    theme.value = themeBeforeEdit;
-}
-
-function onHeaderClick() {
-    // console.debug('[ChecklistTile.onHeaderClick] not implemented')
-    if( !editMode.value) {
-        nameBeforeEdit = title.value;
-        themeBeforeEdit = theme.value;
-        textData.value = ChecklistService.toEditor(checklist.value)
-        editMode.value = true
-    } else {
-        editMode.value = false
-    }
-}
-
-function onThemeChange(newTheme: string) {
-    // console.log('[ChecklistTile.onThemeChange]', newTheme)
-    theme.value = newTheme
-}
-
 </script>
 
 <style scoped>
 .checklistMain {
     cursor: pointer;
+    height: 100%;
 }
-.editList {
-    resize: none;
-    font-family: 'Courier New', Courier, monospace;
-}
-
-.oneLine {
-    display: flex;
-    gap:5px;
-}
-
-.settings {
-    display: flex;
-    flex-flow: column;
-    gap: 5px;    
-    font-size: 0.7rem;
-    padding: 5px
-}
-input.p-inputtext {
-    height: 1.5rem;
-}
-:deep(.p-inputgroup-addon),:deep(.p-dropdown) {
-    font-size: 0.8rem;
-    height: 1.5rem;
-}
-
-:deep(.p-dropdown-label) {
-    font-size: 0.8rem;
-    line-height: 0.5rem;
-
-}
-:deep(.p-inputtext.p-component) {
-    font-size: 0.8rem;
-}
-
 </style>

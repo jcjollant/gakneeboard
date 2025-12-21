@@ -1,63 +1,63 @@
-import { placeHolderSubtitle, visitSkipBanner, loadDemo } from '../shared'
+import { loadTilePage, TileTypeLabel, settingsOpen } from '../shared'
 
 describe('Checklist Tile', () => {
   it('Checklist Tile', () => {
-    visitSkipBanner()
-    loadDemo('Tiles')
+    loadTilePage(TileTypeLabel.checklist)
 
-    const title = 'Power OFF stalls'
+    const title = 'Checklist'
     const title3 = 'Name3'
 
     // check we have header
-    cy.get('.page1 > .tile0 > .headerTitle').contains(title)
-    // Check default content
-    cy.get(':nth-child(1) > .response').contains('Made')
-    cy.get(':nth-child(2) > .response').contains('Bugged')
-    cy.get(':nth-child(2)').should('have.class', 'theme-blue')
-    cy.get(':nth-child(2)').should('have.class', 'theme-blue')
-    cy.get(':nth-child(1) > .challenge').should('have.class','size2')
-    cy.get(':nth-child(1) > .response').should('have.class','size2')
+    cy.get('.tile .headerTitle').contains(title)
 
+    // Edit mode
+    settingsOpen(0)
 
-    // Edit mode 
-    cy.get('.page1 > .tile0 > .checklistMain').click()
-    cy.get('.oneLine > .p-inputgroup > .p-inputgroup-addon').contains('Name')
-    cy.get('.p-inputgroup > .p-inputtext').should('have.value', title)
-    cy.get('.p-dropdown-label').contains('Blue')
-    // Information icon
-    cy.get('.actionBarHelp')
-    // Change title but cancel
-    cy.get('.p-inputgroup > .p-inputtext').type('{selectall}').type('Name1')
-    // Title should be updated for now
-    cy.get('.page1 > .tile0 > .headerTitle > div').contains('Name1')
-    cy.get('.p-dropdown').type('G').type('{enter}')
-    // Cancel
-    cy.get('[aria-label="Cancel"]').click()
-    // Title goes back
-    cy.get('.page1 > .tile0 > .headerTitle > div').contains(title)
-    // Color sdhould not change
-    cy.get(':nth-child(2)').should('have.class', 'theme-blue')
+    // Verify Settings Dialog Open
+    cy.get('.tile-settings-dialog').should('be.visible')
+    cy.get('.tile-settings-dialog .settings-title').contains('Checklist Tile Settings')
 
-    // Change title and color to green
-    cy.get('.page1 > .tile0 > .checklistMain').click()
+    // Verify content
+    cy.get('.checklistNameAddon').contains('Name')
+    cy.get('.p-inputgroup > .p-inputtext').should('have.value', '')
+
     // Change title
     cy.get('.p-inputgroup > .p-inputtext').type('{selectall}').type(title3)
-    // change color to green
-    cy.get('.p-dropdown').type('G').type('{enter}')
-    cy.get('[aria-label="Apply"]').click()
-    // Title should have changed
-    cy.get('.page1 > :nth-child(1) > .headerTitle').contains(title3)
-    // Color should be green
-    cy.get(':nth-child(2)').should('have.class', 'theme-green')
 
-    // remove all entries 
-    cy.get('.page1 > .tile0 > .checklistMain').click()
-    cy.get('.p-inputtextarea').type('{selectall}{backspace}')
-    // Apply changes
-    cy.get('[aria-label="Apply"]').click()
-    // There should be no items
-    cy.get('.placeHolder').contains('No Items')
-    cy.get('.placeHolder').contains(placeHolderSubtitle)
+    // Change theme to Green
+    cy.get('.theme .theme-green').click()
+
+    // Apply
+    cy.get('.p-dialog-footer [aria-label="Apply"]').click()
+
+    // Verify changes
+    // Verify changes
+    cy.get('.tile .headerTitle').contains(title3)
+    // cy.get('.checklistMain .list').should('have.class', 'theme-green') // ChecklistViewer doesn't have .list or theme class on container
+
+    // Add items via Editor
+    settingsOpen(0)
+
+    // Add an item
+    cy.get('.add-buttons button').contains('Challenge/Response').click()
+    cy.get('.item-edit input[placeholder="Challenge (Required)"]').type('Challenge 1')
+    cy.get('.item-edit input[placeholder="Response (Optional)"]').type('Response 1{enter}')
+
+    // Add second item (to verify theme zebra striping)
+    cy.get('.add-buttons button').contains('Challenge/Response').click()
+    cy.get('.item-edit').last().find('input[placeholder="Challenge (Required)"]').type('Challenge 2')
+    cy.get('.item-edit').last().find('input[placeholder="Response (Optional)"]').type('Response 2{enter}')
+
+    // Apply
+    cy.get('.p-dialog-footer [aria-label="Apply"]').click()
+
+    // Verify items
+    cy.get('.checklistMain .challenge').contains('Challenge 1')
+    cy.get('.checklistMain .response').contains('Response 1')
+
+    cy.get('.checklistMain .challenge').contains('Challenge 2')
+    // Verify theme on second item (index 1) which should have the theme class
+    cy.get('.checklistMain .item').eq(1).find('.response').should('have.class', 'theme-green')
 
   })
 

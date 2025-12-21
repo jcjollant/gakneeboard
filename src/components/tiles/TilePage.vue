@@ -13,7 +13,7 @@
             :video="tileLinks?.video"
              @close="onSettingsClose" @apply="onSettingsApply">
             <component :is="settingsComponent" 
-                :tileData="editingTileData" 
+                v-bind="settingsProps"
                 @update="onSettingsUpdate" />
         </TileSettings>
     </div>
@@ -29,7 +29,11 @@ import { TemplateFormat } from '../../models/TemplateFormat';
 import Tile from './Tile.vue'
 import TileSettings from './TileSettings.vue';
 import AirportTileSettings from '../airport/AirportTileSettings.vue';
+import ChecklistSettings from '../checklist/ChecklistSettings.vue';
 import { UserUrl } from '../../lib/UserUrl';
+import { ChecklistSettingsParams } from '../../models/ChecklistSettingsParams';
+import { ChecklistService } from '../../services/ChecklistService';
+import { Checklist } from '../../models/Checklist';
 
 const confirm = useConfirm()
 const emits = defineEmits(['update'])
@@ -52,6 +56,8 @@ const settingsComponent = computed(() => {
   switch (editingTileData.value.name) {
     case TileType.airport:
       return AirportTileSettings;
+    case TileType.checklist:
+      return ChecklistSettings;
     // add other cases here
     default:
       return null;
@@ -121,9 +127,28 @@ function onSettingsClose() {
   editingTileData.value = null;
 }
 
+// Helper to convert ChecklistSettingsParams back to TileData
+function paramsToTileData(currentTileData: TileData, newParams: ChecklistSettingsParams): TileData {
+    const config = {
+      name: newParams.name,
+      theme: newParams.theme,
+      font: newParams.font,
+      items: ChecklistService.toParams(newParams.lists[0]),
+      items2: newParams.lists[1] ? ChecklistService.toParams(newParams.lists[1]) : undefined,
+      items3: newParams.lists[2] ? ChecklistService.toParams(newParams.lists[2]) : undefined
+    };
+    const finalTileData = TileData.copy(currentTileData);
+    finalTileData.data = config;
+    return finalTileData;
+}
+
 function onSettingsUpdate(newConfig: any) {
   // this comes from the child component inside the overlay
-  editingTileData.value = newConfig;
+  if (editingTileData.value && newConfig instanceof ChecklistSettingsParams) {
+      editingTileData.value = paramsToTileData(editingTileData.value, newConfig);
+  } else {
+      editingTileData.value = newConfig;
+  }
 }
 
 // Help URL Centralized Logic
@@ -131,6 +156,9 @@ const tileUrls: Record<string, { help?: string, video?: string }> = {
     [TileType.airport]: {
         help: UserUrl.airportTileGuide,
         video: UserUrl.airportTileVideo
+    },
+    [TileType.checklist]: {
+        help: UserUrl.checklistGuide
     },
 }
 
@@ -140,10 +168,52 @@ const tileLinks = computed(() => {
   return tileUrls[editingTileData.value.name];
 });
 
-function onSettingsApply(newTileData: TileData) {
-  // console.debug('[TilePage.onSettingsApply]', editingTileIndex.value, editingTileData.value)
-  if(editingTileIndex.value >= 0) {
-    onUpdate(editingTileIndex.value, newTileData);
+// Settings Props Logic
+const settingsProps = computed((): any => {
+    if (!editingTileData.value) return {};
+    
+    if (editingTileData.value.name === TileType.checklist) {
+        // Construct params from tile data
+        const config = editingTileData.value.data;
+        const lists = [
+            config.items ? ChecklistService.parseParams(config.items) : new Checklist(),
+            config.items2 ? ChecklistService.parseParams(config.items2) : new Checklist(),
+            config.items3 ? ChecklistService.parseParams(config.items3) : new Checklist()
+        ];
+        
+        return {
+            params: new ChecklistSettingsParams(
+                config.name,
+                lists,
+                config.theme,
+                config.font,
+                true // isTile
+            )
+        };
+    }
+    
+    // Default for Airport and others that expect tileData
+    return {
+        tileData: editingTileData.value,
+        isTile: true
+    };
+});
+
+function onSettingsApply(newConfig: any) {
+  // console.debug('[TilePage.onSettingsApply]', editingTileIndex.value, newConfig)
+  if(editingTileIndex.value >= 0 && newConfig) {
+      let finalTileData: TileData;
+      
+      // We might receive the actual TileData if onSettingsUpdate already converted it
+      // But if we receive the raw params, we convert.
+      if (newConfig instanceof ChecklistSettingsParams && editingTileData.value) {
+          finalTileData = paramsToTileData(editingTileData.value, newConfig);
+      } else {
+          // It's likely already TileData or a generic object compatible with it
+          finalTileData = newConfig;
+      }
+      
+    onUpdate(editingTileIndex.value, finalTileData);
   }
   onSettingsClose();
 }

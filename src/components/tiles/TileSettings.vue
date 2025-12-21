@@ -18,7 +18,7 @@
         </template>
 
         <div class="settings-body">
-            <slot @update="console.log('update')"></slot>
+            <slot></slot>
         </div>
 
         <template #footer>
@@ -95,9 +95,6 @@ const title = computed(() => {
 }
 
 .settings-body {
-    /* PrimeVue Dialog has default padding, adjust as needed */
-    padding-top: 10px; 
-    flex: 1; /* Ensure it takes available space */
     overflow-y: auto;
     background-color: var(--bg-primary);
 }

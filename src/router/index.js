@@ -10,6 +10,8 @@ import FTUX from '../views/FTUX.vue';
 import FormatSelector from '../components/templates/FormatSelector.vue';
 import Demo from '../views/Demo.vue';
 import TileTest from '../views/TileTest.vue';
+import PageTest from '../views/PageTest.vue';
+
 
 export const RouterNames = {
     Admin: 'Admin',
@@ -22,6 +24,7 @@ export const RouterNames = {
     FormatSelector: 'Format Selector',
     Demo: 'Demo',
     TileTest: 'Tile Test',
+    PageTest: 'Page Test',
 }
 
 const routes = [
@@ -39,6 +42,8 @@ const routes = [
     { path: '/format-selector', name: RouterNames.FormatSelector, component: FormatSelector },
     { path: '/demo/:name', name: RouterNames.Demo, component: Demo },
     { path: '/test/tile', name: RouterNames.TileTest, component: TileTest },
+    { path: '/test/page', name: RouterNames.PageTest, component: PageTest },
+
 
 ]
 

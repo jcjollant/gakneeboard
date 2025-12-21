@@ -7,7 +7,7 @@
         </div>
         <div v-else-if="leftButton=='settings'" 
             :title="`Change ${type} Settings`" 
-            class="displayButton headerButton" 
+            class="settingsButton headerButton" 
             @click="emits('settings')">
             <font-awesome-icon :icon="['fas','fa-gear']" />
         </div>
@@ -102,7 +102,7 @@ watch( props, async() => {
     background-color: darkblue;
     color:white;
 }
-.displayButton {
+.displayButton, .settingsButton {
     left: 1px;
 }
 .replaceButton {
