@@ -18,6 +18,11 @@
                     <h3>Create Airport</h3>
                     <p>Add a new airport to the database</p>
                 </div>
+                <div class="api-card" :class="{ active: selectedApi === 'health-check' }" @click="selectApi('health-check')">
+                    <div class="api-icon">❤️</div>
+                    <h3>Health Check</h3>
+                    <p>Run system health check</p>
+                </div>
             </div>
         </div>
         
@@ -79,6 +84,18 @@
         <div v-if="selectedApi === 'create-airport'">
             <AirportCreationForm />
         </div>
+
+        <div v-if="selectedApi === 'health-check'" class="input-section">
+            <h2>System Health Check</h2>
+            <div class="input-group">
+                <button @click="fetchHealthCheck" :disabled="loadingHealth">{{ loadingHealth ? 'Running...' : 'Run Health Check' }}</button>
+            </div>
+            
+            <div v-if="Object.keys(healthData).length > 0">
+                 <h2>Health Check Results</h2>
+                 <pre class="json-display">{{ JSON.stringify(healthData, null, 2) }}</pre>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -106,6 +123,8 @@ const selectedApi = ref('profile')
 const activeUsersRaw = ref({})
 const loadingActive = ref(false)
 const daysValue = ref(1)
+const healthData = ref({})
+const loadingHealth = ref(false)
 
 class Usage {
     type: string
@@ -130,6 +149,7 @@ function selectApi(api: string) {
     } else {
         userId.value = 0
         rawJsonData.value = {}
+        healthData.value = {}
     }
 }
 
@@ -161,6 +181,21 @@ function fetchActiveUsers() {
     }).catch(err => {
         toaster.error('Failed to fetch active users', err.message)
         loadingActive.value = false
+    })
+}
+
+function fetchHealthCheck() {
+    if (loadingHealth.value) return
+    loadingHealth.value = true
+    healthData.value = {}
+    
+    currentUser.getUrl(GApiUrl.root + 'admin/healthCheck').then(res => {
+        healthData.value = res.data
+        loadingHealth.value = false
+    }).catch(err => {
+        toaster.error('Health Check Failed', err.message)
+        healthData.value = { error: err.message }
+        loadingHealth.value = false
     })
 }
 
