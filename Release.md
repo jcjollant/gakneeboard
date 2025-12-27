@@ -1,3 +1,4 @@
+## 12/27/2025 - 6.1.0 - Health Check API
 ## 12/20/2025 - 5.52.0 - Added Skyvector as a DataSource
 ## 12/15/2025 - 5.51.3 - Manual update of airport diagram
 ## 12/15/2025 - 5.51.2 - Airport creation

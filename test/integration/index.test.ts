@@ -1,15 +1,14 @@
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import request from 'supertest';
-import { describe, expect, it, jest, beforeEach } from '@jest/globals';
 import app from '../../api/index';
 import { GApi } from '../../backend/GApi';
-import { AirportService } from '../../backend/services/AirportService';
-import { Maintenance } from '../../backend/Maintenance';
 import { GApiTemplate } from '../../backend/GApiTemplate';
+import { Maintenance } from '../../backend/Maintenance';
+import { AirportService } from '../../backend/services/AirportService';
+import { Authorization } from '../../backend/services/Authorization';
 import { UserTools } from '../../backend/UserTools';
-import { Ticket } from '../../backend/Ticket';
 import { version } from '../../package.json';
 import { currentAirportModelVersion, jcHash } from '../constants';
-import { TemplateView } from '../../backend/models/TemplateView';
 
 // Mock the dependencies
 jest.mock('../../backend/GApi');
@@ -18,6 +17,7 @@ jest.mock('../../backend/Maintenance');
 jest.mock('../../backend/GApiTemplate');
 jest.mock('../../backend/UserTools');
 jest.mock('../../backend/Ticket');
+jest.mock('../../backend/services/Authorization');
 jest.mock('@vercel/postgres', () => ({
     sql: jest.fn()
 }));
@@ -172,6 +172,22 @@ describe('index API', () => {
         const getPubRes = await request(app).get(`/publication/${publicationCode}`);
         expect(getPubRes.status).toBe(200);
         expect(getPubRes.body.id).toBe(templateId);
+    });
+
+    it('Admin healthCheck returns json', async () => {
+        const mockResult = {
+            checks: [{ name: 'test', status: 'success', msg: 'ok' }],
+            refills: []
+        };
+        (Authorization.validateAdmin as unknown as jest.Mock).mockResolvedValue(1);
+        (Maintenance.performHealthChecks as unknown as jest.Mock).mockResolvedValue(mockResult);
+
+        const res = await request(app).get('/admin/healthCheck');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual(mockResult);
+        expect(Authorization.validateAdmin).toHaveBeenCalled();
+        expect(Maintenance.performHealthChecks).toHaveBeenCalled();
     });
 });
 

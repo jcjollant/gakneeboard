@@ -391,9 +391,19 @@ app.get('/sunlight/:from/:to/:dateFrom/:dateTo?', async (req: Request, res: Resp
     }
 })
 
+app.get('/admin/healthCheck', async (req: Request, res: Response) => {
+    try {
+        await Authorization.validateAdmin(req)
+        const result = await Maintenance.performHealthChecks()
+        res.send(result)
+    } catch (e) {
+        catchError(res, e, 'GET /admin/healthCheck')
+    }
+})
+
 app.get('/user/profile/:userId', async (req: Request, res: Response) => {
     try {
-        const requester = await Authorization.validateAdmin(req)
+        await Authorization.validateAdmin(req)
 
         const userProfile = await Admin.getUserProfile(Number(req.params.userId))
         res.send(userProfile)
