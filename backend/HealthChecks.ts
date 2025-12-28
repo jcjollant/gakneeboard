@@ -83,7 +83,7 @@ export class HealthCheck {
                 check.pass("Matching " + rentonDb.effectiveDate)
             } catch (e) {
                 console.log('[HealthCheck.effectiveDateCheck] ' + e.message)
-                check.fail(JSON.stringify(e.message))
+                check.fail(e.message)
             }
         })
         return check

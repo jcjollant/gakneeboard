@@ -46,6 +46,39 @@ describe('AdipService', () => {
         expect(AdipService.currentEffectiveDate()).toBe(AdipService.defaultEffectiveDate)
     })
 
+    test('airportIsStale', async () => {
+        // Setup dates
+        const pastDate = "2025-11-27T00:00:00"
+        const futureDate = "2099-01-01T00:00:00"
+        const specificSetupDate = "2025-12-25T00:00:00"
+
+        // Mock current effective date
+        const originalEffectiveDate = process.env.EFFECTIVE_DATE
+        process.env.EFFECTIVE_DATE = specificSetupDate
+
+        // Stale airport
+        const staleAirport = new Airport('STALE', 'Stale', 0)
+        staleAirport.effectiveDate = pastDate
+        expect(await new AdipService().airportIsStale(staleAirport)).toBeTruthy()
+
+        // Fresh airport
+        const freshAirport = new Airport('FRESH', 'Fresh', 0)
+        freshAirport.effectiveDate = futureDate
+        expect(await new AdipService().airportIsStale(freshAirport)).toBeFalsy()
+
+        // Same date should be fresh (not stale)
+        const sameDateAirport = new Airport('SAME', 'Same', 0)
+        sameDateAirport.effectiveDate = specificSetupDate
+        expect(await new AdipService().airportIsStale(sameDateAirport)).toBeFalsy()
+
+        // Cleanup
+        if (originalEffectiveDate) {
+            process.env.EFFECTIVE_DATE = originalEffectiveDate
+        } else {
+            delete process.env.EFFECTIVE_DATE
+        }
+    })
+
     test('Military frequencies', () => {
         expect(AdipService.isMilitary(123.0)).toBeFalsy()
         expect(AdipService.isMilitary(269.9)).toBeTruthy()

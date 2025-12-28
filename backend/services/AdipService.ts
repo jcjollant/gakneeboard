@@ -18,7 +18,7 @@ export class AdipService implements AirportDataSource {
     }
 
     static basicAuth: string = 'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP'
-    static defaultEffectiveDate = "2025-10-30T00:00:00"
+    static defaultEffectiveDate = "2025-12-25T00:00:00"
     public static currentEffectiveDate(): string {
         // console.log('[AdipService.currentEffectiveDate]', process.env.EFFECTIVE_DATE, AdipService.defaultEffectiveDate)
         // return default date if environment variable is not set
