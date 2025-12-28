@@ -8,6 +8,14 @@ import path from 'path';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
+// Mock SkyvectorDao
+jest.mock('../backend/skyvector/SkyvectorDao', () => ({
+    SkyvectorDao: {
+        save: jest.fn()
+    }
+}));
+import { SkyvectorDao } from '../backend/skyvector/SkyvectorDao';
+
 describe('SkyvectorService', () => {
     const service = new SkyvectorService();
     const kpaoHtmlPath = path.join(__dirname, 'htmlData', 'kpao.skyvector.html');
@@ -86,6 +94,13 @@ describe('SkyvectorService', () => {
         if (sjc) {
             expect(sjc.freq).toBe(114.1);
         }
+
+        // Verify save was NOT called by default
+        expect(SkyvectorDao.save).not.toHaveBeenCalled();
+
+        // Call again with saveRawData = true
+        await service.fetchAirport('KPAO', true);
+        expect(SkyvectorDao.save).toHaveBeenCalledWith('KPAO', expect.anything());
     });
 
     it('should handle search redirects correctly', async () => {

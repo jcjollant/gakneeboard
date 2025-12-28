@@ -14,6 +14,7 @@ import { UserTools } from './UserTools'
 import { UserUsage } from "./models/UserUsage";
 import { Business } from "./business/Business";
 import { SubscriptionDao } from "./dao/SubscriptionDao";
+import { SkyvectorDao } from "./skyvector/SkyvectorDao";
 
 export class Metric {
     name: string;
@@ -32,6 +33,8 @@ export class Metric {
 export enum MetricKey {
     adip = 'adip',
     adip28 = 'adip-28d',
+    skyvector = 'skyvector',
+    skyvector28 = 'skyvector-28d',
     airportsTotal = 'airports-total',
     airportsValid = 'airports-valid',
     airportsCurrent = 'airports-current',
@@ -93,6 +96,11 @@ export class Metrics {
     static async adip(): Promise<Metric[]> {
         const adipCount = await AdipDao.countSince(28)
         return [new Metric(MetricKey.adip28, adipCount)]
+    }
+
+    static async skyvector(): Promise<Metric[]> {
+        const count = await SkyvectorDao.countSince(28)
+        return [new Metric(MetricKey.skyvector28, count)]
     }
 
     static async airports(): Promise<Metric[]> {
@@ -351,7 +359,8 @@ export class Metrics {
             Metrics.publicationsCheck(),
             Metrics.templates(),
             Metrics.airports(),
-            Metrics.adip()
+            Metrics.adip(),
+            Metrics.skyvector()
         ])).reduce((all, one) => {
             all.push(...one)
             return all

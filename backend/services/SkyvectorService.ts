@@ -6,6 +6,7 @@ import { Runway, RunwaySurface, RunwayEnd, PatternDirection } from '../models/Ru
 import { Frequency } from '../models/Frequency'
 import { Navaid } from '../models/Navaid'
 import { Atc } from '../models/Atc'
+import { SkyvectorDao } from '../skyvector/SkyvectorDao'
 
 export class SkyvectorService implements AirportDataSource {
 
@@ -46,6 +47,15 @@ export class SkyvectorService implements AirportDataSource {
             if (!finalUrl.includes('/airport/')) {
                 console.log(`[SkyvectorService] Unexpected URL for ${code}: ${finalUrl}`)
                 return undefined
+            }
+
+            if (saveRawData) {
+                try {
+                    const dataRecap: any = { length: response.data.length }
+                    SkyvectorDao.save(code, dataRecap)
+                } catch (e) {
+                    console.log('[SkyvectorService] cannot save Skyvector data')
+                }
             }
 
             return this.parseAirport(response.data, code, finalUrl)

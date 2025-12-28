@@ -1,6 +1,15 @@
 ## 12/19/2025 Add a new airportsource named 'skyvector' Dev + Prod
 ALTER TYPE airportsource ADD VALUE 'skyvector';
 
+## 12/28/2025 Dev + Prod
+CREATE TABLE skyvector (
+    id SERIAL NOT NULL,
+    create_time timestamp without time zone DEFAULT now(),
+    code varchar(5),
+    "data" text,
+    PRIMARY KEY (id)
+);
+
 ## 12/15/2025 Dev + Prod
 CREATE TYPE airportsource AS ENUM ('adip', 'user');
 
