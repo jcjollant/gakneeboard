@@ -1,3 +1,5 @@
+
+## 12/27/2025 - 6.1.1 - Effective Date update
 ## 12/27/2025 - 6.1.0 - Health Check API
 ## 12/20/2025 - 5.52.0 - Added Skyvector as a DataSource
 ## 12/15/2025 - 5.51.3 - Manual update of airport diagram
@@ -154,23 +156,3 @@
 ## 12/23/2024 4520
 * Added airport currency to Waylon
 * Added Maxout users to Willie
-## 11/27/2024
-* New Effective date
-* Switch to data recap
-## 11/22/2024
-* Templates return version
-## 11/17/2024
-* Feedback is sending emails. 
-* Email sending is centralized
-## 11/16/2024
-* Diagram API and model change
-## 11/15/2024
-* Usage table and metrics
-## 11/12/2024
-* Foreflight checklist exports
-## 11/08/2024
-* Apporach plate API
-## 11/03/2024
-* New Metrics for Approach page, Users and Prints
-## 11/01/2024
-* Instrument Approaches in airport
