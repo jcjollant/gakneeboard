@@ -70,10 +70,10 @@ describe('Airport Creation Integration Flow', () => {
         // readList takes a list of codes and optionally a userId.
         // If we don't pass userId, it queries where creatorId is NULL.
         // Since AirportService.createAirport doesn't seem to set creatorId, this should work.
-        const codeAndAirports = await AirportDao.codesLookup([testCode]);
+        const lookupResult = await AirportDao.codesLookup([testCode]);
 
-        expect(codeAndAirports.length).toBeGreaterThan(0);
-        const found = codeAndAirports.find(ca => ca.code === testCode);
+        expect(lookupResult.found.length).toBeGreaterThan(0);
+        const found = lookupResult.found.find(ca => ca.code === testCode);
         expect(found).toBeDefined();
         if (found && found.airport) {
             expect(found.airport.name).toBe(payload.name);
