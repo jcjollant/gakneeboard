@@ -323,6 +323,32 @@ describe('AirportService Tests', () => {
             expect(AirportSketch.resolve).toBeCalledWith(refreshedAirport, staleCode, true)
         })
 
+        it('Reproduction: Refreshes stale airports and passes valid ID to update', async () => {
+            jest.resetAllMocks()
+            const staleCode = "KRNT"
+            const staleId = 999
+            const staleAirport = new Airport(staleCode, "Stale Renton", 42)
+            staleAirport.effectiveDate = "20200101"
+            staleAirport.version = Airport.currentVersion
+            staleAirport.id = staleId
+            staleAirport.sketch = "existing-sketch-url"
+            const staleCaa = new CodeAndAirport(staleCode, staleAirport)
+
+            const refreshedAirport = new Airport(staleCode, "Refreshed Renton", 42)
+            refreshedAirport.effectiveDate = AdipService.currentEffectiveDate()
+
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ found: [staleCaa], notFound: [] })
+            jest.spyOn(AdipService.prototype, 'airportIsStale').mockResolvedValue(true)
+            jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(refreshedAirport)
+            jest.spyOn(AirportDao, 'updateAirport').mockResolvedValue(undefined)
+            jest.spyOn(AirportSketch, 'resolve').mockResolvedValue(undefined)
+
+            await AirportService.getAirports([staleCode])
+
+            // The critical assertion: ID must be 999, not undefined
+            expect(AirportDao.updateAirport).toBeCalledWith(staleId, expect.anything())
+        })
+
         it('Processes multiple codes in batch', async () => {
             jest.resetAllMocks()
             const newCode = 'KBFI'

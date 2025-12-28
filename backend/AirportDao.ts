@@ -159,7 +159,7 @@ export class AirportDao {
 
     static async updateAirport(id: number, airport: Airport): Promise<void> {
         const data: string = JSON.stringify(airport)
-        // console.log( '[AirportDao.updateAirport] id =', id, ', data =',  data)
+        // console.debug('[AirportDao.updateAirport] id =', id, ', data =', data)
         await sql`UPDATE Airports SET Data=${data}, Version = ${airport.version} WHERE id=${id}`;
     }
 

@@ -145,8 +145,10 @@ export class AirportService {
                     if (refresher) {
                         // preserve the sketch
                         refresher.sketch = found.airport.sketch
+                        refresher.id = found.airport.id
                         found.airport = refresher
                         // update the db record
+                        // console.debug('[AirportService.getAirports] updating', found.code)
                         dbWork.push(AirportDao.updateAirport(found.airport.id, refresher))
                         // if the sketch was there before, update it
                         if (found.airport.sketch) {
@@ -167,6 +169,7 @@ export class AirportService {
         }
 
         // housekeeping for db Work
+        // console.debug('[AirportService.getAirports] dbWork', dbWork.length)
         await Promise.all(dbWork)
 
         return Promise.all(output)
