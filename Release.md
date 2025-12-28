@@ -1,5 +1,6 @@
 
-## 12/27/2025 - 6.1.2 - Fixed airport update logic + Added husky
+## 12/27/2025 - 6.1.3 - Now auditing SkyVector data fetch
+## 12/27/2025 - 6.1.2 - Fixed airport update logic
 ## 12/27/2025 - 6.1.1 - Effective Date update
 ## 12/27/2025 - 6.1.0 - Health Check API
 ## 12/20/2025 - 5.52.0 - Added Skyvector as a DataSource
