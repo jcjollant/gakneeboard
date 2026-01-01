@@ -1,6 +1,5 @@
 import { QueryResult, sql } from "@vercel/postgres";
 import { Airport, versionInvalid } from "./models/Airport";
-import { PutBlobResult } from "@vercel/blob";
 import { CodeAndAirport } from "./models/CodeAndAirport";
 
 export class AirportDao {
@@ -80,7 +79,7 @@ export class AirportDao {
     }
 
     public static parse(row: any, creatorId: number | undefined = undefined): Airport {
-        const airport: Airport = JSON.parse(row.data);
+        const airport: Airport = row.data ? JSON.parse(row.data) : new Airport(undefined, "", 0);
         // Do we need to salvage the code?
         if (!airport.code) airport.code = row.code;
         // It's a custom airport if creatorId matches
@@ -138,15 +137,20 @@ export class AirportDao {
         }
         // console.log( '[AirportDoa.readList] found', result.rowCount, 'entries for', JSON.stringify(list))
 
-        const found: CodeAndAirport[] = result.rows.filter(row => row.data).map(row => {
-            const airport = AirportDao.parse(row, creatorId)
-            return new CodeAndAirport(row.code, airport);
+        const found: CodeAndAirport[] = result.rows.map(row => {
+            if (row.data) {
+                const airport = AirportDao.parse(row, creatorId)
+                return new CodeAndAirport(row.code, airport);
+            } else {
+                const airport = new Airport(row.code, '', 0)
+                airport.version = versionInvalid;
+                return new CodeAndAirport(row.code, airport);
+            }
         })
         const foundCodes = new Set(result.rows.map(row => row.code))
         const missing = (list as string[]).filter(code => !foundCodes.has(code))
 
-        const notFound: string[] = result.rows.filter(row => !row.data).map(row => row.code)
-        notFound.push(...missing)
+        const notFound: string[] = missing;
 
         return { found, notFound }
     }
