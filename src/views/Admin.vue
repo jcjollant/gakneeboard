@@ -92,6 +92,18 @@
             </div>
             
             <div v-if="Object.keys(healthData).length > 0">
+                <div v-if="failedTests.length > 0" class="failures-section">
+                    <h3>Failed Tests</h3>
+                    <ul>
+                        <li v-for="fail in failedTests" :key="fail.name" class="failure-item">
+                            <strong>{{ fail.name }}</strong>: {{ fail.message }}
+                        </li>
+                    </ul>
+                </div>
+                <div v-else class="success-message">
+                    <h3>No Failures</h3>
+                </div>
+
                  <h2>Health Check Results</h2>
                  <pre class="json-display">{{ JSON.stringify(healthData, null, 2) }}</pre>
             </div>
@@ -100,7 +112,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import { currentUser } from '../assets/data'
 import { GApiUrl } from '../lib/GApiUrl'
 import { useToaster } from '../assets/Toaster';
@@ -125,6 +137,40 @@ const loadingActive = ref(false)
 const daysValue = ref(1)
 const healthData = ref({})
 const loadingHealth = ref(false)
+
+const failedTests = computed(() => {
+    const failures: { name: string, message: string }[] = []
+    const data = healthData.value as any
+    if (!data) return []
+
+    // Check for 'checks' array based on user provided JSON
+    const source = data.checks || data.entries || []
+    
+    // Handle array format (checks: [...])
+    if (Array.isArray(source)) {
+        source.forEach((item: any) => {
+            if (item && item.status === 'fail') {
+                failures.push({
+                    name: item.name,
+                    message: item.msg || item.message || item.description || ''
+                })
+            }
+        })
+    } else {
+        // Fallback for object format just in case
+        Object.keys(source).forEach(key => {
+            const item = source[key]
+            if (item && item.status === 'fail') {
+                failures.push({
+                    name: key,
+                    message: item.msg || item.message || item.description || ''
+                })
+            }
+        })
+    }
+    
+    return failures
+})
 
 class Usage {
     type: string
@@ -405,5 +451,43 @@ onMounted(() => {
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.failures-section {
+    background-color: #fee2e2;
+    border: 1px solid #ef4444;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.failures-section ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.failures-section h3 {
+    color: #b91c1c;
+    margin-top: 0;
+}
+
+.failure-item {
+    color: #b91c1c;
+    margin-bottom: 0.5rem;
+}
+
+.success-message {
+    background-color: #dcfce7;
+    border: 1px solid #22c55e;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.success-message h3 {
+    color: #15803d;
+    margin: 0;
 }
 </style>
