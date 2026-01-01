@@ -105,6 +105,7 @@ export class AirportService {
 
         // lookup clean codes in DB
         const dbCodesLookup: { found: CodeAndAirport[], notFound: string[] } = await AirportDao.codesLookup(cleanCodes.valid, userId)
+        // console.debug('[AirportService.getAirports] dbCodesLookup', dbCodesLookup)
 
         // Processing codes that are not in the DB yet
         for (const newCode of dbCodesLookup.notFound) {
@@ -125,6 +126,7 @@ export class AirportService {
             } else {
                 output.push(Promise.resolve(CodeAndAirport.undefined(newCode)))
                 // remember this as a known unknown
+                // console.debug('[AirportService.getAirports] marking code for unknown', newCode)
                 dbWork.push(AirportDao.createUnknown(newCode))
             }
         }
@@ -134,6 +136,7 @@ export class AirportService {
             // some codes found in the db are known unknowns
             if (found.airport.version == versionInvalid) {
                 // This is a known unknown
+                // console.debug('[AirportService.getAirport] known unknown', found.code)
                 output.push(Promise.resolve(CodeAndAirport.undefined(found.code)))
             } else {
                 const dataSource = AirportService.getDataSource(found.code)
