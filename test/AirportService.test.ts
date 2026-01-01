@@ -163,7 +163,7 @@ describe('AirportService Tests', () => {
 
         it('Handles invalid codes', async () => {
             jest.resetAllMocks()
-            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ found: [], notFound: [] })
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ known: [], knownUnknown: [], notFound: [] })
             jest.spyOn(AirportDao, 'createUnknown').mockResolvedValue(undefined)
 
             const invalidCodes = ['AB', 'TOOLONG', 'X']
@@ -179,7 +179,7 @@ describe('AirportService Tests', () => {
         it('Handles valid codes not found in ADIP', async () => {
             jest.resetAllMocks()
             const validCode = 'KXYZ'
-            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ found: [], notFound: [validCode] })
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ known: [], knownUnknown: [], notFound: [validCode] })
             jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(undefined)
             jest.spyOn(AirportDao, 'createUnknown').mockResolvedValue(undefined)
             jest.spyOn(AirportDao, 'create').mockResolvedValue(undefined)
@@ -198,7 +198,7 @@ describe('AirportService Tests', () => {
             const validCode = 'KBFI'
             const mockBoeing = new Airport(validCode, "Boeing Field", 42)
 
-            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ found: [], notFound: [validCode] })
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ known: [], knownUnknown: [], notFound: [validCode] })
             jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(mockBoeing)
             jest.spyOn(AirportDao, 'create').mockResolvedValue(undefined)
             jest.spyOn(AirportSketch, 'resolve').mockResolvedValue(undefined)
@@ -221,7 +221,7 @@ describe('AirportService Tests', () => {
             customAirport.custom = true
             const customCaa = new CodeAndAirport(customCode, customAirport)
 
-            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ found: [customCaa], notFound: [] })
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ known: [customCaa], knownUnknown: [], notFound: [] })
             jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(undefined)
 
             const result = await AirportService.getAirports([customCode])
@@ -239,7 +239,7 @@ describe('AirportService Tests', () => {
             currentAirport.version = Airport.currentVersion
             const currentCaa = new CodeAndAirport(currentCode, currentAirport)
 
-            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ found: [currentCaa], notFound: [] })
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ known: [currentCaa], knownUnknown: [], notFound: [] })
             jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(undefined)
             jest.spyOn(AdipService.prototype, 'airportIsStale').mockResolvedValue(false)
 
@@ -257,7 +257,7 @@ describe('AirportService Tests', () => {
             unknownAirport.version = -1 // versionInvalid
             const unknownCaa = new CodeAndAirport(unknownCode, unknownAirport)
 
-            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ found: [unknownCaa], notFound: [] })
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ known: [], knownUnknown: [unknownCaa], notFound: [] })
             jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(undefined)
 
             const result = await AirportService.getAirports([unknownCode])
@@ -280,7 +280,7 @@ describe('AirportService Tests', () => {
             const refreshedAirport = new Airport(staleCode, "Refreshed Renton", 42)
             refreshedAirport.effectiveDate = AdipService.currentEffectiveDate()
 
-            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ found: [staleCaa], notFound: [] })
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ known: [staleCaa], knownUnknown: [], notFound: [] })
             jest.spyOn(AdipService.prototype, 'airportIsStale').mockResolvedValue(true)
             jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(refreshedAirport)
             jest.spyOn(AirportDao, 'updateAirport').mockResolvedValue(undefined)
@@ -310,7 +310,7 @@ describe('AirportService Tests', () => {
             const refreshedAirport = new Airport(staleCode, "Refreshed Renton", 42)
             refreshedAirport.effectiveDate = AdipService.currentEffectiveDate()
 
-            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ found: [staleCaa], notFound: [] })
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ known: [staleCaa], knownUnknown: [], notFound: [] })
             jest.spyOn(AdipService.prototype, 'airportIsStale').mockResolvedValue(true)
             jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(refreshedAirport)
             jest.spyOn(AirportDao, 'updateAirport').mockResolvedValue(undefined)
@@ -337,7 +337,7 @@ describe('AirportService Tests', () => {
             const refreshedAirport = new Airport(staleCode, "Refreshed Renton", 42)
             refreshedAirport.effectiveDate = AdipService.currentEffectiveDate()
 
-            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ found: [staleCaa], notFound: [] })
+            jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ known: [staleCaa], knownUnknown: [], notFound: [] })
             jest.spyOn(AdipService.prototype, 'airportIsStale').mockResolvedValue(true)
             jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(refreshedAirport)
             jest.spyOn(AirportDao, 'updateAirport').mockResolvedValue(undefined)
@@ -362,7 +362,8 @@ describe('AirportService Tests', () => {
             const currentCaa = new CodeAndAirport(currentCode, currentAirport)
 
             jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({
-                found: [currentCaa],
+                known: [currentCaa],
+                knownUnknown: [],
                 notFound: [newCode]
             })
             jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(newAirport)

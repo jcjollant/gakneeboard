@@ -126,7 +126,7 @@ export class AirportDao {
      * @param creatorId 
      * @returns two lists, one of CodeAndAirport found, and a list of unknown codes
      */
-    public static async codesLookup(list: any, creatorId: number | undefined = undefined): Promise<{ found: CodeAndAirport[], notFound: string[] }> {
+    public static async codesLookup(list: any, creatorId: number | undefined = undefined): Promise<{ known: CodeAndAirport[], knownUnknown: CodeAndAirport[], notFound: string[] }> {
         // console.log( '[AirportDao.codesLookup] ' + JSON.stringify(list) + ' / ' + creatorId)
 
         let result: QueryResult;
@@ -137,14 +137,17 @@ export class AirportDao {
         }
         // console.log( '[AirportDoa.readList] found', result.rowCount, 'entries for', JSON.stringify(list))
 
-        const found: CodeAndAirport[] = result.rows.map(row => {
+        const known: CodeAndAirport[] = []
+        const knownUnknown: CodeAndAirport[] = []
+
+        result.rows.forEach(row => {
             if (row.data) {
                 const airport = AirportDao.parse(row, creatorId)
-                return new CodeAndAirport(row.code, airport);
+                known.push(new CodeAndAirport(row.code, airport));
             } else {
                 const airport = new Airport(row.code, '', 0)
                 airport.version = versionInvalid;
-                return new CodeAndAirport(row.code, airport);
+                knownUnknown.push(new CodeAndAirport(row.code, airport));
             }
         })
         const foundCodes = new Set(result.rows.map(row => row.code))
@@ -152,7 +155,7 @@ export class AirportDao {
 
         const notFound: string[] = missing;
 
-        return { found, notFound }
+        return { known, knownUnknown, notFound }
     }
 
     static async updateSketch(code: string, url: string) {

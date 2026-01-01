@@ -50,15 +50,15 @@ describe('Custom Airports', () => {
         await AirportDao.createOrUpdateCustom(airportJc, jcUserId)
         await AirportDao.createOrUpdateCustom(airportAs, userIdAs)
         // Read for JC
-        const listJc = await AirportDao.codesLookup([customCode], jcUserId)
-        expect(listJc.found.length).toBe(1)
-        expect(listJc.found[0].airport.name).toBe(customNameJC)
-        expect(listJc.found[0].airport.source).toBe(AirportSource.User)
+        const listJc: { known: any[], knownUnknown: any[], notFound: any[] } = await AirportDao.codesLookup([customCode], jcUserId)
+        expect(listJc.known.length).toBe(1)
+        expect(listJc.known[0].airport.name).toBe(customNameJC)
+        expect(listJc.known[0].airport.source).toBe(AirportSource.User)
         // Read for AS
-        const listAs = await AirportDao.codesLookup([customCode], userIdAs)
-        expect(listAs.found.length).toBe(1)
-        expect(listAs.found[0].airport.name).toBe(customNameAS)
-        expect(listAs.found[0].airport.source).toBe(AirportSource.User)
+        const listAs: { known: any[], knownUnknown: any[], notFound: any[] } = await AirportDao.codesLookup([customCode], userIdAs)
+        expect(listAs.known.length).toBe(1)
+        expect(listAs.known[0].airport.name).toBe(customNameAS)
+        expect(listAs.known[0].airport.source).toBe(AirportSource.User)
     })
 
     test('Undefined airport', () => {
@@ -74,11 +74,11 @@ describe('Custom Airports', () => {
         await AirportDao.createUnknown(customCode)
 
         // Verify it is found but marked as invalid version
-        const result = await AirportDao.codesLookup([customCode])
+        const result: { known: any[], knownUnknown: any[], notFound: any[] } = await AirportDao.codesLookup([customCode])
 
-        expect(result.found.length).toBe(1)
-        expect(result.found[0].code).toBe(customCode)
-        expect(result.found[0].airport.version).toBe(versionInvalid)
+        expect(result.knownUnknown.length).toBe(1)
+        expect(result.knownUnknown[0].code).toBe(customCode)
+        expect(result.knownUnknown[0].airport.version).toBe(versionInvalid)
         expect(result.notFound.length).toBe(0)
 
         // Cleanup

@@ -104,7 +104,7 @@ export class AirportService {
         const cleanCodes: { valid: string[], invalid: string[] } = AirportService.cleanUpCodes(airportCodes)
 
         // lookup clean codes in DB
-        const dbCodesLookup: { found: CodeAndAirport[], notFound: string[] } = await AirportDao.codesLookup(cleanCodes.valid, userId)
+        const dbCodesLookup: { known: CodeAndAirport[], knownUnknown: CodeAndAirport[], notFound: string[] } = await AirportDao.codesLookup(cleanCodes.valid, userId)
         // console.debug('[AirportService.getAirports] dbCodesLookup', dbCodesLookup)
 
         // Processing codes that are not in the DB yet
@@ -131,38 +131,36 @@ export class AirportService {
             }
         }
 
+        // Processing codes that are known unknowns
+        for (const found of dbCodesLookup.knownUnknown) {
+            output.push(Promise.resolve(CodeAndAirport.undefined(found.code)))
+        }
+
         // Processing codes that are already in the DB
-        for (const found of dbCodesLookup.found) {
-            // some codes found in the db are known unknowns
-            if (found.airport.version == versionInvalid) {
-                // This is a known unknown
-                // console.debug('[AirportService.getAirport] known unknown', found.code)
-                output.push(Promise.resolve(CodeAndAirport.undefined(found.code)))
-            } else {
-                const dataSource = AirportService.getDataSource(found.code)
-                const modelIsStale = found.airport.version < Airport.currentVersion
-                // the airport must be refreshed if the model stale or the data source says it is stale and it is not a custom airport
-                const needRefresh = dataSource && (modelIsStale || await dataSource.airportIsStale(found.airport)) && !found.airport.custom
-                if (needRefresh) {
-                    const refresher = await dataSource?.fetchAirport(found.code)
-                    if (refresher) {
-                        // preserve the sketch
+        for (const found of dbCodesLookup.known) {
+            const dataSource = AirportService.getDataSource(found.code)
+            const modelIsStale = found.airport.version < Airport.currentVersion
+            // the airport must be refreshed if the model stale or the data source says it is stale and it is not a custom airport
+            const needRefresh = dataSource && (modelIsStale || await dataSource.airportIsStale(found.airport)) && !found.airport.custom
+            if (needRefresh) {
+                const refresher = await dataSource?.fetchAirport(found.code)
+                if (refresher) {
+                    // preserve the sketch
+                    refresher.sketch = found.airport.sketch
+                    refresher.id = found.airport.id
+                    found.airport = refresher
+                    // update the db record
+                    // console.debug('[AirportService.getAirports] updating', found.code)
+                    dbWork.push(AirportDao.updateAirport(found.airport.id, refresher))
+                    // if the sketch was there before, update it
+                    if (found.airport.sketch) {
                         refresher.sketch = found.airport.sketch
-                        refresher.id = found.airport.id
-                        found.airport = refresher
-                        // update the db record
-                        // console.debug('[AirportService.getAirports] updating', found.code)
-                        dbWork.push(AirportDao.updateAirport(found.airport.id, refresher))
-                        // if the sketch was there before, update it
-                        if (found.airport.sketch) {
-                            refresher.sketch = found.airport.sketch
-                        } else {
-                            dbWork.push(AirportSketch.resolve(refresher, found.code, true))
-                        }
+                    } else {
+                        dbWork.push(AirportSketch.resolve(refresher, found.code, true))
                     }
                 }
-                output.push(Promise.resolve(found))
             }
+            output.push(Promise.resolve(found))
         }
 
         // Appending dirty codes
