@@ -66,5 +66,23 @@ describe('Custom Airports', () => {
         expect(undefinedCaa.code).toBe('TEST')
         expect(undefinedCaa.airport.version).toBe(versionInvalid)
     })
+    test('Known Unknown', async () => {
+        // Cleanup
+        await AirportDao.deleteTest()
+
+        // Create a known unknown
+        await AirportDao.createUnknown(customCode)
+
+        // Verify it is found but marked as invalid version
+        const result = await AirportDao.codesLookup([customCode])
+
+        expect(result.found.length).toBe(1)
+        expect(result.found[0].code).toBe(customCode)
+        expect(result.found[0].airport.version).toBe(versionInvalid)
+        expect(result.notFound.length).toBe(0)
+
+        // Cleanup
+        await AirportDao.deleteTest()
+    })
 });
 
