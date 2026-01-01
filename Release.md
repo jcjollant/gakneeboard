@@ -1,4 +1,5 @@
 
+## 12/31/2025 - 6.1.4 - Fixed parse and codeLookup logic
 ## 12/27/2025 - 6.1.3 - Now auditing SkyVector data fetch
 ## 12/27/2025 - 6.1.2 - Fixed airport update logic
 ## 12/27/2025 - 6.1.1 - Effective Date update
