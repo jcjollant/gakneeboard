@@ -28,6 +28,9 @@ SELECT version, COUNT(*) FROM airports GROUP BY version ORDER BY version DESC
 # Known Unknowns
 SELECT * FROM airports WHERE version=-1
 
+# Known Unknowns with Full code
+SELECT * FROM airports WHERE version=-1 AND LENGTH(code)=4
+
 # Count of known unknowns
 SELECT COUNT(*) FROM airports WHERE version=-1
 

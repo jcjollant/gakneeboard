@@ -5,6 +5,7 @@ import { User } from "./models/User";
 import { PublicationDao } from './PublicationDao';
 import { AdipService } from './services/AdipService';
 
+import { CodeAndAirport } from "./models/CodeAndAirport";
 import dotenv from 'dotenv';
 import { UserTools } from "./UserTools";
 dotenv.config()
@@ -63,12 +64,14 @@ export class HealthCheck {
         // Force an Adip Check
         await Promise.all([AirportDao.codesLookup([rentonCode]), new AdipService().fetchAirport(rentonCode, false)]).then((results) => {
             try {
+                const lookupResult = results[0] as { known: CodeAndAirport[], knownUnknown: CodeAndAirport[], notFound: string[] };
                 // Check we have found Renton in the database
-                if (results[0].found.length == 0) throw new Error(rentonCode + " is not in the database")
+                if (lookupResult.known.length == 0 && lookupResult.knownUnknown.length == 0) throw new Error(rentonCode + " is not in the database")
 
                 // Check we have the correct version
-                const rentonDb: Airport = results[0].found[0].airport
-                if (rentonDb.version == -1) throw new Error(rentonCode + " version is invalid")
+                if (lookupResult.knownUnknown.length > 0) throw new Error(rentonCode + " version is invalid")
+
+                const rentonDb: Airport = lookupResult.known[0].airport
 
                 const rentonAdip: Airport | undefined = results[1]
                 if (!rentonAdip) throw new Error(rentonCode + " is not in ADIP")
