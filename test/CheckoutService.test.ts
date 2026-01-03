@@ -51,7 +51,7 @@ describe('CheckoutService', () => {
 
         test('should call checkout API and return URL', async () => {
             const expectedUrl = 'https://checkout.stripe.com/pay/cs_test_...';
-            (axios.post as jest.Mock).mockResolvedValue({ data: { url: expectedUrl } });
+            (axios.post as jest.Mock<any>).mockResolvedValue({ data: { url: expectedUrl } });
 
             const url = await CheckoutService.plan(Pricing.privatePilot, mockUser);
 
@@ -68,7 +68,7 @@ describe('CheckoutService', () => {
 
         test('should include attribution data in the payload when available', async () => {
             const expectedUrl = 'https://checkout.stripe.com/pay/cs_test_...';
-            (axios.post as jest.Mock).mockResolvedValue({ data: { url: expectedUrl } });
+            (axios.post as jest.Mock<any>).mockResolvedValue({ data: { url: expectedUrl } });
 
             const mockAttribution = { source: 'google', medium: 'cpc', timestamp: 1234567890 };
             (AttributionService.getAttribution as jest.Mock).mockReturnValue(mockAttribution);
@@ -87,7 +87,7 @@ describe('CheckoutService', () => {
         });
 
         test('should handle API error gracefully', async () => {
-            (axios.post as jest.Mock).mockRejectedValue(new Error('Network Error'));
+            (axios.post as jest.Mock<any>).mockRejectedValue(new Error('Network Error'));
 
             await expect(CheckoutService.plan(Pricing.privatePilot, mockUser)).rejects.toEqual('/');
         });
@@ -100,7 +100,7 @@ describe('CheckoutService', () => {
 
         test('should call plan with "manage"', async () => {
             const expectedUrl = 'https://billing.stripe.com/p/login/...';
-            (axios.post as jest.Mock).mockResolvedValue({ data: { url: expectedUrl } });
+            (axios.post as jest.Mock<any>).mockResolvedValue({ data: { url: expectedUrl } });
 
             const url = await CheckoutService.manage(mockUser);
 
