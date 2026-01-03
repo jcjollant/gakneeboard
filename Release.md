@@ -1,4 +1,5 @@
 
+## 01/03/2026 - 6.2.0 - Added attribution to stripe checkout
 ## 01/01/2026 - 6.1.6 - Fixed Health Check
 ## 01/01/2026 - 6.1.5 - Updated codesLookup logic to return three lists
 ## 12/31/2025 - 6.1.4 - Fixed parse and codeLookup logic
