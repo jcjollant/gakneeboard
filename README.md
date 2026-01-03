@@ -20,6 +20,7 @@ ts-node .\waylon.ts
 ```
 
 ## Testing Stripe client
+(installation) ``
 With Stripe client
 C:\src>stripe listen --forward-to localhost:3000/stripe/webhook
 
@@ -33,7 +34,11 @@ Save files in c:\src\kneeboard.ga\data
 see [Operations](documentation/Operations.md)
 
 ## Testing with Stripe
-.\stripe.exe listen --forward-to locashost:3000/webhook
+### Installation
+(macos) brew install stripe/stripe-cli/stripe
+
+### Usage
+stripe listen --forward-to locashost:3000/webhook
 Call http://localhost:3000/checkout with user and product
 
 ## Refreshing Sketch Data
