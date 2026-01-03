@@ -2,7 +2,7 @@
     <Feedback v-if="route.name!=RouterNames.Print" :open="showFeedback" @submit="feedbackSubmitted"  />
     <About v-model:visible="showAbout" @close="showAbout=false" />
     <Maintenance v-model:visible="showMaintenance" @close="showMaintenance=false" />
-    <Maxed v-model:visible="showMaxed" @close="showMaxed=false" />
+
     <Eula v-model:visible="showEula" @close="showEula=false" />
     <Version v-model:visible="showVersion" @close="showVersion=false" :front="versionFront" :back="backend.version" />
     <Toast />
@@ -42,7 +42,7 @@ import Maintenance from './components/menu/Maintenance.vue'
 import MenuButton from './components/menu/MenuButton.vue';
 // import Session from './components/menu/Session.vue' // Disabled - functionality moved to Menu.vue
 import Toast from 'primevue/toast'
-import Maxed from './components/menu/Maxed.vue';
+
 import Eula from './components/menu/Eula.vue';
 import Version from './components/menu/Version.vue';
 
@@ -52,7 +52,7 @@ const showAbout = ref(false)
 const showEula = ref(false)
 const showFeedback = ref(false)
 const showMaintenance = ref(false)
-const showMaxed = ref(false)
+
 const showVersion = ref(false)
 const versionFront = ref('')
 const toaster = useToaster( useToast())
@@ -71,8 +71,6 @@ onBeforeMount( () => {
       // console.log('[App.onBeforeMount] tempaltes ', currentUser.templates.length, currentUser.maxTemplateCount)
       if(currentUser.loggedIn && !currentUser.eulaCurrent) {
         showEula.value = true
-      } else if(currentUser.pageCount > currentUser.maxPageCount || currentUser.templates.length > currentUser.maxTemplateCount) {
-        showMaxed.value = true
       }
     })
 })
