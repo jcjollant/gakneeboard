@@ -475,7 +475,6 @@ function getItemClass(item: ChecklistItem, index: number) {
 
 .section-display {
     font-weight: bold;
-    text-transform: uppercase;
     padding: 2px 5px;
     text-align: center;
 }
