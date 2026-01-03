@@ -50,6 +50,8 @@ library.add(
     faVideo, faWalkieTalkie, faWordpress, faXmark, faYoutube)
 library.add(faFaceFrown, faFaceMeh, faFaceSmile)
 
+import { AttributionService } from '@/services/AttributionService';
+
 createApp(App)
     .use(PrimeView)
     .use(ConfirmationService)
@@ -57,6 +59,11 @@ createApp(App)
     .use(router)
     .component('font-awesome-icon', FontAwesomeIcon)
     .mount('#app')
+
+router.isReady().then(() => {
+    AttributionService.init(router)
+})
+
 
 if (process.env.NODE_ENV === 'production') {
     window.dataLayer = window.dataLayer || [];

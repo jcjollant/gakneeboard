@@ -16,6 +16,7 @@ export class LocalStoreService {
     static templateOlder = 'page1'
     static thumbnailPrefix = 'tthumb-'
     static flightInfo = 'flightInfo'
+    static attribution = 'channel-attribution'
     static MAX_AIRPORTS = 30
     static MAX_APPROACHES = 5
     static LEAN_AIRPORTS = 24

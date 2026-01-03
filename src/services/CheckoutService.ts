@@ -3,6 +3,8 @@ import { CurrentUser } from '../assets/CurrentUser'
 import { GApiUrl } from '../lib/GApiUrl'
 import { AccountType } from '../models/AccounType'
 
+import { AttributionService } from './AttributionService'
+
 export class Pricing {
     static simmer = 'fs1';
     static studentPilot = 'pp1'; // This is the old private pilot.
@@ -45,8 +47,15 @@ export class CheckoutService {
     static async plan(code: string, user: CurrentUser): Promise<string> {
         try {
             const url = GApiUrl.root + 'stripe/checkout'
-            const payload = { user: user.sha256, product: code, source: window.location.href }
-            // console.log('[Checkout.plan]', payload)
+            const payload: any = { user: user.sha256, product: code, source: window.location.href }
+
+            const attribution = AttributionService.getAttribution()
+            if (attribution) {
+                payload.attribution = attribution
+            }
+
+            // console.debug('[Checkout.plan]', payload)
+            // console.debug('[Checkout.plan] attribution', attribution)
             const headers = { headers: { 'Content-Type': 'application/json' } }
             const response = await axios.post(url, payload, headers)
             return response.data.url

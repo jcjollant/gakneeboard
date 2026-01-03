@@ -4,7 +4,14 @@ import { AccountType } from '../src/models/AccounType';
 import { CurrentUser } from '../src/assets/CurrentUser';
 import axios from 'axios';
 
+import { AttributionService } from '../src/services/AttributionService';
+
 jest.mock('axios');
+jest.mock('../src/services/AttributionService', () => ({
+    AttributionService: {
+        getAttribution: jest.fn()
+    }
+}));
 
 // Mock window location
 Object.defineProperty(global, 'window', {
@@ -39,6 +46,7 @@ describe('CheckoutService', () => {
 
         beforeEach(() => {
             jest.clearAllMocks();
+            (AttributionService.getAttribution as jest.Mock).mockReturnValue(null);
         });
 
         test('should call checkout API and return URL', async () => {
@@ -53,6 +61,26 @@ describe('CheckoutService', () => {
                 expect.objectContaining({
                     user: 'mock_user_hash',
                     product: Pricing.privatePilot
+                }),
+                expect.anything()
+            );
+        });
+
+        test('should include attribution data in the payload when available', async () => {
+            const expectedUrl = 'https://checkout.stripe.com/pay/cs_test_...';
+            (axios.post as jest.Mock).mockResolvedValue({ data: { url: expectedUrl } });
+
+            const mockAttribution = { source: 'google', medium: 'cpc', timestamp: 1234567890 };
+            (AttributionService.getAttribution as jest.Mock).mockReturnValue(mockAttribution);
+
+            await CheckoutService.plan(Pricing.privatePilot, mockUser);
+
+            expect(axios.post).toHaveBeenCalledWith(
+                expect.stringContaining('stripe/checkout'),
+                expect.objectContaining({
+                    user: 'mock_user_hash',
+                    product: Pricing.privatePilot,
+                    attribution: mockAttribution
                 }),
                 expect.anything()
             );
