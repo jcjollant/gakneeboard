@@ -24,6 +24,14 @@
                 <div class="printCredits" :class="{'maxedOut':user.printCredits == 0 }">{{ user.printCredits }}</div>
             </div>
             <div style="grid-column: span 2"><hr></div>
+            <div class="key">Ambassador Link</div>
+            <div class="value">
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <Button label="Copy Link" icon="pi pi-copy" size="small" @click="copyAmbassadorLink" title="Send this link to people you want to help" />
+                    <Button icon="pi pi-question-circle" text rounded @click="UserUrl.open(UserUrl.ambassador)" title="Tell me how this works" />
+                </div>
+            </div>
+            <div style="grid-column: span 2"><hr></div>
             <div class="key">Airports Cached</div>
             <div class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
                 <div class="airportCount">{{ airportCount }}</div>
@@ -45,6 +53,7 @@ import { CheckoutService } from '../../services/CheckoutService'
 import { LocalStoreService } from '../../services/LocalStoreService';
 import { CurrentUser } from '../../assets/CurrentUser';
 import { Formatter } from '../../lib/Formatter';
+import { UserUrl } from '../../lib/UserUrl';
 import { useToast } from 'primevue/usetoast';
 import { useToaster } from '../../assets/Toaster';
 import { useRouter } from 'vue-router';
@@ -116,6 +125,13 @@ function deleteAirports() {
     LocalStoreService.airportRemoveAll()
     airportCount.value = 0
     toaster.success('Local Storage', 'Airports deleted')
+}
+
+function copyAmbassadorLink() {
+    const link = `${UserUrl.main}?utm_source=ambassador&utm_medium=referral&utm_campaign=${user.value.sha256.slice(-10)}`
+    navigator.clipboard.writeText(link).then(() => {
+        toaster.success('Clipboard', 'Ambassador link copied')
+    })
 }
 
 </script>

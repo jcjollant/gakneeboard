@@ -1,5 +1,5 @@
 
-import { Router } from 'vue-router'
+
 
 export interface AttributionData {
     source?: string
@@ -14,14 +14,13 @@ import { LocalStoreService } from './LocalStoreService'
 
 export class AttributionService {
 
-    static init(router: Router) {
-        // We check the current route once on initialization
-        // Note: When called from main.js router.isReady(), currentRoute should be resolved
-        const currentRoute = router.currentRoute.value
-
-        if (currentRoute) {
-            AttributionService.capture(currentRoute.query)
+    static initFromWindow() {
+        const params = new URLSearchParams(window.location.search)
+        const query: Record<string, string> = {}
+        for (const [key, value] of params) {
+            query[key] = value
         }
+        AttributionService.capture(query)
     }
 
     static capture(query: Record<string, any>) {

@@ -14,6 +14,7 @@ export class UserUrl {
     static radioTileGuide: string = 'https://gakneeboard.wordpress.com/radio-tile-guide/'
     static sunlightTileGuide: string = 'https://gakneeboard.wordpress.com/2024/08/10/sunlight-tile-guide/'
     static checklistDigestPage: string = 'https://gakneeboard.wordpress.com/checklists-digest/'
+    static ambassador: string = 'https://gakneeboard.wordpress.com/ambassador-program/'
 
     // Youtube
     static youTubeChannel: string = 'https://www.youtube.com/@GAKneeboard/videos'

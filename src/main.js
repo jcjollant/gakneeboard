@@ -60,9 +60,9 @@ createApp(App)
     .component('font-awesome-icon', FontAwesomeIcon)
     .mount('#app')
 
-router.isReady().then(() => {
-    AttributionService.init(router)
-})
+// Capture attribution data from window location immediately
+AttributionService.initFromWindow()
+
 
 
 if (process.env.NODE_ENV === 'production') {
