@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 01/03/2026 - 6.2.2 - Checklist editor improvements
 ## 01/03/2026 - 6.2.1 - Removed maxed
 ## 01/03/2026 - 6.2.0 - Added attribution service
 ## 01/02/2026 - 6.1.2 - Removed uppercase on checklist editor
