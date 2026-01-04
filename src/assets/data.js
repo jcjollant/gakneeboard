@@ -9,6 +9,7 @@ import { CurrentUser } from './CurrentUser.ts'
 import { GApiUrl } from '../lib/GApiUrl.ts'
 import { SessionAirports } from './SessionAirports.ts'
 import { LocalStoreService } from '../services/LocalStoreService.ts'
+import { AttributionService } from '../services/AttributionService.ts'
 import { NavlogQueue } from './NavlogQueue.ts'
 
 export const contentTypeJson = { headers: { 'Content-Type': 'application/json' } }
@@ -36,6 +37,13 @@ export const sessionAirports = new SessionAirports()
 export async function authenticationRequest(payload) {
   return new Promise((resolve, reject) => {
     const url = GApiUrl.root + 'authenticate'
+
+    // Add attribution data if available
+    const attribution = AttributionService.getAttribution()
+    if (attribution) {
+      payload.attribution = attribution
+    }
+
     axios.post(url, payload, contentTypeJson)
       .then(response => {
         // remove unknown airports because some may be due to unauhtenticated user
