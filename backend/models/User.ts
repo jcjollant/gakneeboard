@@ -1,22 +1,24 @@
 import { createHash } from 'crypto'
 import { AccountType } from './AccountType';
 import { Business } from '../business/Business';
+import { AttributionData } from './AttributionData';
 
 export class User {
-    id:number;
-    sha256:string;
-    name:string;
-    source:string;
-    email:string;
-    maxPages:number;
-    maxTemplates:number;
-    accountType:AccountType;
-    customerId:string|undefined;
-    printCredits:number
-    createDate:Date|undefined;
-    eula:number;
+    id: number;
+    sha256: string;
+    name: string;
+    source: string;
+    email: string;
+    maxPages: number;
+    maxTemplates: number;
+    accountType: AccountType;
+    customerId: string | undefined;
+    printCredits: number
+    createDate: Date | undefined;
+    eula: number;
+    attribution?: AttributionData;
 
-    constructor( id:number, sha256:string) {
+    constructor(id: number, sha256: string) {
         this.id = id;
         this.sha256 = sha256;
         this.name = '';
@@ -36,47 +38,52 @@ export class User {
     //     return this.sha256
     // }
 
-    public static createSha256(input: any):string {
+    public static createSha256(input: any): string {
         return createHash('sha256').update(JSON.stringify(input)).digest('hex')
     }
- 
-    public setEmail(email:string) {
+
+    public setEmail(email: string) {
         this.email = email;
     }
 
-    public setSource(source:string) {
+    public setSource(source: string) {
         this.source = source;
     }
 
-    public setMaxPages( newMax:number) {
+    public setMaxPages(newMax: number) {
         this.maxPages = newMax;
     }
 
-    public setMaxTemplates( newMax:number) {
+    public setMaxTemplates(newMax: number) {
         this.maxTemplates = newMax;
     }
 
-    public setName( newName:string) {
+    public setName(newName: string) {
         this.name = newName;
-    }    
+    }
 
-    public setAccountType( newType:AccountType) {
+    public setAccountType(newType: AccountType) {
         this.accountType = newType;
     }
-    
+
     public setCustomerId(customer_id: string) {
         this.customerId = customer_id;
     }
 
-    public setPrintCredits(count:number) {
-        this.printCredits  = count;
+    public setPrintCredits(count: number) {
+        this.printCredits = count;
     }
 
-    public setCreateDate(date:Date|undefined) {
+    public setCreateDate(date: Date | undefined) {
         this.createDate = date;
     }
 
-    public setEula(eula:number) {
+    public setEula(eula: number) {
         this.eula = eula;
+    }
+
+
+    public setAttribution(attribution: AttributionData) {
+        this.attribution = attribution;
     }
 }

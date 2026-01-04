@@ -39,6 +39,10 @@ export class UserTools {
         user.printCredits = Business.calculatePrintCredits(user)
         user.maxTemplates = Business.maxTemplates(user)
 
+        if (body.attribution) {
+            user.setAttribution(body.attribution)
+        }
+
         // Save the new user
         const savedUser = await userDao.save(user);
 

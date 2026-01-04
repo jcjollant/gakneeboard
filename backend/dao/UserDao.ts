@@ -6,15 +6,15 @@ import { Ticket } from '../Ticket';
 
 export class UserDao extends Dao<User> {
     protected tableName: string = 'users';
-    modelVersion:number = 2;
+    modelVersion: number = 2;
 
-    public async addPrints(user:User, count: number):Promise<User> {
+    public async addPrints(user: User, count: number): Promise<User> {
         return new Promise<User>(async (resolve, reject) => {
             // console.log('[UserDao.addPrints]', query)
             try {
                 const query = `UPDATE ${this.tableName} SET print_credit = print_credit + ${count} WHERE id = ${user.id} RETURNING *`;
                 const res = await this.db.query(query)
-                resolve( this.parseRow(res.rows[0]) )
+                resolve(this.parseRow(res.rows[0]))
             } catch (err) {
                 console.log('[UserDao.addPrints] error ' + err)
                 reject(err)
@@ -22,12 +22,12 @@ export class UserDao extends Dao<User> {
         })
     }
 
-    public getAll():Promise<User[]> {
+    public getAll(): Promise<User[]> {
         const dao = new UserDao()
-        return new Promise( async (resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             const result = await sql`SELECT * FROM users`;
-            const users:User[] = []
-            for(const row of result.rows) {
+            const users: User[] = []
+            for (const row of result.rows) {
                 users.push(dao.parseRow(row))
             }
             resolve(users)
@@ -39,45 +39,46 @@ export class UserDao extends Dao<User> {
      * @param userSha User sha256
      * @returns User Id
      */
-    public static async getIdFromHash(userSha:string):Promise<number | undefined> {
+    public static async getIdFromHash(userSha: string): Promise<number | undefined> {
         // console.log( '[UserDao] find user with sha256 ' + sha256)
         const result = await sql`SELECT id FROM users WHERE sha256=${userSha}`;
         // console.log( '[UserDao] found ' + result.rowCount + ' entries')
-    
-        if( result.rowCount == 0) return undefined
+
+        if (result.rowCount == 0) return undefined
 
         // console.log( '[db] fetchAirportList found ' + JSON.stringify(result.rows[0]))
         return result.rows[0].id
     }
 
-    public async getFromHash(userSha: string): Promise<User|undefined> {
+    public async getFromHash(userSha: string): Promise<User | undefined> {
         return this.queryWhere(`sha256='${userSha}'`)
     }
 
-    public getFromCustomerId(customerId:string):Promise<User> {
+    public getFromCustomerId(customerId: string): Promise<User> {
         const dao = new UserDao()
         return new Promise<User>(async (resolve, reject) => {
             const user = await dao.queryWhere(`customer_id='${customerId}'`)
-            if( !user) return reject('User not found with customer_id' + customerId)
+            if (!user) return reject('User not found with customer_id' + customerId)
             resolve(user)
         })
     }
 
     // builds a user using the sha256 as a key
-    public static async getUserFromHash(sha256:string):Promise<User | undefined> {
+    public static async getUserFromHash(sha256: string): Promise<User | undefined> {
         const dao = new UserDao()
         return dao.getFromHash(sha256)
     }
 
     // creates a user from it's data representation
-    public parseRow(row:any):User {
+    public parseRow(row: any): User {
         // console.log('[UserDao.parseRow]', id, sha256, accountType)
         const user = new User(Number(row.id), row.sha256)
         try {
             const data = JSON.parse(row.data)
-            if(data?.source) user.setSource(data.source)
-            if(data?.email) user.setEmail(data.email)
-            if(data?.name) user.setName(data.name)
+            if (data?.source) user.setSource(data.source)
+            if (data?.email) user.setEmail(data.email)
+            if (data?.name) user.setName(data.name)
+            if (data?.attribution) user.setAttribution(data.attribution)
         } catch (err) {
             Ticket.create(3, '[UserDao.parseRow] error parsing data ' + err)
             user.setSource('?')
@@ -103,13 +104,13 @@ export class UserDao extends Dao<User> {
      * @param count Number of credits to add
      * @param accountType Account type to refill
      * @returns List of refills
-     */ 
-    public async refill(count:number, accountType:string):Promise<Refill[]> {
+     */
+    public async refill(count: number, accountType: string): Promise<Refill[]> {
         const r1 = await sql`SELECT id,print_credit FROM users WHERE account_type=${accountType} AND print_credit < ${count}`
-        if( r1.rowCount == 0) return [] // no users to refill
+        if (r1.rowCount == 0) return [] // no users to refill
 
         const r2 = await sql`UPDATE users SET print_credit=${count} WHERE account_type=${accountType} AND print_credit < ${count}`
-        const refills:Refill[] = r1.rows.map( r => new Refill(r.id, r.print_credit, count))
+        const refills: Refill[] = r1.rows.map(r => new Refill(r.id, r.print_credit, count))
 
         return refills
     }
@@ -120,63 +121,64 @@ export class UserDao extends Dao<User> {
      * @throws Error if sha256 is missing
      */
 
-    public async save(user:User, overwrite:boolean=false):Promise<User> {
+    public async save(user: User, overwrite: boolean = false): Promise<User> {
         // console.log( '[UserDao.save]  ' + JSON.stringify(user))
         return new Promise<User>(async (resolve, reject) => {
             try {
-                if( !user.sha256) throw new Error('sha256 missing')
+                if (!user.sha256) throw new Error('sha256 missing')
 
-                    // Do we know this user?
-                    const result = await this.db.query(`SELECT id from ${this.tableName} WHERE sha256 = '${user.sha256}'`);
-                    // console.log( '[UserDao.save] match count ' + result.rowCount)
-                    const userData =  {
-                        "name": user.name,
-                        "source": user.source,
-                        "email": user.email,
-                    }
-                    const stringifiedData = JSON.stringify(userData)
-                    if(result.rowCount == 0) {
-                        // console.log( '[UserDao.save] adding ' + user.sha256)
-                        // const insert = await this.db.query(`INSERT INTO ${this.tableName} (sha256, data,version,account_type,max_pages,max_templates,print_credit) VALUES ('${user.sha256}','${stringifiedData}',${this.modelVersion},'${user.accountType}',${user.maxPages},${user.maxTemplates}, ${user.printCredits}) RETURNING id`)
-                        const insert = await this.db.query(
-                            `INSERT INTO ${this.tableName} 
+                // Do we know this user?
+                const result = await this.db.query(`SELECT id from ${this.tableName} WHERE sha256 = '${user.sha256}'`);
+                // console.log( '[UserDao.save] match count ' + result.rowCount)
+                const userData = {
+                    "name": user.name,
+                    "source": user.source,
+                    "email": user.email,
+                    "attribution": user.attribution,
+                }
+                const stringifiedData = JSON.stringify(userData)
+                if (result.rowCount == 0) {
+                    // console.log( '[UserDao.save] adding ' + user.sha256)
+                    // const insert = await this.db.query(`INSERT INTO ${this.tableName} (sha256, data,version,account_type,max_pages,max_templates,print_credit) VALUES ('${user.sha256}','${stringifiedData}',${this.modelVersion},'${user.accountType}',${user.maxPages},${user.maxTemplates}, ${user.printCredits}) RETURNING id`)
+                    const insert = await this.db.query(
+                        `INSERT INTO ${this.tableName} 
                             (sha256, data, version, account_type, max_pages, max_templates, print_credit) 
                             VALUES ($1, $2, $3, $4, $5, $6, $7) 
                             RETURNING id`,
-                            [
-                                user.sha256,
-                                stringifiedData,
-                                this.modelVersion,
-                                user.accountType,
-                                user.maxPages,
-                                user.maxTemplates,
-                                user.printCredits
-                            ]
-                        );
+                        [
+                            user.sha256,
+                            stringifiedData,
+                            this.modelVersion,
+                            user.accountType,
+                            user.maxPages,
+                            user.maxTemplates,
+                            user.printCredits
+                        ]
+                    );
 
-                        user.id = insert.rows[0].id
-                        // console.log( '[UserDao.save] ' + user.sha256)
-                    } else if( overwrite){ // this user is known but we can override
-                        // console.log( '[UserDao.save] known user ' + user.sha256)
-                        user.id = result.rows[0].id
-                        await this.db.query(`UPDATE ${this.tableName} SET data = $1, version=$2, account_type=$3 WHERE id = $4`,
-                            [
-                                stringifiedData,
-                                this.modelVersion,
-                                user.accountType,
-                                user.id
-                            ]
-                        )
-                    } else {
-                        throw new Error('Cannot save existing user without overwrite')
-                    }
-                    // set use to values that have been used
-                    user.name = userData.name
-                    user.source = userData.source
-                    user.email = userData.email
-                    resolve( user)
-            } catch(err) {
-                console.log( '[UserDao.save] ' + user.sha256 + ' failed ' + err)
+                    user.id = insert.rows[0].id
+                    // console.log( '[UserDao.save] ' + user.sha256)
+                } else if (overwrite) { // this user is known but we can override
+                    // console.log( '[UserDao.save] known user ' + user.sha256)
+                    user.id = result.rows[0].id
+                    await this.db.query(`UPDATE ${this.tableName} SET data = $1, version=$2, account_type=$3 WHERE id = $4`,
+                        [
+                            stringifiedData,
+                            this.modelVersion,
+                            user.accountType,
+                            user.id
+                        ]
+                    )
+                } else {
+                    throw new Error('Cannot save existing user without overwrite')
+                }
+                // set use to values that have been used
+                user.name = userData.name
+                user.source = userData.source
+                user.email = userData.email
+                resolve(user)
+            } catch (err) {
+                console.log('[UserDao.save] ' + user.sha256 + ' failed ' + err)
                 reject(err)
             }
         })
@@ -189,12 +191,12 @@ export class UserDao extends Dao<User> {
      * @param version Version of the EULA that was accepted
      * @returns true if exactly one user was updated
      */
-    async updateEulaAcceptance(userId: number, version:number):Promise<boolean> {
+    async updateEulaAcceptance(userId: number, version: number): Promise<boolean> {
         try {
             const result = await sql`UPDATE users SET eula=${version} WHERE id=${userId}`
             return result.rowCount == 1
-        } catch(err) {
-            console.error( '[UserDao.updateEulaAcceptance] ' + userId + ' failed ' + err)
+        } catch (err) {
+            console.error('[UserDao.updateEulaAcceptance] ' + userId + ' failed ' + err)
             return false
         }
     }
@@ -204,24 +206,24 @@ export class UserDao extends Dao<User> {
      * @param user target user with id and customerId
      * @returns true if exactely one user was updated
      */
-    static async updateCustomerId(user:User):Promise<boolean> {
+    static async updateCustomerId(user: User): Promise<boolean> {
         // console.log( '[UserDao.updateCustomerId] ' + user.id + ' to ' + user.customerId)
         const result = await sql`UPDATE users SET customer_id=${user.customerId} WHERE id=${user.id}`
         return result.rowCount == 1;
     }
 
-    public updatePrintCredit(user:User):Promise<void> {
+    public updatePrintCredit(user: User): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
-                if(user.printCredits < 0) throw new Error('Negative print credit')
+                if (user.printCredits < 0) throw new Error('Negative print credit')
                 const result = await sql`UPDATE users SET print_credit=${user.printCredits} WHERE id=${user.id}`
-                if(result.rowCount == 1) {
+                if (result.rowCount == 1) {
                     resolve()
                 } else {
                     reject('Matching users ' + result.rowCount)
                 }
-            } catch(err) {
-                console.log( '[UserDao.updatePrintCredit] ' + user.id + ' to ' + user.printCredits + ' failed ' + err)
+            } catch (err) {
+                console.log('[UserDao.updatePrintCredit] ' + user.id + ' to ' + user.printCredits + ' failed ' + err)
                 reject(err)
             }
         })
@@ -231,17 +233,17 @@ export class UserDao extends Dao<User> {
      * Update an existing user with a new account_type, max_pages and max_templates
      * @param user, Target user
      */
-     public updateType(user:User):Promise<void> {
+    public updateType(user: User): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
                 const result = await sql`UPDATE users SET account_type=${user.accountType},max_templates=${user.maxTemplates},max_pages=${user.maxPages} WHERE id=${user.id}`
-                if(result.rowCount == 1) {
+                if (result.rowCount == 1) {
                     resolve()
                 } else {
                     reject('Matching users ' + result.rowCount)
                 }
-            } catch(err) {
-                console.log( '[UserDao.updateType] ' + user.id + ' to: ' + user.accountType + ' failed ' + err)
+            } catch (err) {
+                console.log('[UserDao.updateType] ' + user.id + ' to: ' + user.accountType + ' failed ' + err)
                 reject(err)
             }
         })
