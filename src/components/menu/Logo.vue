@@ -40,11 +40,12 @@ defineProps({
     color: #777;
 }
 
-/* Hide the logo text and beta label on narrow screens only when a template is loaded */
-@media (max-width: 768px) {
+/* Hide the logo text and beta label when a template is loaded */
     .template-loaded .logo-name, 
     .template-loaded .logo-beta {
         display: none;
     }
+
+@media (max-width: 768px) {
 }
 </style>
