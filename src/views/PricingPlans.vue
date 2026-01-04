@@ -110,7 +110,7 @@ const plans = ref([
     features: {
       "Prints per Month": 8,
       "Advanced Print Options": true,
-      "Templates": 2,
+      "Kneeboards": 2,
       "Pages": 4,
     },
     popular: false,
@@ -126,7 +126,7 @@ const plans = ref([
     features: {
       "Prints per Month": 16,
       "Advanced Print Options": true,
-      "Templates": 5,
+      "Kneeboards": 5,
       "Pages": 20,
     },
     popular: false,
@@ -142,7 +142,7 @@ const plans = ref([
     features: {
       "Prints per Month": 16,
       "Advanced Print Options": true,
-      "Templates": 5,
+      "Kneeboards": 5,
       "Pages": 20,
     },
     popular: true,

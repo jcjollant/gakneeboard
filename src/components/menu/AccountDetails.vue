@@ -8,7 +8,7 @@
               <div :class="{unlimited: user.accountType == AccountType.lifetime}">{{Formatter.accountType(user.accountType)}}</div>
               <UpdateButton @click="onUpdateAccount" :manage="user.accountType != AccountType.simmer"/>
             </div>
-            <div class="key">Templates</div>
+            <div class="key">Kneeboards</div>
             <div class="value">
                 <div class="templatesCount" :class="{'maxedOut':user.templates.length > user.maxTemplateCount }">{{user.templates.length}} / {{ user.maxTemplateCount }}</div>
             </div>
@@ -24,18 +24,18 @@
                 <div class="printCredits" :class="{'maxedOut':user.printCredits == 0 }">{{ user.printCredits }}</div>
             </div>
             <div style="grid-column: span 2"><hr></div>
-            <div class="key">Ambassador Link</div>
-            <div class="value">
-                <div style="display: flex; gap: 0.5rem; align-items: center;">
-                    <Button label="Copy Link" icon="pi pi-copy" size="small" @click="copyAmbassadorLink" title="Send this link to people you want to help" />
-                    <Button icon="pi pi-question-circle" text rounded @click="UserUrl.open(UserUrl.ambassador)" title="Tell me how this works" />
-                </div>
-            </div>
-            <div style="grid-column: span 2"><hr></div>
             <div class="key">Airports Cached</div>
             <div class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
                 <div class="airportCount">{{ airportCount }}</div>
                 <Button icon="pi pi-trash" text severity="danger" @click="deleteAirports" v-if="airportCount > 0" title="Empty Airports Cache" />
+            </div>
+            <div style="grid-column: span 2"><hr></div>
+            <div class="key">Ambassador Link</div>
+            <div class="value">
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <Button label="Copy" icon="pi pi-copy" size="small" @click="copyAmbassadorLink" title="Send this link to people you want to help" />
+                    <Button icon="pi pi-question-circle" text rounded @click="UserUrl.open(UserUrl.ambassador)" title="Tell me how this works" />
+                </div>
             </div>
         </div>
         <div class="actions">
