@@ -20,7 +20,7 @@
                     <div v-if="editingIndex === index" class="item-edit-form">
                         <!-- Section Edit -->
                         <div v-if="item.section.length > 0 || (item.section === '' && item.challenge === '' && item.response === '' && item.type === ChecklistItemType.undefined)" class="section-edit">
-                            <input v-model="item.section" placeholder="Section Name (Required)" class="input-text" @keyup.enter="stopEditing" />
+                            <input v-model="item.section" placeholder="Section Name" class="input-text" @keyup.enter="stopEditing" />
                             <div class="style-group">
                                 <button :class="{ active: item.type === ChecklistItemType.undefined }" @click="item.type = ChecklistItemType.undefined" title="Normal"><font-awesome-icon icon="fa-solid fa-font" /></button>
                                 <button :class="{ active: item.type === ChecklistItemType.strong }" @click="item.type = ChecklistItemType.strong" title="Strong"><font-awesome-icon icon="fa-solid fa-bold" /></button>
@@ -30,8 +30,8 @@
 
                         <!-- Item Edit -->
                         <div v-else class="item-edit">
-                            <input v-model="item.challenge" placeholder="Challenge (Required)" class="input-text" @keyup.enter="stopEditing" />
-                            <input v-model="item.response" placeholder="Response (Optional)" class="input-text" @keyup.enter="stopEditing" />
+                            <input v-model="item.challenge" placeholder="Challenge" class="input-text" @keyup.enter="stopEditing" />
+                            <input v-model="item.response" placeholder="Response" class="input-text" @keyup.enter="stopEditing" />
                         </div>
                         
                         <div class="edit-actions">
@@ -58,11 +58,14 @@
 
                         <!-- Hover Actions -->
                         <div class="item-actions">
-                            <button class="btn-insert" @click.stop="insertAbove(index)" title="Insert Before">
-                                <font-awesome-icon icon="fa-solid fa-arrows-up-to-line" />
-                            </button>
-                            <button class="btn-insert" @click.stop="insertBelow(index)" title="Insert After">
+                            <button class="btn-insert" @click.stop="addSectionAfter(index)" title="Add Section">
                                 <font-awesome-icon icon="fa-solid fa-arrows-down-to-line" />
+                            </button>
+                            <button class="btn-insert" @click.stop="addItemAfter(index)" title="Add Item">
+                                <font-awesome-icon icon="fa-solid fa-plus" />
+                            </button>
+                            <button class="btn-insert" @click.stop="addSeparatorAfter(index)" title="Add Blank Line">
+                                <font-awesome-icon icon="fa-solid fa-ban" />
                             </button>
                             <button class="btn-delete" @click.stop="deleteItem(index)" title="Delete">
                                 <font-awesome-icon icon="fa-solid fa-trash" />
@@ -72,14 +75,15 @@
                 </div>
             </div>
             <div v-else class="empty-state">
-                No items in checklist.
+                <button class="btn-start" @click="addSection" title="Start with Section">
+                    <font-awesome-icon icon="fa-solid fa-plus" /> Section
+                </button>
+                <button class="btn-start" @click="addItem" title="Start with Challenge/Response">
+                    <font-awesome-icon icon="fa-solid fa-plus" /> Item
+                </button>
             </div>
 
-            <div class="add-buttons">
-                <button @click="addSection" title="Add Section"><font-awesome-icon icon="fa-solid fa-plus" /> Section</button>
-                <button @click="addItem" title="Add Challenge/Response"><font-awesome-icon icon="fa-solid fa-plus" /> Challenge/Response</button>
-                <button @click="addSeparator" title="Add Separator"><font-awesome-icon icon="fa-solid fa-plus" /> Separator</button>
-            </div>
+
         </div>
 
         <!-- Text Mode -->
@@ -105,6 +109,10 @@ const emit = defineEmits(['update:modelValue', 'active']);
 const items = ref<ChecklistItem[]>([]);
 const editingIndex = ref<number>(-1);
 
+// Text mode handling with debounce
+const localText = ref('');
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
 // Sync from props
 watch(() => props.modelValue, (newVal) => {
     if (newVal) {
@@ -117,10 +125,6 @@ watch(() => props.modelValue, (newVal) => {
         }
     }
 }, { immediate: true });
-
-// Text mode handling with debounce
-const localText = ref('');
-let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
 function onTextInput() {
     if (debounceTimer) clearTimeout(debounceTimer);
@@ -220,47 +224,36 @@ function addSection() {
     emitUpdate();
 }
 
+
+
 function deleteItem(index: number) {
     items.value.splice(index, 1);
     emitUpdate();
 }
 
-function insertAbove(index: number) {
-    const currentItem = items.value[index];
-    const newItem = createSameTypeItem(currentItem);
-    items.value.splice(index, 0, newItem);
-    
-    if (newItem.type !== ChecklistItemType.blank) {
-        startEditing(index); // Edit the new item (now at index)
-        emit('active');
-    } else {
-        stopEditing();
-    }
+
+
+function addSectionAfter(index: number) {
+    const section = ChecklistItem.section('', ChecklistItemType.undefined);
+    items.value.splice(index + 1, 0, section);
+    startEditing(index + 1);
+    emit('active');
     emitUpdate();
 }
 
-function insertBelow(index: number) {
-    const currentItem = items.value[index];
-    const newItem = createSameTypeItem(currentItem);
-    items.value.splice(index + 1, 0, newItem);
-    
-    if (newItem.type !== ChecklistItemType.blank) {
-        startEditing(index + 1); // Edit the new item
-        emit('active');
-    } else {
-        stopEditing();
-    }
+function addItemAfter(index: number) {
+    const item = ChecklistItem.alternate();
+    items.value.splice(index + 1, 0, item);
+    startEditing(index + 1);
+    emit('active');
     emitUpdate();
 }
 
-function createSameTypeItem(item: ChecklistItem): ChecklistItem {
-    if (item.section.length > 0) {
-        return ChecklistItem.section('');
-    } else if (item.type === ChecklistItemType.blank) {
-        return ChecklistItem.blank();
-    } else {
-        return ChecklistItem.alternate();
-    }
+function addSeparatorAfter(index: number) {
+    const separator = ChecklistItem.blank();
+    items.value.splice(index + 1, 0, separator);
+    // Do not start editing for separator
+    emitUpdate();
 }
 
 // Drag and Drop
@@ -446,13 +439,14 @@ function getItemClass(item: ChecklistItem, index: number) {
 /* Display Mode */
 .item-display {
     display: grid;
-    grid-template-columns: 1fr auto; /* Content | Actions */
+    grid-template-columns: 1fr; /* Fill space */
     align-items: center;
     padding: 5px;
     cursor: pointer;
     min-height: 30px;
     flex-grow: 1; /* Take remaining space */
     text-wrap: initial;
+    position: relative; /* Context for absolute actions */
 }
 .item-display:hover .item-actions {
     visibility: visible;
@@ -495,7 +489,14 @@ function getItemClass(item: ChecklistItem, index: number) {
     visibility: hidden; /* Shown on hover */
     display: flex;
     gap: 3px;
-    margin-left: 10px;
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 2px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 
@@ -522,29 +523,7 @@ function getItemClass(item: ChecklistItem, index: number) {
     cursor: pointer;
 }
 
-.add-buttons {
-    margin-top: auto; /* Push to bottom if space allows, though flex-grow on list handles it */
-    padding-top: 5px;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    flex-shrink: 0;
-}
-.add-buttons button {
-    padding: 8px 12px;
-    cursor: pointer;
-    background: var(--bg-secondary);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.9em;
-}
-.add-buttons button:hover {
-    background: #0056b3;
-}
+
 
 .editor-text {
     display: flex;
@@ -569,4 +548,30 @@ function getItemClass(item: ChecklistItem, index: number) {
 .item-urgent .challenge, .item-urgent .response {
     color: red;
 }
+
+.empty-state {
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+    /* flex-grow: 1; */
+    gap: 10px;
+    padding: 20px;
+}
+
+.btn-start {
+    padding: 10px 20px;
+    cursor: pointer;
+    background: var(--bg-secondary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+}
+.btn-start:hover {
+    background: #0056b3;
+}
+
 </style>

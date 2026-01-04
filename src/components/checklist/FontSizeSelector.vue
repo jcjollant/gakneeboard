@@ -3,7 +3,7 @@
         <div class="sampleList">
             <div v-for="(c,index) in choices" class="sample" :class="{selected:c.value == model}" @click="onChange(c)">
                 <!-- <font-awesome-icon v-if="c.value == model" icon="fa-solid fa-check" /> -->
-                <label>{{ c.name }}</label>
+                <label :class="'font-' + c.value">{{ c.name }}</label>
             </div>
         </div>
     </div>
@@ -33,10 +33,12 @@ function onChange(choice) {
 .sampleList {
     /* padding: 5px; */
     border-radius: 3px;
+    border: 1px solid lightgrey;
     display: flex;
     align-items: center;
     width: 100%;
     font-size: 0.9rem;
+    overflow: hidden; /* Ensure child background doesn't bleed */
 }
 
 .sample {
@@ -46,6 +48,11 @@ function onChange(choice) {
     align-items: center;
     justify-content: center;
     gap: 5px;
+    cursor: pointer; /* moved from fontSelector */
+}
+
+.sample:hover:not(.selected) {
+    background-color: #eee;
 }
 
 .sample > label {
@@ -57,10 +64,10 @@ function onChange(choice) {
     display: flex;
     align-items: center;
     width: 100%;
-    cursor: pointer;
 }
 
 .selected {
     background: #b4c6e7;
+    /* or var(--bg-choice-active) if available, but keeping existing color logic for now unless requested */
 }
 </style>

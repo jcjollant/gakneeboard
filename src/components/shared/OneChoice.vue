@@ -3,8 +3,10 @@
         <div v-if="model" v-for="(c,index) in choices" :aria-label="c.label" 
             @click="onChoice(c)" 
             class="choice" :class="[{'choiceActive':(model.label==c.label),'choiceInactive':(model.label!=c.label),'thinPad':thinpad}, `choice${index}`]"
-            :title="c.title??undefined"
-            >{{c.label}}</div>
+            :title="c.title??undefined">
+            <font-awesome-icon v-if="c.label.startsWith('fa-')" :icon="c.label" />
+            <span v-else>{{c.label}}</span>
+        </div>
         <div v-else>Model Missing</div>
     </div>
 </template>

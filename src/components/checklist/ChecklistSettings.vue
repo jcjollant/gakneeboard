@@ -6,32 +6,34 @@
                 <InputText v-model="localName" />
             </InputGroup>
             <div class="columnsChoice">
-                <div>Editor</div>
                 <OneChoice v-model="choosenEditorMode" :choices="[choiceEditorModeUi, choiceEditorModeText]"/>
             </div>
         </div>
-        <div v-if="!isTile" class="editChoice">
-            <div class="columnsChoice" title="Number of columns on the checklist page">
-                <div>Columns</div>
-                <OneChoice v-model="columnsChoice" :choices="[choiceSingle, choiceDouble, choiceTriple]"/>
-            </div>
-            <div class="columnsChoice" v-if="choicesEditing.length > 1" >
-                <div>Editing</div>
-                <OneChoice v-model="choosenEditing" :choices="choicesEditing"/> 
+
+        
+        <div class="editors-container" :class="'cols-'+columnsCount">
+            <div v-for="index in columnsCount" :key="index" class="editor-wrapper">
+                <ChecklistEditor 
+                    v-model="checklistData[index-1]"
+                    :mode="checklistEditorMode"
+                    @update:modelValue="onEditorUpdate(index-1, $event)"
+                    :class="['editList', 'editor']" />
             </div>
         </div>
-        <ChecklistEditor 
-            :ref="(el: any) => editorRef = el"
-            v-model="editorChecklist"
-            :mode="checklistEditorMode"
-            :class="['editList', 'editor']" />
+
         <div class="theme">
             <div>Theme</div>
             <ChecklistThemeSelector v-model="theme" />
         </div>
-        <div v-if="!isTile" class="font">
-            <div>Font</div>
-            <FontSizeSelector v-model="font" />
+        <div v-if="!isTile" class="footer-settings">
+            <div class="font">
+                <div>Font</div>
+                <FontSizeSelector v-model="font" />
+            </div>
+            <div class="columnsChoice" title="Number of columns on the checklist page">
+                <div>Columns</div>
+                <OneChoice v-model="columnsChoice" :choices="[choiceSingle, choiceDouble, choiceTriple]"/>
+            </div>
         </div>
         <!-- ActionBar is not needed here as it will be in the parent container (TileSettings or ChecklistPage) -->
     </div>
@@ -67,17 +69,6 @@ const choiceSingle = new ChoiceColumnCount('1', 1)
 const choiceDouble = new ChoiceColumnCount('2', 2)
 const choiceTriple = new ChoiceColumnCount('3', 3)
 
-class ChoiceEditing {
-    label: string
-    value: number
-    title: string|undefined
-    constructor(label: string, value: number, title: string|undefined = undefined) {
-        this.label = label
-        this.value = value
-        this.title = title ?? 'Edit ' + label
-    }
-}
-
 const props = defineProps({
     params: { type: ChecklistSettingsParams, required: true }
 })
@@ -95,45 +86,16 @@ const columnsChoice = ref<ChoiceColumnCount>(choiceSingle)
 const isTile = computed(() => props.params.isTile)
 const columnsCount = computed(() => isTile.value ? 1 : columnsChoice.value.value)
 
-// Editor Selection Logic
-const choosenEditing = ref<ChoiceEditing>(new ChoiceEditing('Left', 0))
-const choicesEditing = computed(() => {
-    const choices = [new ChoiceEditing('Left', 0)]
-    if (!isTile.value) {
-        if (columnsCount.value === 2) {
-            choices.push(new ChoiceEditing('Right', 1))
-        } else if (columnsCount.value === 3) {
-            choices.push(new ChoiceEditing('Middle', 1))
-            choices.push(new ChoiceEditing('Right', 2))
-        }
-    }
-    return choices
-})
-
-watch(columnsCount, () => {
-    // Reset to first column if count changes
-    choosenEditing.value = choicesEditing.value[0]
-})
-
-// Editor Data Logic
-const editorChecklist = computed({
-    get: () => { 
-        return checklistData.value[choosenEditing.value.value] 
-    },
-    set: (val: Checklist) => {
-        checklistData.value[choosenEditing.value.value] = val;
-        emitUpdate()
-    }
-})
-
+function onEditorUpdate(index: number, val: Checklist) {
+    checklistData.value[index] = val;
+    emitUpdate()
+}
 
 // Editor Mode Logic
-const choiceEditorModeUi = new ChoiceColumnCount('Visual', 0, 'Visual Editor')
-const choiceEditorModeText = new ChoiceColumnCount('Text', 1, 'Text Editor')
+const choiceEditorModeUi = new ChoiceColumnCount('fa-solid fa-eye', 0, 'Visual Editor')
+const choiceEditorModeText = new ChoiceColumnCount('fa-solid fa-file-code', 1, 'Text Editor')
 const choosenEditorMode = ref(choiceEditorModeUi)
 const checklistEditorMode = computed(() => ['ui', 'text'][choosenEditorMode.value.value])
-
-const editorRef = ref<any>(null)
 
 // Initialization
 onMounted(() => {
@@ -258,12 +220,44 @@ const tileSettingsUpdate = inject('tileSettingsUpdate', null) as ((data: any) =>
     align-items: center;
 }
 
+.editors-container {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    width: 100%;
+    /* Ensure it takes available height but leaves room for header/footer */
+    flex: 1; 
+    min-height: 200px;
+    scroll-snap-type: x mandatory; /* Optional: Adds snap scrolling */
+}
+
+.editor-wrapper {
+    flex: 0 0 100%; /* Force full width, don't grow/shrink */
+    min-width: 100%; 
+    display: flex;
+    flex-direction: column;
+    scroll-snap-align: start; /* Snap to start */
+}
+
+/* If we have only 1 column, it should just fill */
+.cols-1 .editor-wrapper {
+    min-width: 100%;
+}
+
 .editList {
     resize: none;
     font-family: 'Courier New', Courier, monospace;
     width: 100%;
+    height: 100%; /* Fill wrapper */
     white-space: pre;
     overflow-wrap: normal;
-    overflow-x: scroll;
+    overflow-x: hidden; /* Scroll handled by container or component? Component likely handles y-scroll */
+}
+
+.footer-settings {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
 }
 </style>

@@ -238,7 +238,7 @@ function showSettings() {
     display: grid;
     gap: 5px;
     padding: 5px;
-    grid-template-rows: 2.5rem 2rem 1fr 2rem 2rem 50px;
+    grid-template-rows: 2.5rem 1fr 2rem 2rem 50px;
 }
 
 .settings-container {
