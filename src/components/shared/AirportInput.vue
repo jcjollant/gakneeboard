@@ -56,6 +56,11 @@ async function loadProps(props:any) {
     let airport:Airport|undefined = undefined
     if(model.value) {
         const airport = model.value as Airport;
+        if(airport.isValid()) {
+             code.value = airport.code
+             name.value = airport.name
+             valid.value = true
+        }
     } else {
         code.value = props.code
         try {
@@ -82,6 +87,10 @@ onUnmounted(() => {
 
 watch( props, async() => {
     // console.log("Airport props changed " + JSON.stringify(props));
+    loadProps(props)
+})
+
+watch(model, () => {
     loadProps(props)
 })
 

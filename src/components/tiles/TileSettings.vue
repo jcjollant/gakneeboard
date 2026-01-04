@@ -44,7 +44,7 @@ const props = defineProps({
     index: { type: Number, default: -1 },
 });
 
-const editingTileData = ref<TileData | null>(null);
+const editingTileData = ref<TileData | null>(props.tile);
 
 // Manage visibility internally to satisfy v-model, but sync with parent lifecycle
 const visible = ref(true);

@@ -30,6 +30,7 @@ import Tile from './Tile.vue'
 import TileSettings from './TileSettings.vue';
 import AirportTileSettings from '../airport/AirportTileSettings.vue';
 import ChecklistSettings from '../checklist/ChecklistSettings.vue';
+import ClearanceSettings from '../clearance/ClearanceSettings.vue';
 import { UserUrl } from '../../lib/UserUrl';
 import { ChecklistSettingsParams } from '../../models/ChecklistSettingsParams';
 import { ChecklistService } from '../../services/ChecklistService';
@@ -58,6 +59,8 @@ const settingsComponent = computed(() => {
       return AirportTileSettings;
     case TileType.checklist:
       return ChecklistSettings;
+    case TileType.clearance:
+      return ClearanceSettings;
     // add other cases here
     default:
       return null;

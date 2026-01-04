@@ -1,16 +1,10 @@
 <template>
     <div class="tile">
-        <Header :title="getTitle()" :showReplace="displaySelection"
-            @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
-        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" @keep="displaySelection=false" />
-        <div v-else-if="editMode" class="editMode">
-            <AirportInput v-model="airport" :expanded="true" @valid="onAirportUpdate"/>
-            <ActionBar :actions="[{action:'cancel',label:'Manual'}]" :showApply="false" @cancel="editMode=false" @action="onManual"/>
-        </div>
-        <ApproachContent v-else-if="displayMode==DisplayModeIfr.Approach" :airport="airport" class="clickable"
-            @click="editMode=true" />
-        <DepartureContent v-else-if="displayMode==DisplayModeIfr.Departure" :airport="airport" class="clickable"
-            @click="editMode=true" />
+        <Header :title="getTitle()" :showReplace="false" leftButton="settings"
+            @replace="emits('replace')" @settings="emits('settings')"></Header>
+       
+        <ApproachContent v-if="displayMode==DisplayModeIfr.Approach" :airport="airport" />
+        <DepartureContent v-else-if="displayMode==DisplayModeIfr.Departure" :airport="airport" />
         <div v-else-if="displayMode==DisplayModeIfr.Alternate">
             <ImageContent src="alternate.png" /> 
             <RegLink :regs="[Regulation.IFRFlightPlanInformation]" />
@@ -27,42 +21,28 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { Airport } from '../../models/Airport.ts';
-import { DisplayModeChoice, DisplayModeIfr } from '../../models/DisplayMode.ts';
+import { DisplayModeIfr } from '../../models/DisplayMode.ts';
 import { getAirport } from '../../services/AirportService';
-import { TileData } from '../../models/TileData.ts';
-import { TileType } from '../../models/TileType.ts';
 import { Regulation } from '../../models/Regulation.ts';
-import { IfrTileDisplayModeLabels } from './IfrTileDisplayModeLabel.ts';
 
-import ActionBar from '../shared/ActionBar.vue';
 import ApproachContent from './ApproachContent.vue';
 import CraftBoxedContent from './CraftBoxedContent.vue';
 import DepartureContent from './DepartureContent.vue';
 import Header from '../shared/Header.vue';
 import ImageContent from '../shared/ImageContent.vue';
-import AirportInput from '../shared/AirportInput.vue';
-import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import RegLink from '../regulations/RegLink.vue';
 
 // Enum with display modes
 
 const noAirport = new Airport()
 const airport = ref(noAirport)
-const emits = defineEmits(['replace','update'])
+const emits = defineEmits(['replace','update','settings'])
 const defaultMode = DisplayModeIfr.BoxV
 const displayMode=ref(DisplayModeIfr.Unknown)
-const editMode = ref(false)
+
 const props = defineProps({
     params: { type: Object, default: null},
 })
-const displaySelection=ref(false)
-const displayModes = [
-    new DisplayModeChoice( IfrTileDisplayModeLabels.craft, DisplayModeIfr.BoxV),
-    new DisplayModeChoice( IfrTileDisplayModeLabels.departure, DisplayModeIfr.Departure),
-    new DisplayModeChoice( IfrTileDisplayModeLabels.appraoch, DisplayModeIfr.Approach),
-    new DisplayModeChoice( IfrTileDisplayModeLabels.alternate, DisplayModeIfr.Alternate),
-    new DisplayModeChoice( IfrTileDisplayModeLabels.lostComms, DisplayModeIfr.LostComms),
-]
 
 onMounted(() => {   
     loadProps(props)
@@ -70,14 +50,6 @@ onMounted(() => {
 
 watch( props, async() => {
     loadProps(props)
-})
-
-watch( displayMode, (newValue, oldValue) => {
-    // console.debug('[Clearance.displayMode]', newValue, oldValue)
-    if( newValue != oldValue && displaySelection.value) {
-        saveConfig()
-    }
-    displaySelection.value = false;
 })
 
 function loadProps(props:any) {
@@ -89,13 +61,12 @@ function loadProps(props:any) {
             if(props.params.mode == DisplayModeIfr.BoxH_deprecated 
                 || props.params.mode==DisplayModeIfr.Craft_deprecated 
                 || props.params.mode=="") {
-                props.params.mode = defaultMode;
+                displayMode.value = defaultMode;
             } else {
                 displayMode.value = props.params.mode
             }
          } else {
-            // we don't have a mode, so we need to display the selection
-            displaySelection.value = true
+            displayMode.value = defaultMode
          }
          if( props.params.airport) {
             getAirport(props.params.airport).then( output => {
@@ -105,25 +76,16 @@ function loadProps(props:any) {
             })
          }
     } else {
-        displaySelection.value = true
+        displayMode.value = defaultMode
     }
 
 }
 
-function saveConfig() {
-    // build parameters
-    const params = {mode:displayMode.value, airport:airport.value.code}
-    emits('update', new TileData( TileType.clearance, params))
-}
-
 function getTitle() {
-    if( displaySelection.value) return "IFR Tile Mode"
     let title:string;
-    let airportPosition:string = 'none';
     const airportCode = airport.value.code || ''
     if( displayMode.value==DisplayModeIfr.Approach) {
         title =  `${airportCode} Apch`
-        airportPosition = 'prepend'
     } else if( displayMode.value==DisplayModeIfr.Alternate) {
         title = 'IFR Alternate'
     } else if( displayMode.value==DisplayModeIfr.LostComms) {
@@ -137,22 +99,7 @@ function getTitle() {
     return title
 }
 
-// This is used to switch to manual mode
-function onManual() {
-    editMode.value = false
-    airport.value = noAirport
-    saveConfig()
-}
-
-function onAirportUpdate() {
-    editMode.value = false
-    saveConfig()
-}
-
 </script>
 
 <style scoped>
-.editMode {
-    padding: 10px;
-}
 </style>
