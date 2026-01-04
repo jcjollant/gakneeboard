@@ -102,34 +102,40 @@ describe('AttributionService', () => {
         });
     });
 
-    describe('init', () => {
-        test('should capture params from router current route', () => {
-            const mockRouter: any = {
-                currentRoute: {
-                    value: {
-                        query: {
-                            utm_source: 'router_test'
-                        }
-                    }
+    describe('initFromWindow', () => {
+        const originalWindow = global.window;
+
+        beforeEach(() => {
+            // @ts-ignore
+            global.window = {
+                location: {
+                    search: ''
                 }
             };
+        });
 
-            AttributionService.init(mockRouter);
+        afterAll(() => {
+            global.window = originalWindow;
+        });
+
+        test('should capture params from window.location.search', () => {
+            global.window.location.search = '?utm_source=window_test&utm_medium=browser';
+
+            AttributionService.initFromWindow();
 
             expect(localStorageMock.setItem).toHaveBeenCalledWith(
                 LocalStoreService.attribution,
-                expect.stringContaining('"source":"router_test"')
+                expect.stringContaining('"source":"window_test"')
+            );
+            expect(localStorageMock.setItem).toHaveBeenCalledWith(
+                LocalStoreService.attribution,
+                expect.stringContaining('"medium":"browser"')
             );
         });
 
-        test('should do nothing if router has no current route (edge case)', () => {
-            const mockRouter: any = {
-                currentRoute: {
-                    value: null
-                }
-            };
-
-            AttributionService.init(mockRouter);
+        test('should do nothing if no params in window', () => {
+            global.window.location.search = '';
+            AttributionService.initFromWindow();
             expect(localStorageMock.setItem).not.toHaveBeenCalled();
         });
     });
