@@ -1,4 +1,8 @@
 
+# Format is {today's date} - {version number} - {change description}
+# REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
+
+## 01/03/2026 - 6.2.1 - Captured attribution during user creation
 ## 01/03/2026 - 6.2.0 - Added attribution to stripe checkout
 ## 01/01/2026 - 6.1.6 - Fixed Health Check
 ## 01/01/2026 - 6.1.5 - Updated codesLookup logic to return three lists
@@ -148,17 +152,3 @@
 * Templates now have page counts
 ## 01/02/2025 5010
 * Added diagram and strips to page counts
-## 12/29/2024 4525
-* Metrics code cleanup
-## 12/28/2024 
-1) 4522
-* Reverted Adip date
-2) 4523
-* Improved effective date check
-3) 4524
-* Added 7, 14 and 28 days session counts
-## 12/27/2024
-* Data Refresh 12/26
-## 12/23/2024 4520
-* Added airport currency to Waylon
-* Added Maxout users to Willie
