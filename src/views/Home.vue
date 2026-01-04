@@ -4,7 +4,7 @@
 
         <Menu></Menu>
         <div class="section templateSection">
-            <div class="header">My Templates</div>
+            <div class="header">My Kneeboards</div>
             <div class="templateList">
                 <TemplateSelector :template="newTemplate" :temporary="true" src="/thumbnails/new.png" class="templateNew"
                     @selection="onNewTemplate"/>
@@ -98,7 +98,7 @@ const poh = ref<Poh[]>([
     {code: 'AC', src: 'PA-28-161-CHEROKEE-WARRIOR-II.png', template: new Template('PA-28 CHEROKEE WII', 'PA-28 161 CHEROKEE WARRIOR II', false, [])},
 ])
 //const localTemplate = ref({name:'Local',desc:'Resume your last session'})
-const newTemplate = ref(new Template('New','Create a new template'))
+const newTemplate = ref(new Template('New','Create a new kneeboard'))
 const router = useRouter()
 const templates = ref<Template[]>([])
 const toast = useToast()
@@ -142,7 +142,7 @@ function onNewTemplate() {
     // router.push('/format-selector');
 
     const templateData = getTemplateBlank();
-    templateData.name = 'New Template';
+    templateData.name = 'New Kneeboard';
     templateData.format = TemplateFormat.Kneeboard;
   
     // Save template data to localstore and navigate to template editor

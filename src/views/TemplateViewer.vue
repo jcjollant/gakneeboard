@@ -15,20 +15,20 @@
         <div v-else class="templateMenu">
           <MenuButton id="btnExpand" icon="bars" title="Hide Action Buttons" label="Hide Actions" :active="true"
             @click="menuCollapased=true"/>
-          <MenuButton id="btnPrint" icon="print" title="Print Template" label="Print"
+          <MenuButton id="btnPrint" icon="print" title="Print Kneeboard" label="Print"
             @click="onPrint"/>
-          <MenuButton id="btnSave" icon="save" title="Save Template to the Cloud" label="Save" :disabled="activeTemplate.isInvalid()"
+          <MenuButton id="btnSave" icon="save" title="Save Kneeboard to the Cloud" label="Save" :disabled="activeTemplate.isInvalid()"
             @click="onSave(false)"/>
-          <MenuButton id="btnDuplicate" v-if="activeTemplate.ver > 0" icon="clone" title="Save as a duplicate new template" label="Duplicate" @click="onSave(true)" />
+          <MenuButton id="btnDuplicate" v-if="activeTemplate.ver > 0" icon="clone" title="Save as a duplicate new kneeboard" label="Duplicate" @click="onSave(true)" />
           <MenuButton id="btnEditor"
             icon="screwdriver-wrench" title="Toggle Editor mode" label="Page Editor" :active="showEditor"
             :class="{'editorButtonActive':showEditor}" class="editorButton" 
             @click="onEditor"/>
-          <MenuButton id="btnExport" icon="file-export" title="Export Template to Various Formats" label="Export"
+          <MenuButton id="btnExport" icon="file-export" title="Export Kneeboard to Various Formats" label="Export"
             @click="onExport"/>
-          <MenuButton id="btnSettings" icon="gear" title="Template Name and Description" label="Properties"
+          <MenuButton id="btnSettings" icon="gear" title="Kneeboard Name and Description" label="Properties"
             @click="onSettings"/>
-          <MenuButton id="btnDelete" icon="trash" title="Delete Template" label="Delete" :danger="true" :disabled="activeTemplate.isInvalid()"
+          <MenuButton id="btnDelete" icon="trash" title="Delete Kneeboard" label="Delete" :danger="true" :disabled="activeTemplate.isInvalid()"
             @click="onDelete"/>
         </div>
       </div>
