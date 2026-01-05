@@ -1,5 +1,10 @@
+import { currentUser } from "../assets/data";
 import { Checklist, ChecklistItem, ChecklistItemType, ChecklistTheme } from "../models/Checklist";
 import { ChecklistTile } from "../models/ChecklistTile";
+import { LibraryChecklist } from "../models/LibraryChecklist";
+import axios from "axios";
+import { GApiUrl } from "../lib/GApiUrl";
+import { Toaster } from "../assets/Toaster";
 
 export class ChecklistService {
 
@@ -107,4 +112,50 @@ export class ChecklistService {
         newChecklist.items = checklist.items.map(item => new ChecklistItem(item.challenge, item.response, item.section, item.type))
         return newChecklist
     }
+
+    static async save(checklist: LibraryChecklist, toaster: Toaster) {
+        toaster.info('Saving', 'Saving checklist...')
+        const url = GApiUrl.checklist(checklist.id || undefined)
+        // If it's a new checklist, it might not have an ID yet, so we POST to root or if updating we PUT/POST to ID?
+        // Usually POST to /checklist for new, POST/PUT to /checklist/:id for update.
+        // Let's assume generic Save handling:
+        // If ID exists, we might want to include it in URL or body.
+        // Based on implementation plan: POST to /checklist or checklist/:id
+
+        const headers = { headers: { 'user': currentUser.sha256 } }
+
+        try {
+            const response = await axios.post(url, checklist, headers)
+            if (response.data) {
+                const savedChecklist = new LibraryChecklist(
+                    response.data.id,
+                    response.data.fullName,
+                    response.data.shortName,
+                    response.data.entries
+                )
+                currentUser.addChecklist(savedChecklist)
+                toaster.success('Saved', `Checklist "${savedChecklist.fullName}" saved.`)
+            }
+        } catch (e) {
+            console.error(e)
+            toaster.error('Error', 'Failed to save checklist.')
+        }
+    }
+
+    static async delete(checklist: LibraryChecklist, toaster: Toaster) {
+        if (!checklist.id) return;
+        toaster.info('Deleting', 'Deleting checklist...')
+        const url = GApiUrl.checklist(checklist.id)
+        const headers = { headers: { 'user': currentUser.sha256 } }
+
+        try {
+            await axios.delete(url, headers)
+            currentUser.removeChecklist(checklist.id)
+            toaster.success('Deleted', `Checklist "${checklist.fullName}" deleted.`)
+        } catch (e) {
+            console.error(e)
+            toaster.error('Error', 'Failed to delete checklist.')
+        }
+    }
+
 }

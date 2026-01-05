@@ -26,6 +26,13 @@ export class GApiUrl {
         return GApiUrl.root + 'template'
     }
 
+    static checklist(id: string | undefined = undefined): string {
+        if (id) {
+            return GApiUrl.root + 'checklist/' + id
+        }
+        return GApiUrl.root + 'checklist'
+    }
+
     static templateExport(id: any, format: string): string {
         return GApiUrl.root + 'export/template/' + id + '/' + format.toLowerCase();
     }
