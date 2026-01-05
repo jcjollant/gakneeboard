@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 01/05/2026 - 6.2.5 - Added affiliate support
 ## 01/04/2026 - 6.2.4 - Added ambassador link to account details
 ## 01/04/2026 - 6.2.3 - Improved IFR tile settings
 ## 01/03/2026 - 6.2.2 - Checklist editor improvements
