@@ -3,19 +3,26 @@
         <Toast />
 
         <Menu></Menu>
-        <div class="section templateSection">
+        <div class="section templateSection kneeboardSection">
             <div class="header">My Kneeboards</div>
             <div class="templateList">
                 <TemplateSelector :template="newTemplate" :temporary="true" src="/thumbnails/new.png" class="templateNew"
                     @selection="onNewTemplate"/>
                 <!-- <TemplateSelector :template="localTemplate" :temporary="true" src="local"
                     @selection="onTemplateSelection('local')"/> -->
-                <TemplateSelector v-if="templates.length > 0" v-for="(template,index) in templates" 
+                <TemplateSelector v-if="kneeboards.length > 0" v-for="(template,index) in kneeboards" 
                     :template="template"  
                     @selection="onTemplateSelection(template.id)" />
                 <div v-else>
                     <PlaceHolder title="No Templates (yet)" subtitle="Your saved templates will show here"/>
                 </div>
+            </div>
+        </div>
+        <div class="section templateSection">
+            <div class="header" title="These can be used across several kneeboards">My Checklist Library <span class="badge">NEW</span></div>
+            <div class="templateList">
+                <ChecklistSelector :isNew="true" @click="onNewChecklist"/>
+                <ChecklistSelector v-for="checklist in checklists" :key="checklist.id" :checklist="checklist" @click="onChecklistSelection(checklist)" @delete="onChecklistDelete(checklist)"/>
             </div>
         </div>
         <div class="section demoSection">
@@ -34,31 +41,41 @@
             </div>
         </div>
         <div class="section demoSection">
-            <div class="header">Checklists Digest <font-awesome-icon :icon="['fas', 'question']" class="inlineButton" @click="onChecklistHelp" title="How do use these checklists?"></font-awesome-icon></div>
+            <div class="header">Checklists from POH <font-awesome-icon :icon="['fas', 'question']" class="inlineButton" @click="onChecklistHelp" title="How do use these checklists?"></font-awesome-icon></div>
             <div class="templateList">
                 <TemplateSelector v-for="(p,index) in poh" :template="p.template" :demo="true" :src="'/thumbnails/'+p.src" :class="'poh'+index"
                     @selection="onPohSelection(p)" />
             </div>
         </div>
+        <PricingPlans v-if="showPlans" :visible="showPlans" :user="currentUser" @close="showPlans=false" />
+        <LibraryChecklistDialog :visible="showChecklistDialog" :checklist="currentLibraryChecklist" 
+            @close="showChecklistDialog=false" 
+            @apply="onChecklistApply"
+            @delete="onChecklistDelete" />
     </div>
 </template>
 
 <script setup lang="ts">
 import { useToast } from 'primevue/usetoast';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { currentUser, routeToLocalTemplate } from '../assets/data';
 import { getTemplateBlank, SheetName, ThumbnailImage } from '../assets/sheetData';
 import { TemplateData } from '../assets/TemplateData';
+import { ChecklistService } from '../services/ChecklistService';
 import { useToaster } from '../assets/Toaster';
 import { UserUrl } from '../lib/UserUrl';
-import { Template } from '../models/Template';
-
 import Toast from 'primevue/toast';
 import Menu from '../components/menu/Menu.vue';
 import PlaceHolder from '../components/shared/PlaceHolder.vue';
 import TemplateSelector from '../components/templates/TemplateSelector.vue';
+import ChecklistSelector from '../components/checklist/ChecklistSelector.vue';
+import LibraryChecklistDialog from '../components/checklist/LibraryChecklistDialog.vue';
+import PricingPlans from './PricingPlans.vue';
 import { TemplateFormat } from '../models/TemplateFormat';
+import { LibraryChecklist } from '../models/LibraryChecklist';
+import { Template, TemplatePage } from '../models/Template';
+import { PageType } from '../assets/PageType';
 
 
 class DemoSelector {
@@ -99,25 +116,23 @@ const poh = ref<Poh[]>([
 ])
 //const localTemplate = ref({name:'Local',desc:'Resume your last session'})
 const newTemplate = ref(new Template('New','Create a new kneeboard'))
+const newChecklist = ref(new Template('New','Create a new checklist'))
 const router = useRouter()
 const templates = ref<Template[]>([])
+const checklists = ref<LibraryChecklist[]>([])
+const kneeboards = computed(() => templates.value.filter(t => t.format === TemplateFormat.Kneeboard))
+
 const toast = useToast()
 const toaster = useToaster(toast)
 
 
 onMounted( () => {
-    // console.log('[Home.onMounted] templates', currentUser.templates.length)
     templates.value = currentUser.templates
-    // console.log('[Home.onMounted] template length', templates.value.length)
+    checklists.value = currentUser.checklists
     currentUser.addListener(userUpdate);
-    // localTemplate.value = templates.value[0]
-    // setTimeout(() => {
-    //     checkThumbnails()
-    // }, 500)
 })
 
 onUnmounted( () => {
-    // console.log('[Home.onUnmounted]')
     currentUser.removeListener(userUpdate)
 })
 
@@ -137,16 +152,35 @@ function onDemoSelection(name:string) {
     router.push(`/demo/${name}`)
 }
 
-function onNewTemplate() {
-    // Instead of creating a template directly, navigate to format selection
-    // router.push('/format-selector');
+// Checklist Library Handlers
+const showPlans = ref(false)
+const showChecklistDialog = ref(false)
+const currentLibraryChecklist = ref<LibraryChecklist | undefined>(undefined)
 
+function onNewTemplate() {
     const templateData = getTemplateBlank();
     templateData.name = 'New Kneeboard';
     templateData.format = TemplateFormat.Kneeboard;
   
     // Save template data to localstore and navigate to template editor
     routeToLocalTemplate(router, templateData);
+}
+
+function onNewChecklist() {
+    currentLibraryChecklist.value = undefined // New
+    showChecklistDialog.value = true
+}
+
+function onChecklistDelete(checklist: LibraryChecklist) {
+    if (checklist && checklist.id) {
+        ChecklistService.delete(checklist, toaster)
+    }
+    showChecklistDialog.value = false
+}
+
+function onChecklistSelection(checklist: LibraryChecklist) {
+    currentLibraryChecklist.value = checklist
+    showChecklistDialog.value = true
 }
 
 function onPohSelection(poh:Poh) {
@@ -168,6 +202,10 @@ function onPohSelection(poh:Poh) {
     }) 
 }
 
+function onChecklistApply(checklist: LibraryChecklist) {
+    // save to user checklists or refresh existing
+    ChecklistService.save(checklist, toaster)
+}
 
 function onTemplateSelection(index:number) {
     router.push(`/template/${index}`)
@@ -178,6 +216,7 @@ function onTemplateSelection(index:number) {
 function userUpdate() {
     // console.log('[Home.userUpdate]')
     templates.value = currentUser.templates
+    checklists.value = currentUser.checklists
     // console.log('[Home.userUpdate] template length', templates.value.length)
 }
 </script>
@@ -214,4 +253,24 @@ function userUpdate() {
     cursor: pointer ;
     margin-left: 15px;
 }
+
+.kneeboardSection {
+    background-color: #f0dfbd;
+    border-color: #57422a;
+}
+
+.kneeboardSection .header {
+    border-bottom-color: #57422a;
+}
+
+.badge {
+    background-color: #f97316;
+    color: white;
+    border-radius: 4px;
+    padding: 2px 4px;
+    font-size: 0.6em;
+    vertical-align: middle;
+    margin-left: 5px;
+}
+
 </style>
