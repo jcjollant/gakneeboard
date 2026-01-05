@@ -50,4 +50,27 @@ export class AttributionService {
         }
         return null
     }
+
+    static saveAttribution(attributionString: string) {
+        // Parse string "key:value" or just store as content/source if simple
+        // For now adhering to the request "record a specific attribution data"
+        // The existing capture expects query params logic, let's adapt or just simple store
+        // The user request example was just "record a specific attribution data".
+
+        // Let's reuse the Capture logic structure but for a manual string. 
+        // Or simpler: just store it as source if it matches "source:value" pattern, or content otherwise.
+
+        const data: AttributionData = {
+            timestamp: Date.now()
+        }
+
+        if (attributionString.startsWith('source:')) {
+            data.source = attributionString.substring(7)
+        } else {
+            data.content = attributionString
+        }
+
+        // console.debug('[AttributionService] Saving manual attribution data', data)
+        localStorage.setItem(LocalStoreService.attribution, JSON.stringify(data))
+    }
 }

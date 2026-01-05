@@ -21,6 +21,7 @@
         <section class="hero">
             <div class="hero-container">
                 <div class="hero-content">
+                    <div v-if="greeting" class="greeting-badge">{{ greeting }}</div>
                     <h1 class="hero-title">Make Your Kneeboard Work For You</h1>
                     <p class="hero-subtitle">Improve your situational awareness and confidence with a custom kneeboard template that gives you exactly what you want when you need it.</p>
                     <button class="cta-primary" @click="scrollToFeatures">Create Your First Template</button>
@@ -195,8 +196,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { SheetName, ThumbnailImage } from '../assets/sheetData'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { LocalStoreService } from '../services/LocalStoreService'
+import { affiliates } from '../lib/affiliates'
 
 class Demo {
     title: string
@@ -223,9 +225,13 @@ const readyToPrintTemplates = ref<Demo[]>([
     new Demo('Reference Card', ThumbnailImage.reference0, 'Quick reference for important information', SheetName.reference),
     new Demo('Acronyms', ThumbnailImage.acronyms0, 'Aviation acronyms and abbreviations', SheetName.acronyms),
     new Demo('IFR Training', ThumbnailImage.ifrTraining, 'Instrument training aids and procedures', SheetName.ifrStrips),
+    new Demo('IFR Training', ThumbnailImage.ifrTraining, 'Instrument training aids and procedures', SheetName.ifrStrips),
 ])
 
 const router = useRouter()
+const route = useRoute()
+const affiliateKey = route.query.affiliate as string
+const greeting = ref(affiliateKey && affiliates[affiliateKey]?.greeting ? affiliates[affiliateKey].greeting : '')
 const mobileMenuOpen = ref(false)
 
 
@@ -358,6 +364,18 @@ function scrollToFeatures() {
     color: #1e3a8a;
     margin-bottom: 1rem;
     line-height: 1.2;
+}
+
+.greeting-badge {
+    display: inline-block;
+    background: #e0e7ff;
+    color: #4338ca;
+    padding: 0.5rem 3rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #c7d2fe;
 }
 
 .hero-subtitle {

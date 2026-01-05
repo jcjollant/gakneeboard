@@ -11,6 +11,8 @@ import FormatSelector from '../components/templates/FormatSelector.vue';
 import Demo from '../views/Demo.vue';
 import TileTest from '../views/TileTest.vue';
 import PageTest from '../views/PageTest.vue';
+import AffiliateRedirect from '../views/AffiliateRedirect.vue';
+import { affiliates } from '../lib/affiliates';
 
 
 export const RouterNames = {
@@ -43,8 +45,7 @@ const routes = [
     { path: '/demo/:name', name: RouterNames.Demo, component: Demo },
     { path: '/test/tile', name: RouterNames.TileTest, component: TileTest },
     { path: '/test/page', name: RouterNames.PageTest, component: PageTest },
-
-
+    ...Object.keys(affiliates).map(path => ({ path: '/' + path, component: AffiliateRedirect }))
 ]
 
 

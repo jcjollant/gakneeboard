@@ -102,6 +102,28 @@ describe('AttributionService', () => {
         });
     });
 
+    describe('saveAttribution', () => {
+        test('should save source: style attribution', () => {
+            AttributionService.saveAttribution('source:airplane_academy');
+
+            const stored = JSON.parse(localStorageMock.setItem.mock.calls[0][1] as string);
+            expect(stored).toMatchObject({
+                source: 'airplane_academy'
+            });
+            expect(stored.timestamp).toBeDefined();
+        });
+
+        test('should save arbitrary content attribution', () => {
+            AttributionService.saveAttribution('some_random_string');
+
+            const stored = JSON.parse(localStorageMock.setItem.mock.calls[0][1] as string);
+            expect(stored).toMatchObject({
+                content: 'some_random_string'
+            });
+            expect(stored.timestamp).toBeDefined();
+        });
+    });
+
     describe('initFromWindow', () => {
         const originalWindow = global.window;
 
