@@ -18,7 +18,7 @@
                 </div>
             </div>
         </div>
-        <div class="section templateSection">
+        <div class="section templateSection" v-if="false">
             <div class="header" title="These can be used across several kneeboards">My Checklist Library <span class="badge">NEW</span></div>
             <div class="templateList">
                 <ChecklistSelector :isNew="true" @click="onNewChecklist"/>
