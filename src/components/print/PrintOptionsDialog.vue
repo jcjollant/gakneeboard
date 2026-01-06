@@ -18,6 +18,9 @@
 
           <div class="pageOptionLabel">Vertical Info Bar</div>
           <OneChoice v-model="vibSelected" :choices="verticalInfoBarOptions" @change="onNewOptions" />
+
+          <div class="pageOptionLabel">Clip Margin</div>
+          <OneChoice v-model="clipMarginSelected" :choices="clipMarginOptions" @change="onNewOptions" />
         </template>
         
         <template v-else>
@@ -88,6 +91,12 @@ const vibHide = new OneChoiceValue('Hide', VerticalInfoBarOption.hide, 'Hide ver
 const vibSelected = ref(vibAll)
 const verticalInfoBarOptions = ref([vibAll, vibVersion, vibHide])
 
+const clipMarginNone = new OneChoiceValue('None', 0)
+const clipMarginSmall = new OneChoiceValue('Small', 24) // ~0.25in
+const clipMarginLarge = new OneChoiceValue('Large', 48) // ~0.50in
+const clipMarginSelected = ref(clipMarginNone)
+const clipMarginOptions = ref([clipMarginNone, clipMarginSmall, clipMarginLarge])
+
 //---------------------
 // Props management
 const props = defineProps({
@@ -131,7 +140,8 @@ function getOptions():PrintOptions|undefined {
     flipBackPage.value?.value,
     isFullPageFormat.value ? 1 : pagePerSheet.value.value,
     pageSelection.value,
-    vibSelected.value.value
+    vibSelected.value.value,
+    clipMarginSelected.value.value
   )
 }
 
@@ -141,19 +151,19 @@ function onHelp() {
 
 function onNewOptions() {
   const options = getOptions()
-  // console.debug('[PrintOptions.onNewOptions]', options)
+  console.debug('[PrintOptions.onNewOptions]', options)
   if(options) {
     if( simmer.value) { // free acounts cannot change options
       const unselected = options.pageSelection.find( (p:boolean) => !p)
       // user need to upgrade if they changed any default settings
-      upgrade.value = options.flipBackPage || !options.vibOption || (unselected === false)
+      upgrade.value = options.flipBackPage || !options.vibOption || (unselected === false) || (options.clipMargin > 0)
     }
     emits('options', options)
   } 
 }
 
 function onPrint() {
-  // console.debug('[Print.onPrint] options', JSON.stringify(options.value),'pageOptions', JSON.stringify(pageOption.value))
+  // console.log('[Print.onPrint] options', JSON.stringify(getOptions()),'pageOptions', JSON.stringify(pageSelection.value))
   emits('print', getOptions())
 }
 

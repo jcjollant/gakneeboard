@@ -11,14 +11,17 @@
       <div v-if="printSingles" v-for="(page,index) in template.data" class="printOnePage printPageBreak">
         <div class="onePage" v-if="pageSelection[index]">
           <Page :data="page" :format="template.format"
-            :class="{flipMode:(index % 2 == 1 && printFlipMode)}"/>
+            :class="{flipMode:(index % 2 == 1 && printFlipMode)}"
+            :style="getPageStyle()" />
         </div>
       </div>
       <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages">
-        <Page :data="page.front" :format="template.format"/>
-        <SideBar v-if="printVibOption != VerticalInfoBarOption.hide" class="sidebar" :ver="template.ver" :option="printVibOption" />
-        <SideBar v-if="printVibOption != VerticalInfoBarOption.hide" class="sidebar back" :ver="template.ver" :option="printVibOption" />
-        <Page v-if="page.back" :data="page.back" :format="template.format" :class="{flipMode:printFlipMode}" />
+        <Page :data="page.front" :format="template.format" :style="getPageStyle()" />
+        <SideBar v-if="printVibOption != VerticalInfoBarOption.hide" class="sidebar" :ver="template.ver" :option="printVibOption" 
+            :style="getSideBarStyle(false)"/>
+        <SideBar v-if="printVibOption != VerticalInfoBarOption.hide" class="sidebar back" :ver="template.ver" :option="printVibOption" 
+            :style="getSideBarStyle(true)"/>
+        <Page v-if="page.back" :data="page.back" :format="template.format" :class="{flipMode:printFlipMode}" :style="getPageStyle()" />
       </div>
     </div>
     <div v-else>No Template</div>
@@ -51,6 +54,7 @@ const pageSelection = ref<boolean[]>([])
 const printFlipMode = ref(false)
 const printSingles = ref(false)
 const printVibOption = ref(VerticalInfoBarOption.all)
+const printClipMargin = ref(0)
 const template = ref<Template|undefined>(undefined)
 const templateModified = ref(false)
 const route = useRoute()
@@ -104,6 +108,7 @@ function onOptionsUpdate(options:PrintOptions) {
       printSingles.value = (options.pagePerSheet == 1)
       pageSelection.value = options.pageSelection
       printVibOption.value = options.vibOption
+      printClipMargin.value = options.clipMargin
       
       // Ensure full page templates always use one page per sheet
       if (template.value && template.value.format === TemplateFormat.FullPage) {
@@ -206,6 +211,47 @@ function canUserPrint(): boolean {
 // Redirect user to plans page with out-of-credits indicator
 function redirectToPlansPage() {
   router.push('/plans?reason=out-of-credits');
+}
+
+function getPageStyle() {
+  if (printClipMargin.value === 0) return {};
+  
+  // Determine base height based on format
+  const isFullPage = template.value && template.value.format === TemplateFormat.FullPage;
+  const baseHeight = isFullPage ? 1050 : 800; // Matches CSS variables
+  
+  // Calculate scale
+  const scale = (baseHeight - printClipMargin.value) / baseHeight;
+  
+  return {
+    transform: `scale(${scale})`,
+    transformOrigin: 'top center',
+    marginTop: `${printClipMargin.value}px`,
+    marginBottom: '0px' // Ensure no extra space at bottom affects flow if possible
+  };
+}
+
+function getSideBarStyle(isBack: boolean) {
+  if (printClipMargin.value === 0) return {};
+  
+  // Sidebar only used for Kneeboard so height is 800
+  const baseHeight = 800;
+  const newWidth = baseHeight - printClipMargin.value;
+  
+  if (!isBack) {
+    return {
+      top: `${printClipMargin.value}px`,
+      width: `${newWidth}px`
+    };
+  } else {
+    // Back sidebar
+    return {
+      bottom: 'calc(-1.5rem)', // Keep pinned to bottom
+      width: `${newWidth}px`,
+      // Adjust pivot? No, changing width changes the box size
+      // We might need to adjust right/left if width change affects position
+    };
+  }
 }
 
 </script>
