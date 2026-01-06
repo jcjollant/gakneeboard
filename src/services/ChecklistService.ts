@@ -1,5 +1,6 @@
 import { currentUser } from "../assets/data";
 import { Checklist, ChecklistItem, ChecklistItemType, ChecklistTheme } from "../models/Checklist";
+import { DisplayModeChecklist } from "../models/DisplayMode";
 import { ChecklistTile } from "../models/ChecklistTile";
 import { LibraryChecklist } from "../models/LibraryChecklist";
 import axios from "axios";
@@ -72,7 +73,8 @@ export class ChecklistService {
         const name = source.name ?? 'Checklist'
         const items = ChecklistService.parseItems(source.items)
         const theme = source.theme ?? ChecklistTheme.blue
-        return new ChecklistTile(name, items, theme)
+        const displayMode = source.displayMode ?? DisplayModeChecklist.Full
+        return new ChecklistTile(name, items, theme, displayMode)
     }
 
     static toEditor(checklist: Checklist): string {

@@ -5,7 +5,8 @@
             @replace="emits('replace')" 
             @settings="emits('settings')" />
         <div class="checklistMain">
-            <ChecklistViewer :view="view" />
+            <CompactChecklistViewer v-if="displayMode === DisplayModeChecklist.Compact" :view="view" />
+            <ChecklistViewer v-else :view="view" />
         </div>
     </div>
 </template>
@@ -14,15 +15,18 @@
 import { ChecklistTile } from '../../models/ChecklistTile'
 import { onMounted, ref, watch } from 'vue'
 
+import CompactChecklistViewer from './CompactChecklistViewer.vue'
 import ChecklistViewer from './ChecklistViewer.vue'
 import Header from '../shared/Header.vue'
 import { ChecklistFont, ChecklistItem, ChecklistTheme } from '../../models/Checklist'
 import { ChecklistView } from '../../models/ChecklistView'
 import { ChecklistService } from '../../services/ChecklistService'
+import { DisplayModeChecklist } from '../../models/DisplayMode'
 
 const emits = defineEmits(['replace', 'update', 'settings'])
 const title = ref('Checklist')
 const view = ref<ChecklistView>(new ChecklistView())
+const displayMode = ref<DisplayModeChecklist>(DisplayModeChecklist.Full)
 
 //-----------------------
 // Props management
@@ -35,6 +39,7 @@ function loadProps(newProps:any) {
     const checklistTile:ChecklistTile = ChecklistService.parseTile(newProps.params)
     title.value = checklistTile.name
     view.value = new ChecklistView( checklistTile.items, ChecklistFont.medium, checklistTile.theme)
+    displayMode.value = checklistTile.displayMode
 }
 
 onMounted(() => {

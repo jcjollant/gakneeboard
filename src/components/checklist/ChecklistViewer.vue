@@ -3,9 +3,9 @@
         <div v-if="items.length > 0" v-for="(item, index) in items" 
             class="item">
             <div v-if="item.section.length" class="section"
-                :class="getClassSection(item)">{{ item.section }}</div>
-            <div v-else :class="getClassChallenge(item,index)">{{ item.challenge }}</div>
-            <div v-if="item.response.length" :class="getClassResponse(item,index)">{{ item.response }}</div>
+                :class="getClassSection(item)" :style="getStyleSection(item)">{{ item.section }}</div>
+            <div v-else :class="getClassChallenge(item,index)" :style="getStyleChallenge(item, index)">{{ item.challenge }}</div>
+            <div v-if="item.response.length" :class="getClassResponse(item,index)" :style="getStyleResponse(item, index)">{{ item.response }}</div>
         </div>
         <PlaceHolder v-else title="No Items" />
     </div>
@@ -14,7 +14,7 @@
 <script setup lang="ts">
 
 import { onMounted, ref, watch } from 'vue'
-import { ChecklistFont, ChecklistItem, ChecklistItemType, ChecklistTheme } from '../../models/Checklist'
+import { ChecklistFont, ChecklistItem, ChecklistItemType, ChecklistTheme, ChecklistThemeColors } from '../../models/Checklist'
 
 import PlaceHolder from '../shared/PlaceHolder.vue';
 import { ChecklistView } from '../../models/ChecklistView';
@@ -24,35 +24,58 @@ const props = defineProps({
 })
 
 const font = ref('font-'+ChecklistFont.medium)
-const theme = ref('theme-'+ChecklistTheme.yellow)
+const theme = ref<ChecklistTheme>(ChecklistTheme.yellow)
 // const items = ref<ChecklistItem[]>([])
 const items = ref<ChecklistItem[]>([])
 
 // Use theme only when item is strong or line is event and theme is not blank
 function getClassSection(item:ChecklistItem) {
     const output = [font.value];
-    if( item.type==ChecklistItemType.strong) output.push(theme.value+'-strong')
+    if( item.type==ChecklistItemType.strong) output.push('strong-section') // Changed from theme.value+'-strong'
     else if( item.type==ChecklistItemType.emergent) output.push('emergent')
     else if( item.type!=ChecklistItemType.blank) output.push('normal')
     return output
+}
+
+function getStyleSection(item: ChecklistItem) {
+    if (item.type == ChecklistItemType.strong) {
+        const colors = ChecklistThemeColors[theme.value];
+        return {
+            backgroundColor: colors.strong,
+            color: colors.textStrong,
+            textShadow: theme.value === ChecklistTheme.red ? '2px 2px black' : 'none' 
+        }
+    }
+    return {}
 }
 
 function getClassChallenge(item:ChecklistItem, index:number) {
     const output = ['challenge', font.value];
     if(item.response == '') output.push('spanned')
     if(item.type==ChecklistItemType.emergent) output.push('important')
-    // Every other item has the theme
-    if(index%2 && item.type!=ChecklistItemType.blank) output.push(theme.value)
-
     return output
+}
+
+function getStyleChallenge(item: ChecklistItem, index: number) {
+    // Every other item has the theme
+    if(index % 2 && item.type != ChecklistItemType.blank) {
+        return { backgroundColor: ChecklistThemeColors[theme.value].light }
+    }
+    return {}
 }
 
 function getClassResponse(item:ChecklistItem, index:number) {
     const output = ['response', font.value]
     if(item.type==ChecklistItemType.emergent) output.push('important')
-    // Every other item has the theme
-    if(index%2) output.push(theme.value)
     return output
+}
+
+function getStyleResponse(item: ChecklistItem, index: number) {
+    // Every other item has the theme
+    if(index % 2) {
+        return { backgroundColor: ChecklistThemeColors[theme.value].light }
+    }
+    return {}
 }
 
 function loadProps(newProps:any) {
@@ -61,7 +84,7 @@ function loadProps(newProps:any) {
     if(!view) return;
     font.value = 'font-'+view.font;
     items.value = view.items;
-    theme.value = 'theme-'+view.theme;
+    theme.value = view.theme;
     // console.debug('[ChecklistViewer.loadProps] theme', theme.value, 'from', view.theme)
 }
 
@@ -144,48 +167,6 @@ watch(props, () => {
     grid-column: 1 / span 2
 }
 
-.theme-blue {
-    background: #b4c6e7;
-}
-.theme-blue-strong{
-    color:white;
-    background: blue;
-}
-.theme-green {
-    background: #c6e0b4;
-}
-.theme-green-strong{
-    color:white;
-    background: darkgreen;
-}
-.theme-grey {
-    background: #e9e9e9;
-}
-.theme-grey-strong {
-    color:white;
-    background: #666;
-}
-.theme-purple {
-    background: #E9E;
-}
-.theme-purple-strong {
-    color:white;
-    background: purple;
-}
-.theme-red {
-    background: pink;
-}
-.theme-red-strong {
-    color:white;
-    background: red;
-    text-shadow: 2px 2px black;
-}
-.theme-yellow {
-    background: lightyellow;
-}
-.theme-yellow-strong {
-    color:white;
-    background: darkorange;
-}
+
 
 </style>
