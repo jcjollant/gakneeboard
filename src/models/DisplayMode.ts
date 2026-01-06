@@ -1,14 +1,19 @@
 export class DisplayModeChoice {
-    label:string;
-    value:string;
-    expandable:boolean;
-    description:string;
-    constructor(label:string, value:string, expandable:boolean = false, description:string = '') {
+    label: string;
+    value: string;
+    expandable: boolean;
+    description: string;
+    constructor(label: string, value: string, expandable: boolean = false, description: string = '') {
         this.label = label;
         this.value = value;
         this.expandable = expandable;
         this.description = description;
     }
+}
+
+export enum DisplayModeChecklist {
+    Full = 'full',
+    Compact = 'compact',
 }
 
 export enum DisplayModeAirport {

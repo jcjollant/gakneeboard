@@ -138,7 +138,8 @@ function paramsToTileData(currentTileData: TileData, newParams: ChecklistSetting
       font: newParams.font,
       items: ChecklistService.toParams(newParams.lists[0]),
       items2: newParams.lists[1] ? ChecklistService.toParams(newParams.lists[1]) : undefined,
-      items3: newParams.lists[2] ? ChecklistService.toParams(newParams.lists[2]) : undefined
+      items3: newParams.lists[2] ? ChecklistService.toParams(newParams.lists[2]) : undefined,
+      displayMode: newParams.displayMode
     };
     const finalTileData = TileData.copy(currentTileData);
     finalTileData.data = config;
@@ -188,7 +189,8 @@ const settingsProps = computed((): any => {
                 lists,
                 config.theme,
                 config.font,
-                true // isTile
+                true, // isTile
+                config.displayMode
             )
         };
     }

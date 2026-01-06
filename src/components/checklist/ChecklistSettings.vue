@@ -25,6 +25,10 @@
             <div>Theme</div>
             <ChecklistThemeSelector v-model="theme" />
         </div>
+        <div v-if="isTile" class="displayMode">
+            <div>Display</div>
+            <OneChoice v-model="displayModeChoice" :choices="[choiceDisplayFullObj, choiceDisplayCompact]"/>
+        </div>
         <div v-if="!isTile" class="footer-settings">
             <div class="font">
                 <div>Font</div>
@@ -42,8 +46,10 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from 'vue'
 import { Checklist, ChecklistFont, ChecklistTheme } from '../../models/Checklist'
+import { DisplayModeChecklist } from '../../models/DisplayMode'
 import { ChecklistService } from '../../services/ChecklistService'
 import { ChecklistSettingsParams } from '../../models/ChecklistSettingsParams'
+import { OneChoiceValue } from '../../models/OneChoiceValue';
 
 import ChecklistEditor from './ChecklistEditor.vue'
 import FontSizeSelector from './FontSizeSelector.vue'
@@ -79,7 +85,13 @@ const emits = defineEmits(['update'])
 const localName = ref('')
 const theme = ref(ChecklistTheme.yellow)
 const font = ref(ChecklistFont.medium)
+const displayMode = ref(DisplayModeChecklist.Full)
 const checklistData = ref<Checklist[]>([new Checklist(), new Checklist(), new Checklist()])
+
+// Display choices
+const choiceDisplayFullObj = new OneChoiceValue('Full', DisplayModeChecklist.Full, 'Full view')
+const choiceDisplayCompact = new OneChoiceValue('Compact', DisplayModeChecklist.Compact, 'Compact view')
+const displayModeChoice = ref<OneChoiceValue>(choiceDisplayFullObj) 
 
 const columnsChoice = ref<ChoiceColumnCount>(choiceSingle)
 // Use params.isTile directly or via a computed if reactivity is needed (though params prop should be reactive)
@@ -115,6 +127,8 @@ function loadFromData(params: ChecklistSettingsParams) {
     localName.value = params.name || ''
     theme.value = params.theme
     font.value = params.font
+    displayMode.value = params.displayMode 
+    displayModeChoice.value = params.displayMode === DisplayModeChecklist.Compact ? choiceDisplayCompact : choiceDisplayFullObj
 
     // Checklists
     // The model expects lists: Checklist[]
@@ -146,7 +160,7 @@ function loadFromData(params: ChecklistSettingsParams) {
 }
 
 // Watchers for simple values to emit updates
-watch([localName, theme, font, columnsChoice], () => {
+watch([localName, theme, font, columnsChoice, displayModeChoice], () => {
     emitUpdate()
 })
 
@@ -167,7 +181,8 @@ function emitUpdate() {
         newLists,
         theme.value,
         font.value,
-        isTile.value
+        isTile.value,
+        displayModeChoice.value.value // Use the value from the choice object
     )
     
     emits('update', newParams)
@@ -213,7 +228,7 @@ const tileSettingsUpdate = inject('tileSettingsUpdate', null) as ((data: any) =>
     gap: 10px;
 }
 
-.theme, .font {
+.theme, .font, .displayMode {
     display: grid;
     grid-template-columns: 60px auto;
     gap: 5px;

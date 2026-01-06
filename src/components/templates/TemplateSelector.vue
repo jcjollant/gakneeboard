@@ -6,7 +6,7 @@
                 <img v-for="thumb in thumbnails" :key="thumb" :src="thumb" class="page" />
             </div>
             <div v-else class="default">
-                <font-awesome-icon icon="fa-camera" />
+                <font-awesome-icon :icon="icon" />
             </div>
         </div>
         <div class="name">{{template?.name}}</div>
@@ -22,7 +22,8 @@ const props = defineProps({
   template: { type: Object, required: true},
   temporary: { type: Boolean, default: false},
   demo: { type: Boolean, default: false},
-  src: { type: [String, Array], default: null }
+  src: { type: [String, Array], default: null },
+  icon: { type: String, default: 'fa-camera'}
 })
 const noTemplate = Template.noTemplate()
 const template = ref<Template>(noTemplate)
@@ -77,6 +78,7 @@ function onSelection() {
     border: 3px solid var(--bg);
     cursor: pointer;
     background-color: white;
+    transition: border-color 0.2s;
 }
 .templateSelector.demo {
     border: 3px solid #607D8B;
@@ -111,5 +113,9 @@ function onSelection() {
     width: calc(var(--page-width) / 5);
     height: calc(var(--page-height) / 5);
     object-fit: cover;
+}
+
+.templateSelector:hover {
+    border-color: var(--primary-color, #3B82F6);
 }
 </style>

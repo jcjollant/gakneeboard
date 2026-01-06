@@ -54,3 +54,13 @@ export enum ChecklistFont {
     large = 'large',
     larger = 'larger',
 }
+
+
+export const ChecklistThemeColors: Record<ChecklistTheme, { light: string; strong: string; textStrong: string }> = {
+    [ChecklistTheme.blue]: { light: '#b4c6e7', strong: 'blue', textStrong: 'white' },
+    [ChecklistTheme.green]: { light: '#c6e0b4', strong: 'darkgreen', textStrong: 'white' },
+    [ChecklistTheme.grey]: { light: '#e9e9e9', strong: '#666', textStrong: 'white' },
+    [ChecklistTheme.purple]: { light: '#E9E', strong: 'purple', textStrong: 'white' },
+    [ChecklistTheme.red]: { light: 'pink', strong: 'red', textStrong: 'white' }, // Note: red strong had text-shadow in CSS, handled separately or simplifying? CSS had text-shadow: 2px 2px black.
+    [ChecklistTheme.yellow]: { light: 'lightyellow', strong: 'darkorange', textStrong: 'white' },
+}
