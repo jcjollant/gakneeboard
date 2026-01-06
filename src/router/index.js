@@ -45,6 +45,15 @@ const routes = [
     { path: '/demo/:name', name: RouterNames.Demo, component: Demo },
     { path: '/test/tile', name: RouterNames.TileTest, component: TileTest },
     { path: '/test/page', name: RouterNames.PageTest, component: PageTest },
+    {
+        path: '/cfi',
+        component: {
+            template: '<div>Redirecting...</div>',
+            mounted() {
+                window.location.href = '/cfi-ambassadors.html';
+            }
+        }
+    },
     ...Object.keys(affiliates).map(path => ({ path: '/' + path, component: AffiliateRedirect }))
 ]
 

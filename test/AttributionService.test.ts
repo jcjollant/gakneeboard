@@ -128,12 +128,11 @@ describe('AttributionService', () => {
         const originalWindow = global.window;
 
         beforeEach(() => {
-            // @ts-ignore
             global.window = {
                 location: {
                     search: ''
-                }
-            };
+                } as any
+            } as any;
         });
 
         afterAll(() => {
