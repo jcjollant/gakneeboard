@@ -3,6 +3,7 @@ export class UserUrl {
     static privacy: string = "/privacy.html"
     static eula: string = "/eula.html"
     static main: string = 'https://kneeboard.ga'
+    static press: string = '/press.html'
 
     // Blog stuff
     static blog: string = 'https://gakneeboard.wordpress.com/'

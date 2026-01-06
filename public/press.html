@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Press Release - GA Kneeboard</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            color: #2c3e50;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .header-info {
+            font-weight: bold;
+            margin-bottom: 2rem;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .gallery img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 4px;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header-info">FOR IMMEDIATE RELEASE</div>
+
+        <h1>Aviate Software LLC Launches "GA Kneeboard": Pioneering the Hybrid Cockpit to Reduce Pilot Workload</h1>
+
+        <p><strong>[Seattle, WA] — January 6, 2026</strong> — Aviate Software LLC today announced the official release
+            of GA Kneeboard, a specialized utility designed to help pilots master the "Hybrid Cockpit." After two years
+            of development and a successful beta program involving over 150 general aviation pilots, GA Kneeboard is now
+            available to the public to help aviators bridge the gap between digital efficiency and analog reliability.
+        </p>
+
+        <!-- Gallery Section -->
+        <div class="gallery">
+            <img src="assets/page-vfr-flight.png" alt="VFR Flight Sheet" onclick="openModal(this)">
+            <img src="assets/page-checklist.png" alt="Checklist Sheet" onclick="openModal(this)">
+            <img src="assets/page-ifr-training.png" alt="IFR Training Sheet" onclick="openModal(this)">
+            <img src="assets/page-ifr-reference.png" alt="IFR Reference Sheet" onclick="openModal(this)">
+        </div>
+
+        <h2>The Rise of the "Hybrid Cockpit"</h2>
+        <p>As cockpits have transitioned to glass panels and iPads, many pilots have found themselves overwhelmed by
+            "screen fatigue." While Electronic Flight Bags (EFBs) are powerful, they can become cumbersome during
+            high-workload phases of flight, such as approach and landing, where digging through app menus poses a safety
+            risk.</p>
+        <p>GA Kneeboard introduces the concept of the Hybrid Cockpit: a philosophy that uses digital precision to create
+            optimized, physical reference sheets. The software allows pilots to generate custom, high-density data
+            sheets tailored to their specific aircraft and mission, providing "at-a-glance" information that doesn't
+            require a battery, a stylus, or a swipe.</p>
+
+        <h2>Rooted in Student Pilot Safety</h2>
+        <p>The product was born out of necessity. Created by a team of student pilots who felt the mounting pressure of
+            cockpit workload, GA Kneeboard was designed to make general aviation safer.</p>
+        <p>"We realized that the iPad, while amazing, had become terrible at providing quick, tactile access to critical
+            data during an emergency or a busy pattern," said [Your Name], Founder of Aviate Software LLC. "We spent two
+            years and hundreds of iterations—grounded in direct feedback from our 150+ beta testers—to ensure this tool
+            actually reduces cognitive load when it matters most."</p>
+
+        <h2>Key Features of GA Kneeboard</h2>
+        <ul>
+            <li><strong>Custom Sheet Creation:</strong> Build mission-specific kneeboard sheets (frequencies,
+                checklists, and nav logs) that fit standard physical kneeboards.</li>
+            <li><strong>Reduced Cockpit Workload:</strong> Simplifies access to information that is often buried three
+                menus deep in traditional EFB apps.</li>
+            <li><strong>Pilot-Vetted Ergonomics:</strong> Over 200 usability improvements made during the two-year
+                development cycle based on real-world flight data.</li>
+            <li><strong>Failure-Proof Data Source:</strong> Provides a physical "analog" backup to digital systems,
+                ensuring critical data is always visible.</li>
+        </ul>
+
+        <h2>Who It Is For</h2>
+        <p>GA Kneeboard is built for the modern pilot who values safety and organization. It is especially beneficial
+            for student pilots learning to manage radio transitions and cross-country flyers who want to keep their
+            primary EFB screen dedicated to navigation while having their "vital signs" on their leg.</p>
+
+        <h2>Pricing and Availability</h2>
+        <p>GA Kneeboard is available starting today at <a href="https://kneeboard.ga">https://kneeboard.ga</a>. Prices
+            range from $2.99/month for basic accounts to $4.49/month for private pilots. To celebrate the launch, Aviate
+            Software LLC is offering a lifetime deal for $59.</p>
+
+        <h2>About Aviate Software LLC</h2>
+        <p>Aviate Software LLC is a pilot-owned software hangar dedicated to building tools that enhance situational
+            awareness and flight safety. By focusing on the intersection of human factors and digital utility, Aviate
+            Software helps pilots fly smarter and safer.</p>
+
+        <div class="footer">
+            #<br>
+            Media Contact: JC, Founder of GA Kneeboard, support@kneeboard.ga
+        </div>
+    </div>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal" onclick="closeModal()">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="img01">
+    </div>
+
+    <script>
+        function openModal(element) {
+            var modal = document.getElementById("myModal");
+            var modalImg = document.getElementById("img01");
+            modal.style.display = "flex";
+            modalImg.src = element.src;
+        }
+
+        function closeModal() {
+            document.getElementById("myModal").style.display = "none";
+        }
+    </script>
+</body>
+
+</html>

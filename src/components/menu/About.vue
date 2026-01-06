@@ -5,10 +5,10 @@
         <OneChoice v-model="activeTopic" :choices="topics" class="mb-2" />
       </div>
       <div v-if="activeTopic.value==topicAbout.value">
-        <div class="mb-2 justify"><strong>GA Kneeboard</strong> has evoled a LOT thanks to pilots like you. Keep suggestions coming!</div>
+        <div class="mb-2 justify"><strong>GA Kneeboard</strong> was created by general aviation pilots that want to be safer through information clarity. Here are ways to stay tuned with our progress:</div>
         <div class="allButtons">
           <div v-for="guide in guides">
-            <FAButton iconclass="fab" :icon="guide.icon" :label="guide.name" @click="openUrl(guide.url)" :link="true" class="oneButton" />
+            <FAButton :iconclass="guide.iconclass || 'fab'" :icon="guide.icon" :label="guide.name" @click="openUrl(guide.url)" :link="true" class="oneButton" />
             <div class="buttonDesc">{{ guide.subtitle }}</div>
           </div>
         </div>
@@ -49,7 +49,7 @@
         <div class="warning-item mr-3">Magnetic Headings</div>
         <div>Always take time to confirm all data points as a good preflight</div>
       </div>
-      <div class="bottom">GA Kneeboard Original artwork is copyrighted by Aviates Software LLC</div>
+      <div class="bottom">GA Kneeboard original artwork is copyrighted by Aviate Software LLC</div>
       <div class="actionDialog gap-2">
         <Button label="Privacy Policy" @click="openUrl(UserUrl.privacy)" link></Button>
         <Button label="End User License Agreement" @click="openUrl(UserUrl.eula)" link></Button>
@@ -76,7 +76,7 @@ const emits = defineEmits(["close","hdiw"]);
 const guides = [
   {name:'',icon:'wordpress',subtitle:'Updates', url:UserUrl.blog},
   {name:'',icon:'youtube',subtitle:'Demos', url:UserUrl.youTubeChannel},
-  {name:'',icon:'facebook-f',subtitle:'Dopamine', url:UserUrl.facebookProfile},
+  {name:'',icon:'pen-nib',iconclass:'fas',subtitle:'Press Release', url:UserUrl.press},
 ]
 
 const topicAbout = {label:'About',value:'about'}
