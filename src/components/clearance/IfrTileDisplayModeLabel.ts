@@ -1,8 +1,8 @@
 export enum IfrTileDisplayModeLabels {
-    craft = 'CRAFT Clearance',
-    departure = 'IFR Departure',
-    appraoch = 'IFR Approach',
-    alternate = 'Alternate Requirements',
-    lostComms = 'IFR Lost Comms',
+    craft = 'CRAFT',
+    departure = 'Departure',
+    appraoch = 'Approach',
+    alternate = 'Alternate',
+    lostComms = 'Lost Comms',
 
 }
