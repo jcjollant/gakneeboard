@@ -20,7 +20,7 @@ defineProps({
     flex: 1;
     height: 1px;
     margin: 0 1rem;
-    background: lightblue;
+    background: var(--bg-secondary);
   }
 
   align-items: center;
