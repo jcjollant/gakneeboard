@@ -25,23 +25,8 @@ describe('Airport Creation Integration Flow', () => {
 
     beforeAll(async () => {
         // Cleanup incase previous run failed
-        await AirportDao.deleteCustom(testCode, 0); // creatorId is not used for primary key, but deleteCustom requires it. 
-        // Wait, createOrUpdateCustom logic vs create logic.
-        // AirportService.createAirport calls AirportDao.create.
-        // AirportDao.create inserts raw.
-        // We probably need to delete by code directly?
-        // AirportDao.deleteCustom(code, creatorId) deletes WHERE code=X AND creatorid=Y.
-        // AirportService.createAirport doesn't set creatorId in the inserted row? 
-        // Let's check AirportService.ts line 38: await AirportDao.create(request.code, airport);
-        // AirportDao.create line 29: INSERT INTO Airports ... (no creatorId column specified).
-        // So creatorId will be NULL by default?
-        // If creatorId is NULL, deleteCustom might not work if it expects a value.
-        // Let's check AirportDao.deleteCustom line 170. "DELETE FROM airports WHERE code=${code} AND creatorid=${creatorId}"
-        // If we pass 0, and DB has NULL, it won't delete.
-        // We might need a raw delete/cleanup or use a method that handles null creator.
-        // Actually, if we use pure SQL for cleanup in this test it's safer.
-        // But we can't easily run raw SQL here without importing sql from @vercel/postgres.
-        // Let's import sql.
+        const { sql } = require('@vercel/postgres');
+        await sql`DELETE FROM airports WHERE code = ${testCode}`;
     });
 
     afterAll(async () => {
@@ -72,8 +57,8 @@ describe('Airport Creation Integration Flow', () => {
         // Since AirportService.createAirport doesn't seem to set creatorId, this should work.
         const lookupResult = await AirportDao.codesLookup([testCode]);
 
-        expect(lookupResult.found.length).toBeGreaterThan(0);
-        const found = lookupResult.found.find(ca => ca.code === testCode);
+        expect(lookupResult.known.length).toBeGreaterThan(0);
+        const found = lookupResult.known.find(ca => ca.code === testCode);
         expect(found).toBeDefined();
         if (found && found.airport) {
             expect(found.airport.name).toBe(payload.name);
