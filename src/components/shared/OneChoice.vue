@@ -1,8 +1,9 @@
 <template>
-    <div class="oneChoice">
+    <div class="oneChoice" :class="{'full':full}">
         <div v-if="model" v-for="(c,index) in choices" :aria-label="c.label" 
             @click="onChoice(c)" 
-            class="choice" :class="[{'choiceActive':(model.label==c.label),'choiceInactive':(model.label!=c.label),'thinPad':thinpad}, `choice${index}`]"
+            class="choice" 
+            :class="[{'choiceActive':(model.label==c.label),'choiceInactive':(model.label!=c.label),'thinPad':thinpad}, `choice${index}`]"
             :title="c.title??undefined">
             <font-awesome-icon v-if="c.label.startsWith('fa-')" :icon="c.label" />
             <span v-else>{{c.label}}</span>
@@ -18,6 +19,7 @@ import { OneChoiceValue } from '../../models/OneChoiceValue';
 const props = defineProps({
   choices: { type: Array<OneChoiceValue>, default: []},
   thinpad: { type: Boolean, default: false },
+  full: { type: Boolean, default: false },
 })
 
 
@@ -39,10 +41,18 @@ function onChoice(choice:OneChoiceValue) {
     justify-content: center;
     cursor: pointer;
     width: fit-content;
+    line-height: 1.5rem;
+}
+
+.oneChoice.full {
+    width: 100%;
 }
 
 .choice {
     padding: 7px 14px;
+    flex: 1 1 auto;
+    line-height: 1.5rem;
+    text-align: center;
 }
 
 .choiceInactive:hover {
