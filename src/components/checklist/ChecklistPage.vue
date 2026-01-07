@@ -56,7 +56,7 @@ function loadProps(newProps:any) {
     const newPage:ChecklistPage = new ChecklistPage()
     if (newProps.data) {
         editMode.value = false
-        newPage.name = newProps.data.name
+        newPage.name = newProps.data.name ?? newPage.name
         newPage.theme = newProps.data.theme
         newPage.font = newProps.data.font ?? ChecklistFont.medium
         newPage.items = ChecklistService.parseItems(newProps.data.items) ?? []
