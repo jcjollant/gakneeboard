@@ -1,6 +1,7 @@
 <template>
-    <div class="templateSelector" :class="{temporary:temporary,demo:demo,public:template?.publish}" :title="template?.desc"
+    <div class="templateSelector" :class="{temporary:temporary,demo:demo,public:template?.publish,clipped:clipped}" :title="template?.desc"
         @click="onSelection">
+        <img v-if="clipped" src="/assets/clip.png" class="clip" />
         <div class="preview">
             <div v-if="thumbnails.length > 0" class="pages">
                 <img v-for="thumb in thumbnails" :key="thumb" :src="thumb" class="page" />
@@ -23,7 +24,8 @@ const props = defineProps({
   temporary: { type: Boolean, default: false},
   demo: { type: Boolean, default: false},
   src: { type: [String, Array], default: null },
-  icon: { type: String, default: 'fa-camera'}
+  icon: { type: String, default: 'fa-camera'},
+  clipped: { type: Boolean, default: false}
 })
 const noTemplate = Template.noTemplate()
 const template = ref<Template>(noTemplate)
@@ -79,6 +81,18 @@ function onSelection() {
     cursor: pointer;
     background-color: white;
     transition: border-color 0.2s;
+    position: relative;
+}
+.templateSelector.clipped {
+    margin-top: 15px;
+}
+.clip {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    z-index: 10;
 }
 .templateSelector.demo {
     border: 3px solid #607D8B;

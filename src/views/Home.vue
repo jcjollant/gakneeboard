@@ -6,12 +6,12 @@
         <div class="section templateSection kneeboardSection">
             <div class="header">My Kneeboards</div>
             <div class="templateList">
-                <TemplateSelector :template="newTemplate" :temporary="true" src="/thumbnails/new.png" class="templateNew"
+                <TemplateSelector :template="newTemplate" :temporary="true" :clipped="true" src="/thumbnails/new.png" class="templateNew"
                     @selection="onNewTemplate"/>
                 <!-- <TemplateSelector :template="localTemplate" :temporary="true" src="local"
                     @selection="onTemplateSelection('local')"/> -->
                 <TemplateSelector v-if="kneeboards.length > 0" v-for="(template,index) in kneeboards" 
-                    :template="template"  
+                    :template="template" :clipped="true"
                     @selection="onTemplateSelection(template.id)" />
                 <div v-else>
                     <PlaceHolder title="No Templates (yet)" subtitle="Your saved templates will show here"/>
