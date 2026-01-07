@@ -11,6 +11,7 @@ export class UserTools {
     static facebook: string = 'facebook'
     static google: string = 'google'
     static test: string = 'test'
+    static defaultUserName: string = 'user'
 
     public static async authenticate(body: any, userDaoParam: UserDao | undefined = undefined): Promise<User> {
         // console.log("User authenticate", JSON.stringify(body))
@@ -41,6 +42,11 @@ export class UserTools {
 
         if (body.attribution) {
             user.setAttribution(body.attribution)
+        }
+
+        // Default name if empty
+        if (!user.name) {
+            user.setName(this.defaultUserName)
         }
 
         // Save the new user
