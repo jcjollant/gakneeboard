@@ -1,6 +1,6 @@
 {
   "name": "vite",
-  "version": "6.2.11",
+  "version": "6.2.12",
   "type": "module",
   "scripts": {
     "dev": "vite",

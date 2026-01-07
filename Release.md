@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 01/07/2026 - 6.2.12 - Added clip to Kneeboard
 ## 01/06/2026 - 6.2.11 - Using OneChoice for DisplayMode in Airport Tile and IFR Tile
 ## 01/06/2026 - 6.2.10 - Checklist alternate bug fix
 ## 01/06/2026 - 6.2.9 - CFI ambassadors page
