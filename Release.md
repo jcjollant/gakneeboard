@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 01/06/2026 - 6.2.2 - Defaulting user name
 ## 01/03/2026 - 6.2.1 - Captured attribution during user creation
 ## 01/03/2026 - 6.2.0 - Added attribution to stripe checkout
 ## 01/01/2026 - 6.1.6 - Fixed Health Check
