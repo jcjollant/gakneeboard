@@ -1,8 +1,8 @@
 <template>
-    <div class="templateSelector" :class="{temporary:temporary,demo:demo,public:template?.publish,clipped:clipped}" :title="template?.desc"
+    <div class="templateSelector" :class="{clipped:clipped}" :title="template?.desc"
         @click="onSelection">
         <img v-if="clipped" src="/assets/clip.png" class="clip" />
-        <div class="preview">
+        <div class="preview" :class="{temporary:temporary,demo:demo,public:template?.publish}">
             <div v-if="thumbnails.length > 0" class="pages">
                 <img v-for="thumb in thumbnails" :key="thumb" :src="thumb" class="page" />
             </div>
@@ -71,16 +71,19 @@ function onSelection() {
 }
 .preview{
     background-color: white;
+    border-radius: 5px;
+    border: 3px solid var(--bg);
+    transition: border-color 0.2s;
+}
+.preview.demo {
+    border-color: #607D8B;
 }
 .templateSelector {
     display: flex;
     flex-flow: column;
     justify-content: center;
-    border-radius: 5px;
-    border: 3px solid var(--bg);
     cursor: pointer;
-    background-color: white;
-    transition: border-color 0.2s;
+    /* background-color: white; */
     position: relative;
 }
 .templateSelector.clipped {
@@ -88,19 +91,16 @@ function onSelection() {
 }
 .clip {
     position: absolute;
-    top: -8px;
+    top: -5px;
     left: 50%;
     transform: translateX(-50%);
     width: 50%;
     z-index: 10;
 }
-.templateSelector.demo {
-    border: 3px solid #607D8B;
-}
-.templateSelector.public {
+.preview.public {
     border: 3px solid var(--bg-public);
 }
-.templateSelector.temporary {
+.preview.temporary {
     border: 3px dashed lightgrey;
 }
 .pages {
