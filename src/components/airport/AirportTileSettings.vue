@@ -1,7 +1,13 @@
 <template>
     <div class="airport-settings">
+        <!-- Display Mode Section -->
+        <Separator name="Display" class="separator" />
+        <div class="display-mode-selector">
+            <OneChoice :choices="modeChoices" v-model="selectedModeChoice" :thinpad="true" />
+            <EitherOr either="Normal" or="Wide" v-model="isNormal" />
+        </div>
         <!-- Airport Section -->
-        <!-- <Separator name="Airport" /> -->
+        <Separator name="Airport" />
         <div class="airport-selection">
             <AirportInput :code="airportCode" :auto="true" :expanded="true" :large="true"
                 @valid="onUserSelectAirport"
@@ -44,10 +50,6 @@
                 </Button>
             </div>
         </div>
-        <!-- Display Mode Section -->
-        <Separator name="Display" class="separator" />
-        <DisplayModeSelection v-model="currentMode" :modes="modesList" :expandable="true" :expanded="expanded"
-            @expand="onExpand" />
 
     </div>
 </template>
@@ -56,7 +58,7 @@
 import { ref, onMounted, watch, computed, inject } from 'vue';
 import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
-import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
+import OneChoice from '../shared/OneChoice.vue';
 import AirportInput from '../shared/AirportInput.vue';
 import EitherOr from '../shared/EitherOr.vue';
 
@@ -72,6 +74,7 @@ import { RunwayOrientation } from './RunwayOrientation';
 import { DisplayModeAirport, DisplayModeChoice } from '../../models/DisplayMode';
 import { getAirport } from '../../services/AirportService';
 import { TileData } from '../../models/TileData';
+import { OneChoiceValue } from '../../models/OneChoiceValue';
 
 const props = defineProps({
     tileData: { type: TileData, required: true },
@@ -103,6 +106,23 @@ const modesList = ref([
     new DisplayModeChoice('Runway Sketch', DisplayModeAirport.RunwaySketch, true, "Simplified vue of runway(s) with airport data"),
     new DisplayModeChoice('Airport Diagram', DisplayModeAirport.Diagram, true, "Small Airport Diagram with airport data"),
 ]);
+
+const modeChoices = computed(() => {
+    return modesList.value.map(m => new OneChoiceValue(m.label, m.value, m.description));
+})
+
+const selectedModeChoice = computed({
+    get: () => modeChoices.value.find(c => c.value === currentMode.value),
+    set: (val) => { 
+        if(val) currentMode.value = val.value as DisplayModeAirport 
+    }
+})
+
+const isNormal = computed({
+    get: () => !expanded.value,
+    set: (val) => { expanded.value = !val; emitUpdate(); }
+})
+
 
 const patternOptions = Object.values(TrafficPatternDisplay).map(value => ({
     label: TrafficPatternDisplayLabels[value],
@@ -211,10 +231,6 @@ function selectRunway(name: string) {
     }
 }
 
-function onExpand(val: boolean) {
-    expanded.value = val;
-    emitUpdate(); 
-}
 
 function emitUpdate() {
     // Build new config object
@@ -329,5 +345,13 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
 .pattern-btn {
     padding: 4px 12px;
     font-size: 0.9rem;
+}
+
+.display-mode-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
 }
 </style>
