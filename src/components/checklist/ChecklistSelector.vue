@@ -5,8 +5,12 @@
                 <font-awesome-icon :icon="['fas', 'list-check']" class="icon" />
             </template>
             <template v-else>
-                <div class="count">{{ itemCount }}</div>
-                <div class="label">Items</div>
+                <div class="preview-list">
+                    <div v-for="(item, index) in previewItems" :key="index" class="preview-item">
+                        {{ item }}
+                    </div>
+                    <div v-if="hasMore" class="preview-more">...</div>
+                </div>
             </template>
         </div>
         <div class="name">{{ name }}</div>
@@ -41,6 +45,43 @@ const itemCount = computed(() => {
     // ChecklistItem has type.
     // Let's rely on parsed.items.length for now.
     return parsed.items.length
+})
+
+const previewItems = computed(() => {
+    if (props.isNew || !props.checklist) return []
+    // Get text
+    const text = props.checklist.entries.join('\n')
+    // Parse
+    const checklist = ChecklistService.parseEditor(text)
+    // Extract first 5 items (challenges)
+    const items = []
+    let count = 0
+    for (const item of checklist.items) {
+        if (item.challenge) {
+            items.push(item.challenge)
+            count++
+        } else if (item.section) {
+           // Optionally show sections? Maybe differently.
+           // For now, let's just show challenges as they are the main content.
+           // If we want sections, we can add them.
+           // Let's skip sections for "preview" or maybe show them in bold?
+           // The prompt said "first few items".
+           // Let's include sections but maybe style differently if we could, 
+           // but here we just return strings.
+           items.push(item.section.toUpperCase())
+           count ++
+        }
+        if (count >= 5) break
+    }
+    return items
+})
+
+const hasMore = computed(() => {
+     if (props.isNew || !props.checklist) return false
+     // This is a rough estimation. 
+     // We could precise it by checking total items vs shown.
+     // Let's just say if entries.length > 5 * 2 (approx lines per item)
+     return props.checklist.entries.length > 10
 })
 
 const name = computed(() => {
@@ -101,10 +142,32 @@ function onClick() {
     line-height: 1;
 }
 
-.label {
+.preview-list {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+.preview-item {
+    font-size: 0.6rem;
+    color: #555;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+    line-height: 1.2;
+}
+
+.preview-more {
     font-size: 0.8rem;
-    color: #666;
-    text-transform: uppercase;
+    color: #999;
+    line-height: 0.8;
 }
 
 .name {

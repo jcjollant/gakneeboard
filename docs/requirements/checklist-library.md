@@ -25,6 +25,7 @@ Implement a "Checklist Library" system that allows users to create named, shared
 #### 4. Managing the Library
 - A UI is needed to view, create, and delete shared checklists.
 - This could be part of the Account/Settings area or a dedicated "Library" view.
+- **Visual Representation**: Checklists in the library should be represented by a card that shows the first few items.
 
 ## User Experience
 1.  **Creating**: User goes to "Checklist Library", clicks "New", enters a name ("C-172 Normal"), and edits the items.
