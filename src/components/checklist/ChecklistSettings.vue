@@ -39,7 +39,6 @@
                 <OneChoice v-model="columnsChoice" :choices="[choiceSingle, choiceDouble, choiceTriple]"/>
             </div>
         </div>
-        <!-- ActionBar is not needed here as it will be in the parent container (TileSettings or ChecklistPage) -->
     </div>
 </template>
 
