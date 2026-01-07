@@ -199,7 +199,7 @@ defineExpose({ stopEditing });
 
 function addItem() {
     // Adds new item at end
-    items.value.push(ChecklistItem.alternate());
+    items.value.push(new ChecklistItem());
     editingIndex.value = items.value.length - 1;
     takeSnapshot(editingIndex.value);
     emit('active');
@@ -242,7 +242,7 @@ function addSectionAfter(index: number) {
 }
 
 function addItemAfter(index: number) {
-    const item = ChecklistItem.alternate();
+    const item = new ChecklistItem();
     items.value.splice(index + 1, 0, item);
     startEditing(index + 1);
     emit('active');

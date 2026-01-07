@@ -83,8 +83,9 @@ export class ChecklistService {
 
         // translate items into text
         const list = checklist.items.map(item => {
-            if (item.type == ChecklistItemType.blank) return ''
-            if (item.type == ChecklistItemType.alternate) return '##'
+            const emptyItem = item.challenge == '' && item.response == ''
+            if (item.type == ChecklistItemType.blank && emptyItem) return ''
+            if (item.type == ChecklistItemType.alternate && emptyItem) return '##'
             if (item.section.length > 0) {
                 if (item.type == ChecklistItemType.emergent) return '##!' + item.section;
                 if (item.type == ChecklistItemType.strong) return '##*' + item.section;
