@@ -33,6 +33,7 @@ import { computed, ref, provide } from 'vue';
 import { TileData } from '../../models/TileData';
 import ActionBar from '../shared/ActionBar.vue';
 import Dialog from 'primevue/dialog';
+import { TileType } from '../../models/TileType';
 
 const emits = defineEmits(['close', 'apply']);
 
@@ -75,8 +76,14 @@ provide('tileSettingsUpdate', handleChildUpdate);
 
 const title = computed(() => {
     if (!props.tile) return 'Settings';
-    // Capitalize first letter
-    const name = props.tile.name.charAt(0).toUpperCase() + props.tile.name.slice(1);
+    // resolve title from tile name
+    let name = '';
+    if(props.tile.name === TileType.clearance) {
+        name = 'IFR';
+    } else {
+        // Capitalize first letter
+        name = props.tile.name.charAt(0).toUpperCase() + props.tile.name.slice(1);
+    }
     return `${name} Tile Settings`;
 });
 </script>

@@ -151,7 +151,7 @@ function onHelp() {
 
 function onNewOptions() {
   const options = getOptions()
-  console.debug('[PrintOptions.onNewOptions]', options)
+  // console.debug('[PrintOptions.onNewOptions]', options)
   if(options) {
     if( simmer.value) { // free acounts cannot change options
       const unselected = options.pageSelection.find( (p:boolean) => !p)

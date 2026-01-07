@@ -1,23 +1,22 @@
 <template>
     <div class="settings">
-        <!-- Airport Section -->
+        <div class="field">
+            <Separator name="Display" />
+            <div class="display-mode-selector">
+                <OneChoice :choices="modeChoices" v-model="selectedModeChoice" :thinpad="true" :full="true" />
+            </div>
+        </div>
         <div class="field">
             <Separator name="Airport" />
             <AirportInput v-model="airport" :expanded="true" large @valid="emitUpdate"/>
-        </div>
-        
-        <div class="field">
-            <Separator name="Display" />
-            <DisplayModeSelection v-model="displayMode" :modes="displayModes" :expandable="false" />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch, inject } from 'vue'
+import { onMounted, ref, watch, inject, computed } from 'vue'
 import { Airport } from '../../models/Airport.ts';
 import { TileData } from '../../models/TileData.ts';
-import { TileType } from '../../models/TileType.ts';
 import { 
     DisplayModeChoice, 
     DisplayModeIfr 
@@ -26,8 +25,9 @@ import { IfrTileDisplayModeLabels } from './IfrTileDisplayModeLabel.ts';
 import { getAirport } from '../../services/AirportService';
 
 import AirportInput from '../shared/AirportInput.vue';
-import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
+import OneChoice from '../shared/OneChoice.vue';
 import Separator from '../shared/Separator.vue';
+import { OneChoiceValue } from '../../models/OneChoiceValue';
 
 const emits = defineEmits(['update'])
 const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void) | undefined;
@@ -46,6 +46,17 @@ const displayModes = [
     new DisplayModeChoice( IfrTileDisplayModeLabels.alternate, DisplayModeIfr.Alternate),
     new DisplayModeChoice( IfrTileDisplayModeLabels.lostComms, DisplayModeIfr.LostComms),
 ]
+
+const modeChoices = computed(() => {
+    return displayModes.map(m => new OneChoiceValue(m.label, m.value, m.description));
+})
+
+const selectedModeChoice = computed({
+    get: () => modeChoices.value.find(c => c.value === displayMode.value),
+    set: (val) => { 
+        if(val) displayMode.value = val.value as DisplayModeIfr 
+    }
+})
 
 onMounted(() => {
     loadFromData(props.tileData as TileData)
@@ -127,5 +138,11 @@ function emitUpdate() {
 label {
     font-weight: bold;
     font-size: 0.9em;
+}
+
+.display-mode-selector {
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
 </style>
