@@ -19,7 +19,7 @@
                     <!-- Edit Mode -->
                     <div v-if="editingIndex === index" class="item-edit-form">
                         <!-- Section Edit -->
-                        <div v-if="item.section.length > 0 || (item.section === '' && item.challenge === '' && item.response === '' && item.type === ChecklistItemType.undefined)" class="section-edit">
+                        <div v-if="editingAsSection" class="section-edit">
                             <input v-model="item.section" placeholder="Section Name" class="input-text" @keyup.enter="stopEditing" />
                             <div class="style-group">
                                 <button :class="{ active: item.type === ChecklistItemType.undefined }" @click="item.type = ChecklistItemType.undefined" title="Normal"><font-awesome-icon icon="fa-solid fa-font" /></button>
@@ -108,6 +108,7 @@ const emit = defineEmits(['update:modelValue', 'active']);
 // We work on a local copy of items
 const items = ref<ChecklistItem[]>([]);
 const editingIndex = ref<number>(-1);
+const editingAsSection = ref(false);
 
 // Text mode handling with debounce
 const localText = ref('');
@@ -178,6 +179,15 @@ function takeSnapshot(index: number) {
 
 function startEditing(index: number) {
     editingIndex.value = index;
+    const item = items.value[index];
+    // If it has section text, or if it is completely blank but was created as a section (handled by creation flag logic which we don't have per-se, but we can infer from properties)
+    // Actually, we want explicit control. For existing items, we infer:
+    if (item.section.length > 0 || (item.section === '' && item.challenge === '' && item.response === '' && item.type !== ChecklistItemType.undefined && item.type !== ChecklistItemType.blank)) {
+        editingAsSection.value = true;
+    } else {
+        // If it's a blank item, we might need more context, but default to item editor unless it has section properties
+        editingAsSection.value = false;
+    }
     takeSnapshot(index);
     emit('active');
 }
@@ -201,6 +211,7 @@ function addItem() {
     // Adds new item at end
     items.value.push(new ChecklistItem());
     editingIndex.value = items.value.length - 1;
+    editingAsSection.value = false;
     takeSnapshot(editingIndex.value);
     emit('active');
     emitUpdate();
@@ -219,6 +230,7 @@ function addSection() {
     const section = ChecklistItem.section('', ChecklistItemType.undefined); 
     items.value.push(section);
     editingIndex.value = items.value.length - 1;
+    editingAsSection.value = true;
     takeSnapshot(editingIndex.value);
     emit('active');
     emitUpdate();
@@ -236,7 +248,9 @@ function deleteItem(index: number) {
 function addSectionAfter(index: number) {
     const section = ChecklistItem.section('', ChecklistItemType.undefined);
     items.value.splice(index + 1, 0, section);
+    editingAsSection.value = true;
     startEditing(index + 1);
+    editingAsSection.value = true; // startEditing might reset it based on content, force it here for new empty section
     emit('active');
     emitUpdate();
 }
@@ -244,7 +258,9 @@ function addSectionAfter(index: number) {
 function addItemAfter(index: number) {
     const item = new ChecklistItem();
     items.value.splice(index + 1, 0, item);
+    editingAsSection.value = false;
     startEditing(index + 1);
+    editingAsSection.value = false; // startEditing might reset it based on content, force it here for new empty item
     emit('active');
     emitUpdate();
 }
