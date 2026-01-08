@@ -101,20 +101,26 @@ describe('UserDao', () => {
         await expect(userDao.save(existingUser)).rejects.toEqual(new Error('Cannot save existing user without overwrite'))
 
         const newUser = newTestUser()
-        await userDao.save(newUser).then((user: User) => {
-            expect(user.id).toBeGreaterThan(0)
-            expect(user.email).toBe(newUser.email)
-            expect(user.sha256).toBe(newUser.sha256)
+        let createdUserId = 0;
+        try {
+            const savedUser = await userDao.save(newUser);
+            expect(savedUser.id).toBeGreaterThan(0)
+            expect(savedUser.email).toBe(newUser.email)
+            expect(savedUser.sha256).toBe(newUser.sha256)
+            createdUserId = savedUser.id;
 
             // overwritte this user
-            const userId = user.id
+            const userId = savedUser.id
             const newName = 'NewName'
-            user.setName(newName);
-            userDao.save(user, true).then((user: User) => {
-                expect(user.id).toBe(userId)
-                expect(user.name).toBe(newName)
-            })
-        })
+            savedUser.setName(newName);
+            const updatedUser = await userDao.save(savedUser, true);
+            expect(updatedUser.id).toBe(userId)
+            expect(updatedUser.name).toBe(newName)
+        } finally {
+            if (createdUserId > 0) {
+                await sql`DELETE FROM users WHERE id=${createdUserId}`
+            }
+        }
     })
 
     it('refills', async () => {
