@@ -70,7 +70,7 @@ export class UserTools {
                 `Content: ${user.attribution.content || ''}`;
         }
 
-        await Email.send(emailMessage, EmailType.Feedback);
+        await Email.send(emailMessage, EmailType.NewUser);
 
         return savedUser;
     }

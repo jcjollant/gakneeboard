@@ -9,15 +9,21 @@ Otherwise use `npm test script.test.ts`
 Start debugger in terminal `npm run debug`
 Run the actual test `npm test XXX`
 
-## Houskeeping and Metrics
-Housekeeper willie is a script that checks system heath . It is invoked everyday via a cron entry in `vercel.json`. 
-Waylon (Smithers) is reporting metrics and is also invoked everyday via cron
-To run script manually use
+## Simpsons Characters
+We have named some operational tasks and emails after simpsons characters. 
+Groundskeeper 'Willie' is a script that checks system heath . It is invoked everyday via a cron entry in `vercel.json`. 
+'Waylon' Smithers is reporting metrics and is also invoked everyday via cron
+'Ralph' Wiggum is sending an email every time we receive user feedback
+'Ned' Flanders is sending an email every time we see a new user
+'Apu' Nahasapeemapetilon is sending an email every time a user becomes a customer
+
+Willie and Waylon can be executed manually as follows
 ```
 cd housekeeping
 ts-node .\willie.ts
 ts-node .\waylon.ts
 ```
+
 
 ## Testing Stripe client
 (installation) ``

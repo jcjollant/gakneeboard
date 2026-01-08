@@ -1,15 +1,16 @@
 import { createTransport } from 'nodemailer'
 
 export enum EmailType {
-    Metrics = 0,
+    Metric = 0,
     Housekeeping = 1,
-    Feedback = 2,
+    NewUser = 2,
     Purchase = 3,
+    UserFeedback = 4,
 }
 
 export class Email {
 
-    static async send(message:string, type:EmailType):Promise<boolean> {
+    static async send(message: string, type: EmailType): Promise<boolean> {
         const transporter = createTransport({
             service: 'gmail',
             auth: {
@@ -21,10 +22,10 @@ export class Email {
         let identity = '?'
         let subject = '?'
         // choose email subject and sender identity 
-        switch(type) {
-            case EmailType.Metrics: 
+        switch (type) {
+            case EmailType.Metric:
                 // Waylon Smithers is looking after metrics
-                subject = 'Metrics'; 
+                subject = 'Metrics';
                 identity = 'Waylon';
                 break;
             case EmailType.Housekeeping:
@@ -32,10 +33,15 @@ export class Email {
                 subject = 'Housekeeping';
                 identity = 'Willie';
                 break;
-            case EmailType.Feedback: 
+            case EmailType.NewUser:
                 // Ned Flanders reports on neighbors activity
-                subject = 'Feedback'; 
+                subject = 'New User Signup';
                 identity = 'Ned';
+                break;
+            case EmailType.UserFeedback:
+                // Ralph Wiggum reports on user feedback
+                subject = 'User Feedback';
+                identity = 'Ralph';
                 break;
             case EmailType.Purchase:
                 // Apu Nahasapeemapetilon watches the store
@@ -50,15 +56,15 @@ export class Email {
             subject: subject,
             text: message
         };
-          
-        return new Promise( (resolve, reject) => {
-            transporter.sendMail(mailOptions, function(error:any, info:any){
+
+        return new Promise((resolve, reject) => {
+            transporter.sendMail(mailOptions, function (error: any, info: any) {
                 if (error) {
-                  console.log('[Email.send]', error);
-                  resolve(false)
+                    console.log('[Email.send]', error);
+                    resolve(false)
                 } else {
-                  console.log('[Email.send] Email sent:', info.response);
-                  resolve(true)
+                    console.log('[Email.send] Email sent:', info.response);
+                    resolve(true)
                 }
             });
         })

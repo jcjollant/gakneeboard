@@ -10,7 +10,7 @@ jest.mock('../backend/Email', () => {
             send: jest.fn(),
         },
         EmailType: {
-            Feedback: 2,
+            NewUser: 2,
         }
     };
 });
