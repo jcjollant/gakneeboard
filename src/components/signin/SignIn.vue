@@ -11,6 +11,10 @@
         </span>
       </div>
 
+
+      <div v-if="errorMessage" class="error-message mb-3">
+        {{ errorMessage }}
+      </div>
       <div class="pending" v-if="authenticating">Working on it...</div>
       <div class="actions" v-else>
         <Button label="Do not sign in" @click="emits('close')" link></Button>
@@ -34,10 +38,12 @@ import GoogleSignInButton from './GoogleSignInButton.vue';
 
 const emits = defineEmits(["close",'authentication']);
 const authenticating = ref(false)
+const errorMessage = ref('')
 
 function authenticate(source:string, token:string, user:any=undefined) {
   const payload = { source: source, token: token, user: user }
   authenticating.value = true;
+  errorMessage.value = ''; // Clear previous errors
   authenticationRequest( payload)
     .then( user => {
       // console.log( "[SignIn.authenticate] user ", JSON.stringify(user))
@@ -45,7 +51,16 @@ function authenticate(source:string, token:string, user:any=undefined) {
       authenticating.value = false;
     })
     .catch( e => {
-      console.log('[SignIn.authenticate]' + e)
+      console.log('[SignIn.authenticate] error', e)
+      if (e.response && e.response.status === 400) {
+        if (e.response.data && typeof e.response.data === 'string') {
+             errorMessage.value = e.response.data
+        } else {
+             errorMessage.value = "Sign in with Apple is not allowed with 'Hide My Email'. Please share your real email address or use another sign in method."
+        }
+      } else {
+        errorMessage.value = "An error occurred during sign in. Please try again."
+      }
       authenticating.value = false;
     })
 }
@@ -85,6 +100,12 @@ function onGoogleSuccess( response:any) {
 .benefits-list li {
   margin-bottom: 0.5rem;
   margin-left: 1rem;
+}
+
+.error-message {
+  color: var(--red-500, #ff0000); /* Fallback to red if var not defined */
+  text-align: center;
+  font-weight: bold;
 }
 </style>
   
