@@ -31,6 +31,10 @@ export class UserTools {
         }
         if (!user) throw new Error('Invalid User');
 
+        if (user.email.endsWith('@privaterelay.appleid.com')) {
+            throw new Error("Sign in with Apple is not allowed with 'Hide My Email'. Please share your real email address or use another sign in method.");
+        }
+
         // Read user from DB
         const userDao = userDaoParam ?? new UserDao()
         const dbUser: User | undefined = await userDao.getFromHash(user.sha256)
