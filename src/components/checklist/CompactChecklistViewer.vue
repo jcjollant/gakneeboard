@@ -157,7 +157,7 @@ watch(() => props.view, () => {
 }
 
 .response {
-    margin-left: 2px;
+    /* margin-left: 2px; */
     font-weight: normal; 
     opacity: 0.9;
 }
