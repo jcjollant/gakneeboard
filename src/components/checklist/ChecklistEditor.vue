@@ -131,7 +131,7 @@ function onTextInput() {
     if (debounceTimer) clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
         saveTextToModel();
-    }, 1000);
+    }, 2000);
 }
 
 function saveTextToModel() {
