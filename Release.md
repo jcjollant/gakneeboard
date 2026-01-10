@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 01/10/2026 - 6.3.0 - Added stricter push criteria, fixed type errors, refreshed tests
 ## 01/10/2026 - 6.2.5 - Fixed skyvector logging in DB
 ## 01/09/2026 - 6.2.4 - Blocking hidden email
 ## 01/07/2026 - 6.2.3 - Added attribution to feedback email
@@ -146,13 +147,3 @@
 * Filtering frequencies below 118
 * Added notes to frequencies
 * Mapping 'LCL/P IC' to Tower
-## 01/22/2025 5040
-* Data Refresh and departure charts
-## 01/19/2025 5030
-* Added User category metrics
-## 01/08/2025 5021
-* Refresh pages count utility
-## 01/06/2025 5020
-* Templates now have page counts
-## 01/02/2025 5010
-* Added diagram and strips to page counts
