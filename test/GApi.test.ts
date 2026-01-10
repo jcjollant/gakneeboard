@@ -1,8 +1,9 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test, afterAll } from '@jest/globals';
 import { GApi } from '../backend/GApi';
 import { UserMiniView } from '../backend/models/UserMiniView';
 import { UserTools } from '../backend/UserTools';
 import { jcHash, jcName, jcToken, jcUserId } from './constants';
+import { sql } from '@vercel/postgres';
 
 import * as dotenv from 'dotenv';
 dotenv.config()
@@ -58,6 +59,10 @@ describe('GApi Tests', () => {
         expect(session2.camv).toBeDefined()
         expect(session2.user).toBeDefined()
 
+    })
+
+    afterAll(async () => {
+        await sql.end()
     })
 })
 

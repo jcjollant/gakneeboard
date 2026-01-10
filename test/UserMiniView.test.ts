@@ -1,9 +1,10 @@
-import { describe, expect, it, jest} from '@jest/globals';
+import { describe, expect, it, jest, afterAll } from '@jest/globals';
 import { newTestUser } from './common';
 import { UserMiniView } from '../backend/models/UserMiniView';
 import { UserDao } from '../backend/dao/UserDao';
 import { User } from '../backend/models/User';
 import { jcHash, jcMaxTemplates, jcName } from './constants';
+import { sql } from '@vercel/postgres';
 
 require('dotenv').config();
 
@@ -14,7 +15,7 @@ describe('UserMiniView', () => {
         it('should create UserMiniView instance with correct properties', () => {
             const user = newTestUser()
             const maxTemplates = 3
-            const printCredits = 7 
+            const printCredits = 7
             user.setMaxTemplates(maxTemplates)
             user.setPrintCredits(printCredits)
             const userMiniView = new UserMiniView(user, [])
@@ -27,14 +28,17 @@ describe('UserMiniView', () => {
         });
 
         it('should retrieve from hash', async () => {
-            const userJc:User|undefined = await UserDao.getUserFromHash(jcHash)
-            const umv:UserMiniView|undefined = await UserMiniView.fromHash(jcHash)
+            const userJc: User | undefined = await UserDao.getUserFromHash(jcHash)
+            const umv: UserMiniView | undefined = await UserMiniView.fromHash(jcHash)
             expect(umv).toBeDefined()
-            if( !umv) return;
+            if (!umv) return;
             expect(umv.sha256).toBe(jcHash)
             expect(umv.name).toBe(jcName)
             expect(umv.templates).toBeDefined()
         })
     });
 
+    afterAll(async () => {
+        await sql.end()
+    })
 });

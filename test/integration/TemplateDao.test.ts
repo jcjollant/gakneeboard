@@ -1,5 +1,5 @@
 
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it, afterAll } from '@jest/globals';
 import { TemplateDao } from '../../backend/TemplateDao'
 import { jcUserId, jcTestTemplateName, jcTestTemplateData } from '../constants';
 import { sql } from '@vercel/postgres';
@@ -185,7 +185,7 @@ describe('Custom Templates', () => {
                 TemplateDao.deleteStatic(t2.id, user.id),
                 TemplateDao.deleteStatic(t3.id, user.id)])
 
-            userDao.end()
+
         })
     })
 
@@ -216,6 +216,9 @@ describe('Custom Templates', () => {
             expect(template.thumbnail).toBe(row.thumbnail)
             expect(template.thumbhash).toBe(row.thumbhash)
         })
+    })
+    afterAll(async () => {
+        await sql.end()
     })
 });
 
