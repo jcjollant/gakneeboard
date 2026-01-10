@@ -2,6 +2,11 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
+if (process.env.POSTGRES_PROD_URL) {
+    console.log('Using Production Database')
+    process.env.POSTGRES_URL = process.env.POSTGRES_PROD_URL
+}
+
 //===============================================================================
 // Update all airports that do not have a sketch, with version 15 and are current
 import { sql } from "@vercel/postgres";
