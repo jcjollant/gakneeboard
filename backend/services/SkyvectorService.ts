@@ -27,7 +27,7 @@ export class SkyvectorService implements AirportDataSource {
         return Promise.resolve(false)
     }
 
-    async fetchAirport(code: string, saveRawData?: boolean): Promise<Airport | undefined> {
+    async fetchAirport(code: string, saveRawData: boolean = true): Promise<Airport | undefined> {
         const searchUrl = `https://skyvector.com/api/airportSearch?query=${code}`
         try {
             const response = await axios.get(searchUrl, {

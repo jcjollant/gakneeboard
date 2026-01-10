@@ -95,12 +95,15 @@ describe('SkyvectorService', () => {
             expect(sjc.freq).toBe(114.1);
         }
 
-        // Verify save was NOT called by default
-        expect(SkyvectorDao.save).not.toHaveBeenCalled();
 
-        // Call again with saveRawData = true
-        await service.fetchAirport('KPAO', true);
+        // Verify save IS called by default
         expect(SkyvectorDao.save).toHaveBeenCalledWith('KPAO', expect.anything());
+
+        jest.clearAllMocks();
+
+        // Call again with saveRawData = false
+        await service.fetchAirport('KPAO', false);
+        expect(SkyvectorDao.save).not.toHaveBeenCalled();
     });
 
     it('should handle search redirects correctly', async () => {
