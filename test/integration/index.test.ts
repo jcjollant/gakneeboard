@@ -111,7 +111,7 @@ describe('index API', () => {
     });
 
     it('Get Maintenance valid code', async () => {
-        const mockPerform = jest.fn().mockResolvedValue('OK');
+        const mockPerform = jest.fn<any>().mockResolvedValue('OK');
         const mockIsValid = jest.fn().mockReturnValue(true);
 
         (Maintenance as unknown as jest.Mock).mockImplementation(() => ({
@@ -141,7 +141,7 @@ describe('index API', () => {
         const publicationCode = 'pubCode';
 
         // Mock UserTools
-        (UserTools.userIdFromRequest as unknown as jest.Mock).mockResolvedValue(1);
+        (UserTools.userIdFromRequest as unknown as jest.Mock<any>).mockResolvedValue(1);
 
         // Mock GApiTemplate.save
         (GApiTemplate.save as unknown as jest.Mock<any>).mockResolvedValue({
@@ -179,8 +179,8 @@ describe('index API', () => {
             checks: [{ name: 'test', status: 'success', msg: 'ok' }],
             refills: []
         };
-        (Authorization.validateAdmin as unknown as jest.Mock).mockResolvedValue(1);
-        (Maintenance.performHealthChecks as unknown as jest.Mock).mockResolvedValue(mockResult);
+        (Authorization.validateAdmin as unknown as jest.Mock<any>).mockResolvedValue(1);
+        (Maintenance.performHealthChecks as unknown as jest.Mock<any>).mockResolvedValue(mockResult);
 
         const res = await request(app).get('/admin/healthCheck');
 

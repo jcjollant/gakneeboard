@@ -11,7 +11,7 @@ describe('SubscriptionDao', () => {
     describe('getNewCustomersLast30Days', () => {
         it('should return count of new customers', async () => {
             const mockResult = { rowCount: 5, rows: [] } as any;
-            const mockQuery = jest.fn().mockResolvedValue(mockResult);
+            const mockQuery = jest.fn<any>().mockResolvedValue(mockResult);
             const subscriptionDao = new TestableSubscriptionDao();
             subscriptionDao.setDb({ query: mockQuery });
 
@@ -24,7 +24,7 @@ describe('SubscriptionDao', () => {
 
         it('should return 0 when no results', async () => {
             const mockResult = { rowCount: 0, rows: [] } as any;
-            const mockQuery = jest.fn().mockResolvedValue(mockResult);
+            const mockQuery = jest.fn<any>().mockResolvedValue(mockResult);
             const subscriptionDao = new TestableSubscriptionDao();
             subscriptionDao.setDb({ query: mockQuery });
 
@@ -37,7 +37,7 @@ describe('SubscriptionDao', () => {
     describe('getChurnLastDays', () => {
         it('should return count of churned customers', async () => {
             const mockResult = { rowCount: 3, rows: [] } as any;
-            const mockQuery = jest.fn().mockResolvedValue(mockResult);
+            const mockQuery = jest.fn<any>().mockResolvedValue(mockResult);
             const subscriptionDao = new TestableSubscriptionDao();
             subscriptionDao.setDb({ query: mockQuery });
 
@@ -50,7 +50,7 @@ describe('SubscriptionDao', () => {
 
         it('should return 0 when no churned customers', async () => {
             const mockResult = { rowCount: 0, rows: [] } as any;
-            const mockQuery = jest.fn().mockResolvedValue(mockResult);
+            const mockQuery = jest.fn<any>().mockResolvedValue(mockResult);
             const subscriptionDao = new TestableSubscriptionDao();
             subscriptionDao.setDb({ query: mockQuery });
 

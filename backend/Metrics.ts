@@ -301,7 +301,7 @@ export class Metrics {
      */
     static async sendMail(data: any): Promise<boolean> {
         const message = 'Here are ' + new Date().toDateString() + ' metrics\n\n' + data;
-        return Email.send(message, EmailType.Metrics)
+        return Email.send(message, EmailType.Metric)
     }
 
     public static async pagePerUser(): Promise<Map<number, UserUsage>> {

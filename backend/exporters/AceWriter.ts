@@ -13,74 +13,74 @@ export class AceWriter {
     static LIST_START = Uint8Array.from([0x28, 0x30]) // '(0'
     static LIST_STOP = Uint8Array.from([0x29, 0x0d, 0x0a]) // ')\r\n'
 
-    static addString(parts:BlobPart[], text:string) {
+    static addString(parts: BlobPart[], text: string) {
         parts.push(text)
         parts.push(AceWriter.NEWLINE)
     }
 
-    public static async demo():Promise<ArrayBuffer> {
-        const checklist:AceChecklist = AceChecklist.getDemo()
+    public static async demo(): Promise<ArrayBuffer> {
+        const checklist: AceChecklist = AceChecklist.getDemo()
         return AceWriter.encode(checklist)
     }
 
-    public static async encodeTemplate(template:TemplateView):Promise<ArrayBuffer> {
-        const checklist:AceChecklist = AceChecklist.fromTemplate(template)
+    public static async encodeTemplate(template: TemplateView): Promise<ArrayBuffer> {
+        const checklist: AceChecklist = AceChecklist.fromTemplate(template)
         return AceWriter.encode(checklist)
     }
 
-    public static async encode(checklist:AceChecklist):Promise<ArrayBuffer> {
-        const parts:BlobPart[] = []
-        parts.push( AceWriter.FILE_START)
-        parts.push( AceWriter.DEFAULT)
+    public static async encode(checklist: AceChecklist): Promise<ArrayBuffer> {
+        const parts: BlobPart[] = []
+        parts.push(AceWriter.FILE_START)
+        parts.push(AceWriter.DEFAULT)
         // Name
-        parts.push( checklist.filename)
-        parts.push( AceWriter.NEWLINE)
+        parts.push(checklist.filename)
+        parts.push(AceWriter.NEWLINE)
         // Make and Model
-        parts.push( checklist.makeAndModel)
-        parts.push( AceWriter.NEWLINE)
+        parts.push(checklist.makeAndModel)
+        parts.push(AceWriter.NEWLINE)
         // Aircraft Info
-        parts.push( checklist.aircraft)
-        parts.push( AceWriter.NEWLINE)
+        parts.push(checklist.aircraft)
+        parts.push(AceWriter.NEWLINE)
         // Manufacturer Info
-        parts.push( checklist.manufacturer)
-        parts.push( AceWriter.NEWLINE)
+        parts.push(checklist.manufacturer)
+        parts.push(AceWriter.NEWLINE)
         // Copyright Info
-        parts.push( checklist.copyright)
-        parts.push( AceWriter.NEWLINE)
+        parts.push(checklist.copyright)
+        parts.push(AceWriter.NEWLINE)
 
         // 3 nested loops Groups / Lists / Items
-        for(const group of checklist.groups) {
-            parts.push( AceWriter.GROUP_START)
-            parts.push( group.name)
-            parts.push( AceWriter.NEWLINE)
-            for( const list of group.lists) {
-                parts.push( AceWriter.LIST_START)
-                parts.push( list.name)
-                parts.push( AceWriter.NEWLINE)
-                for( const item of list.items) {
+        for (const group of checklist.groups) {
+            parts.push(AceWriter.GROUP_START)
+            parts.push(group.name)
+            parts.push(AceWriter.NEWLINE)
+            for (const list of group.lists) {
+                parts.push(AceWriter.LIST_START)
+                parts.push(list.name)
+                parts.push(AceWriter.NEWLINE)
+                for (const item of list.items) {
                     // Type an Position
-                    parts.push( Uint8Array.from([item.type, item.ident]))
-                    if(item.type == AceType.RESPONSE) {
-                        parts.push( item.challenge + '~' + item.response)
+                    parts.push(Uint8Array.from([item.type, item.ident]))
+                    if (item.type == AceType.RESPONSE) {
+                        parts.push(item.challenge + '~' + item.response)
                     } else {
-                        parts.push( item.challenge)
+                        parts.push(item.challenge)
                     }
-                    parts.push( this.NEWLINE)
+                    parts.push(this.NEWLINE)
                 }
-                parts.push( AceWriter.LIST_STOP)
+                parts.push(AceWriter.LIST_STOP)
             }
-            parts.push( AceWriter.GROUP_STOP)
+            parts.push(AceWriter.GROUP_STOP)
         }
 
-        parts.push( AceWriter.FILE_STOP)
+        parts.push(AceWriter.FILE_STOP)
 
         // add crc 32
         const crcBlob = new Blob(parts)
         const crcArray = new Uint8Array(await crcBlob.arrayBuffer())
-        const crc32 = Crc32.computeArray( crcArray) 
-        parts.push( crc32)
+        const crc32 = Crc32.computeArray(crcArray)
+        parts.push(crc32 as unknown as BlobPart)
 
-        const blob = new Blob(parts, {type: 'application/octet-stream'})
+        const blob = new Blob(parts, { type: 'application/octet-stream' })
         return await blob.arrayBuffer()
     }
 
