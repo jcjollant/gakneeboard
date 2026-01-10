@@ -1,7 +1,7 @@
 import { createTransport } from 'nodemailer'
 
 export enum EmailType {
-    Metric = 0,
+    Metrics = 0,
     Housekeeping = 1,
     NewUser = 2,
     Purchase = 3,
@@ -23,7 +23,7 @@ export class Email {
         let subject = '?'
         // choose email subject and sender identity 
         switch (type) {
-            case EmailType.Metric:
+            case EmailType.Metrics:
                 // Waylon Smithers is looking after metrics
                 subject = 'Metrics';
                 identity = 'Waylon';
