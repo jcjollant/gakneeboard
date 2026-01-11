@@ -132,11 +132,11 @@ export class TemplateDao extends Dao<Template> {
     public static async getOverviewListForUser(userId: number): Promise<TemplateView[]> {
         // console.log('[SheetDao.getListForUser] user', userId)
         return await sql`
-            SELECT s.id,s.name,s.description,s.pages,s.format,s.thumbnail,s.thumbhash,p.active,p.code as code FROM sheets AS s LEFT JOIN publications AS p ON s.id = p.sheetid WHERE user_id=${userId}
+            SELECT s.id,s.name,s.description,s.pages,s.format,s.thumbnail,s.thumbhash,s.version,p.active,p.code as code FROM sheets AS s LEFT JOIN publications AS p ON s.id = p.sheetid WHERE user_id=${userId}
         `.then((result) => {
             // console.log('[SheetDao.getListForUser]', result.rowCount)
             if (result.rowCount) {
-                return result.rows.map((row) => new TemplateView(row['id'], row['name'], [], row['format'], row['description'], 0, row['active'], row['code'], row['pages'], row['thumbnail'], row['thumbhash']))
+                return result.rows.map((row) => new TemplateView(row['id'], row['name'], [], row['format'], row['description'], row['version'], row['active'], row['code'], row['pages'], row['thumbnail'], row['thumbhash']))
             } else {
                 return []
             }

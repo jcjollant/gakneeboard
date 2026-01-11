@@ -170,15 +170,15 @@ describe('Custom Templates', () => {
             // Test publication, data and version should not be present
             expect(result[0].publish).toBeTruthy()
             expect(result[0].code).toBeDefined()
-            expect(result[0].ver).toBe(0)
+            expect(result[0].ver).toBe(1)
 
             expect(result[1].code).toBeDefined()
             expect(result[1].publish).toBeTruthy()
-            expect(result[1].ver).toBe(0)
+            expect(result[1].ver).toBe(1)
 
             expect(result[2].code).toBeNull()
             expect(result[2].publish).toBeFalsy()
-            expect(result[2].ver).toBe(0)
+            expect(result[2].ver).toBe(1)
 
             await Promise.all([
                 TemplateDao.deleteStatic(t1.id, user.id),
