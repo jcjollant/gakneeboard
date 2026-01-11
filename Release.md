@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 01/11/2026 - 6.3.1 - Fixed missing version getOverviewListForUser
 ## 01/10/2026 - 6.3.0 - Added stricter push criteria, fixed type errors, refreshed tests
 ## 01/10/2026 - 6.2.5 - Fixed skyvector logging in DB
 ## 01/09/2026 - 6.2.4 - Blocking hidden email
