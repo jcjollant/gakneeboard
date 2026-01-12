@@ -1,6 +1,6 @@
 <template>
     <div class="contentPage blankPage">
-        <Header title="" :stealth="true" :page="true" :displayMode="false"
+        <Header title="" :stealth="true" :page="true" :displayMode="false" leftButton=""
             @replace="emits('replace')"></Header>
     </div>
 
