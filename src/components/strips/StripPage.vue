@@ -1,6 +1,6 @@
 <template>
     <div class="contentPage pageStrips">
-        <Header title="Strips" :page="true" @replace="emits('replace')" @click="editMode=!editMode"></Header>
+        <Header title="Strips" :page="true" leftButton="settings" @replace="emits('replace')" @click="editMode=!editMode"></Header>
         <div class="stripContainer">
             <div class="stripList" >
                 <template v-if="strips.length" v-for="(s,index) in strips" >
