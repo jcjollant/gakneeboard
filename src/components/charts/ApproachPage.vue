@@ -1,7 +1,7 @@
 <template>
     <div class="contentPage approachPage">
-        <Header :title="title" :page="true" :displayMode="false"
-            @replace="emits('replace')" @click="toggleEditMode"></Header>
+        <Header :title="title" :page="true" leftButton="settings"
+            @replace="emits('replace')" @settings="toggleEditMode"></Header>
         <div v-if="editMode" class="editMode">
             <AirportInput label="Airport Code" :page="true" v-model="airport"/>
             <div v-if="selectedPdf && airport.isValid()" class="currentSelection">
