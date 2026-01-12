@@ -9,7 +9,7 @@
         <Button id="editorCopyToLeft" v-if="!edge"
             icon="pi pi-arrow-left" title="Copy Right to Left" 
             @click="onAction(EditorAction.duplicatePage(offset+1, offset))" ></Button>
-        <Button id="editorInsert" icon="pi pi-file" :title="last?'Add One Page':'Insert New Page Here'" 
+        <Button id="editorInsert" icon="pi pi-plus" :title="last?'Add One Page':'Insert New Page Here'" 
             @click="onAction(EditorAction.insertPage(offset+1))" ></Button>
         <FAButton icon="video" v-if="offset==-1"
             title="Editor Demo Video" :link="true"

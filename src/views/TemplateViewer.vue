@@ -43,6 +43,17 @@
           <HorizontalActionBar v-if="showEditor" @action="onAction" :index="index" :blockDelete="activeTemplate.data.length < 2" />
           <div></div>
         </div>
+        <div class="pageGrid pagePlaceholderGrid" v-if="activeTemplate.format === TemplateFormat.Kneeboard">
+             <div class="pagePlaceholder" @click="onAddPage" title="Add New Page to this Kneeboard">
+                  <div class="addPageContent">
+                       <font-awesome-icon icon="plus" class="addIcon" />
+                       <div class="addText">Add Page</div>
+                  </div>
+             </div>
+             <div></div>
+             <div></div>
+             <div></div>
+        </div>
       </div>
       <div v-else class="pageAll">
         <LoadingPage></LoadingPage>
@@ -650,6 +661,14 @@ function updateThumbnail(template:Template) {
   }).catch((e) => console.log('[TemplateViewer.updateThumbnail] failed', e))
 
 }
+
+function onAddPage() {
+    if(!activeTemplate.value) return;
+    activeTemplate.value.data.push(duplicate(TemplatePage.SELECTION));
+    templateModified.value = true;
+    updateOffsets();
+    saveTemplateToLocalStoreService();
+}
 </script>
 
 <style scoped>
@@ -774,4 +793,38 @@ function updateThumbnail(template:Template) {
   /* grid-template-columns: var(--fullpage-width) var(--pages-gap);
   grid-template-rows: var(--fullpage-height) var(--pages-gap); */
 }
+
+.pagePlaceholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px dashed lightgrey;
+    border-radius: 10px;
+    background-color: rgba(0,0,0,0.03);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    height: 100%;
+}
+.pagePlaceholder:hover {
+    background-color: rgba(0,0,0,0.08);
+    border-color: darkgrey;
+}
+.addPageContent {
+    text-align: center;
+    color: grey;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.addIcon {
+    font-size: 2em;
+    display: block;
+}
+.addText {
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
 </style>
