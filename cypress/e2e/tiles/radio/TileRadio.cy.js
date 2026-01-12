@@ -1,4 +1,4 @@
-import { displaySelection, loadDemo, lostCommsTitle, notesTitle, radioTitle, serviceVolumeTitle, TileTypeLabel, visitSkipBanner, replaceTile, viewport, loadTestTileWithData, loadTestTile, displayModesCheck } from '../../shared'
+import { displaySelection, loadDemo, lostCommsTitle, notesTitle, radioTitle, serviceVolumeTitle, TileTypeLabel, visitSkipBanner, replaceTile, viewport, loadTestTileWithData, loadTestTile, loadTilePage, displayModesCheck } from '../../shared'
 import { checkImageContentTestTile } from '../../shared'
 const labelFrequencies = 'Frequencies'
 const labelLostCommsVFR = 'Lost Comms VFR'
@@ -18,40 +18,44 @@ describe('Radios Tile', () => {
     cy.fixture('radioTile15Freq').then(data => fifteenFreqTileData = data)
     cy.fixture('radioTileServiceVolumes').then(data => serviceVolumeTileData = data)
 
-    cy.wrap(
-        Cypress.automation('remote:debugger:protocol', {
-            command: 'Browser.grantPermissions',
-            params: {
-              permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'],
-              origin: window.location.origin,
-            },
-        }),
-    );    
+    // cy.wrap(
+    //     Cypress.automation('remote:debugger:protocol', {
+    //         command: 'Browser.grantPermissions',
+    //         params: {
+    //           permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'],
+    //           origin: window.location.origin,
+    //         },
+    //     }),
+    // );    
   })
 
   it('Has correct display mode selection', () => {
-    loadTestTile(TileTypeLabel.radios)
+    loadTilePage(TileTypeLabel.radios)
 
-    // test tile title updated
-    cy.get('.headerTitle').contains('Radios Tile Mode')
+    // Open settings (Tile 0 is the radio tile)
+    cy.get('.tile0 .settingsButton').click({ force: true })
 
-    const expectedDisplayModes = [ labelFrequencies, labelLostCommsVFR, labelLostCommsIFR, labelServiceVolumes]
-    displayModesCheck(expectedDisplayModes, true)
+    // Check display modes in settings
+    // They are buttons in OneChoice, verify labels exist
+    cy.get('.radio-settings').contains(labelFrequencies)
+    cy.get('.radio-settings').contains(labelLostCommsVFR)
+    cy.get('.radio-settings').contains(labelLostCommsIFR)
+    cy.get('.radio-settings').contains(labelServiceVolumes)
 
-    // check display mode is saved correctly in local storage
-    cy.get(`[aria-label="${labelServiceVolumes}"]`).click()
+    // Select Service Volumes
+    cy.get('.display-mode-selector').contains(labelServiceVolumes).click()
 
-    // copy data to clipboard
-    cy.get('.copy-btn').click()
+    // Apply settings
+    cy.get('[aria-label="Apply"]').click()
 
-    // read clipboard data
-    cy.window().then((win) => {
-      win.navigator.clipboard.readText().then((text) => {
-          const tileData = JSON.parse(text)
-          expect(tileData.data['mode']).to.equal('sv')
-      });
-    });    
+    // Check tile content updated
+    // Service volumes should be visible (VorServiceVolumes component)
+    cy.get('.tile0 img[src*="service-volumes.png"]').should('exist')
 
+    // Re-open settings and switch back to Frequencies
+    cy.get('.tile0 .settingsButton').click({ force: true })
+    cy.get('.display-mode-selector').contains(labelFrequencies).click()
+    cy.get('[aria-label="Apply"]').click()
   })
 
   it('Displays Lost Comms VFR', () => {
@@ -66,7 +70,7 @@ describe('Radios Tile', () => {
     cy.get('[title="Declare Emergency"]')
 
     const expectedLostCommsFields = ['Signal', 'Ground', 'Air', 'T/O', 'Land', 'Taxi', 'STOP', 'Give Way', 'Taxi Off Rwy', 'Use Extreme Caution', 'Start', '7500', '7600', '7700']
-    for(const field of expectedLostCommsFields) {
+    for (const field of expectedLostCommsFields) {
       cy.get(`.tile`).contains(field)
     }
   })
@@ -77,17 +81,17 @@ describe('Radios Tile', () => {
     // Verify radio tile is loaded
     cy.get('.tile').should('exist')
     cy.get('.freqList').should('exist')
-    
+
     // Count frequency boxes
     cy.get('.freqList > div').should('have.length', 15)
-    
+
     // Check that all frequencies are visible (not overflowing)
     cy.get('.freqList').then($freqList => {
       const listHeight = $freqList[0].scrollHeight
       const visibleHeight = $freqList[0].clientHeight
       expect(listHeight).to.equal(visibleHeight)
     })
-    
+
     // test .freqList.three height is less or equal to 240px
     cy.get('.freqList.three').then($freqList => {
       const listHeight = $freqList[0].scrollHeight
@@ -102,14 +106,14 @@ describe('Radios Tile', () => {
     visitSkipBanner()
     loadDemo('Tiles')
 
-    cy.intercept({method: 'GET',url: '**/airports/**',}).as('getAirports');
-    
+    cy.intercept({ method: 'GET', url: '**/airports/**', }).as('getAirports');
+
     // Check all fields are present in Radio flow
     cy.fixture('radioFlow').then((radioFlow) => {
-      for(let index=0; index<radioFlow.length; index++) {
+      for (let index = 0; index < radioFlow.length; index++) {
         cy.get(`.freq${index}`).contains(radioFlow[index].freq)
         cy.get(`.freq${index}`).contains(radioFlow[index].name)
-        cy.get(`.freq${index} > .freq`).should('have.class',radioFlow[index].class)
+        cy.get(`.freq${index} > .freq`).should('have.class', radioFlow[index].class)
       }
     })
 
@@ -118,17 +122,11 @@ describe('Radios Tile', () => {
     // check header is the expected one
     cy.get('.page1 .tile5 > .headerTitle').contains(radioTitle)
 
-    // Switch to Display mode selection
-    displaySelection(1, 5)
+    // Open Settings for editing
+    cy.get('.page1 .tile5 .settingsButton').click({ force: true })
 
-    // bring back normal mode
-    displaySelection(1, 5)
-    cy.get('.page1 .tile5 .modesList').should('not.exist')
-
-    // Switch to edit mode
-    cy.get(`.freqList`).click()
-    // check it has hint
-    cy.get('.actionBarHelp')
+    // check settings loaded
+    cy.get('.radio-settings').should('exist')
 
     // remove previous content
     cy.get('.p-inputtextarea').type('{selectall}{backspace}')
@@ -138,7 +136,7 @@ describe('Radios Tile', () => {
     // test Airport box is populated
     cy.get('.p-inputgroup-addon').contains('Code')
     const expectedAirportCodes = ['KRNT', 'KBFI', 'W39', 'O26', 'KAWO']
-    for( let code of expectedAirportCodes) {
+    for (let code of expectedAirportCodes) {
       cy.get('.recentAirportList').contains(code)
     }
     // Click Renton
@@ -148,21 +146,21 @@ describe('Radios Tile', () => {
     // FielSets should change
     cy.get('.airportSpecific > :nth-child(1) > .p-fieldset-legend').contains('KRNT Local Frequencies')
     cy.fixture('krntLocalFreq').then((krntLocalFreq) => {
-      for(let index=0; index<krntLocalFreq.length; index++) {
+      for (let index = 0; index < krntLocalFreq.length; index++) {
         cy.get('.listLocal').contains(krntLocalFreq[index].mhz + ' ' + krntLocalFreq[index].name)
       }
     })
     // Navaids
     cy.get('.listNavaids > .p-fieldset-legend').contains('KRNT Navaids')
     cy.fixture('krntNavaids').then((krntNavaids) => {
-      for(let index=0; index<krntNavaids.length; index++) {
+      for (let index = 0; index < krntNavaids.length; index++) {
         cy.get('.listNavaids').contains(krntNavaids[index].mhz + ' ' + krntNavaids[index].name)
       }
     })
     // ATC
     cy.get(':nth-child(3) > .p-fieldset-legend').contains('SEATTLE-TACOMA APPROACH CONTROL')
     cy.fixture('krntAtcs').then((krntAtcs) => {
-      for(let index=0; index<krntAtcs.length; index++) {
+      for (let index = 0; index < krntAtcs.length; index++) {
         cy.get('.listAtc').contains(krntAtcs[index].mhz)
       }
     })
@@ -176,24 +174,24 @@ describe('Radios Tile', () => {
     // close lookup
     cy.get('.p-dialog-header-icon').click()
     // Test textarea content
-    cy.get('.p-inputtextarea').should('have.value','124.700,KRNT CTAF,CTAF\n122.950,KRNT UNICOM,Ground\n121.600,KRNT GND,Ground\n110.600,PAE VOR/DME,Navaid\n119.200,SEATTLE-TACOMA APPROACH CONTROL,TRACON')
+    cy.get('.p-inputtextarea').should('have.value', '124.700,KRNT CTAF,CTAF\n122.950,KRNT UNICOM,Ground\n121.600,KRNT GND,Ground\n110.600,PAE VOR/DME,Navaid\n119.200,SEATTLE-TACOMA APPROACH CONTROL,TRACON')
 
     // Apply and check classes
     cy.get('[aria-label="Apply"]').click()
-    cy.get('.freq0 > .freq').should('have.class','ctaf')
-    cy.get('.freq1 > .freq').should('have.class','ground')
-    cy.get('.freq2 > .freq').should('have.class','ground')
-    cy.get('.freq3 > .freq').should('have.class','navaid')
-    cy.get('.freq4 > .freq').should('have.class','tracon')
+    cy.get('.freq0 > .freq').should('have.class', 'ctaf')
+    cy.get('.freq1 > .freq').should('have.class', 'ground')
+    cy.get('.freq2 > .freq').should('have.class', 'ground')
+    cy.get('.freq3 > .freq').should('have.class', 'navaid')
+    cy.get('.freq4 > .freq').should('have.class', 'tracon')
 
     // switch left tile to radio so it doesnt merge
-    replaceTile(1,4,TileTypeLabel.radios)
+    replaceTile(1, 4, TileTypeLabel.radios)
     // Switch tile type to notes then come back to radio
-    replaceTile(1,5,TileTypeLabel.notes)
+    replaceTile(1, 5, TileTypeLabel.notes)
     cy.get('.page1 > .tile5 > .headerTitle > div').contains(notesTitle)
     // Change tile back to Radio 
     cy.get('.page1 > .tile5 > .headerTitle').click()
-    replaceTile(1,5,TileTypeLabel.radios)
+    replaceTile(1, 5, TileTypeLabel.radios)
 
     // Header should be back to Radio
     cy.get('.page1 > .tile5 > .headerTitle > div').contains(radioTitle)
@@ -202,15 +200,17 @@ describe('Radios Tile', () => {
     cy.get('.placeHolder').contains('Click Here to Add Frequencies')
   })
 
-  it.skip( 'Shows correct icon', () => {
+  it.skip('Shows correct icon', () => {
     visitSkipBanner()
     loadDemo()
     viewport()
 
-    cy.get('.page0 .tile2 .freqList').click()
+    // Open Settings
+    cy.get('.page0 .tile2 .settingsButton').click({ force: true })
+
     cy.get('.p-inputtextarea').type('{selectall}{backspace}')
-    const list = ['123-456-7890,KAWO CD,Phone','123.450,Weather,Weather','222.222,Test,Navaid','333.500,CTAF,CTAF']
-    cy.get('.p-inputtextarea').type( list.join('\n'), {delay:0})
+    const list = ['123-456-7890,KAWO CD,Phone', '123.450,Weather,Weather', '222.222,Test,Navaid', '333.500,CTAF,CTAF']
+    cy.get('.p-inputtextarea').type(list.join('\n'), { delay: 0 })
     cy.get('[aria-label="Apply"]').click()
 
     cy.get('.tile2 .freq0 .freqType').should('not.exist')
