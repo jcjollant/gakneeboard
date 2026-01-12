@@ -115,20 +115,38 @@ onMounted(() =>{
       // console.log('[TemplateViewer.onMounted] temporaryTemplate', temporaryTemplate)
       activeTemplate.value = temporaryTemplate;
 
-      TemplateData.get(templateId).then( template => {
-        if(template.id) {
-          loadTemplate(template, true)
-          emits('template',template)
-        } else {
-          toaster.error( 'Load Template','Invalid Template Id ' + route.params.id)
-          // restore last template
-          loadTemplate(LocalStoreService.getTemplate())
-        }
-      }).catch( (err) => {
-          toaster.error( 'Load Template','Could not reach server')
-      })
+      // Check if we have a local copy that matches the expected version
+      const localTemplate = LocalStoreService.getTemplateById(templateId)
+      if (userTemplate && localTemplate && localTemplate.ver >= userTemplate.ver) {
+          // console.debug('[TemplateViewer.onMounted] loading from local cache', templateId)
+          loadTemplate(localTemplate, true)
+          emits('template', localTemplate)
+      } else {
+        // console.debug('[TemplateViewer.onMounted] loading from backend', templateId)
+        TemplateData.get(templateId).then( template => {
+          if(template.id) {
+            loadTemplate(template, true)
+            // Save to local cache
+            LocalStoreService.saveTemplateById(template.id, template)
+            emits('template',template)
+          } else {
+            toaster.error( 'Load Template','Invalid Template Id ' + route.params.id)
+            // restore last template
+            loadTemplate(LocalStoreService.getTemplate())
+          }
+        }).catch( (err) => {
+            if(localTemplate) {
+              // fallback to local cache if network fails
+              toaster.warning( 'Load Template','Could not reach server, using cached version')
+              loadTemplate(localTemplate, true)
+              emits('template', localTemplate)
+            } else {
+              toaster.error( 'Load Template','Could not reach server')
+            }
+        })
+      }
     } else { 
-      // no template id => load local template
+      // no template id => load local template active session
       loadTemplate(LocalStoreService.getTemplate())
     }
   } catch(e) {
@@ -195,6 +213,9 @@ function doSave() {
         activeTemplate.value.ver = t.ver
         // update code
         activeTemplate.value.code = t.code
+
+        // Update local cache with new version
+        LocalStoreService.saveTemplateById(activeTemplate.value.id, activeTemplate.value)
 
         // mark the template as not modified anymore
         templateModified.value = false

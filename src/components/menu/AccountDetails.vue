@@ -1,7 +1,7 @@
 <template>
-    <Dialog modal header="Account Details">
+    <Dialog modal :header="showSettings ? 'Account Settings' : 'Account Details'">
       <div class="accountDialog">
-        <div class="account mb-5">
+        <div class="account mb-5" v-if="!showSettings">
             <div class="key">Name</div><div class="value accountName">{{user.name}}</div>
             <div class="key">Account Type</div>
             <div class="value accountType">
@@ -24,12 +24,6 @@
                 <div class="printCredits" :class="{'maxedOut':user.printCredits == 0 }">{{ user.printCredits }}</div>
             </div>
             <div style="grid-column: span 2"><hr></div>
-            <div class="key">Airports Cached</div>
-            <div class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                <div class="airportCount">{{ airportCount }}</div>
-                <Button icon="pi pi-trash" text severity="danger" @click="deleteAirports" v-if="airportCount > 0" title="Empty Airports Cache" />
-            </div>
-            <div style="grid-column: span 2"><hr></div>
             <div class="key">Ambassador Link</div>
             <div class="value">
                 <div style="display: flex; gap: 0.5rem; align-items: center;">
@@ -38,7 +32,24 @@
                 </div>
             </div>
         </div>
+        
+        <div class="account mb-5" v-else>
+            <div class="key">Airports Cached</div>
+            <div class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                <div class="airportCount">{{ airportCount }}</div>
+                <Button icon="pi pi-trash" text severity="danger" @click="deleteAirports" v-if="airportCount > 0" title="Empty Airports Cache" />
+            </div>
+            <div class="key">Kneeboards Cached</div>
+            <div class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                <div class="templateCount">{{ templateCount }}</div>
+                <Button icon="pi pi-trash" text severity="danger" @click="deleteTemplates" v-if="templateCount > 0" title="Empty Kneeboards Cache" />
+            </div>
+        </div>
+
         <div class="actions">
+          <div style="flex-grow: 1; text-align: left;">
+             <Button icon="pi pi-cog" :text="!showSettings" rounded @click="showSettings = !showSettings" :title="showSettings ? 'Back to Details' : 'Settings'" />
+          </div>
           <Button link label="Sign Out" class="btnSignOut" @click="emits('signout')"></Button>
           <Button label="Stay In Pattern" @click="emits('close')"></Button>
         </div>
@@ -66,7 +77,9 @@ import { currentUser } from '../../assets/data';
 
 const emits = defineEmits(['close','signout'])
 const airportCount = ref(0)
+const templateCount = ref(0)
 const pagesCount = ref(0)
+const showSettings = ref(false)
 const props = defineProps({
   user: {type: CurrentUser, required: true}
 })
@@ -79,8 +92,10 @@ const unsubscribe = ref<(() => void) | undefined>(undefined)
 onMounted(() => {
     loadProps(props)
     airportCount.value = LocalStoreService.airportRecentsGet().length
+    templateCount.value = LocalStoreService.templateCount()
     unsubscribe.value = LocalStoreService.subscribe(() => {
         airportCount.value = LocalStoreService.airportRecentsGet().length
+        templateCount.value = LocalStoreService.templateCount()
     })
 })
 
@@ -125,6 +140,12 @@ function deleteAirports() {
     LocalStoreService.airportRemoveAll()
     airportCount.value = 0
     toaster.success('Local Storage', 'Airports deleted')
+}
+
+function deleteTemplates() {
+    LocalStoreService.templateRemoveAll()
+    templateCount.value = 0
+    toaster.success('Local Storage', 'Kneeboards deleted')
 }
 
 function copyAmbassadorLink() {

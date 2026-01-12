@@ -14,6 +14,7 @@ export class LocalStoreService {
     static template = 'template'
     static templateOld = 'sheet'
     static templateOlder = 'page1'
+    static templatePrefix = 'template-'
     static thumbnailPrefix = 'tthumb-'
     static flightInfo = 'flightInfo'
     static attribution = 'channel-attribution'
@@ -258,9 +259,33 @@ export class LocalStoreService {
         this.approachCleanUp()
     }
 
-    // Save sheet data to browser
     static saveTemplate(data: any) {
         localStorage.setItem(LocalStoreService.template, JSON.stringify(data))
+    }
+
+    static saveTemplateById(id: number, template: Template) {
+        localStorage.setItem(LocalStoreService.templatePrefix + id, JSON.stringify(template))
+    }
+
+    static getTemplateById(id: number): Template | undefined {
+        const stringData = localStorage.getItem(LocalStoreService.templatePrefix + id)
+        if (stringData) return Template.parse(JSON.parse(stringData))
+        return undefined
+    }
+
+    static templateCount(): number {
+        return Object.keys(localStorage).filter(key => key.startsWith(LocalStoreService.templatePrefix) && !isNaN(Number(key.substring(LocalStoreService.templatePrefix.length)))).length
+    }
+
+    static templateRemoveAll() {
+        const keys = Object.keys(localStorage)
+        for (const key of keys) {
+            // Check if key starts with prefix and followed by a number
+            if (key.startsWith(LocalStoreService.templatePrefix) && !isNaN(Number(key.substring(LocalStoreService.templatePrefix.length)))) {
+                localStorage.removeItem(key)
+            }
+        }
+        LocalStoreService.notify()
     }
 
     /**
