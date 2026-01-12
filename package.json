@@ -23,6 +23,7 @@
     "pnpm": "^9.0.4",
     "primeicons": "^7.0.0",
     "primevue": "^3.52.0",
+    "qrcode.vue": "^3.6.0",
     "vue": "^3.2.45",
     "vue-router": "^4.5.0"
   },

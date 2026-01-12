@@ -1,5 +1,5 @@
 <template>
-    <Dialog modal :header="showSettings ? 'Account Settings' : 'Account Details'">
+    <Dialog v-bind="$attrs" modal :header="showSettings ? 'Account Settings' : 'Account Details'">
       <div class="accountDialog">
         <div class="account mb-5" v-if="!showSettings">
             <div class="key">Name</div><div class="value accountName">{{user.name}}</div>
@@ -28,6 +28,7 @@
             <div class="value">
                 <div style="display: flex; gap: 0.5rem; align-items: center;">
                     <Button label="Copy" icon="pi pi-copy" size="small" @click="copyAmbassadorLink" title="Send this link to people you want to help" />
+                    <Button icon="pi pi-qrcode" size="small" @click="showQrcode = true" title="Show QR Code" />
                     <Button icon="pi pi-question-circle" text rounded @click="UserUrl.open(UserUrl.ambassador)" title="Tell me how this works" />
                 </div>
             </div>
@@ -55,10 +56,15 @@
         </div>
       </div>
     </Dialog>
+    <Dialog v-model:visible="showQrcode" modal header="Ambassador QR Code" :style="{ width: '300px' }">
+        <div style="display: flex; justify-content: center;">
+            <QrcodeVue :value="ambassadorLink" :size="200" level="H" />
+        </div>
+    </Dialog>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch, computed } from 'vue';
 import { AccountType } from '../../models/AccounType';
 import { CheckoutService } from '../../services/CheckoutService'
 import { LocalStoreService } from '../../services/LocalStoreService';
@@ -73,6 +79,7 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import UpdateButton from './UpdateButton.vue';
 import { currentUser } from '../../assets/data';
+import QrcodeVue from 'qrcode.vue'
 
 
 const emits = defineEmits(['close','signout'])
@@ -80,6 +87,7 @@ const airportCount = ref(0)
 const templateCount = ref(0)
 const pagesCount = ref(0)
 const showSettings = ref(false)
+const showQrcode = ref(false)
 const props = defineProps({
   user: {type: CurrentUser, required: true}
 })
@@ -148,9 +156,12 @@ function deleteTemplates() {
     toaster.success('Local Storage', 'Kneeboards deleted')
 }
 
+const ambassadorLink = computed(() => {
+    return `${UserUrl.main}?utm_source=ambassador&utm_medium=referral&utm_campaign=${user.value.sha256.slice(-10)}`
+})
+
 function copyAmbassadorLink() {
-    const link = `${UserUrl.main}?utm_source=ambassador&utm_medium=referral&utm_campaign=${user.value.sha256.slice(-10)}`
-    navigator.clipboard.writeText(link).then(() => {
+    navigator.clipboard.writeText(ambassadorLink.value).then(() => {
         toaster.success('Clipboard', 'Ambassador link copied')
     })
 }

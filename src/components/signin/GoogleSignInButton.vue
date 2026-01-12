@@ -29,7 +29,7 @@ return new Promise<void>((resolve, reject) => {
     
     script.onload = () => {
         googleScriptLoaded.value = true
-        const google = window['google'] 
+        const google = (window as any).google 
         google.accounts.id.initialize({
             client_id: '864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent.com',
             callback: onSignIn
@@ -46,7 +46,7 @@ return new Promise<void>((resolve, reject) => {
 })
 }
 
-function onSignIn(payload) {
+function onSignIn(payload:any) {
     // console.log('[GoogleSignInButton.onSignIn]');
     emits('success', payload)
 }
