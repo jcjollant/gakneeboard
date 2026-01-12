@@ -1,6 +1,6 @@
 <template>
     <div class="flightDebrief contentPage">
-        <Header title="Flight Debrief" :page="true" :displayMode="false"
+        <Header title="Flight Debrief" :page="true" :displayMode="false" leftButton="settings"
             @replace="emits('replace')" @click="toggleEditMode"></Header>
         <div v-if="editMode" class="editMode">
             <Textarea class='list' rows="25" cols="48" v-model="categoriesText" placeholder="Enter one category per line, up to 25 lines" style="resize:none"></Textarea>
@@ -66,7 +66,7 @@ watch( props, () => {
     loadProps(props)
 })
 
-function addCategories(list) {
+function addCategories(list:string[]) {
     let newText = categoriesText.value
     if(newText.length) {
         newText += '\n'
