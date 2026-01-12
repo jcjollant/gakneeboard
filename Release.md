@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 01/11/2026 - 6.3.1 - Radio Tile Settings. New Page Selection. Ambassadors QR Code. Template cache
 ## 01/10/2026 - 6.3.0 - Update Ambassadors conditions
 ## 01/09/2026 - 6.2.18 - Apple Obfuscated accounts error message
 ## 01/09/2026 - 6.2.17 - Checklist item editor improvements (2s debounce)
