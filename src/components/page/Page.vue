@@ -25,7 +25,7 @@
         @replace="onReplace" @update="onUpdate" />
     <StripPage v-else-if="type==PageType.strips" :data="pageData"
         @replace="onReplace" @update="onUpdate" />
-    <SelectionPage v-else @replace="onReplace" :format="format" />
+    <SelectionPage v-else @replace="onReplace" @load="onLoad" :format="format" />
 </template>
 
 <script setup lang="ts">
@@ -50,6 +50,7 @@ import PersonalMinimumsPage from './PersonalMinimumsPage.vue'
 import SelectionPage from './SelectionPage.vue'
 import StripPage from '../strips/StripPage.vue'
 import TilePage from '../tiles/TilePage.vue'
+import { DemoData } from '../../assets/DemoData'
 
 const confirm = useConfirm()
 const emits = defineEmits(['update'])
@@ -81,6 +82,11 @@ watch( props, async(newP, oldP) => {
     // console.log('[Page.watch]', newP, oldP);
     loadProps(props)
 })
+
+function onLoad(index:number) {
+    const newPageData = DemoData.getPage(index)
+    emits('update', newPageData)
+}
 
 
 // Page must be replaced with new type

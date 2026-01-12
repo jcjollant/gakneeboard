@@ -1,32 +1,33 @@
 <template>
     <div class="contentPage" :class="{'fullpage': isFullPage}">
         <Header :title="'Pick Your Page Style'" :replace="false" :clickable="false"></Header>
-        <div class="topTwo">
-            <div class="clickable preview" @click="replacePage(PageType.tiles)" :title="allPages[0].tooltip">
-                <div>Tiles</div>
-                <img src="/thumbnails/vfrflight.png"></img>
-            </div>
-            <div class="clickable preview" @click="replacePage(PageType.checklist)"  :title="allPages[2].tooltip">
-                <div>Checklist</div>
-                <img src="/thumbnails/page-checklist.png"></img>
+         
+        <div v-if="templateMode" class="template-grid">
+             <div class="clickable preview" v-for="template in allTemplates" :title="template.tooltip" @click="loadPage(template.demoPage)">
+                <div>{{ template.name }}</div>
+                <img :src="template.thumbnail"></img>
             </div>
         </div>
 
-        <div class="list">
+        <div v-else class="list">
             <div class="section wide">
-                <!-- <Separator name="More Choices" class="separator" /> -->
-                <!-- <div class="grid">
-                    <FAButton v-for="page in [0,1,2]" :label="allPages[page].name" :title="allPages[page].tooltip" :icon="allPages[page].icon" class="grow"
-                        @click="replacePage(allPages[page].type)"/>
-                </div> -->
+                <Separator name="Composable"/>
+           </div>
+             <div class="section wide grid">
+                <FAButton v-for="page in [0,2]" :label="allPages[page].name" :title="allPages[page].tooltip" :icon="allPages[page].icon" class="grow"
+                    @click="replacePage(allPages[page].type)"/>
             </div>
             <template v-for="section in filteredSections">
                 <div class="section">
-                    <Separator :name="section.name"/>
+                    <Separator :name="section.name" :level="1"/>
                     <FAButton v-for="page in section.pages" :label="page.name" :title="page.tooltip" :icon="page.icon"
                         @click="replacePage(page.type)"/>
                 </div>
             </template>
+        </div>
+
+        <div class="footer-toggle">
+             <EitherOr v-model="templateMode" either="From Templates" or="Craft Your Own" :small="false"/>
         </div>
     </div>
 </template>
@@ -40,6 +41,8 @@ import { TemplateFormat } from '../../models/TemplateFormat'
 import Header from '../shared/Header.vue'
 import FAButton from '../shared/FAButton.vue'
 import Separator from '../shared/Separator.vue'
+import EitherOr from '../shared/EitherOr.vue'
+import { DemoData } from '../../assets/DemoData'
 
 const props = defineProps({
     format: { type: String, default: TemplateFormat.Kneeboard }
@@ -47,7 +50,7 @@ const props = defineProps({
 
 const isFullPage = computed(() => props.format === TemplateFormat.FullPage)
 
-const emits = defineEmits(['replace'])
+const emits = defineEmits(['replace', 'load'])
 
 enum Section {
     composable = 'Composable',
@@ -84,6 +87,28 @@ const sections = ref([
     Section.cosmetics,
 ])
 
+class TemplateItem {
+    name: string;
+    thumbnail: string;
+    tooltip: string;
+    demoPage: number;
+    constructor(name: string, thumbnail: string, tooltip: string, demoPage: number) {
+        this.name = name
+        this.thumbnail = thumbnail
+        this.tooltip = tooltip
+        this.demoPage = demoPage
+    }
+}
+
+const allTemplates = ref([
+    new TemplateItem('VFR Flight', '/thumbnails/vfrflight.png', 'A 2x3 grid of customizable tiles like Airport, ATIS, Radios, ...', DemoData.VFRFlightPage),
+    new TemplateItem('IFR Training', '/thumbnails/ifrflight.png', 'A 2x3 grid of customizable tiles  with Departure, Radios, Weather and Notes', DemoData.IFRTrainingPage),
+    new TemplateItem('IFR Strips', '/thumbnails/ifr-strips.png', 'A customizable page of horizontal strips tuned for IFR flying', DemoData.IFRStripsPage),
+    new TemplateItem('Checklist', '/thumbnails/checklist-1.png', 'A full page checklist', DemoData.ChecklistPage),
+    new TemplateItem('Long Checklist', '/thumbnails/checklist-3.png', 'A high capacity checklist with 3 columns', DemoData.LongChecklistPage),
+    new TemplateItem('Airport Diagram', '/thumbnails/airport-diagram.png', 'The official FAA airport diagram', DemoData.AirportDiagramPage),
+])
+
 const allPages = ref([
     new PageItem('Tiles', PageType.tiles, 'border-all', 'A 2x3 grid of customizable tiles like Airport, ATIS, Radios, ...', Section.composable, true, true),
     new PageItem('Strips', PageType.strips, 'bars', 'Customizable horizontal strips', Section.cosmetics, true, false),
@@ -96,8 +121,14 @@ const allPages = ref([
     new PageItem('Flight Debrief', PageType.flightDebrief, 'pen-to-square', 'Debrief your flights per topic', Section.debrief, true, false),
     new PageItem('Notes', PageType.notes, 'pen-to-square', 'A blank page to write down instructions', Section.debrief, true, false),
     new PageItem('Cover', PageType.cover, 'image', 'A cover page for your stylish templates', Section.cosmetics, true, false),
-    new PageItem('Blank', PageType.none, 'file', 'A blank page', Section.cosmetics, true, false)
+    new PageItem('Blank', PageType.none, '', 'A blank page', Section.cosmetics, true, false)
 ])
+
+const templateMode = ref(true) // true = Templates, false = Craft
+
+const availableTemplates = computed(() => {
+    return allPages.value.filter(page => isFullPage.value ? page.fullPage : page.smallPage)
+})
 
 // Filter sections based on format
 const filteredSections = computed(() => {
@@ -112,6 +143,10 @@ const filteredSections = computed(() => {
     }).filter(section => section !== null)
 })
 
+function loadPage(index: number) {
+    emits('load', index)
+}
+
 function replacePage(type:PageType) {
     // console.log('[SelectionPage.replacePage]', type)
     emits('replace',type)
@@ -120,6 +155,15 @@ function replacePage(type:PageType) {
 </script>
 
 <style scoped>
+.template-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: min-content; /* Ensure rows don't stretch unnecessarily */
+    padding: 10px;
+    gap: 10px;
+    /* overflow-y: auto; Make it scrollable if it gets too long */
+}
+
 .list {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -127,26 +171,19 @@ function replacePage(type:PageType) {
     gap:10px;
     /* padding-top: 50px; */
 }
-.topTwo {
-    display: flex;
-    flex-flow: row;
-    justify-content: space-around;
-    padding: 10px;
-    font-weight: bold;
-    color: black;
-}
+
 .section {
     display: flex;
     flex-flow: column;
-    gap: 10px;
+    gap: 8px;
 }
 .section.wide {
     grid-column: 1 / span 2;
 }
-.section.wide .grid {
+.section.wide.grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
 }
 .preview {
     display: flex;
@@ -164,7 +201,22 @@ function replacePage(type:PageType) {
 .preview img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    border-radius: 10px;
+    object-fit: contain; /* Changed to contain to show full thumbnail */
+    border-radius: 5px;
+}
+
+.footer-toggle {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    /* background-color: var(--bg-panel); */
+    border-top: 1px solid var(--border);
+    margin-top: auto; /* Push to bottom if parent is flex-col */
+}
+
+.contentPage {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 </style>

@@ -8,6 +8,12 @@ import { PageType } from "./PageType"
 import { SheetName } from "./sheetData"
 
 export class DemoData {
+    static IFRStripsPage = 0
+    static VFRFlightPage = 1
+    static IFRTrainingPage = 2
+    static ChecklistPage = 3
+    static LongChecklistPage = 4
+    static AirportDiagramPage = 5
 
     static demoRadioData = [
         { mhz: 116.8, name: 'SEA VOR', type: FrequencyType.navaid },
@@ -149,17 +155,8 @@ export class DemoData {
             { name: "TOD", "alt": 7500, "th": 81, "mh": 66, "ld": 18.2, "lt": 11.466666666666667, "lf": 1.5, "att": "-", "gs": 95, "fr": 45 },
             { name: "KELN", "alt": 1763.2, "ld": 0, "lt": 0, "lf": 0 }
         ],
-        ff: 53,
-        fr: 13.5,
-        ft: 43.5,
-        mv: -15,
-        md: 0,
-        cta: 105,
-        cff: 9,
-        dr: 500,
-        dff: 6,
+        ff: 53, fr: 13.5, ft: 43.5, mv: -15, md: 0, cta: 105, cff: 9, dr: 500, dff: 6,
     })
-
 
     static page1DemoNavlog = new TemplatePage(PageType.tiles, 'Back Page', [
         { "id": 0, name: "airport", data: { code: "krnt", "rwy": "16-34" } },
@@ -169,8 +166,6 @@ export class DemoData {
         { "id": 4, name: "airport", data: { code: "KELN", "rwy": "11-29", "rwyOrientation": "magnetic", "corners": ["weather", "twr", "field", "tpa"] } },
         { "id": 5, name: "navlog", data: {} }
     ])
-
-
 
     static page0DemoReference = new TemplatePage(PageType.tiles, 'Reference 1', [
         { name: "vfr", data: { mode: "clouds", "airport": "" } },
@@ -244,7 +239,19 @@ export class DemoData {
     static page2IFRFlight = new TemplatePage(PageType.approach, "Approach 1", { "airport": "S43", "pdf": 0 })
     // static page3IFRFlight = new TemplatePage(PageType.approach, "Approach 2", {"airport":"KAWO","pdf":1})
 
-    static page0SeattleAirports = new TemplatePage(PageType.tiles, 'Page1',
+
+    static pageIFRStrips = new TemplatePage(PageType.strips, 'Page1',
+        [
+            { type: "radio", data: { code: "KBFI" } },
+            { type: "atis", data: {} },
+            { type: "craft", data: {} },
+            { type: "taxi", data: {} },
+            { type: "radio", data: { code: "KPAE" } },
+            { type: "atis", data: {} },
+            { type: "notes", data: {} }
+        ]
+    )
+    static page0IFRTraining = new TemplatePage(PageType.tiles, 'Page1',
         [
             { name: "airport", data: { code: "KBFI", "rwy": "14R-32L", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
             { name: "airport", data: { code: "KBFI", "rwy": "14L-32R", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
@@ -278,6 +285,8 @@ export class DemoData {
     )
 
     static pagePaperNavlog = new TemplatePage(PageType.paperNavlog, 'Paper NavLog')
+
+    static pageDemoAirportDiagram = new TemplatePage(PageType.diagram, 'Airport Diagram', { airport: "KBFI" })
 
     static acronyms(): Template {
         return new Template('Acronyms', 'Popular Acronyms', false, [DemoData.page0Acronyms, DemoData.page1Acronyms, DemoData.page2Acronyms])
@@ -326,8 +335,8 @@ export class DemoData {
             return DemoData.ifrstrips()
         } else if (name == SheetName.reference) {
             return DemoData.reference()
-        } else if (name == SheetName.seattle) {
-            return DemoData.seattleAirports()
+            // } else if (name == SheetName.seattle) {
+            //     return DemoData.seattleAirports()
         } else if (name == SheetName.paperNavlog) {
             return DemoData.paperNavlog()
         }
@@ -358,9 +367,9 @@ export class DemoData {
         return new Template('Reference Card', 'Two Pages of References Tiles', false, [DemoData.page0DemoReference, DemoData.page1DemoReference])
     }
 
-    static seattleAirports(): Template {
-        return new Template('Seattle Airports', '24 Seattle area GA airports (Full Page)', false, [DemoData.page0SeattleAirports, DemoData.page1SeattleAirports], TemplateFormat.FullPage)
-    }
+    // static seattleAirports(): Template {
+    //     return new Template('Seattle Airports', '24 Seattle area GA airports (Full Page)', false, [DemoData.page0SeattleAirports, DemoData.page1SeattleAirports], TemplateFormat.FullPage)
+    // }
 
     static skyhawk(): Template {
         return new Template('VFR Flight', 'VFR Reference Template', false, [DemoData.page0DemoVFR, DemoData.page1DemoVFR])
@@ -368,6 +377,24 @@ export class DemoData {
 
     static tiles(): Template {
         return new Template('Tiles Demo', 'Every Tile Available on GA Kneeboard', false, [DemoData.page0DemoTiles, DemoData.page1DemoTiles])
+    }
+
+    static getPage(index: number): TemplatePage | undefined {
+        switch (index) {
+            case DemoData.IFRStripsPage:
+                return DemoData.pageIFRStrips
+            case DemoData.VFRFlightPage:
+                return DemoData.page0DemoVFR
+            case DemoData.IFRTrainingPage:
+                return DemoData.page0IFRFlight
+            case DemoData.ChecklistPage:
+                return DemoData.page0DemoChecklist
+            case DemoData.LongChecklistPage:
+                return DemoData.page2DemoChecklist
+            case DemoData.AirportDiagramPage:
+                return DemoData.pageDemoAirportDiagram
+        }
+        return undefined
     }
 
     static paperNavlog(): Template {
