@@ -25,7 +25,7 @@
         @replace="onReplace" @update="onUpdate" />
     <StripPage v-else-if="type==PageType.strips" :data="pageData"
         @replace="onReplace" @update="onUpdate" />
-    <SelectionPage v-else @replace="onReplace" @load="onLoad" :format="format" />
+    <SelectionPage v-else @replace="onReplace" @load="onLoad" @delete="onDelete" :format="format" />
 </template>
 
 <script setup lang="ts">
@@ -53,7 +53,7 @@ import TilePage from '../tiles/TilePage.vue'
 import { DemoData } from '../../assets/DemoData'
 
 const confirm = useConfirm()
-const emits = defineEmits(['update'])
+const emits = defineEmits(['update', 'delete'])
 const pageData = ref({})
 const type = ref(PageType.tiles)
 
@@ -82,6 +82,10 @@ watch( props, async(newP, oldP) => {
     // console.log('[Page.watch]', newP, oldP);
     loadProps(props)
 })
+
+function onDelete() {
+    emits('delete')
+}
 
 function onLoad(index:number) {
     const newPageData = DemoData.getPage(index)

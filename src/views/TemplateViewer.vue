@@ -35,7 +35,7 @@
       <div v-if="activeTemplate" class="pageAll" :class="{'editor':showEditor}">
         <div v-for="(data,index) in activeTemplate.data" class="pageGrid" :class="{'fullpage-grid': activeTemplate.format === TemplateFormat.FullPage}">
           <Page :data="data" :class="'page'+index"
-            :format="activeTemplate.format" @update="onPageUpdate(index, $event)" />
+            :format="activeTemplate.format" @update="onPageUpdate(index, $event)" @delete="onPageDelete(index)" />
           
           <VerticalActionBar v-if="showEditor" :offset="index" :last="index == activeTemplate.data.length - 1"
             @action="onAction" />
@@ -499,6 +499,13 @@ function onExported(format:any) {
     console.log('[Menu.onExportExported] failed ' + e)
     toaster.error( 'Export Error', e.message)
   })  
+}
+
+function onPageDelete(index:number) {
+  // console.debug('[TemplateViewer.onPageDelete]', index)
+    templateModified.value = true
+    activeTemplate.value.data.splice(index, 1)
+    saveTemplateToLocalStoreService()
 }
 
 function onPageUpdate(index:number, pageData:TemplatePage) {

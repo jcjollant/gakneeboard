@@ -27,6 +27,9 @@
         </div>
 
         <div class="footer-toggle">
+             <div v-if="canDelete" class="delete-btn" @click="emits('delete')" title="Delete Page">
+                <font-awesome-icon :icon="['fas', 'trash']" />
+             </div>
              <EitherOr v-model="templateMode" either="From Templates" or="Craft Your Own" :small="false"/>
         </div>
     </div>
@@ -45,12 +48,13 @@ import EitherOr from '../shared/EitherOr.vue'
 import { DemoData } from '../../assets/DemoData'
 
 const props = defineProps({
-    format: { type: String, default: TemplateFormat.Kneeboard }
+    format: { type: String, default: TemplateFormat.Kneeboard },
+    canDelete: { type: Boolean, default: true }
 })
 
 const isFullPage = computed(() => props.format === TemplateFormat.FullPage)
 
-const emits = defineEmits(['replace', 'load'])
+const emits = defineEmits(['replace', 'load', 'delete'])
 
 enum Section {
     composable = 'Composable',
@@ -209,9 +213,23 @@ function replacePage(type:PageType) {
     display: flex;
     justify-content: center;
     padding: 10px;
+    position: relative;
     /* background-color: var(--bg-panel); */
     border-top: 1px solid var(--border);
     margin-top: auto; /* Push to bottom if parent is flex-col */
+}
+
+.delete-btn {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: var(--danger, #ff4444);
+    cursor: pointer;
+}
+.delete-btn:hover {
+    color: red;
 }
 
 .contentPage {
