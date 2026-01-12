@@ -29,6 +29,7 @@ import { TemplateFormat } from '../../models/TemplateFormat';
 import Tile from './Tile.vue'
 import TileSettings from './TileSettings.vue';
 import AirportTileSettings from '../airport/AirportTileSettings.vue';
+import RadioTileSettings from '../radios/RadioTileSettings.vue';
 import ChecklistSettings from '../checklist/ChecklistSettings.vue';
 import ClearanceSettings from '../clearance/ClearanceSettings.vue';
 import { UserUrl } from '../../lib/UserUrl';
@@ -57,6 +58,8 @@ const settingsComponent = computed(() => {
   switch (editingTileData.value.name) {
     case TileType.airport:
       return AirportTileSettings;
+    case TileType.radios:
+      return RadioTileSettings;
     case TileType.checklist:
       return ChecklistSettings;
     case TileType.clearance:
@@ -163,6 +166,9 @@ const tileUrls: Record<string, { help?: string, video?: string }> = {
     },
     [TileType.checklist]: {
         help: UserUrl.checklistGuide
+    },
+    [TileType.radios]: {
+        help: UserUrl.radioTileGuide
     },
 }
 
