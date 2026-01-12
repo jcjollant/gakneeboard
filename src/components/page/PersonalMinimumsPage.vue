@@ -1,6 +1,6 @@
 <template>
   <div class="contentPage">
-    <Header :title="'Personal Minimums'" :replace="true" :clickable="true" :displayMode="false" @replace="$emit('replace')"></Header>
+    <Header :title="'Personal Minimums'" :replace="true" :clickable="true" :displayMode="false" leftButton="" @replace="$emit('replace')"></Header>
     <div class="ritz grid-container" dir="ltr">
       <table class="waffle" cellspacing="0" cellpadding="0">
         <tbody>
