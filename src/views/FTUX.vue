@@ -22,7 +22,7 @@
             <div class="hero-container">
                 <div class="hero-content">
                     <div v-if="greeting" class="greeting-badge">{{ greeting }}</div>
-                    <h1 class="hero-title">Make Your Kneeboard Work For You</h1>
+                    <h1 class="hero-title">Better Kneeboards For Safer Pilots</h1>
                     <p class="hero-subtitle">Improve your situational awareness and confidence with a custom kneeboard template that gives you exactly what you want when you need it.</p>
                     <button class="cta-primary" @click="scrollToFeatures">Create Your First Template</button>
                     <p class="trust-indicator">Join 150+ pilots using GA Kneeboard</p>
