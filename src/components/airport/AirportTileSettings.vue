@@ -3,7 +3,7 @@
         <!-- Display Mode Section -->
         <Separator name="Display" class="separator" />
         <div class="display-mode-selector">
-            <OneChoice :choices="modeChoices" v-model="selectedModeChoice" :thinpad="true" />
+            <OneChoice :choices="modeChoices" v-model="selectedModeChoice" />
             <EitherOr either="Normal" or="Wide" v-model="isNormal" />
         </div>
         <!-- Airport Section -->
