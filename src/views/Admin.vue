@@ -52,6 +52,8 @@
                 <div class="prop-value">{{ userAccountType }}</div>
                 <div class="prop-name">Eula</div>
                 <div class="prop-value">{{ userEula }}</div>
+                <div class="prop-name">Create Time</div>
+                <div class="prop-value">{{ userCreateTime }}</div>
             </div>
 
             <h2>Usage 90</h2>
@@ -129,6 +131,7 @@ const userName = ref('')
 const userId = ref(0)
 const userAccountType = ref('')
 const userEula = ref(0)
+const userCreateTime = ref('')
 const usage = ref<Usage[]>([])
 const rawJsonData = ref({})
 const selectedApi = ref('profile')
@@ -210,6 +213,11 @@ function handleSubmit() {
         userEmail.value = userProfile.email
         userAccountType.value = userProfile.accountType
         userEula.value = userProfile.eula
+        if (userProfile.create_time) {
+            userCreateTime.value = new Date(userProfile.create_time).toLocaleDateString()
+        } else {
+            userCreateTime.value = 'N/A'
+        }
         usage.value = userProfile.usage.map((u:any) => new Usage(u.usage_type, u.count))
         rawJsonData.value = res.data
     }).catch(err => {
