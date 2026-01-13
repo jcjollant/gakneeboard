@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 01/12/2026 - 6.3.3 - GAK Banner
 ## 01/12/2026 - 6.3.2 - Updated FTUX title to "Better Kneeboards For Safer Pilots"
 ## 01/11/2026 - 6.3.1 - Radio Tile Settings. New Page Selection. Ambassadors QR Code. Template cache
 ## 01/10/2026 - 6.3.0 - Update Ambassadors conditions
