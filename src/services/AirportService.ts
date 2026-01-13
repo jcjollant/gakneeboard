@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { Airport } from '../models/Airport'
 import { AirportCreationRequest } from '../models/AirportCreationRequest'
+import { Notam } from '../models/Notam'
 import { GApiUrl } from '../lib/GApiUrl'
 import { LocalStoreService } from './LocalStoreService'
 import { backend, sessionAirports, currentUser } from '../assets/data'
@@ -225,4 +226,13 @@ export async function createAirport(request: AirportCreationRequest) {
             reportError('[AirportService.createAirport] error ' + JSON.stringify(error))
             throw error
         })
+}
+
+export async function getNotams(airportCode: string): Promise<Notam[]> {
+    const notams: Notam[] = [];
+    // const count = Math.floor(Math.random() * 10) + 1;
+    // for (let i = 0; i < count; i++) {
+    //     notams.push({ text: "Mock Notam" });
+    // }
+    return notams;
 }

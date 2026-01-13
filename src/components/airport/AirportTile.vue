@@ -39,15 +39,20 @@
                     @click="onCornerEdit(2, $event)"/>
                 <Corner v-if="!expanded"  class="corner bottom right" :airport="airportData" :data="corners[3]"  :runway="mainRunway"  id="corner3"
                     @click="onCornerEdit(3, $event)"/>
+                    
+                <div v-if="notamCount && notamCount > 0" class="notam-badge" @click.stop="onNotamBadgeClick" title="View Notams">
+                    {{ notamCount }}
+                </div>
             </div>
             <PlaceHolder v-else title="No Airport" />
         </div>
+        <NotamListDialog :visible="showNotamsDialog" :notams="notamsList" :airportCode="airportCode" :airportName="title" @close="showNotamsDialog = false" />
     </div>    
 </template>
 
 <script setup lang="ts">
 import {ref, onMounted, watch} from 'vue';
-import { getAirport } from '../../services/AirportService'
+import { getAirport, getNotams } from '../../services/AirportService'
 import { DisplayModeAirport, DisplayModeChoice } from '../../models/DisplayMode';
 import { Airport, Runway } from '../../models/Airport.ts';
 import { AirportTileConfig } from './AirportTileConfig.ts';
@@ -62,6 +67,8 @@ import CornerConfig from './CornerConfig.vue';
 import Header from '../../components/shared/Header.vue'
 import PlaceHolder from '../../components/shared/PlaceHolder.vue'
 import RunwaySketch from './RunwaySketch.vue'
+import NotamListDialog from './NotamListDialog.vue'
+import { Notam } from '../../models/Notam.ts';
 
 const defaultMode = DisplayModeAirport.RunwaySketch
 const emits = defineEmits(['replace','update', 'settings'])
@@ -78,6 +85,9 @@ const elevation = ref()
 const tpa = ref()
 const airportCode = ref('') // shortcut to airportData.value.code
 const aptDiagram = ref('')
+const notamCount = ref(0)
+const notamsList = ref<Notam[]>([])
+const showNotamsDialog = ref(false)
 
 const airportData = ref<Airport|undefined>(undefined)
 const runwayViews = ref(<RunwayViewSettings[]>[])
@@ -186,6 +196,12 @@ function loadProps(newProps:any) {
             }
         })
     })
+
+    // load notams
+    getNotams(propsConfig.code).then(notams => {
+        notamsList.value = notams
+        notamCount.value = notams.length
+    })
 }
 
 onMounted(() => {
@@ -244,6 +260,10 @@ function onHeaderClick() {
     // Maybe just do nothing or bring up settings?
         emits('settings')
 }    
+
+function onNotamBadgeClick() {
+    showNotamsDialog.value = true
+}
 
 // Settings have been updated in edit mode
 // Show new Airport and runway(s)
@@ -449,5 +469,23 @@ function saveConfig() {
 .smallRunway {
     width: 120px;
     height: 150px;
+}
+
+.notam-badge {
+    position: absolute;
+    top: 45px;
+    left: 5px;
+    background-color: #e00;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 10;
+    cursor: pointer;
 }
 </style>
