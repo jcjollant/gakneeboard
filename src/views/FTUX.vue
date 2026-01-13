@@ -190,6 +190,13 @@
                 </div>
             </div>
         </section>
+
+        <!-- Banner -->
+        <section class="banner-section">
+            <div class="container flex-center">
+                <GakBanner />
+            </div>
+        </section>
     </div>
 </template>
 
@@ -199,6 +206,7 @@ import { SheetName, ThumbnailImage } from '../assets/sheetData'
 import { useRouter, useRoute } from 'vue-router'
 import { LocalStoreService } from '../services/LocalStoreService'
 import { affiliates } from '../lib/affiliates'
+import GakBanner from '../components/ads/GakBanner.vue'
 
 class Demo {
     title: string
@@ -804,5 +812,18 @@ h2 {
         flex-direction: column;
         gap: 1rem;
     }
+}
+
+.banner-section {
+    padding: 2rem 0;
+    background: #f8fafc;
+    display: flex;
+    justify-content: center;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 </style>
