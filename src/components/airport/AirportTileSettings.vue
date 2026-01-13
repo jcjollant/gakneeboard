@@ -26,7 +26,7 @@
                         @click="selectRunway(rwy.name)">
                         <div class="rwy-btn-content">
                             <span class="rwy-name">{{ rwy.name }}</span>
-                            <span class="rwy-len">{{ Formatter.feet(rwy.length) }}</span>
+                            <span class="rwy-len">{{ Formatter.feet(rwy.length) + getRunwayPositionLabel(rwy.name) }}</span>
                         </div>
                     </Button>
                 <div class="rwyOrientation">
@@ -193,12 +193,16 @@ function loadFromTileData(tile: TileData) {
 
 
 function onUserSelectAirport(newAirport: Airport) {
+    const isSameAirport = newAirport.code === airportCode.value;
+
     isInternalUpdate.value = true;
     loadAirportData(newAirport);
     
-    // Default to first runway if there is one
+    // Default to first runway if there is one, but only if it's a new airport or no selection
     if (newAirport.rwys.length > 0) {
-        selectedRwyNames.value = [newAirport.rwys[0].name];
+        if (!isSameAirport || selectedRwyNames.value.length === 0) {
+            selectedRwyNames.value = [newAirport.rwys[0].name];
+        }
     } else {
         selectedRwyNames.value = [];
     }
@@ -231,6 +235,13 @@ function selectRunway(name: string) {
     }
 }
 
+
+function getRunwayPositionLabel(rwyName: string): string {
+    if (selectedRwyNames.value.length < 2) return '';
+    if (selectedRwyNames.value[0] === rwyName) return ' (L)';
+    if (selectedRwyNames.value[1] === rwyName) return ' (R)';
+    return '';
+}
 
 function emitUpdate() {
     // Build new config object
