@@ -2,6 +2,7 @@
 # Format is {today's date} - {version number} - {change description}
 # REMINDER: Always use `date +"%m/%d/%Y"` command to get today's date. Always match version number to data.js version constant
 
+## 01/13/2026 - 6.3.6 - Fixed Runway selection and added position clarification
 ## 01/13/2026 - 6.3.5 - New Flight Strip
 ## 01/13/2026 - 6.3.4 - Added create time to user profile
 ## 01/12/2026 - 6.3.3 - GAK Banner
