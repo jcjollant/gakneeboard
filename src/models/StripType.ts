@@ -3,5 +3,6 @@ export enum StripType {
     craft = 'craft',
     notes = 'notes',
     taxi = 'taxi',
-    radio = 'radio'
+    radio = 'radio',
+    flight = 'flight'
 }

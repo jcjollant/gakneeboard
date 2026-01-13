@@ -8,6 +8,7 @@
                         :edit="editMode" :header="!index || strips[index-1].type != StripType.atis"
                         @action="action(index, $event)"/>
                     <CraftStrip v-else-if="s.type == StripType.craft" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
+                    <FlightStrip v-else-if="s.type == StripType.flight" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
                     <NotesStrip v-else-if="s.type == StripType.notes" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
                     <TaxiStrip v-else-if="s.type == StripType.taxi" :edit="editMode" @action="action(index, $event)" :class="'strip'+index"/>
                     <RadioStrip v-else-if="s.type == StripType.radio" :edit="editMode" @action="action(index, $event)" 
@@ -29,6 +30,7 @@ import { StripType } from '../../models/StripType';
 
 import AtisStrip from '../atis/AtisStrip.vue';
 import CraftStrip from './CraftStrip.vue';
+import FlightStrip from './FlightStrip.vue';
 import Header from '../shared/Header.vue';
 import NotesStrip from '../notes/NotesStrip.vue';
 import SelectionStrip from './SelectionStrip.vue';

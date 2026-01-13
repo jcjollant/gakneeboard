@@ -29,6 +29,7 @@ import { UserUrl } from '../../lib/UserUrl';
 
 const emits = defineEmits(['selection','done'])
 const strips = ref([
+    {name: 'Flight', type: StripType.flight, class: 'stripFlight', title: 'Flight Details', icon:'plane'},
     {name: 'Radio', type: StripType.radio, class: 'stripRadio', title: 'Facility Frequencies strip', icon:'headset'},
     {name: 'ATIS', type: StripType.atis, class: 'stripAtis', title: 'ATIS information strip', icon:'cloud-sun-rain'},
     {name: 'CRAFT', type: StripType.craft, class: 'stripCraft', title: 'Departure Clearance', icon:'plane-circle-check'},
