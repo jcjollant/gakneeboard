@@ -31,7 +31,7 @@ return new Promise<void>((resolve, reject) => {
         googleScriptLoaded.value = true
         const google = (window as any).google 
         google.accounts.id.initialize({
-            client_id: '864395393673-li5elss3gtbhipp6pdjs1pbgbl0866si.apps.googleusercontent.com',
+            client_id: import.meta.env.GAK_GOOGLE_CLIENT_ID,
             callback: onSignIn
         })
         google.accounts.id.renderButton( 
