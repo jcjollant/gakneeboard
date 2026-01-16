@@ -1,0 +1,58 @@
+{
+  "name": "ga-api",
+  "version": "6.3.2",
+  "description": "run `vercel dev` to run the local service",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "debug": "node --debug-brk --inspect ./node_modules/jest/bin/jest -i",
+    "prepare": "husky"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/cheerio": "^0.22.35",
+    "@vercel/blob": "^0.27.3",
+    "@vercel/node": "^3.0.27",
+    "@vercel/postgres": "^0.8.0",
+    "axios": "^1.6.8",
+    "canvas": "^3.1.0",
+    "cheerio": "^1.1.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.19.2",
+    "fast-xml-parser": "^4.5.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.14",
+    "pdfjs-dist": "^5.1.91",
+    "postgres": "^3.4.4",
+    "stripe": "^17.6.0",
+    "vercel": "^48.9.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.24.7",
+    "@babel/preset-env": "^7.24.7",
+    "@babel/preset-typescript": "^7.24.7",
+    "@types/express": "^4.17.21",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^20.12.7",
+    "@types/nodemailer": "^6.4.15",
+    "@types/supertest": "^6.0.3",
+    "babel-jest": "^29.7.0",
+    "husky": "^9.1.7",
+    "jest": "^29.7.0",
+    "supertest": "^7.1.4",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.7.3",
+    "typescript": "^5.4.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jcjollant/ga-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jcjollant/ga-api/issues"
+  },
+  "homepage": "https://github.com/jcjollant/ga-api#readme"
+}

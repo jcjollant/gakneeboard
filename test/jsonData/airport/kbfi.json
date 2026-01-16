@@ -1,0 +1,3858 @@
+{
+    "arp": "SRID=4326;POINT(-122.301944444444 47.5299722222222)",
+    "name": "BOEING FLD/KING COUNTY INTL",
+    "fssId": "SEA",
+    "locId": "BFI",
+    "icaoId": "KBFI",
+    "siteId": "26396.*A",
+    "status": "Operational",
+    "unicom": "122.950",
+    "artccId": "ZSE",
+    "fssName": "SEATTLE",
+    "gliders": 1,
+    "hubType": "Non-Hub",
+    "navaids": [{
+            "city": "SEATTLE",
+            "name": "SEATTLE",
+            "class": "VOT",
+            "distance": 0.1,
+            "location": "SRID=4326;POINT(-122.304281388889 47.5291880555556)",
+            "navaidId": "BFI*VOT",
+            "elevation": 18.6,
+            "faaRegion": "ANM",
+            "frequency": 108.60,
+            "ownerName": "FEDERAL AVIATION ADMIN",
+            "stateCode": "WA",
+            "stateName": "WASHINGTON",
+            "facilityId": "BFI",
+            "facilityType": "VOT",
+            "operatorName": "FEDERAL AVIATION ADMIN",
+            "publicUseFlag": "Y",
+            "bearingToNavaid": 63.6,
+            "hoursOfOperation": "24",
+            "officialFacilityId": "BFI",
+            "commonSystemUsageFlag": "Y"
+        }, {
+            "city": "SEATTLE",
+            "name": "SEATTLE-TACOMA",
+            "class": "VOT",
+            "distance": 4.5,
+            "location": "SRID=4326;POINT(-122.301388888889 47.4555555555556)",
+            "navaidId": "SEA*VOT",
+            "elevation": 461.0,
+            "faaRegion": "ANM",
+            "frequency": 117.50,
+            "ownerName": "FEDERAL AVIATION ADMIN",
+            "stateCode": "WA",
+            "stateName": "WASHINGTON",
+            "facilityId": "SEA",
+            "facilityType": "VOT",
+            "operatorName": "FEDERAL AVIATION ADMIN",
+            "publicUseFlag": "Y",
+            "bearingToNavaid": 359.7,
+            "hoursOfOperation": "24",
+            "officialFacilityId": "SEA",
+            "commonSystemUsageFlag": "Y"
+        }, {
+            "city": "SEATTLE",
+            "name": "SEATTLE",
+            "class": "H-VORTACW",
+            "channel": "115X",
+            "remarks": [{
+                    "remark": "VOR UNUSBL 002-010 BYD 40 NM; 008-023 BYD 20 NM BLW 3500 FT; 008-023 BYD 30 NM BLW 4100 FT; 037-047 BYD 40 NM BLW 12000 FT; 037-047 BYD 46 NM BLW 18000 FT; 048-066 BYD 40 NM; 067-077 BYD 40 NM BLW 12000 FT; 067-077 BYD 56 NM BLW 18000 FT; 078-110 BYD 40 NM; 125-130 BYD 40 NM; 233-273 BYD 8 NM BLW 5500 FT; 233-273 BYD 20 NM BLW 8000 FT; 233-273 BYD 30 NM BLW 10000 FT; 233-273 BYD 35 NM BLW 11000 FT; 250-275 BYD 40 NM; 276-286 BYD 40 NM BLW 10000 FT; 276-286 BYD 60 NM; 287-292 BYD 40 NM; 303-333 BYD 20 NM BLW 2900 FT; 303-333 BYD 30 NM BLW 4000 FT; 305-315 BYD 40 NM BLW 5000 FT;"
+                }, {
+                    "remark": "DME UNUSBL 008-028 BYD 20 NM BLW 4500 FT; 008-028 BYD 30 NM BLW 7000 FT; 203-219 BYD 27 NM; 220-225 BYD 20 NM; 226-239 BYD 27 NM; 240-253 BYD 15 NM; 303-008 BYD 30 NM BLW 3500 FT."
+                }, {
+                    "remark": "TACAN AZM UNUSBL 008-163; 303-008 BYD 30 NM BLW 3500 FT."
+                }, {
+                    "remark": "VOR UNUSBL 305-315 BYD 47 NM BLW 5400 FT; 305-315 BYD 55 NM; 316-327 BYD 40 NM BLW 18000 FT; 328-359 BYD 40 NM; 333-353 BYD 15 NM BLW 3500 FT; 353-008 BYD 20 NM BLW 2900 FT."
+                }
+            ],
+            "distance": 5.7,
+            "location": "SRID=4326;POINT(-122.309616111111 47.4353730555556)",
+            "navaidId": "SEA*VORTAC",
+            "elevation": 348.4,
+            "faaRegion": "ANM",
+            "frequency": 116.80,
+            "ownerName": "FEDERAL AVIATION ADMIN",
+            "stateCode": "WA",
+            "stateName": "WASHINGTON",
+            "facilityId": "SEA",
+            "facilityType": "VORTAC",
+            "operatorName": "FEDERAL AVIATION ADMIN",
+            "publicUseFlag": "Y",
+            "bearingToNavaid": 3.1,
+            "hoursOfOperation": "24",
+            "magneticVariation": "19E",
+            "officialFacilityId": "SEA",
+            "commonSystemUsageFlag": "Y",
+            "magneticVariationYear": "2000"
+        }, {
+            "city": "EVERETT",
+            "name": "PAINE",
+            "class": "L-VORW/DME",
+            "channel": "43X",
+            "distance": 23.4,
+            "location": "SRID=4326;POINT(-122.277801666667 47.9198333333333)",
+            "navaidId": "PAE*VOR/DME",
+            "elevation": 669.2,
+            "faaRegion": "ANM",
+            "frequency": 110.60,
+            "ownerName": "FEDERAL AVIATION ADMIN",
+            "stateCode": "WA",
+            "stateName": "WASHINGTON",
+            "facilityId": "PAE",
+            "facilityType": "VOR/DME",
+            "operatorName": "FEDERAL AVIATION ADMIN",
+            "publicUseFlag": "Y",
+            "bearingToNavaid": 182.4,
+            "hoursOfOperation": "24",
+            "magneticVariation": "20E",
+            "officialFacilityId": "PAE",
+            "commonSystemUsageFlag": "Y",
+            "magneticVariationYear": "1990"
+        }, {
+            "city": "TACOMA",
+            "name": "MCCHORD",
+            "class": "T-TACAN",
+            "channel": "33X",
+            "remarks": [{
+                    "remark": "NO-NOTAM MP 0800-2300Z++ WED."
+                }
+            ],
+            "distance": 24.0,
+            "location": "SRID=4326;POINT(-122.475038888889 47.1476694444444)",
+            "navaidId": "TCM*TACAN",
+            "elevation": 283.4,
+            "faaRegion": "ANM",
+            "frequency": 109.60,
+            "ownerName": "US AIR FORCE",
+            "stateCode": "WA",
+            "stateName": "WASHINGTON",
+            "facilityId": "TCM",
+            "facilityType": "TACAN",
+            "operatorName": "US AIR FORCE",
+            "publicUseFlag": "Y",
+            "bearingToNavaid": 17.0,
+            "hoursOfOperation": "24",
+            "magneticVariation": "15E",
+            "officialFacilityId": "TCM",
+            "commonSystemUsageFlag": "Y",
+            "magneticVariationYear": "2020"
+        }, {
+            "city": "ARLINGTON",
+            "name": "WATON",
+            "class": "LOMW",
+            "distance": 33.3,
+            "location": "SRID=4326;POINT(-122.153911666667 48.07612)",
+            "navaidId": "AW*NDB",
+            "elevation": 65.0,
+            "faaRegion": "ANM",
+            "frequency": 382,
+            "ownerName": "FEDERAL AVIATION ADMINISTRATION",
+            "stateCode": "WA",
+            "stateName": "WASHINGTON",
+            "facilityId": "AW",
+            "facilityType": "NDB",
+            "operatorName": "FEDERAL AVIATION ADMINISTRATION",
+            "publicUseFlag": "Y",
+            "bearingToNavaid": 190.4,
+            "hoursOfOperation": "24",
+            "magneticVariation": "17E",
+            "officialFacilityId": "AW",
+            "commonSystemUsageFlag": "Y",
+            "magneticVariationYear": "2010"
+        }, {
+            "city": "OLYMPIA",
+            "name": "OLYMPIA",
+            "class": "H-VORTACW",
+            "channel": "81X",
+            "remarks": [{
+                    "remark": "TACAN AZM UNUSBL 223-258 BYD 20 NM BLW 4100 FT; 258-283 BYD 30 NM BLW 4100 FT; 358-043 BYD 10 NM BLW 6000 FT; 358-043 BYD 20 NM BLW 7000 FT."
+                }, {
+                    "remark": "DME UNUSBL 223-258 BYD 20 NM BLW 4100 FT; 258-283 BYD 30 NM BLW 4100 FT; 358-043 BYD 10 NM BLW 6000 FT; 358-043 BYD 20 NM BLW 7000 FT."
+                }, {
+                    "remark": "VOR UNUSBL 059-069 BYD 40 NM BLW 10000 FT; 059-069 BYD 63 NM BLW 18000 FT; 070-080 BYD 40 NM; 102-117 BYD 40 NM; 135-145 BYD 40 NM; 154-168 BYD 40 NM BLW 10000 FT; 154-168 BYD 54 NM; 169-220 BYD 40 NM; 225-297 BYD 40 NM; 313-328 BYD 40 NM BLW 10000 FT."
+                }
+            ],
+            "distance": 41.5,
+            "location": "SRID=4326;POINT(-122.901833333333 46.9716388888889)",
+            "navaidId": "OLM*VORTAC",
+            "elevation": 200.0,
+            "faaRegion": "ANM",
+            "frequency": 113.40,
+            "ownerName": "FEDERAL AVIATION ADMIN",
+            "stateCode": "WA",
+            "stateName": "WASHINGTON",
+            "facilityId": "OLM",
+            "facilityType": "VORTAC",
+            "operatorName": "FEDERAL AVIATION ADMIN",
+            "publicUseFlag": "Y",
+            "bearingToNavaid": 35.9,
+            "hoursOfOperation": "24",
+            "magneticVariation": "19E",
+            "officialFacilityId": "OLM",
+            "commonSystemUsageFlag": "Y",
+            "magneticVariationYear": "1995"
+        }, {
+            "city": "COUPEVILLE",
+            "name": "PENN COVE",
+            "class": "L-VORW/DME",
+            "channel": "119X",
+            "remarks": [{
+                    "remark": "DME UNUSBL 126-160 BYD 30 NM BLW 2200 FT; 250-260 BYD 30 NM BLW 3400 FT; 330-360 BYD 30 NM BLW 2200 FT."
+                }, {
+                    "remark": "VOR UNUSBL 001-360 BYD 40 NM."
+                }
+            ],
+            "distance": 46.2,
+            "location": "SRID=4326;POINT(-122.724416666667 48.2446944444444)",
+            "navaidId": "CVV*VOR/DME",
+            "elevation": 200.0,
+            "faaRegion": "ANM",
+            "frequency": 117.20,
+            "ownerName": "FEDERAL AVIATION ADMIN",
+            "stateCode": "WA",
+            "stateName": "WASHINGTON",
+            "facilityId": "CVV",
+            "facilityType": "VOR/DME",
+            "operatorName": "FEDERAL AVIATION ADMIN",
+            "publicUseFlag": "Y",
+            "bearingToNavaid": 158.2,
+            "hoursOfOperation": "24",
+            "magneticVariation": "19E",
+            "officialFacilityId": "CVV",
+            "commonSystemUsageFlag": "Y",
+            "magneticVariationYear": "2000"
+        }, {
+            "city": "OAK HARBOR",
+            "name": "WHIDBEY ISLAND",
+            "class": "H-TACAN",
+            "channel": "85X",
+            "remarks": [{
+                    "remark": "TACAN AZM UNUSBLE 133-163 BYD 30 NM BELOW 4,000 FT."
+                }, {
+                    "remark": "TACAN OPERATES 0730-0000."
+                }
+            ],
+            "distance": 51.6,
+            "location": "SRID=4326;POINT(-122.661788055556 48.3549344444444)",
+            "navaidId": "NUW*TACAN",
+            "elevation": 59.7,
+            "faaRegion": "ANM",
+            "frequency": 113.80,
+            "ownerName": "US NAVY",
+            "stateCode": "WA",
+            "stateName": "WASHINGTON",
+            "facilityId": "NUW",
+            "facilityType": "TACAN",
+            "operatorName": "US NAVY",
+            "publicUseFlag": "Y",
+            "bearingToNavaid": 163.6,
+            "hoursOfOperation": "24",
+            "magneticVariation": "18E",
+            "officialFacilityId": "NUW",
+            "commonSystemUsageFlag": "Y",
+            "magneticVariationYear": "2005"
+        }, {
+            "city": "BURLINGTON/MOUNT VERNON",
+            "name": "SKAGIT/BAY VIEW",
+            "class": "MHW",
+            "remarks": [{
+                    "remark": "NDB UNUSBL 350-030 BYD 20 NM."
+                }
+            ],
+            "distance": 56.5,
+            "location": "SRID=4326;POINT(-122.418413055556 48.4685983333333)",
+            "navaidId": "BVS*NDB",
+            "elevation": 97.6,
+            "faaRegion": "ANM",
+            "frequency": 240,
+            "ownerName": "PORT OF SKAGIT COUNTY",
+            "stateCode": "WA",
+            "stateName": "WASHINGTON",
+            "facilityId": "BVS",
+            "facilityType": "NDB",
+            "operatorName": "PORT OF SKAGIT COUNTY",
+            "publicUseFlag": "Y",
+            "bearingToNavaid": 175.2,
+            "hoursOfOperation": "24",
+            "magneticVariation": "16E",
+            "officialFacilityId": "BVS",
+            "commonSystemUsageFlag": "Y",
+            "magneticVariationYear": "2015"
+        }
+    ],
+    "remarks": [{
+            "remark": "TPA RWY 14L/32R 1000 MSL; RWY 14R/32L 800 MSL.",
+            "rawElement": "A110-002"
+        }, {
+            "remark": "TOUCH AND GO LNDGS PROHIBITED 2200-0700.",
+            "rawElement": "A110-003"
+        }, {
+            "remark": "BIRD FLOCKS WITHIN ARPT VICINITY. - CHECK LOCAL ADVISORIES.",
+            "rawElement": "A110-005"
+        }, {
+            "remark": "FLIGHT NOTIFICATION SERVICE (ADCUS) AVBL.",
+            "rawElement": "A110-006"
+        }, {
+            "remark": "14' ANT (MKD/LGTD) 230' FM RY 14L END 125' R.",
+            "rawElement": "A110-007"
+        }, {
+            "remark": "TWY A1 & TWY A FROM A1-A3 RSTRD TO ACFT UP TO 150000 LBS AND LESS THAN 108 FT WINGSPAN.",
+            "rawElement": "A110-008"
+        }, {
+            "remark": "TWYS A2; B2; & A11 RSTD TO ACFT UP TO 60000 LBS. TWYS A3; A5; & A8 RSTD TO ACFT UP TO 12500 LBS.",
+            "rawElement": "A110-009"
+        }, {
+            "remark": "GA ITNRNT/TSNT PRKG AVBL. CTC ARPT OPS 206-296-7334.",
+            "rawElement": "A110-010"
+        }, {
+            "remark": "TWR 80 FT AGL LCTD 1200 FT N AND 900 FT W OF THLD RY 14R.",
+            "rawElement": "A110-011"
+        }, {
+            "remark": "FOR NOISE ABATEMENT PROCEDURES, CONTACT NOISE OFFICE AT (206) 296-7334.",
+            "rawElement": "A110-013"
+        }, {
+            "remark": "EXTENSIVE HELICOPTER TRAINING ACTIVITY ON TAXIWAY B.",
+            "rawElement": "A110-014"
+        }, {
+            "remark": "FOR MUSEUM OF FLT TSNT ACFT PRKG, PPR, CALL MUSEUM OF FLT SCTY (206) 920-9770.",
+            "rawElement": "A110-015"
+        }, {
+            "remark": "TAXIWAY ZULU AND 880' SPECIAL USE PAVEMENT AVAILABLE 72 HOURS PRIOR PERMISSION REQUIRED.  CONTACT AIRPORT OPERATIONS 206-296-7334.",
+            "rawElement": "A110-016"
+        }, {
+            "remark": "EMERG FREQ 121.5 NOT MNT AT TWR.",
+            "rawElement": "A110-022"
+        }, {
+            "remark": "FOR BOEING MILITARY FLIGHT CENTER RAMP PERMISSION, CTC RAMP COORDINATOR 206-225-0989, 72 HOUR PRIOR PERMISSION REQUIRED, 96 HOUR PRIOR PERMISSION REQUIRED IF ORDNANCES/MUNITIONS INSTALLED OR IF ORDNANCES/MUNITIONS STORAGE IS REQUIRED. LIMITED LOX SERVICE MEETING MIL-PRF-27210J, TYPE II AVAILABLE FOR MILITARY FLIGHT CENTER TRANSIENT AIRCRAFT, CONTACT 96 HOURS PRIOR WITH NEEDED VOLUME AND AIRCRAFT TYPE. PRIOR TO ARRIVAL ONTO BOEING COMMERCIAL AIRPLANE RAMP, CTC BOEING SEATTLE AT 123.425 OR CALL 206-662-4500. ADVANCED PERMISSION TO ACCESS BOEING COMMERCIAL AIRPLANE RAMP ONLY, CTC 206-544-5900 M-F 1600Z-0000Z.",
+            "rawElement": "A110-023"
+        }, {
+            "remark": "FOR CD WHEN ATCT IS CLSD CTC SEATTLE APCH AT 206-214-4722.",
+            "rawElement": "A110-025"
+        }, {
+            "remark": "VFR PILOTS SHLD REVIEW & EXPC VFR PROCS PRIOR TO ARR/DEP.",
+            "rawElement": "A110-026"
+        }
+    ],
+    "runways": [{
+            "pcn": "71 /F/A/X/T",
+            "width": 100,
+            "length": 3709,
+            "baseEnd": {
+                "vgsi": "P2L",
+                "endType": "BASE",
+                "endPoint": "SRID=4326;POINT(-122.30746025 47.53801825)",
+                "latitude": 47.53801825,
+                "reilFlag": "Y",
+                "elevation": 17.4,
+                "longitude": -122.30746025,
+                "endPointWNB": {
+                    "crs": {
+                        "type": "name",
+                        "properties": {
+                            "name": "EPSG:4326"
+                        }
+                    },
+                    "type": "Point",
+                    "coordinates": [-122.30746025, 47.53801825]
+                },
+                "markingType": "BSC",
+                "runwayEndId": "14L",
+                "trueHeading": 150,
+                "tdzElevation": 17.6,
+                "obstaclePart77": "A(V)",
+                "positionSource": "3RD PARTY SURVEY",
+                "closeInObstacle": "N",
+                "elevationSource": "3RD PARTY SURVEY",
+                "thresholdHeight": 39,
+                "markingCondition": "G",
+                "runwayIdentifier": "14L/32R",
+                "positionSourceDate": "2016-02-02T00:00:00",
+                "tdzElevationSource": "3RD PARTY SURVEY",
+                "elevationSourceDate": "2016-02-02T00:00:00",
+                "rightHandTrafficFlag": "NO",
+                "visualGlidePathAngle": 3.00,
+                "obstacleClearanceSlope": 50,
+                "tdzElevationSourceDate": "2016-02-02T00:00:00",
+                "displacedThresholdPoint": {
+                    "crs": {
+                        "type": "name",
+                        "properties": {
+                            "name": "EPSG:4326"
+                        }
+                    },
+                    "type": "Point",
+                    "coordinates": [-122.306958, 47.5374240555556]
+                },
+                "displacedThresholdLength": 250,
+                "displacedThresholdLatitude": 47.5374240555556,
+                "displacedThresholdElevation": 17.5,
+                "displacedThresholdLongitude": -122.306958,
+                "displacedThresholdPositionSource": "3RD PARTY SURVEY",
+                "displacedThresholdElevationSource": "3RD PARTY SURVEY",
+                "displacedThresholdPositionSourceDate": "2016-02-02T00:00:00",
+                "displacedThresholdElevationSourceDate": "2016-02-02T00:00:00"
+            },
+            "surface": "SRID=4326;POLYGON((-122.30728432447572 47.53808624883352 0,-122.3076361751885 47.537950250942856 0,-122.30017646082925 47.52912554007492 0,-122.29982464994731 47.529261515256756 0,-122.30728432447572 47.53808624883352 0))",
+            "surfaceType": "ASPH",
+            "lengthSource": "3RD PARTY SURVEY",
+            "reciprocalEnd": {
+                "vgsi": "P2L",
+                "endType": "RECIPROCAL",
+                "endPoint": "SRID=4326;POINT(-122.300000555556 47.5291935277778)",
+                "latitude": 47.5291935277778,
+                "obstacle": "TREE",
+                "reilFlag": "Y",
+                "elevation": 17.1,
+                "longitude": -122.300000555556,
+                "endPointWNB": {
+                    "crs": {
+                        "type": "name",
+                        "properties": {
+                            "name": "EPSG:4326"
+                        }
+                    },
+                    "type": "Point",
+                    "coordinates": [-122.300000555556, 47.5291935277778]
+                },
+                "markingType": "BSC",
+                "runwayEndId": "32R",
+                "trueHeading": 330,
+                "tdzElevation": 17.5,
+                "obstaclePart77": "A(V)",
+                "positionSource": "3RD PARTY SURVEY",
+                "closeInObstacle": "N",
+                "elevationSource": "3RD PARTY SURVEY",
+                "thresholdHeight": 39,
+                "markingCondition": "G",
+                "runwayIdentifier": "14L/32R",
+                "positionSourceDate": "2016-02-02T00:00:00",
+                "tdzElevationSource": "3RD PARTY SURVEY",
+                "elevationSourceDate": "2016-02-02T00:00:00",
+                "rightHandTrafficFlag": "YES",
+                "visualGlidePathAngle": 3.00,
+                "obstacleClearanceSlope": 22,
+                "tdzElevationSourceDate": "2016-02-02T00:00:00",
+                "displacedThresholdPoint": {
+                    "crs": {
+                        "type": "name",
+                        "properties": {
+                            "name": "EPSG:4326"
+                        }
+                    },
+                    "type": "Point",
+                    "coordinates": [-122.300753055556, 47.5300857222222]
+                },
+                "displacedThresholdLength": 375,
+                "obstacleCenterlineOffset": "625R",
+                "obstacleHeightAboveRunway": 210,
+                "displacedThresholdLatitude": 47.5300857222222,
+                "obstacleDistanceFromRunway": 5000,
+                "displacedThresholdElevation": 17.3,
+                "displacedThresholdLongitude": -122.300753055556,
+                "displacedThresholdPositionSource": "3RD PARTY SURVEY",
+                "displacedThresholdElevationSource": "3RD PARTY SURVEY",
+                "displacedThresholdPositionSourceDate": "2016-02-02T00:00:00",
+                "displacedThresholdElevationSourceDate": "2016-02-02T00:00:00"
+            },
+            "lengthSourceDate": "2016-02-02T00:00:00",
+            "runwayIdentifier": "14L/32R",
+            "surfaceCondition": "(F) Fair",
+            "surfaceTreatment": "GRVD",
+            "edgeLightIntensity": "MED",
+            "surfaceTypeCondition": "ASPH-F",
+            "weightBearingCapacityDual": 250.0,
+            "weightBearingCapacitySingle": 120.0,
+            "weightBearingCapacityTwoDual": 550.0,
+            "weightBearingCapacityTandemTwoDual": 1109.0
+        }, {
+            "pcn": "90 /F/B/W/T",
+            "width": 200,
+            "length": 10007,
+            "baseEnd": {
+                "ils": {
+                    "dme": {
+                        "channel": "46X",
+                        "latitude": 47.5151697222222,
+                        "location": "SRID=4326;POINT(-122.291225 47.5151697222222)",
+                        "elevation": 32.9,
+                        "longitude": -122.291225,
+                        "locationSource": "T",
+                        "operationalStatus": "OPERATIONAL RESTRICTED"
+                    },
+                    "ilsType": "ILS/DME",
+                    "remarks": [{
+                            "remark": "ILS CLASSIFICATION CODE IA"
+                        }, {
+                            "remark": "DME UNUSBL BYD 30 DEG LEFT OF CRS. BC DME UNUSBLE BYD 12 DEG RIGHT OF CRS."
+                        }, {
+                            "remark": "LOC UNUSBL BYD 20 DEG LEFT OF CRS; BC UNUSBL BYD 10 DEG LEFT AND RIGHT OF CRS; BC UNUSBL BYD 13 NM BLW 3500 FT."
+                        }
+                    ],
+                    "category": "I",
+                    "localizer": {
+                        "latitude": 47.5155072222222,
+                        "location": "SRID=4326;POINT(-122.290190277778 47.5155072222222)",
+                        "elevation": 20.7,
+                        "frequency": "110.90",
+                        "longitude": -122.290190277778,
+                        "servicesCode": "NV",
+                        "locationSource": "T",
+                        "backCourseStatus": "RESTRICTED",
+                        "operationalStatus": "OPERATIONAL RESTRICTED"
+                    },
+                    "glideSlope": {
+                        "angle": 3.00,
+                        "latitude": 47.5391341666667,
+                        "location": "SRID=4326;POINT(-122.308880555556 47.5391341666667)",
+                        "classType": "GLIDE SLOPE",
+                        "elevation": 16.7,
+                        "frequency": "330.80",
+                        "longitude": -122.308880555556,
+                        "locationSource": "T",
+                        "operationalStatus": "OPERATIONAL IFR"
+                    },
+                    "identifier": "I-BFI",
+                    "approachBearing": 135.20
+                },
+                "lda": 9120,
+                "rvr": "T",
+                "asda": 9120,
+                "toda": 10000,
+                "tora": 10000,
+                "vgsi": "P4L",
+                "endType": "BASE",
+                "ilsType": "ILS/DME",
+                "rvvFlag": "N",
+                "endPoint": "SRID=4326;POINT(-122.311354277778 47.5405428333333)",
+                "latitude": 47.5405428333333,
+                "obstacle": "FENCE",
+                "elevation": 17.8,
+                "longitude": -122.311354277778,
+                "endPointWNB": {
+                    "crs": {
+                        "type": "name",
+                        "properties": {
+                            "name": "EPSG:4326"
+                        }
+                    },
+                    "type": "Point",
+                    "coordinates": [-122.311354277778, 47.5405428333333]
+                },
+                "markingType": "PIR",
+                "runwayEndId": "14R",
+                "trueHeading": 150,
+                "tdzElevation": 17.8,
+                "obstaclePart77": "PIR",
+                "positionSource": "3RD PARTY SURVEY",
+                "closeInObstacle": "N",
+                "elevationSource": "3RD PARTY SURVEY",
+                "thresholdHeight": 55,
+                "markingCondition": "G",
+                "runwayIdentifier": "14R/32L",
+                "positionSourceDate": "2016-02-02T00:00:00",
+                "tdzElevationSource": "3RD PARTY SURVEY",
+                "elevationSourceDate": "2016-02-02T00:00:00",
+                "rightHandTrafficFlag": "YES",
+                "visualGlidePathAngle": 3.00,
+                "approachLightingSystem": "MALSF",
+                "obstacleClearanceSlope": 3,
+                "tdzElevationSourceDate": "2016-02-02T00:00:00",
+                "obstacleCenterlineOffset": "425R",
+                "obstacleHeightAboveRunway": 12,
+                "obstacleDistanceFromRunway": 240
+            },
+            "surface": "SRID=4326;POLYGON((-122.31100244574593 47.54067887383149 0,-122.31170610810679 47.54040679180029 0,-122.2915794451607 47.51660065861699 0,-122.29087599758266 47.51687261812644 0,-122.31100244574593 47.54067887383149 0))",
+            "surfaceType": "ASPH",
+            "lengthSource": "3RD PARTY SURVEY",
+            "reciprocalEnd": {
+                "ils": {
+                    "dme": {
+                        "channel": "46X",
+                        "latitude": 47.5151697222222,
+                        "location": "SRID=4326;POINT(-122.291225 47.5151697222222)",
+                        "elevation": 32.9,
+                        "longitude": -122.291225,
+                        "locationSource": "T",
+                        "operationalStatus": "OPERATIONAL RESTRICTED"
+                    },
+                    "ilsType": "ILS/DME",
+                    "remarks": [{
+                            "remark": "LOC UNUSBL BYD 15 DEG RGT OF CRS."
+                        }, {
+                            "remark": "ILS CLASSIFICATION CODE IA"
+                        }, {
+                            "remark": "ILS/DME UNUSBL BYD 10 DEG RGT OF CRS."
+                        }, {
+                            "remark": "GP UNUSBL BYD 7NM FROM THR."
+                        }
+                    ],
+                    "category": "I",
+                    "localizer": {
+                        "latitude": 47.54485,
+                        "location": "SRID=4326;POINT(-122.314996944444 47.54485)",
+                        "elevation": 22.3,
+                        "frequency": "110.90",
+                        "longitude": -122.314996944444,
+                        "servicesCode": "NV",
+                        "locationSource": "T",
+                        "backCourseStatus": "NO RESTRICTIONS",
+                        "operationalStatus": "OPERATIONAL RESTRICTED"
+                    },
+                    "glideSlope": {
+                        "angle": 3.10,
+                        "latitude": 47.5214194444444,
+                        "location": "SRID=4326;POINT(-122.293951111111 47.5214194444444)",
+                        "classType": "GLIDE SLOPE",
+                        "elevation": 16.9,
+                        "frequency": "330.80",
+                        "longitude": -122.293951111111,
+                        "locationSource": "T",
+                        "operationalStatus": "OPERATIONAL RESTRICTED"
+                    },
+                    "identifier": "I-CHJ",
+                    "approachBearing": 315.21
+                },
+                "lda": 9120,
+                "rvr": "R",
+                "asda": 10000,
+                "toda": 10000,
+                "tora": 10000,
+                "vgsi": "P4L",
+                "endType": "RECIPROCAL",
+                "ilsType": "ILS/DME",
+                "endPoint": "SRID=4326;POINT(-122.291227722222 47.5167366388889)",
+                "latitude": 47.5167366388889,
+                "obstacle": "RR",
+                "reilFlag": "Y",
+                "elevation": 21.0,
+                "longitude": -122.291227722222,
+                "endPointWNB": {
+                    "crs": {
+                        "type": "name",
+                        "properties": {
+                            "name": "EPSG:4326"
+                        }
+                    },
+                    "type": "Point",
+                    "coordinates": [-122.291227722222, 47.5167366388889]
+                },
+                "markingType": "PIR",
+                "runwayEndId": "32L",
+                "trueHeading": 330,
+                "tdzElevation": 21.6,
+                "obstaclePart77": "PIR",
+                "positionSource": "3RD PARTY SURVEY",
+                "closeInObstacle": "Y",
+                "elevationSource": "3RD PARTY SURVEY",
+                "thresholdHeight": 66,
+                "markingCondition": "G",
+                "runwayIdentifier": "14R/32L",
+                "positionSourceDate": "2016-02-02T00:00:00",
+                "tdzElevationSource": "3RD PARTY SURVEY",
+                "elevationSourceDate": "2016-02-02T00:00:00",
+                "rightHandTrafficFlag": "NO",
+                "visualGlidePathAngle": 3.10,
+                "obstacleClearanceSlope": 40,
+                "tdzElevationSourceDate": "2016-02-02T00:00:00",
+                "displacedThresholdPoint": {
+                    "crs": {
+                        "type": "name",
+                        "properties": {
+                            "name": "EPSG:4326"
+                        }
+                    },
+                    "type": "Point",
+                    "coordinates": [-122.293011583333, 47.5188452777778]
+                },
+                "displacedThresholdLength": 887,
+                "obstacleCenterlineOffset": "375R",
+                "obstacleHeightAboveRunway": 27,
+                "displacedThresholdLatitude": 47.5188452777778,
+                "obstacleDistanceFromRunway": 200,
+                "displacedThresholdElevation": 21.6,
+                "displacedThresholdLongitude": -122.293011583333,
+                "displacedThresholdPositionSource": "3RD PARTY SURVEY",
+                "displacedThresholdElevationSource": "3RD PARTY SURVEY",
+                "displacedThresholdPositionSourceDate": "2016-02-02T00:00:00",
+                "displacedThresholdElevationSourceDate": "2016-02-02T00:00:00"
+            },
+            "lengthSourceDate": "2016-02-02T00:00:00",
+            "runwayIdentifier": "14R/32L",
+            "surfaceCondition": "(G) Good",
+            "surfaceTreatment": "GRVD",
+            "edgeLightIntensity": "HIGH",
+            "surfaceTypeCondition": "ASPH-G",
+            "weightBearingCapacityDual": 200.0,
+            "weightBearingCapacitySingle": 100.0,
+            "weightBearingCapacityTwoDual": 500.0,
+            "weightBearingCapacityTandemTwoDual": 800.0
+        }
+    ],
+    "asosAwos": [{
+            "city": "SEATTLE",
+            "phone": "206-658-6435",
+            "state": "WA",
+            "siteId": "26396.*A",
+            "distance": 1.1,
+            "location": "SRID=4326;POINT(-122.314714138889 47.5455688055556)",
+            "elevation": 22.6,
+            "asosAwosId": "BFI*ASOS",
+            "navaidFlag": "N",
+            "sensorType": "ASOS",
+            "sensorIdent": "BFI",
+            "commissionedFlag": "Y",
+            "surveyMethodCode": "S"
+        }, {
+            "city": "RENTON",
+            "phone": "425-255-6080",
+            "state": "WA",
+            "siteId": "26381.*A",
+            "distance": 4.1,
+            "location": "SRID=4326;POINT(-122.21575 47.4931388888889)",
+            "elevation": 32.2,
+            "frequency": 126.95,
+            "asosAwosId": "RNT*ASOS",
+            "navaidFlag": "N",
+            "sensorType": "ASOS",
+            "sensorIdent": "RNT",
+            "commissionedFlag": "Y",
+            "surveyMethodCode": "S"
+        }, {
+            "city": "SEATTLE",
+            "phone": "206-214-2592",
+            "state": "WA",
+            "siteId": "26395.*A",
+            "distance": 4.8,
+            "location": "SRID=4326;POINT(-122.311777777778 47.4498888888889)",
+            "elevation": 432.5,
+            "asosAwosId": "SEA*ASOS",
+            "navaidFlag": "N",
+            "sensorType": "ASOS",
+            "statusDate": "1996-09-26T00:00:00",
+            "sensorIdent": "SEA",
+            "commissionedFlag": "Y"
+        }, {
+            "city": "BREMERTON",
+            "phone": "360-674-2811",
+            "state": "WA",
+            "siteId": "26120.*A",
+            "distance": 18.7,
+            "location": "SRID=4326;POINT(-122.759380416667 47.4941613888889)",
+            "elevation": 436.3,
+            "frequency": 121.2,
+            "asosAwosId": "PWT*AWOS-3PT",
+            "navaidFlag": "N",
+            "sensorType": "AWOS-3PT",
+            "statusDate": "1989-08-04T00:00:00",
+            "sensorIdent": "PWT",
+            "commissionedFlag": "Y"
+        }, {
+            "city": "TACOMA",
+            "phone": "253-858-6507",
+            "state": "WA",
+            "siteId": "26434.4*A",
+            "distance": 19.3,
+            "location": "SRID=4326;POINT(-122.576215666667 47.2675434444444)",
+            "elevation": 290.0,
+            "asosAwosId": "TIW*ASOS",
+            "navaidFlag": "N",
+            "sensorType": "ASOS",
+            "sensorIdent": "TIW",
+            "commissionedFlag": "Y",
+            "surveyMethodCode": "S"
+        }
+    ],
+    "facility": {
+        "atis": [{
+                "hours": "24",
+                "phone": "206-767-4113",
+                "serialNumber": "1"
+            }
+        ],
+        "city": "SEATTLE",
+        "fssId": "SEA",
+        "hours": {
+            "towerOperationHours": "24"
+        },
+        "radar": {
+            "primaryApproachCall": "RADAR",
+            "primaryDepartureCall": "RADAR"
+        },
+        "fssName": "SEATTLE",
+        "remarks": [{
+                "remark": "FREQ 121.5 NOT AVBL.",
+                "element": "1"
+            }, {
+                "remark": "FREQ 118.3 (312-127) AND DEPS RWY 14L/32R.",
+                "element": "2"
+            }, {
+                "remark": "FREQ 120.6 (128-311) AND DEPS RWY 14R/32L AND ALL JETS; HEAVY ACFT AND IFR ARRS.",
+                "element": "3"
+            }
+        ],
+        "airspace": {
+            "classD": "Y"
+        },
+        "stateCode": "WA",
+        "stateName": "WASHINGTON",
+        "regionCode": "ANM",
+        "frequencies": [{
+                "frequency": "127.75",
+                "frequencyUse": "ATIS",
+                "frequencyUseDisplay": "ATIS"
+            }, {
+                "frequency": "132.4",
+                "frequencyUse": "CD/P",
+                "frequencyUseDisplay": "BOEING CLERANCE DELIVERY"
+            }, {
+                "frequency": "121.9",
+                "frequencyUse": "GND/P",
+                "frequencyUseDisplay": "BOEING GROUND"
+            }, {
+                "frequency": "118.3 ;RWY 14L/32R",
+                "frequencyUse": "LCL/P",
+                "frequencyUseDisplay": "BOEING TOWER"
+            }, {
+                "frequency": "120.6 ;RWY 14R/32L & ALL IFR",
+                "frequencyUse": "LCL/P",
+                "frequencyUseDisplay": "BOEING TOWER"
+            }, {
+                "frequency": "257.8",
+                "frequencyUse": "LCL/P",
+                "frequencyUseDisplay": "BOEING TOWER"
+            }
+        ],
+        "facilityType": "ATCT",
+        "radioCallName": "BOEING",
+        "masterAirportId": "S46",
+        "towerAgencyName": "FEDERAL AVIATION ADMIN",
+        "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+        "facilityIdentifier": "BFI",
+        "dailyOperationHours": "24",
+        "dailyOperationDaysCode": "ALL",
+        "primaryApproachRadioCallName": "SEATTLE",
+        "primaryDepartureRadioCallName": "SEATTLE"
+    },
+    "helipads": [],
+    "arptSeqNo": 19305,
+    "artccName": "SEATTLE",
+    "elevation": 21.6,
+    "fuelTypes": "100LL, A",
+    "npiasCode": "NGPY3",
+    "ownerName": "KING COUNTY",
+    "sectional": "SEATTLE",
+    "ownerPhone": "(206) 296-7380",
+    "statusCode": "O",
+    "areaInAcres": 634,
+    "arpLatitude": 47.5299722222222,
+    "faaDistrict": "SEA",
+    "facilityUse": "PUBLIC",
+    "managerName": "JOHN PARROTT, AAE",
+    "npiasNumber": "53-0058",
+    "amrAirportId": 1400154,
+    "arpLongitude": -122.301944444444,
+    "facilityType": "AIRPORT",
+    "jointUseFlag": "NO",
+    "managerPhone": "206-296-7334",
+    "ownerAddress": "516 THIRD AVE",
+    "serviceLevel": "Primary",
+    "tieInFssFlag": "NO",
+    "annualAirTaxi": 27913,
+    "effectiveDate": "2024-07-11T00:00:00",
+    "faaRegionCode": "ANM",
+    "otherServices": "AFRT,AMB,AVNCS,CARGO,CHTR,INSTR,RNTL,SALES,SURV",
+    "ownershipType": "PUBLIC",
+    "runwayRemarks": [{
+            "object": "runway_ends",
+            "remark": "RWY 32L APCH SLOPE 40:1 TO DSPLCD THLD.",
+            "element": "obstacle_clearance_slope",
+            "objectId": "32L",
+            "rawElement": "A057"
+        }, {
+            "object": "runway_ends",
+            "remark": "RWY 32L FENCE/ROAD/POLES/RR TRACKS WITHIN EAST EDGE OF PRIM SFC.",
+            "element": "close_in_obstruction",
+            "objectId": "32L",
+            "rawElement": "A058"
+        }, {
+            "object": "runway_ends",
+            "remark": "RWY 32R APCH RATIO 27:1 FM DSPLCD THLD.",
+            "element": "obstacle_clearance_slope",
+            "objectId": "32R",
+            "rawElement": "A057"
+        }, {
+            "object": "runways",
+            "remark": "RWY 14L/32R RUNWAY 14L/32R NOT AVAILABLE FOR AIR CARRIER OPERATIONS",
+            "element": "runway_identifier",
+            "objectId": "14L/32R",
+            "rawElement": "A030"
+        }, {
+            "object": "runways",
+            "remark": "RWY 14L/32R LTD TO USE BY ACFT UP TO 12,500 LBS.",
+            "element": "weight_bearing_capacity_single",
+            "objectId": "14L/32R",
+            "rawElement": "A035"
+        }
+    ],
+    "windIndicator": "LIGHTED",
+    "activationDate": "1938-11-01T00:00:00",
+    "associatedCity": "SEATTLE",
+    "bulkOxygenType": "HIGH/LOW",
+    "landingFeeFlag": "YES",
+    "managerAddress": "7277 PERIMETER ROAD SOUTH",
+    "nearByAirports": [{
+            "arp": "POINT(-123.773777777778 47.0848138888889)",
+            "name": "WISHKAH RIVER RANCH",
+            "locId": "94WA",
+            "siteId": "26092.*A",
+            "distance": 66,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.847080555556 46.9798916666667)",
+            "name": "HARBOR RGNL HEALTH",
+            "locId": "WT00",
+            "siteId": "26092.01*H",
+            "distance": 71,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.177657222222 48.7095575)",
+            "name": "ACME FLD",
+            "locId": "WA12",
+            "siteId": "26093.3*A",
+            "distance": 71,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.662468055556 48.4985069444444)",
+            "name": "ANACORTES",
+            "locId": "74S",
+            "siteId": "26098.1*A",
+            "distance": 60,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.539334444444 48.4567708333333)",
+            "name": "BECKER'S LANDING",
+            "locId": "WN18",
+            "siteId": "26098.12*A",
+            "distance": 56,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.614666666667 48.5026666666667)",
+            "name": "THE ISLAND HOSPITAL",
+            "locId": "WA02",
+            "siteId": "26098.2*H",
+            "distance": 60,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.684618055556 48.4831583333333)",
+            "name": "SKYLINE",
+            "locId": "21H",
+            "siteId": "26098.23*C",
+            "distance": 59,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.159027777778 48.16075)",
+            "name": "ARLINGTON MUNI",
+            "locId": "AWO",
+            "siteId": "26099.*A",
+            "distance": 38,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.101388888889 48.19)",
+            "name": "CASCADE VALLEY HOSPITAL",
+            "locId": "6WA9",
+            "siteId": "26099.11*H",
+            "distance": 40,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.233919444444 48.1533277777778)",
+            "name": "LAKEWOOD",
+            "locId": "62WA",
+            "siteId": "26099.13*H",
+            "distance": 38,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-121.856742444444 46.72976)",
+            "name": "KAUTZ CREEK HELIBASE",
+            "locId": "7WA7",
+            "siteId": "26099.5*H",
+            "distance": 51,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.149561388889 47.2806561111111)",
+            "name": "AUBURN ACADEMY",
+            "locId": "WA84",
+            "siteId": "26102.9*A",
+            "distance": 16,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.297899444444 47.2981555555556)",
+            "name": "WEYERHAEUSER",
+            "locId": "WA85",
+            "siteId": "26102.91*H",
+            "distance": 14,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.258453888889 47.3139891666667)",
+            "name": "J J H",
+            "locId": "60WA",
+            "siteId": "26102.912*H",
+            "distance": 13,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.222816666667 47.3328833333333)",
+            "name": "PRIVATE H/C PAD",
+            "locId": "WA28",
+            "siteId": "26102.92*H",
+            "distance": 12,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.244564166667 47.2942669444444)",
+            "name": "BOEING - AUBURN COMPLEX",
+            "locId": "WA86",
+            "siteId": "26102.921*H",
+            "distance": 14,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.15095 47.3023222222222)",
+            "name": "DON JOHNSON HOME",
+            "locId": "WA06",
+            "siteId": "26102.93*H",
+            "distance": 15,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.226655 47.327625)",
+            "name": "AUBURN MUNI",
+            "locId": "S50",
+            "siteId": "26103.11*A",
+            "distance": 13,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-121.536471944444 47.3953688888889)",
+            "name": "BANDERA STATE",
+            "locId": "4W0",
+            "siteId": "26104.*A",
+            "distance": 32,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.187730555556 47.6215638888889)",
+            "name": "OVERLAKE HOSPITAL EMS",
+            "locId": "1WT6",
+            "siteId": "26106.02*H",
+            "distance": 7,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.1704 47.6252305555556)",
+            "name": "EVERETT I",
+            "locId": "64WA",
+            "siteId": "26106.03*H",
+            "distance": 8,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.176234166667 47.6303769444444)",
+            "name": "EVANS",
+            "locId": "WN71",
+            "siteId": "26107.01*H",
+            "distance": 8,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.200058333333 47.6177777777778)",
+            "name": "KEMPER DEVELOPMENT COMPANY",
+            "locId": "1WA7",
+            "siteId": "26107.02*H",
+            "distance": 7,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.351275 48.7331661111111)",
+            "name": "FLOATHAVEN AIRSTRIP",
+            "locId": "WA90",
+            "siteId": "26110.1*A",
+            "distance": 72,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.340027777778 48.7356111111111)",
+            "name": "FLOATHAVEN",
+            "locId": "0W7",
+            "siteId": "26110.11*C",
+            "distance": 72,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.585922222222 48.6529444444444)",
+            "name": "ELIZA ISLAND",
+            "locId": "WA93",
+            "siteId": "26110.2*A",
+            "distance": 68,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.400777777778 48.6732611111111)",
+            "name": "LAKESAMISH",
+            "locId": "93WA",
+            "siteId": "26110.21*C",
+            "distance": 69,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.033333333333 47.3333333333333)",
+            "name": "LAKE SAWYER DOUBLE EE",
+            "locId": "WA41",
+            "siteId": "26115.12*C",
+            "distance": 16,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.023725833333 47.3339897222222)",
+            "name": "WASHINGTON AIR MUSEUM",
+            "locId": "WA94",
+            "siteId": "26115.5*H",
+            "distance": 16,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.0678925 47.2681561111111)",
+            "name": "EVERGREEN SKY RANCH",
+            "locId": "51WA",
+            "siteId": "26115.51*A",
+            "distance": 18,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.009835833333 47.3156563888889)",
+            "name": "BLACK DIAMOND",
+            "locId": "95WA",
+            "siteId": "26115.52*A",
+            "distance": 18,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.826290833333 48.5789916666667)",
+            "name": "BLAKELY ISLAND",
+            "locId": "38WA",
+            "siteId": "26116.4*A",
+            "distance": 66,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.764805555556 47.49025)",
+            "name": "BREMERTON NTL",
+            "locId": "PWT",
+            "siteId": "26120.*A",
+            "distance": 19,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.682433333333 47.5539027777778)",
+            "name": "WASHINGTON NTL GUARD - SINCLAIR HGTS",
+            "locId": "WA65",
+            "siteId": "26120.01*H",
+            "distance": 16,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.773894444444 47.6079861111111)",
+            "name": "LEISURELAND AIRPARK",
+            "locId": "WA96",
+            "siteId": "26120.2*A",
+            "distance": 20,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.924972222222 47.6533055555556)",
+            "name": "CORMORANT",
+            "locId": "WA05",
+            "siteId": "26123.4*H",
+            "distance": 26,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.541111111111 46.7997222222222)",
+            "name": "BANAS FLD",
+            "locId": "WA16",
+            "siteId": "26123.7*A",
+            "distance": 67,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.119975833333 47.1838513888889)",
+            "name": "FLYING H RANCH",
+            "locId": "WN42",
+            "siteId": "26124.4*A",
+            "distance": 22,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.133055555556 47.2155555555556)",
+            "name": "ALBRITTON",
+            "locId": "9WA7",
+            "siteId": "26124.41*A",
+            "distance": 20,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.421689444444 48.4705261111111)",
+            "name": "SKAGIT RGNL",
+            "locId": "BVS",
+            "siteId": "26125.1*A",
+            "distance": 57,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.465165833333 48.5209397222222)",
+            "name": "BAYVIEW FARMS",
+            "locId": "WN51",
+            "siteId": "26126.*A",
+            "distance": 60,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-120.484666666667 47.51475)",
+            "name": "CASHMERE-DRYDEN",
+            "locId": "8S2",
+            "siteId": "26135.*A",
+            "distance": 74,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-120.488691388889 47.5123461111111)",
+            "name": "CASCADE",
+            "locId": "WA98",
+            "siteId": "26135.04*H",
+            "distance": 74,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.832121111111 48.4901011111111)",
+            "name": "CENTER ISLAND",
+            "locId": "78WA",
+            "siteId": "26140.*A",
+            "distance": 61,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.985775 46.7116583333333)",
+            "name": "PROVIDENCE CENTRALIA HOSPITAL",
+            "locId": "2WA7",
+            "siteId": "26141.01*H",
+            "distance": 57,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.98275 46.6770277777778)",
+            "name": "CHEHALIS-CENTRALIA",
+            "locId": "CLS",
+            "siteId": "26144.*A",
+            "distance": 58,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.865777777778 46.5878333333333)",
+            "name": "FANTASY FLD AIRSTRIP",
+            "locId": "FA99",
+            "siteId": "26144.02*A",
+            "distance": 61,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.826232222222 46.6170491666667)",
+            "name": "DWIGHT FLD",
+            "locId": "0WA1",
+            "siteId": "26144.1*A",
+            "distance": 59,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-120.884035388889 47.19424275)",
+            "name": "CLE ELUM MUNI",
+            "locId": "S93",
+            "siteId": "26159.*A",
+            "distance": 61,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-120.852660833333 47.1775811111111)",
+            "name": "DE VERE FLD",
+            "locId": "2W1",
+            "siteId": "26159.1*A",
+            "distance": 63,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-121.758248888889 48.5298383333333)",
+            "name": "MEARS FLD",
+            "locId": "3W5",
+            "siteId": "26167.*A",
+            "distance": 64,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.31571 48.3251022222222)",
+            "name": "JC'S",
+            "locId": "27WA",
+            "siteId": "26168.8*A",
+            "distance": 48,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.633333333333 48.1833333333333)",
+            "name": "COUPEVILLE NOLF",
+            "locId": "NRA",
+            "siteId": "26174.01*A",
+            "distance": 41,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "MN"
+        }, {
+            "arp": "POINT(-122.685666666667 48.2131666666667)",
+            "name": "WHIDBEY GENERAL HOSPITAL",
+            "locId": "01WN",
+            "siteId": "26174.02*H",
+            "distance": 44,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.069444444444 47.3691666666667)",
+            "name": "FLYING 'O' RANCH",
+            "locId": "WA75",
+            "siteId": "26174.5*H",
+            "distance": 14,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.104577222222 46.5903808333333)",
+            "name": "CURTIS",
+            "locId": "0WA2",
+            "siteId": "26177.4*A",
+            "distance": 65,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-121.610203611111 48.2586125)",
+            "name": "DARRINGTON MUNI",
+            "locId": "1S2",
+            "siteId": "26180.*A",
+            "distance": 52,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-121.591792222222 48.2642758333333)",
+            "name": "HILINE",
+            "locId": "72WA",
+            "siteId": "26180.01*H",
+            "distance": 53,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-121.608469444444 48.253475)",
+            "name": "DARRINGTON CLINIC EMS",
+            "locId": "WA40",
+            "siteId": "26180.02*H",
+            "distance": 52,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.813777777778 48.4998333333333)",
+            "name": "DECATUR SHORES",
+            "locId": "WN07",
+            "siteId": "26182.8*A",
+            "distance": 62,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.802955555556 48.5101016666667)",
+            "name": "DECATUR /JONES/",
+            "locId": "WA18",
+            "siteId": "26182.91*A",
+            "distance": 62,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.006250333333 48.6081620555556)",
+            "name": "DEER HARBOR",
+            "locId": "88WA",
+            "siteId": "26183.455*C",
+            "distance": 71,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.899722222222 47.9952777777778)",
+            "name": "OLYMPIC FLD",
+            "locId": "WA45",
+            "siteId": "26185.*A",
+            "distance": 37,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-121.185531666667 47.2541838888889)",
+            "name": "EASTON STATE",
+            "locId": "ESW",
+            "siteId": "26189.*A",
+            "distance": 48,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-123.4768275 46.9725961111111)",
+            "name": "MY",
+            "locId": "WN65",
+            "siteId": "26196.1*A",
+            "distance": 59,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.910595277778 48.7083372222222)",
+            "name": "ORCAS ISLAND",
+            "locId": "ORS",
+            "siteId": "26190.*A",
+            "distance": 75,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.947126666667 48.6223244444444)",
+            "name": "CLAM HARBOR",
+            "locId": "WA35",
+            "siteId": "26190.02*A",
+            "distance": 71,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.953586111111 48.6503611111111)",
+            "name": "CROW VALLEY",
+            "locId": "WA39",
+            "siteId": "26190.03*A",
+            "distance": 72,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.257222222222 46.8716666666667)",
+            "name": "SWANSON",
+            "locId": "2W3",
+            "siteId": "26191.1*A",
+            "distance": 40,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.334298055556 47.8037077777778)",
+            "name": "SWEDISH EDMONDS",
+            "locId": "0WA6",
+            "siteId": "26191.5*H",
+            "distance": 16,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-120.5894025 47.0910008333333)",
+            "name": "WEST RANCH",
+            "locId": "79WT",
+            "siteId": "26195.06*A",
+            "distance": 75,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.384323333333 46.9728741666667)",
+            "name": "D AND B AIRPARK",
+            "locId": "84WA",
+            "siteId": "26196.01*A",
+            "distance": 55,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.392175 47.0063083333333)",
+            "name": "SUMMIT PACIFIC MEDICAL CENTER",
+            "locId": "3WA6",
+            "siteId": "26196.11*H",
+            "distance": 55,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.022056111111 47.1956569444444)",
+            "name": "ENUMCLAW",
+            "locId": "WA77",
+            "siteId": "26201.*A",
+            "distance": 23,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.092614444444 47.2085733333333)",
+            "name": "BRYAN",
+            "locId": "WN87",
+            "siteId": "26201.2*A",
+            "distance": 21,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-121.988888888889 47.1988888888889)",
+            "name": "TOM MATSON ENUMCLAW",
+            "locId": "WA27",
+            "siteId": "26201.21*H",
+            "distance": 24,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-121.924553888889 47.2435738888889)",
+            "name": "BERGSETH FLD",
+            "locId": "WN76",
+            "siteId": "26202.*A",
+            "distance": 23,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.282093888889 47.9073180555556)",
+            "name": "SEATTLE PAINE FLD INTL",
+            "locId": "PAE",
+            "siteId": "26210.*A",
+            "distance": 23,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.264856944444 47.9312066666667)",
+            "name": "THE BOEING COMPANY",
+            "locId": "WA82",
+            "siteId": "26210.01*H",
+            "distance": 24,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.246666666667 47.9983333333333)",
+            "name": "NAVAL STATION EVERETT",
+            "locId": "0WA9",
+            "siteId": "26210.02*H",
+            "distance": 28,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "MN"
+        }, {
+            "arp": "POINT(-122.155555555556 47.8980555555556)",
+            "name": "JIM & JULIE'S",
+            "locId": "96WA",
+            "siteId": "26210.03*A",
+            "distance": 23,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.133744722222 48.0050966666667)",
+            "name": "HEINECK FARM",
+            "locId": "76WA",
+            "siteId": "26210.13*A",
+            "distance": 29,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.186245555556 47.9795402777778)",
+            "name": "CALKINS EQUIPMENT COMPANY",
+            "locId": "1WA3",
+            "siteId": "26210.14*H",
+            "distance": 27,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.217263888889 47.9757777777778)",
+            "name": "PROVIDENCE HOSPITAL",
+            "locId": "1WA4",
+            "siteId": "26210.16*H",
+            "distance": 27,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.205933333333 47.9995361111111)",
+            "name": "GENERAL HOSPITAL OF EVERETT",
+            "locId": "1WA5",
+            "siteId": "26210.17*H",
+            "distance": 28,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-121.863725833333 47.5595461111111)",
+            "name": "FALL CITY",
+            "locId": "1WA6",
+            "siteId": "26210.95*A",
+            "distance": 18,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.580783333333 47.0792194444444)",
+            "name": "GRAY AAF (JOINT BASE LEWIS-MCCHORD)",
+            "locId": "GRF",
+            "siteId": "26216.*A",
+            "distance": 29,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "MR"
+        }, {
+            "arp": "POINT(-122.557166666667 47.1098333333333)",
+            "name": "MADIGAN HOSPITAL",
+            "locId": "1WA8",
+            "siteId": "26216.1*H",
+            "distance": 27,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "MR"
+        }, {
+            "arp": "POINT(-123.009623611111 48.5373219444444)",
+            "name": "FRIDAY HARBOR",
+            "locId": "W33",
+            "siteId": "26219.1*C",
+            "distance": 67,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-123.024361111111 48.5219722222222)",
+            "name": "FRIDAY HARBOR",
+            "locId": "FHR",
+            "siteId": "26219.4*A",
+            "distance": 66,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.5795 47.3368833333333)",
+            "name": "EAST GIG HARBOR",
+            "locId": "6WA8",
+            "siteId": "26220.78*H",
+            "distance": 16,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.625130555556 47.3522166666667)",
+            "name": "FIRE DISTRICT 5 EMS",
+            "locId": "WA50",
+            "siteId": "26220.79*H",
+            "distance": 17,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.293888888889 47.06)",
+            "name": "LONE STAR PAD 1",
+            "locId": "8WA1",
+            "siteId": "26229.*H",
+            "distance": 28,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.014515 48.0930263888889)",
+            "name": "GREEN VALLEY AIRFIELD",
+            "locId": "WA25",
+            "siteId": "26229.85*A",
+            "distance": 36,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-121.533666666667 47.0131388888889)",
+            "name": "RANGER CREEK",
+            "locId": "21W",
+            "siteId": "26230.*A",
+            "distance": 44,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-121.636236111111 47.1449333333333)",
+            "name": "PCFD NR 26",
+            "locId": "2WA0",
+            "siteId": "26230.1*H",
+            "distance": 36,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.608055555556 47.9386111111111)",
+            "name": "MIRTH",
+            "locId": "WA22",
+            "siteId": "26230.45*A",
+            "distance": 27,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.936555555556 46.9711944444444)",
+            "name": "BOWERMAN",
+            "locId": "HQM",
+            "siteId": "26236.*A",
+            "distance": 75,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.080398333333 47.5601002777778)",
+            "name": "CONNER",
+            "locId": "92WA",
+            "siteId": "26241.01*H",
+            "distance": 9,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.060616666667 47.5372666666667)",
+            "name": "KELLY RANCH",
+            "locId": "WA71",
+            "siteId": "26241.02*H",
+            "distance": 10,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.235669722222 47.0039908333333)",
+            "name": "KAPOWSIN FLD",
+            "locId": "86WA",
+            "siteId": "26243.8*A",
+            "distance": 32,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.259293055556 47.75482)",
+            "name": "KENMORE AIR HARBOR",
+            "locId": "S60",
+            "siteId": "26248.*C",
+            "distance": 14,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.103536388889 47.3370966666667)",
+            "name": "NORMAN GRIER FLD",
+            "locId": "S36",
+            "siteId": "26252.1*A",
+            "distance": 14,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.230399166667 47.4145444444444)",
+            "name": "KENT BENAROYA",
+            "locId": "3WA7",
+            "siteId": "26252.12*H",
+            "distance": 8,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-121.826036111111 47.5151583333333)",
+            "name": "SNOQUALMIE VALLEY HOSPITAL EMERGENCY ROOM",
+            "locId": "8WA8",
+            "siteId": "26254.5*H",
+            "distance": 19,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.529722222222 47.7983333333333)",
+            "name": "THOMPSON",
+            "locId": "WA61",
+            "siteId": "26254.8*A",
+            "distance": 19,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.180166666667 47.7161111111111)",
+            "name": "EVERGREEN HOSPITAL",
+            "locId": "3WA8",
+            "siteId": "26255.*H",
+            "distance": 12,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.21 47.66)",
+            "name": "SEAPLANE SCENICS AT CARILLON POINT",
+            "locId": "WA32",
+            "siteId": "26255.01*C",
+            "distance": 9,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.725888888889 46.9704166666667)",
+            "name": "P-L RANCH",
+            "locId": "08WA",
+            "siteId": "26260.16*A",
+            "distance": 38,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.560958888889 47.1414866666667)",
+            "name": "AMERICAN LAKE",
+            "locId": "W37",
+            "siteId": "26265.02*C",
+            "distance": 26,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.062836111111 48.1104236111111)",
+            "name": "FRONTIER AIRPARK",
+            "locId": "WN53",
+            "siteId": "26265.1*A",
+            "distance": 36,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.061166666667 48.0386666666667)",
+            "name": "REOH1",
+            "locId": "WA31",
+            "siteId": "26265.11*H",
+            "distance": 32,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.057880555556 48.0244638888889)",
+            "name": "HARTFORD INDUSTRIAL",
+            "locId": "WA11",
+            "siteId": "26265.12*H",
+            "distance": 31,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.4377275 48.01751225)",
+            "name": "WHIDBEY AIR PARK",
+            "locId": "W10",
+            "siteId": "26266.2*A",
+            "distance": 30,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-120.719894166667 47.8194136111111)",
+            "name": "LAKE WENATCHEE STATE",
+            "locId": "27W",
+            "siteId": "26269.1*A",
+            "distance": 66,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-120.670088055556 47.6036111111111)",
+            "name": "JOHNSON'S LANDING",
+            "locId": "3WA1",
+            "siteId": "26269.11*U",
+            "distance": 66,
+            "facilityType": "ULTRALIGHT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.968472222222 46.9271811111111)",
+            "name": "CRICKET FLD",
+            "locId": "4WA2",
+            "siteId": "26273.61*A",
+            "distance": 45,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.912388888889 48.5249333333333)",
+            "name": "LOPEZ MEDICAL CLINIC",
+            "locId": "03WT",
+            "siteId": "26274.*H",
+            "distance": 65,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.7718 47.1784305555556)",
+            "name": "HOWELL",
+            "locId": "00WA",
+            "siteId": "26274.3*A",
+            "distance": 29,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.937666666667 48.4839166666667)",
+            "name": "LOPEZ ISLAND",
+            "locId": "S31",
+            "siteId": "26274.7*A",
+            "distance": 63,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.917956111111 48.5164891666667)",
+            "name": "FISHERMANS BAY",
+            "locId": "81W",
+            "siteId": "26274.71*C",
+            "distance": 64,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.887400833333 48.54149)",
+            "name": "WINDSOCK",
+            "locId": "4WA4",
+            "siteId": "26274.72*A",
+            "distance": 65,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.270277777778 47.0816666666667)",
+            "name": "BEAR VALLEY SKYRANCH",
+            "locId": "WN47",
+            "siteId": "26278.1*A",
+            "distance": 48,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.037644444444 47.9829166666667)",
+            "name": "STREAMLINE",
+            "locId": "0WA0",
+            "siteId": "26279.*H",
+            "distance": 29,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.225691666667 48.0420388888889)",
+            "name": "JANES",
+            "locId": "WA43",
+            "siteId": "26287.71*H",
+            "distance": 31,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-121.995243888889 47.8713636111111)",
+            "name": "FIRST AIR FLD",
+            "locId": "W16",
+            "siteId": "26304.21*A",
+            "distance": 24,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-121.922901666667 47.8723219444444)",
+            "name": "VAN DE PLASCH",
+            "locId": "WN20",
+            "siteId": "26304.22*A",
+            "distance": 26,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.266625833333 46.5503608333333)",
+            "name": "STROM FLD",
+            "locId": "39P",
+            "siteId": "26304.8*A",
+            "distance": 59,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.471422222222 46.5245222222222)",
+            "name": "FIRE DISTRICT 3",
+            "locId": "WT51",
+            "siteId": "26307.5*H",
+            "distance": 61,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.288488888889 48.3792888888889)",
+            "name": "WARE MOUNTAIN",
+            "locId": "0WA5",
+            "siteId": "26310.*H",
+            "distance": 51,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.338768333333 48.3748255555556)",
+            "name": "BARKER",
+            "locId": "WA07",
+            "siteId": "26310.1*A",
+            "distance": 51,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.324419444444 48.4180527777778)",
+            "name": "SKAGIT VALLEY HOSPITAL",
+            "locId": "0WA3",
+            "siteId": "26310.37*H",
+            "distance": 53,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.851230555556 46.5498280555556)",
+            "name": "FOSTER",
+            "locId": "5WA6",
+            "siteId": "26310.74*H",
+            "distance": 63,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.666666666667 48.2583333333333)",
+            "name": "BARNES LONESOME POLECAT RANCH",
+            "locId": "3WA5",
+            "siteId": "26322.1*H",
+            "distance": 46,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.673666666667 48.2515277777778)",
+            "name": "DELAURENTIS",
+            "locId": "OKH",
+            "siteId": "26322.11*A",
+            "distance": 46,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.655959166667 48.3518402777778)",
+            "name": "WHIDBEY ISLAND NAS (AULT FLD)",
+            "locId": "NUW",
+            "siteId": "26323.*A",
+            "distance": 51,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "MN"
+        }, {
+            "arp": "POINT(-123.310426944444 46.7903772222222)",
+            "name": "KIMBREL FARM",
+            "locId": "WN48",
+            "siteId": "26323.17*A",
+            "distance": 61,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.902544722222 46.9694044444444)",
+            "name": "OLYMPIA RGNL",
+            "locId": "OLM",
+            "siteId": "26327.*A",
+            "distance": 42,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.8474 47.0521138888889)",
+            "name": "PROVIDENCE ST PETERS HOSPITAL",
+            "locId": "8WA4",
+            "siteId": "26327.02*H",
+            "distance": 36,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.870139166667 47.1492625)",
+            "name": "FISHTRAP",
+            "locId": "WN12",
+            "siteId": "26327.04*H",
+            "distance": 33,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.950988888889 47.0431111111111)",
+            "name": "CAPITAL MEDICAL CENTER",
+            "locId": "WN58",
+            "siteId": "26327.05*H",
+            "distance": 39,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.736547222222 46.97075)",
+            "name": "LZ RANCH",
+            "locId": "14WA",
+            "siteId": "26327.07*A",
+            "distance": 38,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.891552777778 46.9639861111111)",
+            "name": "OLYMPIA",
+            "locId": "0WN4",
+            "siteId": "26327.08*H",
+            "distance": 42,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.821247222222 47.111485)",
+            "name": "GOWER FLD",
+            "locId": "6WA2",
+            "siteId": "26327.2*A",
+            "distance": 33,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.827833333333 46.9923888888889)",
+            "name": "HOSKINS FLD",
+            "locId": "44T",
+            "siteId": "26328.1*A",
+            "distance": 39,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.717893055556 46.5376069444444)",
+            "name": "NELSONS NITCH",
+            "locId": "WN59",
+            "siteId": "26331.*A",
+            "distance": 62,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.626226111111 46.5853838888889)",
+            "name": "BURNT RIDGE AIRSTRIP",
+            "locId": "WN74",
+            "siteId": "26331.1*A",
+            "distance": 58,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-121.677899722222 46.6041622222222)",
+            "name": "PACKWOOD",
+            "locId": "55S",
+            "siteId": "26341.*A",
+            "distance": 61,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-123.499694444444 48.1201944444444)",
+            "name": "WILLIAM R FAIRCHILD INTL",
+            "locId": "CLM",
+            "siteId": "26357.*A",
+            "distance": 60,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-123.323793888889 48.1106469444444)",
+            "name": "MCLAUGHLIN",
+            "locId": "WN37",
+            "siteId": "26357.11*H",
+            "distance": 54,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.397962777778 48.0814794444444)",
+            "name": "LAWSON AIRPARK",
+            "locId": "WN21",
+            "siteId": "26357.12*A",
+            "distance": 55,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.642971388889 48.0984219444444)",
+            "name": "BIG ANDY",
+            "locId": "7WA0",
+            "siteId": "26357.13*A",
+            "distance": 64,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.482686944444 48.0967563888889)",
+            "name": "ECLIPSE",
+            "locId": "7WA1",
+            "siteId": "26357.14*H",
+            "distance": 59,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.413333333333 48.1155)",
+            "name": "OLYMPIC MEML HOSPITAL",
+            "locId": "26WA",
+            "siteId": "26357.15*H",
+            "distance": 57,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.413954027778 48.1412926388889)",
+            "name": "PORT ANGELES CGAS",
+            "locId": "NOW",
+            "siteId": "26358.*A",
+            "distance": 58,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "CG"
+        }, {
+            "arp": "POINT(-123.413138888889 48.1166944444444)",
+            "name": "PORT ANGELES",
+            "locId": "W66",
+            "siteId": "26358.16*C",
+            "distance": 57,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-123.324233333333 48.0363833333333)",
+            "name": "MALETTI HILL LZ",
+            "locId": "WT29",
+            "siteId": "26358.18*H",
+            "distance": 51,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.667913333333 47.4323175)",
+            "name": "PORT ORCHARD",
+            "locId": "4WA9",
+            "siteId": "26361.*A",
+            "distance": 16,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.569021388889 47.4637077777778)",
+            "name": "VAUGHAN RANCH AIRFIELD",
+            "locId": "WN13",
+            "siteId": "26361.01*A",
+            "distance": 12,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.810638888889 48.0538055555556)",
+            "name": "JEFFERSON COUNTY INTL",
+            "locId": "0S9",
+            "siteId": "26363.*A",
+            "distance": 38,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.772109444444 47.9720341666667)",
+            "name": "STACEY'S",
+            "locId": "WA42",
+            "siteId": "26363.01*A",
+            "distance": 33,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.840661111111 48.0769444444445)",
+            "name": "SKY VALLEY AIRSTRIP",
+            "locId": "WA68",
+            "siteId": "26363.02*A",
+            "distance": 39,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.788741666667 48.1062555555556)",
+            "name": "JEFFERSON GENERAL HOSPITAL",
+            "locId": "7WA2",
+            "siteId": "26363.04*H",
+            "distance": 40,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.642083333333 47.7209722222222)",
+            "name": "PORT OF POULSBO MARINA MOORAGE",
+            "locId": "83Q",
+            "siteId": "26365.*C",
+            "distance": 18,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.287200277778 47.10392)",
+            "name": "PIERCE COUNTY - THUN FLD",
+            "locId": "PLU",
+            "siteId": "26374.1*A",
+            "distance": 26,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.346507777778 47.0826)",
+            "name": "BCAG - FREDERICKSON",
+            "locId": "23WA",
+            "siteId": "26374.11*H",
+            "distance": 27,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.289925 47.1786166666667)",
+            "name": "MULTI CARE HEALTH SYSTEM GOOD SAMARITAN HOSPITAL",
+            "locId": "7WA8",
+            "siteId": "26374.12*H",
+            "distance": 21,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.859608333333 47.8400913888889)",
+            "name": "KIMSHAN RANCH",
+            "locId": "WN00",
+            "siteId": "26376.*A",
+            "distance": 29,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.853122222222 47.9260638888889)",
+            "name": "MILLIONAIRE",
+            "locId": "WA17",
+            "siteId": "26376.01*H",
+            "distance": 33,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.855047222222 47.9273944444444)",
+            "name": "BLACKHEART",
+            "locId": "WA56",
+            "siteId": "26376.02*H",
+            "distance": 33,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.852388888889 47.9275694444444)",
+            "name": "NEPTUNE SPEAR",
+            "locId": "WA58",
+            "siteId": "26376.03*H",
+            "distance": 33,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.669569722222 46.8975991666667)",
+            "name": "TAYLOR",
+            "locId": "3WA0",
+            "siteId": "26377.1*A",
+            "distance": 41,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.601233888889 46.8776)",
+            "name": "FLYING B",
+            "locId": "8WA0",
+            "siteId": "26377.11*A",
+            "distance": 41,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.006205277778 46.5114997222222)",
+            "name": "RANDLE-KIONA AIRPARK",
+            "locId": "WN55",
+            "siteId": "26377.8*A",
+            "distance": 62,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.135678333333 47.6853766666667)",
+            "name": "JOBE SKIS PLANT 1",
+            "locId": "81WA",
+            "siteId": "26379.*H",
+            "distance": 12,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.073733333333 47.6742661111111)",
+            "name": "EVANS",
+            "locId": "WN91",
+            "siteId": "26379.01*H",
+            "distance": 13,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.148456388889 47.6820433333333)",
+            "name": "BERKLEY STRUCTURES",
+            "locId": "WA19",
+            "siteId": "26379.03*H",
+            "distance": 11,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.083686111111 47.6424527777778)",
+            "name": "WEBER POINT",
+            "locId": "1WA1",
+            "siteId": "26379.04*H",
+            "distance": 11,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.1375 47.6888888888889)",
+            "name": "SOUTH COVE",
+            "locId": "WA38",
+            "siteId": "26379.05*H",
+            "distance": 12,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.21575 47.4931388888889)",
+            "name": "RENTON MUNI",
+            "locId": "RNT",
+            "siteId": "26381.*A",
+            "distance": 4,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.218025 47.500575)",
+            "name": "WILL ROGERS WILEY POST MEML",
+            "locId": "W36",
+            "siteId": "26381.01*C",
+            "distance": 4,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.210908333333 47.5181777777778)",
+            "name": "ODYSSEY",
+            "locId": "01WT",
+            "siteId": "26381.02*H",
+            "distance": 4,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.200676388889 47.4959330555556)",
+            "name": "BOEING RENTON RAMP SITE NR 2",
+            "locId": "8WA2",
+            "siteId": "26381.13*H",
+            "distance": 5,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.214552777778 47.4417972222222)",
+            "name": "VALLEY MEDICAL CENTER",
+            "locId": "8WA3",
+            "siteId": "26381.2*H",
+            "distance": 6,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-121.123978888889 46.6375513888889)",
+            "name": "TIETON STATE",
+            "locId": "4S6",
+            "siteId": "26386.6*A",
+            "distance": 72,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-123.159631388889 48.6081547222222)",
+            "name": "ROCHE HARBOR",
+            "locId": "W39",
+            "siteId": "26388.63*C",
+            "distance": 73,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.13852 48.6123216666667)",
+            "name": "ROCHE HARBOR",
+            "locId": "WA09",
+            "siteId": "26388.65*A",
+            "distance": 73,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.091418611111 46.8326827777778)",
+            "name": "R & K SKYRANCH",
+            "locId": "8W9",
+            "siteId": "26388.8*A",
+            "distance": 53,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.867960555556 48.6456591666667)",
+            "name": "ROSARIO",
+            "locId": "W49",
+            "siteId": "26389.4*C",
+            "distance": 71,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.331793611111 47.6275980555556)",
+            "name": "SEATTLE SEAPLANES",
+            "locId": "0W0",
+            "siteId": "26393.*C",
+            "distance": 6,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.283719444444 47.6626166666667)",
+            "name": "CHILDRENS HOSPITAL EMERGENCY",
+            "locId": "0WA8",
+            "siteId": "26393.1*H",
+            "distance": 8,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.348711111111 47.6195694444444)",
+            "name": "BROADCAST HOUSE HELISTOP",
+            "locId": "8WA9",
+            "siteId": "26393.11*H",
+            "distance": 6,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.31318 47.5367652777778)",
+            "name": "BOEING PLANT 2",
+            "locId": "9WA0",
+            "siteId": "26393.12*H",
+            "distance": 1,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.3606825 47.6198202777778)",
+            "name": "ELLIOTT PARK",
+            "locId": "WA55",
+            "siteId": "26393.13*H",
+            "distance": 6,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.298380555556 47.6581)",
+            "name": "GRAVES FLD",
+            "locId": "WT22",
+            "siteId": "26393.14*H",
+            "distance": 8,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.344722222222 47.6216666666667)",
+            "name": "KOMO TV",
+            "locId": "WN16",
+            "siteId": "26393.17*H",
+            "distance": 6,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.324683333333 47.6028138888889)",
+            "name": "HARBORVIEW MEDICAL CENTER",
+            "locId": "WA53",
+            "siteId": "26393.18*H",
+            "distance": 4,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.3337375 47.6067647222222)",
+            "name": "1001 FOURTH AVENUE PLAZA",
+            "locId": "WA54",
+            "siteId": "26393.41*H",
+            "distance": 5,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.342348888889 47.6214869444444)",
+            "name": "SEATTLE PRIVATE NUMBER ONE",
+            "locId": "WN01",
+            "siteId": "26393.42*H",
+            "distance": 6,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.326236944444 47.5845427777778)",
+            "name": "PARK 90",
+            "locId": "WN93",
+            "siteId": "26393.43*H",
+            "distance": 3,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.331793333333 47.6081538888889)",
+            "name": "PUGET SOUND PLAZA",
+            "locId": "9WA6",
+            "siteId": "26393.7*H",
+            "distance": 5,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.311777777778 47.4498888888889)",
+            "name": "SEATTLE-TACOMA INTL",
+            "locId": "SEA",
+            "siteId": "26395.*A",
+            "distance": 5,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.338737777778 47.6289869444444)",
+            "name": "KENMORE AIR",
+            "locId": "W55",
+            "siteId": "26395.5*C",
+            "distance": 6,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.283761111111 47.6626166666667)",
+            "name": "BLDG CARE EMS HELISTOP",
+            "locId": "WT78",
+            "siteId": "26396.01*H",
+            "distance": 8,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.2592 48.5914555555556)",
+            "name": "THE TIME PORTAL",
+            "locId": "WA47",
+            "siteId": "26399.24*H",
+            "distance": 64,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-120.778888888889 46.8580555555556)",
+            "name": "DOGS RUN FREE",
+            "locId": "WA76",
+            "siteId": "26401.32*A",
+            "distance": 74,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.179623055556 48.1017588888889)",
+            "name": "GRAND VIEW INTL",
+            "locId": "WN23",
+            "siteId": "26402.012*A",
+            "distance": 49,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.205520833333 48.13025)",
+            "name": "BLUE RIBBON",
+            "locId": "WN29",
+            "siteId": "26402.02*A",
+            "distance": 51,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.150833333333 48.1255)",
+            "name": "RAKE'S GLEN",
+            "locId": "WA59",
+            "siteId": "26402.03*A",
+            "distance": 50,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.928505555556 48.0925925)",
+            "name": "DIAMOND POINT AIRSTRIP",
+            "locId": "2WA1",
+            "siteId": "26402.04*A",
+            "distance": 42,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.110897222222 48.0884166666667)",
+            "name": "SEQUIM EMS",
+            "locId": "3WA9",
+            "siteId": "26402.06*H",
+            "distance": 47,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.187920833333 48.0979222222222)",
+            "name": "SEQUIM VALLEY",
+            "locId": "W28",
+            "siteId": "26402.1*A",
+            "distance": 49,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.087954722222 48.1217591666667)",
+            "name": "BLUE HERON FLD",
+            "locId": "WN49",
+            "siteId": "26402.11*A",
+            "distance": 48,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.112719444444 48.1372944444444)",
+            "name": "RUCILLA'S ROOST",
+            "locId": "0WN0",
+            "siteId": "26402.21*A",
+            "distance": 49,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.095194444444 48.0768333333333)",
+            "name": "SECURITY SERVICES NORTHWEST HQ",
+            "locId": "4WA6",
+            "siteId": "26402.22*H",
+            "distance": 46,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.943616361111 48.5756141111111)",
+            "name": "WILDING FARM",
+            "locId": "6WA5",
+            "siteId": "26404.*A",
+            "distance": 68,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.921111111111 48.5858333333333)",
+            "name": "SHAW ISLAND TRUST",
+            "locId": "WA33",
+            "siteId": "26404.01*H",
+            "distance": 68,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.147555555556 47.2335555555556)",
+            "name": "SANDERSON FLD",
+            "locId": "SHN",
+            "siteId": "26405.*A",
+            "distance": 39,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-123.113983333333 47.2265888888889)",
+            "name": "MASON GENERAL HOSPITAL",
+            "locId": "9WA8",
+            "siteId": "26405.01*H",
+            "distance": 38,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.703762777778 47.6998161111111)",
+            "name": "NAVAL SUBMARINE BASE BANGOR",
+            "locId": "9WA9",
+            "siteId": "26407.12*H",
+            "distance": 19,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "MN"
+        }, {
+            "arp": "POINT(-122.7331375 47.6564138888889)",
+            "name": "APEX AIRPARK",
+            "locId": "8W5",
+            "siteId": "26408.*A",
+            "distance": 19,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.675036111111 47.6568916666667)",
+            "name": "ST MICHAEL MEDICAL CENTER",
+            "locId": "98WT",
+            "siteId": "26408.01*H",
+            "distance": 17,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-121.339056388889 47.7109355555556)",
+            "name": "SKYKOMISH STATE",
+            "locId": "S88",
+            "siteId": "26409.*A",
+            "distance": 41,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.102743611111 47.9048680277778)",
+            "name": "HARVEY FLD",
+            "locId": "S43",
+            "siteId": "26411.*A",
+            "distance": 24,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.043333333333 47.8133333333333)",
+            "name": "KYLES",
+            "locId": "WA04",
+            "siteId": "26411.01*A",
+            "distance": 20,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.094002777778 47.1523238888889)",
+            "name": "CAWLEYS SOUTH PRAIRIE",
+            "locId": "02WA",
+            "siteId": "26412.6*A",
+            "distance": 24,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.371083333333 47.0703888888889)",
+            "name": "SHADY ACRES",
+            "locId": "3B8",
+            "siteId": "26414.1*A",
+            "distance": 28,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.436194444444 48.2569444444444)",
+            "name": "CAMANO ISLAND AIRFIELD",
+            "locId": "13W",
+            "siteId": "26424.3*A",
+            "distance": 44,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.361611111111 48.2773888888889)",
+            "name": "SUNSET",
+            "locId": "15WA",
+            "siteId": "26424.32*A",
+            "distance": 45,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-121.752896944444 47.8681575)",
+            "name": "ROESLER TIMBER COMPANY",
+            "locId": "17WA",
+            "siteId": "26424.7*H",
+            "distance": 30,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.662629444444 47.1962077777778)",
+            "name": "MC NEIL ISLAND EMERGENCY PAD",
+            "locId": "WA92",
+            "siteId": "26425.13*H",
+            "distance": 25,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.436388888889 47.2616666666667)",
+            "name": "CROSSINGS",
+            "locId": "29WA",
+            "siteId": "26431.3*H",
+            "distance": 17,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.447455555556 47.24455)",
+            "name": "ST JOSEPH HOSPITAL",
+            "locId": "WN50",
+            "siteId": "26431.31*H",
+            "distance": 18,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.452002777778 47.2596972222222)",
+            "name": "MARY BRIDGE",
+            "locId": "31WA",
+            "siteId": "26431.32*H",
+            "distance": 17,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.476475 47.1376777777778)",
+            "name": "MCCHORD FLD (JOINT BASE LEWIS-MCCHORD)",
+            "locId": "TCM",
+            "siteId": "26432.*A",
+            "distance": 25,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "MA"
+        }, {
+            "arp": "POINT(-122.578111111111 47.2679444444444)",
+            "name": "TACOMA NARROWS",
+            "locId": "TIW",
+            "siteId": "26434.4*A",
+            "distance": 19,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.473558333333 47.2831972222222)",
+            "name": "TACOMA",
+            "locId": "56WA",
+            "siteId": "26434.41*C",
+            "distance": 16,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.935967777778 46.8503775)",
+            "name": "SORRELL",
+            "locId": "59WA",
+            "siteId": "26436.2*A",
+            "distance": 48,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.916244722222 46.8403777777778)",
+            "name": "WISSLER'S",
+            "locId": "65WA",
+            "siteId": "26436.21*A",
+            "distance": 48,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.806475833333 46.4771691666667)",
+            "name": "ED CARLSON MEML FLD/SOUTH LEWIS COUNTY",
+            "locId": "TDO",
+            "siteId": "26437.*A",
+            "distance": 67,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.792060277778 46.5148291666667)",
+            "name": "HARRIS",
+            "locId": "WN05",
+            "siteId": "26437.01*A",
+            "distance": 64,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.247621666667 47.4392663888889)",
+            "name": "TUKWILA OPERATIONS CENTER",
+            "locId": "54WA",
+            "siteId": "26439.612*H",
+            "distance": 6,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-123.070063888889 47.3485722222222)",
+            "name": "UNION",
+            "locId": "WA99",
+            "siteId": "26442.01*H",
+            "distance": 33,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.476971944444 47.4585886111111)",
+            "name": "VASHON MUNI",
+            "locId": "2S1",
+            "siteId": "26448.*A",
+            "distance": 8,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PU",
+            "ownershipTypeCode": "PU"
+        }, {
+            "arp": "POINT(-122.488236111111 47.4045722222222)",
+            "name": "MISTY ISLE FARMS",
+            "locId": "WN96",
+            "siteId": "26448.2*H",
+            "distance": 11,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.46044 47.39287)",
+            "name": "QUARTERMASTER HARBOR",
+            "locId": "69WT",
+            "siteId": "26448.21*C",
+            "distance": 10,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.790277777778 47.3552222222222)",
+            "name": "ROCKY BAY",
+            "locId": "WT77",
+            "siteId": "26448.5*A",
+            "distance": 22,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.952682222222 48.61788)",
+            "name": "WESTSOUND/WSX",
+            "locId": "WA83",
+            "siteId": "26464.4*C",
+            "distance": 70,
+            "facilityType": "SEAPLANE BASE",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.055972222222 47.1296805555556)",
+            "name": "BURNETT LANDING",
+            "locId": "WN15",
+            "siteId": "26471.3*A",
+            "distance": 26,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.890083333333 46.51925)",
+            "name": "PILOT'S PASTURES",
+            "locId": "1WA2",
+            "siteId": "26475.01*A",
+            "distance": 65,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.521508333333 47.6432944444444)",
+            "name": "BAINBRIDGE ISLAND FIRE DEPT",
+            "locId": "2WA4",
+            "siteId": "26475.7*H",
+            "distance": 11,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.524024444444 47.7078744444444)",
+            "name": "HALEY",
+            "locId": "WN79",
+            "siteId": "26475.8*H",
+            "distance": 14,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.156792222222 47.7623205555556)",
+            "name": "WILSON",
+            "locId": "43WA",
+            "siteId": "26477.8*H",
+            "distance": 15,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.141944444444 47.7841666666667)",
+            "name": "FITZ PAD ONE",
+            "locId": "47WA",
+            "siteId": "26478.7*H",
+            "distance": 17,
+            "facilityType": "HELIPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.522063611111 46.8470455555556)",
+            "name": "COUGAR MOUNTAIN AIRFIELD",
+            "locId": "49WA",
+            "siteId": "26485.*A",
+            "distance": 42,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }, {
+            "arp": "POINT(-122.553038888889 46.9249847222222)",
+            "name": "WESTERN AIRPARK",
+            "locId": "06WN",
+            "siteId": "26485.01*A",
+            "distance": 38,
+            "facilityType": "AIRPORT",
+            "facilityUseCode": "PR",
+            "ownershipTypeCode": "PR"
+        }
+    ],
+    "positionSource": "3RD PARTY SURVEY",
+    "artccComputerId": "ZCS",
+    "associatedState": "WASHINGTON",
+    "beaconLensColor": "White and Green",
+    "elevationSource": "3RD PARTY SURVEY",
+    "facilityUseCode": "PU",
+    "notamFacilityId": "BFI",
+    "segmentedCircle": "NO",
+    "associatedCounty": "KING",
+    "controlTowerFlag": "Y",
+    "customsEntryFlag": "YES",
+    "inspectionAgency": "F",
+    "inspectionMethod": "F",
+    "militaryAircraft": 0,
+    "notamServiceFlag": "Y",
+    "tollFreeFssPhone": "1-800-WX-BRIEF",
+    "bottledOxygenType": "HIGH/LOW",
+    "helicopterGeneral": 26,
+    "magneticVariation": "15E",
+    "ownerCityStateZip": "SEATTLE, WA 98104",
+    "ownershipTypeCode": "PU",
+    "satelliteAirports": [{
+            "frequency": "126.5 ;161-222 SEA RWY 14",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "128.5 ;302-016 SEA, RWY 32",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "119.2 ;028-160 SEA RWY 14",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "128.5 ;316-027 SEA, RWY 14",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "125.9 ;290-315 SEA, RWY 14",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "126.5 ;126-222 SEA, RWY 32",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "377.15 ;161-222 SEA, RWY 14",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "120.1 ;223-301 SEA, RWY 32",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "290.9 ;290-315 SEA, RWY 14",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "269.125 ;301-340 SEA, RWY 32",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "290.9 ;080-125 SEA, RWY 32",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "284.7 ;028-160 SEA, RWY 14",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "284.7 ;017-079 SEA, RWY 32",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "377.15 ;126-222 SEA, RWY 32",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "120.4 ;301-340 SEA. RWY 32",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "306.9 ;316-027 SEA, RWY 14",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "306.9 ;302-016 SEA, RWY 32",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "119.2 ;017-079 SEA, RWY 32",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "125.9 ;080-125 SEA, RWY 32",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "125.9 ;080-125 SEA,RWY 32",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "120.1 ;223-289 SEA, RWY 14",
+            "frequencyUse": "APCH/P DEP/P",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH/DEPARTURE",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "125.9",
+            "frequencyUse": "APCH/P IC",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "306.9",
+            "frequencyUse": "APCH/P IC",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "APPROACH",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "120.4",
+            "frequencyUse": "CBAIN RNAV DP",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CBAIN RNAV DP)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "269.125",
+            "frequencyUse": "CBAIN RNAV DP",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CBAIN RNAV DP)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "377.15 ;161-222 SEA, RWY 14",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "119.2 ;017-079 SEA, RWY 32",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "119.2 ;028-160 SEA RWY 14",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "120.1 ;223-289 SEA, RWY 14",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "120.1 ;223-301 SEA, RWY 32",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "125.9 ;080-125 SEA RWY 32",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "125.9 ;290-315 SEA RWY 14",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "126.5 ;126-222 SEA, RWY 32",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "126.5 ;161-222 SEA, RWY 14",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "128.5 ;302-016 SEA, RWY 32",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "128.5 ;316-027 SEA, RWY 14",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "284.7 ;017-079 SEA RWY 32",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "284.7 ;028-160 SEA RWY 14",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "290.9 ;080-125 SEA, RWY 32",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "290.9 ;223-289 SEA, RWY 14",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "290.9 ;223-301 SEA, RWY 32",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "290.9 ;290-315 SEA, RWY 14",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "306.9 ;302-016 SEA, RWY 32",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "306.9 ;316-027 SEA, RWY 14",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "377.15 ;126-222 SEA, RWY 32",
+            "frequencyUse": "CLASS B",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (CLASS B)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "338.2",
+            "frequencyUse": "GLASR STAR",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (GLASR STAR)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "123.9",
+            "frequencyUse": "GLASR STAR",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (GLASR STAR)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "125.6",
+            "frequencyUse": "JAWBN STAR",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (JAWBN STAR)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "273.45",
+            "frequencyUse": "JAWBN STAR",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (JAWBN STAR)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "119.2",
+            "frequencyUse": "KENT DP",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (KENT DP)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "284.7",
+            "frequencyUse": "KENT DP",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (KENT DP)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "269.125",
+            "frequencyUse": "NEEDLE DP",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (NEEDLE DP)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "120.4",
+            "frequencyUse": "NEEDLE DP",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (NEEDLE DP)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "284.7",
+            "frequencyUse": "NRVNA RNAV DP",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (NRVNA RNAV DP)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "119.2",
+            "frequencyUse": "NRVNA RNAV DP",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (NRVNA RNAV DP)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "273.45",
+            "frequencyUse": "OLYMPIA STAR",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (OLYMPIA STAR)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }, {
+            "frequency": "125.6",
+            "frequencyUse": "OLYMPIA STAR",
+            "masterAirportCity": "SEATTLE/TACOMA",
+            "masterAirportName": "SEATTLE-TACOMA APPROACH CONTROL",
+            "facilityIdentifier": "S46",
+            "frequencyUseDisplay": "Other - (OLYMPIA STAR)",
+            "masterAirportRegion": "ANM",
+            "masterAirportStateCode": "WA",
+            "masterAirportStateName": "WASHINGTON"
+        }
+    ],
+    "windIndicatorCode": "Y-L",
+    "lastInspectionDate": "2023-05-26T00:00:00",
+    "positionSourceDate": "2016-02-02T00:00:00",
+    "responsibleArtccId": "ZSE",
+    "ultralightAircraft": 0,
+    "associatedStateCode": "WA",
+    "beaconLensColorCode": "WG",
+    "elevationSourceDate": "2016-02-02T00:00:00",
+    "managerCityStateZip": "SEATTLE, WA 98108-3844",
+    "otherAirportRemarks": [{
+            "object": "airports",
+            "remark": "(MANAGER NAME) JPARROTT@KINGCOUNTY.GOV.",
+            "element": "manager_name",
+            "rawElement": "A014"
+        }, {
+            "object": "airports",
+            "remark": "(AIRPORT LIGHTING SCHEDULE) HIRL RY 14R/32L OPEN DUSK-DAWN. MIRL RY 14L/32R NOT OPER 0600-1500Z++.",
+            "element": "airport_lighting_schedule",
+            "rawElement": "A081"
+        }
+    ],
+    "responsibleArtccName": "SEATTLE",
+    "airframeRepairService": "MAJOR",
+    "certificationTypeDate": "IV C U 01/1974",
+    "magneticVariationYear": "2020",
+    "annualCommuterServices": 0,
+    "arpDeterminationMethod": "ESTIMATED",
+    "beaconLightingSchedule": "SS-SR",
+    "airportLightingSchedule": "SEE RMK",
+    "annualOperationsEndDate": "2019-01-01T00:00:00",
+    "powerplantRepairService": "MAJOR",
+    "annualCommercialServices": 10142,
+    "customsLandingRightsFlag": "NO",
+    "jetEngineGeneralAircraft": 88,
+    "associatedCountyStateCode": "WA",
+    "militaryLandingRightsFlag": "Y",
+    "airportAttendanceSchedules": [{
+            "schedule": "ALL/ALL/ALL",
+            "scheduleSeq": 1,
+            "formattedSchedule": "CONTINUOUS"
+        }
+    ],
+    "multiEngineGeneralAircraft": 40,
+    "responsibleArtccComputerId": "ZCS",
+    "transientStorageFacilities": "HGR,TIE",
+    "directionOfBusinessDistrict": "S",
+    "singleEngineGeneralAircraft": 229,
+    "annualGeneralLocalOperations": 49537,
+    "distanceFromBusinessDistrict": "04",
+    "elevationDeterminationMethod": "SURVEYED",
+    "airspaceAnalysisDetermination": "NOT ANALYZED",
+    "annualGeneralItinerantOperations": 94500,
+    "annualMilitaryAircraftOperations": 1176
+}

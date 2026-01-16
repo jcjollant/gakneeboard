@@ -1,0 +1,31 @@
+{
+    "code": "SADF",
+    "name": "San Fernando International",
+    "elevation": 11,
+    "trafficPatternAltitude": null,
+    "frequencies": [
+        {
+            "name": "Ground",
+            "mhz": 121.85
+        },
+        {
+            "name": "Tower",
+            "mhz": 119
+        },
+        {
+            "name": "Tower",
+            "mhz": 120.5
+        },
+        {
+            "name": "Clearance",
+            "mhz": 129.5
+        }
+    ],
+    "runways": [
+        {
+            "name": "5/23",
+            "length": 5545,
+            "width": 98
+        }
+    ]
+}

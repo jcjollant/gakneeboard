@@ -1,0 +1,118 @@
+## Getting Chart data from adip
+API at https://adip.faa.gov/agisServices/public-api/getAirportChartData
+### Sample Payload
+{locId: "RNT"}
+
+### Interesting Fields
+`cycle`: "2410" => contains the current document cycle which should be used to construct the URL
+charts[n].chartCode: "IAP"
+charts[n].chartName: "RNAV (GPS) RWY 34"
+charts[n].pdfName: "05396R34.PDF"
+### Actual PDF URI
+https://aeronav.faa.gov/d-tpp/2409/05396RZ16.PDF
+https://aeronav.faa.gov/d-tpp/{cycle}/
+https://aeronav.faa.gov/d-tpp/2411/05396R34.PDF
+
+### Sample response
+{
+    "cycle": "2410",
+    "airportName": "",
+    "locId": "RNT",
+    "icaoId": "KRNT",
+    "military": "N",
+    "charts": [
+        {
+            "chartSeq": "10100",
+            "chartCode": "MIN",
+            "chartName": "TAKEOFF MINIMUMS",
+            "pdfName": "NW1TO.PDF"
+        },
+        {
+            "chartSeq": "10200",
+            "chartCode": "MIN",
+            "chartName": "ALTERNATE MINIMUMS",
+            "pdfName": "NW1ALT.PDF"
+        },
+        {
+            "chartSeq": "30000",
+            "chartCode": "STAR",
+            "chartName": "CHINS FIVE",
+            "pdfName": "00582CHINS.PDF"
+        },
+        {
+            "chartSeq": "30000",
+            "chartCode": "STAR",
+            "chartName": "CHINS FIVE, CONT.1",
+            "pdfName": "00582CHINS_C.PDF"
+        },
+        {
+            "chartSeq": "30000",
+            "chartCode": "STAR",
+            "chartName": "GLASR THREE",
+            "pdfName": "00582GLASR.PDF"
+        },
+        {
+            "chartSeq": "30000",
+            "chartCode": "STAR",
+            "chartName": "GLASR THREE, CONT.1",
+            "pdfName": "00582GLASR_C.PDF"
+        },
+        {
+            "chartSeq": "30000",
+            "chartCode": "STAR",
+            "chartName": "OLYMPIA TWO",
+            "pdfName": "00582OLYMPIA.PDF"
+        },
+        {
+            "chartSeq": "30000",
+            "chartCode": "STAR",
+            "chartName": "OLYMPIA TWO, CONT.1",
+            "pdfName": "00582OLYMPIA_C.PDF"
+        },
+        {
+            "chartSeq": "30000",
+            "chartCode": "STAR",
+            "chartName": "SKYKO ONE",
+            "pdfName": "00582SKYKO.PDF"
+        },
+        {
+            "chartSeq": "53525",
+            "chartCode": "IAP",
+            "chartName": "RNAV (GPS) RWY 34",
+            "pdfName": "05396R34.PDF"
+        },
+        {
+            "chartSeq": "53525",
+            "chartCode": "IAP",
+            "chartName": "RNAV (GPS) Y RWY 16",
+            "pdfName": "05396RY16.PDF"
+        },
+        {
+            "chartSeq": "53525",
+            "chartCode": "IAP",
+            "chartName": "RNAV (GPS) Z RWY 16",
+            "pdfName": "05396RZ16.PDF"
+        },
+        {
+            "chartSeq": "70000",
+            "chartCode": "APD",
+            "chartName": "AIRPORT DIAGRAM",
+            "pdfName": "05396AD.PDF"
+        },
+        {
+            "chartSeq": "90100",
+            "chartCode": "DP",
+            "chartName": "BELLEVUE FOUR",
+            "pdfName": "05396BELLEVUE.PDF"
+        },
+        {
+            "chartSeq": "90100",
+            "chartCode": "DP",
+            "chartName": "RENTN THREE",
+            "pdfName": "05396RENTN.PDF"
+        }
+    ]
+}
+
+## Getting Airport Details from ADIP
+API at https://adip.faa.gov/agisServices/public-api/getAirportDetails

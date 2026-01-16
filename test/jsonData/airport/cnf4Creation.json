@@ -1,0 +1,19 @@
+{
+    "code": "CNF4",
+    "name": "Kawartha Lakes Municipal Airport",
+    "elevation": 895,
+    "trafficPatternAltitude": null,
+    "frequencies": [
+        {
+            "name": "ATF",
+            "mhz": 122.725
+        }
+    ],
+    "runways": [
+        {
+            "name": "13/31",
+            "length": 3508,
+            "width": 75
+        }
+    ]
+}

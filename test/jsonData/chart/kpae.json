@@ -1,0 +1,117 @@
+{
+    "cycle": "2413",
+    "airportName": "",
+    "locId": "PAE",
+    "icaoId": "KPAE",
+    "military": "N",
+    "charts": [
+        {
+            "chartSeq": "10100",
+            "chartCode": "MIN",
+            "chartName": "TAKEOFF MINIMUMS",
+            "pdfName": "NW1TO.PDF"
+        },
+        {
+            "chartSeq": "10110",
+            "chartCode": "MIN",
+            "chartName": "DIVERSE VECTOR AREA",
+            "pdfName": "NW1TO.PDF"
+        },
+        {
+            "chartSeq": "10200",
+            "chartCode": "MIN",
+            "chartName": "ALTERNATE MINIMUMS",
+            "pdfName": "NW1ALT.PDF"
+        },
+        {
+            "chartSeq": "10700",
+            "chartCode": "HOT",
+            "chartName": "HOT SPOT",
+            "pdfName": "NW1HOTSPOT.PDF"
+        },
+        {
+            "chartSeq": "30000",
+            "chartCode": "STAR",
+            "chartName": "CHINS FIVE",
+            "pdfName": "00582CHINS.PDF"
+        },
+        {
+            "chartSeq": "30000",
+            "chartCode": "STAR",
+            "chartName": "CHINS FIVE, CONT.1",
+            "pdfName": "00582CHINS_C.PDF"
+        },
+        {
+            "chartSeq": "30000",
+            "chartCode": "STAR",
+            "chartName": "DEVYN TWO (RNAV)",
+            "pdfName": "00142DEVYN.PDF"
+        },
+        {
+            "chartSeq": "30000",
+            "chartCode": "STAR",
+            "chartName": "OLYMPIA TWO",
+            "pdfName": "00582OLYMPIA.PDF"
+        },
+        {
+            "chartSeq": "30000",
+            "chartCode": "STAR",
+            "chartName": "OLYMPIA TWO, CONT.1",
+            "pdfName": "00582OLYMPIA_C.PDF"
+        },
+        {
+            "chartSeq": "50750",
+            "chartCode": "IAP",
+            "chartName": "ILS Y OR LOC Y RWY 16R",
+            "pdfName": "00142IYLY16R.PDF"
+        },
+        {
+            "chartSeq": "50750",
+            "chartCode": "IAP",
+            "chartName": "ILS Z OR LOC Z RWY 16R",
+            "pdfName": "00142IZLZ16R.PDF"
+        },
+        {
+            "chartSeq": "51750",
+            "chartCode": "IAP",
+            "chartName": "ILS Z RWY 16R (SA CAT II)",
+            "pdfName": "00142IZ16RSAC2.PDF"
+        },
+        {
+            "chartSeq": "53525",
+            "chartCode": "IAP",
+            "chartName": "RNAV (GPS) RWY 34L",
+            "pdfName": "00142R34L.PDF"
+        },
+        {
+            "chartSeq": "53525",
+            "chartCode": "IAP",
+            "chartName": "RNAV (GPS) Y RWY 16R",
+            "pdfName": "00142RY16R.PDF"
+        },
+        {
+            "chartSeq": "53525",
+            "chartCode": "IAP",
+            "chartName": "RNAV (GPS) Z RWY 16R",
+            "pdfName": "00142RZ16R.PDF"
+        },
+        {
+            "chartSeq": "55800",
+            "chartCode": "IAP",
+            "chartName": "VOR-A",
+            "pdfName": "00142VA.PDF"
+        },
+        {
+            "chartSeq": "70000",
+            "chartCode": "APD",
+            "chartName": "AIRPORT DIAGRAM",
+            "pdfName": "00142AD.PDF"
+        },
+        {
+            "chartSeq": "90100",
+            "chartCode": "DP",
+            "chartName": "PAINE SIX",
+            "pdfName": "00142PAINE.PDF"
+        }
+    ]
+}
