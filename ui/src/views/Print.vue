@@ -17,9 +17,11 @@
       </div>
       <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages">
         <Page :data="page.front" :format="template.format" :style="getPageStyle()" />
-        <SideBar v-if="printVibOption != VerticalInfoBarOption.hide" class="sidebar" :ver="template.ver" :option="printVibOption" 
+        <SideBar v-if="printVibOption != VerticalInfoBarOption.hide" class="sidebar" 
+            :ver="template.ver" :option="printVibOption" :name="page.front.type == PageType.checklist ? template.name : ''"
             :style="getSideBarStyle(false)"/>
-        <SideBar v-if="printVibOption != VerticalInfoBarOption.hide" class="sidebar back" :ver="template.ver" :option="printVibOption" 
+        <SideBar v-if="printVibOption != VerticalInfoBarOption.hide" class="sidebar back" 
+            :ver="template.ver" :option="printVibOption" :name="page.back?.type == PageType.checklist ? template.name : ''"
             :style="getSideBarStyle(true)"/>
         <Page v-if="page.back" :data="page.back" :format="template.format" :class="{flipMode:printFlipMode}" :style="getPageStyle()" />
       </div>
