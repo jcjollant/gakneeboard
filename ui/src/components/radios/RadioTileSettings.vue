@@ -11,7 +11,7 @@
             <Separator name="Frequency List" />
             <div class="list-editor">
                  <Textarea class='list' rows="9" cols="24" v-model="textData"
-                            placeholder="Enter up to 15 freq."></Textarea>
+                            placeholder="Format: Value,Name,Type&#10;Ex: 123.45, KABC Twr, Tower"></Textarea>
                  <Button icon="pi pi-search" title="Frequency Lookup" link
                             @click="showLookup = true" class="lookupBtn"></Button>
             </div>
@@ -36,7 +36,9 @@
 </template>
 
 <script setup lang="ts">
+import { useToast } from 'primevue/usetoast';
 import { ref, onMounted, watch, computed, inject } from 'vue';
+import { useToaster } from '../../assets/Toaster';
 import { TileData } from '../../models/TileData';
 import { DisplayModeRadios, DisplayModeChoice } from '../../models/DisplayMode';
 import { Frequency, FrequencyType } from '../../models/Frequency';
@@ -63,6 +65,7 @@ const textData = ref('');
 const colorScheme = ref('light');
 const showLookup = ref(false);
 const lookupTime = ref(0);
+const toaster = useToaster(useToast());
 
 const freqLight = new Frequency('Light', '123.45', FrequencyType.ctaf)
 const freqShade = new Frequency('Shade', '123.45', FrequencyType.ctaf)
@@ -136,7 +139,7 @@ function loadFromTileData(tile: TileData) {
         textData.value = list.map( (f:Frequency) => f.value + ',' + f.name + ',' + Frequency.typeToString(f.type)).join('\n')
         
         // Color Scheme
-         if('colorScheme' in data) colorScheme.value = data.colorScheme
+        if('colorScheme' in data) colorScheme.value = data.colorScheme
     }
 }
 
@@ -160,6 +163,7 @@ function addFrequency(freq:Frequency) {
     } else {
         textData.value = newLine
     }
+    toaster.success('Radio Settings', freq.name + ' added')
 }
 
 function emitUpdate() {
