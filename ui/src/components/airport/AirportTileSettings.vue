@@ -72,7 +72,7 @@ import { Formatter } from '../../lib/Formatter';
 import { TrafficPatternDisplay, TrafficPatternDisplayLabels } from '../../models/TrafficPatternDisplay';
 import { RunwayOrientation } from './RunwayOrientation';
 import { DisplayModeAirport, DisplayModeChoice } from '../../models/DisplayMode';
-import { getAirport } from '../../services/AirportService';
+import { getAirport } from '../../services/AirportDataService';
 import { TileData } from '../../models/TileData';
 import { OneChoiceValue } from '../../models/OneChoiceValue';
 

@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { Airport } from '../../models/Airport.ts'
-import { getAirport } from '../../services/AirportService'
+import { getAirport } from '../../services/AirportDataService'
 import { LocalStoreService } from '../../services/LocalStoreService'
 import { sessionAirports } from '../../assets/data'
 import { useToast } from 'primevue/usetoast'

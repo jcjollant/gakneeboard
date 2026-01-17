@@ -1,5 +1,5 @@
 import { describe, expect, test, jest, beforeEach } from '@jest/globals';
-import { getAirport, createAirport } from '../src/services/AirportService';
+import { getAirport, createAirport } from '../src/services/AirportDataService';
 import { LocalStoreService } from '../src/services/LocalStoreService';
 import { sessionAirports, backend, currentUser, reportError } from '../src/assets/data';
 import axios from 'axios';
@@ -36,7 +36,7 @@ const mockReportError = reportError as jest.Mock;
 // Mock LocalStoreService
 jest.mock('../src/services/LocalStoreService');
 
-describe('AirportService', () => {
+describe('AirportDataService', () => {
     const kpae = { "version": 1, "code": "KPAE", "name": "Seattle Paine Fld Intl", "elev": 606.9, "custom": false, "asof": 20230101 };
 
     beforeEach(() => {

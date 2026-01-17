@@ -215,7 +215,7 @@ const contentType = { headers: { 'Content-Type': 'application/json' } }
 export async function createAirport(request: AirportCreationRequest) {
     const url = GApiUrl.root + 'airport'
     const payload = { user: currentUser.sha256, request: request }
-    // console.debug('[AirportService.createAirport] payload', payload)
+    // console.debug('[AirportDataService.createAirport] payload', payload)
     await axios.post(url, payload, contentType)
         .then(response => {
             if (response.data && response.data.code) {
@@ -223,7 +223,7 @@ export async function createAirport(request: AirportCreationRequest) {
             }
         })
         .catch(error => {
-            reportError('[AirportService.createAirport] error ' + JSON.stringify(error))
+            reportError('[AirportDataService.createAirport] error ' + JSON.stringify(error))
             throw error
         })
 }

@@ -17,7 +17,7 @@
 import { onMounted, ref, watch } from 'vue'
 import { Airport } from '../../models/Airport.ts';
 import { DisplayModeChoice, DisplayModeVfr } from '../../models/DisplayMode.ts';
-import { getAirport } from '../../services/AirportService';
+import { getAirport } from '../../services/AirportDataService';
 
 import Header from '../shared/Header.vue';
 import ImageContent from '../shared/ImageContent.vue';

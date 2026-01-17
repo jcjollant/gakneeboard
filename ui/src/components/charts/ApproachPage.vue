@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { getAirport } from '../../services/AirportService';
+import { getAirport } from '../../services/AirportDataService';
 import { UserUrl } from '../../lib/UserUrl';
 import { Airport } from '../../models/Airport';
 import AirportInput from '../shared/AirportInput.vue';

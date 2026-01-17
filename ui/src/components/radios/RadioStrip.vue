@@ -32,7 +32,7 @@ import { onMounted, ref, watch } from 'vue';
 import StripActions from '../strips/StripActions.vue';
 import Button from 'primevue/button'
 import { Airport } from '../../models/Airport';
-import { getAirport } from '../../services/AirportService';
+import { getAirport } from '../../services/AirportDataService';
 import { Formatter } from '../../lib/Formatter';
 import AirportSelectionDialog from '../airport/AirportSelectionDialog.vue';
 

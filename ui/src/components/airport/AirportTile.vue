@@ -52,7 +52,7 @@
 
 <script setup lang="ts">
 import {ref, onMounted, watch} from 'vue';
-import { getAirport, getNotams } from '../../services/AirportService'
+import { getAirport, getNotams } from '../../services/AirportDataService'
 import { DisplayModeAirport, DisplayModeChoice } from '../../models/DisplayMode';
 import { Airport, Runway } from '../../models/Airport.ts';
 import { AirportTileConfig } from './AirportTileConfig.ts';

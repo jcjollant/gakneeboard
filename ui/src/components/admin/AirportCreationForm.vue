@@ -79,7 +79,7 @@ import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';
-import { createAirport } from '../../services/AirportService';
+import { createAirport } from '../../services/AirportDataService';
 import { AirportCreationRequest, RequestFrequency, RequestRunway } from '../../models/AirportCreationRequest';
 
 const toast = useToast();

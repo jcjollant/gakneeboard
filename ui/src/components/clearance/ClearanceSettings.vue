@@ -22,7 +22,7 @@ import {
     DisplayModeIfr 
 } from '../../models/DisplayMode.ts';
 import { IfrTileDisplayModeLabels } from './IfrTileDisplayModeLabel.ts';
-import { getAirport } from '../../services/AirportService';
+import { getAirport } from '../../services/AirportDataService';
 
 import AirportInput from '../shared/AirportInput.vue';
 import OneChoice from '../shared/OneChoice.vue';

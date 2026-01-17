@@ -38,7 +38,7 @@ import AirportInput from '../shared/AirportInput.vue';
 import Diagram from './Diagram.vue';
 import FAButton from '../shared/FAButton.vue';
 import Header from '../shared/Header.vue';
-import { getAirport } from '../../services/AirportService';
+import { getAirport } from '../../services/AirportDataService';
 import { sessionAirports } from '../../assets/data';
 import { UserUrl } from '../../lib/UserUrl';
 import { Airport } from '../../models/Airport';

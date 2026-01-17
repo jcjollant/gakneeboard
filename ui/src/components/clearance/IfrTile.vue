@@ -22,7 +22,7 @@
 import { onMounted, ref, watch } from 'vue'
 import { Airport } from '../../models/Airport.ts';
 import { DisplayModeIfr } from '../../models/DisplayMode.ts';
-import { getAirport } from '../../services/AirportService';
+import { getAirport } from '../../services/AirportDataService';
 import { Regulation } from '../../models/Regulation.ts';
 
 import ApproachContent from './ApproachContent.vue';
