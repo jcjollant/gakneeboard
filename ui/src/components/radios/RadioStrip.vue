@@ -33,6 +33,7 @@ import StripActions from '../strips/StripActions.vue';
 import Button from 'primevue/button'
 import { Airport } from '../../models/Airport';
 import { getAirport } from '../../services/AirportDataService';
+import { AirportService } from '../../services/AirportService';
 import { Formatter } from '../../lib/Formatter';
 import AirportSelectionDialog from '../airport/AirportSelectionDialog.vue';
 
@@ -60,12 +61,11 @@ watch(props, () => {
 
 function applyAirport(a: Airport) {
     // console.debug('[RadioStrip.onPick] airport', airpt)
-    freqWeather.value = Formatter.frequency( a.getFreqWeather())
-    const fg = a.getFreqGround()
-    // console.debug('[RadioStrip.onPick] freqGround', fg)
-    freqGround.value = Formatter.frequency( fg)
-    freqClearance.value = Formatter.frequency( a.getFreqClearance())
-    freqTower.value = Formatter.frequency( a.getFreqTowerIfr())
+    freqWeather.value = Formatter.frequency( AirportService.getFreqWeather(a))
+    const fg = AirportService.getFreqGround(a)
+    freqGround.value = fg ? Formatter.frequency(fg.value) : Formatter.noFrequency
+    freqClearance.value = Formatter.frequency( AirportService.getFreqClearance(a))
+    freqTower.value = Formatter.frequency( AirportService.getFreqTowerIfr(a))
     airport.value = a
 }
 

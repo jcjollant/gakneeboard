@@ -34,6 +34,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
+import { Formatter } from '../../lib/Formatter';
+import { AirportService } from '../../services/AirportService';
 import { Airport } from '../../models/Airport';
 import { Frequency, FrequencyType } from '../../models/Frequency';
 
@@ -59,11 +61,11 @@ function loadProps(props:any) {
         // console.log('[DepartureContent] loadProps', props.airport)
         freqAtc.value = Frequency.fromType(0,FrequencyType.tracon)
         // console.log('[DepartureContent] loadProps', freqClearance.value)
-        freqGround.value = airport.getFreqGround()
-        const twrFreq = airport.getFreqTower()
-        const ctafFreq = airport.getFreqCtaf()
+        freqGround.value = AirportService.getFreqGround(airport)
+        const twrFreq = AirportService.getFreqTower(airport)
+        const ctafFreq = AirportService.getFreqCtaf(airport)
         freqTower.value = twrFreq ? Frequency.fromType(twrFreq,FrequencyType.tower) : ( ctafFreq ? Frequency.fromType(ctafFreq,FrequencyType.ctaf) : noFreq)
-        const weatherFreq = airport.getFreqWeather()
+        const weatherFreq = AirportService.getFreqWeather(airport)
         freqWeather.value = weatherFreq || Frequency.noFreq(undefined, FrequencyType.weather)
     } else {
         airportMode.value = false

@@ -1,0 +1,239 @@
+{
+    "code": "KBFI",
+    "name": "Boeing Fld/king County Intl",
+    "elev": 21.6,
+    "freq": [
+        {
+            "name": "UNICOM",
+            "mhz": 122.95,
+            "notes": ""
+        },
+        {
+            "name": "ATIS",
+            "mhz": 127.75,
+            "notes": ""
+        },
+        {
+            "name": "CD/P",
+            "mhz": 132.4,
+            "notes": ""
+        },
+        {
+            "name": "GND",
+            "mhz": 121.9,
+            "notes": ""
+        },
+        {
+            "name": "TWR",
+            "mhz": 118.3,
+            "notes": "RWY 14L/32R"
+        },
+        {
+            "name": "TWR",
+            "mhz": 120.6,
+            "notes": "RWY 14R/32L & ALL IFR"
+        },
+        {
+            "name": "LOC I-BFI 14R",
+            "mhz": 110.9,
+            "notes": ""
+        },
+        {
+            "name": "LOC I-CHJ 32L",
+            "mhz": 110.9,
+            "notes": ""
+        }
+    ],
+    "rwys": [
+        {
+            "name": "14L-32R",
+            "length": 3709,
+            "width": 100,
+            "ends": [
+                {
+                    "name": "14L",
+                    "mag": 135,
+                    "tp": "L"
+                },
+                {
+                    "name": "32R",
+                    "mag": 315,
+                    "tp": "R"
+                }
+            ],
+            "surface": {
+                "type": "ASPH",
+                "cond": "(F) Fair"
+            },
+            "freq": 118.3
+        },
+        {
+            "name": "14R-32L",
+            "length": 10007,
+            "width": 200,
+            "ends": [
+                {
+                    "name": "14R",
+                    "mag": 135,
+                    "tp": "R"
+                },
+                {
+                    "name": "32L",
+                    "mag": 315,
+                    "tp": "L"
+                }
+            ],
+            "surface": {
+                "type": "ASPH",
+                "cond": "(G) Good"
+            },
+            "freq": 120.6
+        }
+    ],
+    "navaids": [
+        {
+            "id": "SEA",
+            "freq": 116.8,
+            "type": "VORTAC",
+            "dist": 5.7,
+            "to": 3.1
+        },
+        {
+            "id": "PAE",
+            "freq": 110.6,
+            "type": "VOR/DME",
+            "dist": 23.4,
+            "to": 182.4
+        },
+        {
+            "id": "OLM",
+            "freq": 113.4,
+            "type": "VORTAC",
+            "dist": 41.5,
+            "to": 35.9
+        },
+        {
+            "id": "CVV",
+            "freq": 117.2,
+            "type": "VOR/DME",
+            "dist": 46.2,
+            "to": 158.2
+        }
+    ],
+    "atc": [
+        {
+            "mhz": 119.2,
+            "name": "SEATTLE-TACOMA APPROACH CONTROL",
+            "use": [
+                "APCH/P DEP/P(028-160 SEA RWY 14)",
+                "APCH/P DEP/P(017-079 SEA, RWY 32)",
+                "CLASS B(017-079 SEA, RWY 32)",
+                "CLASS B(028-160 SEA RWY 14)",
+                "KENT DP",
+                "NRVNA RNAV DP"
+            ]
+        },
+        {
+            "mhz": 120.1,
+            "name": "SEATTLE-TACOMA APPROACH CONTROL",
+            "use": [
+                "APCH/P DEP/P(223-301 SEA, RWY 32)",
+                "APCH/P DEP/P(223-289 SEA, RWY 14)",
+                "CLASS B(223-289 SEA, RWY 14)",
+                "CLASS B(223-301 SEA, RWY 32)"
+            ]
+        },
+        {
+            "mhz": 120.4,
+            "name": "SEATTLE-TACOMA APPROACH CONTROL",
+            "use": [
+                "APCH/P DEP/P(301-340 SEA. RWY 32)",
+                "CBAIN RNAV DP",
+                "NEEDLE DP"
+            ]
+        },
+        {
+            "mhz": 123.9,
+            "name": "SEATTLE-TACOMA APPROACH CONTROL",
+            "use": [
+                "GLASR STAR"
+            ]
+        },
+        {
+            "mhz": 125.6,
+            "name": "SEATTLE-TACOMA APPROACH CONTROL",
+            "use": [
+                "JAWBN STAR",
+                "OLYMPIA STAR"
+            ]
+        },
+        {
+            "mhz": 125.9,
+            "name": "SEATTLE-TACOMA APPROACH CONTROL",
+            "use": [
+                "APCH/P DEP/P(290-315 SEA, RWY 14)",
+                "APCH/P DEP/P(080-125 SEA, RWY 32)",
+                "APCH/P DEP/P(080-125 SEA,RWY 32)",
+                "APCH/P IC",
+                "CLASS B(080-125 SEA RWY 32)",
+                "CLASS B(290-315 SEA RWY 14)"
+            ]
+        },
+        {
+            "mhz": 126.5,
+            "name": "SEATTLE-TACOMA APPROACH CONTROL",
+            "use": [
+                "APCH/P DEP/P(161-222 SEA RWY 14)",
+                "APCH/P DEP/P(126-222 SEA, RWY 32)",
+                "CLASS B(126-222 SEA, RWY 32)",
+                "CLASS B(161-222 SEA, RWY 14)"
+            ]
+        },
+        {
+            "mhz": 128.5,
+            "name": "SEATTLE-TACOMA APPROACH CONTROL",
+            "use": [
+                "APCH/P DEP/P(302-016 SEA, RWY 32)",
+                "APCH/P DEP/P(316-027 SEA, RWY 14)",
+                "CLASS B(302-016 SEA, RWY 32)",
+                "CLASS B(316-027 SEA, RWY 14)"
+            ]
+        }
+    ],
+    "custom": false,
+    "asof": 20251225,
+    "version": 10,
+    "iap": [
+        {
+            "name": "ILS OR LOC RWY 14R",
+            "pdf": "2513/00384IL14R.PDF"
+        },
+        {
+            "name": "ILS OR LOC RWY 32L",
+            "pdf": "2513/00384IL32L.PDF"
+        },
+        {
+            "name": "RNAV (RNP) Z RWY 14R",
+            "pdf": "2513/00384RRZ14R.PDF"
+        },
+        {
+            "name": "RNAV (RNP) Z RWY 32L",
+            "pdf": "2513/00384RRZ32L.PDF"
+        },
+        {
+            "name": "RNAV (GPS) Y RWY 14R",
+            "pdf": "2513/00384RY14R.PDF"
+        },
+        {
+            "name": "RNAV (GPS) Y RWY 32L",
+            "pdf": "2513/00384RY32L.PDF"
+        },
+        {
+            "name": "HARBOR VISUAL RWY 14R",
+            "pdf": "2513/00384HARBOR_VIS14R.PDF"
+        }
+    ],
+    "dep": [],
+    "diag": "2513/00384AD.PDF",
+    "sketch": "dne"
+}

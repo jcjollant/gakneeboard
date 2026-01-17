@@ -290,57 +290,9 @@ export class Airport {
         this.rwys.push(...runways);
     }
 
-    getAnyFrequency(patterns: string[]): AirportFrequency | undefined {
-        // test wether freq.name contains any of the patterns
-        return this.freq.find((freq) => (patterns.some(p => freq.name.includes(p))))
-    }
-
-    // returns a number
-    getFreq(name: string): number | undefined {
-        return this.freq.find((freq) => freq.name == name)?.mhz
-    }
-
-    // retuns a Frequency
-    getFrequency(name: string): AirportFrequency | undefined {
-        return this.freq.find((freq) => freq.name == name)
-    }
-
-    getFreqClearance(): number | undefined {
-        return this.getFreq('CD/P')
-    }
-
-    getFreqCtaf(): number | undefined {
-        return this.getFreq('CTAF');
-    }
-
-    getFreqGround(): Frequency {
-        const af = this.getFrequency('GND');
-        if (af) {
-            return Frequency.fromType(af.mhz, FrequencyType.ground)
-        }
-        const name = Frequency.typeToString(FrequencyType.ground);
-        return Frequency.noFreq(name, FrequencyType.ground)
-    }
-
-    getFreqTower(): number | undefined {
-        return this.getFreq('TWR');
-    }
-
-    getFreqTowerAll(): AirportFrequency[] {
-        return this.freq.filter(f => f.name.includes('TWR'))
-    }
-
-    getFreqTowerIfr(): number | undefined {
-        const list = this.getFreqTowerAll()
-        if (list.length == 0) return undefined
-        // return the first element
-        return list.sort((f1, f2) => f2.mhz - f1.mhz)[0].mhz;
-    }
-
-    getFreqWeather(): Frequency | undefined {
-        const af = this.getAnyFrequency(['ATIS', 'ASOS', 'AWOS', 'Weather'])
-        return af ? new Frequency(Formatter.frequency(af.mhz), af.name, FrequencyType.weather) : undefined
-    }
+    /*
+     * Frequency lookup methods have been moved to AirportService
+     */
 
     isValid(): boolean {
         const isValidCode = Airport.isValidCode(this.code)

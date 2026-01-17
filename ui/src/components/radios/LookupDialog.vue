@@ -43,6 +43,7 @@ import FieldSet from 'primevue/fieldset'
 
 import AirportInput from '../shared/AirportInput.vue'
 import { Airport } from '../../models/Airport'
+import { AirportService } from '../../services/AirportService';
 import FrequencyBox from '../shared/FrequencyBox.vue'
 
 const emits = defineEmits(["add"]);
@@ -107,20 +108,20 @@ function onAirport(airport:Airport) {
     airports.value.push(airport)
 
     // add weather frequency
-    const weatherFreq = airport.getFreqWeather()
+    const weatherFreq = AirportService.getFreqWeather(airport)
     if(weatherFreq) weatherFrequencies.value.push(new FrequencyAndAirport(weatherFreq, airport)) 
 
     // tower ctaf ground
-    const towerFreqs = airport.getFreqTowerAll()
+    const towerFreqs = AirportService.getFreqTowerAll(airport)
     towerFreqs.forEach( f => {
         towerCtafGndFrequencies.value.push( new FrequencyAndAirport( Frequency.fromType(f.mhz, FrequencyType.tower), airport))
     })
     // CTAF frequency
-    const ctafFreq = airport.getFreqCtaf()
+    const ctafFreq = AirportService.getFreqCtaf(airport)
     if(ctafFreq) 
-        towerCtafGndFrequencies.value.push( new FrequencyAndAirport( Frequency.fromType(ctafFreq, FrequencyType.ctaf), airport))
-    // GND frequency
-    const gndFreq = airport.getFreqGround()
+        towerCtafGndFrequencies.value.push( new FrequencyAndAirport( Frequency.fromType(ctafFreq, FrequencyType.ctaf), airport) )
+
+    const gndFreq = AirportService.getFreqGround(airport)
     if(gndFreq && gndFreq.value != '') 
         towerCtafGndFrequencies.value.push( new FrequencyAndAirport( gndFreq, airport))
 

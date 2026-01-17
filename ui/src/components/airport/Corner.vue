@@ -13,6 +13,7 @@
 
 import { ref, onMounted, watch } from 'vue';
 import { getFrequency, getNavaid } from '../../assets/data';
+import { AirportService } from '../../services/AirportService';
 import { Formatter } from '../../lib/Formatter';
 import { Airport, Runway } from '../../models/Airport';
 import { Frequency, FrequencyType } from '../../models/Frequency';
@@ -165,7 +166,7 @@ function showField( field:string) {
     } else {
         switch( field) {
             case 'weather':
-                const weather =  airport.getFreqWeather()
+                const weather =  AirportService.getFreqWeather(airport)
                 // console.log('[Corner.showField] weather', airport, weather)
                 label.value = weather ? weather.name : ''
                 value.value = weather ? weather.value : '?'
@@ -180,12 +181,12 @@ function showField( field:string) {
                     currentFrequencyType.value = FrequencyType.tower
                 } else {
                     // assign mhz or '-' if the frequency is undefined
-                    let freq = airport.getFreqTower()
+                    let freq = AirportService.getFreqTower(airport)
                     if( freq) {
                         label.value = 'TWR'
                         currentFrequencyType.value = FrequencyType.tower
                     } else {
-                        freq = airport.getFreqCtaf()
+                        freq = AirportService.getFreqCtaf(airport)
                         label.value = 'CTAF'
                         currentFrequencyType.value = FrequencyType.ctaf
                     }
@@ -202,7 +203,7 @@ function showField( field:string) {
                 label.value = 'TPA'
                 break
             case 'gnd':
-                const ground =  airport.getFreqGround()
+                const ground =  AirportService.getFreqGround(airport)
                 value.value = ground.value
                 label.value = 'GND'
                 currentFrequencyType.value = FrequencyType.ground

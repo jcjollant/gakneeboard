@@ -53,6 +53,7 @@
 <script setup lang="ts">
 import {ref, onMounted, watch} from 'vue';
 import { getAirport, getNotams } from '../../services/AirportDataService'
+import { AirportService } from '../../services/AirportService';
 import { DisplayModeAirport, DisplayModeChoice } from '../../models/DisplayMode';
 import { Airport, Runway } from '../../models/Airport.ts';
 import { AirportTileConfig } from './AirportTileConfig.ts';
@@ -296,7 +297,7 @@ function showAirport( airport:Airport) {
     
     // title.value = airport.code + ":" + airport.name
     title.value = airport.name
-    const weather = airport.getFreqWeather()
+    const weather = AirportService.getFreqWeather(airport)
     weatherFreq.value = weather ? weather.value : '-'
     weatherType.value = weather ? weather.name : '-'
 
