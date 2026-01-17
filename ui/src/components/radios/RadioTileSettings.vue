@@ -66,6 +66,7 @@ const colorScheme = ref('light');
 const showLookup = ref(false);
 const lookupTime = ref(0);
 const toaster = useToaster(useToast());
+const isInternalUpdate = ref(false);
 
 const freqLight = new Frequency('Light', '123.45', FrequencyType.ctaf)
 const freqShade = new Frequency('Shade', '123.45', FrequencyType.ctaf)
@@ -101,6 +102,10 @@ onMounted(() => {
 });
 
 watch(() => props.tileData, (newTileData) => {
+    if (isInternalUpdate.value) {
+        isInternalUpdate.value = false;
+        return;
+    }
     loadFromTileData(newTileData);
 }, { deep: true });
 
@@ -170,6 +175,7 @@ function emitUpdate() {
      const list = loadListFromText();
      const data = {'mode':currentMode.value,'list':list, 'colorScheme':colorScheme.value}
      
+     isInternalUpdate.value = true;
      tileData.value.data = data;
      tileData.value.span2 = expanded.value;
      
