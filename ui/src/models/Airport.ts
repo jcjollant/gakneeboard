@@ -290,7 +290,7 @@ export class Airport {
         this.rwys.push(...runways);
     }
 
-    getAnyFrequency(patterns: string[]) {
+    getAnyFrequency(patterns: string[]): AirportFrequency | undefined {
         // test wether freq.name contains any of the patterns
         return this.freq.find((freq) => (patterns.some(p => freq.name.includes(p))))
     }
@@ -326,8 +326,12 @@ export class Airport {
         return this.getFreq('TWR');
     }
 
+    getFreqTowerAll(): AirportFrequency[] {
+        return this.freq.filter(f => f.name.includes('TWR'))
+    }
+
     getFreqTowerIfr(): number | undefined {
-        const list = this.freq.filter(f => f.name.includes('TWR'))
+        const list = this.getFreqTowerAll()
         if (list.length == 0) return undefined
         // return the first element
         return list.sort((f1, f2) => f2.mhz - f1.mhz)[0].mhz;

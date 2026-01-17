@@ -111,9 +111,10 @@ function onAirport(airport:Airport) {
     if(weatherFreq) weatherFrequencies.value.push(new FrequencyAndAirport(weatherFreq, airport)) 
 
     // tower ctaf ground
-    const towerFreq = airport.getFreqTowerIfr()
-    if(towerFreq) 
-        towerCtafGndFrequencies.value.push( new FrequencyAndAirport( Frequency.fromType(towerFreq, FrequencyType.tower), airport))
+    const towerFreqs = airport.getFreqTowerAll()
+    towerFreqs.forEach( f => {
+        towerCtafGndFrequencies.value.push( new FrequencyAndAirport( Frequency.fromType(f.mhz, FrequencyType.tower), airport))
+    })
     // CTAF frequency
     const ctafFreq = airport.getFreqCtaf()
     if(ctafFreq) 
