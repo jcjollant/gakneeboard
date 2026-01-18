@@ -11,6 +11,10 @@
             <ImageContent src="oxygen-requirements.png"/>
             <RegLink :regs="oxygenRegs" />
         </div>
+        <div v-else-if="displayMode==DisplayModeRegulations.MinSafeAltitudes">
+            <ImageContent src="safe-altitudes.png"/>
+            <RegLink :regs="msaRegs" />
+        </div>
     </div>
 </template>
 
@@ -36,9 +40,11 @@ const displaySelection = ref(false)
 const displayModes = [
     new DisplayModeChoice('Definitions of Night', DisplayModeRegulations.Night),
     new DisplayModeChoice('Supplemental Oxygen', DisplayModeRegulations.Oxygen),
+    new DisplayModeChoice('Minimum Safe Altitudes', DisplayModeRegulations.MinSafeAltitudes),
 ]
 const nightRegs = ref([Regulation.RecentFlightExperiencePic, Regulation.Far1_1, Regulation.AircraftLights])
 const oxygenRegs = ref([Regulation.SupplementalOxygen])
+const msaRegs = ref([Regulation.MinimumSafeAltitudes])
 
 onMounted(() => {   
     loadProps(props)
@@ -75,6 +81,8 @@ function getTitle() {
         return 'Definitions of Night'
     } else if(displayMode.value == DisplayModeRegulations.Oxygen) {
         return 'Supplemental Oxygen'
+    } else if(displayMode.value == DisplayModeRegulations.MinSafeAltitudes) {
+        return 'Minimum Safe Altitudes'
     } else {
         return 'Regulations'
     }

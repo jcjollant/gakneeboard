@@ -78,4 +78,5 @@ export enum DisplayModeRegulations {
     Unknown = '?',
     Night = 'night',
     Oxygen = 'oxygen',
+    MinSafeAltitudes = 'msa',
 }

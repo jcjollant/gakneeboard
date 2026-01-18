@@ -20,4 +20,5 @@ export class Regulation {
     static RecentFlightExperiencePic = new Regulation('Recent Flight Experience PIC', '61.57', 'https://www.ecfr.gov/current/title-14/chapter-I/subchapter-D/part-61/subpart-A/section-61.57', 'Recent Flight Experience PIC');
     static VfrAltitudes = new Regulation('VFR cruising altitude', '91.159', 'https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-91/subpart-B/section-91.159', 'VFR cruising altitude');
     static StandardServiceVolumes = new Regulation('Standard Service Volumes', 'AIM 1-1-8', 'https://www.faa.gov/air_traffic/publications/atpubs/aim_html/chap1_section_1.html#$paragraph1-1-8', 'Standard Service Volumes');
+    static MinimumSafeAltitudes = new Regulation('Minimum Safe Altitudes', '91.119', 'https://www.ecfr.gov/current/title-14/chapter-I/section-91.119', 'Minimum Safe Altitudes');
 }
