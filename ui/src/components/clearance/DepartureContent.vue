@@ -58,6 +58,7 @@
 </template>
 
 <script setup lang="ts">
+import { AirportService } from '../../services/AirportService'
 import { onMounted, ref, watch } from 'vue'
 import { Airport } from '../../models/Airport'
 import { Frequency, FrequencyType } from '../../models/Frequency'
@@ -81,16 +82,16 @@ function loadProps(props:any) {
         airportMode.value = true
         const airport:Airport = props.airport
         // console.log('[DepartureContent] loadProps', props.airport)
-        const cdFreq = airport.getFreqClearance()
+        const cdFreq = AirportService.getFreqClearance(airport)
         freqClearance.value = Frequency.fromType(cdFreq, FrequencyType.clearance)
         // console.log('[DepartureContent] loadProps', freqClearance.value)
-        freqGround.value = airport.getFreqGround()
-        const twrFreq = airport.getFreqTowerIfr()
+        freqGround.value = AirportService.getFreqGround(airport)
+        const twrFreq = AirportService.getFreqTowerIfr(airport)
         // console.log('[DepartureContent.loadProps] twrFreq', twrFreq)
-        const ctafFreq = airport.getFreqCtaf()
+        const ctafFreq = AirportService.getFreqCtaf(airport)
         // tower frequency will be tower or ctaf
         freqTower.value = twrFreq ? Frequency.fromType(twrFreq,FrequencyType.tower) : ( ctafFreq ? Frequency.fromType(ctafFreq,FrequencyType.ctaf) : noFreq)
-        const weatherFreq = airport.getFreqWeather()
+        const weatherFreq = AirportService.getFreqWeather(airport)
         freqWeather.value = weatherFreq || noFreq
     } else {
         airportMode.value = false
