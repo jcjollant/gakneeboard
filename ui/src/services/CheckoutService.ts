@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { CurrentUser } from '../assets/CurrentUser'
 import { GApiUrl } from '../lib/GApiUrl'
-import { AccountType } from '../models/AccounType'
+import { AccountType } from '@checklist/shared'
 
 import { AttributionService } from './AttributionService'
 

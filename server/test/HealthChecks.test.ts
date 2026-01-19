@@ -176,6 +176,8 @@ describe('HealthChecks', () => {
 
         test('Failure: Missing variable', async () => {
             process.env.STRIPE_SECRET_KEY = 'test';
+            // remove STRIPE_WEBHOOK_SECRET
+            delete process.env.STRIPE_WEBHOOK_SECRET;
             // Missing STRIPE_WEBHOOK_SECRET
 
             const result = await HealthCheck.environmentVariables();

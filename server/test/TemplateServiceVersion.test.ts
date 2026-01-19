@@ -6,7 +6,7 @@ import { TemplateDao } from '../backend/TemplateDao';
 import { TemplateView } from '../backend/models/TemplateView';
 import { Template } from '../backend/models/Template';
 import { User } from '../backend/models/User';
-import { AccountType } from '../backend/models/AccountType';
+import { AccountType } from '@checklist/shared';
 import { GApiError } from '../backend/GApiError';
 import { TemplateFormat } from '../backend/models/TemplateFormat';
 

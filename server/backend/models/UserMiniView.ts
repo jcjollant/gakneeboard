@@ -1,7 +1,7 @@
 import { TemplateDao } from '../TemplateDao';
 import { Business } from '../business/Business';
 import { UserDao } from '../dao/UserDao';
-import { AccountType } from './AccountType';
+import { AccountType } from '@checklist/shared';
 import { TemplateView } from './TemplateView';
 import { User } from './User'
 
@@ -15,7 +15,7 @@ export class UserMiniView {
     printCredits: number;
     eulaCurrent: boolean;
 
-    constructor(user:User, templates:TemplateView[]) {
+    constructor(user: User, templates: TemplateView[]) {
         this.sha256 = user.sha256;
         this.name = user.name;
         this.maxPages = user.maxPages
@@ -26,14 +26,14 @@ export class UserMiniView {
         this.eulaCurrent = user.eula >= Business.latestEula;
     }
 
-    static fromHash(hash: string):Promise<UserMiniView|undefined> {
+    static fromHash(hash: string): Promise<UserMiniView | undefined> {
         return new Promise(async (resolve, reject) => {
             const user = await UserDao.getUserFromHash(hash)
-            if(!user) {
+            if (!user) {
                 resolve(undefined)
                 return
             }
-            
+
             const templates = await TemplateDao.getOverviewListForUser(user.id)
             resolve(new UserMiniView(user, templates))
         })

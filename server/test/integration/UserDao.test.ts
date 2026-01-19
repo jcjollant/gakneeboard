@@ -2,7 +2,7 @@
 import { afterAll, beforeAll, describe, expect, it, xdescribe } from '@jest/globals';
 import { UserDao } from '../../backend/dao/UserDao'
 import { jcUserId, jcHash, jcEmail, jcName, jcSource, jcCustomerId } from '../constants';
-import { AccountType } from '../../backend/models/AccountType';
+import { AccountType } from '@checklist/shared';
 import { User } from '../../backend/models/User';
 import { newTestUser } from '../common'
 import { db, sql } from '@vercel/postgres';

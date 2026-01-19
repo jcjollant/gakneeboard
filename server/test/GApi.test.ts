@@ -8,7 +8,7 @@ import { TemplateDao } from '../backend/TemplateDao';
 import { AirportService } from '../backend/services/AirportService';
 import { jcHash, jcName, jcToken, jcUserId } from './constants';
 import { User } from '../backend/models/User';
-import { AccountType } from '../backend/models/AccountType';
+import { AccountType } from '@checklist/shared';
 
 // Mock dependencies
 jest.mock('../backend/UserTools');

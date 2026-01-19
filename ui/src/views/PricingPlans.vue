@@ -89,7 +89,7 @@ import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../assets/Toaster';
 
 import Menu from '../components/menu/Menu.vue';
-import { AccountType } from '../models/AccounType';
+import { AccountType } from '@checklist/shared';
 
 const toaster = useToaster(useToast())
 const monthly = ref(true)

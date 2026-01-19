@@ -39,7 +39,7 @@ import { Template, TemplatePage } from '../models/Template';
 import { exportToPDF } from '../assets/pdf'
 import { PageType } from '../assets/PageType.js';
 import { TemplateFormat } from '../models/TemplateFormat.js';
-import { AccountType } from '../models/AccounType.js';
+import { AccountType } from '@checklist/shared';
 import { PrintOptions } from '../components/print/PrintOptions.js';
 import Page from '../components/page/Page.vue';
 import PrintOptionsDialog from '../components/print/PrintOptionsDialog.vue';

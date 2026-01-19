@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { duplicate } from "./data";
 import { LocalStoreService } from "../services/LocalStoreService";
 import { User } from "../models/User";
-import { AccountType } from "../models/AccounType";
+import { AccountType } from '@checklist/shared';
 import { Template } from "../models/Template";
 
 import { LibraryChecklist } from "../models/LibraryChecklist";

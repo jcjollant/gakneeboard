@@ -67,7 +67,7 @@ import Dialog from 'primevue/dialog'
 import FieldSet from 'primevue/fieldset'
 import PageSelection from './PageSelection.vue';
 import { currentUser } from '../../assets/data';
-import { AccountType } from '../../models/AccounType';
+import { AccountType } from '@checklist/shared';
 import { VerticalInfoBarOption } from '../../models/VerticalInfoBarOption';
 
 const emits = defineEmits(["print","options",'close']);

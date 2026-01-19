@@ -1,5 +1,5 @@
 import { createHash } from 'crypto'
-import { AccountType } from './AccountType';
+import { AccountType } from '@checklist/shared';
 import { Business } from '../business/Business';
 import { AttributionData } from './AttributionData';
 

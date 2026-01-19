@@ -4,7 +4,7 @@ import { UserTools } from '../backend/UserTools'
 import { jcSource } from './constants'
 import { jcHash, jcUserId, jcToken, jcName, jcEmail } from './constants'
 import { UserMiniView } from '../backend/models/UserMiniView';
-import { AccountType } from '../backend/models/AccountType';
+import { AccountType } from '@checklist/shared';
 import { Business } from '../backend/business/Business';
 import { UserDao } from '../backend/dao/UserDao';
 import { Email } from '../backend/Email';

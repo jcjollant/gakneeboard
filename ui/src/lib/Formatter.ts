@@ -1,4 +1,4 @@
-import { AccountType } from "../models/AccounType"
+import { AccountType } from '@checklist/shared'
 
 export class Formatter {
     static noFuel: string = '-.-'

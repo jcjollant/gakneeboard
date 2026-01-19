@@ -1,6 +1,6 @@
 import { describe, expect, test, jest, beforeEach } from '@jest/globals';
 import { CheckoutService, Pricing } from '../src/services/CheckoutService';
-import { AccountType } from '../src/models/AccounType';
+import { AccountType } from '@checklist/shared';
 import { CurrentUser } from '../src/assets/CurrentUser';
 import axios from 'axios';
 

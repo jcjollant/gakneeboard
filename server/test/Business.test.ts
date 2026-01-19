@@ -1,6 +1,6 @@
 
 import { describe, expect, jest, it } from '@jest/globals'
-import { AccountType } from '../backend/models/AccountType';
+import { AccountType } from '@checklist/shared';
 import { Business } from '../backend/business/Business';
 import { getMockBrandNewSubscription, getMockSubscriptionDao, getMockUserDao, newTestUser } from './common';
 import { Email } from '../backend/Email';
@@ -19,7 +19,7 @@ describe('Business', () => {
 
     const mockEmail = jest.spyOn(Email, 'send').mockResolvedValue(true);
     const mockUsage = jest.spyOn(UsageDao, 'refill').mockResolvedValue();
-    
+
     const testUser = newTestUser();
     const testUserDao = getMockUserDao(testUser);
     const testSubsciption = getMockBrandNewSubscription()
@@ -29,7 +29,7 @@ describe('Business', () => {
         it('should return correct credits for simmer account', () => {
             const expectedRefill = 4
             const newUser = newTestUser()
-            newUser.setAccountType( AccountType.simmer);
+            newUser.setAccountType(AccountType.simmer);
             newUser.printCredits = 0; // no credits
             const c0 = Business['calculatePrintCredits'](newUser);
             expect(c0).toBe(expectedRefill);
@@ -47,7 +47,7 @@ describe('Business', () => {
         it('should return correct credits for student account', () => {
             const expectedRefill = Business.PRINT_CREDIT_STUDENT
             const newUser = newTestUser()
-            newUser.setAccountType( AccountType.student);
+            newUser.setAccountType(AccountType.student);
             newUser.printCredits = 0; // no credits
             const c1 = Business['calculatePrintCredits'](newUser);
             expect(c1).toBe(expectedRefill);
@@ -56,7 +56,7 @@ describe('Business', () => {
         it('should return correct credits for student account', () => {
             const expectedRefill = Business.PRINT_CREDIT_STUDENT
             const newUser = newTestUser()
-            newUser.setAccountType( AccountType.student);
+            newUser.setAccountType(AccountType.student);
             newUser.printCredits = 0; // no credits
             const c1 = Business['calculatePrintCredits'](newUser);
             expect(c1).toBe(expectedRefill);
@@ -307,14 +307,14 @@ describe('Business', () => {
             const user = newTestUser()
             const mockUserDao = getMockUserDao(user)
             const now = new Date().getTime()
-            await expect( Business.subscriptionStop('', 'customer-id', mockUserDao, now, now)).rejects.toEqual('Subscription Id is required')
+            await expect(Business.subscriptionStop('', 'customer-id', mockUserDao, now, now)).rejects.toEqual('Subscription Id is required')
         })
 
         it('should reject invalid customer id', async () => {
             const user = newTestUser()
             const mockUserDao = getMockUserDao(user)
             const now = new Date().getTime()
-            await expect( Business.subscriptionStop('sub-id', '', mockUserDao, now, now)).rejects.toEqual('Customer Id is required')
+            await expect(Business.subscriptionStop('sub-id', '', mockUserDao, now, now)).rejects.toEqual('Customer Id is required')
         })
 
         it('should stop subscription', async () => {
@@ -322,7 +322,7 @@ describe('Business', () => {
             user.accountType = AccountType.private
             const mockUserDao = getMockUserDao(user)
             const now = new Date().getTime()
-            await Business.subscriptionStop('customer-id', 'sub-id', mockUserDao, now, now).then( u => {
+            await Business.subscriptionStop('customer-id', 'sub-id', mockUserDao, now, now).then(u => {
                 // Account should be downgraded to simmer
                 expect(u.accountType).toBe(AccountType.simmer)
             })
@@ -330,7 +330,7 @@ describe('Business', () => {
     })
 
     describe('updateAccountType', () => {
-        it( 'should call updateType and send email', async() => {
+        it('should call updateType and send email', async () => {
             const user = newTestUser()
             const mockUserDao = getMockUserDao(user)
             mockEmail.mockReset()
@@ -349,7 +349,7 @@ describe('Business', () => {
             expect(Email.send).toHaveBeenCalledTimes(1);
         })
 
-        it('should refill print credit for student pilots', async() => {
+        it('should refill print credit for student pilots', async () => {
             const user = newTestUser(0, AccountType.simmer)
             const mockUserDao = getMockUserDao(user)
 
@@ -445,7 +445,7 @@ describe('Business', () => {
     })
 
     describe('User upgrade', () => {
-        it( 'from Simmer to Student', async() => {
+        it('from Simmer to Student', async () => {
             const user = newTestUser()
             const mockUserDao = getMockUserDao(user)
             mockEmail.mockReset()
@@ -467,7 +467,7 @@ describe('Business', () => {
             expect(UsageDao.refill).toHaveBeenCalledTimes(1);
         })
 
-        it( 'from Simmer to Private', async() => {
+        it('from Simmer to Private', async () => {
             const user = newTestUser()
             const mockUserDao = getMockUserDao(user)
             mockEmail.mockReset()
@@ -489,7 +489,7 @@ describe('Business', () => {
             expect(UsageDao.refill).toHaveBeenCalledTimes(1);
         })
 
-        it( 'from Simmer to Lifetime', async() => {
+        it('from Simmer to Lifetime', async () => {
             const user = newTestUser()
             const mockUserDao = getMockUserDao(user)
             mockEmail.mockReset()

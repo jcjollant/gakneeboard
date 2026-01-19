@@ -65,7 +65,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch, computed } from 'vue';
-import { AccountType } from '../../models/AccounType';
+import { AccountType } from '@checklist/shared';
 import { CheckoutService } from '../../services/CheckoutService'
 import { LocalStoreService } from '../../services/LocalStoreService';
 import { CurrentUser } from '../../assets/CurrentUser';

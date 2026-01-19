@@ -39,7 +39,7 @@ import { currentUser } from '../../assets/data';
 import AccountDetails from './AccountDetails.vue';
 import Logo from './Logo.vue';
 import SignIn from '../signin/SignIn.vue';
-import { AccountType } from '../../models/AccounType';
+import { AccountType } from '@checklist/shared';
 
 const emits = defineEmits(['about'])
 const props = defineProps({

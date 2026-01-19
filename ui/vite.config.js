@@ -8,7 +8,8 @@ export default defineConfig({
   envPrefix: 'GAK_',
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@checklist/shared': fileURLToPath(new URL('../shared/src/index.ts', import.meta.url))
     },
   },
   build: {

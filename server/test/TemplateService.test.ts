@@ -9,7 +9,7 @@ import { Template } from '../backend/models/Template';
 import { User } from '../backend/models/User';
 import { getMockTemplateDao, getTemplateView, newTestUser } from './common';
 import { Business } from '../backend/business/Business';
-import { AccountType } from '../backend/models/AccountType';
+import { AccountType } from '@checklist/shared';
 
 import * as dotenv from 'dotenv'
 import { TemplateService } from '../backend/services/TemplateService';

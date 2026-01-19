@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import { UserDao } from '../dao/UserDao'
 import { SubscriptionDao } from '../dao/SubscriptionDao'
-import { AccountType } from '../models/AccountType'
+import { AccountType } from '@checklist/shared';
 import { Stripe } from 'stripe'
 import { Business } from './Business'
 import { AttributionData } from '../models/AttributionData'
