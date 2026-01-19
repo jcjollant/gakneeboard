@@ -1,6 +1,7 @@
 <template>
     <Dialog v-model:visible="visible" modal :draggable="true" :closable="true" 
         :style="{ width: '50vw', maxWidth: '600px' }" 
+        :breakpoints="{ '960px': '75vw', '640px': '100%' }"
         @update:visible="onUpdateVisible"
         class="tile-settings-dialog">
         
@@ -131,3 +132,5 @@ const title = computed(() => {
     bottom: auto;
 }
 </style>
+
+

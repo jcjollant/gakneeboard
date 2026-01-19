@@ -8,7 +8,7 @@
     <!-- <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
       @offset="onOffset" @update="onPageUpdate" /> -->
     <div class="pageGroup">
-        <div v-if="menuCollapased" class="templateMenu">
+        <div v-if="menuCollapased" class="templateMenu collapsed">
           <MenuButton id="btnExpand" icon="bars" title="Show Action Buttons" label="Show Actions"
             @click="menuCollapased=false"/>
         </div>
@@ -725,8 +725,8 @@ function onAddPage() {
   flex-flow: column;
   gap: var(--menu-border-offset);
   z-index: 2;
+  top: -15px;
 }
-
 
 .twoPages {
     display: flex;
