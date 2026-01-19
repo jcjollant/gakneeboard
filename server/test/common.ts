@@ -62,7 +62,6 @@ export function newTestUser(userId: number = 0, accoutType: AccountType = Accoun
     newUser.name = userName
     newUser.source = 'test'
     newUser.accountType = accoutType
-    // assign random value between 1 and 25
     newUser.setPrintCredits(Business.getQuotas(newUser).prints)
 
     // max either 2, 5 or 10
