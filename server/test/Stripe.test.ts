@@ -95,4 +95,28 @@ describe('StripeClient', () => {
             expect(stripe.accountTypeFromPrice('unknown_price')).toBe(AccountType.unknown);
         });
     });
+
+    describe('planIdFromPrice', () => {
+        const stripe = StripeClient.instance;
+
+        it('should return "pp1" for PP1 price', () => {
+            expect(stripe.planIdFromPrice(process.env.STRIPE_PP1_PRICE!)).toBe('pp1');
+        });
+
+        it('should return "pp2" for PP2 price', () => {
+            expect(stripe.planIdFromPrice(process.env.STRIPE_PP2_PRICE!)).toBe('pp2');
+        });
+
+        it('should return "bd1" for BD1 price', () => {
+            expect(stripe.planIdFromPrice(process.env.STRIPE_BD1_PRICE!)).toBe('bd1');
+        });
+
+        it('should return "ld1" for LD1 price', () => {
+            expect(stripe.planIdFromPrice(process.env.STRIPE_LD1_PRICE!)).toBe('ld1');
+        });
+
+        it('should return undefined for unknown price', () => {
+            expect(stripe.planIdFromPrice('unknown_price')).toBeUndefined();
+        });
+    });
 });

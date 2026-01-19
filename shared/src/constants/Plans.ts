@@ -2,11 +2,12 @@ import { AccountType } from "../models/AccountType";
 import { PlanDescription } from "../models/PlanDescription";
 
 export const bestValuePlan: string = 'ld1';
+export const PLAN_ID_SIM = 'sim'
 
 export const PLANS: PlanDescription[] = [
     // Define plans here
     {
-        id: 'sim',
+        id: PLAN_ID_SIM,
         displayName: 'Flight Simmer',
         subtitles: ['Just Testing', 'Get A Feel For The System'],
         active: true,

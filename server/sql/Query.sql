@@ -4,8 +4,7 @@ SELECT COUNT(*) FROM unknowns
 
 SELECT * FROM unknowns
 
-
-SELECT * FROM unknowns where code='KBFF'
+SELECT * FROM unknowns where code = 'KBFF'
 
 #########################################
 # Feedback table
@@ -29,6 +28,32 @@ SELECT COUNT(*) FROM Users
 # Users by account_type
 SELECT COUNT(*) as count, account_type FROM Users GROUP BY account_type
 
+UPDATE users
+SET
+    plan_id = 'sim'
+WHERE
+    account_type = 'sim'
+UPDATE users
+SET
+    plan_id = 'pp1'
+WHERE
+    account_type = 'sp'
+UPDATE users
+SET
+    plan_id = 'pp2'
+WHERE
+    account_type = 'pp'
+UPDATE users
+SET
+    plan_id = 'bd1'
+WHERE
+    account_type = 'beta'
+UPDATE users
+SET
+    plan_id = 'ld1'
+WHERE
+    account_type = 'ld'
+
 SELECT * FROM Users
 
 # Particular user : JC
@@ -42,7 +67,7 @@ SELECT COUNT(*) FROM custom_airports
 # Table health_checks
 SELECT * FROM health_checks
 
-INSERT INTO health_checks (data,failures) VALUES ("TEST",1)
+INSERT INTO health_checks (data, failures) VALUES ("TEST", 1)
 
 #########################################
 # Templates (sheets)
@@ -53,8 +78,7 @@ SELECT * FROM sheets WHERE user_id > 2
 
 SELECT * FROM sheets WHERE id = 275
 
-
-SELECT data,name,description FROM sheets WHERE id=0 AND user_id=1
+SELECT data, name, description FROM sheets WHERE id = 0 AND user_id = 1
 
 # Count of JC templates
 SELECT COUNT(*) FROM sheets WHERE user_Id=1
@@ -104,13 +128,13 @@ SELECT user_id, count(*) AS print_count FROM usage WHERE usage_type = 'print' AN
 SELECT user_id, count(*) AS print_count FROM usage WHERE usage_type = 'print' GROUP BY user_id ORDER BY print_count DESC
 
 # Most recent session for each user
-SELECT user_id, MAX(create_time) FROM usage WHERE user_id NOTNULL AND usage_type = 'session' GROUP BY user_id ORDER BY "max" desc LIMIT 100 
+SELECT user_id, MAX(create_time) FROM usage WHERE user_id NOTNULL AND usage_type = 'session' GROUP BY user_id ORDER BY "max" desc LIMIT 100
 
 # Most recent session for each user in the last 30 day
-SELECT user_id, MAX(create_time) FROM usage WHERE user_id NOTNULL AND usage_type = 'session' AND create_time > current_date - 30 GROUP BY user_id ORDER BY "max" desc LIMIT 100 
+SELECT user_id, MAX(create_time) FROM usage WHERE user_id NOTNULL AND usage_type = 'session' AND create_time > current_date - 30 GROUP BY user_id ORDER BY "max" desc LIMIT 100
 
 # Active users in the last 30 days
-SELECT user_id FROM usage WHERE user_id NOTNULL AND usage_type = 'session' AND create_time > current_date - 30 GROUP BY user_id 
+SELECT user_id FROM usage WHERE user_id NOTNULL AND usage_type = 'session' AND create_time > current_date - 30 GROUP BY user_id
 
 # Most Active sim users in the last 90 days
 SELECT user_id, count(*) AS c 
@@ -140,7 +164,7 @@ SELECT *
     ORDER BY user_id
 
 # Prints in the last 30 days
-SELECT count(*) FROM usage WHERE usage_type = 'print' and create_time > current_date - 30 
+SELECT count(*) FROM usage WHERE usage_type = 'print' and create_time > current_date - 30
 
 # Usage by type in the past 90 days
 SELECT count(*) as count, usage_type 
@@ -149,4 +173,9 @@ SELECT count(*) as count, usage_type
     GROUP BY usage_type
     ORDER BY count DESC
 
-SELECT users.id, COUNT(sheets.*) FROM users LEFT JOIN sheets ON sheets.user_id = users.id GROUP BY users.id ORDER BY COUNT DESC 
+SELECT users.id, COUNT(sheets.*)
+FROM users
+    LEFT JOIN sheets ON sheets.user_id = users.id
+GROUP BY
+    users.id
+ORDER BY COUNT DESC

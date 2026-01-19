@@ -151,7 +151,8 @@ export class StripeClient {
                     } else {
                         const subscriptionDao = new SubscriptionDao()
                         const accountType = this.accountTypeFromPrice(priceId)
-                        await Business.subscriptionUpdate(subscriptionId, customerId, priceId, accountType, periodEnd, cancelAt, endedAt, userDao, subscriptionDao)
+                        const planId = this.planIdFromPrice(priceId)
+                        await Business.subscriptionUpdate(subscriptionId, customerId, priceId, accountType, periodEnd, cancelAt, endedAt, userDao, subscriptionDao, planId)
                     }
                     // save event for future reference
                     await sql`INSERT INTO stripe_events (type, stripe_id, data) VALUES (${event.type}, ${subscriptionId}, ${JSON.stringify(event.data.object)})`
@@ -168,20 +169,11 @@ export class StripeClient {
                         await this.stripe.checkout.sessions.listLineItems(sessionId).then(async (li) => {
                             const priceId = li.data[0].price?.id
                             console.log('[Stripe.webhook] priceId', priceId)
-                            const userDao = new UserDao()
-                            switch (priceId) {
-                                case hh1Price:
-                                    const printCount = Business.PRINT_PER_PURCHASE
-                                    await Business.printPurchase(customerId, printCount, userDao).catch((err) => {
-                                        Ticket.create(2, `Customer ${customerId}, Failed to purchase ${printCount} prints. Stripe ${stripeId}`)
-                                    });
-                                    break;
-                                case ld1Price: // Lifetime Deal
-                                    const user = await userDao.getFromCustomerId(customerId)
-                                    await Business.upgradeUser(user, AccountType.lifetime, userDao);
-                                    break;
-                                default:
-                                    console.log('[Stripe.webhook] unexpected priceId', priceId)
+                            const accountType = this.accountTypeFromPrice(priceId)
+                            if (accountType == AccountType.lifetime) {
+                                const userDao = new UserDao()
+                                const user = await userDao.getFromCustomerId(customerId)
+                                await Business.upgradeUser(user, AccountType.lifetime, userDao, 'ld1');
                             }
                         })
                     }
@@ -208,6 +200,11 @@ export class StripeClient {
 
         const plan = PLANS.find((p) => process.env[p.priceEnvironmentVariable] === priceId);
         return plan?.accountType || AccountType.unknown;
+    }
+
+    planIdFromPrice(priceId: string): string | undefined {
+        const plan = PLANS.find((p) => process.env[p.priceEnvironmentVariable] === priceId);
+        return plan?.id
     }
 
     priceFromProduct(product: string): Price {

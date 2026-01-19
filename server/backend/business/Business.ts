@@ -2,7 +2,7 @@ import { SubscriptionDao } from "../dao/SubscriptionDao";
 import { UsageDao } from "../dao/UsageDao";
 import { UserDao } from "../dao/UserDao";
 import { Email, EmailType } from "../Email";
-import { AccountType, Quotas } from '@checklist/shared';
+import { AccountType, PLAN_ID_SIM, Quotas } from '@checklist/shared';
 import { Refill } from "../models/Refill";
 import { User } from "../models/User";
 import { Ticket } from "../Ticket";
@@ -156,7 +156,8 @@ export class Business {
             const subscriptionDao = new SubscriptionDao()
             // call both concurrently
             await Promise.all([
-                Business.updateAccountType(user, AccountType.simmer, userDao),
+                // downgrade to simmer
+                Business.updateAccountType(user, AccountType.simmer, userDao, PLAN_ID_SIM),
                 subscriptionDao.updateCancellation(subscriptionId, cancelAt, endedAt)
             ])
 
@@ -178,7 +179,7 @@ export class Business {
      */
     static async subscriptionUpdate(subscriptionId: string, customerId: string, priceId: string, newAccountType: AccountType,
         periodEnd: number, cancelAt: number | null, endedAt: number | null,
-        userDao: UserDao, subscriptionDao: SubscriptionDao) {
+        userDao: UserDao, subscriptionDao: SubscriptionDao, planId?: string) {
         // Make sure we don't subscribe to crap
         if (newAccountType == AccountType.unknown) throw new Error('Account type is unknown');
 
@@ -190,12 +191,12 @@ export class Business {
             userDao.getFromCustomerId(customerId)])
 
         // Refresh account type
-        await Business.upgradeUser(user, newAccountType, userDao)
+        await Business.upgradeUser(user, newAccountType, userDao, planId)
     }
 
-    static async upgradeUser(user: User, newAccountType: AccountType, userDao: UserDao) {
+    static async upgradeUser(user: User, newAccountType: AccountType, userDao: UserDao, planId?: string) {
         const previousPrintCredits = user.printCredits
-        await Business.updateAccountType(user, newAccountType, userDao)
+        await Business.updateAccountType(user, newAccountType, userDao, planId)
 
         // update print credits
         try {
@@ -209,9 +210,10 @@ export class Business {
         }
     }
 
-    static async updateAccountType(user: User, newAccountType: AccountType, userDao: UserDao): Promise<User> {
+    static async updateAccountType(user: User, newAccountType: AccountType, userDao: UserDao, planId?: string): Promise<User> {
         // update account type
         user.accountType = newAccountType
+        if (planId) user.planId = planId
         const quotas = this.getQuotas(user)
         user.maxTemplates = quotas.templates
         user.maxPages = quotas.pages

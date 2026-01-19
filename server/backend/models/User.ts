@@ -17,6 +17,7 @@ export class User {
     createDate: Date | undefined;
     eula: number;
     attribution?: AttributionData;
+    planId: string | undefined;
 
     constructor(id: number, sha256: string) {
         this.id = id;
@@ -31,6 +32,7 @@ export class User {
         this.printCredits = 0;
         this.createDate = undefined;
         this.eula = 0;
+        this.planId = undefined;
     }
 
 
@@ -85,5 +87,9 @@ export class User {
 
     public setAttribution(attribution: AttributionData) {
         this.attribution = attribution;
+    }
+
+    public setPlanId(planId: string) {
+        this.planId = planId;
     }
 }

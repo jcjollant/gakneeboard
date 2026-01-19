@@ -12,6 +12,7 @@ export class UserProfile {
 
     usage: UsageCount[]
     create_time: Date | undefined;
+    planId: string | undefined;
 
     constructor(user: User, usage: UsageCount[], templateCount: number, pageCount: number) {
         this.id = user.id
@@ -22,6 +23,7 @@ export class UserProfile {
         this.templateCount = templateCount
         this.pageCount = pageCount
         this.create_time = user.createDate;
+        this.planId = user.planId;
 
         this.usage = usage
     }
