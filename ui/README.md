@@ -14,6 +14,13 @@ And access via the browser, typically on port 5173
 Start on local network (to allow access from other devices on the network). This is good for testing on the iPad
 `npm run dev -- --host`
 
+# Setting up the environemt
+Create a .env file in the ui directory with the following content
+```
+GAK_API_URL=https://api.kneeboard.ga/
+GAK_GOOGLE_CLIENT_ID={relevant value}
+```
+
 # Testing
 [See Tests Readme](test/Readme.md) 
 

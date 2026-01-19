@@ -1,6 +1,24 @@
-## Local Debugging
+# Local Debugging
 run `vercel dev` to run the local service
 
+# Setting up the environment
+Create a .env file in the server directory with the following content
+```
+EFFECTIVE_DATE=
+STRIPE_LD1_PRICE=
+STRIPE_PP2_PRICE=
+STRIPE_BD1_PRICE=
+STRIPE_PP1_PRICE=
+STRIPE_HH1_PRICE=
+STRIPE_IP1_PRICE=
+STRIPE_IP2_PRICE=
+STRIPE_WEBHOOK_SECRET=
+STRIPE_SECRET_KEY=
+BLOB_READ_WRITE_TOKEN=
+POSTGRES_URL=
+```
+
+# Testing
 ## Unit testing
 To test everything use `npm test`
 Otherwise use `npm test script.test.ts`
