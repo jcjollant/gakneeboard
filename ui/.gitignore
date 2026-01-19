@@ -27,3 +27,4 @@ package-lock.json
 cypress/downloads/downloads.htm
 .vercel
 docs/~$Tiles.pptx
+.env
