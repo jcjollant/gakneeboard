@@ -1,4 +1,10 @@
-# Development
+# Running the UI and accessing it in a browser
+Change to the ui directory (most likely)
+`cd ui` 
+
+Install dependencies
+`npm install`
+
 Start the UI
 `npm run dev`
 
@@ -8,7 +14,6 @@ And access via the browser, typically on port 5173
 Start on local network (to allow access from other devices on the network). This is good for testing on the iPad
 `npm run dev -- --host`
 
-# Testing
 # Testing
 [See Tests Readme](test/Readme.md) 
 
