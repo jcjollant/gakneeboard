@@ -103,6 +103,8 @@ export class HealthCheck {
             'STRIPE_PP2_PRICE',
             'STRIPE_BD1_PRICE',
             'STRIPE_LD1_PRICE',
+            'BLOB_READ_WRITE_TOKEN',
+            'POSTGRES_URL',
             'EFFECTIVE_DATE']
 
         const check: Check = new Check("Environment Variables")

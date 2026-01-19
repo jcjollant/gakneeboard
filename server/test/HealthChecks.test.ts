@@ -1,5 +1,5 @@
 
-import { describe, expect, test, jest, afterEach } from '@jest/globals';
+import { describe, expect, test, jest, afterEach, beforeEach, afterAll } from '@jest/globals';
 import { HealthCheck, Check } from '../backend/HealthChecks';
 import { AirportDao } from '../backend/AirportDao';
 import { AdipService } from '../backend/services/AdipService';
@@ -142,6 +142,45 @@ describe('HealthChecks', () => {
             const result = await HealthCheck.effectiveDateCheck();
             expect(result.status).toBe(Check.FAIL);
             expect(result.msg).toContain("effective date mismatch ExpectedADIP=");
+        });
+    });
+
+    describe('environmentVariables', () => {
+        const OLD_ENV = process.env;
+
+        beforeEach(() => {
+            jest.resetModules(); // Most important - it clears the cache
+            process.env = { ...OLD_ENV }; // Make a copy
+        });
+
+        afterAll(() => {
+            process.env = OLD_ENV; // Restore old environment
+        });
+
+        test('Success: All variables present', async () => {
+            process.env.STRIPE_SECRET_KEY = 'test';
+            process.env.STRIPE_WEBHOOK_SECRET = 'test';
+            process.env.STRIPE_HH1_PRICE = 'test';
+            process.env.STRIPE_PP1_PRICE = 'test';
+            process.env.STRIPE_PP2_PRICE = 'test';
+            process.env.STRIPE_BD1_PRICE = 'test';
+            process.env.STRIPE_LD1_PRICE = 'test';
+            process.env.BLOB_READ_WRITE_TOKEN = 'test';
+            process.env.POSTGRES_URL = 'test';
+            process.env.EFFECTIVE_DATE = 'test';
+
+            const result = await HealthCheck.environmentVariables();
+            expect(result.status).toBe(Check.SUCCESS);
+            expect(result.msg).toContain('Found 10 variables');
+        });
+
+        test('Failure: Missing variable', async () => {
+            process.env.STRIPE_SECRET_KEY = 'test';
+            // Missing STRIPE_WEBHOOK_SECRET
+
+            const result = await HealthCheck.environmentVariables();
+            expect(result.status).toBe(Check.FAIL);
+            expect(result.msg).toContain('EnvVar missing STRIPE_WEBHOOK_SECRET');
         });
     });
 });
