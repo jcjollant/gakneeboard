@@ -8,6 +8,10 @@
             <RegLink :regs="[Regulation.VfrAltitudes]" />
         </div>
         <Nordo v-else-if="displayMode==DisplayModeVfr.LostComms" />
+        <div v-else-if="displayMode==DisplayModeVfr.Msa">
+            <ImageContent src="safe-altitudes.png" />
+            <RegLink :regs="[Regulation.MinimumSafeAltitudes]" />
+        </div>
         <CloudClearance v-else />
     </div>
 
@@ -43,7 +47,8 @@ const displaySelection=ref(false)
 const displayModes = [
     new DisplayModeChoice( 'VFR Altitudes', DisplayModeVfr.Altitudes),
     new DisplayModeChoice( 'Cloud Clearance', DisplayModeVfr.CloudClearance),
-    new DisplayModeChoice( 'Lost Comms', DisplayModeVfr.LostComms)
+    new DisplayModeChoice( 'Lost Comms', DisplayModeVfr.LostComms),
+    new DisplayModeChoice( 'Minimum Safe Altitudes', DisplayModeVfr.Msa)
 ]
 
 onMounted(() => {   
@@ -104,6 +109,8 @@ function getTitle() {
         title = 'Clouds Clearance'
     } else if( displayMode.value==DisplayModeVfr.LostComms) {
         title = 'VFR Lost Comms'
+    } else if( displayMode.value==DisplayModeVfr.Msa) {
+        title = 'Minimum Safe Altitudes'
     } else {
         title = 'VFR Tile'
     }

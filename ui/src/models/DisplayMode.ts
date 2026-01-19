@@ -55,6 +55,7 @@ export enum DisplayModeVfr {
     Altitudes = 'alt',
     CloudClearance = 'clouds',
     LostComms = 'nordo',
+    Msa = 'msa',
 }
 
 

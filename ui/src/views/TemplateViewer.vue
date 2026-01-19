@@ -275,7 +275,7 @@ function loadTemplate(template:Template,saveToLocalStorage:boolean=false) {
 
   // asynchronous localstorage maintenance
   setTimeout( async() => {
-    return new Promise( async(resolve, reject) => {
+    return new Promise<void>( async(resolve, reject) => {
       // save the template to local storage
       if(saveToLocalStorage) {
         saveTemplateToLocalStoreService()
