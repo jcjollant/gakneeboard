@@ -1,72 +1,106 @@
 import { AccountType } from "../models/AccountType";
 import { PlanDescription } from "../models/PlanDescription";
 
+export const bestValuePlan: string = 'ld1';
+
 export const PLANS: PlanDescription[] = [
     // Define plans here
     {
-        id: 'simmer',
-        displayName: 'Simmer',
+        id: 'sim',
+        displayName: 'Flight Simmer',
+        subtitles: ['Just Testing', 'Get A Feel For The System'],
         active: true,
-        show: false,
+        show: true,
         displayPrice: 'Free',
         accountType: AccountType.simmer,
         chargeFrequency: 'never',
         priceEnvironmentVariable: undefined,
+        quotas: {
+            prints: 4,
+            pages: 2,
+            templates: 1
+        },
         features: {
-            printsPerMonth: 4,
-            maxPages: 2,
-            maxKneeboards: 1,
             advancedPrinting: false,
             restoreOldVersion: false
         }
     },
     {
-        id: 'student',
-        displayName: 'Student',
+        id: 'pp1', // old private pilot
+        displayName: 'Student Pilot',
+        subtitles: ['No Commitment', 'Best for Occasional Use'],
         active: true,
         show: true,
         displayPrice: '$2.99',
         accountType: AccountType.student,
         chargeFrequency: 'monthly',
-        priceEnvironmentVariable: 'STUDENT_PRICE',
+        priceEnvironmentVariable: 'STRIPE_PP1_PRICE',
+        quotas: {
+            prints: 8,
+            pages: 4,
+            templates: 2
+        },
         features: {
-            printsPerMonth: 8,
-            maxPages: 4,
-            maxKneeboards: 2,
             advancedPrinting: true,
             restoreOldVersion: false
         }
     },
     {
-        id: 'private',
-        displayName: 'Private',
+        id: 'pp2',
+        displayName: 'Private Pilot',
         active: true,
-        show: true,
+        show: false,
         displayPrice: '$4.49',
-        accountType: AccountType.private,
+        subtitles: ['Charged $53.88/year', 'This is our regular price'],
         chargeFrequency: 'yearly',
-        priceEnvironmentVariable: 'PRIVATE_PRICE',
+        priceEnvironmentVariable: 'STRIPE_PP2_PRICE',
+        quotas: {
+            prints: 16,
+            pages: 20,
+            templates: 5
+        },
         features: {
-            printsPerMonth: 16,
-            maxKneeboards: 5,
-            maxPages: 20,
             advancedPrinting: true,
             restoreOldVersion: true
-        }
+        },
+        accountType: AccountType.private
     },
     {
-        id: 'lifetime',
-        displayName: 'Lifetime',
+        id: 'bd1',
+        displayName: 'Beta Deal',
+        active: false,
+        show: false,
+        displayPrice: '$4.49',
+        subtitles: ['Charged $53.88/year', 'This is our regular price'],
+        chargeFrequency: 'yearly',
+        priceEnvironmentVariable: 'STRIPE_BD1_PRICE',
+        quotas: {
+            prints: -1,
+            pages: 50,
+            templates: 10
+        },
+        features: {
+            advancedPrinting: true,
+            restoreOldVersion: true
+        },
+        accountType: AccountType.beta
+    },
+    {
+        id: 'ld1',
+        displayName: 'Lifetime Deal',
+        subtitles: ['Pay once, use forever', 'Grab it while it lasts!'],
         active: true,
         show: true,
         displayPrice: '$59',
         accountType: AccountType.lifetime,
         chargeFrequency: 'onetime',
-        priceEnvironmentVariable: 'LIFETIME_PRICE',
+        priceEnvironmentVariable: 'STRIPE_LD1_PRICE',
+        quotas: {
+            prints: 16,
+            pages: 20,
+            templates: 5
+        },
         features: {
-            printsPerMonth: 16,
-            maxKneeboards: 5,
-            maxPages: 20,
             advancedPrinting: true,
             restoreOldVersion: true
         }

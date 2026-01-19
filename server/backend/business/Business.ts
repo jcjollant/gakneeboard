@@ -2,21 +2,10 @@ import { SubscriptionDao } from "../dao/SubscriptionDao";
 import { UsageDao } from "../dao/UsageDao";
 import { UserDao } from "../dao/UserDao";
 import { Email, EmailType } from "../Email";
-import { AccountType } from '@checklist/shared';
+import { AccountType, Quotas } from '@checklist/shared';
 import { Refill } from "../models/Refill";
 import { User } from "../models/User";
 import { Ticket } from "../Ticket";
-
-class Quota {
-    prints: number;
-    pages: number;
-    templates: number;
-    constructor(prints: number, pages: number, templates: number) {
-        this.prints = prints;
-        this.pages = pages;
-        this.templates = templates;
-    }
-}
 
 export class Business {
     static PRINT_PER_PURCHASE: number = 10;
@@ -43,20 +32,20 @@ export class Business {
         return Math.max(user.printCredits, Business.getQuotas(user).prints)
     }
 
-    static getQuotas(user: User): Quota {
+    static getQuotas(user: User): Quotas {
         switch (user.accountType) {
             case AccountType.student:
-                return new Quota(this.PRINT_CREDIT_STUDENT, this.MAX_PAGES_STUDENT, this.MAX_TEMPLATE_STUDENT)
+                return { prints: this.PRINT_CREDIT_STUDENT, pages: this.MAX_PAGES_STUDENT, templates: this.MAX_TEMPLATE_STUDENT }
             case AccountType.private:
             case AccountType.lifetime: // shares the same limit as private
-                return new Quota(this.PRINT_CREDIT_PRIVATE, this.MAX_PAGES_PRIVATE, this.MAX_TEMPLATE_PRIVATE)
+                return { prints: this.PRINT_CREDIT_PRIVATE, pages: this.MAX_PAGES_PRIVATE, templates: this.MAX_TEMPLATE_PRIVATE }
             case AccountType.beta:
-                return new Quota(this.PRINT_CREDIT_BETA, this.MAX_PAGES_BETA, this.MAX_TEMPLATE_BETA)
+                return { prints: this.PRINT_CREDIT_BETA, pages: this.MAX_PAGES_BETA, templates: this.MAX_TEMPLATE_BETA }
             case AccountType.unknown:
-                return new Quota(0, 0, 0)
+                return { prints: 0, pages: 0, templates: 0 }
             case AccountType.simmer:
             default:
-                return new Quota(this.PRINT_CREDIT_SIMMER, this.MAX_PAGES_SIMMER, this.MAX_TEMPLATE_SIMMER)
+                return { prints: this.PRINT_CREDIT_SIMMER, pages: this.MAX_PAGES_SIMMER, templates: this.MAX_TEMPLATE_SIMMER }
         }
     }
 

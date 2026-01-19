@@ -1,4 +1,5 @@
 import { AccountType } from "./AccountType";
+import { Quotas } from "./Quotas";
 
 export interface PlanDescription {
     id: string;
@@ -6,14 +7,13 @@ export interface PlanDescription {
     active: boolean; // Whether this plan is active
     show: boolean; // Whether to show this plan in the UI
     displayPrice: string;
+    subtitles?: string[];
     accountType: AccountType;
     chargeFrequency: 'monthly' | 'yearly' | 'onetime' | 'never';
     priceEnvironmentVariable?: string; // Environment variable name
+    quotas: Quotas;
     features: {
-        printsPerMonth: number;
         advancedPrinting: boolean;
-        maxKneeboards: number;
-        maxPages: number;
         restoreOldVersion: boolean;
     }
 }

@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import { UserDao } from '../dao/UserDao'
 import { SubscriptionDao } from '../dao/SubscriptionDao'
-import { AccountType } from '@checklist/shared';
+import { AccountType, PlanDescription, PLANS } from '@checklist/shared';
 import { Stripe } from 'stripe'
 import { Business } from './Business'
 import { AttributionData } from '../models/AttributionData'
@@ -196,37 +196,42 @@ export class StripeClient {
         })
     }
 
-    accountTypeFromPrice(planId: string) {
-        switch (planId) {
-            case bd1Price: return AccountType.beta;
-            case pp1Price: return AccountType.student;
-            case pp2Price: return AccountType.private;
-            case ff1Price: return AccountType.simmer;
-            case ld1Price: return AccountType.lifetime;
-            default: return AccountType.unknown;
-        }
+    accountTypeFromPrice(priceId: string): AccountType {
+        // switch (priceId) {
+        //     case bd1Price: return AccountType.beta;
+        //     case pp1Price: return AccountType.student;
+        //     case pp2Price: return AccountType.private;
+        //     case ff1Price: return AccountType.simmer;
+        //     case ld1Price: return AccountType.lifetime;
+        //     default: return AccountType.unknown;
+        // }
+
+        const plan = PLANS.find((p) => process.env[p.priceEnvironmentVariable] === priceId);
+        return plan?.accountType || AccountType.unknown;
     }
 
     priceFromProduct(product: string): Price {
         // console.log('[Stripe.priceIdFromProduct]', product)
-        let price: string | undefined
-        switch (product.toLowerCase()) {
-            case 'pp1': return new Price(pp1Price, true);
-            case 'pp2': return new Price(pp2Price, true);
-            case 'hh1': return new Price(hh1Price, false);
-            case 'bd1': return new Price(bd1Price, true);
-            case 'ld1': return new Price(ld1Price, false);
-            default: throw new Error('Product not found : ' + product);
-        }
+        // find this plan id in PLANS
+        const plan = PLANS.find((p) => p.id === product);
+        if (!plan) throw new Error('Product not found : ' + product);
+        return new Price(plan);
+    }
+
+    static isSubscription(chargeFrequency: string): boolean {
+        return chargeFrequency === 'monthly' || chargeFrequency === 'yearly';
     }
 }
 
-class Price {
+export class Price {
     id: string;
     subscription: boolean;
-    constructor(priceId: string | undefined, subscription: boolean) {
-        if (!priceId) throw new Error('Price id missing');
+    constructor(plan: PlanDescription) {
+        // resolve price from environment variable
+        const priceId = process.env[plan.priceEnvironmentVariable];
+        if (!priceId) throw new Error('Price id missing for plan ' + plan.id);
         this.id = priceId;
-        this.subscription = subscription;
+        this.subscription = StripeClient.isSubscription(plan.chargeFrequency);
     }
+
 }

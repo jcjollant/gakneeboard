@@ -1,6 +1,5 @@
 import { describe, expect, test, jest, beforeEach } from '@jest/globals';
-import { CheckoutService, Pricing } from '../src/services/CheckoutService';
-import { AccountType } from '@checklist/shared';
+import { CheckoutService } from '../src/services/CheckoutService';
 import { CurrentUser } from '../src/assets/CurrentUser';
 import axios from 'axios';
 
@@ -23,21 +22,7 @@ Object.defineProperty(global, 'window', {
 });
 
 describe('CheckoutService', () => {
-
-    describe('accountTypeFromPricing', () => {
-        test('should return correct AccountType for known pricing codes', () => {
-            expect(CheckoutService.accountTypeFromPricing(Pricing.simmer)).toBe(AccountType.simmer);
-            expect(CheckoutService.accountTypeFromPricing(Pricing.studentPilot)).toBe(AccountType.beta); // Note: studentPilot maps to beta in code
-            expect(CheckoutService.accountTypeFromPricing(Pricing.privatePilot)).toBe(AccountType.beta);
-            expect(CheckoutService.accountTypeFromPricing(Pricing.betaDeal)).toBe(AccountType.beta);
-            expect(CheckoutService.accountTypeFromPricing(Pricing.hobbs)).toBe(AccountType.hobbs);
-            expect(CheckoutService.accountTypeFromPricing(Pricing.lifetimeDeal)).toBe(AccountType.lifetime);
-        });
-
-        test('should return AccountType.unknown for invalid pricing code', () => {
-            expect(CheckoutService.accountTypeFromPricing('INVALID_CODE' as any)).toBe(AccountType.unknown);
-        });
-    });
+    const privatePilotPlan = 'pp2'
 
     describe('plan', () => {
         const mockUser = {
@@ -53,14 +38,14 @@ describe('CheckoutService', () => {
             const expectedUrl = 'https://checkout.stripe.com/pay/cs_test_...';
             (axios.post as jest.Mock<any>).mockResolvedValue({ data: { url: expectedUrl } });
 
-            const url = await CheckoutService.plan(Pricing.privatePilot, mockUser);
+            const url = await CheckoutService.plan(privatePilotPlan, mockUser);
 
             expect(url).toBe(expectedUrl);
             expect(axios.post).toHaveBeenCalledWith(
                 expect.stringContaining('stripe/checkout'),
                 expect.objectContaining({
                     user: 'mock_user_hash',
-                    product: Pricing.privatePilot
+                    product: privatePilotPlan
                 }),
                 expect.anything()
             );
@@ -73,13 +58,13 @@ describe('CheckoutService', () => {
             const mockAttribution = { source: 'google', medium: 'cpc', timestamp: 1234567890 };
             (AttributionService.getAttribution as jest.Mock).mockReturnValue(mockAttribution);
 
-            await CheckoutService.plan(Pricing.privatePilot, mockUser);
+            await CheckoutService.plan(privatePilotPlan, mockUser);
 
             expect(axios.post).toHaveBeenCalledWith(
                 expect.stringContaining('stripe/checkout'),
                 expect.objectContaining({
                     user: 'mock_user_hash',
-                    product: Pricing.privatePilot,
+                    product: privatePilotPlan,
                     attribution: mockAttribution
                 }),
                 expect.anything()
@@ -89,7 +74,7 @@ describe('CheckoutService', () => {
         test('should handle API error gracefully', async () => {
             (axios.post as jest.Mock<any>).mockRejectedValue(new Error('Network Error'));
 
-            await expect(CheckoutService.plan(Pricing.privatePilot, mockUser)).rejects.toEqual('/');
+            await expect(CheckoutService.plan(privatePilotPlan, mockUser)).rejects.toEqual('/');
         });
     });
 

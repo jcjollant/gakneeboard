@@ -25,74 +25,73 @@
     <div class="pricing-grid">
       <div 
         v-for="plan in plans" 
-        :key="plan.name" 
-        :class="['plan-card', { 'popular': plan.popular, 'unpopular' : !plan.popular }]"
+        :key="plan.displayName" 
+        :class="['plan-card', { 'popular': plan.id === bestValuePlan, 'unpopular' : plan.id !== bestValuePlan }]"
       >
-        <div v-if="plan.popular" class="popular-badge">Best Value</div>
+        <div v-if="plan.id === bestValuePlan" class="popular-badge">Best Value</div>
         
         <div class="plan-header">
-          <h3>{{ plan.name }}</h3>
+          <h3>{{ plan.displayName }}</h3>
           <div class="price">
-            <span class="amount">${{ plan.price}}</span>
-            <span class="period" v-if="plan.monthly">/month</span>
+            <span class="amount">{{ plan.displayPrice}}</span>
+            <span class="period" v-if="plan.chargeFrequency === 'monthly'">/month</span>
           </div>
-          <p class="description">{{ plan.subtitle }}</p>
-          <p class="description">{{ plan.description }}</p>
+          <p v-for="subtitle in plan.subtitles" class="description">{{ subtitle }}</p>
         </div>
 
         <div class="plan-content">
           <ul class="features-list">
-            <li v-for="(value, feature) in plan.features" :key="feature">
-              <span v-if="typeof value === 'boolean'">
-                <svg v-if="value" class="icon check" viewBox="0 0 24 24">
+            <li v-for="(value) in [{name:'Prints per Month', quota: plan.quotas.prints}, {name:'Pages', quota: plan.quotas.pages}, {name:'Kneeboards', quota: plan.quotas.templates}]" key="name">
+              <span>                
+                <svg class="icon check" viewBox="0 0 24 24">
+                  <path d="M20 6L9 17L4 12"></path>
+                </svg>
+              </span>
+              <span class="feature-text">
+                {{value.name}} : {{ value.quota }}
+              </span>
+            </li>
+
+            <li v-for="(value) in [{name:'Advanced Printing', enabled: plan.features.advancedPrinting}, {name:'Restore Old Versions', enabled: plan.features.restoreOldVersion}]">
+              <span>
+                <svg v-if="value.enabled" class="icon check" viewBox="0 0 24 24">
                   <path d="M20 6L9 17L4 12"></path>
                 </svg>
                 <svg v-else class="icon x" viewBox="0 0 24 24">
                   <path d="M18 6L6 18M6 6L18 18"></path>
                 </svg>
               </span>
-              <span v-else-if="typeof value === 'number'">
-                <svg v-if="value > 0 && value < 50" class="icon check" viewBox="0 0 24 24">
-                  <path d="M20 6L9 17L4 12"></path>
-                </svg>
-                <svg v-else class="icon check" viewBox="0 0 24 24">
-                  <path d="M20 6 L9 17 L4 12 M24 6 L13 17 L8 12"></path>
-                </svg>
-              </span>
-              <svg v-else class="icon check" viewBox="0 0 24 24">
-                <path d="M20 6L9 17L4 12"></path>
-              </svg>
               <span class="feature-text">
-                {{ feature }} {{ (typeof value === 'boolean' || value == -1) ? '' : ': ' + value }}
+                {{ value.name }}
               </span>
             </li>
           </ul>
         </div>
 
         <div class="plan-footer">
-          <button v-if="plan.active" :class="['subscribe-button', 'primary']" @click="onPlan(plan.code)">
+          <button v-if="plan.active" :class="['subscribe-button', 'primary']" @click="onPlan(plan)">
             Select Plan
           </button>
           <div v-else>Comming Soon</div>
         </div>
       </div>
+
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router';
-import { CheckoutService, Pricing } from '../services/CheckoutService';
+import { CheckoutService } from '../services/CheckoutService';
 import { currentUser } from '../assets/data';
 import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../assets/Toaster';
 
 import Menu from '../components/menu/Menu.vue';
-import { AccountType } from '@checklist/shared';
+import { AccountType, PlanDescription } from '@checklist/shared';
 
 const toaster = useToaster(useToast())
-const monthly = ref(true)
 const route = useRoute()
 
 // Check if user came here due to being out of print credits
@@ -100,67 +99,21 @@ const showOutOfCreditsBanner = computed(() => {
   return route.query.reason === 'out-of-credits'
 })
 
-const plans = ref([
-  {
-    name: "Student Pilot",
-    price: 2.99,
-    monthly: true,
-    subtitle: "No Commitment",
-    description: "Best for Occasional Use",
-    features: {
-      "Prints per Month": 8,
-      "Advanced Print Options": true,
-      "Kneeboards": 2,
-      "Pages": 4,
-    },
-    popular: false,
-    active: true,
-    code: Pricing.studentPilot
-  },
-  {
-    name: "Private Pilot",
-    price: 4.49,
-    monthly: true,
-    subtitle: "Charged $53.88/year",
-    description: "This is our regular price",
-    features: {
-      "Prints per Month": 16,
-      "Advanced Print Options": true,
-      "Kneeboards": 5,
-      "Pages": 20,
-    },
-    popular: false,
-    active: true,
-    code: Pricing.privatePilot
-  },
-  {
-    name: "Lifetime Deal",
-    price: 59,
-    monthly: false,
-    subtitle: "Pay once, use forever!",
-    description: "Grab it before it's gone",
-    features: {
-      "Prints per Month": 16,
-      "Advanced Print Options": true,
-      "Kneeboards": 5,
-      "Pages": 20,
-    },
-    popular: true,
-    active: true,
-    code: Pricing.lifetimeDeal
-  }
-])
+// import plans from '../constants/Plans'
+import { PLANS, bestValuePlan } from '@checklist/shared'
+
+const plans = PLANS.filter( p => p.show )
 const router = useRouter()
 
-function onPlan(code:Pricing) {
+function onPlan(plan:PlanDescription) {
   // console.log('[PricingPlans.onPlan]',code)
 
-  if( CheckoutService.accountTypeFromPricing(code) == AccountType.simmer) {
+  if( plan.accountType == AccountType.simmer) {
     // There is no change in type, just go back to the home page
     router.push('/')
   } else {
     toaster.info('Calling Tower', 'Stand By...')
-    CheckoutService.plan(code, currentUser).then( (url:string) => {
+    CheckoutService.plan(plan.id, currentUser).then( (url:string) => {
       // console.log('[PricingPlans.onPlan]',url)
       window.location.href = url
     }).catch( (err:any) => {
@@ -292,10 +245,6 @@ function onPlan(code:Pricing) {
     justify-content: space-between;
 }
 
-.plan-card.yours {
-  border: 2px solid darkgrey;
-}
-
 .plan-card.popular {
     border: 3px solid #f97316;
     transform: scale(1.05);
@@ -315,14 +264,6 @@ function onPlan(code:Pricing) {
     border-radius: 20px;
     font-size: 0.875rem;
     font-weight: 600;
-}
-
-.yours-badge {
-  background-color: darkgrey;
-  color: black;
-  text-align: center;
-  padding: 0.25rem;
-  font-size: 0.875rem;
 }
 
 .plan-header {

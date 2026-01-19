@@ -15,7 +15,6 @@ import { GApiError } from "../backend/GApiError";
 import { UserImage } from "../backend/UserImage";
 import { UserDao } from "../backend/dao/UserDao";
 import { UsageDao } from "../backend/dao/UsageDao";
-import { AirportCreationRequest } from "../backend/models/AirportCreationRequest";
 import { Authorization } from "../backend/services/Authorization";
 const port: number = 3000
 const app = express();
@@ -267,6 +266,7 @@ app.get('/publications', async (req: Request, res: Response) => {
  * Payments management
  */
 app.post('/stripe/checkout', async (req, res) => {
+    // console.debug('[index] POST /stripe/checkout', req.body)
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
     let promise = null;
     if (payload.product === 'manage') {
