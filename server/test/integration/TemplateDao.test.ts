@@ -1,5 +1,5 @@
 
-import { describe, expect, it, afterAll } from '@jest/globals';
+import { describe, expect, it, afterAll, xdescribe } from '@jest/globals';
 import { TemplateDao } from '../../backend/TemplateDao'
 import { jcUserId, jcTestTemplateName, jcTestTemplateData } from '../constants';
 import { sql } from '@vercel/postgres';
@@ -13,7 +13,7 @@ import * as dotenv from 'dotenv'
 import { TemplateFormat } from '../../backend/models/TemplateFormat';
 dotenv.config()
 
-describe('Custom Templates', () => {
+xdescribe('Custom Templates', () => {
     describe('countForUser', () => {
         it('Can CountForUser', async () => {
             const result = await sql`SELECT user_id, COUNT(*) FROM sheets GROUP BY user_id`

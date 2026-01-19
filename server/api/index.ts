@@ -10,7 +10,7 @@ import { Maintenance } from '../backend/Maintenance'
 import { NavlogTools } from "../backend/NavlogTools";
 import { Ticket } from "../backend/Ticket";
 import { Charts } from "../backend/Charts";
-import { GApiTemplate } from "../backend/GApiTemplate";
+import { TemplateService } from "../backend/services/TemplateService"
 import { GApiError } from "../backend/GApiError";
 import { UserImage } from "../backend/UserImage";
 import { UserDao } from "../backend/dao/UserDao";
@@ -306,7 +306,7 @@ app.get('/template/:id', async (req: Request, res: Response) => {
         }
         // console.log( "[index] GET template " + req.params.id + " userId " + userId
         const templateId = Number(req.params.id)
-        let template = await GApiTemplate.get(templateId, requester);
+        let template = await TemplateService.get(templateId, requester);
         if (template) {
             res.send(template)
         } else {
@@ -318,12 +318,35 @@ app.get('/template/:id', async (req: Request, res: Response) => {
 })
 
 /**
+ * Get a specific version of a template
+ */
+app.get('/template/:id/version/:version', async (req: Request, res: Response) => {
+    try {
+        const requester = await UserTools.userIdFromRequest(req)
+        if (!requester) {
+            throw new GApiError(401, 'Unauthorized')
+        }
+        const templateId = Number(req.params.id)
+        const version = Number(req.params.version)
+
+        const template = await TemplateService.getVersion(templateId, version, requester)
+        if (template) {
+            res.send(template)
+        } else {
+            res.sendStatus(404)
+        }
+    } catch (e) {
+        catchError(res, e, 'GET /template/:id/version/:version')
+    }
+})
+
+/**
  * Builds a template list for the current user
  */
 app.get('/templates', async (req: Request, res: Response) => {
     const userId = await UserTools.userIdFromRequest(req)
     try {
-        const templates = await GApiTemplate.getList(userId);
+        const templates = await TemplateService.getList(userId);
         res.send(templates)
     } catch (e) {
         catchError(res, e, 'GET /templates')
@@ -335,7 +358,7 @@ app.post('/template', async (req: Request, res: Response) => {
     // console.log('[index.post/template]', typeof req.body)
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
     // console.log("[index] POST template payload " + JSON.stringify(payload))
-    GApiTemplate.save(payload.user, payload.sheet).then((status) => {
+    TemplateService.save(payload.user, payload.sheet).then((status) => {
         // console.log('[index.post/sheet]', JSON.stringify(sheet))
         res.status(status.code).send(status.template)
     }).catch((e) => {
@@ -352,7 +375,7 @@ app.delete('/template/:id', async (req: Request, res: Response) => {
         if (!templateId || !userId) {
             throw new GApiError(400, 'Invalid request')
         }
-        await GApiTemplate.delete(templateId, userId).then((template) => {
+        await TemplateService.delete(templateId, userId).then((template) => {
             res.send(template + ' deleted')
         })
     } catch (e) {
@@ -371,7 +394,7 @@ app.post('/templateThumbnail', upload.single('image'), async (req: Request, res:
         const userId = await UserTools.userIdFromRequest(req)
         const templateId = Number(req.body.templateId)
         const thumbnailHash = req.body.sha256;
-        const thumbnailData = await GApiTemplate.updateThumbnail(templateId, userId, req.file.buffer, thumbnailHash)
+        const thumbnailData = await TemplateService.updateThumbnail(templateId, userId, req.file.buffer, thumbnailHash)
         res.send(thumbnailData)
     } catch (e) {
         catchError(res, e, 'POST /templateThumbnail')

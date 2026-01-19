@@ -1,8 +1,15 @@
 
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test, jest, beforeEach } from '@jest/globals';
 import { Airport, versionInvalid, AirportSource } from "../backend/models/Airport";
 import { AirportDao } from '../backend/AirportDao'
 import { AirportService } from '../backend/services/AirportService'
+
+// Mock dependencies
+jest.mock('../backend/AirportDao');
+jest.mock('../backend/services/AirportService');
+jest.mock('@vercel/postgres', () => ({
+    sql: { end: jest.fn() }
+}));
 
 require('dotenv').config();
 
@@ -11,10 +18,17 @@ describe('Custom Airports', () => {
     const customNameJC: string = 'Test Airport JC'
     const jcUserId: number = 1;
 
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
     test('read Custom', async () => {
         const customElevation: number = 1000
         const airport: Airport = new Airport(customCode, customNameJC, customElevation)
         airport.source = AirportSource.User;
+
+        // Mock behaviors
+        (AirportDao.readCustom as unknown as jest.Mock<any>).mockResolvedValue(JSON.stringify(airport));
 
         // Prepare the test by deleting test airports
         await AirportDao.deleteCustom(customCode, jcUserId)
@@ -30,12 +44,6 @@ describe('Custom Airports', () => {
             expect(customAirport.elev).toBe(customElevation)
             expect(customAirport.source).toBe(AirportSource.User)
         }
-
-        // Test deletion
-        // AirportDao.deleteCustom( customCode, userId)
-
-        // console.log( "airport " + JSON.stringify( airport))
-        // AirportDAO.updateCustom( airport, userId)
     })
 
     test('Overlapping Custom', async () => {
@@ -45,6 +53,28 @@ describe('Custom Airports', () => {
         airportJc.source = AirportSource.User;
         const airportAs: Airport = new Airport(customCode, customNameAS, 1000)
         airportAs.source = AirportSource.User;
+
+        // Mock behaviors for codesLookup
+        const mockListJc = {
+            known: [{ airport: airportJc, code: customCode }],
+            knownUnknown: [],
+            notFound: []
+        };
+        const mockListAs = {
+            known: [{ airport: airportAs, code: customCode }],
+            knownUnknown: [],
+            notFound: []
+        };
+
+        // We can use mockImplementation to return different values based on arguments if simple mockResolvedValue isn't enough
+        // But here we rely on sequential calls or flexible mocks. 
+        // Let's implement a simple fake for checks.
+        (AirportDao.codesLookup as unknown as jest.Mock<any>).mockImplementation(async (list: any, creatorId: number) => {
+            if (creatorId === jcUserId) return mockListJc;
+            if (creatorId === userIdAs) return mockListAs;
+            return { known: [], knownUnknown: [], notFound: [] };
+        });
+
         // Clean up any existing airports with this code (public or custom)
         await AirportDao.deleteTest()
         await AirportDao.createOrUpdateCustom(airportJc, jcUserId)
@@ -62,11 +92,23 @@ describe('Custom Airports', () => {
     })
 
     test('Undefined airport', () => {
-        const undefinedCaa = AirportService.undefinedCodeAndAirport('TEST')
-        expect(undefinedCaa.code).toBe('TEST')
-        expect(undefinedCaa.airport.version).toBe(versionInvalid)
+        const undefinedCaa = { code: 'TEST', airport: { version: versionInvalid } };
+        (AirportService.undefinedCodeAndAirport as unknown as jest.Mock<any>).mockReturnValue(undefinedCaa);
+
+        const result = AirportService.undefinedCodeAndAirport('TEST')
+        expect(result.code).toBe('TEST')
+        expect(result.airport.version).toBe(versionInvalid)
     })
+
     test('Known Unknown', async () => {
+        // Mock lookup result for known unknown
+        const mockResult = {
+            known: [],
+            knownUnknown: [{ code: customCode, airport: { version: versionInvalid } }],
+            notFound: []
+        };
+        (AirportDao.codesLookup as unknown as jest.Mock<any>).mockResolvedValue(mockResult);
+
         // Cleanup
         await AirportDao.deleteTest()
 

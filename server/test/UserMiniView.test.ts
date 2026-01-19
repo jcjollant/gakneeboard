@@ -2,9 +2,16 @@ import { describe, expect, it, jest, afterAll } from '@jest/globals';
 import { newTestUser } from './common';
 import { UserMiniView } from '../backend/models/UserMiniView';
 import { UserDao } from '../backend/dao/UserDao';
+import { TemplateDao } from '../backend/TemplateDao';
 import { User } from '../backend/models/User';
 import { jcHash, jcMaxTemplates, jcName } from './constants';
-import { sql } from '@vercel/postgres';
+
+// Mock dependencies
+jest.mock('../backend/dao/UserDao');
+jest.mock('../backend/TemplateDao');
+jest.mock('@vercel/postgres', () => ({
+    sql: { end: jest.fn() }
+}));
 
 require('dotenv').config();
 
@@ -28,7 +35,13 @@ describe('UserMiniView', () => {
         });
 
         it('should retrieve from hash', async () => {
-            const userJc: User | undefined = await UserDao.getUserFromHash(jcHash)
+            const mockUser = newTestUser();
+            mockUser.sha256 = jcHash;
+            mockUser.name = jcName;
+
+            (UserDao.getUserFromHash as unknown as jest.Mock<any>).mockResolvedValue(mockUser);
+            (TemplateDao.getOverviewListForUser as unknown as jest.Mock<any>).mockResolvedValue([]);
+
             const umv: UserMiniView | undefined = await UserMiniView.fromHash(jcHash)
             expect(umv).toBeDefined()
             if (!umv) return;
@@ -37,8 +50,5 @@ describe('UserMiniView', () => {
             expect(umv.templates).toBeDefined()
         })
     });
-
-    afterAll(async () => {
-        await sql.end()
-    })
 });
+

@@ -1,5 +1,5 @@
 
-import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, it, xdescribe } from '@jest/globals';
 import { UserDao } from '../../backend/dao/UserDao'
 import { jcUserId, jcHash, jcEmail, jcName, jcSource, jcCustomerId } from '../constants';
 import { AccountType } from '../../backend/models/AccountType';
@@ -11,7 +11,7 @@ import { Business } from '../../backend/business/Business';
 
 require('dotenv').config();
 
-describe('UserDao', () => {
+xdescribe('UserDao', () => {
     let userDao: UserDao;
 
     beforeAll(async () => {

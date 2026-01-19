@@ -12,7 +12,7 @@ import { Business } from '../backend/business/Business';
 import { AccountType } from '../backend/models/AccountType';
 
 import * as dotenv from 'dotenv'
-import { GApiTemplate } from '../backend/GApiTemplate';
+import { TemplateService } from '../backend/services/TemplateService';
 import { GApiError } from '../backend/GApiError';
 import { PageType } from '../backend/TemplateTools';
 import { UsageDao } from '../backend/dao/UsageDao';
@@ -23,7 +23,7 @@ const MAX_PAGES_MESSAGE = "Maximum pages reached"
 const MAX_TEMPLATES_REACHED_MESSAGE = "Maximum templates reached"
 const MAX_TEMPLATES_EXCEEDED_MESSAGE = "Maximum templates exceeded"
 
-describe('GApiTemplate Tests', () => {
+describe('TemplateService Tests', () => {
 
     describe('templateDelete', () => {
         it('Returns 404 on not found', async () => {
@@ -31,7 +31,7 @@ describe('GApiTemplate Tests', () => {
             jest.spyOn(templateDao, 'readById').mockResolvedValue(undefined)
             jest.spyOn(TemplateDao, 'getInstance').mockReturnValue(templateDao)
             // expect this to throw new GApiError(404, 'Template not found');
-            await expect(GApiTemplate.delete(0, jcUserId)).rejects.toMatchObject({ status: 404 });
+            await expect(TemplateService.delete(0, jcUserId)).rejects.toMatchObject({ status: 404 });
         })
 
         it('Succeeds with proper template', async () => {
@@ -44,7 +44,7 @@ describe('GApiTemplate Tests', () => {
             // jest.spyOn(TemplateDao, 'readByIdStatic').mockResolvedValue(template);
             jest.spyOn(TemplateDao, 'deleteStatic').mockResolvedValue(1);
 
-            const name = await GApiTemplate.delete(templateId, jcUserId)
+            const name = await TemplateService.delete(templateId, jcUserId)
 
             expect(name).toBe(jcTestTemplateName)
             expect(templateDao.delete).toBeCalledWith(templateId, jcUserId)
@@ -56,7 +56,7 @@ describe('GApiTemplate Tests', () => {
         it('Returns undefined for Invalid template', async () => {
             jest.spyOn(TemplateDao, 'readByIdStatic').mockResolvedValue(undefined);
 
-            const t = await GApiTemplate.get(0, jcUserId)
+            const t = await TemplateService.get(0, jcUserId)
             expect(t).toBeUndefined()
         })
 
@@ -67,7 +67,7 @@ describe('GApiTemplate Tests', () => {
             jest.spyOn(PublicationDao, 'findByTemplate').mockResolvedValue(undefined);
             jest.spyOn(TemplateDao, 'readByIdStatic').mockResolvedValue(template)
 
-            const tv = await GApiTemplate.get(0, jcUserId)
+            const tv = await TemplateService.get(0, jcUserId)
             expect(tv).toEqual(templateView)
             expect(tv?.publish).toBeFalsy()
 
@@ -75,7 +75,7 @@ describe('GApiTemplate Tests', () => {
             const publication = new Publication(0, 'code', template.id, true)
             jest.spyOn(PublicationDao, 'findByTemplate').mockResolvedValue(publication);
 
-            const t2 = await GApiTemplate.get(0, jcUserId)
+            const t2 = await TemplateService.get(0, jcUserId)
             expect(t2?.publish).toBeTruthy()
         })
         it('Request template without userId for admin user', async () => {
@@ -83,7 +83,7 @@ describe('GApiTemplate Tests', () => {
             jest.spyOn(TemplateDao, 'readByIdStatic').mockResolvedValue(template)
 
             const templateId = 0
-            const tv = await GApiTemplate.get(templateId, adminUserId)
+            const tv = await TemplateService.get(templateId, adminUserId)
             expect(TemplateDao.readByIdStatic).toBeCalledWith(templateId, undefined)
         })
         it('Request template with userId for non admin user', async () => {
@@ -91,7 +91,7 @@ describe('GApiTemplate Tests', () => {
             jest.spyOn(TemplateDao, 'readByIdStatic').mockResolvedValue(template)
 
             const templateId = 0
-            const tv = await GApiTemplate.get(templateId, nonAdminUserId)
+            const tv = await TemplateService.get(templateId, nonAdminUserId)
             expect(TemplateDao.readByIdStatic).toBeCalledWith(templateId, nonAdminUserId)
         })
     })
@@ -100,7 +100,7 @@ describe('GApiTemplate Tests', () => {
         it('calls Dao', async () => {
             jest.spyOn(TemplateDao, 'getOverviewListForUser').mockResolvedValue([]);
 
-            await GApiTemplate.getList(jcUserId)
+            await TemplateService.getList(jcUserId)
 
             expect(TemplateDao.getOverviewListForUser).toBeCalledWith(jcUserId)
         })
@@ -113,10 +113,10 @@ describe('GApiTemplate Tests', () => {
             jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
             const template = new TemplateView(0, jcTestTemplateName, jcTestTemplateData)
 
-            await expect(GApiTemplate.save(jcHash, template)).rejects.toEqual(new GApiError(400, "Invalid user"))
+            await expect(TemplateService.save(jcHash, template)).rejects.toEqual(new GApiError(400, "Invalid user"))
             expect(UserDao.getUserFromHash).toBeCalledWith(jcHash)
 
-            await expect(GApiTemplate.save(null as unknown as string, template)).rejects.toEqual(new GApiError(400, "Invalid user"))
+            await expect(TemplateService.save(null as unknown as string, template)).rejects.toEqual(new GApiError(400, "Invalid user"))
         })
 
         it('dodges invalid tempalte', async () => {
@@ -125,7 +125,7 @@ describe('GApiTemplate Tests', () => {
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(simUser)
             jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
 
-            await expect(GApiTemplate.save(simUser.sha256, null as unknown as TemplateView)).rejects.toEqual(new GApiError(400, "Invalid template"))
+            await expect(TemplateService.save(simUser.sha256, null as unknown as TemplateView)).rejects.toEqual(new GApiError(400, "Invalid template"))
         })
 
         it('Can create new template BELOW max but not AT max', async () => {
@@ -147,21 +147,21 @@ describe('GApiTemplate Tests', () => {
             jest.spyOn(TemplateDao, 'getInstance').mockReturnValue(mockTemplateDao)
 
             // User can create below max
-            await GApiTemplate.save(simUser.sha256, tv).then(ts => {
+            await TemplateService.save(simUser.sha256, tv).then(ts => {
                 expect(ts.code).toBe(200)
             })
 
             // User at max
             jest.spyOn(mockTemplateDao, 'countForUser').mockResolvedValue(Business.MAX_TEMPLATE_SIMMER)
-            await expect(GApiTemplate.save(simUser.sha256, tv)).rejects.toEqual(new GApiError(402, MAX_TEMPLATES_REACHED_MESSAGE))
+            await expect(TemplateService.save(simUser.sha256, tv)).rejects.toEqual(new GApiError(402, MAX_TEMPLATES_REACHED_MESSAGE))
 
             // User over max
             jest.spyOn(mockTemplateDao, 'countForUser').mockResolvedValue(Business.MAX_TEMPLATE_SIMMER + 1)
-            await expect(GApiTemplate.save(simUser.sha256, tv)).rejects.toEqual(new GApiError(402, MAX_TEMPLATES_EXCEEDED_MESSAGE))
+            await expect(TemplateService.save(simUser.sha256, tv)).rejects.toEqual(new GApiError(402, MAX_TEMPLATES_EXCEEDED_MESSAGE))
 
             // Boost Max Templates
             simUser.maxTemplates = Business.MAX_TEMPLATE_SIMMER + 2;
-            await GApiTemplate.save(simUser.sha256, tv).then(ts => {
+            await TemplateService.save(simUser.sha256, tv).then(ts => {
                 expect(ts.code).toBe(200)
             })
 
@@ -180,18 +180,18 @@ describe('GApiTemplate Tests', () => {
             getMockTemplateDao(tv4pages, Business.MAX_TEMPLATE_SIMMER - 1)
 
             // Sim user cannot save more than two pages on new templates
-            await expect(GApiTemplate.save(simUser.sha256, tv4pages)).rejects.toEqual(new GApiError(402, MAX_PAGES_MESSAGE))
+            await expect(TemplateService.save(simUser.sha256, tv4pages)).rejects.toEqual(new GApiError(402, MAX_PAGES_MESSAGE))
 
             // Sim user cannot save more than two pages when keeping page size
             tv4pages.id = 1
-            await expect(GApiTemplate.save(simUser.sha256, tv4pages)).rejects.toEqual(new GApiError(402, MAX_PAGES_MESSAGE))
+            await expect(TemplateService.save(simUser.sha256, tv4pages)).rejects.toEqual(new GApiError(402, MAX_PAGES_MESSAGE))
 
             // Sim user can save more than two pages when reducing page size
             const tv3pages = getTemplateView(3, 1)
 
             getMockTemplateDao(tv3pages, Business.MAX_TEMPLATE_SIMMER - 1, 4, 4)
 
-            await GApiTemplate.save(simUser.sha256, tv3pages).then(ts => {
+            await TemplateService.save(simUser.sha256, tv3pages).then(ts => {
                 expect(ts.code).toBe(200)
             })
         })
@@ -208,18 +208,18 @@ describe('GApiTemplate Tests', () => {
             const mockTemplateDao = getMockTemplateDao(tvMax, Business.MAX_TEMPLATE_BETA, 0, 0)
 
             // Should be able to update a template at max pages
-            await GApiTemplate.save(betaUser.sha256, tvMax).then(ts => {
+            await TemplateService.save(betaUser.sha256, tvMax).then(ts => {
                 expect(ts.code).toBe(200)
             })
 
             // Should not be able to update over max pages
             const tvOVerMax = getTemplateView(Business.MAX_PAGES_BETA + 1, 1)
-            await expect(GApiTemplate.save(betaUser.sha256, tvOVerMax)).rejects.toEqual(new GApiError(402, MAX_PAGES_MESSAGE))
+            await expect(TemplateService.save(betaUser.sha256, tvOVerMax)).rejects.toEqual(new GApiError(402, MAX_PAGES_MESSAGE))
 
             // Should be able update over max when decreasing page count
             // We are decreasing from MAX+2 to MAX+1
             jest.spyOn(mockTemplateDao, 'pageCount').mockResolvedValue([Business.MAX_PAGES_BETA + 10, Business.MAX_PAGES_BETA + 2])
-            await GApiTemplate.save(betaUser.sha256, tvMax).then(ts => {
+            await TemplateService.save(betaUser.sha256, tvMax).then(ts => {
                 expect(ts.code).toBe(200)
             })
         })
@@ -242,17 +242,17 @@ describe('GApiTemplate Tests', () => {
 
             const tv = new TemplateView(1, jcTestTemplateName, jcTestTemplateData)
 
-            await GApiTemplate.save(simUser.sha256, tv).then(ts => {
+            await TemplateService.save(simUser.sha256, tv).then(ts => {
                 expect(ts.code).toBe(200)
             })
 
             // One above should fail
             jest.spyOn(mockTemplateDao, 'countForUser').mockResolvedValue(Business.MAX_TEMPLATE_SIMMER + 1)
-            await expect(GApiTemplate.save(simUser.sha256, tv)).rejects.toEqual(new GApiError(402, MAX_TEMPLATES_EXCEEDED_MESSAGE))
+            await expect(TemplateService.save(simUser.sha256, tv)).rejects.toEqual(new GApiError(402, MAX_TEMPLATES_EXCEEDED_MESSAGE))
 
             // Boost Max Templates
             simUser.maxTemplates = Business.MAX_TEMPLATE_SIMMER * 2
-            await GApiTemplate.save(simUser.sha256, tv).then(ts => {
+            await TemplateService.save(simUser.sha256, tv).then(ts => {
                 expect(ts.code).toBe(200)
             })
         })
@@ -271,7 +271,7 @@ describe('GApiTemplate Tests', () => {
             jest.spyOn(PublicationDao, 'publish').mockResolvedValue(publication)
             const mockTemplateDao = getMockTemplateDao(publicTemplateView, Business.MAX_TEMPLATE_PRIVATE - 1, 2, 0)
 
-            const ts = await GApiTemplate.save(jcHash, publicTemplateView)
+            const ts = await TemplateService.save(jcHash, publicTemplateView)
             const t = ts.template
 
             expect(t.code).toBe(publicationCode)
@@ -297,7 +297,7 @@ describe('GApiTemplate Tests', () => {
             jest.spyOn(PublicationDao, 'publish').mockResolvedValue(undefined)
 
             // if publication fails, it should throw an error
-            await expect(GApiTemplate.save(jcHash, publicTemplateView)).rejects.toBeInstanceOf(GApiError)
+            await expect(TemplateService.save(jcHash, publicTemplateView)).rejects.toBeInstanceOf(GApiError)
         })
 
         it('works with unpublished templates', async () => {
@@ -319,7 +319,7 @@ describe('GApiTemplate Tests', () => {
 
             jest.spyOn(PublicationDao, 'publish').mockResolvedValue(undefined)
 
-            const ts = await GApiTemplate.save(jcHash, privateTemplateView)
+            const ts = await TemplateService.save(jcHash, privateTemplateView)
 
             expect(ts.code).toBe(200) // because we had 1
             const t = ts.template
@@ -344,7 +344,7 @@ describe('GApiTemplate Tests', () => {
             jest.spyOn(PublicationDao, 'publish').mockResolvedValue(undefined)
             jest.spyOn(PublicationDao, 'unpublish').mockResolvedValue()
 
-            const ts = await GApiTemplate.save(jcHash, templateView)
+            const ts = await TemplateService.save(jcHash, templateView)
 
             expect(ts.code).toBe(200)
             expect(ts.template.publish).toBeFalsy()

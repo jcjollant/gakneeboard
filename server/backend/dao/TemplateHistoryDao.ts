@@ -142,4 +142,18 @@ export class TemplateHistoryDao extends Dao<TemplateHistory> {
             row.created_at
         )
     }
+    /**
+     * Get a specific version of a template from history
+     * @param templateId The template ID
+     * @param version The version number
+     * @returns TemplateHistory object or undefined if not found
+     */
+    public async getSpecificVersion(templateId: number, version: number): Promise<TemplateHistory | undefined> {
+        const result = await sql`
+            SELECT * FROM ${this.tableName} 
+            WHERE template_id = ${templateId} AND version = ${version}
+        `
+        if (result.rowCount === 0) return undefined
+        return this.parseRow(result.rows[0])
+    }
 }

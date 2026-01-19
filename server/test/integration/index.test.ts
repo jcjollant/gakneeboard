@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import request from 'supertest';
 import app from '../../api/index';
 import { GApi } from '../../backend/GApi';
-import { GApiTemplate } from '../../backend/GApiTemplate';
+import { TemplateService } from '../../backend/services/TemplateService';
 import { Maintenance } from '../../backend/Maintenance';
 import { AirportService } from '../../backend/services/AirportService';
 import { Authorization } from '../../backend/services/Authorization';
@@ -14,7 +14,7 @@ import { currentAirportModelVersion, jcHash } from '../constants';
 jest.mock('../../backend/GApi');
 jest.mock('../../backend/services/AirportService');
 jest.mock('../../backend/Maintenance');
-jest.mock('../../backend/GApiTemplate');
+jest.mock('../../backend/services/TemplateService');
 jest.mock('../../backend/UserTools');
 jest.mock('../../backend/Ticket');
 jest.mock('../../backend/services/Authorization');
@@ -143,14 +143,14 @@ describe('index API', () => {
         // Mock UserTools
         (UserTools.userIdFromRequest as unknown as jest.Mock<any>).mockResolvedValue(1);
 
-        // Mock GApiTemplate.save
-        (GApiTemplate.save as unknown as jest.Mock<any>).mockResolvedValue({
+        // Mock TemplateService.save
+        (TemplateService.save as unknown as jest.Mock<any>).mockResolvedValue({
             code: 200,
             template: { id: templateId, code: publicationCode }
         });
 
-        // Mock GApiTemplate.get
-        (GApiTemplate.get as unknown as jest.Mock<any>).mockResolvedValue({ id: templateId });
+        // Mock TemplateService.get
+        (TemplateService.get as unknown as jest.Mock<any>).mockResolvedValue({ id: templateId });
 
         // Mock GApi.publicationGet
         (GApi.publicationGet as unknown as jest.Mock<any>).mockResolvedValue({ id: templateId });
