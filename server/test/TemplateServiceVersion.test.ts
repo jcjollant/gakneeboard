@@ -6,7 +6,7 @@ import { TemplateDao } from '../backend/TemplateDao';
 import { TemplateView } from '../backend/models/TemplateView';
 import { Template } from '../backend/models/Template';
 import { User } from '../backend/models/User';
-import { AccountType } from '@checklist/shared';
+import { AccountType, PLAN_ID_SIM } from '@checklist/shared';
 import { GApiError } from '../backend/GApiError';
 import { TemplateFormat } from '../backend/models/TemplateFormat';
 
@@ -41,10 +41,11 @@ describe('TemplateService.getVersion', () => {
     it('should throw 403 if user is sim', async () => {
         const simUser = new User(userId, 'hash');
         simUser.accountType = AccountType.simmer;
+        simUser.planId = PLAN_ID_SIM;
         mockUserDao.prototype.get.mockResolvedValue(simUser);
 
         await expect(TemplateService.getVersion(templateId, version, userId))
-            .rejects.toEqual(new GApiError(403, 'Flight Simmers cannot access version history'));
+            .rejects.toEqual(new GApiError(403, 'Your plan does not allow you to restore old versions'));
     });
 
     it('should return history version if found', async () => {
