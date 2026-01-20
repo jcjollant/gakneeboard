@@ -41,3 +41,18 @@ export const krntDep = [
     { "name": "RENTN THREE", "pdf": "2410/05396RENTN.PDF" },
 ]
 export const krntApd = '2410/05396AD.PDF'
+export const PRINT_CREDIT_SIMMER: number = 4;
+export const MAX_PAGES_SIMMER: number = 2;
+export const MAX_TEMPLATE_SIMMER: number = 1;
+
+export const PRINT_CREDIT_STUDENT: number = 8;
+export const MAX_PAGES_STUDENT: number = 4;
+export const MAX_TEMPLATE_STUDENT: number = 2;
+
+export const PRINT_CREDIT_PRIVATE: number = 16;
+export const MAX_PAGES_PRIVATE: number = 20;
+export const MAX_TEMPLATE_PRIVATE: number = 5;
+
+export const PRINT_CREDIT_BETA: number = -1;
+export const MAX_PAGES_BETA: number = 50;
+export const MAX_TEMPLATE_BETA: number = 10;

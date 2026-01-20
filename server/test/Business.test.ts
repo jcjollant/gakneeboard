@@ -1,8 +1,9 @@
 
 import { describe, expect, jest, it } from '@jest/globals'
-import { AccountType, PLAN_ID_SIM, PLANS } from '@checklist/shared';
+import { AccountType, PLAN_ID_SIM, PLANS, PRINT_CREDIT_SIMMER } from '@checklist/shared';
 import { Business } from '../backend/business/Business';
 import { getMockBrandNewSubscription, getMockSubscriptionDao, getMockUserDao, newTestUser } from './common';
+import { MAX_TEMPLATE_SIMMER, MAX_PAGES_SIMMER, MAX_TEMPLATE_BETA, MAX_PAGES_BETA, PRINT_CREDIT_BETA, MAX_TEMPLATE_STUDENT, MAX_PAGES_STUDENT, PRINT_CREDIT_STUDENT, MAX_PAGES_PRIVATE, PRINT_CREDIT_PRIVATE } from './constants';
 import { Email } from '../backend/Email';
 import { User } from '../backend/models/User';
 import { UsageDao } from '../backend/dao/UsageDao';
@@ -16,6 +17,7 @@ require('dotenv').config();
 
 const expectedPrintCreditSimmer = 4
 const expectedPrintCreditStudent = 8
+const MAX_TEMPLATE_PRIVATE = 5
 
 describe('Business', () => {
 
@@ -311,15 +313,15 @@ describe('Business', () => {
             const mockUserDao = getMockUserDao(user)
             mockEmail.mockReset()
 
-            expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_SIMMER)
-            expect(user.maxPages).toEqual(Business.MAX_PAGES_SIMMER)
+            expect(user.maxTemplates).toEqual(MAX_TEMPLATE_SIMMER)
+            expect(user.maxPages).toEqual(MAX_PAGES_SIMMER)
             expect(user.printCredits).toEqual(expectedPrintCreditSimmer)
 
             await Business.updateAccountType(user, AccountType.beta, 'bd1', mockUserDao)
 
-            expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_BETA)
-            expect(user.maxPages).toEqual(Business.MAX_PAGES_BETA)
-            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_BETA)
+            expect(user.maxTemplates).toEqual(MAX_TEMPLATE_BETA)
+            expect(user.maxPages).toEqual(MAX_PAGES_BETA)
+            expect(user.printCredits).toEqual(PRINT_CREDIT_BETA)
 
             expect(mockUserDao.updateType).toHaveBeenCalledTimes(1);
             expect(Email.send).toHaveBeenCalledTimes(1);
@@ -427,15 +429,15 @@ describe('Business', () => {
             mockEmail.mockReset()
             mockUsage.mockReset()
 
-            expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_SIMMER)
-            expect(user.maxPages).toEqual(Business.MAX_PAGES_SIMMER)
-            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_SIMMER)
+            expect(user.maxTemplates).toEqual(MAX_TEMPLATE_SIMMER)
+            expect(user.maxPages).toEqual(MAX_PAGES_SIMMER)
+            expect(user.printCredits).toEqual(PRINT_CREDIT_SIMMER)
 
             await Business.upgradeUser(user, AccountType.student, 'pp1', mockUserDao)
 
-            expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_STUDENT)
-            expect(user.maxPages).toEqual(Business.MAX_PAGES_STUDENT)
-            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_STUDENT)
+            expect(user.maxTemplates).toEqual(MAX_TEMPLATE_STUDENT)
+            expect(user.maxPages).toEqual(MAX_PAGES_STUDENT)
+            expect(user.printCredits).toEqual(PRINT_CREDIT_STUDENT)
 
             expect(mockUserDao.updateType).toHaveBeenCalledTimes(1);
             expect(mockUserDao.updatePrintCredit).toHaveBeenCalledTimes(1);
@@ -449,15 +451,15 @@ describe('Business', () => {
             mockEmail.mockReset()
             mockUsage.mockReset()
 
-            expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_SIMMER)
-            expect(user.maxPages).toEqual(Business.MAX_PAGES_SIMMER)
-            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_SIMMER)
+            expect(user.maxTemplates).toEqual(MAX_TEMPLATE_SIMMER)
+            expect(user.maxPages).toEqual(MAX_PAGES_SIMMER)
+            expect(user.printCredits).toEqual(PRINT_CREDIT_SIMMER)
 
             await Business.upgradeUser(user, AccountType.private, 'pp2', mockUserDao)
 
-            expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_PRIVATE)
-            expect(user.maxPages).toEqual(Business.MAX_PAGES_PRIVATE)
-            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_PRIVATE)
+            expect(user.maxTemplates).toEqual(MAX_TEMPLATE_PRIVATE)
+            expect(user.maxPages).toEqual(MAX_PAGES_PRIVATE)
+            expect(user.printCredits).toEqual(PRINT_CREDIT_PRIVATE)
 
             expect(mockUserDao.updateType).toHaveBeenCalledTimes(1);
             expect(mockUserDao.updatePrintCredit).toHaveBeenCalledTimes(1);
@@ -471,15 +473,15 @@ describe('Business', () => {
             mockEmail.mockReset()
             mockUsage.mockReset()
 
-            expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_SIMMER)
-            expect(user.maxPages).toEqual(Business.MAX_PAGES_SIMMER)
-            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_SIMMER)
+            expect(user.maxTemplates).toEqual(MAX_TEMPLATE_SIMMER)
+            expect(user.maxPages).toEqual(MAX_PAGES_SIMMER)
+            expect(user.printCredits).toEqual(PRINT_CREDIT_SIMMER)
 
             await Business.upgradeUser(user, AccountType.lifetime, 'ld1', mockUserDao)
 
-            expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_PRIVATE)
-            expect(user.maxPages).toEqual(Business.MAX_PAGES_PRIVATE)
-            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_PRIVATE)
+            expect(user.maxTemplates).toEqual(MAX_TEMPLATE_PRIVATE)
+            expect(user.maxPages).toEqual(MAX_PAGES_PRIVATE)
+            expect(user.printCredits).toEqual(PRINT_CREDIT_PRIVATE)
 
             expect(mockUserDao.updateType).toHaveBeenCalledTimes(1);
             expect(mockUserDao.updatePrintCredit).toHaveBeenCalledTimes(1);

@@ -3,6 +3,7 @@ import { PlanDescription } from "../models/PlanDescription";
 
 export const bestValuePlan: string = 'ld1';
 export const PLAN_ID_SIM = 'sim'
+export const PRINT_CREDIT_SIMMER = 4;
 
 export const PLANS: PlanDescription[] = [
     // Define plans here
@@ -17,7 +18,7 @@ export const PLANS: PlanDescription[] = [
         chargeFrequency: 'never',
         priceEnvironmentVariable: undefined,
         quotas: {
-            prints: 4,
+            prints: PRINT_CREDIT_SIMMER,
             pages: 2,
             templates: 1
         },

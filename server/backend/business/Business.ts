@@ -2,37 +2,19 @@ import { SubscriptionDao } from "../dao/SubscriptionDao";
 import { UsageDao } from "../dao/UsageDao";
 import { UserDao } from "../dao/UserDao";
 import { Email, EmailType } from "../Email";
-import { AccountType, PLAN_ID_SIM, PlanDescription, PLANS, Quotas } from '@checklist/shared';
+import { AccountType, PLAN_ID_SIM, PlanDescription, PLANS, PRINT_CREDIT_SIMMER, Quotas } from '@checklist/shared';
 import { Refill } from "../models/Refill";
 import { User } from "../models/User";
 import { Ticket } from "../Ticket";
 
 export class Business {
-    static PRINT_PER_PURCHASE: number = 10;
-
-    static PRINT_CREDIT_SIMMER: number = 4;
-    static MAX_PAGES_SIMMER: number = 2;
-    static MAX_TEMPLATE_SIMMER: number = 1;
-
-    static PRINT_CREDIT_STUDENT: number = 8;
-    static MAX_PAGES_STUDENT: number = 4;
-    static MAX_TEMPLATE_STUDENT: number = 2;
-
-    static PRINT_CREDIT_PRIVATE: number = 16;
-    static MAX_PAGES_PRIVATE: number = 20;
-    static MAX_TEMPLATE_PRIVATE: number = 5;
-
-    static PRINT_CREDIT_BETA: number = -1;
-    static MAX_PAGES_BETA: number = 50;
-    static MAX_TEMPLATE_BETA: number = 10;
-
     static latestEula: number = 20250821;
 
     public static calculatePrintCredits(user: User): number {
         return Math.max(user.printCredits, Business.getQuotas(user).prints)
     }
 
-    static getQuotas(user: User): Quotas {
+    public static getQuotas(user: User): Quotas {
         const plan = PLANS.find(p => p.id === user.planId)
         if (plan) {
             return plan.quotas
@@ -62,6 +44,19 @@ export class Business {
             default:
                 return 0;
         }
+    }
+
+    /**
+     * Set a user up with the default simmer account
+     * @param user 
+     */
+    static primeUser(user: User) {
+        user.setAccountType(AccountType.simmer)
+        user.setPlanId(PLAN_ID_SIM)
+        const quotas = Business.getQuotas(user)
+        user.printCredits = quotas.prints
+        user.maxTemplates = quotas.templates
+        user.maxPages = quotas.pages
     }
 
     /**
@@ -127,7 +122,7 @@ export class Business {
         // onyl refill on the first day of the month or when forced by parameter
         if (!force && dayOfTheMonth != 1) return []
 
-        const refills = await userDao.refill(this.PRINT_CREDIT_SIMMER, AccountType.simmer)
+        const refills = await userDao.refill(PRINT_CREDIT_SIMMER, AccountType.simmer)
         // create a usage record for each refill
         for (const refill of refills) {
             await UsageDao.refill(refill.userId, refill.previousCount, refill.newCount)

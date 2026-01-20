@@ -25,14 +25,14 @@ export class User {
         this.name = '';
         this.source = '';
         this.email = '';
-        this.maxPages = Business.MAX_PAGES_SIMMER;
-        this.maxTemplates = Business.MAX_TEMPLATE_SIMMER;
-        this.accountType = AccountType.simmer;
+        this.maxPages = 0;
+        this.maxTemplates = 0;
+        this.accountType = AccountType.unknown;
         this.customerId = undefined;
         this.printCredits = 0;
         this.createDate = undefined;
         this.eula = 0;
-        this.planId = PLAN_ID_SIM;
+        this.planId = undefined;
     }
 
 

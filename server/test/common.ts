@@ -10,6 +10,7 @@ import { Business } from '../backend/business/Business'
 import { TemplateDao } from '../backend/TemplateDao'
 import { TemplateView } from '../backend/models/TemplateView'
 import { PageType, Template } from '../backend/models/Template'
+import { MAX_TEMPLATE_SIMMER } from './constants'
 
 
 export function getMockUserDao(user: User): UserDao {
@@ -38,7 +39,7 @@ export function getMockBrandNewSubscription(): Subscription {
     return mockSubscription;
 }
 
-export function getMockTemplateDao(tv: TemplateView, numTemplates: number = Business.MAX_TEMPLATE_SIMMER, numPages: number = 0, prevPages: number = 0): TemplateDao {
+export function getMockTemplateDao(tv: TemplateView, numTemplates: number = MAX_TEMPLATE_SIMMER, numPages: number = 0, prevPages: number = 0): TemplateDao {
     const mockTemplateDao = new TemplateDao() as jest.Mocked<TemplateDao>;
     jest.spyOn(mockTemplateDao, 'createOrUpdate').mockResolvedValue(tv)
     jest.spyOn(mockTemplateDao, 'countForUser').mockResolvedValue(numTemplates)

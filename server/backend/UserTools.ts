@@ -5,6 +5,7 @@ import { TemplateView } from './models/TemplateView';
 import { UserDao } from './dao/UserDao'
 import { Business } from './business/Business';
 import { Email, EmailType } from './Email';
+import { AccountType, PLAN_ID_SIM } from '@checklist/shared';
 
 export class UserTools {
     static apple: string = 'apple'
@@ -31,6 +32,7 @@ export class UserTools {
         }
         if (!user) throw new Error('Invalid User');
 
+        // Block private relay emails
         if (user.email.endsWith('@privaterelay.appleid.com')) {
             throw new Error("Sign in with Apple is not allowed with 'Hide My Email'. Please share your real email address or use another sign in method.");
         }
@@ -41,8 +43,7 @@ export class UserTools {
         if (dbUser) return dbUser;
 
         // new user => creation
-        user.printCredits = Business.calculatePrintCredits(user)
-        user.maxTemplates = Business.maxTemplates(user)
+        Business.primeUser(user)
 
         if (body.attribution) {
             user.setAttribution(body.attribution)

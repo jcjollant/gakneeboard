@@ -5,10 +5,20 @@ import { Business } from '../backend/business/Business';
 import { AccountType, PLAN_ID_SIM } from '@checklist/shared';
 
 describe('New User Defaults', () => {
-    it('should default to sim and have correct quotas', () => {
+    it('should initialize empty and then be primed to sim', () => {
         const user = new User(1, 'some-hash');
 
-        // Verify Account Type and Plan ID
+        // Verify Initial State (Unknown/Empty)
+        expect(user.accountType).toBe(AccountType.unknown);
+        expect(user.planId).toBeUndefined();
+        expect(user.maxPages).toBe(0);
+        expect(user.maxTemplates).toBe(0);
+        expect(user.printCredits).toBe(0);
+
+        // Prime the user
+        Business.primeUser(user);
+
+        // Verify Primed State (Simmer defaults)
         expect(user.accountType).toBe(AccountType.simmer);
         expect(user.planId).toBe(PLAN_ID_SIM);
 
@@ -18,14 +28,12 @@ describe('New User Defaults', () => {
         expect(quotas.pages).toBe(2);
         expect(quotas.templates).toBe(1);
 
-        // Verify User properties (some are set in constructor, some rely on business logic later, 
-        // but typically a new user might expect defaults effectively.
-        // The constructor sets maxPages/maxTemplates to static Business constants which are Simmer defaults)
+        // Verify User properties set by primeUser
         expect(user.maxPages).toBe(2);
         expect(user.maxTemplates).toBe(1);
+        expect(user.printCredits).toBe(4);
 
-        // Note: constructor initializes printCredits to 0. Business.calculatePrintCredits handles the refill logic.
-        // So checking user.printCredits might be 0, but Business.calculatePrintCredits(user) should be 4.
+        // Double check business calculation
         const effectiveCredits = Business.calculatePrintCredits(user);
         expect(effectiveCredits).toBe(4);
     });

@@ -1,7 +1,7 @@
 
 import { afterAll, beforeAll, describe, expect, it, xdescribe } from '@jest/globals';
 import { UserDao } from '../../backend/dao/UserDao'
-import { jcUserId, jcHash, jcEmail, jcName, jcSource, jcCustomerId } from '../constants';
+import { jcUserId, jcHash, jcEmail, jcName, jcSource, jcCustomerId, MAX_TEMPLATE_SIMMER, MAX_PAGES_SIMMER, MAX_TEMPLATE_BETA, MAX_PAGES_BETA } from '../constants';
 import { AccountType } from '@checklist/shared';
 import { User } from '../../backend/models/User';
 import { newTestUser } from '../common'
@@ -175,22 +175,22 @@ xdescribe('UserDao', () => {
     it('updateType', async () => {
         const existingUser: User = new User(jcUserId, jcHash)
         existingUser.accountType = AccountType.simmer
-        existingUser.maxTemplates = Business.MAX_TEMPLATE_SIMMER
-        existingUser.maxPages = Business.MAX_PAGES_SIMMER
+        existingUser.maxTemplates = MAX_TEMPLATE_SIMMER
+        existingUser.maxPages = MAX_PAGES_SIMMER
         await userDao.updateType(existingUser)
         const readUser = await userDao.get(jcUserId)
         expect(readUser.id).toBe(jcUserId)
-        expect(readUser.maxTemplates).toBe(Business.MAX_TEMPLATE_SIMMER)
-        expect(readUser.maxPages).toBe(Business.MAX_PAGES_SIMMER)
+        expect(readUser.maxTemplates).toBe(MAX_TEMPLATE_SIMMER)
+        expect(readUser.maxPages).toBe(MAX_PAGES_SIMMER)
 
         // Switch this user to Beta and check wether values are saved
         existingUser.accountType = AccountType.beta
-        existingUser.maxTemplates = Business.MAX_TEMPLATE_BETA
-        existingUser.maxPages = Business.MAX_PAGES_BETA
+        existingUser.maxTemplates = MAX_TEMPLATE_BETA
+        existingUser.maxPages = MAX_PAGES_BETA
         await userDao.updateType(existingUser)
         const readUser2 = await userDao.get(jcUserId)
-        expect(readUser2.maxTemplates).toBe(Business.MAX_TEMPLATE_BETA)
-        expect(readUser2.maxPages).toBe(Business.MAX_PAGES_BETA)
+        expect(readUser2.maxTemplates).toBe(MAX_TEMPLATE_BETA)
+        expect(readUser2.maxPages).toBe(MAX_PAGES_BETA)
     })
 });
 

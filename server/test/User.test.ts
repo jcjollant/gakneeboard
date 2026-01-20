@@ -1,11 +1,10 @@
 import { describe, expect, test, it, jest, beforeAll, afterAll } from '@jest/globals';
 import { User } from '../backend/models/User'
 import { UserTools } from '../backend/UserTools'
-import { jcSource } from './constants'
+import { jcSource, MAX_PAGES_SIMMER, MAX_TEMPLATE_SIMMER } from './constants'
 import { jcHash, jcUserId, jcToken, jcName, jcEmail } from './constants'
 import { UserMiniView } from '../backend/models/UserMiniView';
-import { AccountType } from '@checklist/shared';
-import { Business } from '../backend/business/Business';
+import { AccountType, PRINT_CREDIT_SIMMER } from '@checklist/shared';
 import { UserDao } from '../backend/dao/UserDao';
 import { Email } from '../backend/Email';
 
@@ -29,9 +28,11 @@ describe('User', () => {
         expect(u.source).toBe('')
         expect(u.email).toBe('')
         expect(u.name).toBe('')
-        expect(u.maxTemplates).toBe(Business.MAX_TEMPLATE_SIMMER)
-        expect(u.accountType).toBe(AccountType.simmer)
+        expect(u.accountType).toBe(AccountType.unknown)
+        expect(u.maxTemplates).toBe(0)
         expect(u.printCredits).toBe(0)
+        expect(u.maxPages).toBe(0)
+        expect(u.planId).toBeUndefined()
     })
 
     test('setters', () => {
@@ -72,7 +73,7 @@ describe('UserTool', () => {
         const user = await UserTools.authenticate(body, mockUserDao)
 
         // should have default credit for simmer
-        expect(user.printCredits).toBe(Business.PRINT_CREDIT_SIMMER)
+        expect(user.printCredits).toBe(PRINT_CREDIT_SIMMER)
     })
     it('new user creation give credit and max templates', async () => {
         const testUser = brandNewUser()
@@ -83,9 +84,9 @@ describe('UserTool', () => {
         jest.spyOn(mockUserDao, 'save').mockImplementation(u => new Promise(res => res(u)))
 
         const newUser = await UserTools.authenticate(body, mockUserDao)
-        expect(newUser.printCredits).toBe(Business.PRINT_CREDIT_SIMMER)
-        expect(newUser.maxTemplates).toBe(Business.MAX_TEMPLATE_SIMMER)
-        expect(newUser.maxPages).toBe(Business.MAX_PAGES_SIMMER)
+        expect(newUser.printCredits).toBe(PRINT_CREDIT_SIMMER)
+        expect(newUser.maxTemplates).toBe(MAX_TEMPLATE_SIMMER)
+        expect(newUser.maxPages).toBe(MAX_PAGES_SIMMER)
 
         // Cannot check savedUser via dao since we mocked it and didn't implement back store.
         // We can verify mock call if needed, but the original test checked logic on returned object from dao.
