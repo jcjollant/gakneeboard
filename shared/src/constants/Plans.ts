@@ -91,12 +91,32 @@ export const PLANS: PlanDescription[] = [
         id: 'ld1',
         displayName: 'Lifetime Deal',
         subtitles: ['Pay once, use forever', 'Grab it while it lasts!'],
-        active: true,
-        show: true,
+        active: false,
+        show: false,
         displayPrice: '$59',
         accountType: AccountType.lifetime,
         chargeFrequency: 'onetime',
         priceEnvironmentVariable: 'STRIPE_LD1_PRICE',
+        quotas: {
+            prints: 16,
+            pages: 20,
+            templates: 5
+        },
+        features: {
+            advancedPrinting: true,
+            restoreOldVersion: false
+        }
+    },
+    {
+        id: 'ld2',
+        displayName: 'Lifetime Deal',
+        subtitles: ['Pay once, use forever', 'Grab it while it lasts!'],
+        active: true,
+        show: true,
+        displayPrice: '$69',
+        accountType: AccountType.lifetime,
+        chargeFrequency: 'onetime',
+        priceEnvironmentVariable: 'STRIPE_LD2_PRICE',
         quotas: {
             prints: 16,
             pages: 20,
