@@ -16,10 +16,16 @@
                 <InputText v-model="templateVersion" :disabled="true"  class="templateVersion"/>
             </InputGroup>
             <div class="previous-versions">
-                <Button v-for="ver in previousVersions" :key="ver" 
-                  :label="String(ver)" size="small" outlined 
-                  :title="'Recall version ' + ver"
-                  @click="onRecall(ver)"/>
+                <Button v-if="isOlderVersion" 
+                  label="Show Latest Version" size="small" outlined style="width: 11rem;" 
+                  title="Return to the latest version"
+                  @click="onShowLatest()"/>
+                <template v-else>
+                  <Button v-for="ver in previousVersions" :key="ver" 
+                    :label="String(ver)" size="small" outlined 
+                    :title="'Recall version ' + ver"
+                    @click="onRecall(ver)"/>
+                </template>
             </div>
         </div>
         <TemplateSharing v-model="publish" :template="template" />
@@ -37,6 +43,7 @@
 <script setup>
 import { ref, onMounted, watch, computed } from "vue";
 import { TemplateSettings } from "./TemplateSettings";
+import { LocalStoreService } from "../../services/LocalStoreService";
 import { useConfirm } from "primevue/useconfirm";
 
 import Button from "primevue/button";
@@ -56,7 +63,7 @@ const templateId = ref(0)
 const templateVersion = ref(0)
 const template = ref(null)
 
-//-----------------
+
 // Props management
 const props = defineProps({ 
   template: { type: Object, default: null},
@@ -74,8 +81,21 @@ function loadProps(props) {
     templateId.value = props.template.id
     templateVersion.value = props.template.ver
     publish.value = props.template.publish
+
+    // Check against local storage for latest version
+    const cachedTemplate = LocalStoreService.getTemplateById(props.template.id)
+    if (cachedTemplate && cachedTemplate.ver > props.template.ver) {
+      cachedVersion.value = cachedTemplate.ver
+    } else {
+      cachedVersion.value = 0
+    }
   } 
 }
+
+const cachedVersion = ref(0)
+const isOlderVersion = computed(() => {
+  return cachedVersion.value > templateVersion.value
+})
 
 const previousVersions = computed(() => {
   const versions = []
@@ -109,6 +129,10 @@ function onRecall(ver) {
       emits('recall', {id: templateId.value, ver: ver})
     }
   });
+}
+
+function onShowLatest() {
+    emits('recall', {id: templateId.value, ver: cachedVersion.value})
 }
 
 function onButtonSave () {

@@ -602,7 +602,7 @@ function onRecallVersion({id, ver}: {id:number, ver:number}) {
   toaster.info('Recalling', 'Loading version ' + ver + '...');
   TemplateService.get(id, ver).then( template => {
     if(template.id) {
-      loadTemplate(template, true);
+      loadTemplate(template, false);
       toaster.success('Recalled', 'Version ' + ver + ' loaded successfully');
     } else {
       toaster.error('Recall Failed', 'Could not load version ' + ver);
