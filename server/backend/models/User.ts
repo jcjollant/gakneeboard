@@ -1,5 +1,5 @@
 import { createHash } from 'crypto'
-import { AccountType } from '@checklist/shared';
+import { AccountType, PLAN_ID_SIM } from '@checklist/shared';
 import { Business } from '../business/Business';
 import { AttributionData } from './AttributionData';
 
@@ -32,7 +32,7 @@ export class User {
         this.printCredits = 0;
         this.createDate = undefined;
         this.eula = 0;
-        this.planId = undefined;
+        this.planId = PLAN_ID_SIM;
     }
 
 

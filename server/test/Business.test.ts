@@ -1,6 +1,6 @@
 
 import { describe, expect, jest, it } from '@jest/globals'
-import { AccountType } from '@checklist/shared';
+import { AccountType, PLAN_ID_SIM, PLANS } from '@checklist/shared';
 import { Business } from '../backend/business/Business';
 import { getMockBrandNewSubscription, getMockSubscriptionDao, getMockUserDao, newTestUser } from './common';
 import { Email } from '../backend/Email';
@@ -14,6 +14,8 @@ jest.mock('../backend/Email');
 
 require('dotenv').config();
 
+const expectedPrintCreditSimmer = 4
+const expectedPrintCreditStudent = 8
 
 describe('Business', () => {
 
@@ -27,36 +29,31 @@ describe('Business', () => {
 
     describe('calculatePrintCredits', () => {
         it('should return correct credits for simmer account', () => {
-            const expectedRefill = 4
-            const newUser = newTestUser()
-            newUser.setAccountType(AccountType.simmer);
+            const newUser = newTestUser(0, AccountType.simmer, PLAN_ID_SIM)
             newUser.printCredits = 0; // no credits
             const c0 = Business['calculatePrintCredits'](newUser);
-            expect(c0).toBe(expectedRefill);
+            expect(c0).toBe(expectedPrintCreditSimmer);
             newUser.printCredits = 2; // existing credits
             const c1 = Business['calculatePrintCredits'](newUser);
-            expect(c1).toBe(expectedRefill);
+            expect(c1).toBe(expectedPrintCreditSimmer);
             newUser.printCredits = 6; // existing credits higher than refill
             const c2 = Business['calculatePrintCredits'](newUser);
             expect(c2).toBe(6); // should not loose credits
             newUser.printCredits = -1; // weird credits
             const c3 = Business['calculatePrintCredits'](newUser);
-            expect(c3).toBe(expectedRefill);
+            expect(c3).toBe(expectedPrintCreditSimmer);
         });
 
         it('should return correct credits for student account', () => {
-            const expectedRefill = Business.PRINT_CREDIT_STUDENT
-            const newUser = newTestUser()
-            newUser.setAccountType(AccountType.student);
+            const newUser = newTestUser(0, AccountType.student, 'pp1')
             newUser.printCredits = 0; // no credits
             const c1 = Business['calculatePrintCredits'](newUser);
-            expect(c1).toBe(expectedRefill);
+            expect(c1).toBe(expectedPrintCreditStudent);
         });
 
-        it('should return correct credits for student account', () => {
-            const expectedRefill = Business.PRINT_CREDIT_STUDENT
-            const newUser = newTestUser()
-            newUser.setAccountType(AccountType.student);
+        it('should return correct credits for private account', () => {
+            const expectedRefill = 16
+            const newUser = newTestUser(0, AccountType.private, 'pp2')
             newUser.printCredits = 0; // no credits
             const c1 = Business['calculatePrintCredits'](newUser);
             expect(c1).toBe(expectedRefill);
@@ -68,6 +65,7 @@ describe('Business', () => {
 
         it('should return simmer account quotas', () => {
             user.accountType = AccountType.simmer
+            user.planId = PLAN_ID_SIM
             const quotas = Business.getQuotas(user);
             expect(quotas.pages).toBe(2);
             expect(quotas.prints).toBe(4);
@@ -76,6 +74,7 @@ describe('Business', () => {
 
         it('should return student account quotas', () => {
             user.accountType = AccountType.student
+            user.planId = 'pp1'
             const quotas = Business.getQuotas(user);
             expect(quotas.pages).toBe(4);
             expect(quotas.prints).toBe(8);
@@ -84,6 +83,7 @@ describe('Business', () => {
 
         it('should return private account quotas', () => {
             user.accountType = AccountType.private
+            user.planId = 'pp2'
             const quotas = Business.getQuotas(user);
             expect(quotas.pages).toBe(20);
             expect(quotas.prints).toBe(16);
@@ -92,6 +92,7 @@ describe('Business', () => {
 
         it('should return lifetime deal account quotas', () => {
             user.accountType = AccountType.lifetime
+            user.planId = 'ld1'
             const quotas = Business.getQuotas(user);
             expect(quotas.pages).toBe(20);
             expect(quotas.prints).toBe(16);
@@ -100,6 +101,7 @@ describe('Business', () => {
 
         it('should return beta account quotas', () => {
             user.accountType = AccountType.beta
+            user.planId = 'bd1'
             const quotas = Business.getQuotas(user);
             expect(quotas.pages).toBe(50);
             expect(quotas.prints).toBe(-1);
@@ -109,55 +111,44 @@ describe('Business', () => {
 
     describe('printConsume', () => {
 
+        const meteredAccounts = [{ type: AccountType.simmer, planId: PLAN_ID_SIM }, { type: AccountType.student, planId: 'pp1' }, { type: AccountType.private, planId: 'pp2' }, { type: AccountType.lifetime, planId: 'ld1' }]
 
-        it('should decrease print credits for simmer account', async () => {
-            const initialPrintCredit = 3
-            const newUser = newTestUser();
-            const mockUserDao = getMockUserDao(newUser);
+        it('should decrease print credits for all metered account types', async () => {
+            for (const account of meteredAccounts) {
+                const initialPrintCredit = 3
+                const newUser = newTestUser(0, account.type, account.planId)
+                const mockUserDao = getMockUserDao(newUser);
 
-            newUser.accountType = AccountType.simmer;
-            newUser.printCredits = initialPrintCredit;
+                newUser.printCredits = initialPrintCredit;
 
-            const success = await Business.printConsume(newUser, mockUserDao);
+                const success = await Business.printConsume(newUser, mockUserDao);
 
-            expect(success).toBe(true);
-            expect(newUser.printCredits).toBe(initialPrintCredit - 1);
-            expect(mockUserDao.updatePrintCredit).toHaveBeenCalledWith(newUser);
+                expect(success).toBe(true);
+                expect(newUser.printCredits).toBe(initialPrintCredit - 1);
+                expect(mockUserDao.updatePrintCredit).toHaveBeenCalledWith(newUser);
+            }
         });
 
-        it('should fail simmer account without credit', async () => {
-            const initialPrintCredit = 0
-            const newUser = newTestUser();
-            const mockUserDao = getMockUserDao(newUser);
-            newUser.accountType = AccountType.simmer;
-            newUser.printCredits = initialPrintCredit;
+        it('should fail metered accounts without credit', async () => {
+            for (const account of meteredAccounts) {
+                const initialPrintCredit = 0
+                const newUser = newTestUser(0, account.type, account.planId);
+                const mockUserDao = getMockUserDao(newUser);
+                newUser.printCredits = initialPrintCredit;
 
-            const success = await Business.printConsume(newUser, mockUserDao);
+                const success = await Business.printConsume(newUser, mockUserDao);
 
-            expect(success).toBe(false);
-            expect(newUser.printCredits).toBe(initialPrintCredit);
-            expect(mockUserDao.updatePrintCredit).not.toHaveBeenCalled();
+                expect(success).toBe(false);
+                expect(newUser.printCredits).toBe(initialPrintCredit);
+                expect(mockUserDao.updatePrintCredit).not.toHaveBeenCalled();
+            }
         });
 
-        it('should decrease print credits for simmer account', async () => {
-            const initialPrintCredit = 1
-            const newUser = newTestUser();
-            const mockUserDao = getMockUserDao(newUser);
-            newUser.accountType = AccountType.simmer;
-            newUser.printCredits = initialPrintCredit;
-
-            const success = await Business.printConsume(newUser, mockUserDao);
-
-            expect(success).toBe(true);
-            expect(newUser.printCredits).toBe(initialPrintCredit - 1);
-            expect(mockUserDao.updatePrintCredit).toHaveBeenCalledWith(newUser);
-        });
-
+        // beta accounts
         it('should not decrease credits for beta account', async () => {
             const initialPrintCredit = 3;
-            const newUser = newTestUser();
+            const newUser = newTestUser(0, AccountType.beta, 'bd1');
             const mockUserDao = getMockUserDao(newUser);
-            newUser.accountType = AccountType.beta;
             newUser.printCredits = initialPrintCredit;
 
             const success = await Business.printConsume(newUser, mockUserDao);
@@ -169,23 +160,8 @@ describe('Business', () => {
 
         it('should succeed beta account without credit', async () => {
             const initialPrintCredit = 0
-            const newUser = newTestUser();
+            const newUser = newTestUser(0, AccountType.beta, 'bd1');
             const mockUserDao = getMockUserDao(newUser);
-            newUser.accountType = AccountType.beta;
-            newUser.printCredits = initialPrintCredit;
-
-            const success = await Business.printConsume(newUser, mockUserDao);
-
-            expect(success).toBe(true);
-            expect(newUser.printCredits).toBe(initialPrintCredit);
-            expect(mockUserDao.updatePrintCredit).not.toHaveBeenCalled();
-        });
-
-        it('should succeed beta account without using existing credit', async () => {
-            const initialPrintCredit = 5
-            const newUser = newTestUser();
-            const mockUserDao = getMockUserDao(newUser);
-            newUser.accountType = AccountType.beta;
             newUser.printCredits = initialPrintCredit;
 
             const success = await Business.printConsume(newUser, mockUserDao);
@@ -248,7 +224,7 @@ describe('Business', () => {
                 'sub-id',
                 'customer-id',
                 'price-id',
-                AccountType.unknown,
+                { accountType: AccountType.unknown } as any,
                 123456,
                 null,
                 null,
@@ -267,7 +243,7 @@ describe('Business', () => {
                 testSubsciption.id,
                 testSubsciption.customerId,
                 testSubsciption.priceId,
-                AccountType.private,
+                PLANS.find(p => p.accountType === AccountType.private)!,
                 123456,
                 null,
                 null,
@@ -286,7 +262,7 @@ describe('Business', () => {
                 testSubsciption.id,
                 testSubsciption.customerId,
                 testSubsciption.priceId,
-                AccountType.beta,
+                PLANS.find(p => p.accountType === AccountType.beta)!,
                 123456,
                 null,
                 null,
@@ -337,9 +313,9 @@ describe('Business', () => {
 
             expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_SIMMER)
             expect(user.maxPages).toEqual(Business.MAX_PAGES_SIMMER)
-            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_SIMMER)
+            expect(user.printCredits).toEqual(expectedPrintCreditSimmer)
 
-            await Business.updateAccountType(user, AccountType.beta, mockUserDao)
+            await Business.updateAccountType(user, AccountType.beta, 'bd1', mockUserDao)
 
             expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_BETA)
             expect(user.maxPages).toEqual(Business.MAX_PAGES_BETA)
@@ -350,24 +326,24 @@ describe('Business', () => {
         })
 
         it('should refill print credit for student pilots', async () => {
-            const user = newTestUser(0, AccountType.simmer)
+            const user = newTestUser(0, AccountType.simmer, PLAN_ID_SIM)
             const mockUserDao = getMockUserDao(user)
 
-            await Business.updateAccountType(user, AccountType.student, mockUserDao)
-            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_STUDENT)
+            await Business.updateAccountType(user, AccountType.student, 'pp1', mockUserDao)
+            expect(user.printCredits).toEqual(expectedPrintCreditStudent)
 
             // use a few prints
             user.printCredits -= 2
-            await Business.updateAccountType(user, AccountType.student, mockUserDao)
-            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_STUDENT)
+            await Business.updateAccountType(user, AccountType.student, 'pp1', mockUserDao)
+            expect(user.printCredits).toEqual(expectedPrintCreditStudent)
 
             // one month without usage
-            await Business.updateAccountType(user, AccountType.student, mockUserDao)
-            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_STUDENT)
+            await Business.updateAccountType(user, AccountType.student, 'pp1', mockUserDao)
+            expect(user.printCredits).toEqual(expectedPrintCreditStudent)
 
             // then downgrades to sim
-            await Business.updateAccountType(user, AccountType.simmer, mockUserDao)
-            expect(user.printCredits).toEqual(Business.PRINT_CREDIT_SIMMER)
+            await Business.updateAccountType(user, AccountType.simmer, 'sim', mockUserDao)
+            expect(user.printCredits).toEqual(expectedPrintCreditSimmer)
         })
 
     })
@@ -455,7 +431,7 @@ describe('Business', () => {
             expect(user.maxPages).toEqual(Business.MAX_PAGES_SIMMER)
             expect(user.printCredits).toEqual(Business.PRINT_CREDIT_SIMMER)
 
-            await Business.upgradeUser(user, AccountType.student, mockUserDao)
+            await Business.upgradeUser(user, AccountType.student, 'pp1', mockUserDao)
 
             expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_STUDENT)
             expect(user.maxPages).toEqual(Business.MAX_PAGES_STUDENT)
@@ -477,7 +453,7 @@ describe('Business', () => {
             expect(user.maxPages).toEqual(Business.MAX_PAGES_SIMMER)
             expect(user.printCredits).toEqual(Business.PRINT_CREDIT_SIMMER)
 
-            await Business.upgradeUser(user, AccountType.private, mockUserDao)
+            await Business.upgradeUser(user, AccountType.private, 'pp2', mockUserDao)
 
             expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_PRIVATE)
             expect(user.maxPages).toEqual(Business.MAX_PAGES_PRIVATE)
@@ -499,7 +475,7 @@ describe('Business', () => {
             expect(user.maxPages).toEqual(Business.MAX_PAGES_SIMMER)
             expect(user.printCredits).toEqual(Business.PRINT_CREDIT_SIMMER)
 
-            await Business.upgradeUser(user, AccountType.lifetime, mockUserDao)
+            await Business.upgradeUser(user, AccountType.lifetime, 'ld1', mockUserDao)
 
             expect(user.maxTemplates).toEqual(Business.MAX_TEMPLATE_PRIVATE)
             expect(user.maxPages).toEqual(Business.MAX_PAGES_PRIVATE)

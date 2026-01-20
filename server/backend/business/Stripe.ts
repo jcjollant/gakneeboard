@@ -150,9 +150,9 @@ export class StripeClient {
                         await Business.subscriptionStop(subscriptionId, customerId, userDao, cancelAt, endedAt)
                     } else {
                         const subscriptionDao = new SubscriptionDao()
-                        const accountType = this.accountTypeFromPrice(priceId)
-                        const planId = this.planIdFromPrice(priceId)
-                        await Business.subscriptionUpdate(subscriptionId, customerId, priceId, accountType, periodEnd, cancelAt, endedAt, userDao, subscriptionDao, planId)
+                        const plan = PLANS.find((p) => process.env[p.priceEnvironmentVariable] === priceId);
+                        if (!plan) throw new Error('Plan not found for price ' + priceId)
+                        await Business.subscriptionUpdate(subscriptionId, customerId, priceId, plan, periodEnd, cancelAt, endedAt, userDao, subscriptionDao)
                     }
                     // save event for future reference
                     await sql`INSERT INTO stripe_events (type, stripe_id, data) VALUES (${event.type}, ${subscriptionId}, ${JSON.stringify(event.data.object)})`
@@ -173,7 +173,7 @@ export class StripeClient {
                             if (accountType == AccountType.lifetime) {
                                 const userDao = new UserDao()
                                 const user = await userDao.getFromCustomerId(customerId)
-                                await Business.upgradeUser(user, AccountType.lifetime, userDao, 'ld1');
+                                await Business.upgradeUser(user, AccountType.lifetime, 'ld1', userDao);
                             }
                         })
                     }
@@ -189,15 +189,6 @@ export class StripeClient {
     }
 
     accountTypeFromPrice(priceId: string): AccountType {
-        // switch (priceId) {
-        //     case bd1Price: return AccountType.beta;
-        //     case pp1Price: return AccountType.student;
-        //     case pp2Price: return AccountType.private;
-        //     case ff1Price: return AccountType.simmer;
-        //     case ld1Price: return AccountType.lifetime;
-        //     default: return AccountType.unknown;
-        // }
-
         const plan = PLANS.find((p) => process.env[p.priceEnvironmentVariable] === priceId);
         return plan?.accountType || AccountType.unknown;
     }
