@@ -6,6 +6,7 @@ import { AccountType, PLAN_ID_SIM, PlanDescription, PLANS, PRINT_CREDIT_SIMMER, 
 import { Refill } from "../models/Refill";
 import { User } from "../models/User";
 import { Ticket } from "../Ticket";
+import { PlanService } from "../services/PlanService";
 
 export class Business {
     static latestEula: number = 20250821;
@@ -15,11 +16,8 @@ export class Business {
     }
 
     public static getQuotas(user: User): Quotas {
-        const plan = PLANS.find(p => p.id === user.planId)
-        if (plan) {
-            return plan.quotas
-        }
-        return { prints: 0, pages: 0, templates: 0 }
+        const plan = PlanService.getPlan(user.planId)
+        return plan?.quotas || { prints: 0, pages: 0, templates: 0 }
     }
 
     static isActiveCustomer(user: User): boolean {

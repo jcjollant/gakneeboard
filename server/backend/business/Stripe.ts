@@ -9,6 +9,7 @@ import { AttributionData } from '../models/AttributionData'
 import { sql } from '@vercel/postgres'
 import { Ticket } from '../Ticket'
 import { Request } from "express"
+import { PlanService } from '../services/PlanService';
 
 const planUrl = '/plans'
 const pp1Price = process.env.STRIPE_PP1_PRICE;
@@ -150,7 +151,7 @@ export class StripeClient {
                         await Business.subscriptionStop(subscriptionId, customerId, userDao, cancelAt, endedAt)
                     } else {
                         const subscriptionDao = new SubscriptionDao()
-                        const plan = PLANS.find((p) => process.env[p.priceEnvironmentVariable] === priceId);
+                        const plan = PlanService.getPlanByPriceId(priceId);
                         if (!plan) throw new Error('Plan not found for price ' + priceId)
                         await Business.subscriptionUpdate(subscriptionId, customerId, priceId, plan, periodEnd, cancelAt, endedAt, userDao, subscriptionDao)
                     }
@@ -189,19 +190,19 @@ export class StripeClient {
     }
 
     accountTypeFromPrice(priceId: string): AccountType {
-        const plan = PLANS.find((p) => process.env[p.priceEnvironmentVariable] === priceId);
+        const plan = PlanService.getPlanByPriceId(priceId);
         return plan?.accountType || AccountType.unknown;
     }
 
     planIdFromPrice(priceId: string): string | undefined {
-        const plan = PLANS.find((p) => process.env[p.priceEnvironmentVariable] === priceId);
+        const plan = PlanService.getPlanByPriceId(priceId);
         return plan?.id
     }
 
     priceFromProduct(product: string): Price {
         // console.log('[Stripe.priceIdFromProduct]', product)
         // find this plan id in PLANS
-        const plan = PLANS.find((p) => p.id === product);
+        const plan = PlanService.getPlan(product);
         if (!plan) throw new Error('Product not found : ' + product);
         return new Price(plan);
     }

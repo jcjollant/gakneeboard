@@ -7,6 +7,7 @@ import { MAX_TEMPLATE_SIMMER, MAX_PAGES_SIMMER, MAX_TEMPLATE_BETA, MAX_PAGES_BET
 import { Email } from '../backend/Email';
 import { User } from '../backend/models/User';
 import { UsageDao } from '../backend/dao/UsageDao';
+import { PlanService } from '../backend/services/PlanService';
 
 // Mock the dependencies
 jest.mock('../backend/dao/UserDao');
@@ -245,7 +246,7 @@ describe('Business', () => {
                 testSubsciption.id,
                 testSubsciption.customerId,
                 testSubsciption.priceId,
-                PLANS.find(p => p.accountType === AccountType.private)!,
+                PlanService.getPlan('pp2')!,
                 123456,
                 null,
                 null,
@@ -264,7 +265,7 @@ describe('Business', () => {
                 testSubsciption.id,
                 testSubsciption.customerId,
                 testSubsciption.priceId,
-                PLANS.find(p => p.accountType === AccountType.beta)!,
+                PlanService.getPlan('bd1')!,
                 123456,
                 null,
                 null,
