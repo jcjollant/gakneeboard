@@ -13,6 +13,7 @@ import { TemplateHistoryDao } from "../dao/TemplateHistoryDao"
 import { TemplateFormat } from "../models/TemplateFormat"
 import { put } from "@vercel/blob"
 import { UserTools } from "../UserTools"
+import { PlanService } from "./PlanService";
 
 
 export class TemplateStatus {
@@ -82,9 +83,10 @@ export class TemplateService {
         const user = await userDao.get(requester)
         if (!user) throw new GApiError(401, 'Unauthorized')
 
-        // Flight Simmers cannot access version history
-        if (user.accountType == AccountType.simmer) {
-            throw new GApiError(403, "Flight Simmers cannot access version history")
+        // Is this feature allowed for this user?
+        const plan = PlanService.getPlan(user.planId)
+        if (plan?.features.restoreOldVersion === false) {
+            throw new GApiError(403, "Your plan does not allow you to restore old versions")
         }
 
         // Try to get from history
