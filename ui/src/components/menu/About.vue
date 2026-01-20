@@ -12,7 +12,7 @@
             <div class="buttonDesc">{{ guide.subtitle }}</div>
           </div>
         </div>
-        <div class="justify"><strong>Thanks</strong> to Ash, Jason, Steve and Stewart whom have contributed feedback since Day 1</div>
+        <div class="justify"><strong>Thanks</strong> to Ash, Jason, Nando, Steve, Stewart and Trenton for their repeated feedback</div>
       </div>
       <div v-else-if="activeTopic.value==topicGuide.value" class="mb-5">
         <div class="mb-2 justify"><strong>You can help</strong> in many ways : 
@@ -106,6 +106,7 @@ async function acceptEula() {
 }
 
 .bottom {
+  margin-top: 1rem;
   grid-column: 1 / span 2;
 }
 
