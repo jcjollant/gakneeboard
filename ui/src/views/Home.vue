@@ -61,7 +61,7 @@ import { onMounted, onUnmounted, ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { currentUser, routeToLocalTemplate } from '../assets/data';
 import { getTemplateBlank, SheetName, ThumbnailImage } from '../assets/sheetData';
-import { TemplateData } from '../assets/TemplateData';
+import { TemplateService } from '../services/TemplateService';
 import { ChecklistService } from '../services/ChecklistService';
 import { useToaster } from '../assets/Toaster';
 import { UserUrl } from '../lib/UserUrl';
@@ -186,7 +186,7 @@ function onChecklistSelection(checklist: LibraryChecklist) {
 function onPohSelection(poh:Poh) {
     const code = poh.code
     toaster.info('Loading Checklist',poh.template.name)
-    TemplateData.getPublication(code).then( (templateData: any) => {
+    TemplateService.getPublication(code).then( (templateData: any) => {
         // console.log('[Home.onPohSelection] publication found ', template)
         toast.removeAllGroups()
         if(templateData) {

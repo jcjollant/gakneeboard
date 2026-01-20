@@ -1,8 +1,8 @@
 import axios from 'axios'
-import { contentTypeJson, currentUser, reportError } from './data.js'
-import { isDefaultName } from './sheetData.js'
-import { UrlService } from '../services/UrlService'
-import { PageType } from './PageType.js'
+import { contentTypeJson, currentUser, reportError } from '../assets/data.js'
+import { isDefaultName } from '../assets/sheetData.js'
+import { UrlService } from './UrlService'
+import { PageType } from '../assets/PageType.js'
 import { Template } from '../models/Template.js'
 
 export class ExportOutput {
@@ -23,7 +23,7 @@ export class TemplateStatus {
     }
 }
 
-export class TemplateData {
+export class TemplateService {
     /**
      * Delete custom sheet
      * @param {*} template 

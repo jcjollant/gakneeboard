@@ -74,7 +74,7 @@ import { TemplateFormat } from '../models/TemplateFormat.ts'
 import { PageType } from '../assets/PageType.ts'
 import { RouterNames } from '../router/index.js'
 import { Template, TemplatePage } from '../models/Template'
-import { TemplateData } from '../assets/TemplateData.ts'
+import { TemplateService } from '../services/TemplateService'
 import { TemplateSettings } from '../components/templates/TemplateSettings.ts'
 import { readPageFromClipboard, readTileFromClipboard } from '../assets/sheetData'
 import { useConfirm } from 'primevue/useconfirm'
@@ -134,7 +134,7 @@ onMounted(() =>{
           emits('template', localTemplate)
       } else {
         // console.debug('[TemplateViewer.onMounted] loading from backend', templateId)
-        TemplateData.get(templateId).then( template => {
+        TemplateService.get(templateId).then( template => {
           if(template.id) {
             loadTemplate(template, true)
             // Save to local cache
@@ -208,7 +208,7 @@ function doSave() {
   try {
       // retrieve data from active template
       toaster.info( 'Say Request', 'Saving template ' + activeTemplate.value.name, 4000)
-      TemplateData.save(activeTemplate.value).then(ts => {
+      TemplateService.save(activeTemplate.value).then(ts => {
         // console.debug('[TemplateViewer.doSave]', activeTemplate.value.id, JSON.stringify(t))
         const t = ts.template
         let message = 'Template "' + t.name + '" saved with version ' + t.ver;
@@ -256,7 +256,7 @@ function loadTemplate(template:Template,saveToLocalStorage:boolean=false) {
   }
 
   // make sure data is at the latest format
-  const data = TemplateData.normalize(template.data)
+  const data = TemplateService.normalize(template.data)
 
   // we are on the first page and last page is calculated based on number of pages
   offset.value = 0
@@ -326,7 +326,7 @@ function onDelete() {
       acceptLabel: "Yes, Delete",
       accept: async () => {
         toaster.info( 'Calling Tower', 'Requesting deletion of ' + name)
-        await TemplateData.delete(activeTemplate.value).then( () => {
+        await TemplateService.delete(activeTemplate.value).then( () => {
           // go back to home page
           router.push('/')
           // and give visual feedback
@@ -487,7 +487,7 @@ function onExport() {
 function onExported(format:any) {
   showExport.value = false;
   toaster.info( 'Exporting', activeTemplate.value.name)
-  TemplateData.export(activeTemplate.value, format).then( eo => {
+  TemplateService.export(activeTemplate.value, format).then( eo => {
     // create file link in browser's memory
     // console.log('[TemplateViewer.onExported] blob', eo.blob.size)
     const link = document.createElement('a')
@@ -600,7 +600,7 @@ function onNewSettings(settings:TemplateSettings) {
 function onRecallVersion({id, ver}: {id:number, ver:number}) {
   showSettings.value = false;
   toaster.info('Recalling', 'Loading version ' + ver + '...');
-  TemplateData.get(id, ver).then( template => {
+  TemplateService.get(id, ver).then( template => {
     if(template.id) {
       loadTemplate(template, true);
       toaster.success('Recalled', 'Version ' + ver + ' loaded successfully');
@@ -675,7 +675,7 @@ function updateThumbnail(template:Template) {
       const sha256 = await computeSHA256(blob)
       if(sha256 != template.thumbHash) {
         // console.log('[TemplateViewer.updateThumbnail] sha256', sha256, template.thumbHash)
-        activeTemplate.value.thumbUrl = await TemplateData.updateThumbnail(index, blob, sha256)
+        activeTemplate.value.thumbUrl = await TemplateService.updateThumbnail(index, blob, sha256)
       } else {
         // console.log('[TemplateViewer.updateThumbnail] skipping unchanged thumbnail')
       }

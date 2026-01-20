@@ -28,7 +28,7 @@
 import { onBeforeMount, onMounted, ref } from 'vue';
 import { backend, getBackend, currentUser, routeToLocalTemplate, version } from './assets/data';
 import { LocalStoreService } from './services/LocalStoreService';
-import { TemplateData } from './assets/TemplateData';
+import { TemplateService } from './services/TemplateService';
 import { useRoute, useRouter } from 'vue-router';
 import { RouterNames } from './router';
 import { useToaster } from './assets/Toaster';
@@ -93,7 +93,7 @@ onMounted( () => {
 
           // Get that publication data
           new Promise( (resolve, reject) => {
-              TemplateData.getPublication(templateCode).then( (template: any) => {
+              TemplateService.getPublication(templateCode).then( (template: any) => {
                   // console.log('[App.onMounted] publication found ', template)
                   if(template) {
                       routeToLocalTemplate(router, template)
@@ -120,7 +120,7 @@ onMounted( () => {
 
           // Get that publication data
           new Promise( (resolve, reject) => {
-              TemplateData.getPublication(templateCode).then( (template: any) => {
+              TemplateService.getPublication(templateCode).then( (template: any) => {
                   // console.log('[App.onMounted] publication found ', template)
                   if(template) {
                       routeToLocalTemplate(router, template)
