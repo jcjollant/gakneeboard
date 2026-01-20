@@ -1,6 +1,6 @@
 {
     "name": "@checklist/shared",
-    "version": "6.4.3",
+    "version": "6.4.4",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
