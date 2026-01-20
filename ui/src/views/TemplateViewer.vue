@@ -15,13 +15,15 @@
         <div v-else class="templateMenu">
           <MenuButton id="btnExpand" icon="bars" title="Hide Action Buttons" label="Hide Actions" :active="true"
             @click="menuCollapased=true"/>
-          <MenuButton id="btnPrint" icon="print" title="Print Kneeboard" label="Print"
+            <MenuButton id="btnPrint" icon="print" title="Print Kneeboard" label="Print"
             @click="onPrint"/>
-          <MenuButton id="btnSave" icon="save" title="Save Kneeboard to the Cloud" label="Save" :disabled="activeTemplate.isInvalid()"
+            <MenuButton id="btnSave" icon="save" title="Save Kneeboard to the Cloud" label="Save" :disabled="activeTemplate.isInvalid()"
             @click="onSave(false)"/>
-          <MenuButton id="btnDuplicate" v-if="activeTemplate.ver > 0" icon="clone" title="Save as a duplicate new kneeboard" label="Duplicate" @click="onSave(true)" />
-          <MenuButton id="btnEditor"
-            icon="screwdriver-wrench" title="Toggle Editor mode" label="Page Editor" :active="showEditor"
+            <MenuButton id="btnDuplicate" v-if="activeTemplate.ver > 0" icon="clone" title="Save as a duplicate new kneeboard" label="Duplicate" @click="onSave(true)" />
+            <MenuButton id="btnRoll" icon="scroll" title="Toggle Roll View" label="Toggle Roll" :active="showRoll"
+              @click="onRoll"/>
+            <MenuButton id="btnEditor"
+            icon="screwdriver-wrench" title="Toggle Editor mode" label="Toggle Editor" :active="showEditor"
             :class="{'editorButtonActive':showEditor}" class="editorButton" 
             @click="onEditor"/>
           <MenuButton id="btnExport" icon="file-export" title="Export Kneeboard to Various Formats" label="Export"
@@ -32,7 +34,13 @@
             @click="onDelete"/>
         </div>
       </div>
-      <div v-if="activeTemplate" class="pageAll" :class="{'editor':showEditor}">
+      <div v-if="showRoll && activeTemplate" class="rollView">
+          <Tile v-for="(item, index) in rollTiles" :key="index"
+            :tile="item.tile"
+            @update="onRollUpdate(item.pageIndex, item.tileIndex, $event)"
+          />
+      </div>
+      <div v-else-if="activeTemplate" class="pageAll" :class="{'editor':showEditor}">
         <div v-for="(data,index) in activeTemplate.data" class="pageGrid" :class="{'fullpage-grid': activeTemplate.format === TemplateFormat.FullPage}">
           <Page :data="data" :class="'page'+index"
             :format="activeTemplate.format" @update="onPageUpdate(index, $event)" @delete="onPageDelete(index)" />
@@ -69,13 +77,14 @@ import { DemoData } from '../assets/DemoData.ts'
 import { duplicate } from '../assets/data'
 import { EditorAction } from '../assets/EditorAction.ts'
 import { LocalStoreService } from '../services/LocalStoreService.ts'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, computed } from 'vue'
 import { TemplateFormat } from '../models/TemplateFormat.ts'
 import { PageType } from '../assets/PageType.ts'
 import { RouterNames } from '../router/index.js'
 import { Template, TemplatePage } from '../models/Template'
 import { TemplateService } from '../services/TemplateService'
 import { TemplateSettings } from '../components/templates/TemplateSettings.ts'
+import { TileData } from '../models/TileData'
 import { readPageFromClipboard, readTileFromClipboard } from '../assets/sheetData'
 import { useConfirm } from 'primevue/useconfirm'
 import { useRoute, useRouter } from 'vue-router'
@@ -90,6 +99,7 @@ import LoadingPage from '../components/page/LoadingPage.vue'
 import Page from '../components/page/Page.vue'
 import TemplateExport from '../components/templates/TemplateExport.vue'
 import TemplateSettingsDialog from '../components/templates/TemplateSettingsDialog.vue'
+import Tile from '../components/tiles/Tile.vue'
 import VerticalActionBar from '../components/editor/VerticalActionBar.vue'
 import HorizontalActionBar from '../components/editor/HorizontalActionBar.vue'
 
@@ -106,6 +116,7 @@ const offsetLast = ref(0)
 const route = useRoute()
 const router = useRouter()
 const showEditor = ref(false)
+const showRoll = ref(false)
 const showExport = ref(false)
 const showSettings = ref(false)
 const singlePage = ref(false)
@@ -344,6 +355,10 @@ function onEditor() {
   }
 
   showEditor.value = !showEditor.value;
+}
+
+function onRoll() {
+  showRoll.value = !showRoll.value
 }
 
 // Pages are manipulated via editor buttons
@@ -691,6 +706,62 @@ function onAddPage() {
     updateOffsets();
     saveTemplateToLocalStoreService();
 }
+
+/**
+ * Computed property to get all tiles from all tile pages, flattened and forced to single column.
+ */
+const rollTiles = computed(() => {
+  const tiles: { tile: TileData, pageIndex: number, tileIndex: number }[] = []
+  if (!activeTemplate.value) return []
+  
+  activeTemplate.value.data.forEach((page, pageIndex) => {
+    if (page.type === PageType.tiles) {
+      page.data.forEach((tile: TileData, tileIndex: number) => {
+         // Create a copy to avoid mutating original immediately and to force single column
+         // We assume TileData.copy or simple JSON copy works. 
+         // Since we imported TileData, let's try to use a static copy method if it exists, 
+         // but TilePage used TileData.copy(tile).
+         const tileCopy = TileData.copy(tile) 
+         tileCopy.span2 = false
+         tileCopy.hide = false
+         tiles.push({ tile: tileCopy, pageIndex, tileIndex })
+      })
+    }
+  })
+  return tiles
+})
+
+function onRollUpdate(pageIndex: number, tileIndex: number, newTile: TileData) {
+  // We need to update the original tile in activeTemplate.
+  // We should try to preserve the original span2/hide properties if the user didn't change the type,
+  // or if we just want to avoid Roll mode destroying layout settings.
+  
+  const originalPage = activeTemplate.value.data[pageIndex]
+  if (!originalPage || !originalPage.data[tileIndex]) return
+
+  const originalTile = originalPage.data[tileIndex]
+  
+  // If the type changed, we probably accept the new defaults.
+  // If the type is the same, we might want to preserve the original layout (span2).
+  // However, Tile component emits the FULL state.
+  
+  // Let's create the final tile data to save.
+  const finalTile = TileData.copy(newTile)
+  
+  // Restore layout if type matches (assuming Roll mode shouldn't change layout)
+  if (originalTile.name === newTile.name) {
+      finalTile.span2 = originalTile.span2
+      finalTile.hide = originalTile.hide
+  } else {
+      // If type changed, newTile has the defaults for that type (usually span2=false)
+      // which is probably what we want.
+  }
+
+  // Update the template
+  activeTemplate.value.data[pageIndex].data[tileIndex] = finalTile
+  templateModified.value = true
+  saveTemplateToLocalStoreService()
+}
 </script>
 
 <style scoped>
@@ -730,6 +801,23 @@ function onAddPage() {
   .pageAll {
     flex-wrap: wrap;
   } 
+}
+
+@media (min-height: 1750px) {
+  .pageAll {
+    flex-wrap: wrap;
+  } 
+}
+
+.rollView {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  padding-top: var(--menu-border-offset); /* Align with menu */
+  padding-bottom: 50px;
+  min-height: 100vh;
 }
 
 .templateMenu {
