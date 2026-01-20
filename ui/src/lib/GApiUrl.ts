@@ -17,9 +17,13 @@ export class GApiUrl {
         return GApiUrl.root + 'publication/' + code
     }
 
-    static template(id: any = undefined): string {
+    static template(id: any = undefined, ver: any = undefined): string {
         if (id) {
-            return GApiUrl.root + 'template/' + id
+            let url = GApiUrl.root + 'template/' + id
+            if (ver) {
+                url += '/version/' + ver
+            }
+            return url
         }
         return GApiUrl.root + 'template'
     }

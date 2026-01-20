@@ -1,7 +1,7 @@
 import { AccountType } from "../models/AccountType";
 import { PlanDescription } from "../models/PlanDescription";
 
-export const bestValuePlan: string = 'ld1';
+export const bestValuePlan: string = 'ld2';
 export const PLAN_ID_SIM = 'sim'
 export const PRINT_CREDIT_SIMMER = 4;
 

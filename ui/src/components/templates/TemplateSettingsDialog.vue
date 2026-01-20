@@ -1,5 +1,5 @@
 <template>
-  <Dialog modal header="Template Properties" :style="{width: '35rem'}">
+  <Dialog modal header="Kneeboard Properties" :style="{width: '35rem'}">
     <div>
       <div class="properties">
         <InputGroup class="pageName">
@@ -10,13 +10,18 @@
           <InputGroupAddon>Description</InputGroupAddon>
           <InputText v-model="templateDesc"/>
         </InputGroup>
-        <InputGroup>
-            <InputGroupAddon>Version</InputGroupAddon>
-            <InputText v-model="templateVersion" :disabled="true"  class="templateVersion"/>
-            <span class="spacer"></span>
-            <InputGroupAddon>ID</InputGroupAddon>
-            <InputText v-model="templateId" :disabled="true"  class="templateId"/>
-        </InputGroup>
+        <div class="version-row">
+            <InputGroup>
+                <InputGroupAddon>Version</InputGroupAddon>
+                <InputText v-model="templateVersion" :disabled="true"  class="templateVersion"/>
+            </InputGroup>
+            <div class="previous-versions">
+                <Button v-for="ver in previousVersions" :key="ver" 
+                  :label="String(ver)" size="small" outlined 
+                  :title="'Recall version ' + ver"
+                  @click="onRecall(ver)"/>
+            </div>
+        </div>
         <TemplateSharing v-model="publish" :template="template" />
         <div>
         </div>
@@ -30,8 +35,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { TemplateSettings } from "./TemplateSettings";
+import { useConfirm } from "primevue/useconfirm";
 
 import Button from "primevue/button";
 import Dialog from 'primevue/dialog'
@@ -41,7 +47,8 @@ import InputText from "primevue/inputtext";
 import TemplateSharing from "./TemplateSharing.vue";
 
 
-const emits = defineEmits(["close","save"]);
+const emits = defineEmits(["close","save","recall"]);
+const confirm = useConfirm();
 const publish = ref(false)
 const templateName = ref('')
 const templateDesc = ref('')
@@ -70,6 +77,17 @@ function loadProps(props) {
   } 
 }
 
+const previousVersions = computed(() => {
+  const versions = []
+  for (let i = 1; i <= 5; i++) {
+    const ver = templateVersion.value - i
+    if (ver > 0) {
+      versions.push(ver)
+    }
+  }
+  return versions
+})
+
 onMounted( () => {
   loadProps(props)
 })
@@ -80,6 +98,17 @@ watch( props, async() => {
 
 function onButtonClose() {
   emits('close')
+}
+
+function onRecall(ver) {
+  confirm.require({
+    message: 'Are you sure you want to recall version ' + ver + '? Current changes will be lost.',
+    header: 'Recall Version',
+    icon: 'pi pi-exclamation-triangle',
+    accept: () => {
+      emits('recall', {id: templateId.value, ver: ver})
+    }
+  });
 }
 
 function onButtonSave () {
@@ -158,5 +187,16 @@ function onButtonSave () {
 
 .spacer {
   width: 10px;
+}
+
+.version-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.previous-versions {
+  display: flex;
+  gap: 5px;
 }
 </style>

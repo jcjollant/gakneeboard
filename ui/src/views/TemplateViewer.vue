@@ -4,7 +4,7 @@
     <TemplateExport v-model:visible="showExport" :template="activeTemplate"
       @close="showExport=false" @export="onExported" />
     <TemplateSettingsDialog v-model:visible="showSettings" :template="settingsTemplate"
-      @close="showSettings=false" @save="onNewSettings" />
+      @close="showSettings=false" @save="onNewSettings" @recall="onRecallVersion" />
     <!-- <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
       @offset="onOffset" @update="onPageUpdate" /> -->
     <div class="pageGroup">
@@ -595,6 +595,21 @@ function onNewSettings(settings:TemplateSettings) {
   templateModified.value = settingsTemplate.value.id > 0
   saveTemplateToLocalStoreService()
   doSave()
+}
+
+function onRecallVersion({id, ver}: {id:number, ver:number}) {
+  showSettings.value = false;
+  toaster.info('Recalling', 'Loading version ' + ver + '...');
+  TemplateData.getVersion(id, ver).then( template => {
+    if(template.id) {
+      loadTemplate(template, true);
+      toaster.success('Recalled', 'Version ' + ver + ' loaded successfully');
+    } else {
+      toaster.error('Recall Failed', 'Could not load version ' + ver);
+    }
+  }).catch( e => {
+    toaster.error('Recall Failed', e.message || 'Unknown error');
+  })
 }
 
 function saveTemplateToLocalStoreService() {
