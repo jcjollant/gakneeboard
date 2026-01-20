@@ -40,7 +40,7 @@ import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
 import Header from '../shared/Header.vue'
 import axios from 'axios'
-import { GApiUrl } from '../../lib/GApiUrl'
+import { UrlService } from '../../services/UrlService'
 import { currentUser } from '../../assets/data'
 // import axios from 'axios'
 
@@ -108,7 +108,7 @@ function onEdit() {
 }
 
 async function onFetch() {
-    const url = GApiUrl.root + 'userImage/'
+    const url = UrlService.root + 'userImage/'
     const payload = {user:currentUser.sha256, imageUrl:imageUrl.value}
     const headers = { headers: {'Content-Type':'application/json'} }
     // console.debug('[CoverPage.onFetch]', url, payload)

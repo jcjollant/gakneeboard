@@ -1,45 +1,45 @@
-export class GApiUrl {
+export class UrlService {
     static root: string = import.meta.env.GAK_API_URL || 'https://api.kneeboard.ga/'
 
     static flightPlanToNavlog() {
-        return GApiUrl.root + 'fp2nl'
+        return UrlService.root + 'fp2nl'
     }
 
     static isTest(): boolean {
-        return GApiUrl.root.indexOf('localhost') > -1
+        return UrlService.root.indexOf('localhost') > -1
     }
 
     static publications(): string {
-        return GApiUrl.root + 'publications'
+        return UrlService.root + 'publications'
     }
 
     static publicationWithCode(code: string): string {
-        return GApiUrl.root + 'publication/' + code
+        return UrlService.root + 'publication/' + code
     }
 
     static template(id: any = undefined, ver: any = undefined): string {
         if (id) {
-            let url = GApiUrl.root + 'template/' + id
+            let url = UrlService.root + 'template/' + id
             if (ver) {
                 url += '/version/' + ver
             }
             return url
         }
-        return GApiUrl.root + 'template'
+        return UrlService.root + 'template'
     }
 
     static checklist(id: string | undefined = undefined): string {
         if (id) {
-            return GApiUrl.root + 'checklist/' + id
+            return UrlService.root + 'checklist/' + id
         }
-        return GApiUrl.root + 'checklist'
+        return UrlService.root + 'checklist'
     }
 
     static templateExport(id: any, format: string): string {
-        return GApiUrl.root + 'export/template/' + id + '/' + format.toLowerCase();
+        return UrlService.root + 'export/template/' + id + '/' + format.toLowerCase();
     }
 
     static templateThumbnail(): string {
-        return GApiUrl.root + 'templateThumbnail'
+        return UrlService.root + 'templateThumbnail'
     }
 }

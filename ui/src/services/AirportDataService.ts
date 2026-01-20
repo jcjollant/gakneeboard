@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Airport } from '../models/Airport'
 import { AirportCreationRequest } from '../models/AirportCreationRequest'
 import { Notam } from '../models/Notam'
-import { GApiUrl } from '../lib/GApiUrl'
+import { UrlService } from './UrlService'
 import { LocalStoreService } from './LocalStoreService'
 import { backend, sessionAirports, currentUser } from '../assets/data'
 
@@ -161,7 +161,7 @@ async function waitForAirportData(code: string) {
  */
 async function requestAllAirports(codes: string[]) {
     // console.log( 'perform group request for ' + codes.length)
-    const url = GApiUrl.root + 'airports/' + codes.join('-');
+    const url = UrlService.root + 'airports/' + codes.join('-');
     await currentUser.getUrl(url)
         .then(response => {
             // console.log( JSON.stringify(response.data))
@@ -192,7 +192,7 @@ async function requestOneAirport(code: string) {
     // console.log( '[data.requestOneAirport]', code)
     let airport = null
 
-    const url = GApiUrl.root + 'airport/' + code;
+    const url = UrlService.root + 'airport/' + code;
     await currentUser.getUrl(url)
         .then(response => {
             // console.log( '[data.requestOneAirport] received', JSON.stringify(response.data))
@@ -213,7 +213,7 @@ async function requestOneAirport(code: string) {
 const contentType = { headers: { 'Content-Type': 'application/json' } }
 
 export async function createAirport(request: AirportCreationRequest) {
-    const url = GApiUrl.root + 'airport'
+    const url = UrlService.root + 'airport'
     const payload = { user: currentUser.sha256, request: request }
     // console.debug('[AirportDataService.createAirport] payload', payload)
     await axios.post(url, payload, contentType)

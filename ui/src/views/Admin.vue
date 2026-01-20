@@ -116,7 +116,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue'
 import { currentUser } from '../assets/data'
-import { GApiUrl } from '../lib/GApiUrl'
+import { UrlService } from '../services/UrlService'
 import { useToaster } from '../assets/Toaster';
 import { useToast } from 'primevue/usetoast';
 import { useRoute, useRouter } from 'vue-router';
@@ -206,7 +206,7 @@ function selectApi(api: string) {
 function handleSubmit() {
     console.debug('[Admin.handleSubmit]', inputValue.value)
     // Avoid re-fetching if already same ID? No, explicit refresh is good.
-    currentUser.getUrl(GApiUrl.root + 'user/profile/' + inputValue.value).then(res => {
+    currentUser.getUrl(UrlService.root + 'user/profile/' + inputValue.value).then(res => {
         const userProfile = res.data
         userId.value = userProfile.id
         userName.value = userProfile.name
@@ -229,7 +229,7 @@ function fetchActiveUsers() {
     if (loadingActive.value || !daysValue.value) return
     loadingActive.value = true
     console.debug('[Admin.fetchActiveUsers]', daysValue.value)
-    currentUser.getUrl(GApiUrl.root + 'usage/active?days=' + daysValue.value).then(res => {
+    currentUser.getUrl(UrlService.root + 'usage/active?days=' + daysValue.value).then(res => {
         activeUsersRaw.value = res.data
         loadingActive.value = false
     }).catch(err => {
@@ -243,7 +243,7 @@ function fetchHealthCheck() {
     loadingHealth.value = true
     healthData.value = {}
     
-    currentUser.getUrl(GApiUrl.root + 'admin/healthCheck').then(res => {
+    currentUser.getUrl(UrlService.root + 'admin/healthCheck').then(res => {
         healthData.value = res.data
         loadingHealth.value = false
     }).catch(err => {

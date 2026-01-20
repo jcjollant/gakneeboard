@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { CurrentUser } from '../assets/CurrentUser'
-import { GApiUrl } from '../lib/GApiUrl'
+import { UrlService } from './UrlService'
 
 import { AttributionService } from './AttributionService'
 
@@ -13,7 +13,7 @@ export class CheckoutService {
 
     static async plan(code: string, user: CurrentUser): Promise<string> {
         try {
-            const url = GApiUrl.root + 'stripe/checkout'
+            const url = UrlService.root + 'stripe/checkout'
             const payload: any = { user: user.sha256, product: code, source: window.location.href }
 
             const attribution = AttributionService.getAttribution()

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { contentTypeJson, currentUser, reportError } from './data.js'
 import { isDefaultName } from './sheetData.js'
-import { GApiUrl } from '../lib/GApiUrl.js'
+import { UrlService } from '../services/UrlService'
 import { PageType } from './PageType.js'
 import { Template } from '../models/Template.js'
 
@@ -29,7 +29,7 @@ export class TemplateData {
      * @param {*} template 
      */
     static async delete(template: any) {
-        const url = GApiUrl.template(template.id)
+        const url = UrlService.template(template.id)
         if (!currentUser.loggedIn) {
             throw new Error('Cannot delete template without user')
         }
@@ -54,7 +54,7 @@ export class TemplateData {
         if (!format) {
             format = 'json'
         }
-        const url = GApiUrl.templateExport(template.id, format)
+        const url = UrlService.templateExport(template.id, format)
         return new Promise((resolve, reject) => {
             axios({
                 url: url,
@@ -85,7 +85,7 @@ export class TemplateData {
     * @returns 
     */
     static getPublication(code: string): any {
-        const url = GApiUrl.publicationWithCode(code)
+        const url = UrlService.publicationWithCode(code)
         return axios.get(url)
             .then(response => response.data)
             .catch(error => {
@@ -99,7 +99,7 @@ export class TemplateData {
      * @returns 
      */
     static getPublications(): any {
-        const url = GApiUrl.publications()
+        const url = UrlService.publications()
         return currentUser.getUrl(url)
             .then(response => response.data)
             .catch(error => {
@@ -137,8 +137,8 @@ export class TemplateData {
      * @param id 
      * @returns 
      */
-    static async get(id: number): Promise<Template> {
-        const url = GApiUrl.template(id)
+    static async get(id: number, ver?: number): Promise<Template> {
+        const url = UrlService.template(id, ver)
         return new Promise(async (resolve, reject) => {
             currentUser.getUrl(url).then(response => {
                 // console.log('[data.sheetGetById]', JSON.stringify(response))
@@ -156,31 +156,13 @@ export class TemplateData {
     }
 
     /**
-     * Read template version from backend
-     * @param id 
-     * @param ver 
-     * @returns 
-     */
-    static async getVersion(id: number, ver: number): Promise<Template> {
-        const url = GApiUrl.template(id, ver)
-        return new Promise(async (resolve, reject) => {
-            currentUser.getUrl(url).then(response => {
-                const template = Template.parse(response.data)
-                resolve(template);
-            }).catch(error => {
-                reject(error)
-            })
-        })
-    }
-
-    /**
     * Save template to the backend. User must be logged in. Name must not conflict with defaults.
     * @param {*} template 
     * @returns Created template on success or null on failure
     */
     static async save(template: Template): Promise<TemplateStatus> {
         return new Promise(async (resolve, reject) => {
-            const url = GApiUrl.template()
+            const url = UrlService.template()
             if (!currentUser.loggedIn) {
                 return reject('Cannot save template without user')
             }
@@ -211,13 +193,13 @@ export class TemplateData {
     static async updateThumbnail(id: number, imageBlob: Blob, sha256: string): Promise<string> {
         // console.log('[TemplateData.updateThumbnail] updating thumbnail', id, 'length', imageBlob.size)
         return new Promise(async (resolve, reject) => {
-            const url = GApiUrl.templateThumbnail()
+            const url = UrlService.templateThumbnail()
             if (!currentUser.loggedIn) {
                 return reject('Cannot update thumbnail without user')
             }
             const formData = new FormData();
             formData.append('image', imageBlob, 'thumbnail.png')
-            const sentId = GApiUrl.isTest() ? -id : id
+            const sentId = UrlService.isTest() ? -id : id
             formData.append('templateId', sentId.toString())
             formData.append('user', currentUser.sha256)
             formData.append('sha256', sha256)

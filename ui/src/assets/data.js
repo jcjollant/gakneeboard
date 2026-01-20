@@ -6,7 +6,7 @@ import { reactive } from 'vue'
 
 // import { Backend } from './Backend.ts'
 import { CurrentUser } from './CurrentUser.ts'
-import { GApiUrl } from '../lib/GApiUrl.ts'
+import { UrlService } from '../services/UrlService.ts'
 import { SessionAirports } from './SessionAirports.ts'
 import { LocalStoreService } from '../services/LocalStoreService.ts'
 import { AttributionService } from '../services/AttributionService.ts'
@@ -36,7 +36,7 @@ export const sessionAirports = new SessionAirports()
 // Payload should look like {source:'google',token:'some.token'}
 export async function authenticationRequest(payload) {
   return new Promise((resolve, reject) => {
-    const url = GApiUrl.root + 'authenticate'
+    const url = UrlService.root + 'authenticate'
 
     // Add attribution data if available
     const attribution = AttributionService.getAttribution()
@@ -71,7 +71,7 @@ export function duplicate(source) {
  */
 export async function getBackend() {
   backend.promise = new Promise((resolve) => {
-    currentUser.getUrl(GApiUrl.root)
+    currentUser.getUrl(UrlService.root)
       .then(response => {
         // console.log('[data.getBackend]', JSON.stringify(response.data))
         if (!response || !response.data) {
@@ -120,7 +120,7 @@ export function getFrequency(freqList, name) {
  */
 export async function getMaintenance(code) {
   return new Promise((resolve, reject) => {
-    const url = GApiUrl.root + 'maintenance/' + code
+    const url = UrlService.root + 'maintenance/' + code
     axios.get(url).then(response => {
       // console.log('[data.getMaintenance]', JSON.stringify(response.data))
       if (typeof response.data === 'object' && 'sha256' in response.data) {
@@ -161,7 +161,7 @@ export async function getSunlight(from, to = null, date = null, night = false) {
     return sunlightCache[params]
   }
 
-  let url = GApiUrl.root + 'sunlight/' + params
+  let url = UrlService.root + 'sunlight/' + params
   return axios.get(url)
     .then(response => {
       sunlightCache[params] = response.data
@@ -178,7 +178,7 @@ function getSunlightDate(date) {
 }
 
 export async function postEula() {
-  const url = GApiUrl.root + 'eula'
+  const url = UrlService.root + 'eula'
   const config = { headers: { 'Content-Type': 'application/json', 'user': currentUser.sha256 } }
   const payload = { version: eulaVersion }
   return axios.post(url, payload, config)
@@ -193,7 +193,7 @@ export async function postEula() {
 
 
 export async function postPrint(id, options) {
-  const url = GApiUrl.root + 'print'
+  const url = UrlService.root + 'print'
   const config = { headers: { 'Content-Type': 'application/json', 'user': currentUser.sha256 } }
   const payload = { template: Number(id), options: options }
   return axios.post(url, payload, config)
@@ -226,7 +226,7 @@ export function routeToLocalTemplate(router, template) {
  */
 export async function sendFeedback(text, contactMe = true) {
   // console.log( '[data] feedback ' + JSON.stringify(data))
-  const url = GApiUrl.root + 'feedback'
+  const url = UrlService.root + 'feedback'
   const payload = { version: version, feedback: text, user: currentUser.sha256, contact: contactMe }
 
   axios.post(url, payload, contentTypeJson)

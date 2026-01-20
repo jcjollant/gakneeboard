@@ -4,7 +4,7 @@ import { DisplayModeChecklist } from "../models/DisplayMode";
 import { ChecklistTile } from "../models/ChecklistTile";
 import { LibraryChecklist } from "../models/LibraryChecklist";
 import axios from "axios";
-import { GApiUrl } from "../lib/GApiUrl";
+import { UrlService } from "./UrlService";
 import { Toaster } from "../assets/Toaster";
 
 export class ChecklistService {
@@ -118,7 +118,7 @@ export class ChecklistService {
 
     static async save(checklist: LibraryChecklist, toaster: Toaster) {
         toaster.info('Saving', 'Saving checklist...')
-        const url = GApiUrl.checklist(checklist.id || undefined)
+        const url = UrlService.checklist(checklist.id || undefined)
         // If it's a new checklist, it might not have an ID yet, so we POST to root or if updating we PUT/POST to ID?
         // Usually POST to /checklist for new, POST/PUT to /checklist/:id for update.
         // Let's assume generic Save handling:
@@ -148,7 +148,7 @@ export class ChecklistService {
     static async delete(checklist: LibraryChecklist, toaster: Toaster) {
         if (!checklist.id) return;
         toaster.info('Deleting', 'Deleting checklist...')
-        const url = GApiUrl.checklist(checklist.id)
+        const url = UrlService.checklist(checklist.id)
         const headers = { headers: { 'user': currentUser.sha256 } }
 
         try {

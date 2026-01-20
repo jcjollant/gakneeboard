@@ -1,5 +1,5 @@
 import axios from "axios"
-import { GApiUrl } from "./GApiUrl"
+import { UrlService } from "../services/UrlService"
 import { LocalStoreService } from "../services/LocalStoreService"
 
 export class DiagramData {
@@ -11,7 +11,7 @@ export class DiagramData {
         }
 
         return new Promise<string>(res => {
-            axios.get(GApiUrl.root + 'diagram/' + pdfFile).then(response => {
+            axios.get(UrlService.root + 'diagram/' + pdfFile).then(response => {
                 // console.log('[Approach.getImage] response length', response.data.length)
                 // const apchImage = 'data:image/jpeg;base64,' + response.data;
                 const apchImage = response.data;

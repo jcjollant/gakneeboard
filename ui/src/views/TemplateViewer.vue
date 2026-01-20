@@ -600,7 +600,7 @@ function onNewSettings(settings:TemplateSettings) {
 function onRecallVersion({id, ver}: {id:number, ver:number}) {
   showSettings.value = false;
   toaster.info('Recalling', 'Loading version ' + ver + '...');
-  TemplateData.getVersion(id, ver).then( template => {
+  TemplateData.get(id, ver).then( template => {
     if(template.id) {
       loadTemplate(template, true);
       toaster.success('Recalled', 'Version ' + ver + ' loaded successfully');

@@ -34,7 +34,7 @@ import { useRouter } from 'vue-router'
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import { useToaster } from '../../assets/Toaster';
-import { GApiUrl } from '../../lib/GApiUrl';
+import { UrlService } from '../../services/UrlService';
 import { currentUser } from '../../assets/data';
 import AccountDetails from './AccountDetails.vue';
 import Logo from './Logo.vue';
@@ -53,7 +53,7 @@ const test = ref(false)
 const toaster = useToaster(useToast())
 
 onMounted(() => {
-    test.value = GApiUrl.isTest()
+    test.value = UrlService.isTest()
 })
 
 function onAuthentication(newUser:any) {
