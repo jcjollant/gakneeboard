@@ -1,14 +1,13 @@
 <template>
     <div class="tiles pageTiles" :class="{'fullpage': isFullPage}">
-        <div v-for="(tile,index) in tiles" :key="index" v-show="!tile.hide"
-          class="tile-container" :class="[{'span-2':tile.span2},`tile${index}`]">
-            <Tile :tile="tile" 
-              @update="onUpdate(index,$event)" 
-              @settings="onSettingsOpen(index, $event)"/>
-            <div v-if="captureMode" class="capture-overlay" @click.stop="emits('capture', index)" title="Click to Capture Image">
-                <font-awesome-icon icon="camera" class="capture-icon" />
-            </div>
-        </div>
+        <Tile v-for="(tile,index) in tiles" :key="index" v-show="!tile.hide"
+          :class="[{'span-2':tile.span2},`tile${index}`]"
+          :tile="tile" 
+          :captureMode="captureMode"
+          :index="index"
+          @update="onUpdate(index,$event)" 
+          @settings="onSettingsOpen(index, $event)"
+          @capture="emits('capture', index)"/>
         
         <TileSettings v-if="editingTileIndex >= 0 && editingTileData" 
             :tile="editingTileData" 
@@ -25,22 +24,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch, shallowRef } from 'vue'
 import { useConfirm } from "primevue/useconfirm";
+import { computed, onMounted, ref, watch } from 'vue';
+import { TemplateFormat } from '../../models/TemplateFormat';
 import { TileData } from '../../models/TileData';
 import { TileType } from '../../models/TileType';
-import { TemplateFormat } from '../../models/TemplateFormat';
 
-import Tile from './Tile.vue'
-import TileSettings from './TileSettings.vue';
-import AirportTileSettings from '../airport/AirportTileSettings.vue';
-import RadioTileSettings from '../radios/RadioTileSettings.vue';
-import ChecklistSettings from '../checklist/ChecklistSettings.vue';
-import ClearanceSettings from '../clearance/ClearanceSettings.vue';
 import { UserUrl } from '../../lib/UserUrl';
+import { Checklist } from '../../models/Checklist';
 import { ChecklistSettingsParams } from '../../models/ChecklistSettingsParams';
 import { ChecklistService } from '../../services/ChecklistService';
-import { Checklist } from '../../models/Checklist';
+import AirportTileSettings from '../airport/AirportTileSettings.vue';
+import ChecklistSettings from '../checklist/ChecklistSettings.vue';
+import ClearanceSettings from '../clearance/ClearanceSettings.vue';
+import RadioTileSettings from '../radios/RadioTileSettings.vue';
+import Tile from './Tile.vue';
+import TileSettings from './TileSettings.vue';
 
 const confirm = useConfirm()
 const emits = defineEmits(['update', 'capture'])
@@ -287,42 +286,6 @@ function resolveMergedTiles() {
   width: calc(var(--tile-width) * 2 + 2px); /* Two tile widths plus gap */
 }
 
-.tile-container {
-    position: relative;
-    /* ensure the tile fills the container */ 
-    display: flex;
-    flex-direction: column;
-}
 
-.tile-container > .tile {
-  flex: 1;
-}
-
-.capture-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.3);
-    z-index: 10;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    border-radius: 8px; /* Approximate tile radius */
-    color: white;
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-
-.capture-overlay:hover {
-    opacity: 1;
-}
-
-.capture-icon {
-    font-size: 3rem;
-    filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
-}
 
 </style>

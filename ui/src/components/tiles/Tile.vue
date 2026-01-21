@@ -1,4 +1,5 @@
 <template>
+    <div class="tile-wrapper">
     <div v-if="!tile || tile.name==''" class="tile">
         <Header :title="title" :replace="restorable" :clickable="restorable" :leftButton="''"
             @replace="tile=previousTile"></Header>
@@ -30,6 +31,10 @@
         @replace="onReplace" @update="onUpdate" />
     <VfrTile v-else-if="tile.name==TileType.vfr" :params="tile.data"
         @replace="onReplace" @update="onUpdate" />
+    <div v-if="captureMode" class="capture-overlay" @click.stop="emits('capture', index)" title="Click to Capture Image">
+        <font-awesome-icon icon="camera" class="capture-icon" />
+    </div>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -52,10 +57,12 @@ import NavlogTile from '../navlog/NavlogTile.vue';
 import NotesTile from '../notes/NotesTile.vue';
 import VfrTile from '../vfr/VfrTile.vue';
 
-const emits = defineEmits(['update','settings'])
+const emits = defineEmits(['update','settings','capture'])
 
 const props = defineProps({
     tile: { type: Object, default: null},
+    captureMode: { type: Boolean, default: false},
+    index: { type: Number, default: -1}
 })
 
 var state:TileData
@@ -152,6 +159,44 @@ function onUpdate(newState:TileData) {
 }
 .tileButton:hover {
     background-color: var(--tile-button-hover);
+}
+
+.tile-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.tile-wrapper > .tile {
+    flex: 1;
+    width: 100%;
+}
+
+.capture-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 8px;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.capture-overlay:hover {
+    opacity: 1;
+}
+
+.capture-icon {
+    font-size: 3rem;
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
 }
 
 </style>
