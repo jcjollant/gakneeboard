@@ -111,6 +111,11 @@ export function loadTestTileWithData(data) {
 export function loadTestPage(pageType, data = {}) {
     const type = pageType.toLowerCase()
 
+    // fill the rest of tile data (5x) with selection tiles
+    for (let i = data.length; i < 6; i++) {
+        data.push({ name: 'selection', data: {} })
+    }
+
     const pageData = {
         type: type,
         name: 'Test Page',
