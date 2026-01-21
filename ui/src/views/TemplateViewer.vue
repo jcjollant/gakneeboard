@@ -20,8 +20,8 @@
             <MenuButton id="btnSave" icon="save" title="Save Kneeboard to the Cloud" label="Save" :disabled="activeTemplate.isInvalid()"
             @click="onSave(false)"/>
             <MenuButton id="btnDuplicate" v-if="activeTemplate.ver > 0" icon="clone" title="Save as a duplicate new kneeboard" label="Duplicate" @click="onSave(true)" />
-            <MenuButton id="btnRoll" icon="scroll" title="Toggle Roll View" label="Toggle Roll" :active="showRoll"
-              @click="onRoll"/>
+            <MenuButton id="btnRoll" icon="scroll" title="Toggle Scroll View" label="Toggle Scroll" :active="showScroll"
+              @click="onScroll"/>
             <MenuButton id="btnEditor"
             icon="screwdriver-wrench" title="Toggle Editor mode" label="Toggle Editor" :active="showEditor"
             :class="{'editorButtonActive':showEditor}" class="editorButton" 
@@ -34,10 +34,10 @@
             @click="onDelete"/>
         </div>
       </div>
-      <div v-if="showRoll && activeTemplate" class="rollView">
-          <Tile v-for="(item, index) in rollTiles" :key="index"
+      <div v-if="showScroll && activeTemplate" class="scrollView">
+          <Tile v-for="(item, index) in scrollTiles" :key="index"
             :tile="item.tile"
-            @update="onRollUpdate(item.pageIndex, item.tileIndex, $event)"
+            @update="onScrollUpdate(item.pageIndex, item.tileIndex, $event)"
           />
       </div>
       <div v-else-if="activeTemplate" class="pageAll" :class="{'editor':showEditor}">
@@ -116,7 +116,7 @@ const offsetLast = ref(0)
 const route = useRoute()
 const router = useRouter()
 const showEditor = ref(false)
-const showRoll = ref(false)
+const showScroll = ref(false)
 const showExport = ref(false)
 const showSettings = ref(false)
 const singlePage = ref(false)
@@ -355,10 +355,12 @@ function onEditor() {
   }
 
   showEditor.value = !showEditor.value;
+  if(showEditor.value) showScroll.value = false;
 }
 
-function onRoll() {
-  showRoll.value = !showRoll.value
+function onScroll() {
+  showScroll.value = !showScroll.value
+  if(showScroll.value) showEditor.value = false;
 }
 
 // Pages are manipulated via editor buttons
@@ -710,7 +712,7 @@ function onAddPage() {
 /**
  * Computed property to get all tiles from all tile pages, flattened and forced to single column.
  */
-const rollTiles = computed(() => {
+const scrollTiles = computed(() => {
   const tiles: { tile: TileData, pageIndex: number, tileIndex: number }[] = []
   if (!activeTemplate.value) return []
   
@@ -731,7 +733,7 @@ const rollTiles = computed(() => {
   return tiles
 })
 
-function onRollUpdate(pageIndex: number, tileIndex: number, newTile: TileData) {
+function onScrollUpdate(pageIndex: number, tileIndex: number, newTile: TileData) {
   // We need to update the original tile in activeTemplate.
   // We should try to preserve the original span2/hide properties if the user didn't change the type,
   // or if we just want to avoid Roll mode destroying layout settings.
@@ -809,7 +811,7 @@ function onRollUpdate(pageIndex: number, tileIndex: number, newTile: TileData) {
   } 
 }
 
-.rollView {
+.scrollView {
   display: flex;
   flex-direction: column;
   align-items: center;
