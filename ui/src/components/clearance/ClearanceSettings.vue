@@ -2,7 +2,7 @@
     <div class="settings">
         <div class="field">
             <Separator name="Display" />
-            <DisplayModeSelector :choices="modeChoices" v-model="selectedModeChoice" />
+            <DisplayModeSelector :choices="displayModes" v-model="displayMode" />
         </div>
         <div class="field" v-if="showAirportInput">
             <Separator name="Airport" />

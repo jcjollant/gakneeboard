@@ -3,11 +3,13 @@ export class DisplayModeChoice {
     value: string;
     expandable: boolean;
     description: string;
-    constructor(label: string, value: string, expandable: boolean = false, description: string = '') {
+    image?: string;
+    constructor(label: string, value: string, expandable: boolean = false, description: string = '', image?: string) {
         this.label = label;
         this.value = value;
         this.expandable = expandable;
         this.description = description;
+        this.image = image;
     }
 }
 

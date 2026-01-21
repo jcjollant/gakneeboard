@@ -2,7 +2,7 @@
     <div class="airport-settings">
         <!-- Display Mode Section -->
         <Separator name="Display" class="separator" />
-        <DisplayModeSelector :choices="modeChoices" v-model="selectedModeChoice" />
+        <DisplayModeSelector :choices="modesList" v-model="selectedModeChoice" :show-previews="true" />
         <div class="orientation-selector">
             <EitherOr either="Normal" or="Wide" v-model="isNormal" />
         </div>
@@ -74,7 +74,7 @@ import { RunwayOrientation } from './RunwayOrientation';
 import { DisplayModeAirport, DisplayModeChoice } from '../../models/DisplayMode';
 import { getAirport } from '../../services/AirportDataService';
 import { TileData } from '../../models/TileData';
-import { OneChoiceValue } from '../../models/OneChoiceValue';
+
 
 const props = defineProps({
     tileData: { type: TileData, required: true },
@@ -104,15 +104,11 @@ const patternChoice = ref<TrafficPatternDisplay>(TrafficPatternDisplay.Entry45);
 // Lists
 const modesList = ref([
     new DisplayModeChoice('Runway Sketch', DisplayModeAirport.RunwaySketch, true, "Simplified vue of runway(s) with airport data"),
-    new DisplayModeChoice('Airport Diagram', DisplayModeAirport.Diagram, true, "Small Airport Diagram with airport data"),
+    new DisplayModeChoice('Airport Diagram', DisplayModeAirport.Diagram, true, "Small Airport Diagram with airport data", "/thumbnails/airport-diagram.png"),
 ]);
 
-const modeChoices = computed(() => {
-    return modesList.value.map(m => new OneChoiceValue(m.label, m.value, m.description));
-})
-
 const selectedModeChoice = computed({
-    get: () => modeChoices.value.find(c => c.value === currentMode.value),
+    get: () => modesList.value.find(c => c.value === currentMode.value),
     set: (val) => { 
         if(val) currentMode.value = val.value as DisplayModeAirport 
     }

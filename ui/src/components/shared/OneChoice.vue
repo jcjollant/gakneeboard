@@ -4,9 +4,11 @@
             @click="onChoice(c)" 
             class="choice" 
             :class="[{'choiceActive':(model.label==c.label),'choiceInactive':(model.label!=c.label),'thinPad':thinpad}, `choice${index}`]"
-            :title="c.title??undefined">
-            <font-awesome-icon v-if="c.label.startsWith('fa-')" :icon="c.label" />
-            <span v-else>{{c.label}}</span>
+            :title="c.title || c.description || undefined">
+            <slot :choice="c">
+                <font-awesome-icon v-if="c.label && c.label.startsWith('fa-')" :icon="c.label" />
+                <span v-else>{{c.label}}</span>
+            </slot>
         </button>
         <div v-else>Model Missing</div>
     </div>
@@ -17,16 +19,16 @@ import { OneChoiceValue } from '../../models/OneChoiceValue';
 
 
 const props = defineProps({
-  choices: { type: Array<OneChoiceValue>, default: []},
+  choices: { type: Array<any>, default: []},
   thinpad: { type: Boolean, default: false },
   full: { type: Boolean, default: false },
 })
 
 
 const emits = defineEmits(["change"]);
-const model = defineModel<OneChoiceValue>()
+const model = defineModel<any>()
 
-function onChoice(choice:OneChoiceValue) {
+function onChoice(choice:any) {
     // console.log('[OneChoice.onChouce]', choice)
     model.value = choice
     emits('change')
@@ -72,4 +74,6 @@ function onChoice(choice:OneChoiceValue) {
 .thinPad {
     padding: 3px 7px;
 }
+
+
 </style>
