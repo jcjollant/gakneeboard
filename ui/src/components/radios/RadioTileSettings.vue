@@ -2,8 +2,8 @@
     <div class="radio-settings">
         <!-- Display Mode Section -->
         <Separator name="Display" class="separator" />
-        <div class="display-mode-selector">
-            <OneChoice :choices="modeChoices" v-model="selectedModeChoice" :thinpad="true" />
+        <DisplayModeSelector :choices="modeChoices" v-model="selectedModeChoice" :thinpad="true" />
+        <div class="orientation-selector">
              <EitherOr either="Normal" or="Wide" v-model="isNormal" />
         </div>
 
@@ -45,7 +45,7 @@ import { Frequency, FrequencyType } from '../../models/Frequency';
 import { OneChoiceValue } from '../../models/OneChoiceValue';
 
 import Separator from '../../components/shared/Separator.vue';
-import OneChoice from '../shared/OneChoice.vue';
+import DisplayModeSelector from '../shared/DisplayModeSelector.vue';
 import EitherOr from '../shared/EitherOr.vue';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
@@ -192,12 +192,9 @@ function emitUpdate() {
     flex-direction: column;
     gap: 15px;
 }
-.display-mode-selector {
+.orientation-selector {
     display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
     justify-content: center;
-    align-items: center;
 }
 .list-editor {
     position: relative;

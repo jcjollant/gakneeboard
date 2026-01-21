@@ -2,9 +2,7 @@
     <div class="settings">
         <div class="field">
             <Separator name="Display" />
-            <div class="display-mode-selector">
-                <OneChoice :choices="modeChoices" v-model="selectedModeChoice" :thinpad="true" :full="true" />
-            </div>
+            <DisplayModeSelector :choices="modeChoices" v-model="selectedModeChoice" />
         </div>
         <div class="field" v-if="showAirportInput">
             <Separator name="Airport" />
@@ -25,7 +23,7 @@ import { IfrTileDisplayModeLabels } from './IfrTileDisplayModeLabel.ts';
 import { getAirport } from '../../services/AirportDataService';
 
 import AirportInput from '../shared/AirportInput.vue';
-import OneChoice from '../shared/OneChoice.vue';
+import DisplayModeSelector from '../shared/DisplayModeSelector.vue';
 import Separator from '../shared/Separator.vue';
 import { OneChoiceValue } from '../../models/OneChoiceValue';
 
@@ -144,9 +142,5 @@ label {
     font-size: 0.9em;
 }
 
-.display-mode-selector {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
+
 </style>

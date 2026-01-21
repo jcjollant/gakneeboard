@@ -2,8 +2,8 @@
     <div class="airport-settings">
         <!-- Display Mode Section -->
         <Separator name="Display" class="separator" />
-        <div class="display-mode-selector">
-            <OneChoice :choices="modeChoices" v-model="selectedModeChoice" />
+        <DisplayModeSelector :choices="modeChoices" v-model="selectedModeChoice" />
+        <div class="orientation-selector">
             <EitherOr either="Normal" or="Wide" v-model="isNormal" />
         </div>
         <!-- Airport Section -->
@@ -58,7 +58,7 @@
 import { ref, onMounted, watch, computed, inject } from 'vue';
 import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
-import OneChoice from '../shared/OneChoice.vue';
+import DisplayModeSelector from '../shared/DisplayModeSelector.vue';
 import AirportInput from '../shared/AirportInput.vue';
 import EitherOr from '../shared/EitherOr.vue';
 
@@ -358,11 +358,8 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
     font-size: 0.9rem;
 }
 
-.display-mode-selector {
+.orientation-selector {
     display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
     justify-content: center;
-    align-items: center;
 }
 </style>
