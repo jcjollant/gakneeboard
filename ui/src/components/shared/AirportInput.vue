@@ -9,11 +9,11 @@
             <span v-if="!expanded" class="recentAirport"  @click="name=''" title="Show Recent Airports">...</span>
         </div>
         <div v-else-if="!expanded" class="recentAirportList">
-            <div v-for="a in airports" class="recentAirport" @click="onRecentAirport(a)">{{ a }}</div>
+            <button type="button" v-for="a in airports" class="recentAirport" @click="onRecentAirport(a)">{{ a }}</button>
         </div>
         <div v-if="expanded" class="recentAirportList expanded">
             <span>Recent:</span>
-            <div v-for="a in airports" class="recentAirport" @click="onRecentAirport(a)">{{ a }}</div>
+            <button type="button" v-for="a in airports" class="recentAirport" @click="onRecentAirport(a)">{{ a }}</button>
         </div>
     </div>
 </template>
@@ -187,7 +187,10 @@ function refreshAirportList() {
     color: white;
     background-color: var(--bg-secondary);
     cursor: pointer;
-    padding: 0 5px;
+    padding: 2px 8px;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
 }
 .recentAirport:hover {
     background-color: var(--bg-hover);
