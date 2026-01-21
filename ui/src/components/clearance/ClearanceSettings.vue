@@ -6,7 +6,7 @@
                 <OneChoice :choices="modeChoices" v-model="selectedModeChoice" :thinpad="true" :full="true" />
             </div>
         </div>
-        <div class="field">
+        <div class="field" v-if="showAirportInput">
             <Separator name="Airport" />
             <AirportInput v-model="airport" :expanded="true" large @valid="emitUpdate"/>
         </div>
@@ -56,6 +56,10 @@ const selectedModeChoice = computed({
     set: (val) => { 
         if(val) displayMode.value = val.value as DisplayModeIfr 
     }
+})
+
+const showAirportInput = computed(() => {
+    return displayMode.value === DisplayModeIfr.Departure || displayMode.value === DisplayModeIfr.Approach
 })
 
 onMounted(() => {
