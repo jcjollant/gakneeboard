@@ -2,7 +2,7 @@
     <div class="radio-settings">
         <!-- Display Mode Section -->
         <Separator name="Display" class="separator" />
-        <DisplayModeSelector :choices="modeChoices" v-model="selectedModeChoice" :thinpad="true" />
+        <DisplayModeSelector :choices="modesList" v-model="currentMode" :thinpad="true" :showPreviews="true" />
         <div class="orientation-selector">
              <EitherOr either="Normal" or="Wide" v-model="isNormal" />
         </div>
@@ -73,10 +73,10 @@ const freqShade = new Frequency('Shade', '123.45', FrequencyType.ctaf)
 const freqDark = new Frequency('Dark', '123.45', FrequencyType.ctaf)
 
 const modesList = ref([
-    new DisplayModeChoice('Frequencies', DisplayModeRadios.FreqList, true),
-    new DisplayModeChoice('Lost Comms VFR', DisplayModeRadios.LostComms),
-    new DisplayModeChoice('Lost Comms IFR', DisplayModeRadios.LostCommsIFR),
-    new DisplayModeChoice('Service Volumes', DisplayModeRadios.ServiceVolumes),
+    new DisplayModeChoice('Frequencies', DisplayModeRadios.FreqList, true, 'List of Radio frequencies', '/tiles/radio-frequencies.png'),
+    new DisplayModeChoice('Lost Comms VFR', DisplayModeRadios.LostComms, false, 'Lost Comms VFR', '/tiles/radio-lostcomm-vfr.png'),
+    new DisplayModeChoice('Lost Comms IFR', DisplayModeRadios.LostCommsIFR, false, 'Lost Comms IFR', '/tiles/radio-lostcomm-ifr.png'),
+    new DisplayModeChoice('Service Volumes', DisplayModeRadios.ServiceVolumes, false, 'Service Volumes', '/tiles/radio-sv.png'),
 ])
 
 const modeChoices = computed(() => {

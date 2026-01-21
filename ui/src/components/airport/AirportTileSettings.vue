@@ -103,8 +103,8 @@ const patternChoice = ref<TrafficPatternDisplay>(TrafficPatternDisplay.Entry45);
 
 // Lists
 const modesList = ref([
-    new DisplayModeChoice('Runway Sketch', DisplayModeAirport.RunwaySketch, true, "Simplified vue of runway(s) with airport data"),
-    new DisplayModeChoice('Airport Diagram', DisplayModeAirport.Diagram, true, "Small Airport Diagram with airport data", "/thumbnails/airport-diagram.png"),
+    new DisplayModeChoice('Runway Sketch', DisplayModeAirport.RunwaySketch, true, "Simplified vue of runway(s) with airport data", '/tiles/airport-sketch.png'),
+    new DisplayModeChoice('Airport Diagram', DisplayModeAirport.Diagram, true, "Small Airport Diagram with airport data", "/tiles/airport-diagram.png"),
 ]);
 
 const selectedModeChoice = computed({
