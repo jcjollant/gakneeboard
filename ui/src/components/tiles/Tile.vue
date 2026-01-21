@@ -165,6 +165,7 @@ function onUpdate(newState:TileData) {
     position: relative;
     display: flex;
     flex-direction: column;
+    height: var(--tile-height);
 }
 
 .tile-wrapper > .tile {
