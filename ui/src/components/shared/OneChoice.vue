@@ -1,13 +1,13 @@
 <template>
     <div class="oneChoice" :class="{'full':full}">
-        <div v-if="model" v-for="(c,index) in choices" :aria-label="c.label" 
+        <button type="button" v-if="model" v-for="(c,index) in choices" :aria-label="c.label" 
             @click="onChoice(c)" 
             class="choice" 
             :class="[{'choiceActive':(model.label==c.label),'choiceInactive':(model.label!=c.label),'thinPad':thinpad}, `choice${index}`]"
             :title="c.title??undefined">
             <font-awesome-icon v-if="c.label.startsWith('fa-')" :icon="c.label" />
             <span v-else>{{c.label}}</span>
-        </div>
+        </button>
         <div v-else>Model Missing</div>
     </div>
 </template>
@@ -42,6 +42,7 @@ function onChoice(choice:OneChoiceValue) {
     cursor: pointer;
     width: fit-content;
     line-height: 1.5rem;
+    flex-wrap: wrap;
 }
 
 .oneChoice.full {
@@ -53,6 +54,11 @@ function onChoice(choice:OneChoiceValue) {
     flex: 1 1 auto;
     line-height: 1.5rem;
     text-align: center;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
 }
 
 .choiceInactive:hover {
