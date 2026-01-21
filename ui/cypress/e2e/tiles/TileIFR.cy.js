@@ -153,17 +153,33 @@ describe('Tile IFR', () => {
         checkImageContentTestTile('/tiles/lostcomms-ifr.png')
     })
 
-    it('Settings', () => {
+    it('Settings - Conditional Airport Input', () => {
         const data = [{ name: 'clearance', data: { mode: 'craft' } }]
         loadTestPage(PageTypeLabel.tiles, data)
 
         settingsOpen(0)
 
-        for (const displayMode of Object.values(IfrTileDisplayModeLabels)) {
-            cy.get('.oneChoice').contains(displayMode)
-        }
+        // CRAFT mode (default) - Airport Input should NOT exist
+        cy.get('.airportCode').should('not.exist')
 
-        // Check for Airport Input
+        // Switch to Departure - Airport Input SHOULD exist
+        cy.get('.oneChoice').contains(labelDeparture).click()
+        cy.get('.airportCode').should('exist')
+
+        // Switch to Approach - Airport Input SHOULD exist
+        cy.get('.oneChoice').contains(labelApproach).click()
+        cy.get('.airportCode').should('exist')
+
+        // Switch to Alternate - Airport Input should NOT exist
+        cy.get('.oneChoice').contains(labelAlternate).click()
+        cy.get('.airportCode').should('not.exist')
+
+        // Switch to Lost Comms - Airport Input should NOT exist
+        cy.get('.oneChoice').contains(labelLostComms).click()
+        cy.get('.airportCode').should('not.exist')
+
+        // Back to Departure to confirm it reappears
+        cy.get('.oneChoice').contains(labelDeparture).click()
         cy.get('.airportCode').should('exist')
     })
 })
