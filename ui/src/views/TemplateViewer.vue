@@ -43,12 +43,15 @@
       <div v-else-if="activeTemplate" class="pageAll" :class="{'editor':showEditor}">
         <div v-for="(data,index) in activeTemplate.data" class="pageGrid" :class="{'fullpage-grid': activeTemplate.format === TemplateFormat.FullPage}">
           <Page :data="data" :class="'page'+index"
-            :format="activeTemplate.format" @update="onPageUpdate(index, $event)" @delete="onPageDelete(index)" />
+            :format="activeTemplate.format" @update="onPageUpdate(index, $event)" @delete="onPageDelete(index)" 
+            :captureMode="showCapture" @capture="onCaptureTile(index, $event)"/>
           
           <VerticalActionBar v-if="showEditor" :offset="index" :last="index == activeTemplate.data.length - 1"
             @action="onAction" />
           <div v-else></div>
-          <HorizontalActionBar v-if="showEditor" @action="onAction" :index="index" :blockDelete="activeTemplate.data.length < 2" />
+          <HorizontalActionBar v-if="showEditor" @action="onAction" :index="index" :blockDelete="activeTemplate.data.length < 2" 
+            :isTilePage="data.type == PageType.tiles" :captureMode="showCapture"/>
+          <div></div>
           <div></div>
         </div>
         <div class="pageGrid pagePlaceholderGrid" v-if="activeTemplate.format === TemplateFormat.Kneeboard">
@@ -116,6 +119,7 @@ const offsetLast = ref(0)
 const route = useRoute()
 const router = useRouter()
 const showEditor = ref(false)
+const showCapture = ref(false)
 const showScroll = ref(false)
 const showExport = ref(false)
 const showSettings = ref(false)
@@ -356,6 +360,11 @@ function onEditor() {
 
   showEditor.value = !showEditor.value;
   if(showEditor.value) showScroll.value = false;
+  if(!showEditor.value) showCapture.value = false;
+}
+
+function onCapture() {
+  showCapture.value = !showCapture.value
 }
 
 function onScroll() {
@@ -456,6 +465,10 @@ async function onEditorAction(ea:EditorAction) {
     activeTemplate.value.data[ea.offset + 1] = swap;
     updatedPages.push(ea.offset)
     updatedPages.push(ea.offset + 1)
+
+  } else if(ea.action == EditorAction.TOGGLE_CAPTURE) {
+
+    onCapture()
 
   } else if(ea.action == EditorAction.SWAP_TILES) {
 
@@ -763,6 +776,31 @@ function onScrollUpdate(pageIndex: number, tileIndex: number, newTile: TileData)
   activeTemplate.value.data[pageIndex].data[tileIndex] = finalTile
   templateModified.value = true
   saveTemplateToLocalStoreService()
+}
+
+async function onCaptureTile(pageIndex: number, tileIndex: number) {
+  if(!showCapture.value) return;
+
+  const selector = `.page${pageIndex} .tile${tileIndex}`;
+  const element = document.querySelector(selector) as HTMLElement;
+  if(!element) {
+        toaster.error('Capture', 'Could not find tile to capture')
+        return
+  }
+
+  try {
+      toaster.info('Capture', 'Capturing tile...')
+      const canvas = await html2canvas(element, { useCORS: true, logging: false, scale: 1 })
+      canvas.toBlob(blob => {
+            if(blob) {
+                const url = URL.createObjectURL(blob);
+                window.open(url, '_blank')
+            }
+      })
+  } catch(e) {
+      // console.error(e)
+      toaster.error('Capture', 'Failed to capture tile')
+  }
 }
 </script>
 

@@ -1,9 +1,14 @@
 <template>
     <div class="tiles pageTiles" :class="{'fullpage': isFullPage}">
-        <Tile v-for="(tile,index) in tiles" v-show="!tile.hide" 
-          :tile="tile" :class="[{'span-2':tile.span2},`tile${index}`]" 
-          @update="onUpdate(index,$event)" 
-          @settings="onSettingsOpen(index, $event)"/>
+        <div v-for="(tile,index) in tiles" :key="index" v-show="!tile.hide"
+          class="tile-container" :class="[{'span-2':tile.span2},`tile${index}`]">
+            <Tile :tile="tile" 
+              @update="onUpdate(index,$event)" 
+              @settings="onSettingsOpen(index, $event)"/>
+            <div v-if="captureMode" class="capture-overlay" @click.stop="emits('capture', index)" title="Click to Capture Image">
+                <font-awesome-icon icon="camera" class="capture-icon" />
+            </div>
+        </div>
         
         <TileSettings v-if="editingTileIndex >= 0 && editingTileData" 
             :tile="editingTileData" 
@@ -38,10 +43,11 @@ import { ChecklistService } from '../../services/ChecklistService';
 import { Checklist } from '../../models/Checklist';
 
 const confirm = useConfirm()
-const emits = defineEmits(['update'])
+const emits = defineEmits(['update', 'capture'])
 const props = defineProps({
     data: { type: Object, default: null},
     format: { type: String, default: TemplateFormat.Kneeboard },
+    captureMode: { type: Boolean, default: false}
 })
 
 const isFullPage = computed(() => props.format === TemplateFormat.FullPage)
@@ -280,4 +286,43 @@ function resolveMergedTiles() {
 .fullpage .span-2 {
   width: calc(var(--tile-width) * 2 + 2px); /* Two tile widths plus gap */
 }
+
+.tile-container {
+    position: relative;
+    /* ensure the tile fills the container */ 
+    display: flex;
+    flex-direction: column;
+}
+
+.tile-container > .tile {
+  flex: 1;
+}
+
+.capture-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 8px; /* Approximate tile radius */
+    color: white;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.capture-overlay:hover {
+    opacity: 1;
+}
+
+.capture-icon {
+    font-size: 3rem;
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+}
+
 </style>

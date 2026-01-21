@@ -9,7 +9,7 @@
     <PaperNavlogPage v-else-if="type==PageType.paperNavlog" :data="pageData" :format="format"
         @replace="onReplace" @update="onUpdate" />
     <TilePage v-else-if="type==PageType.tiles" :data="pageData" :format="format"
-        @update="onUpdate" />
+        @update="onUpdate" :captureMode="captureMode" @capture="emits('capture', $event)"/>
     <NotesPage v-else-if="type==PageType.notes" 
         @replace="onReplace(PageType.selection)" />
     <ApproachPage v-else-if="type==PageType.approach" :data="pageData"
@@ -53,13 +53,14 @@ import TilePage from '../tiles/TilePage.vue'
 import { DemoData } from '../../assets/DemoData'
 
 const confirm = useConfirm()
-const emits = defineEmits(['update', 'delete'])
+const emits = defineEmits(['update', 'delete', 'capture'])
 const pageData = ref({})
 const type = ref(PageType.tiles)
 
 const props = defineProps({
     data: { type: Object, default: null},
     format: { type: String, default: TemplateFormat.Kneeboard},
+    captureMode: { type: Boolean, default: false},
 })
 
 function loadProps(props:any) {
