@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 
 const props = defineProps({
     title: { type: String, default: '?'},
-    subtitle: { type: String, default: 'Click header to configure'},
+    subtitle: { type: String, default: 'Click upper left to configure'},
 })
 
 const title = ref('')
