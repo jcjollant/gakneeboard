@@ -1,34 +1,46 @@
-import { bellinghamTitle, boeingTitle, checkTileSpan, checkTileTitle, checkTileVisible, loadDemo, maintenanceMode, rentonTitle, visitSkipBanner, waitForAirports, waitOneAirport } from '../shared'
+import { bellinghamTitle, boeingTitle, checkTileSpan, checkTileTitle, checkTileVisible, maintenanceMode, rentonTitle, waitForAirports, waitOneAirport, loadTestPage, PageTypeLabel } from '../shared'
 import { displaySelection, displaySelectionExpand, viewport } from '../shared'
 
+const airportTilesData = [
+  { name: 'airport', data: { code: "KRNT", rwy: "16-34", rwyOrientation: "vertical" } },
+  { name: 'airport', data: { code: "KBFI", rwy: "14L-32R", rwyOrientation: "magnetic", corners: ["weather", "twr", "field", "tpa"] } },
+  { name: 'airport', data: { code: "W39", rwy: "09-27" } },
+  { name: 'airport', data: { code: "O26", rwy: "07-25" } },
+  { name: 'atis', data: {} },
+  { name: 'clearance', data: { mode: 'dep', airport: 'kbfi' } }
+]
+
+function loadAirportTestPage() {
+  loadTestPage(PageTypeLabel.tiles, airportTilesData)
+}
+
 function checkCorner(page, tile, corner, label, value) {
-    cy.get(`.page${page} > .tile${tile} > .tileContent ${corner} .label`).contains(label)
-    cy.get(`.page${page} > .tile${tile} > .tileContent ${corner} .value`).contains(value)
+  cy.get(`.page${page} > .tile${tile} > .tileContent ${corner} .label`).contains(label)
+  cy.get(`.page${page} > .tile${tile} > .tileContent ${corner} .value`).contains(value)
 }
 
 function clickCorner(page, tile, corner) {
-    // cy.get(`.page${page} > .tile${tile} > .tileContent #corner${corner}`).should('have.currentTager').click()
-    cy.get(`.page${page} > .tile${tile} > .tileContent #corner${corner}`).trigger('mousedown')
+  // cy.get(`.page${page} > .tile${tile} > .tileContent #corner${corner}`).should('have.currentTager').click()
+  cy.get(`.page${page} > .tile${tile} > .tileContent #corner${corner}`).trigger('mousedown')
 }
 
-function toggleEditMode( page, tile) {
-    cy.get(`.page${page} > .tile${tile} > .headerTitle > .titleText`).click()
+function toggleEditMode(page, tile) {
+  cy.get(`.page${page} > .tile${tile} > .headerTitle > .titleText`).click()
 }
 
 describe('Tiles', () => {
   it('Shows default fields in Sketch mode single runway', () => {
-    visitSkipBanner()
+    loadAirportTestPage()
     // maintenanceMode()
-    loadDemo('Tiles')
 
     waitForAirports()
 
     // Renton and Boeing fields
     const expectedValues = [
-      {tile:rentonTitle,label0:'ATIS',value0:'126.950',label1:'TWR','value1':'124.700',label2:'Elev','value2':'32',label3:'GND',value3:'121.600',watermark:'KRNT','dimensions':'5382x200'},
-      {tile:boeingTitle,label0:'ATIS',value0:'127.750',label1:'TWR','value1':'118.300',label2:'Elev','value2':'22',label3:'GND',value3:'121.900','watermark':'KBFI','dimensions':'3709x100'},
+      { tile: rentonTitle, label0: 'ATIS', value0: '126.950', label1: 'TWR', 'value1': '124.700', label2: 'Elev', 'value2': '32', label3: 'GND', value3: '121.600', watermark: 'KRNT', 'dimensions': '5382x200' },
+      { tile: boeingTitle, label0: 'ATIS', value0: '127.750', label1: 'TWR', 'value1': '118.300', label2: 'Elev', 'value2': '22', label3: 'GND', value3: '121.900', 'watermark': 'KBFI', 'dimensions': '3709x100' },
     ]
-    expectedValues.forEach((value,index) => {
+    expectedValues.forEach((value, index) => {
       checkTileTitle(0, index, value.tile)
       cy.get(`.page0 > .tile${index} > .tileContent .top.left > .clickable`)
       checkCorner(0, index, '.top.left', value.label0, value.value0)
@@ -57,24 +69,24 @@ describe('Tiles', () => {
     cy.get('.page0 > .tile2 .settings > .airportCode .airportName').contains(bellinghamTitle)
     cy.get('.page0 .tile2 .actionBar [aria-label="Apply"]').click()
     // Check for bellingham fields
-    const kbliValues = {tile:bellinghamTitle, label0:'ATIS',value0:'134.450',label1:'TWR',value1:'124.900',label2:'Elev',value2:'171',label3:'GND',value3:'127.400',watermark:'KBLI',dimensions:'6700x150'}
+    const kbliValues = { tile: bellinghamTitle, label0: 'ATIS', value0: '134.450', label1: 'TWR', value1: '124.900', label2: 'Elev', value2: '171', label3: 'GND', value3: '127.400', watermark: 'KBLI', dimensions: '6700x150' }
     checkTileTitle(0, 2, kbliValues.tile)
     cy.get('.page0 > .tile2 > .headerTitle').contains(kbliValues.tile)
-    checkCorner( 0, 2, '.top.left', kbliValues.label0, kbliValues.value0)
-    checkCorner( 0, 2, '.top.right', kbliValues.label1, kbliValues.value1)
-    checkCorner( 0, 2, '.bottom.left', kbliValues.label2, kbliValues.value2)
-    checkCorner( 0, 2, '.bottom.right', kbliValues.label3, kbliValues.value3)
+    checkCorner(0, 2, '.top.left', kbliValues.label0, kbliValues.value0)
+    checkCorner(0, 2, '.top.right', kbliValues.label1, kbliValues.value1)
+    checkCorner(0, 2, '.bottom.left', kbliValues.label2, kbliValues.value2)
+    checkCorner(0, 2, '.bottom.right', kbliValues.label3, kbliValues.value3)
     cy.get(`.page0 > .tile2 > .tileContent .container .label`).contains(kbliValues.dimensions)
 
     // Replace tile with Notes
     toggleEditMode(0, 2)
-    cy.get('.page0 > .tile2 > .headerTitle > .replaceButton').click({force: true})
+    cy.get('.page0 > .tile2 > .headerTitle > .replaceButton').click({ force: true })
     cy.get('[aria-label="Notes"]').click()
     cy.get('.page0 > :nth-child(3) > .headerTitle > div').contains('Notes')
 
     // Change tile back to Airport
     toggleEditMode(0, 2)
-    cy.get('.page0 > .tile2 > .headerTitle > .replaceButton').click({force: true})
+    cy.get('.page0 > .tile2 > .headerTitle > .replaceButton').click({ force: true })
     cy.get('[aria-label="Airport"]').click()
     // we should be in edit mode
     cy.get('.p-inputtext')
@@ -82,8 +94,7 @@ describe('Tiles', () => {
 
   it.only('Configures Corners', () => {
     viewport()
-    visitSkipBanner()
-    loadDemo('Tiles')
+    loadAirportTestPage()
 
     waitForAirports()
     checkTileTitle(0, 0, rentonTitle)
@@ -94,17 +105,17 @@ describe('Tiles', () => {
 
     // standard fields
     const expectedStandardFields = [
-      {name:'Field Elevation',label:'Elevation',value:'32'}, 
-      {name:'Traffic Pattern Altitude',label:'TPA',value:'1250'}, 
-      {name:'Runway Information',label:'(G) Good/ASPH-CONC',value:'5382x200'}, 
-      {name:'Notes',label:'Notes',value:''}, 
+      { name: 'Field Elevation', label: 'Elevation', value: '32' },
+      { name: 'Traffic Pattern Altitude', label: 'TPA', value: '1250' },
+      { name: 'Runway Information', label: '(G) Good/ASPH-CONC', value: '5382x200' },
+      { name: 'Notes', label: 'Notes', value: '' },
     ]
-    for(let index = 0; index < expectedStandardFields.length; index++) {
+    for (let index = 0; index < expectedStandardFields.length; index++) {
       const field = expectedStandardFields[index]
-      cy.get(`.standardList > :nth-child(${index+1})`).contains(field.name)
-      cy.get(`.standardList > :nth-child(${index+1}) > .ml-2`).click()
-      if(field.label != '') cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .label').contains(field.label)
-      if(field.value != '') cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .value').contains(field.value)
+      cy.get(`.standardList > :nth-child(${index + 1})`).contains(field.name)
+      cy.get(`.standardList > :nth-child(${index + 1}) > .ml-2`).click()
+      if (field.label != '') cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .label').contains(field.label)
+      if (field.value != '') cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .value').contains(field.value)
     }
 
     // last one is notes. should have a border
@@ -112,57 +123,57 @@ describe('Tiles', () => {
 
     // Radios
     const expectedRadios = [
-      {name:'124.700 : CTAF',label:'CTAF',value:'124.700'}, 
-      {name:'122.950 : UNICOM',label:'UNICOM',value:'122.950'}, 
-      {name:'126.950 : ATIS',label:'ATIS',value:'126.950'}, 
-      {name:'121.600 : GND',label:'GND',value:'121.600'}, 
-      {name:'124.700 : TWR',label:'TWR',value:'124.700'}, 
-      {name:'Selected Runway',label:'twr',value:'-.-'}, 
+      { name: '124.700 : CTAF', label: 'CTAF', value: '124.700' },
+      { name: '122.950 : UNICOM', label: 'UNICOM', value: '122.950' },
+      { name: '126.950 : ATIS', label: 'ATIS', value: '126.950' },
+      { name: '121.600 : GND', label: 'GND', value: '121.600' },
+      { name: '124.700 : TWR', label: 'TWR', value: '124.700' },
+      { name: 'Selected Runway', label: 'twr', value: '-.-' },
     ]
-    for(let index = 0; index < expectedRadios.length; index++) {
+    for (let index = 0; index < expectedRadios.length; index++) {
       const field = expectedRadios[index]
-      cy.get(`.freqList > :nth-child(${index+1}) > .ml-2`).contains(field.name)
-      cy.get(`.freqList > :nth-child(${index+1}) > .ml-2`).click()
+      cy.get(`.freqList > :nth-child(${index + 1}) > .ml-2`).contains(field.name)
+      cy.get(`.freqList > :nth-child(${index + 1}) > .ml-2`).click()
       cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .label').contains(field.label)
       cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .value').contains(field.value)
     }
     const expectedNavaids = [
-      'SEA (VORTAC)', '116.800', '48°', 
+      'SEA (VORTAC)', '116.800', '48°',
       'PAE (VOR/DME)', '110.600', '174°',
       'OLM (VORTAC)', '113.400', '42°',
       'CVV (VOR/DME)', '117.200', '155°']
     const expectedNaaidsOutcomes = [
-      {label1:'SEA', value1:'116.800', label2:'SEA Radial', value2:'48°'},
-      {label1:'PAE', value1:'110.600', label2:'PAE Radial', value2:'174°'},
-      {label1:'OLM', value1:'113.400', label2:'OLM Radial', value2:'42°'},
-      {label1:'CVV', value1:'117.200', label2:'CVV Radial', value2:'155°'},
+      { label1: 'SEA', value1: '116.800', label2: 'SEA Radial', value2: '48°' },
+      { label1: 'PAE', value1: '110.600', label2: 'PAE Radial', value2: '174°' },
+      { label1: 'OLM', value1: '113.400', label2: 'OLM Radial', value2: '42°' },
+      { label1: 'CVV', value1: '117.200', label2: 'CVV Radial', value2: '155°' },
     ]
-    for(let index = 0; index < expectedNavaids.length; index++) {
-      cy.get(`.navList > :nth-child(${index+1})`).contains(expectedNavaids[index])
-      if(index % 3 == 0) {
-        const field2 = expectedNaaidsOutcomes[index/3]
-        cy.get(`.navList > :nth-child(${index+2}) > .ml-2`).click()
+    for (let index = 0; index < expectedNavaids.length; index++) {
+      cy.get(`.navList > :nth-child(${index + 1})`).contains(expectedNavaids[index])
+      if (index % 3 == 0) {
+        const field2 = expectedNaaidsOutcomes[index / 3]
+        cy.get(`.navList > :nth-child(${index + 2}) > .ml-2`).click()
         cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .label').contains(field2.label1)
         cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .value').contains(field2.value1)
-        cy.get(`.navList > :nth-child(${index+3}) > .ml-2`).click()
+        cy.get(`.navList > :nth-child(${index + 3}) > .ml-2`).click()
         cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .label').contains(field2.label2)
         cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .value').contains(field2.value2)
       }
     }
     const expectedAtcs = [
-      {name:'119.200 : Apch',     label:'SEATTLE-TACOMA', value:'119.200'},
-      {name:'120.100 : Apch',     label:'SEATTLE-TACOMA', value:'120.100'}, 
-      {name:'120.400 : Apch',     label:'SEATTLE-TACOMA', value:'120.400'}, 
-      {name:'123.900 : Approach', label:'SEATTLE-TACOMA', value:'123.900'}, 
-      {name:'125.600 : OLYMPIA',  label:'SEATTLE-TACOMA', value:'125.600'}, 
-      {name:'125.900 : Apch',     label:'SEATTLE-TACOMA', value:'125.900'}, 
-      {name:'126.500 : Apch',     label:'SEATTLE-TACOMA', value:'126.500'}, 
-      {name:'128.500 : Apch',     label:'SEATTLE-TACOMA', value:'128.500'}, 
-      ]
-    for(let index = 0; index < expectedAtcs.length; index++) {
+      { name: '119.200 : Apch', label: 'SEATTLE-TACOMA', value: '119.200' },
+      { name: '120.100 : Apch', label: 'SEATTLE-TACOMA', value: '120.100' },
+      { name: '120.400 : Apch', label: 'SEATTLE-TACOMA', value: '120.400' },
+      { name: '123.900 : Approach', label: 'SEATTLE-TACOMA', value: '123.900' },
+      { name: '125.600 : OLYMPIA', label: 'SEATTLE-TACOMA', value: '125.600' },
+      { name: '125.900 : Apch', label: 'SEATTLE-TACOMA', value: '125.900' },
+      { name: '126.500 : Apch', label: 'SEATTLE-TACOMA', value: '126.500' },
+      { name: '128.500 : Apch', label: 'SEATTLE-TACOMA', value: '128.500' },
+    ]
+    for (let index = 0; index < expectedAtcs.length; index++) {
       const field = expectedAtcs[index]
-      cy.get(`.atcList > :nth-child(${index+1}) > .ml-2`).contains(field.name)
-      cy.get(`.atcList > :nth-child(${index+1}) > .ml-2`).click()
+      cy.get(`.atcList > :nth-child(${index + 1}) > .ml-2`).contains(field.name)
+      cy.get(`.atcList > :nth-child(${index + 1}) > .ml-2`).click()
       cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .label').contains(field.label)
       cy.get('.page0 > .tile0 > .tileContent > :nth-child(1) > .bottom.right > .clickable > .small > .value').contains(field.value)
     }
@@ -187,10 +198,9 @@ describe('Tiles', () => {
   })
 
   it('Merges when code match', () => {
-    visitSkipBanner()
+    loadAirportTestPage()
     viewport()
     // Load default demo
-    loadDemo()
 
     // by default tiles are not merged
     checkTileSpan(0, 0, false)
@@ -210,23 +220,23 @@ describe('Tiles', () => {
     cy.get('.top.right.cornerColumn').children().should('have.length', 4)
 
     const expectedCorners = [
-      {label:'ATIS',value:'127.750'},
-      {label:'RWY 14L-32R',value:'118.300'},
-      {label:'Elevation',value:'22'},
-      {label:'TPA',value:'1022'},
-      {label:'CD/P',value:'132.400'},
-      {label:'GND',value:'121.900'},
-      {label:'Custom',value:'Custom'},
-      {label:'UNICOM',value:'122.950'},
+      { label: 'ATIS', value: '127.750' },
+      { label: 'RWY 14L-32R', value: '118.300' },
+      { label: 'Elevation', value: '22' },
+      { label: 'TPA', value: '1022' },
+      { label: 'CD/P', value: '132.400' },
+      { label: 'GND', value: '121.900' },
+      { label: 'Custom', value: 'Custom' },
+      { label: 'UNICOM', value: '122.950' },
     ]
-    for(let index = 0; index < expectedCorners.length; index++) {
+    for (let index = 0; index < expectedCorners.length; index++) {
       cy.get(`.corner${index}`).contains(expectedCorners[index].label)
       cy.get(`.corner${index}`).contains(expectedCorners[index].value)
 
     }
 
     // We can change values of corner boxes
-    for(let index = 0; index < 8; index++) {
+    for (let index = 0; index < 8; index++) {
       cy.get(`.corner${index}`).click()
       // pick elevation
       cy.get('.standardList > :nth-child(1) > :nth-child(1)').click()
@@ -238,12 +248,11 @@ describe('Tiles', () => {
 
   it('Merges on expand', () => {
     viewport()
-    visitSkipBanner()
+    loadAirportTestPage()
     // Load default demo
-    loadDemo()
 
     waitForAirports()
-    checkTileTitle(0,0, boeingTitle)
+    checkTileTitle(0, 0, boeingTitle)
 
     // by default tiles are not merged
     checkTileSpan(0, 0, false)
@@ -258,7 +267,7 @@ describe('Tiles', () => {
     checkTileVisible(0, 1, false)
 
     // contract back to list mode
-    displaySelection(0,0,'Runway List')
+    displaySelection(0, 0, 'Runway List')
     cy.get('.page0 .tile0 canvas').should('not.exist')
     cy.get('.page0 .tile0 .runwayList').should('exist')
     cy.get('.page0 .tile0 .rwySketch').should('not.exist')
@@ -275,8 +284,7 @@ describe('Tiles', () => {
   })
 
   it('Settings', () => {
-    visitSkipBanner()
-    loadDemo()
+    loadAirportTestPage()
 
     waitForAirports()
 
@@ -328,8 +336,7 @@ describe('Tiles', () => {
   })
 
   it('Handles Display Mode', () => {
-    visitSkipBanner()
-    loadDemo()
+    loadAirportTestPage()
 
     waitForAirports()
 
