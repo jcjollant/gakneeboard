@@ -67,6 +67,7 @@ function onAction(action:any) {
   width: 100%;
 }
 .inverted {
-    filter: invert(1);
+    background-color: white !important;
+    color: rgb(0,0,255) !important;
 }
 </style>
