@@ -2,7 +2,7 @@
     <div class="radio-settings">
         <!-- Display Mode Section -->
         <Separator name="Display" class="separator" />
-        <DisplayModeSelector :choices="modesList" v-model="currentMode" :thinpad="true" :showPreviews="true" />
+        <DisplayModeSelector :choices="modesList" v-model="selectedModeChoice" :thinpad="true" :showPreviews="true" />
         <div class="orientation-selector">
              <EitherOr either="Normal" or="Wide" v-model="isNormal" />
         </div>
@@ -42,7 +42,7 @@ import { useToaster } from '../../assets/Toaster';
 import { TileData } from '../../models/TileData';
 import { DisplayModeRadios, DisplayModeChoice } from '../../models/DisplayMode';
 import { Frequency, FrequencyType } from '../../models/Frequency';
-import { OneChoiceValue } from '../../models/OneChoiceValue';
+
 
 import Separator from '../../components/shared/Separator.vue';
 import DisplayModeSelector from '../shared/DisplayModeSelector.vue';
@@ -79,12 +79,8 @@ const modesList = ref([
     new DisplayModeChoice('Service Volumes', DisplayModeRadios.ServiceVolumes, false, 'Service Volumes', '/tiles/radio-sv.png'),
 ])
 
-const modeChoices = computed(() => {
-    return modesList.value.map(m => new OneChoiceValue(m.label, m.value, m.description));
-})
-
 const selectedModeChoice = computed({
-    get: () => modeChoices.value.find(c => c.value === currentMode.value),
+    get: () => modesList.value.find(c => c.value === currentMode.value),
     set: (val) => { 
         if(val) currentMode.value = val.value as DisplayModeRadios 
     }

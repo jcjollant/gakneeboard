@@ -9,7 +9,7 @@
             <ImageContent v-else-if="displayMode==DisplayModeRadios.LostCommsIFR" src="lostcomms-ifr.png" /> 
             <div v-else-if="displayMode==DisplayModeRadios.FreqList" class="main">
                  <div>
-                    <PlaceHolder v-if="frequencies.length==0" title="No Radios" subtitle="Click Here to Add Frequencies" />
+                    <PlaceHolder v-if="frequencies.length==0" title="No Radios" />
                     <div v-else class="freqList" :class="[boxColumns()]" >
                         <FrequencyBox v-for="(freq,index) in frequencies" :freq="freq" :size="boxSize()" :class="['freq'+index]" :colorScheme="colorScheme" />
                     </div>
