@@ -14,7 +14,14 @@ const maxNavaids: number = 10
 
 export class AdipService implements AirportDataSource {
     airportIsStale(airport: Airport): Promise<boolean> {
-        return Promise.resolve(airport.effectiveDate < AdipService.currentEffectiveDate())
+        const currentDate = AdipService.currentEffectiveDate()
+        const isStale = !airport.effectiveDate || airport.effectiveDate < currentDate
+        
+        if (isStale) {
+            console.debug(`[AdipService.airportIsStale] ${airport.code} is stale: effectiveDate=${airport.effectiveDate}, current=${currentDate}`)
+        }
+        
+        return Promise.resolve(isStale)
     }
 
     static basicAuth: string = 'Basic 3f647d1c-a3e7-415e-96e1-6e8415e6f209-ADIP'

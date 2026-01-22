@@ -140,9 +140,11 @@ export class AirportService {
         for (const found of dbCodesLookup.known) {
             const dataSource = AirportService.getDataSource(found.code)
             const modelIsStale = found.airport.version < Airport.currentVersion
+            const dataIsStale = dataSource ? await dataSource.airportIsStale(found.airport) : false
             // the airport must be refreshed if the model stale or the data source says it is stale and it is not a custom airport
-            const needRefresh = dataSource && (modelIsStale || await dataSource.airportIsStale(found.airport)) && !found.airport.custom
+            const needRefresh = dataSource && (modelIsStale || dataIsStale) && !found.airport.custom
             if (needRefresh) {
+                console.debug(`[AirportService.getAirports] Refreshing ${found.code}: modelStale=${modelIsStale}, dataStale=${dataIsStale}, version=${found.airport.version}, effectiveDate=${found.airport.effectiveDate}`)
                 const refresher = await dataSource?.fetchAirport(found.code)
                 if (refresher) {
                     // preserve the sketch

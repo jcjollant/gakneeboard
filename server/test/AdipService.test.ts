@@ -56,12 +56,12 @@ describe('AdipService', () => {
         const originalEffectiveDate = process.env.EFFECTIVE_DATE
         process.env.EFFECTIVE_DATE = specificSetupDate
 
-        // Stale airport
+        // Stale airport (old date)
         const staleAirport = new Airport('STALE', 'Stale', 0)
         staleAirport.effectiveDate = pastDate
         expect(await new AdipService().airportIsStale(staleAirport)).toBeTruthy()
 
-        // Fresh airport
+        // Fresh airport (future date)
         const freshAirport = new Airport('FRESH', 'Fresh', 0)
         freshAirport.effectiveDate = futureDate
         expect(await new AdipService().airportIsStale(freshAirport)).toBeFalsy()
@@ -70,6 +70,11 @@ describe('AdipService', () => {
         const sameDateAirport = new Airport('SAME', 'Same', 0)
         sameDateAirport.effectiveDate = specificSetupDate
         expect(await new AdipService().airportIsStale(sameDateAirport)).toBeFalsy()
+
+        // Empty effectiveDate should be stale
+        const emptyDateAirport = new Airport('EMPTY', 'Empty', 0)
+        emptyDateAirport.effectiveDate = ''
+        expect(await new AdipService().airportIsStale(emptyDateAirport)).toBeTruthy()
 
         // Cleanup
         if (originalEffectiveDate) {
