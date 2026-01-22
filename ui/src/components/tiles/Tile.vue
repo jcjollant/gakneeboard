@@ -166,6 +166,11 @@ function onUpdate(newState:TileData) {
     display: flex;
     flex-direction: column;
     height: var(--tile-height);
+    width: var(--tile-width);
+}
+
+.tile-wrapper .span2 {
+    width: var(--tile-span2);
 }
 
 .tile-wrapper > .tile {
