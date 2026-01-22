@@ -638,7 +638,11 @@ function onRecallVersion({id, ver}: {id:number, ver:number}) {
       toaster.error('Recall Failed', 'Could not load version ' + ver);
     }
   }).catch( e => {
-    toaster.error('Recall Failed', e.message || 'Unknown error');
+    if (e.response && e.response.status === 403) {
+      toaster.error('Recall Failed', 'Restoring old version is not supported on your current plan. Please consider upgrading.', 10000);
+    } else {
+      toaster.error('Recall Failed', e.message || 'Unknown error');
+    }
   })
 }
 

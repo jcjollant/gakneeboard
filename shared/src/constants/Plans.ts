@@ -104,7 +104,7 @@ export const PLANS: PlanDescription[] = [
         },
         features: {
             advancedPrinting: true,
-            restoreOldVersion: false
+            restoreOldVersion: true
         }
     },
     {

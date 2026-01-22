@@ -148,10 +148,10 @@ export class TemplateHistoryDao extends Dao<TemplateHistory> {
      * @param version The version number
      * @returns TemplateHistory object or undefined if not found
      */
-    public async getSpecificVersion(templateId: number, version: number): Promise<TemplateHistory | undefined> {
-        // console.debug(`[TemplateHistoryDao.getSpecificVersion] Getting version ${version} for template ${templateId}`)
+    public async getTemplateVersion(templateId: number, version: number): Promise<TemplateHistory | undefined> {
+        // console.debug(`[TemplateHistoryDao.getTemplateVersion] Getting version ${version} for template ${templateId}`)
         const query = `SELECT * FROM ${this.tableName} WHERE template_id = ${templateId} AND version = ${version}`
-        console.debug('[TemplateHistoryDao.getSpecificVersion]', query)
+        // console.debug('[TemplateHistoryDao.getTemplateVersion]', query)
         const result = await this.db.query(query)
         if (result.rows.length === 0) return undefined
         return this.parseRow(result.rows[0])

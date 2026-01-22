@@ -1,6 +1,7 @@
 import { describe, expect, it, jest, beforeEach } from '@jest/globals';
 import { TemplateService } from '../backend/services/TemplateService';
 import { UserDao } from '../backend/dao/UserDao';
+import { UsageDao } from '../backend/dao/UsageDao';
 import { TemplateHistoryDao, TemplateHistory, TemplateOperation } from '../backend/dao/TemplateHistoryDao';
 import { TemplateDao } from '../backend/TemplateDao';
 import { TemplateView } from '../backend/models/TemplateView';
@@ -12,6 +13,7 @@ import { TemplateFormat } from '../backend/models/TemplateFormat';
 
 // Mock dependencies
 jest.mock('../backend/dao/UserDao');
+jest.mock('../backend/dao/UsageDao');
 jest.mock('../backend/dao/TemplateHistoryDao');
 // We don't fully mock TemplateDao because it has static methods that might be complex to mock if the class is auto-mocked
 // But let's try auto-mocking first.
@@ -67,7 +69,7 @@ describe('TemplateService.getVersion', () => {
             operation: 'UPDATE',
             createdAt: new Date()
         } as unknown as TemplateHistory;
-        mockHistoryDao.prototype.getSpecificVersion.mockResolvedValue(history);
+        mockHistoryDao.prototype.getTemplateVersion.mockResolvedValue(history);
 
         // Mock current template to get format
         const current = new Template(templateId, userId, {}, TemplateFormat.Kneeboard, 'Name', 'Desc', 6, 1);
@@ -101,7 +103,7 @@ describe('TemplateService.getVersion', () => {
             operation: 'UPDATE',
             createdAt: new Date()
         } as unknown as TemplateHistory;
-        mockHistoryDao.prototype.getSpecificVersion.mockResolvedValue(history);
+        mockHistoryDao.prototype.getTemplateVersion.mockResolvedValue(history);
 
         await expect(TemplateService.getVersion(templateId, version, userId))
             .rejects.toEqual(new GApiError(404, 'Template not found'));
@@ -111,7 +113,7 @@ describe('TemplateService.getVersion', () => {
         const validUser = new User(userId, 'hash');
         validUser.accountType = AccountType.private;
         mockUserDao.prototype.get.mockResolvedValue(validUser);
-        mockHistoryDao.prototype.getSpecificVersion.mockResolvedValue(undefined);
+        mockHistoryDao.prototype.getTemplateVersion.mockResolvedValue(undefined);
 
         const current = new Template(templateId, userId, { current: true }, TemplateFormat.Kneeboard, 'Name', 'Desc', version, 1);
         (mockTemplateDao.readByIdStatic as unknown as jest.Mock).mockResolvedValue(current);
@@ -126,7 +128,7 @@ describe('TemplateService.getVersion', () => {
         const validUser = new User(userId, 'hash');
         validUser.accountType = AccountType.private;
         mockUserDao.prototype.get.mockResolvedValue(validUser);
-        mockHistoryDao.prototype.getSpecificVersion.mockResolvedValue(undefined);
+        mockHistoryDao.prototype.getTemplateVersion.mockResolvedValue(undefined);
 
         const current = new Template(templateId, userId, {}, TemplateFormat.Kneeboard, 'Name', 'Desc', version + 1, 1);
         (mockTemplateDao.readByIdStatic as unknown as jest.Mock).mockResolvedValue(current);
@@ -139,7 +141,7 @@ describe('TemplateService.getVersion', () => {
         const validUser = new User(userId, 'hash');
         validUser.accountType = AccountType.private;
         mockUserDao.prototype.get.mockResolvedValue(validUser);
-        mockHistoryDao.prototype.getSpecificVersion.mockResolvedValue(undefined);
+        mockHistoryDao.prototype.getTemplateVersion.mockResolvedValue(undefined);
 
         (mockTemplateDao.readByIdStatic as unknown as jest.Mock).mockResolvedValue(undefined);
 

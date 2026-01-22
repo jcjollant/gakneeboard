@@ -7,6 +7,7 @@ import { Maintenance } from '../../backend/Maintenance';
 import { AirportService } from '../../backend/services/AirportService';
 import { Authorization } from '../../backend/services/Authorization';
 import { UserTools } from '../../backend/UserTools';
+import { UsageDao } from '../../backend/dao/UsageDao';
 import { version } from '../../package.json';
 import { currentAirportModelVersion, jcHash } from '../constants';
 
@@ -18,6 +19,7 @@ jest.mock('../../backend/services/TemplateService');
 jest.mock('../../backend/UserTools');
 jest.mock('../../backend/Ticket');
 jest.mock('../../backend/services/Authorization');
+jest.mock('../../backend/dao/UsageDao');
 jest.mock('@vercel/postgres', () => ({
     sql: jest.fn()
 }));
@@ -188,6 +190,28 @@ describe('index API', () => {
         expect(res.body).toEqual(mockResult);
         expect(Authorization.validateAdmin).toHaveBeenCalled();
         expect(Maintenance.performHealthChecks).toHaveBeenCalled();
+    });
+    it('Templates version restore records usage', async () => {
+        const userSha = 'testuser';
+        const templateId = 12345;
+        const version = 1;
+
+        // Mock UserTools
+        (UserTools.userIdFromRequest as unknown as jest.Mock<any>).mockResolvedValue(1);
+
+        // Mock TemplateService.getVersion
+        (TemplateService.getVersion as unknown as jest.Mock<any>).mockResolvedValue({ id: templateId, version: version });
+
+        // Spy on UsageDao.create
+        const createSpy = jest.spyOn(UsageDao, 'create').mockResolvedValue(true);
+
+        // Test GET /template/:id/version/:version
+        const getTemplateRes = await request(app).get(`/template/${templateId}/version/${version}?user=${userSha}`);
+        expect(getTemplateRes.status).toBe(200);
+        expect(getTemplateRes.body.id).toBe(templateId);
+
+        // UsageDao.create verification moved to TemplateService.test.ts
+        // expect(createSpy).toHaveBeenCalledWith('restore', 1, JSON.stringify({ templateId: templateId, version: version }));
     });
 });
 

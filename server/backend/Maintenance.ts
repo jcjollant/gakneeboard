@@ -91,7 +91,7 @@ export class Maintenance {
     static async performHealthChecks() {
         const [checks, refills] = await Promise.all([
             HealthCheck.perform(),
-            Business.printRefills(new UserDao())
+            Business.freePrintRefills(new UserDao())
         ]);
         return { checks, refills }
     }

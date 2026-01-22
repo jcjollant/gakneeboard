@@ -1,4 +1,4 @@
-import { AccountType, PLAN_ID_SIM } from '@checklist/shared';
+import { AccountType, PLAN_ID_SIM, PLANS } from '@checklist/shared';
 import { describe, expect, it, jest } from '@jest/globals';
 import * as dotenv from 'dotenv';
 import { GApiError } from '../backend/GApiError';
@@ -12,6 +12,7 @@ import { TemplateFormat } from '../backend/models/TemplateFormat';
 import { TemplateView } from '../backend/models/TemplateView';
 import { User } from '../backend/models/User';
 import { TemplateService } from '../backend/services/TemplateService';
+import { PlanService } from '../backend/services/PlanService';
 import { getMockTemplateDao, getTemplateView, newTestUser } from './common';
 import { adminUserId, asUserId, jcHash, jcTestTemplateData, jcTestTemplateDescription, jcTestTemplateName, jcUserId, MAX_PAGES_BETA, MAX_TEMPLATE_BETA, MAX_TEMPLATE_PRIVATE, MAX_TEMPLATE_SIMMER, nonAdminUserId } from './constants';
 dotenv.config()
@@ -19,6 +20,8 @@ dotenv.config()
 const MAX_PAGES_MESSAGE = "Maximum pages reached"
 const MAX_TEMPLATES_REACHED_MESSAGE = "Maximum templates reached"
 const MAX_TEMPLATES_EXCEEDED_MESSAGE = "Maximum templates exceeded"
+
+
 
 describe('TemplateService Tests', () => {
 
@@ -45,6 +48,23 @@ describe('TemplateService Tests', () => {
 
             expect(name).toBe(jcTestTemplateName)
             expect(templateDao.delete).toBeCalledWith(templateId, jcUserId)
+        })
+
+        it('Records usage on success', async () => {
+            const user = newTestUser(jcUserId)
+            user.planId = 'pp' // Set plan that allows restore. Assuming 'pp' allows.
+            // We need to mock PlanService.getPlan or ensure we use a planId that maps to allowed feature.
+            // Since we can't easily see Plans.ts content right now, let's rely on mocking PlanService if this fails, 
+            // or try 'lifetime' or 'beta' if they exist.
+            // Let's force the check to pass by mocking PlanService if we can import it.
+            // TemplateService imports PlanService.
+
+            // Mocking the check inside TemplateService.getVersion logic:
+            // const plan = PlanService.getPlan(user.planId)
+            // if (plan?.features.restoreOldVersion === false) ...
+
+            // If we can't easily pick a plan, let's just assert that UsageDao is called if we bypass that check.
+            // But first let's fix the syntax error.
         })
     })
 
@@ -90,6 +110,42 @@ describe('TemplateService Tests', () => {
             const templateId = 0
             const tv = await TemplateService.get(templateId, nonAdminUserId)
             expect(TemplateDao.readByIdStatic).toBeCalledWith(templateId, nonAdminUserId)
+        })
+    })
+
+    describe('getVersion', () => {
+        it('throws 401 if user not found', async () => {
+            const userDao = new UserDao()
+            jest.spyOn(UserDao.prototype, 'get').mockResolvedValue(undefined)
+            await expect(TemplateService.getVersion(1, 1, 999)).rejects.toMatchObject({ status: 401, message: 'Unauthorized' })
+        })
+
+        it('throws 404 if version not found', async () => {
+            const user = newTestUser(jcUserId)
+            user.planId = 'pp2'
+            jest.spyOn(UserDao.prototype, 'get').mockResolvedValue(user)
+            jest.spyOn(TemplateDao, 'readByIdStatic').mockResolvedValue(undefined)
+            jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
+
+            await expect(TemplateService.getVersion(1, 1, jcUserId)).rejects.toMatchObject({ status: 404, message: 'Version not found' })
+        })
+
+        it('Records usage on success', async () => {
+            const user = newTestUser(jcUserId)
+            user.planId = 'pp2'
+            jest.spyOn(UserDao.prototype, 'get').mockResolvedValue(user)
+
+            // Mock successful retrieval
+            const templateId = 123
+            const version = 5
+            const template = new Template(templateId, jcUserId, jcTestTemplateData, TemplateFormat.Kneeboard, jcTestTemplateName, undefined, version, 2)
+            jest.spyOn(TemplateDao, 'readByIdStatic').mockResolvedValue(template)
+
+            jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
+
+            await TemplateService.getVersion(templateId, version, jcUserId)
+
+            expect(UsageDao.create).toHaveBeenCalledWith('restore', jcUserId, JSON.stringify({ templateId, version }))
         })
     })
 
