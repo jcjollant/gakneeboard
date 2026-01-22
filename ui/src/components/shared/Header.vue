@@ -73,6 +73,7 @@ watch( props, async() => {
     position: relative;
     height: 23px;
     line-height: 23px;
+    max-width: calc( var(--tile-width) - 2px);
 }
 .headerTitle.stealth {
     border-bottom: 1px dashed white;
