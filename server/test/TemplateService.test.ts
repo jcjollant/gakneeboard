@@ -6,6 +6,7 @@ import { PublicationDao } from '../backend/PublicationDao';
 import { TemplateDao } from '../backend/TemplateDao';
 import { UsageDao } from '../backend/dao/UsageDao';
 import { UserDao } from '../backend/dao/UserDao';
+import { TemplateHistoryDao, TemplateHistory, TemplateOperation } from '../backend/dao/TemplateHistoryDao';
 import { Publication } from '../backend/models/Publication';
 import { Template } from '../backend/models/Template';
 import { TemplateFormat } from '../backend/models/TemplateFormat';
@@ -124,6 +125,7 @@ describe('TemplateService Tests', () => {
             const user = newTestUser(jcUserId)
             user.planId = 'pp2'
             jest.spyOn(UserDao.prototype, 'get').mockResolvedValue(user)
+            jest.spyOn(TemplateHistoryDao.prototype, 'getTemplateVersion').mockResolvedValue(undefined)
             jest.spyOn(TemplateDao, 'readByIdStatic').mockResolvedValue(undefined)
             jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
 
@@ -139,8 +141,24 @@ describe('TemplateService Tests', () => {
             const templateId = 123
             const version = 5
             const template = new Template(templateId, jcUserId, jcTestTemplateData, TemplateFormat.Kneeboard, jcTestTemplateName, undefined, version, 2)
-            jest.spyOn(TemplateDao, 'readByIdStatic').mockResolvedValue(template)
 
+            // Mock the history retrieval
+            const mockHistory = new TemplateHistory(
+                1,
+                templateId,
+                jcUserId,
+                jcTestTemplateData,
+                jcTestTemplateName,
+                version,
+                undefined,
+                2,
+                undefined,
+                undefined,
+                TemplateOperation.UPDATE,
+                new Date()
+            )
+            jest.spyOn(TemplateHistoryDao.prototype, 'getTemplateVersion').mockResolvedValue(mockHistory)
+            jest.spyOn(TemplateDao, 'readByIdStatic').mockResolvedValue(template)
             jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
 
             await TemplateService.getVersion(templateId, version, jcUserId)

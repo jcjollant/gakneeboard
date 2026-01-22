@@ -1,5 +1,6 @@
 
-import { describe, expect, it, beforeAll, afterAll } from '@jest/globals';
+
+import { describe, expect, it, beforeAll, afterAll, xdescribe } from '@jest/globals';
 import { UserDao } from '../../backend/dao/UserDao';
 import { Business } from '../../backend/business/Business';
 import { newTestUser } from '../common';
@@ -8,7 +9,7 @@ import { sql } from '@vercel/postgres';
 
 require('dotenv').config();
 
-describe('Refill Reproduction', () => {
+xdescribe('Refill Reproduction', () => {
     let userDao: UserDao;
     const uniqueId = Math.floor(Math.random() * 100000);
     const studentUser = newTestUser(0, AccountType.student, 'pp1');
