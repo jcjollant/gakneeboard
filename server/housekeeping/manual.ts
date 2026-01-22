@@ -105,6 +105,6 @@ dotenv.config()
 //================================
 import { Business } from '../backend/business/Business';
 import { UserDao } from '../backend/dao/UserDao';
-Business.printRefills(new UserDao(), true).then( r => {
+Business.freePrintRefills(new UserDao(), true).then(r => {
     console.log('Refilled ' + r.length + ' users')
 })

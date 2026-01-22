@@ -358,9 +358,9 @@ describe('Business', () => {
 
             const mockUserDao = getMockUserDao(newTestUser())
 
-            const refills = await Business.printRefills(mockUserDao)
+            const refills = await Business.freePrintRefills(mockUserDao)
 
-            expect(mockUserDao.refill).toHaveBeenCalledTimes(1)
+            expect(mockUserDao.refillAccountType).toHaveBeenCalledTimes(1)
             expect(refills).toHaveLength(4)
         })
 
@@ -368,7 +368,7 @@ describe('Business', () => {
             jest.useFakeTimers().setSystemTime(new Date('2023-01-03'));
             expect(new Date().getDate()).not.toBe(1)
 
-            const refills = await Business.printRefills(testUserDao)
+            const refills = await Business.freePrintRefills(testUserDao)
             expect(refills).toHaveLength(0)
         })
 
@@ -377,9 +377,9 @@ describe('Business', () => {
             expect(new Date().getDate()).not.toBe(1)
             const mockUserDao = getMockUserDao(testUser)
 
-            const refills = await Business.printRefills(mockUserDao, true)
+            const refills = await Business.freePrintRefills(mockUserDao, true)
 
-            expect(mockUserDao.refill).toHaveBeenCalledTimes(1)
+            expect(mockUserDao.refillAccountType).toHaveBeenCalledTimes(1)
             expect(refills).toHaveLength(4)
         })
     })

@@ -106,7 +106,7 @@ export class UserDao extends Dao<User> {
      * @param accountType Account type to refill
      * @returns List of refills
      */
-    public async refill(count: number, accountType: string): Promise<Refill[]> {
+    public async refillAccountType(accountType: string, count: number): Promise<Refill[]> {
         const r1 = await sql`SELECT id,print_credit FROM users WHERE account_type=${accountType} AND print_credit < ${count}`
         if (r1.rowCount == 0) return [] // no users to refill
 

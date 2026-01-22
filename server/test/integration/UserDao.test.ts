@@ -1,13 +1,11 @@
 
-import { afterAll, beforeAll, describe, expect, it, xdescribe } from '@jest/globals';
-import { UserDao } from '../../backend/dao/UserDao'
-import { jcUserId, jcHash, jcEmail, jcName, jcSource, jcCustomerId, MAX_TEMPLATE_SIMMER, MAX_PAGES_SIMMER, MAX_TEMPLATE_BETA, MAX_PAGES_BETA } from '../constants';
 import { AccountType } from '@checklist/shared';
-import { User } from '../../backend/models/User';
-import { newTestUser } from '../common'
+import { afterAll, beforeAll, expect, it, xdescribe } from '@jest/globals';
 import { db, sql } from '@vercel/postgres';
-import e from 'express';
-import { Business } from '../../backend/business/Business';
+import { UserDao } from '../../backend/dao/UserDao';
+import { User } from '../../backend/models/User';
+import { newTestUser } from '../common';
+import { jcCustomerId, jcEmail, jcHash, jcName, jcSource, jcUserId, MAX_PAGES_BETA, MAX_PAGES_SIMMER, MAX_TEMPLATE_BETA, MAX_TEMPLATE_SIMMER } from '../constants';
 
 require('dotenv').config();
 
@@ -146,9 +144,9 @@ xdescribe('UserDao', () => {
         }
 
         const count1 = 10
-        const refill1 = await userDao.refill(count1, testType1)
+        const refill1 = await userDao.refillAccountType(testType1, count1)
         const count2 = 20
-        const refill2 = await userDao.refill(count2, testType2)
+        const refill2 = await userDao.refillAccountType(testType2, count2)
 
         for (let r of refill1) {
             expect(r.previousCount).toBe(previous1)

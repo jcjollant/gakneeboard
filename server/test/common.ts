@@ -20,7 +20,7 @@ export function getMockUserDao(user: User): UserDao {
     jest.spyOn(mockUserDao, 'addPrints').mockResolvedValue(user);
     jest.spyOn(mockUserDao, 'updateType').mockResolvedValue();
     const refills = [1, 2, 3, 4].map(i => new Refill(i, i, 5))
-    jest.spyOn(mockUserDao, 'refill').mockResolvedValue(refills);
+    jest.spyOn(mockUserDao, 'refillAccountType').mockResolvedValue(refills);
 
     return mockUserDao
 }
