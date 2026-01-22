@@ -1,4 +1,4 @@
-import { loadTestPage, PageTypeLabel } from './shared'
+import { loadTestPage, PageTypeLabel } from '../shared'
 
 describe('Checklist Fixture Tests', () => {
 

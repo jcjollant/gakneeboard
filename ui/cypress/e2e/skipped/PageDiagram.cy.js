@@ -1,11 +1,11 @@
-import { visitSkipBanner, newTemplate, expectToast } from './shared'
+import { visitSkipBanner, newTemplate, expectToast } from '../shared'
 
 function enterCode(page, code) {
-    cy.get(`.page${page} .p-inputtext`).type('{selectall}').type(code, {delay:0})
+  cy.get(`.page${page} .p-inputtext`).type('{selectall}').type(code, { delay: 0 })
 }
 
-function testEditMode(page,edit) {
-  if(edit) {
+function testEditMode(page, edit) {
+  if (edit) {
     cy.get(`.page${page}  .section`).contains('Pick New Airport')
 
   } else {
@@ -25,8 +25,8 @@ describe('Diagram Page', () => {
     cy.get('.page0 > .headerTitle').contains('Airport Diagram')
     cy.get('.page1 > .headerTitle').contains('Airport Diagram')
     // by default, we should be in edit mode
-    testEditMode(0,true)
-    testEditMode(1,true)
+    testEditMode(0, true)
+    testEditMode(1, true)
 
     // Test Bogus code => airport should not allow toggle
     enterCode(0, 'KJC')
@@ -37,7 +37,7 @@ describe('Diagram Page', () => {
 
     cy.get('.page0 > .headerTitle').click()
     // Should still be in edit mode
-    testEditMode(0,true)
+    testEditMode(0, true)
 
     // Test an airport without diagram
     enterCode(0, 'W39')
@@ -52,11 +52,11 @@ describe('Diagram Page', () => {
     // cy.intercept({ method: 'GET', url: '**/pdf.worker.min.mjs',}).as('getWorker')
 
     // make selection
-    cy.intercept({ method: 'GET', url: '**/05396AD.PDF',}).as('getPDF');
+    cy.intercept({ method: 'GET', url: '**/05396AD.PDF', }).as('getPDF');
     cy.get('.page0 [aria-label="Show Diagram"]').click()
 
     // accept 200 or 304
-    cy.wait('@getPDF').its('response.statusCode').should('be.oneOf', [200,304])
+    cy.wait('@getPDF').its('response.statusCode').should('be.oneOf', [200, 304])
 
   })
 })

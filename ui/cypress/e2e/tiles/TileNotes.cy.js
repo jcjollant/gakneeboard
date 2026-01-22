@@ -1,5 +1,4 @@
-import { checkTestPageTileTitle, displaySelection, loadDemo, notesTitle, radioTitle, visitSkipBanner } from '../shared'
-import { loadTestPage, PageTypeLabel } from '../shared'
+import { checkTestPageTileTitle, loadTestPage, notesTitle, PageTypeLabel } from '../shared'
 
 const labelBlank = "Blank"
 const labelWORD = "W O R D"
@@ -29,7 +28,7 @@ function loadNotesTestPage() {
 
 describe('Notes Tile', () => {
 
-  it('Loads Notes Tiles', () => {
+  it('Loads Notes Tiles with various display modes', () => {
     loadNotesTestPage()
 
     checkTestPageTileTitle(0, notesTitle)

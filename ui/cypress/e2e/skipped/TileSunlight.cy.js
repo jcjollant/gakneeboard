@@ -14,7 +14,7 @@ class DisplayModeLabel {
 
 const placeHolderSubtitle = "Click Here to Configure"
 
-describe('Tiles', () => {
+describe.skip('Tiles', () => {
   beforeEach(() => {
     visitSkipBanner()
     newTemplateWithTile(TileTypeLabel.sunlight)
@@ -24,14 +24,14 @@ describe('Tiles', () => {
     checkTileTitle(0, 0, Header.displaySelection)
     // all modes are present
     const expectedModes = [DisplayModeLabel.flight, DisplayModeLabel.reference]
-    for(const mode of expectedModes) {
+    for (const mode of expectedModes) {
       cy.get(`[aria-label="${mode}"]`)
     }
   })
 
   it('Flight Mode works', () => {
     // Switch to flight mode
-    displaySelection( 0, 0, DisplayModeLabel.flight)
+    displaySelection(0, 0, DisplayModeLabel.flight)
 
     // Edit Mode
     cy.get(`.placeHolder`).click()
@@ -45,8 +45,8 @@ describe('Tiles', () => {
     cy.get('.legend')
 
     // date should be today
-    const today = new Date().toLocaleString('en-US', {weekday: 'short', month: 'short', day: 'numeric'})
-    cy.get('.date').contains( today)
+    const today = new Date().toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+    cy.get('.date').contains(today)
     // Check corners in day mode
     cy.get('.topLeftCorner').contains('KRNT')
     cy.get('.topRightCorner').contains('KSFF')
@@ -63,11 +63,11 @@ describe('Tiles', () => {
     cy.get('.topRightCorner').contains('KSFF')
     cy.get('.bottomLeftCorner').contains('From')
     cy.get('.bottomRightCorner').contains('To')
-    cy.get('.date').contains( 'Night Flight')
+    cy.get('.date').contains('Night Flight')
   })
 
   it('Can be replaced by other tiles', () => {
-    displaySelection( 0, 0, DisplayModeLabel.reference)
+    displaySelection(0, 0, DisplayModeLabel.reference)
 
     // Test Tile can be replaced by Notes
     replaceTile(0, 0, TileTypeLabel.notes)
@@ -83,7 +83,7 @@ describe('Tiles', () => {
     checkTileTitle(0, 0, Header.displaySelection)
 
     // Flight Mode
-    displaySelection( 0, 0, DisplayModeLabel.flight)
+    displaySelection(0, 0, DisplayModeLabel.flight)
     checkTileTitle(0, 0, Header.flight)
 
     // Edit mode

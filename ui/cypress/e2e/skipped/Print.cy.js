@@ -1,8 +1,8 @@
-import { maintenanceMode, loadDemo, visitSkipBanner } from './shared'
+import { maintenanceMode, loadDemo, visitSkipBanner } from '../shared'
 
 describe('Navigation', () => {
 
-  it('Print Dialog', () =>{
+  it('Print Dialog', () => {
     visitSkipBanner()
     maintenanceMode()
     cy.viewport('macbook-16')
@@ -12,7 +12,7 @@ describe('Navigation', () => {
     cy.get('#btnPrint').click()
     // check title
     cy.get('.p-dialog-header').contains('Print')
-    cy.url().should('include','/print/0')
+    cy.url().should('include', '/print/0')
     // Check Page options
     cy.get('.pageOptions').contains('Pages per sheet')
     cy.get('.pageOptions').contains('Back Page Orientation')
@@ -22,7 +22,7 @@ describe('Navigation', () => {
     cy.get('[aria-label="Flipped"]')
     // click do not print
     cy.get('.actionDialog > .p-button-link').click()
-    cy.url().should('include','/template/local')
+    cy.url().should('include', '/template/local')
   })
 
 })

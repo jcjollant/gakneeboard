@@ -1,9 +1,9 @@
-import { visitAndCloseBanner, newTemplate, visitSkipBanner } from './shared'
+import { visitAndCloseBanner, newTemplate, visitSkipBanner } from '../shared'
 
 function checkBlankState() {
-    cy.get('.titleContainer').contains('Title')
-    cy.get('.clickable > .pi').should('have.class', 'pi-camera')
-    cy.get('.subtitle').contains('Click anywhere to customize')
+  cy.get('.titleContainer').contains('Title')
+  cy.get('.clickable > .pi').should('have.class', 'pi-camera')
+  cy.get('.subtitle').contains('Click anywhere to customize')
 }
 
 describe('Approach Page', () => {

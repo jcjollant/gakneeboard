@@ -1,10 +1,10 @@
-import { visitAndCloseBanner, newPage, visitSkipBanner, newTemplate } from './shared'
+import { visitAndCloseBanner, newPage, visitSkipBanner, newTemplate } from '../shared'
 
-function testEditMode(present=true) {
-  if(present) {
+function testEditMode(present = true) {
+  if (present) {
     const expectedStrips = ['ATIS', 'CRAFT', 'Radio', 'Taxi', 'Notes']
     cy.get('.selectionStrip > .list').children().should('have.length', expectedStrips.length + 1)
-    for( const type of expectedStrips) {
+    for (const type of expectedStrips) {
       cy.get('.selectionStrip').contains(type)
     }
   } else {

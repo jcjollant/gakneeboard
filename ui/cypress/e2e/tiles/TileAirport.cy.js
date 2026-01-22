@@ -20,10 +20,6 @@ function checkCorner(tile, corner, label, value) {
   cy.get(`.tile${tile} .tileContent ${corner} .value`).contains(value)
 }
 
-function toggleEditMode(tile) {
-  cy.get(`.tile${tile} .headerTitle > .titleText`).click()
-}
-
 describe('Tiles', () => {
   it('Shows default fields in Sketch mode single runway', () => {
     loadAirportTestPage()

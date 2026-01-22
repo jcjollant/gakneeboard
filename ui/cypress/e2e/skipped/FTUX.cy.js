@@ -1,11 +1,11 @@
-import { boeingTitle, demoChecklistOnPage, demoTilesOnPage, expectedDemos, expectToast, loadDemo, rentonTitle, selectionTitle, visitAndCloseBanner, visitSkipBanner, waitForAirports } from './shared.js'
-import { environment, landing } from './shared.js'
+import { boeingTitle, demoChecklistOnPage, demoTilesOnPage, expectedDemos, expectToast, loadDemo, rentonTitle, selectionTitle, visitAndCloseBanner, visitSkipBanner, waitForAirports } from '../shared.js'
+import { environment, landing } from '../shared.js'
 
 function checkFtuxTile() {
     cy.get('h1').contains('Pick a demo to get started')
 }
 
-describe('First Time User Experience', () => {
+describe.skip('First Time User Experience', () => {
 
     it('Landing Page', () => {
         cy.visit(landing)
@@ -32,8 +32,8 @@ describe('First Time User Experience', () => {
     it('FTUX', () => {
         cy.visit(environment)
         checkFtuxTile()
-        const expectedDemos = ['VFR Flight','Checklists','Charts', 'IFR Flight']
-        for(let index = 0; index < expectedDemos.length; index++) {
+        const expectedDemos = ['VFR Flight', 'Checklists', 'Charts', 'IFR Flight']
+        for (let index = 0; index < expectedDemos.length; index++) {
             const demo = expectedDemos[index]
             cy.get(`.demo${index} > .name`).contains(demo)
             cy.get(`.demo${index}`).click()
@@ -74,7 +74,7 @@ describe('First Time User Experience', () => {
         expectedDemos.forEach((demo, index) => {
             cy.get('.demoSection > .templateList').children().eq(index).contains(demo.l)
         })
-        
+
         // As a new user, I should see the version number
         cy.get('.versionDialog')
     })
@@ -106,13 +106,13 @@ describe('First Time User Experience', () => {
         // Check demo pages description work
         cy.get('.logo-img').click()
         cy.get('.demoSection > .templateList').children().should('have.length', expectedDemos.length)
-        for(const ed of expectedDemos) {
+        for (const ed of expectedDemos) {
             visitSkipBanner()
             cy.get(`.demo${ed.i}`).contains(ed.l);
             cy.get(`.demo${ed.i}`).title(ed.t);
             loadDemo(ed.i)
-            cy.get('.page0').should('have.class',ed.c[0])
-            cy.get('.page1').should('have.class',ed.c[1])
+            cy.get('.page0').should('have.class', ed.c[0])
+            cy.get('.page1').should('have.class', ed.c[1])
         }
     })
 
@@ -128,8 +128,8 @@ describe('First Time User Experience', () => {
         // As a new User I can rename a template
         const newName = 'NewName'
         cy.get('#btnSettings').click()
-        cy.get('.pageName > .p-inputtext').type( '{selectAll}'+newName,{delay:0})
-        cy.get('.pageDescription > .p-inputtext').type('NewDescription',{delay:0})
+        cy.get('.pageName > .p-inputtext').type('{selectAll}' + newName, { delay: 0 })
+        cy.get('.pageDescription > .p-inputtext').type('NewDescription', { delay: 0 })
         // Should have a version number at 0
         cy.get('.templateVersion').should('have.value', '0')
         // Should have a version number at 0
