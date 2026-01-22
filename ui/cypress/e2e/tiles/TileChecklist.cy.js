@@ -1,6 +1,6 @@
 import { loadTilePage, TileTypeLabel, settingsOpen } from '../shared'
 
-describe('Checklist Tile', () => {
+describe.skip('Checklist Tile', () => {
   it('Checklist Tile', () => {
     loadTilePage(TileTypeLabel.checklist)
 

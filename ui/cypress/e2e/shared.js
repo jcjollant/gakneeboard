@@ -75,6 +75,9 @@ export function checkTileTitle(page, tile, title) {
     cy.get(`.page${page} > .tile${tile} > .headerTitle`).contains(title)
 }
 
+export function checkTestPageTileTitle(tile, title) {
+    cy.get(`.tile${tile} .headerTitle`).contains(title)
+}
 export function checkTileVisible(page, tile, visible = true) {
     const condition = visible ? 'not.have.css' : 'have.css'
     cy.get(`.page${page} > .tile${tile}`).should(condition, 'display', 'none')
