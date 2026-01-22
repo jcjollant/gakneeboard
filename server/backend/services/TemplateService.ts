@@ -74,13 +74,13 @@ export class TemplateService {
      * Get a specific version of a template
      * @param templateId 
      * @param version 
-     * @param requester 
+     * @param requesterId 
      * @returns 
      */
-    public static async getVersion(templateId: number, version: number, requester: number): Promise<TemplateView | undefined> {
+    public static async getVersion(templateId: number, version: number, requesterId: number): Promise<TemplateView | undefined> {
         // Check user type
         const userDao = new UserDao()
-        const user = await userDao.get(requester)
+        const user = await userDao.get(requesterId)
         if (!user) throw new GApiError(401, 'Unauthorized')
 
         // Is this feature allowed for this user?
@@ -91,19 +91,24 @@ export class TemplateService {
 
         // Try to get from history
         const historyDao = new TemplateHistoryDao()
-        const history = await historyDao.getSpecificVersion(templateId, version)
+        // We record usage parallel to the history retrieval
+        const [history] = await Promise.all([
+            historyDao.getTemplateVersion(templateId, version),
+            UsageDao.create(UsageType.Restore, requesterId, JSON.stringify({ templateId: templateId, version: version }))
+        ])
 
         if (history) {
-            if (history.userId !== requester) {
+            if (history.userId !== requesterId) {
                 throw new GApiError(404, 'Template not found')
             }
             // We have the data, but we need the format. We'll try to get it from the current template
             // If the template is deleted, we default to Kneeboard (most common)
             let format = TemplateFormat.Kneeboard
             try {
-                const currentTemplate = await TemplateDao.readByIdStatic(templateId, requester)
+                const currentTemplate = await TemplateDao.readByIdStatic(templateId, requesterId)
                 if (currentTemplate) format = currentTemplate.format
             } catch (ignore) { }
+
 
             return new TemplateView(
                 history.templateId,
@@ -121,7 +126,7 @@ export class TemplateService {
         }
 
         // Check if current version matches
-        const currentTemplate = await TemplateDao.readByIdStatic(templateId, requester)
+        const currentTemplate = await TemplateDao.readByIdStatic(templateId, requesterId)
         if (currentTemplate && currentTemplate.version === version) {
             return TemplateView.parseTemplate(currentTemplate)
         }
