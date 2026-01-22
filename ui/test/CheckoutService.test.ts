@@ -32,6 +32,8 @@ describe('CheckoutService', () => {
         beforeEach(() => {
             jest.clearAllMocks();
             (AttributionService.getAttribution as jest.Mock).mockReturnValue(null);
+            // Suppress console.log during tests
+            jest.spyOn(console, 'log').mockImplementation(() => { });
         });
 
         test('should call checkout API and return URL', async () => {
