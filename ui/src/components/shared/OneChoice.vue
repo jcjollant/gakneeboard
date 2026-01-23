@@ -44,7 +44,6 @@ function onChoice(choice:any) {
     cursor: pointer;
     width: fit-content;
     line-height: 1.5rem;
-    flex-wrap: wrap;
 }
 
 .oneChoice.full {

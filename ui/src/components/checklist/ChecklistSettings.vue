@@ -211,9 +211,16 @@ const tileSettingsUpdate = inject('tileSettingsUpdate', null) as ((data: any) =>
 .nameAndCols, .editChoice {
     display: flex;
     gap: 10px;
-    height: 2rem;
     align-items: center;
     justify-content: space-between;
+}
+
+.nameAndCols :deep(.p-inputgroup) {
+    height: fit-content;
+}
+
+.nameAndCols :deep(.p-inputtext) {
+    height: 2.5rem;
 }
 
 .checklistNameAddon {
