@@ -189,6 +189,21 @@ export class NotamService {
         });
     }
 
+    public static async getSimplifiedNotams(params: Omit<GetNotamsParams, 'nmsResponseFormat'>): Promise<SimplifiedNotam[]> {
+        const response = await this.getNotams({
+            ...params,
+            nmsResponseFormat: NmsResponseFormat.GEOJSON
+        });
+
+        if (response.status === 'Success' && response.data.geojson) {
+            return response.data.geojson
+                .map((f: any) => this.simplify(f))
+                .filter((n: any) => n !== null) as SimplifiedNotam[];
+        }
+
+        return [];
+    }
+
     public static async getInitialLoad(classification?: NotamClassification, allowRedirect?: boolean): Promise<NmsInitialLoadResponse> {
         const query = new URLSearchParams();
         if (allowRedirect !== undefined) query.append('allowRedirect', String(allowRedirect));

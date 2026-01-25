@@ -16,6 +16,7 @@ import { UserImage } from "../backend/UserImage";
 import { UserDao } from "../backend/dao/UserDao";
 import { UsageDao } from "../backend/dao/UsageDao";
 import { Authorization } from "../backend/services/Authorization";
+import { NotamService } from "../backend/services/NotamService";
 const port: number = 3000
 const app = express();
 
@@ -76,6 +77,26 @@ app.get('/airport/:id', async (req, res) => {
         res.send(output)
     } catch (e) {
         catchError(res, e, 'GET /airport')
+    }
+})
+
+/**
+ * Get simplified NOTAMs for an airport
+ */
+app.get('/notam/:airportCode', async (req: Request, res: Response) => {
+    try {
+        const userId = await UserTools.userIdFromRequest(req)
+        if (!userId) {
+            throw new GApiError(401, 'Unauthorized')
+        }
+
+        const airportCode = req.params.airportCode
+        const simplified = await NotamService.getSimplifiedNotams({
+            location: airportCode
+        })
+        res.send(simplified)
+    } catch (e) {
+        catchError(res, e, 'GET /notam/:airportCode')
     }
 })
 
