@@ -105,7 +105,10 @@ export class HealthCheck {
             'STRIPE_LD1_PRICE',
             'BLOB_READ_WRITE_TOKEN',
             'POSTGRES_URL',
-            'EFFECTIVE_DATE']
+            'EFFECTIVE_DATE',
+            'NMS_API_URL',
+            'NMS_API_KEY',
+            'NMS_API_SECRET']
 
         const check: Check = new Check("Environment Variables")
         for (const envVar of envVars) {

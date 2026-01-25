@@ -168,10 +168,13 @@ describe('HealthChecks', () => {
             process.env.BLOB_READ_WRITE_TOKEN = 'test';
             process.env.POSTGRES_URL = 'test';
             process.env.EFFECTIVE_DATE = 'test';
+            process.env.NMS_API_URL = 'test';
+            process.env.NMS_API_KEY = 'test';
+            process.env.NMS_API_SECRET = 'test';
 
             const result = await HealthCheck.environmentVariables();
             expect(result.status).toBe(Check.SUCCESS);
-            expect(result.msg).toContain('Found 10 variables');
+            expect(result.msg).toContain('Found 13 variables');
         });
 
         test('Failure: Missing variable', async () => {
