@@ -22,6 +22,7 @@ function checkCorner(tile, corner, label, value) {
 
 describe('Tiles', () => {
   it('Shows default fields in Sketch mode single runway', () => {
+    cy.intercept('GET', '**/notams/**', [])
     loadAirportTestPage()
     // maintenanceMode()
 

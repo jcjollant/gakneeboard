@@ -46,7 +46,7 @@ describe('NotamService', () => {
 
             expect(mockFetch).toHaveBeenCalledTimes(2);
             // First call to auth
-            expect(mockFetch).toHaveBeenNthCalledWith(1, 'https://api.example.com/auth/token', expect.objectContaining({
+            expect(mockFetch).toHaveBeenNthCalledWith(1, 'https://api.example.com/v1/auth/token', expect.objectContaining({
                 method: 'POST',
                 headers: expect.objectContaining({
                     'Authorization': expect.stringContaining('Basic ')
