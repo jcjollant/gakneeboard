@@ -40,9 +40,7 @@
                 <Corner v-if="showCorners"  class="corner bottom right" :airport="airportData" :data="corners[3]"  :runway="mainRunway"  id="corner3"
                     @click="onCornerEdit(3, $event)"/>
                     
-                <div v-if="showNotams" class="notam-badge" @click.stop="onNotamBadgeClick" title="View Notams" :class="{'expanded': span2}">
-                    {{ notamsList.length }}
-                </div>
+                <NotamBadge v-if="showNotams" :count="notamsList.length" @click.stop="onNotamBadgeClick" class="notam-badge-pos" :class="{'expanded': span2}" />
             </div>
             <PlaceHolder v-else title="No Airport" />
         </div>
@@ -71,6 +69,7 @@ import Header from '../../components/shared/Header.vue'
 import PlaceHolder from '../../components/shared/PlaceHolder.vue'
 import RunwaySketch from './RunwaySketch.vue'
 import NotamListDialog from './NotamListDialog.vue'
+import NotamBadge from './NotamBadge.vue'
 
 const defaultMode = DisplayModeAirport.RunwaySketch
 const emits = defineEmits(['replace','update', 'settings'])
@@ -452,24 +451,13 @@ function saveConfig() {
     height: 150px;
 }
 
-.notam-badge {
+.notam-badge-pos {
     position: absolute;
     top: 45px;
     left: 5px;
-    background-color: #666;
-    color: white;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 12px;
-    font-weight: bold;
     z-index: 10;
-    cursor: pointer;
 }
-.notam-badge.expanded {
+.notam-badge-pos.expanded {
     top: 5px;
     left: 135px;
 }

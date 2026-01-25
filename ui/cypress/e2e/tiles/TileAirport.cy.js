@@ -22,11 +22,15 @@ function checkCorner(tile, corner, label, value) {
 
 describe('Tiles', () => {
   it('Shows default fields in Sketch mode single runway', () => {
-    cy.intercept('GET', '**/notams/**', [])
+    cy.intercept('GET', '**/notams/**', [
+      { id: '1', text: 'NOTAM 1' },
+      { id: '2', text: 'NOTAM 2' }
+    ])
     loadAirportTestPage()
     // maintenanceMode()
 
     waitForAirports()
+    cy.get('.notam-badge').should('contain', '2')
 
     // Renton and Boeing fields
     const expectedValues = [

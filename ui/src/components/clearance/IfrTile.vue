@@ -14,6 +14,17 @@
             <RegLink :regs="[Regulation.IFRTwoWayRadioFailure]" />
         </div>
         <CraftBoxedContent v-else />
+
+        <NotamBadge v-if="displayMode==DisplayModeIfr.Departure && notamsList.length > 0" 
+            :count="notamsList.length" 
+            class="notam-badge-pos" 
+            @click.stop="showNotamsDialog = true" />
+
+        <NotamListDialog :visible="showNotamsDialog" 
+            :notams="notamsList" 
+            :airportCode="airport.code" 
+            :airportName="airport.name" 
+            @close="showNotamsDialog = false" />
     </div>
 
 </template>
@@ -22,8 +33,9 @@
 import { onMounted, ref, watch } from 'vue'
 import { Airport } from '../../models/Airport.ts';
 import { DisplayModeIfr } from '../../models/DisplayMode.ts';
-import { getAirport } from '../../services/AirportDataService';
+import { getAirport, getNotams } from '../../services/AirportDataService';
 import { Regulation } from '../../models/Regulation.ts';
+import { Notam } from '../../models/Notam.ts';
 
 import ApproachContent from './ApproachContent.vue';
 import CraftBoxedContent from './CraftBoxedContent.vue';
@@ -31,6 +43,8 @@ import DepartureContent from './DepartureContent.vue';
 import Header from '../shared/Header.vue';
 import ImageContent from '../shared/ImageContent.vue';
 import RegLink from '../regulations/RegLink.vue';
+import NotamBadge from '../airport/NotamBadge.vue';
+import NotamListDialog from '../airport/NotamListDialog.vue';
 
 // Enum with display modes
 
@@ -39,6 +53,8 @@ const airport = ref(noAirport)
 const emits = defineEmits(['replace','update','settings'])
 const defaultMode = DisplayModeIfr.BoxV
 const displayMode=ref(DisplayModeIfr.Unknown)
+const notamsList = ref<Notam[]>([])
+const showNotamsDialog = ref(false)
 
 const props = defineProps({
     params: { type: Object, default: null},
@@ -72,6 +88,9 @@ function loadProps(props:any) {
             getAirport(props.params.airport).then( output => {
                 if( output) {
                     airport.value = Airport.copy(output)
+                    getNotams(output.code).then(notams => {
+                        notamsList.value = notams
+                    })
                 }
             })
          }
@@ -102,4 +121,10 @@ function getTitle() {
 </script>
 
 <style scoped>
+.notam-badge-pos {
+    position: absolute;
+    top: calc(var(--header-height) + 2px);
+    right: 2px;
+    z-index: 10;
+}
 </style>
