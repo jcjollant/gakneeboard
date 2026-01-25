@@ -230,9 +230,24 @@ export async function createAirport(request: AirportCreationRequest) {
 
 export async function getNotams(airportCode: string): Promise<Notam[]> {
     const notams: Notam[] = [];
-    // const count = Math.floor(Math.random() * 10) + 1;
-    // for (let i = 0; i < count; i++) {
-    //     notams.push({ text: "Mock Notam" });
-    // }
+
+    // check local storage first
+    const localNotams = LocalStoreService.notamsGet(airportCode)
+    if (localNotams.length > 0) {
+        console.debug('[AirportDataService.getNotams] using local notams for ' + airportCode)
+        return localNotams
+    }
+    const url = UrlService.root + 'notams/' + airportCode;
+    await currentUser.getUrl(url)
+        .then(response => {
+            // console.log( '[data.requestOneAirport] received', JSON.stringify(response.data))
+            notams.push(...response.data)
+
+            // save this data in local storage
+            if (notams.length > 0) LocalStoreService.notamsAdd(airportCode, notams)
+        })
+        .catch(error => {
+            reportError('[AirportDataService.getNotams] error ' + JSON.stringify(error))
+        })
     return notams;
 }

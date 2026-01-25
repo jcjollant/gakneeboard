@@ -82,5 +82,80 @@ describe('LocalStoreService', () => {
             unsubscribe();
         });
     });
+    describe('notams', () => {
+        const airportCode = 'KJFK';
+        const notams = [{
+            text: 'Test Notam',
+            id: '1',
+            type: 'Test',
+            effectiveStart: '2023-01-01',
+            effectiveEnd: '2023-01-02'
+        }];
+
+        test('notamsAdd should store notams with timestamp', () => {
+            LocalStoreService.notamsAdd(airportCode, notams);
+
+            const key = LocalStoreService.notamsPrefix + airportCode;
+            expect(localStorageMock.setItem).toHaveBeenCalledWith(key, expect.any(String));
+
+            // Check payload structure
+            const storedValue = (localStorageMock.setItem as jest.Mock).mock.calls[0][1] as string;
+            const payload = JSON.parse(storedValue);
+            expect(payload.notams).toEqual(notams);
+            expect(payload.timestamp).toBeDefined();
+        });
+
+        test('notamsGet should retrieve stored notams', () => {
+            const key = LocalStoreService.notamsPrefix + airportCode;
+            const payload = {
+                timestamp: new Date().toISOString(),
+                notams: notams
+            };
+            localStorageMock.getItem.mockReturnValue(JSON.stringify(payload));
+
+            const result = LocalStoreService.notamsGet(airportCode);
+            expect(result).toEqual(notams);
+            expect(localStorageMock.getItem).toHaveBeenCalledWith(key);
+        });
+
+        test('notamsGet should return empty array if no data found', () => {
+            localStorageMock.getItem.mockReturnValue(null);
+            const result = LocalStoreService.notamsGet(airportCode);
+            expect(result).toEqual([]);
+        });
+
+        test('notamsCleanUp should remove expired notams', () => {
+            // Mock localStorage with one valid and one expired entry
+            const validKey = LocalStoreService.notamsPrefix + 'KLAX';
+            const expiredKey = LocalStoreService.notamsPrefix + 'KJFK';
+
+            const validPayload = {
+                timestamp: new Date().toISOString(),
+                notams: []
+            };
+            const expiredPayload = {
+                timestamp: new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString(), // 7 hours ago
+                notams: []
+            };
+
+            const store: { [key: string]: string } = {
+                [validKey]: JSON.stringify(validPayload),
+                [expiredKey]: JSON.stringify(expiredPayload),
+                'other-key': 'value'
+            };
+
+            // Mock length and key() to iterate
+            Object.defineProperty(localStorageMock, 'length', { value: 3, configurable: true });
+            // @ts-ignore
+            localStorageMock.key = jest.fn((i: number) => Object.keys(store)[i]);
+            localStorageMock.getItem.mockImplementation((key: string) => store[key] || null);
+
+            LocalStoreService.notamsCleanUp();
+
+            expect(localStorageMock.removeItem).toHaveBeenCalledWith(expiredKey);
+            expect(localStorageMock.removeItem).not.toHaveBeenCalledWith(validKey);
+            expect(localStorageMock.removeItem).not.toHaveBeenCalledWith('other-key');
+        });
+    });
 });
 

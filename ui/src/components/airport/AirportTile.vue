@@ -31,32 +31,34 @@
                     <Corner v-for="index in [1,5,7,3]" :airport="airportData" :data="corners[index]" :runway="mainRunway" :big="true" :class="['corner'+index]"
                         @click="onCornerEdit(index, $event)" />
                 </div>
-                <Corner v-if="!expanded" class="corner top left" :airport="airportData" :data="corners[0]" :runway="mainRunway" :flip="true" id="corner0"
+                <Corner v-if="showCorners" class="corner top left" :airport="airportData" :data="corners[0]" :runway="mainRunway" :flip="true" id="corner0"
                     @click="onCornerEdit(0, $event)" />
-                <Corner v-if="!expanded" class="corner top right" :airport="airportData" :data="corners[1]"  :runway="mainRunway" :flip="true" id="corner1"
+                <Corner v-if="showCorners" class="corner top right" :airport="airportData" :data="corners[1]"  :runway="mainRunway" :flip="true" id="corner1"
                     @click="onCornerEdit(1, $event)"/>
-                <Corner v-if="!expanded"  class="corner bottom left" :airport="airportData" :data="corners[2]"  :runway="mainRunway"  id="corner2"
+                <Corner v-if="showCorners"  class="corner bottom left" :airport="airportData" :data="corners[2]"  :runway="mainRunway"  id="corner2"
                     @click="onCornerEdit(2, $event)"/>
-                <Corner v-if="!expanded"  class="corner bottom right" :airport="airportData" :data="corners[3]"  :runway="mainRunway"  id="corner3"
+                <Corner v-if="showCorners"  class="corner bottom right" :airport="airportData" :data="corners[3]"  :runway="mainRunway"  id="corner3"
                     @click="onCornerEdit(3, $event)"/>
                     
-                <div v-if="notamCount && notamCount > 0" class="notam-badge" @click.stop="onNotamBadgeClick" title="View Notams">
-                    {{ notamCount }}
+                <div v-if="showNotams" class="notam-badge" @click.stop="onNotamBadgeClick" title="View Notams" :class="{'expanded': span2}">
+                    {{ notamsList.length }}
                 </div>
             </div>
             <PlaceHolder v-else title="No Airport" />
         </div>
-        <NotamListDialog :visible="showNotamsDialog" :notams="notamsList" :airportCode="airportCode" :airportName="title" @close="showNotamsDialog = false" />
+        <NotamListDialog :visible="showNotamsDialog" :notams="notamsList" :airportCode="config.code" :airportName="title" @close="showNotamsDialog = false" />
     </div>    
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, watch} from 'vue';
+import {ref, onMounted, watch, computed} from 'vue';
+
 import { getAirport, getNotams } from '../../services/AirportDataService'
 import { AirportService } from '../../services/AirportService';
-import { DisplayModeAirport, DisplayModeChoice } from '../../models/DisplayMode';
 import { Airport, Runway } from '../../models/Airport.ts';
 import { AirportTileConfig } from './AirportTileConfig.ts';
+import { DisplayModeAirport } from '../../models/DisplayMode';
+import { Notam } from '../../models/Notam.ts';
 import { RunwayOrientation } from './RunwayOrientation.ts';
 import { RunwayViewSettings } from './RunwayViewSettings.ts';
 import { TileData } from '../../models/TileData.ts';
@@ -69,31 +71,28 @@ import Header from '../../components/shared/Header.vue'
 import PlaceHolder from '../../components/shared/PlaceHolder.vue'
 import RunwaySketch from './RunwaySketch.vue'
 import NotamListDialog from './NotamListDialog.vue'
-import { Notam } from '../../models/Notam.ts';
 
 const defaultMode = DisplayModeAirport.RunwaySketch
 const emits = defineEmits(['replace','update', 'settings'])
 const expanded = ref(false)
 const editMode = ref(false)
-const modesList = ref([
-    new DisplayModeChoice('Runway Sketch', DisplayModeAirport.RunwaySketch, true, "Simplified vue of runway(s) with airport data"),
-    new DisplayModeChoice('Airport Diagram', DisplayModeAirport.Diagram, true, "Small Airport Diagram with airport data"),
-])
 const title = ref('')
 const weatherFreq = ref('')
 const weatherType = ref()
 const elevation = ref()
 const tpa = ref()
-const airportCode = ref('') // shortcut to airportData.value.code
 const aptDiagram = ref('')
-const notamCount = ref(0)
 const notamsList = ref<Notam[]>([])
+const showCorners = computed(() => {
+    return !expanded.value
+})
+const showNotams = computed(() => {
+    return notamsList.value.length > 0
+})
 const showNotamsDialog = ref(false)
 
 const airportData = ref<Airport|undefined>(undefined)
 const runwayViews = ref(<RunwayViewSettings[]>[])
-
-
 
 const defaultCornerFields = ['weather','twr','field','#FGND','#FCD/P','tpa','?Custom?Custom','#FUNICOM']
 const defaultPatternMode = TrafficPatternDisplay.Entry45
@@ -201,7 +200,6 @@ function loadProps(newProps:any) {
     // load notams
     getNotams(propsConfig.code).then(notams => {
         notamsList.value = notams
-        notamCount.value = notams.length
     })
 }
 
@@ -215,8 +213,6 @@ watch( props, async() => {
     // console.debug("Airport props changed " + JSON.stringify(props));
     loadProps(props)
 })
-
-// Removed watch(displayMode) since we don't have local display selection anymore
 
 // End of props management
 //--------------------------
@@ -249,36 +245,15 @@ function onCornerUpdate( field:string) {
     }
 }
 
-function onExpand(newValue:boolean) {
-    // console.debug('[AirportTile.onExpand]', newValue)
-    expanded.value = newValue
-    saveConfig()
-}
-
 // Toggle between edit mode and current mode
 function onHeaderClick() {
     // Header click logic simplified or removed since we use settings now
     // Maybe just do nothing or bring up settings?
-        emits('settings')
+    emits('settings')
 }    
 
 function onNotamBadgeClick() {
     showNotamsDialog.value = true
-}
-
-// Settings have been updated in edit mode
-// Show new Airport and runway(s)
-function onSettingsUpdate( newAirport:Airport, newConfig:AirportTileConfig, save:boolean = true) {
-    // console.debug('[AirportTile.onSettingsUpdate]', newAirport, newConfig, save)
-    // Close edit mode and save config
-    editMode.value = false
-    config.value = newConfig
-
-    if(save) {
-        saveConfig()
-    } else {
-        showAirport(newAirport)
-    }
 }
 
 /**
@@ -287,6 +262,8 @@ function onSettingsUpdate( newAirport:Airport, newConfig:AirportTileConfig, save
  */
 function showAirport( airport:Airport) {
     // console.debug( "[AirportTile.showAirport] Showing airport ", JSON.stringify(airport))
+    notamsList.value = []
+
     if( !airport) {
         // if airport data is missing, we switch to edit mode
         editMode.value = true
@@ -330,6 +307,13 @@ function showAirport( airport:Airport) {
     } else {
         mainRunway.value = Runway.noRunway()
     }
+
+    // get notams
+    getNotams(airport.code).then((notams) => {
+        notamsList.value = notams
+    }).catch((error) => {
+        console.error('[AirportTile.showAirport] Failed to get notams', error)
+    })
 }
 
 // invoked whenever we want to save the current state
@@ -342,10 +326,6 @@ function saveConfig() {
 
     emits( 'update', new TileData( TileType.airport, config.value, expanded.value));
 }
-
-// function updateTitle() {
-//    deprecated
-// }
 
 </script>
 <style scoped>
@@ -488,5 +468,9 @@ function saveConfig() {
     font-weight: bold;
     z-index: 10;
     cursor: pointer;
+}
+.notam-badge.expanded {
+    top: 5px;
+    left: 135px;
 }
 </style>

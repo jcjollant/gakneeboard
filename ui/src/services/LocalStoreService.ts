@@ -1,10 +1,14 @@
 import { Airport } from '../models/Airport'
 import { User } from "../models/User"
 import { Template } from "../models/Template"
+import { Notam } from '../models/Notam'
+
+const MAX_NOTAMS_AGE = 6 * 60 * 60 * 1000
 
 export class LocalStoreService {
     static airportPrefix: string = 'airport-'
     static approachPrefix: string = 'apch-'
+    static notamsPrefix: string = 'notams-'
     static user: string = 'user'
     static userOld: string = 'kb-user'
     static howDoesItWork_deprecated: string = 'howDoesItWork'
@@ -82,8 +86,24 @@ export class LocalStoreService {
             LocalStoreService.airportRecentsUpdate(code)
             return Airport.copy(JSON.parse(storeAirport))
         } else {
+            // remove from recent list
+            LocalStoreService.airportRecentsRemove(code)
             // Throw new error
             throw new Error('Airport ' + code + ' not found in local store')
+        }
+    }
+
+    static airportRecentsRemove(code: string) {
+        let recentAirports = localStorage.getItem(LocalStoreService.recentAirports)
+        if (recentAirports) {
+            const recentList = recentAirports.split('-')
+            if (recentList.includes(code)) {
+                // remove from list
+                recentList.splice(recentList.indexOf(code), 1)
+                recentAirports = recentList.join('-')
+                localStorage.setItem(LocalStoreService.recentAirports, recentAirports)
+                LocalStoreService.notify()
+            }
         }
     }
 
@@ -199,6 +219,7 @@ export class LocalStoreService {
             LocalStoreService.airportCleanUp()
             LocalStoreService.approachCleanUp()
             LocalStoreService.thumbnailCleanUp()
+            LocalStoreService.notamsCleanUp()
 
             resolve(true)
         })
@@ -237,6 +258,46 @@ export class LocalStoreService {
         const popup = localStorage.getItem(LocalStoreService.popup);
 
         return popup ? Number(popup) < id : true;
+    }
+
+    static notamsAdd(airportCode: string, notams: Notam[]) {
+        // create a notam key for this airport
+        const key = LocalStoreService.notamsPrefix + airportCode
+        // create a payload with current time and notam data
+        const payload = {
+            timestamp: new Date().toISOString(),
+            notams: notams
+        }
+        // save the notams
+        localStorage.setItem(key, JSON.stringify(payload))
+    }
+
+    static notamsCleanUp() {
+        const cleanUpTime = new Date().getTime() - MAX_NOTAMS_AGE
+        const cleanUpList: string[] = []
+        // look for all notams entries
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i)
+            if (key && key.startsWith(LocalStoreService.notamsPrefix)) {
+                // remove the item if time is more than 6 hours
+                const payload = JSON.parse(localStorage.getItem(key) || '{}')
+                if (payload.timestamp && new Date(payload.timestamp).getTime() < cleanUpTime) {
+                    cleanUpList.push(key)
+                }
+            }
+        }
+        cleanUpList.forEach(key => {
+            localStorage.removeItem(key)
+        })
+        console.log('[LocalStoreService.notamsCleanUp] removed ' + cleanUpList.length + ' notams')
+    }
+
+    static notamsGet(airportCode: string): Notam[] {
+        const key = LocalStoreService.notamsPrefix + airportCode
+        const payload = JSON.parse(localStorage.getItem(key) || '{}')
+        const isCurrent = payload && payload.timestamp && new Date(payload.timestamp).getTime() > new Date().getTime() - MAX_NOTAMS_AGE
+        if (!payload || !isCurrent) return []
+        return payload.notams
     }
 
     /**
