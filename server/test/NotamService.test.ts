@@ -6,6 +6,15 @@ import { GApiError } from '../backend/GApiError';
 const mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>;
 global.fetch = mockFetch;
 
+jest.mock('../backend/dao/ApiCallDao', () => ({
+    ApiCallDao: {
+        save: jest.fn(),
+    },
+    ApiName: {
+        Nms: 'nms'
+    }
+}));
+
 describe('NotamService', () => {
     const originalEnv = process.env;
 

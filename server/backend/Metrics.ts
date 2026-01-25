@@ -1,5 +1,5 @@
 import { AdipService } from "./services/AdipService";
-import { AdipDao } from "./adip/AdipDao";
+import { ApiCallDao, ApiName } from "./dao/ApiCallDao";
 import { AirportDao } from "./AirportDao";
 import { Email, EmailType } from "./Email";
 import { FeedbackDao } from "./FeedbackDao"
@@ -14,7 +14,6 @@ import { UserTools } from './UserTools'
 import { UserUsage } from "./models/UserUsage";
 import { Business } from "./business/Business";
 import { SubscriptionDao } from "./dao/SubscriptionDao";
-import { SkyvectorDao } from "./skyvector/SkyvectorDao";
 
 export class Metric {
     name: string;
@@ -46,6 +45,7 @@ export enum MetricKey {
     export7 = 'exports-7d',
     export28 = 'exports-28d',
     feedbacks = 'feedbacks',
+    notams28 = 'notams-28d',
     onboard28 = 'onboard-28d',
     pageApproach = 'approachPageCount',
     pageDiagram = 'diagramPageCount',
@@ -81,6 +81,7 @@ export enum MetricKey {
     tileRadios = 'radiosTileCount',
     tileSunlight = 'sunlightTileCount',
     tilesTotal = 'totalTileCount',
+    unknown28 = 'unknown-28d',
     users = 'users',
     usersGoogle = 'usersGoogle',
     usersApple = 'usersApple',
@@ -93,14 +94,17 @@ export enum MetricKey {
 
 export class Metrics {
 
-    static async adip(): Promise<Metric[]> {
-        const adipCount = await AdipDao.countSince(28)
-        return [new Metric(MetricKey.adip28, adipCount)]
-    }
-
-    static async skyvector(): Promise<Metric[]> {
-        const count = await SkyvectorDao.countSince(28)
-        return [new Metric(MetricKey.skyvector28, count)]
+    // fetch all api calls by type in the last 28 days
+    static async apiCalls(): Promise<Metric[]> {
+        const counts = await ApiCallDao.countSinceByType(28)
+        // Peform mapping between Api name and Metric key
+        const mapping = {
+            [ApiName.Adip]: MetricKey.adip28,
+            [ApiName.Skyvector]: MetricKey.skyvector28,
+            [ApiName.Nms]: MetricKey.notams28,
+        }
+        // unknown api calls are mapped to unknown
+        return Object.entries(counts).map(([type, count]) => new Metric(mapping[type] || MetricKey.unknown28, count))
     }
 
     static async airports(): Promise<Metric[]> {
@@ -359,8 +363,7 @@ export class Metrics {
             Metrics.publicationsCheck(),
             Metrics.templates(),
             Metrics.airports(),
-            Metrics.adip(),
-            Metrics.skyvector()
+            Metrics.apiCalls()
         ])).reduce((all, one) => {
             all.push(...one)
             return all

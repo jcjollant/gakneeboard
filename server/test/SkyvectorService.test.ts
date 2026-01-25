@@ -8,13 +8,16 @@ import path from 'path';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
-// Mock SkyvectorDao
-jest.mock('../backend/skyvector/SkyvectorDao', () => ({
-    SkyvectorDao: {
+// Mock ApiCallDao
+jest.mock('../backend/dao/ApiCallDao', () => ({
+    ApiCallDao: {
         save: jest.fn()
+    },
+    ApiName: {
+        Skyvector: 'skyvector'
     }
 }));
-import { SkyvectorDao } from '../backend/skyvector/SkyvectorDao';
+import { ApiCallDao, ApiName } from '../backend/dao/ApiCallDao';
 
 describe('SkyvectorService', () => {
     const service = new SkyvectorService();
@@ -97,13 +100,13 @@ describe('SkyvectorService', () => {
 
 
         // Verify save IS called by default
-        expect(SkyvectorDao.save).toHaveBeenCalledWith('KPAO', expect.anything());
+        expect(ApiCallDao.save).toHaveBeenCalledWith(ApiName.Skyvector, 'KPAO', expect.anything());
 
         jest.clearAllMocks();
 
         // Call again with saveRawData = false
         await service.fetchAirport('KPAO', false);
-        expect(SkyvectorDao.save).not.toHaveBeenCalled();
+        expect(ApiCallDao.save).not.toHaveBeenCalled();
     });
 
     it('should handle search redirects correctly', async () => {

@@ -72,6 +72,8 @@ export interface GetNotamsParams {
     radius?: number;
 }
 
+import { ApiCallDao, ApiName } from "../dao/ApiCallDao";
+
 export class NotamService {
     private static token: string | undefined = undefined;
     private static tokenExpiry: number = 0;
@@ -137,7 +139,7 @@ export class NotamService {
         }
     }
 
-    private static async fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<any> {
+    private static async fetchWithAuth(endpoint: string, options: RequestInit = {}, code?: string): Promise<any> {
         const token = await this.getAuthToken();
         const url = `${this.getUrl()}${endpoint}`;
 
@@ -158,7 +160,20 @@ export class NotamService {
             throw new GApiError(response.status, `NMS API Error: ${text}`);
         }
 
-        return response.json();
+        const data = await response.json();
+
+        // Record usage
+        try {
+            const dataLength = JSON.stringify(data).length;
+            // Use provided code or try to infer from endpoint? 
+            // Better to rely on caller providing meaningful code.
+            const codeToRecord = code || 'unknown';
+            ApiCallDao.save(ApiName.Nms, codeToRecord, dataLength);
+        } catch (e) {
+            console.error('[NotamService] Failed to record usage', e);
+        }
+
+        return data;
     }
 
     public static async getNotams(params: GetNotamsParams): Promise<NmsNotamResponse> {
@@ -186,7 +201,7 @@ export class NotamService {
         return this.fetchWithAuth(`/notams?${query.toString()}`, {
             method: 'GET',
             headers
-        });
+        }, params.location || params.nmsId || params.notamNumber || 'query');
     }
 
     public static async getSimplifiedNotams(params: Omit<GetNotamsParams, 'nmsResponseFormat'>): Promise<SimplifiedNotam[]> {
@@ -219,7 +234,7 @@ export class NotamService {
 
         return this.fetchWithAuth(endpoint, {
             method: 'GET'
-        });
+        }, classification || 'initial-load');
     }
 
     public static async getChecklist(params: { accountability?: string, classification?: NotamClassification, location?: string }): Promise<NmsChecklistResponse> {
@@ -230,7 +245,7 @@ export class NotamService {
 
         return this.fetchWithAuth(`/notams/checklist?${query.toString()}`, {
             method: 'GET'
-        });
+        }, params.location || 'checklist');
     }
 
     public static async getLocationSeries(lastUpdatedDate?: string): Promise<any> {
@@ -238,7 +253,7 @@ export class NotamService {
         if (lastUpdatedDate) query.append('lastUpdatedDate', lastUpdatedDate);
         return this.fetchWithAuth(`/locationseries?${query.toString()}`, {
             method: 'GET'
-        });
+        }, 'location-series');
     }
 
     public static simplify(item: any): SimplifiedNotam | null {

@@ -1,4 +1,38 @@
--- Active: 1768842526847@@ep-proud-field-a6tfe60l-pooler.us-west-2.aws.neon.tech@5432@neondb
+-- 01/24/2026 Test + Prod
+CREATE TYPE api_source AS ENUM ('nms', 'adip', 'skyvector');
+
+CREATE TABLE api_calls (
+    id SERIAL PRIMARY KEY,
+    create_time TIMESTAMP DEFAULT NOW(),
+    api api_source,
+    code VARCHAR(255),
+    data_length INTEGER,
+    data TEXT
+);
+
+-- Migration: Copy old data
+INSERT INTO
+    api_calls (
+        create_time,
+        api,
+        code,
+        data_length,
+        data
+    )
+SELECT create_time, 'adip', code, (data::json ->> 'length')::int, data
+FROM adip;
+
+INSERT INTO
+    api_calls (
+        create_time,
+        api,
+        code,
+        data_length,
+        data
+    )
+SELECT create_time, 'skyvector', code, (data::json ->> 'length')::int, data
+FROM skyvector;
+
 -- 01/21/2026 Test + Prod
 ALTER TYPE usagetype ADD VALUE 'restore';
 

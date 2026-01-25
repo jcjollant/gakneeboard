@@ -1,4 +1,4 @@
-import { AdipDao } from '../adip/AdipDao'
+import { ApiCallDao, ApiName } from '../dao/ApiCallDao'
 import { Airport } from '../models/Airport'
 import { Chart } from '../models/Chart'
 import { Atc } from '../models/Atc'
@@ -16,11 +16,11 @@ export class AdipService implements AirportDataSource {
     airportIsStale(airport: Airport): Promise<boolean> {
         const currentDate = AdipService.currentEffectiveDate()
         const isStale = !airport.effectiveDate || airport.effectiveDate < currentDate
-        
+
         if (isStale) {
             console.debug(`[AdipService.airportIsStale] ${airport.code} is stale: effectiveDate=${airport.effectiveDate}, current=${currentDate}`)
         }
-        
+
         return Promise.resolve(isStale)
     }
 
@@ -131,9 +131,8 @@ export class AdipService implements AirportDataSource {
                     if (saveRawData) {
                         // save returned adip data
                         try {
-                            // save a recap version of the data
-                            const dataRecap: any = { length: JSON.stringify(response.data).length }
-                            AdipDao.save(fetchCode, dataRecap)
+                            const dataLength = JSON.stringify(response.data).length;
+                            ApiCallDao.save(ApiName.Adip, fetchCode, dataLength);
                         } catch (e) {
                             console.log('[AdipService.fetchAirportDetails] cannot save Adip data')
                         }

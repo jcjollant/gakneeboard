@@ -6,7 +6,7 @@ import { Runway, RunwaySurface, RunwayEnd, PatternDirection } from '../models/Ru
 import { Frequency } from '../models/Frequency'
 import { Navaid } from '../models/Navaid'
 import { Atc } from '../models/Atc'
-import { SkyvectorDao } from '../skyvector/SkyvectorDao'
+import { ApiCallDao, ApiName } from '../dao/ApiCallDao'
 
 export class SkyvectorService implements AirportDataSource {
 
@@ -51,8 +51,8 @@ export class SkyvectorService implements AirportDataSource {
 
             if (saveRawData) {
                 try {
-                    const dataRecap: any = { length: response.data.length }
-                    SkyvectorDao.save(code, dataRecap)
+                    const dataLength = response.data.length
+                    ApiCallDao.save(ApiName.Skyvector, code, dataLength)
                 } catch (e) {
                     console.log('[SkyvectorService] cannot save Skyvector data')
                 }
