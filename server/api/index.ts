@@ -83,7 +83,7 @@ app.get('/airport/:id', async (req, res) => {
 /**
  * Get simplified NOTAMs for an airport
  */
-app.get('/notam/:airportCode', async (req: Request, res: Response) => {
+app.get('/notams/:airportCode', async (req: Request, res: Response) => {
     try {
         const userId = await UserTools.userIdFromRequest(req)
         if (!userId) {
