@@ -3,7 +3,7 @@
         <!-- Display Mode Section -->
         <Separator name="Display" class="separator" />
         <DisplayModeSelector :choices="modesList" v-model="selectedModeChoice" :show-previews="true" />
-        <div class="orientation-selector">
+        <div class="display-onechoice">
             <EitherOr either="Normal" or="Wide" v-model="isNormal" />
         </div>
         <!-- Airport Section -->
@@ -17,7 +17,7 @@
         <ProgressSpinner v-if="loading" class="spinner"></ProgressSpinner>
         
         <!-- Runway & Pattern Section -->
-        <div v-else class="rwyChoices">
+        <div v-else-if="currentMode !== DisplayModeAirport.Diagram" class="rwyChoices">
             <Separator name="Runway(s)" />
             <div v-if="validAirport">
                 <div class="rwySelector" title="Select 1 or 2 runways">
@@ -40,8 +40,8 @@
             </div>
             
             
-            <Separator name="Traffic Pattern" />
             <div class="pattern-selector">
+                <span class="pattern-label">Traffic Pattern:</span>
                 <Button v-for="option in patternOptions" :key="option.value" 
                     :severity="patternChoice === option.value ? 'primary' : 'secondary'"
                     @click="patternChoice = option.value"
@@ -309,7 +309,6 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
-    justify-content: center;
 }
 
 .sign {
@@ -335,7 +334,6 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
 
 .rwyOrientation {
     display: flex;
-    justify-content: center;
 }
 
 .centered {
@@ -346,7 +344,14 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
-    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.pattern-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-right: 5px;
 }
 
 .pattern-btn {
@@ -354,7 +359,7 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
     font-size: 0.9rem;
 }
 
-.orientation-selector {
+.display-onechoice {
     display: flex;
     justify-content: center;
 }

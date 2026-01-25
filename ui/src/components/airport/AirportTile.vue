@@ -456,7 +456,7 @@ function saveConfig() {
     position: absolute;
     top: 45px;
     left: 5px;
-    background-color: #e00;
+    background-color: #666;
     color: white;
     border-radius: 50%;
     width: 24px;
