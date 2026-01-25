@@ -150,8 +150,11 @@ function onRecentAirport(airportCode:string) {
         valid.value = true
         model.value = airport
         emits('valid', airport)
-    } catch(e) {
-        console.log('[AirportInput] onRecentAirport',e)
+    } catch(e) { 
+        console.warn('[AirportInput] onRecentAirport failed',e)
+        // Fallback with a fetch
+        code.value = airportCode
+        fetchAirport()
     }
 }
 
