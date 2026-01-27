@@ -2,14 +2,14 @@
     <div class="contentPage" :class="{'fullpage': isFullPage}">
         <Header :title="'Pick Your Page Style'" :replace="false" :clickable="false"></Header>
          
-        <div v-if="templateMode" class="template-grid">
+        <div class="template-grid" :class="{ 'expanded': isExpanded }">
              <div class="clickable preview" v-for="template in allTemplates" :title="template.tooltip" @click="loadPage(template.demoPage)">
                 <div>{{ template.name }}</div>
                 <img :src="template.thumbnail"></img>
             </div>
         </div>
 
-        <div v-else class="list">
+        <div v-if="isExpanded" class="list">
             <div class="section wide">
                 <Separator name="Composable"/>
            </div>
@@ -30,7 +30,9 @@
              <div v-if="canDelete" class="delete-btn" @click="emits('delete')" title="Delete Page">
                 <font-awesome-icon :icon="['fas', 'trash']" />
              </div>
-             <EitherOr v-model="templateMode" either="From Templates" or="Craft Your Own" :small="false"/>
+             <div class="more-btn clickable" @click="isExpanded = !isExpanded">
+                {{ isExpanded ? 'Less...' : 'More...' }}
+             </div>
         </div>
     </div>
 </template>
@@ -44,7 +46,6 @@ import { TemplateFormat } from '../../models/TemplateFormat'
 import Header from '../shared/Header.vue'
 import FAButton from '../shared/FAButton.vue'
 import Separator from '../shared/Separator.vue'
-import EitherOr from '../shared/EitherOr.vue'
 import { DemoData } from '../../assets/DemoData'
 
 const props = defineProps({
@@ -128,7 +129,7 @@ const allPages = ref([
     new PageItem('Blank', PageType.none, '', 'A blank page', Section.cosmetics, true, false)
 ])
 
-const templateMode = ref(true) // true = Templates, false = Craft
+const isExpanded = ref(false)
 
 const availableTemplates = computed(() => {
     return allPages.value.filter(page => isFullPage.value ? page.fullPage : page.smallPage)
@@ -165,15 +166,37 @@ function replacePage(type:PageType) {
     grid-auto-rows: min-content; /* Ensure rows don't stretch unnecessarily */
     padding: 10px;
     gap: 10px;
-    /* overflow-y: auto; Make it scrollable if it gets too long */
+    flex: 1; /* Allow it to fill space */
+    overflow-y: auto; /* Make it scrollable if it gets too long */
+    transition: flex 0.3s ease;
+}
+
+.template-grid.expanded {
+    flex: 0 0 auto; /* Stop it from taking all space */
+    padding: 5px;
+    gap: 5px;
+}
+
+.template-grid.expanded .preview {
+    height: 140px; /* Further reduced height */
+    padding: 5px;
+    gap: 2px;
+    font-size: 12px;
+}
+
+.template-grid.expanded .preview img {
+    object-position: top;
+    object-fit: cover;
+    height: 95px; /* Force image height */
 }
 
 .list {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    padding: 10px;
+    padding: 20px 10px 10px 10px;
     gap:10px;
     /* padding-top: 50px; */
+    overflow-y: auto;
 }
 
 .section {
@@ -201,12 +224,14 @@ function replacePage(type:PageType) {
     background-color: #f0f0f0;
     font-weight: bold;
     color: black;
+    transition: height 0.3s ease;
 }
 .preview img {
     width: 100%;
     height: 100%;
     object-fit: contain; /* Changed to contain to show full thumbnail */
     border-radius: 5px;
+    transition: height 0.3s ease;
 }
 
 .footer-toggle {
@@ -214,9 +239,10 @@ function replacePage(type:PageType) {
     justify-content: center;
     padding: 10px;
     position: relative;
-    /* background-color: var(--bg-panel); */
     border-top: 1px solid var(--border);
     margin-top: auto; /* Push to bottom if parent is flex-col */
+    min-height: 50px;
+    flex-shrink: 0; /* Ensure footer doesn't shrink */
 }
 
 .delete-btn {
@@ -230,6 +256,15 @@ function replacePage(type:PageType) {
 }
 .delete-btn:hover {
     color: red;
+}
+
+.more-btn {
+    background-color: var(--bg);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
 }
 
 .contentPage {
