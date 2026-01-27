@@ -15,6 +15,8 @@ const placeHolderText = ref('')
 const pdfCanvas = ref(null)
 const pdfFile = ref('')
 
+import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
+
 // Props Management
 const props = defineProps({
     pdf: { type: String, required: true },
@@ -41,7 +43,7 @@ watch(props, (newProps) => {
 
 const initPDF = async () => {
     const pdfjs = await import('pdfjs-dist/build/pdf')
-    pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+    pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
 }
 
 function loadPdf() {
