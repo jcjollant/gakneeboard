@@ -10,12 +10,25 @@ export class TicketService {
      */
     public static async create(severity: number, message: string): Promise<void> {
         try {
-            await sql`INSERT INTO tickets (severity, message) VALUES (${severity}, ${message})`;
-            console.error('[TicketService][' + severity + ']', message);
+            await sql`INSERT INTO tickets (severity, message, status) VALUES (${severity}, ${message}, 'open')`;
+            console.log('[TicketService][' + severity + ']', message);
         } catch (error) {
             console.error('[TicketService] Failed to create ticket:', error);
             // Fallback logging if DB fails
             console.error('[Ticket][' + severity + ']', message);
+        }
+    }
+
+    /**
+     * Close a ticket by ID.
+     * @param id Ticket ID
+     */
+    public static async close(id: number): Promise<void> {
+        try {
+            await sql`UPDATE tickets SET status = 'closed' WHERE id = ${id}`;
+        } catch (error) {
+            console.error('[TicketService] Failed to close ticket:', error);
+            throw error;
         }
     }
 }

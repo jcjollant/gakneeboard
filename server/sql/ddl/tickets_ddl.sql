@@ -3,5 +3,6 @@ CREATE TABLE tickets (
     create_time timestamp without time zone DEFAULT now(),
     severity integer,
     message varchar(1024),
+    status varchar(20) DEFAULT 'open',
     PRIMARY KEY (id)
 );

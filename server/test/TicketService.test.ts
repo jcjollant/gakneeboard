@@ -26,6 +26,12 @@ describe('TicketService', () => {
         expect(sql).toHaveBeenCalled();
     });
 
+    it('should close a ticket', async () => {
+        const ticketId = 123;
+        await TicketService.close(ticketId);
+        expect(sql).toHaveBeenCalled();
+    });
+
     it('should handle db errors gracefully', async () => {
         (sql as any).mockRejectedValueOnce(new Error("DB Error"));
         const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });

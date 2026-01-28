@@ -5,5 +5,7 @@ CREATE TABLE airports(
     id SERIAL NOT NULL,
     version integer DEFAULT 0,
     creatorid integer,
+    sketch varchar(255),
+    "source" airportsource DEFAULT 'adip'::airportsource,
     PRIMARY KEY(id)
 );

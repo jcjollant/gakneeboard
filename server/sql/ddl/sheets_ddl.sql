@@ -8,6 +8,9 @@ CREATE TABLE sheets(
     description varchar(255) DEFAULT NULL::character varying,
     creation_date timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     pages integer,
+    thumbnail varchar(255),
+    thumbhash character(64),
+    format varchar(16) DEFAULT 'kneeboard'::character varying,
     PRIMARY KEY(id),
     CONSTRAINT pages_user_id_fkey FOREIGN key(user_id) REFERENCES users(id)
 );

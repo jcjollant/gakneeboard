@@ -5,6 +5,13 @@ CREATE TABLE users(
     version integer NOT NULL,
     "data" varchar(1024),
     create_time timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    account_type varchar(8),
+    customer_id varchar(255),
+    print_credit integer NOT NULL DEFAULT 0,
+    max_templates integer,
+    max_pages integer DEFAULT 4,
+    eula integer DEFAULT 0,
+    plan_id VARCHAR(20),
     PRIMARY KEY(id)
 );
 CREATE UNIQUE INDEX users_sha256_key ON users USING btree ("sha256");

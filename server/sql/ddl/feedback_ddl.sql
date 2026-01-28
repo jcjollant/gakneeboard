@@ -5,6 +5,7 @@ CREATE TABLE feedback(
     version varchar(64),
     text varchar(1024),
     user_id integer,
+    contact boolean DEFAULT false,
     PRIMARY KEY(id),
     CONSTRAINT feedback_user_id_fkey FOREIGN key(user_id) REFERENCES users(id)
 );
