@@ -32,6 +32,16 @@ describe('TicketService', () => {
         expect(sql).toHaveBeenCalled();
     });
 
+    it('should count open tickets', async () => {
+        (sql as any).mockResolvedValueOnce({
+            rows: [{ count: '5' }]
+        });
+
+        const count = await TicketService.countOpenTickets();
+        expect(count).toBe(5);
+        expect(sql).toHaveBeenCalled();
+    });
+
     it('should handle db errors gracefully', async () => {
         (sql as any).mockRejectedValueOnce(new Error("DB Error"));
         const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });

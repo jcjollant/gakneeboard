@@ -31,4 +31,17 @@ export class TicketService {
             throw error;
         }
     }
+
+    /**
+     * Count the number of open tickets.
+     */
+    public static async countOpenTickets(): Promise<number> {
+        try {
+            const result = await sql`SELECT COUNT(*) FROM tickets WHERE status = 'open'`;
+            return Number(result.rows[0].count);
+        } catch (error) {
+            console.error('[TicketService] Failed to count open tickets:', error);
+            return 0;
+        }
+    }
 }

@@ -4,6 +4,7 @@ import { Airport } from "./models/Airport";
 import { User } from "./models/User";
 import { PublicationDao } from './PublicationDao';
 import { AdipService } from './services/AdipService';
+import { TicketService } from './services/TicketService';
 
 import { CodeAndAirport } from "./models/CodeAndAirport";
 import dotenv from 'dotenv';
@@ -149,13 +150,25 @@ export class HealthCheck {
 
     }
 
+    static async tickets(): Promise<Check> {
+        const check: Check = new Check('tickets')
+        const openCount = await TicketService.countOpenTickets()
+        if (openCount > 0) {
+            check.fail(`Found ${openCount} open tickets`)
+        } else {
+            check.pass('No open tickets')
+        }
+        return check
+    }
+
     public static async perform(): Promise<Check[]> {
         const airportChecks = await HealthCheck.airportChecks()
         const allChecks = await Promise.all([
             HealthCheck.effectiveDateCheck(),
             HealthCheck.environmentVariables(),
             HealthCheck.availablePublicationsCheck(),
-            HealthCheck.users()
+            HealthCheck.users(),
+            HealthCheck.tickets()
         ])
         allChecks.push(...airportChecks)
         return allChecks

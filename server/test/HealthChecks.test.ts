@@ -188,4 +188,22 @@ describe('HealthChecks', () => {
             expect(result.msg).toContain('EnvVar missing STRIPE_WEBHOOK_SECRET');
         });
     });
+
+    describe('tickets', () => {
+        const TicketService = require('../backend/services/TicketService').TicketService;
+
+        test('Success: No open tickets', async () => {
+            jest.spyOn(TicketService, 'countOpenTickets').mockResolvedValue(0);
+            const result = await HealthCheck.tickets();
+            expect(result.status).toBe(Check.SUCCESS);
+            expect(result.msg).toBe('No open tickets');
+        });
+
+        test('Failure: Open tickets found', async () => {
+            jest.spyOn(TicketService, 'countOpenTickets').mockResolvedValue(5);
+            const result = await HealthCheck.tickets();
+            expect(result.status).toBe(Check.FAIL);
+            expect(result.msg).toBe('Found 5 open tickets');
+        });
+    });
 });
