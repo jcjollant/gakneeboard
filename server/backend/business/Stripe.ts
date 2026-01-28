@@ -7,7 +7,7 @@ import { Business } from './Business'
 import { AttributionData } from '../models/AttributionData'
 
 import { sql } from '@vercel/postgres'
-import { Ticket } from '../Ticket'
+import { TicketService } from "../services/TicketService";
 import { Request } from "express"
 import { PlanService } from '../services/PlanService';
 
@@ -94,7 +94,7 @@ export class StripeClient {
                 if (!session.url) throw new Error('Session url is null')
                 resolve(session.url)
             } catch (err) {
-                Ticket.create(3, '[Stripe.checkout] error ' + err)
+                TicketService.create(3, '[Stripe.checkout] error ' + err)
                 reject(err)
             }
         })
@@ -180,7 +180,7 @@ export class StripeClient {
                     }
                 }
             } catch (err) {
-                Ticket.create(2, '[Stripe.webhook] ' + err)
+                TicketService.create(2, '[Stripe.webhook] ' + err)
                 reject(err)
             }
 

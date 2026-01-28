@@ -5,7 +5,7 @@ import { Email, EmailType } from "../Email";
 import { AccountType, PLAN_ID_SIM, PlanDescription, PLANS, PRINT_CREDIT_SIMMER, Quotas } from '@checklist/shared';
 import { Refill } from "../models/Refill";
 import { User } from "../models/User";
-import { Ticket } from "../Ticket";
+import { TicketService } from "../services/TicketService";
 import { PlanService } from "../services/PlanService";
 
 export class Business {
@@ -190,7 +190,7 @@ export class Business {
                 await UsageDao.refill(user.id, previousPrintCredits, user.printCredits)
             }
         } catch (e) {
-            Ticket.create(2, 'Failed to update print credits ' + e)
+            TicketService.create(2, 'Failed to update print credits ' + e)
         }
     }
 

@@ -17,7 +17,7 @@ jest.mock('../../backend/services/AirportService');
 jest.mock('../../backend/Maintenance');
 jest.mock('../../backend/services/TemplateService');
 jest.mock('../../backend/UserTools');
-jest.mock('../../backend/Ticket');
+jest.mock('../../backend/services/TicketService');
 jest.mock('../../backend/services/Authorization');
 jest.mock('../../backend/dao/UsageDao');
 jest.mock('@vercel/postgres', () => ({

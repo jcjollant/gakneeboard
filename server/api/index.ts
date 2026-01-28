@@ -8,7 +8,7 @@ import { StripeClient } from '../backend/business/Stripe'
 import { UserTools } from '../backend/UserTools'
 import { Maintenance } from '../backend/Maintenance'
 import { NavlogTools } from "../backend/NavlogTools";
-import { Ticket } from "../backend/Ticket";
+import { TicketService } from "../backend/services/TicketService";
 import { Charts } from "../backend/Charts";
 import { TemplateService } from "../backend/services/TemplateService"
 import { GApiError } from "../backend/GApiError";
@@ -510,10 +510,10 @@ function catchError(res, e, msg) {
     // console.log( "[index] " + msg + " error " + JSON.stringify(e))
     if (e instanceof GApiError) {
         res.status(e.status).send(e.message)
-        Ticket.create(4, e.message)
+        TicketService.create(4, e.message)
     } else {
         res.status(500).send(e)
-        Ticket.create(4, e)
+        TicketService.create(4, String(e))
     }
 }
 

@@ -2,7 +2,7 @@ import { sql } from '@vercel/postgres';
 import { User } from '../models/User'
 import { Dao } from './Dao';
 import { Refill } from '../models/Refill';
-import { Ticket } from '../Ticket';
+import { TicketService } from "../services/TicketService";
 
 export class UserDao extends Dao<User> {
     protected tableName: string = 'users';
@@ -80,7 +80,7 @@ export class UserDao extends Dao<User> {
             if (data?.name) user.setName(data.name)
             if (data?.attribution) user.setAttribution(data.attribution)
         } catch (err) {
-            Ticket.create(3, '[UserDao.parseRow] error parsing data ' + err)
+            TicketService.create(3, '[UserDao.parseRow] error parsing data ' + err)
             user.setSource('?')
             user.setEmail('?')
             user.setName('?')
