@@ -1,19 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import Admin from '../views/Admin.vue';
 import Home from '../views/Home.vue';
-import PricingPlans from '../views/PricingPlans.vue';
-import Print from '../views/Print.vue';
 import TemplateViewer from '../views/TemplateViewer.vue';
-import ThankYou from '../views/ThankYou.vue';
 import FTUX from '../views/FTUX.vue';
-import FormatSelector from '../components/templates/FormatSelector.vue';
-import Demo from '../views/Demo.vue';
-import TileTest from '../views/TileTest.vue';
-import PageTest from '../views/PageTest.vue';
-import AffiliateRedirect from '../views/AffiliateRedirect.vue';
 import { affiliates } from '../lib/affiliates';
 
+const Admin = () => import('../views/Admin.vue');
+const PricingPlans = () => import('../views/PricingPlans.vue');
+const Print = () => import('../views/Print.vue');
+const ThankYou = () => import('../views/ThankYou.vue');
+const FormatSelector = () => import('../components/templates/FormatSelector.vue');
+const Demo = () => import('../views/Demo.vue');
+const TileTest = () => import('../views/TileTest.vue');
+const PageTest = () => import('../views/PageTest.vue');
+const AffiliateRedirect = () => import('../views/AffiliateRedirect.vue');
 
 export const RouterNames = {
     Admin: 'Admin',
