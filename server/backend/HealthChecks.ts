@@ -15,23 +15,30 @@ export class Check {
     name: string;
     status: string;
     msg: string;
+    startTime: number;
+    duration: number;
     public static FAIL: string = 'fail'
     public static SUCCESS: string = 'success'
+    public static NEW: string = 'new'
 
     constructor(checkName: string) {
         this.name = checkName
-        this.status = Check.SUCCESS
+        this.status = Check.NEW
         this.msg = ''
+        this.startTime = Date.now()
+        this.duration = 0
     }
 
     fail(msg: string) {
         this.status = Check.FAIL
         this.msg = msg;
+        this.duration = Date.now() - this.startTime
     }
 
     pass(msg: string) {
         this.status = Check.SUCCESS
         this.msg = msg
+        this.duration = Date.now() - this.startTime
     }
 }
 
@@ -39,6 +46,7 @@ export class HealthCheck {
 
     static async airportChecks(): Promise<Check[]> {
         const dupeCheck: Check = new Check('airportDuplicates')
+        const missingSketches: Check = new Check('airportMissingSketches')
         const dupeCount = await AirportDao.countDuplicates()
         if (dupeCount > 0) {
             dupeCheck.fail("Found " + dupeCount + " duplicates")
@@ -48,7 +56,6 @@ export class HealthCheck {
 
         const missingSketchesCount = await AirportDao.countMissingSketches()
         const validCount = await AirportDao.countValid()
-        const missingSketches: Check = new Check('airportMissingSketches')
         if (missingSketchesCount > 0) {
             missingSketches.fail(`Found ${missingSketchesCount}/${validCount} airports missing sketches`)
         } else {
