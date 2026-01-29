@@ -85,12 +85,12 @@ app.get('/airport/:id', async (req, res) => {
  */
 app.get('/notams/:airportCode', async (req: Request, res: Response) => {
     try {
+        const airportCode = req.params.airportCode
         const userId = await UserTools.userIdFromRequest(req)
         if (!userId) {
-            throw new GApiError(401, 'Unauthorized')
+            throw new GApiError(401, `Unauthorized Notams request ${airportCode}`)
         }
 
-        const airportCode = req.params.airportCode
         const simplified = await NotamService.getSimplifiedNotams({
             location: airportCode
         })
@@ -322,11 +322,11 @@ app.get('/template/:id', async (req: Request, res: Response) => {
     const requester = await UserTools.userIdFromRequest(req)
     try {
         // console.log( "[index] GET template " + req.params.id + " userId " + userId);
+        const templateId = Number(req.params.id)
         if (!requester) {
-            throw new GApiError(401, 'Unauthorized')
+            throw new GApiError(401, `Unauthorized Template request ${templateId}`)
         }
         // console.log( "[index] GET template " + req.params.id + " userId " + userId
-        const templateId = Number(req.params.id)
         let template = await TemplateService.get(templateId, requester);
         if (template) {
             res.send(template)
@@ -344,11 +344,11 @@ app.get('/template/:id', async (req: Request, res: Response) => {
 app.get('/template/:id/version/:version', async (req: Request, res: Response) => {
     try {
         const requester = await UserTools.userIdFromRequest(req)
-        if (!requester) {
-            throw new GApiError(401, 'Unauthorized')
-        }
         const templateId = Number(req.params.id)
         const version = Number(req.params.version)
+        if (!requester) {
+            throw new GApiError(401, `Unauthorized template version request ${templateId} v${version}`)
+        }
 
         const template = await TemplateService.getVersion(templateId, version, requester)
         if (template) {

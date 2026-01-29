@@ -14,7 +14,7 @@ export class Authorization {
         const userId = await UserTools.userIdFromRequest(req)
         if (!userId || !UserTools.isAdmin(userId)) {
             console.log(`User ${userId} is not authorized`)
-            throw new GApiError(401, "Unauthorized")
+            throw new GApiError(401, `Unauthorized admin request ${userId}`)
         }
         return userId
     }

@@ -81,7 +81,7 @@ export class TemplateService {
         // Check user type
         const userDao = new UserDao()
         const user = await userDao.get(requesterId)
-        if (!user) throw new GApiError(401, 'Unauthorized')
+        if (!user) throw new GApiError(401, `Unauthorized getVersion ${templateId} v${version}`)
 
         // Is this feature allowed for this user?
         const plan = PlanService.getPlan(user.planId)
