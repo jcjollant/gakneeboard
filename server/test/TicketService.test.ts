@@ -53,4 +53,20 @@ describe('TicketService', () => {
 
         consoleSpy.mockRestore();
     });
+    it('should get all open tickets', async () => {
+        const mockTickets = [
+            { id: 1, create_time: new Date(), severity: 1, message: 'Error 1', status: 'open' },
+            { id: 2, create_time: new Date(), severity: 2, message: 'Error 2', status: 'open' }
+        ];
+
+        (sql as any).mockResolvedValueOnce({
+            rows: mockTickets
+        });
+
+        const tickets = await TicketService.getAllOpen();
+        expect(tickets.length).toBe(2);
+        expect(tickets[0].message).toBe('Error 1');
+        expect(tickets[1].severity).toBe(2);
+        expect(sql).toHaveBeenCalled();
+    });
 });

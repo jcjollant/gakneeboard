@@ -435,6 +435,31 @@ app.get('/sunlight/:from/:to/:dateFrom/:dateTo?', async (req: Request, res: Resp
     }
 })
 
+app.get('/tickets', async (req: Request, res: Response) => {
+    try {
+        await Authorization.validateAdmin(req)
+        const tickets = await TicketService.getAllOpen()
+        res.send(tickets)
+    } catch (e) {
+        catchError(res, e, 'GET /tickets')
+    }
+})
+
+app.post('/tickets/:id/close', async (req: Request, res: Response) => {
+    try {
+        await Authorization.validateAdmin(req)
+        const id = Number(req.params.id)
+        if (isNaN(id)) {
+            res.status(400).send('Invalid ticket ID')
+            return
+        }
+        await TicketService.close(id)
+        res.send({ status: 'closed', id })
+    } catch (e) {
+        catchError(res, e, 'POST /tickets/:id/close')
+    }
+})
+
 app.get('/admin/healthCheck', async (req: Request, res: Response) => {
     try {
         await Authorization.validateAdmin(req)

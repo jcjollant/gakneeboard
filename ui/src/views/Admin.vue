@@ -18,6 +18,11 @@
                     <h3>Create Airport</h3>
                     <p>Add a new airport to the database</p>
                 </div>
+                <div class="api-card" :class="{ active: selectedApi === 'tickets' }" @click="selectApi('tickets')">
+                    <div class="api-icon">🎫</div>
+                    <h3>Ticket Management</h3>
+                    <p>View and manage support tickets</p>
+                </div>
                 <div class="api-card" :class="{ active: selectedApi === 'health-check' }" @click="selectApi('health-check')">
                     <div class="api-icon">❤️</div>
                     <h3>Health Check</h3>
@@ -87,6 +92,10 @@
             <AirportCreationForm />
         </div>
 
+        <div v-if="selectedApi === 'tickets'">
+            <TicketManager />
+        </div>
+
         <div v-if="selectedApi === 'health-check'" class="input-section">
             <h2>System Health Check</h2>
             <div class="input-group">
@@ -121,6 +130,7 @@ import { useToaster } from '../assets/Toaster';
 import { useToast } from 'primevue/usetoast';
 import { useRoute, useRouter } from 'vue-router';
 import AirportCreationForm from '../components/admin/AirportCreationForm.vue';
+import TicketManager from '../components/admin/TicketManager.vue';
 
 const route = useRoute()
 const router = useRouter()
@@ -287,8 +297,8 @@ onMounted(() => {
 
 <style scoped>
 .admin-container {
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
     padding: 2rem;
     display: flex;
     flex-direction: column;

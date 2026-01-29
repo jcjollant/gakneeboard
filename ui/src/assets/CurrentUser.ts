@@ -60,6 +60,14 @@ export class CurrentUser {
     }
   }
 
+  async postUrl(url: string, data: any = {}): Promise<AxiosResponse<any, any>> {
+    if (this.loggedIn) {
+      return axios.post(url, data, { headers: { 'user': this.sha256 } })
+    } else {
+      return axios.post(url, data)
+    }
+  }
+
 
   login(data: any) {
     // console.log('[CurrentUser.login] logging in')
