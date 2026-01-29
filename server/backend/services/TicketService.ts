@@ -44,4 +44,23 @@ export class TicketService {
             return 0;
         }
     }
+
+    /**
+     * Get all open tickets.
+     */
+    public static async getAllOpen(): Promise<Ticket[]> {
+        try {
+            const result = await sql`SELECT * FROM tickets WHERE status = 'open' ORDER BY create_time DESC`;
+            return result.rows.map(row => new Ticket(
+                row.id,
+                row.create_time,
+                row.severity,
+                row.message,
+                row.status
+            ));
+        } catch (error) {
+            console.error('[TicketService] Failed to get all open tickets:', error);
+            return [];
+        }
+    }
 }

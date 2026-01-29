@@ -243,6 +243,8 @@ export class TemplateService {
                     access: "public",
                     contentType: "image/png",
                     token: process.env.BLOB_READ_WRITE_TOKEN,
+                    addRandomSuffix: false,
+                    allowOverwrite: true,
                 })
 
                 // Save url with associated template
@@ -257,7 +259,7 @@ export class TemplateService {
 
                 return resolve(output)
             } catch (error) {
-                console.log('[GApiTemplate.updateThumnail] ' + error)
+                console.log('[GApiTemplate.updateThumbnail] ' + error)
                 return reject(new GApiError(500, `Could not update thumbnail ${templateIdParam} for ${userId}`))
             }
         })
