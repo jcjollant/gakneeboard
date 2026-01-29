@@ -8,7 +8,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { DiagramData } from '../../lib/DiagramData';
-import { getDocument } from 'pdfjs-dist'
+import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist'
 
 let pageRendering = false;
 const placeHolderText = ref('')
@@ -16,6 +16,7 @@ const pdfCanvas = ref(null)
 const pdfFile = ref('')
 
 import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
+GlobalWorkerOptions.workerSrc = pdfWorker;
 
 // Props Management
 const props = defineProps({
@@ -29,9 +30,7 @@ function loadProps(newProps) {
 }
 
 onMounted(async () => {
-    initPDF().then( () => {
-        loadProps(props);
-    })
+    loadProps(props);
 })
 
 watch(props, (newProps) => {
@@ -41,10 +40,6 @@ watch(props, (newProps) => {
 
 // End of props management
 
-const initPDF = async () => {
-    const pdfjs = await import('pdfjs-dist/build/pdf')
-    pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
-}
 
 function loadPdf() {
     if(pdfFile.value == null) {
