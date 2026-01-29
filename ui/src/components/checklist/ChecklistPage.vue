@@ -4,6 +4,7 @@
             @click="onHeaderClick" @replace="emits('replace')"></Header>
         <div v-if="editMode" class="settings-container">
             <ChecklistSettings 
+                ref="settingsRef"
                 :params="settingsData" 
                 class="settings-embedded"
                 @update="onSettingsUpdate" />
@@ -118,6 +119,9 @@ function onSettingsUpdate(newData: any) {
 }
 
 function onApply() {
+    if (settingsRef.value && typeof settingsRef.value.forceSave === 'function') {
+        settingsRef.value.forceSave()
+    }
     if (!pendingUpdate.value) {
         editMode.value = false
         return;
@@ -157,6 +161,7 @@ function onCancel() {
 
 // Data to be passed to Settings
 const settingsData = ref<any>(null)
+const settingsRef = ref<any>(null)
 
 function onHeaderClick() {
     if(!editMode.value) showSettings();

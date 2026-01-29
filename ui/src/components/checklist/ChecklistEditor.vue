@@ -205,7 +205,16 @@ function cancelEditing() {
     stopEditing();
 }
 
-defineExpose({ stopEditing });
+function forceSave() {
+    if (props.mode === 'text') {
+        if (debounceTimer) clearTimeout(debounceTimer);
+        saveTextToModel();
+    } else {
+        stopEditing();
+    }
+}
+
+defineExpose({ stopEditing, forceSave });
 
 function addItem() {
     // Adds new item at end
