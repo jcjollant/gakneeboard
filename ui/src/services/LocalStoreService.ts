@@ -166,7 +166,7 @@ export class LocalStoreService {
             // remove first element
             const apch = approaches.shift()
             localStorage.removeItem(this.approachPrefix + apch)
-            console.log('[LocalStoreService.approachCleanUp] removing ' + apch)
+            // console.debug('[LocalStoreService.approachCleanUp] removing ' + apch)
             cleanUp++;
         }
         if (cleanUp) {
@@ -289,7 +289,7 @@ export class LocalStoreService {
         cleanUpList.forEach(key => {
             localStorage.removeItem(key)
         })
-        console.log('[LocalStoreService.notamsCleanUp] removed ' + cleanUpList.length + ' notams')
+        // console.log('[LocalStoreService.notamsCleanUp] removed ' + cleanUpList.length + ' notams')
     }
 
     static notamsGet(airportCode: string): Notam[] {

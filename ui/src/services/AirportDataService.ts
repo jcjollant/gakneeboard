@@ -234,7 +234,7 @@ export async function getNotams(airportCode: string): Promise<Notam[]> {
     // check local storage first
     const localNotams = LocalStoreService.notamsGet(airportCode)
     if (localNotams.length > 0) {
-        console.debug('[AirportDataService.getNotams] using local notams for ' + airportCode)
+        // console.debug('[AirportDataService.getNotams] using local notams for ' + airportCode)
         return localNotams
     }
     const url = UrlService.root + 'notams/' + airportCode;
