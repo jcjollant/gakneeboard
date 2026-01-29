@@ -88,7 +88,7 @@
 
         <!-- Text Mode -->
         <div v-else class="editor-text">
-            <textarea v-model="localText" @input="onTextInput" placeholder="Paste checklist text here..."></textarea>
+            <textarea v-model="localText" @input="onTextInput" @blur="saveTextToModel" placeholder="Paste checklist text here..."></textarea>
         </div>
     </div>
 </template>
@@ -205,16 +205,7 @@ function cancelEditing() {
     stopEditing();
 }
 
-function forceSave() {
-    if (props.mode === 'text') {
-        if (debounceTimer) clearTimeout(debounceTimer);
-        saveTextToModel();
-    } else {
-        stopEditing();
-    }
-}
-
-defineExpose({ stopEditing, forceSave });
+defineExpose({ stopEditing });
 
 function addItem() {
     // Adds new item at end

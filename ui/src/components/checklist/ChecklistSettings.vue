@@ -14,7 +14,6 @@
         <div class="editors-container" :class="'cols-'+columnsCount">
             <div v-for="index in columnsCount" :key="index" class="editor-wrapper">
                 <ChecklistEditor 
-                    :ref="(el) => setEditorRef(el, index-1)"
                     v-model="checklistData[index-1]"
                     :mode="checklistEditorMode"
                     @update:modelValue="onEditorUpdate(index-1, $event)"
@@ -97,11 +96,6 @@ const columnsChoice = ref<ChoiceColumnCount>(choiceSingle)
 // Use params.isTile directly or via a computed if reactivity is needed (though params prop should be reactive)
 const isTile = computed(() => props.params.isTile)
 const columnsCount = computed(() => isTile.value ? 1 : columnsChoice.value.value)
-
-const editorRefs = ref<any[]>([])
-function setEditorRef(el: any, index: number) {
-    if (el) editorRefs.value[index] = el
-}
 
 function onEditorUpdate(index: number, val: Checklist) {
      checklistData.value[index] = val;
@@ -199,16 +193,6 @@ function emitUpdate() {
 
 
 const tileSettingsUpdate = inject('tileSettingsUpdate', null) as ((data: any) => void) | null;
-
-function forceSave() {
-    editorRefs.value.forEach(editor => {
-        if (editor && typeof editor.forceSave === 'function') {
-            editor.forceSave()
-        }
-    })
-}
-
-defineExpose({ forceSave })
 
 </script>
 
