@@ -383,7 +383,12 @@ app.post('/template', async (req: Request, res: Response) => {
         // console.log('[index.post/sheet]', JSON.stringify(sheet))
         res.status(status.code).send(status.template)
     }).catch((e) => {
-        catchError(res, e, 'POST /template')
+        if (e instanceof GApiError && e.status == 402) {
+            TicketService.create(5, 'User ' + payload.user.id + ' cannot save template ' + payload.sheet.id + ': ' + e.message)
+            res.status(e.status).send(e.message)
+        } else {
+            catchError(res, e, 'POST /template')
+        }
     })
 })
 
@@ -529,17 +534,18 @@ if (process.env.__VERCEL_DEV_RUNNING != "1" && process.env.VERCEL != "1" && proc
  * Prints an error in the console and send an error response
  * @param {*} res 
  * @param {*} e 
- * @param {*} msg 
+ * @param {*} context
  */
-function catchError(res, e, msg) {
+function catchError(res, e, context): void {
     // console.log( "[index] " + msg + " error " + JSON.stringify(e))
+    let status = 500
+    let message = e
     if (e instanceof GApiError) {
-        res.status(e.status).send(e.message)
-        TicketService.create(4, e.message)
-    } else {
-        res.status(500).send(e)
-        TicketService.create(4, String(e))
+        status = e.status
+        message = e.message
     }
+    res.status(status).send(message)
+    TicketService.create(3, message + ' ' + context)
 }
 
 export default app;

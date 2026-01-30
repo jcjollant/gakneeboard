@@ -28,7 +28,7 @@ describe('Authorization Tests', () => {
         jest.spyOn(UserTools, 'userIdFromRequest').mockResolvedValue(mockUserId);
         jest.spyOn(UserTools, 'isAdmin').mockReturnValue(false);
 
-        await expect(Authorization.validateAdmin(req)).rejects.toEqual(new GApiError(401, 'Unauthorized'));
+        await expect(Authorization.validateAdmin(req)).rejects.toEqual(new GApiError(401, 'Unauthorized admin request 2'));
         expect(UserTools.userIdFromRequest).toHaveBeenCalledWith(req);
         expect(UserTools.isAdmin).toHaveBeenCalledWith(mockUserId);
     });
@@ -37,7 +37,7 @@ describe('Authorization Tests', () => {
         const req = {} as Request;
         jest.spyOn(UserTools, 'userIdFromRequest').mockResolvedValue(undefined);
 
-        await expect(Authorization.validateAdmin(req)).rejects.toEqual(new GApiError(401, 'Unauthorized'));
+        await expect(Authorization.validateAdmin(req)).rejects.toEqual(new GApiError(401, 'Unauthorized admin request undefined'));
         expect(UserTools.userIdFromRequest).toHaveBeenCalledWith(req);
         // UserTools.isAdmin should not be called if userId is undefined
     });

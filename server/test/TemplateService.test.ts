@@ -14,7 +14,10 @@ import { TemplateView } from '../backend/models/TemplateView';
 import { User } from '../backend/models/User';
 import { TemplateService } from '../backend/services/TemplateService';
 import { PlanService } from '../backend/services/PlanService';
+import { TicketService } from '../backend/services/TicketService';
 import { getMockTemplateDao, getTemplateView, newTestUser } from './common';
+
+jest.mock('../backend/services/TicketService');
 import { adminUserId, asUserId, jcHash, jcTestTemplateData, jcTestTemplateDescription, jcTestTemplateName, jcUserId, MAX_PAGES_BETA, MAX_TEMPLATE_BETA, MAX_TEMPLATE_PRIVATE, MAX_TEMPLATE_SIMMER, nonAdminUserId } from './constants';
 dotenv.config()
 
@@ -118,7 +121,7 @@ describe('TemplateService Tests', () => {
         it('throws 401 if user not found', async () => {
             const userDao = new UserDao()
             jest.spyOn(UserDao.prototype, 'get').mockResolvedValue(undefined)
-            await expect(TemplateService.getVersion(1, 1, 999)).rejects.toMatchObject({ status: 401, message: 'Unauthorized' })
+            await expect(TemplateService.getVersion(1, 1, 999)).rejects.toMatchObject({ status: 401, message: 'Unauthorized getVersion 1 v1' })
         })
 
         it('throws 404 if version not found', async () => {

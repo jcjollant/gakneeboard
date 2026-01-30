@@ -221,7 +221,7 @@ export class TemplateDao extends Dao<Template> {
         const result = await sql`
             UPDATE sheets SET thumbnail=${template.thumbnail},thumbhash=${template.thumbhash} WHERE id=${template.id}
         `
-        if (result.rowCount == 0) throw new Error('Template not found')
+        if (result.rowCount == 0) throw new Error(`Cannot update thumbnail, template ${template.id} not found`)
 
         return new ThumbnailData(template.thumbnail, template.thumbhash)
     }

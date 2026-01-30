@@ -14,6 +14,7 @@ import { TemplateFormat } from "../models/TemplateFormat"
 import { put } from "@vercel/blob"
 import { UserTools } from "../UserTools"
 import { PlanService } from "./PlanService";
+import { TicketService } from "./TicketService";
 
 
 export class TemplateStatus {
@@ -42,6 +43,7 @@ export class TemplateService {
                 await templateDao.delete(templateId, userId)
                 return resolve(template.name)
             }
+            TicketService.create(5, 'User ' + userId + ' cannot delete template ' + templateId + ': Template not found')
             reject(new GApiError(404, 'Template not found'))
         })
     }
@@ -99,7 +101,8 @@ export class TemplateService {
 
         if (history) {
             if (history.userId !== requesterId) {
-                throw new GApiError(404, 'Template not found')
+                TicketService.create(3, 'User ' + requesterId + ' cannot restore template ' + templateId + ' v' + version + ': user mismatch')
+                return undefined
             }
             // We have the data, but we need the format. We'll try to get it from the current template
             // If the template is deleted, we default to Kneeboard (most common)

@@ -37,7 +37,7 @@ describe('TemplateService.getVersion', () => {
         mockUserDao.prototype.get.mockResolvedValue(undefined as any);
 
         await expect(TemplateService.getVersion(templateId, version, userId))
-            .rejects.toEqual(new GApiError(401, 'Unauthorized'));
+            .rejects.toEqual(new GApiError(401, `Unauthorized getVersion ${templateId} v${version}`));
     });
 
     it('should throw 403 if user is sim', async () => {
@@ -84,7 +84,7 @@ describe('TemplateService.getVersion', () => {
         expect(result?.data).toEqual({ foo: 'bar' });
     });
 
-    it('should throw 404 if history found but wrong user', async () => {
+    it('should return undefined if history found but wrong user', async () => {
         const validUser = new User(userId, 'hash');
         validUser.accountType = AccountType.private;
         mockUserDao.prototype.get.mockResolvedValue(validUser);
@@ -105,8 +105,8 @@ describe('TemplateService.getVersion', () => {
         } as unknown as TemplateHistory;
         mockHistoryDao.prototype.getTemplateVersion.mockResolvedValue(history);
 
-        await expect(TemplateService.getVersion(templateId, version, userId))
-            .rejects.toEqual(new GApiError(404, 'Template not found'));
+        const result = await TemplateService.getVersion(templateId, version, userId);
+        expect(result).toBeUndefined();
     });
 
     it('should return current version if history not found but current matches', async () => {
