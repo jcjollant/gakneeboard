@@ -1,6 +1,6 @@
 <template>
     <div class="home">
-        <Toast />
+
 
         <Menu></Menu>
         <div class="section templateSection kneeboardSection">
@@ -65,7 +65,7 @@ import { TemplateService } from '../services/TemplateService';
 import { ChecklistService } from '../services/ChecklistService';
 import { useToaster } from '../assets/Toaster';
 import { UserUrl } from '../lib/UserUrl';
-import Toast from 'primevue/toast';
+
 import Menu from '../components/menu/Menu.vue';
 import PlaceHolder from '../components/shared/PlaceHolder.vue';
 import TemplateSelector from '../components/templates/TemplateSelector.vue';

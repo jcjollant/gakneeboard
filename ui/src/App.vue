@@ -5,7 +5,7 @@
 
     <Eula v-model:visible="showEula" @close="showEula=false" />
     <Version v-model:visible="showVersion" @close="showVersion=false" :front="versionFront" :back="backend.version" />
-    <Toast />
+    <Toast style="z-index: 10000" />
     <ConfirmDialog />
     <div class="application">
         <router-view ></router-view>
@@ -55,7 +55,8 @@ const showMaintenance = ref(false)
 
 const showVersion = ref(false)
 const versionFront = ref('')
-const toaster = useToaster( useToast())
+const toast = useToast()
+const toaster = useToaster( toast)
 
 // Before the app starts, we request backend information, load user and potentially show how does it work
 onBeforeMount( () => {
@@ -88,45 +89,24 @@ onMounted( () => {
       const templateCode = urlParams.get('t')
       const demoCode = urlParams.get('d')
       const testCode = urlParams.get('test')
+
       if( templateCode) {
           // console.log('[App.onMounted] publication code', code)
+          toaster.info('Load Template', 'Loading shared template...')
 
           // Get that publication data
           new Promise( (resolve, reject) => {
               TemplateService.getPublication(templateCode).then( (template: any) => {
                   // console.log('[App.onMounted] publication found ', template)
-                  if(template) {
-                      routeToLocalTemplate(router, template)
-                  } else {
-                      // template not found?
-                      toaster.error('Load Template','Code not found ' + templateCode)
-                  }
-              }).catch((e: any) => {
-                  // Get publication failed
-                  toaster.error('Load Template','Error fetching template ' + templateCode)
-                  console.log('[App.onMounted] publication fetch failed', e)
-              }) 
-          })
-      } else if( demoCode){ // this is a demo
-        const template = DemoData.fromName( 'gak-' + demoCode )
-        if( template) {
-          routeToLocalTemplate(router, template)
-        }
-      } else if( testCode) { // this is a test
-        router.push({path: 'test/' + testCode})
-      }
-      if( templateCode) {
-          // console.log('[App.onMounted] publication code', code)
+                  // close previous toast
+                  toast.removeAllGroups()
 
-          // Get that publication data
-          new Promise( (resolve, reject) => {
-              TemplateService.getPublication(templateCode).then( (template: any) => {
-                  // console.log('[App.onMounted] publication found ', template)
                   if(template) {
+                      toaster.success('Template Found','Consider saving your own copy', 5000)
                       routeToLocalTemplate(router, template)
                   } else {
                       // template not found?
-                      toaster.error('Load Template','Code not found ' + templateCode)
+                      toaster.error('Template Loaded','Code not found ' + templateCode)
                   }
               }).catch((e: any) => {
                   // Get publication failed
