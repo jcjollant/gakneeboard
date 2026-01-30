@@ -201,4 +201,9 @@ export class GApi {
     public static async userShaToId(sha256: string): Promise<number | undefined> {
         return await UserDao.getIdFromHash(sha256)
     }
+
+    public static async setHomeAirport(userId: number, airportCode: string): Promise<void> {
+        const userDao = new UserDao()
+        await userDao.updateHomeAirport(userId, airportCode)
+    }
 }

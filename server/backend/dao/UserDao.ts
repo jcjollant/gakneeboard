@@ -255,4 +255,22 @@ export class UserDao extends Dao<User> {
         })
     }
 
+    /**
+     * Update the home airport for a user
+     * @param userId 
+     * @param airportCode 
+     * @returns 
+     */
+    public async updateHomeAirport(userId: number, airportCode: string): Promise<boolean> {
+        try {
+            const result = await sql`UPDATE users SET home_airport=${airportCode} WHERE id=${userId}`
+            /*
+            console.log('[UserDao.updateHomeAirport] ' + userId + ' to ' + airportCode + ' result ' + JSON.stringify(result))
+            */
+            return result.rowCount == 1
+        } catch (err) {
+            console.error('[UserDao.updateHomeAirport] ' + userId + ' failed ' + err)
+            return false
+        }
+    }
 }

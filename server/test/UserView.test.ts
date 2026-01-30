@@ -4,6 +4,7 @@ import { UserView } from '../backend/models/UserView';
 import { UserDao } from '../backend/dao/UserDao';
 import { TemplateDao } from '../backend/TemplateDao';
 import { User } from '../backend/models/User';
+import { GApi } from '../backend/GApi';
 import { jcHash, jcMaxTemplates, jcName } from './constants';
 
 // Mock dependencies
@@ -57,6 +58,18 @@ describe('UserView', () => {
             expect(uv.sha256).toBe(jcHash)
             expect(uv.name).toBe(jcName)
             expect(uv.templates).toBeDefined()
+        })
+
+        it('should update home airport', async () => {
+            const userId = 123
+            const airportCode = 'KSEA'
+
+            // Mock UserDao
+            const mockUpdate = jest.fn().mockResolvedValue(true)
+            jest.spyOn(UserDao.prototype, 'updateHomeAirport' as any).mockImplementation(mockUpdate)
+
+            await GApi.setHomeAirport(userId, airportCode)
+            expect(mockUpdate).toHaveBeenCalledWith(userId, airportCode)
         })
     });
 });

@@ -155,7 +155,15 @@ export class CurrentUser {
       this.maxTemplateCount = Number(data.maxTemp || 0);
       this.printCredits = Number(data.printCredits || 0)
       this.eulaCurrent = data.eulaCurrent || false
-      this.homeAirport = data.homeAirport
+      if (data.homeAirport) {
+        this.homeAirport = data.homeAirport
+      } else {
+        const tempHome = localStorage.getItem(LocalStoreService.tempHomeAirport)
+        if (tempHome) {
+          this.homeAirport = tempHome
+          data.homeAirport = tempHome
+        }
+      }
 
       // save new user data
       localStorage.setItem(LocalStoreService.user, JSON.stringify(data))

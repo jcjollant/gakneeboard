@@ -530,6 +530,22 @@ app.post('/userImage', async (req: Request, res: Response) => {
     }
 })
 
+app.post('/user/homeAirport', async (req: Request, res: Response) => {
+    try {
+        const userId = await UserTools.userIdFromRequest(req)
+        if (!userId) {
+            throw new GApiError(401, 'Unauthorized')
+        }
+        const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+        const airportCode = payload.airportCode
+
+        await GApi.setHomeAirport(userId, airportCode)
+        res.sendStatus(200)
+    } catch (e) {
+        catchError(res, e, 'POST /user/homeAirport')
+    }
+})
+
 
 if (process.env.__VERCEL_DEV_RUNNING != "1" && process.env.VERCEL != "1" && process.env.NODE_ENV != 'test') {
     app.listen(port, () => console.log("[index] Server ready on port " + port));
