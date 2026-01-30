@@ -92,7 +92,7 @@ onMounted( () => {
 
       if( templateCode) {
           // console.log('[App.onMounted] publication code', code)
-          toaster.info('Load Template', 'Loading shared template...')
+          toaster.info('Loading Kneeboard', 'Loading shared kneeboard...')
 
           // Get that publication data
           new Promise( (resolve, reject) => {
@@ -102,15 +102,15 @@ onMounted( () => {
                   toast.removeAllGroups()
 
                   if(template) {
-                      toaster.success('Template Found','Consider saving your own copy', 5000)
+                      toaster.success('Kneeboard Found','Consider saving your own copy', 5000)
                       routeToLocalTemplate(router, template)
                   } else {
                       // template not found?
-                      toaster.error('Template Loaded','Code not found ' + templateCode)
+                      toaster.error('Unknown Kneeboard','Code not found ' + templateCode)
                   }
               }).catch((e: any) => {
                   // Get publication failed
-                  toaster.error('Load Template','Error fetching template ' + templateCode)
+                  toaster.error('Hrmmm','Error fetching kneeboard ' + templateCode)
                   console.log('[App.onMounted] publication fetch failed', e)
               }) 
           })
