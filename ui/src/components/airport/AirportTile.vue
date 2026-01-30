@@ -146,6 +146,9 @@ function loadProps(newProps:any) {
     if( params.code) {
         propsConfig.code = params.code
         editMode.value = false
+    } else if (currentUser.homeAirport) {
+        propsConfig.code = currentUser.homeAirport
+        editMode.value = false
     } else { // Force edit mode if we don't have an airport yet
         title.value = defaultTitle
         editMode.value = true
@@ -313,12 +316,20 @@ function showAirport( airport:Airport) {
     // get runway(s) data into runwayViews
     // console.debug('[AirportTile.showAirport] config', config.value)
     const conf = config.value
-    if(conf && conf.rwys) {
+    if(conf && conf.rwys && conf.rwys.length > 0) {
         runwayViews.value = conf.rwys.map((rwyName, index) => {
             const rwyData = airport.rwys.find((rwy) => rwy.name == rwyName)
             // console.debug( '[AirportTile.showAirport] runway ', index, rwyData, conf)
             return new RunwayViewSettings(rwyData, conf.pattern, conf.rwyOrientation, undefined, conf.headings)
         })
+    } else if (airport.rwys.length > 0) {
+        // Default to the first runway
+        const rwyData = airport.rwys[0]
+        runwayViews.value = [new RunwayViewSettings(rwyData, conf.pattern, conf.rwyOrientation, undefined, conf.headings)]
+        // Update config to reflect this default selection so it persists if saved immediately
+        if (conf) {
+            conf.rwys = [rwyData.name]
+        }
     } else {
         runwayViews.value = []
     }
