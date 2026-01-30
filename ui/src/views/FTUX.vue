@@ -9,7 +9,7 @@
                 </div>
                 <div class="nav-menu" :class="{ active: mobileMenuOpen }">
                     <a href="#pricing" class="nav-link">Pricing</a>
-                    <button class="nav-btn" @click="scrollToFeatures">Get Started</button>
+                    <button class="nav-btn" @click="loadDemo()">Get Started</button>
                 </div>
                 <div class="hamburger" @click="mobileMenuOpen = !mobileMenuOpen">
                     <span></span><span></span><span></span>
@@ -24,7 +24,7 @@
                     <div v-if="greeting" class="greeting-badge">{{ greeting }}</div>
                     <h1 class="hero-title">Better Kneeboards For Safer Pilots</h1>
                     <p class="hero-subtitle">Improve your situational awareness and confidence with a custom kneeboard template that gives you exactly what you want when you need it.</p>
-                    <button class="cta-primary" @click="scrollToFeatures">Create Your First Template</button>
+                    <button class="cta-primary" @click="loadDemo()">Create Your First Template</button>
                     <p class="trust-indicator">Join 150+ pilots using GA Kneeboard</p>
                 </div>
                 <div class="hero-visual">
@@ -258,9 +258,7 @@ function goToPlans() {
     router.push('/plans')
 }
 
-function scrollToFeatures() {
-    document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })
-}
+
 
 
 

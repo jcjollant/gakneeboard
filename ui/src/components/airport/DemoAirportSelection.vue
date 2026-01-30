@@ -1,5 +1,6 @@
 <template>
-    <Dialog modal header="Enter Your Airports" :style="{ width: '17.5rem' }">
+    <Dialog modal header="Enter Your Airports" :style="{ width: '26.25rem' }">
+        <p style="margin-bottom: 1rem;">Let's make this kneeboard useful by selecting airports you care about</p>
         <div class="flight-dialog">
             <AirportInput :code="fromCode" v-model="fromAirport" label="From" @invalid="onFromInvalid" />
             <AirportInput :code="toCode" v-model="toAirport" label="To" @invalid="onToInvalid" />
