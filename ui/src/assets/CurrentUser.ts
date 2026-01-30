@@ -214,7 +214,7 @@ export class CurrentUser {
   async setHomeAirport(airportCode: string): Promise<boolean> {
     if (this.loggedIn) {
       try {
-        await this.postUrl(UrlService.root + '/user/homeAirport', { airportCode: airportCode })
+        await this.postUrl(UrlService.root + 'user/homeAirport', { airportCode: airportCode })
       } catch (e) {
         console.error('[CurrentUser.setHomeAirport] failed', e)
         return false
