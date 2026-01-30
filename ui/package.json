@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "git config core.hooksPath server/.husky"
   },
   "dependencies": {
     "@checklist/shared": "file:../shared",

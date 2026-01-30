@@ -1,1 +1,22 @@
-npm test && npx tsc --noEmit
+#!/bin/sh
+
+# Get repo root from script location (server/.husky/pre-push)
+SCRIPT_DIR=$(dirname "$0")
+REPO_ROOT=$(cd "$SCRIPT_DIR/../../" && pwd)
+
+echo ">>> [Pre-Push] Starting checks..."
+
+echo ">>> [Server] Running tests..."
+cd "$REPO_ROOT/server" || exit 1
+npm test || exit 1
+npx tsc --noEmit || exit 1
+
+echo ">>> [UI] Running tests..."
+cd "$REPO_ROOT/ui" || exit 1
+npm test || exit 1
+
+echo ">>> [UI] Running Cypress E2E..."
+npx cypress run || exit 1
+
+echo ">>> [Pre-Push] All checks passed!"
+exit 0
