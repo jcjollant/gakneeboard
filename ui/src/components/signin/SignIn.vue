@@ -4,8 +4,9 @@
         <span>Signing In will enable the following features:</span>
         <span>
           <ul class="benefits-list">
-            <li>💾 Save custom templates</li>
-            <li>🖨️ Print your creations or Ready to Print templates</li>
+            <li>💾 Save Custom Kneeboard</li>
+            <li>🖨️ Print your creations or Ready to Print Kneeboards</li>
+            <li>⚠ View current Notams</li>
             <li>📝 Feedback follow up</li>
           </ul>
         </span>
