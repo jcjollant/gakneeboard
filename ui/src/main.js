@@ -31,6 +31,7 @@ import { createApp } from 'vue';
 import App from '@/App.vue';
 import router from './router';
 import './style.css';
+import { showSplash } from './consoleSplash';
 
 library.add(
     faArrowDown, faArrowsDownToLine, faArrowsUpToLine, faArrowUp,
@@ -62,6 +63,7 @@ createApp(App)
 
 // Capture attribution data from window location immediately
 AttributionService.initFromWindow()
+showSplash()
 
 
 
