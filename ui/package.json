@@ -1,6 +1,6 @@
 {
   "name": "gak-ui",
-  "version": "6.5.11",
+  "version": "6.5.12",
   "type": "module",
   "scripts": {
     "dev": "vite",
