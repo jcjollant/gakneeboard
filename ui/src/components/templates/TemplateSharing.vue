@@ -40,7 +40,7 @@ function loadProps(props) {
   template.value = props.template;
   publishChoice.value = (publish.value ? pubPublic : pubPrivate)
   if( template.value && template.value.code) {
-    directLink.value = UserUrl.main + '?t=' + template.value.code
+    directLink.value = UserUrl.main + '/?t=' + template.value.code
   } else {
     directLink.value = ''
   }

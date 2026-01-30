@@ -157,7 +157,7 @@ function deleteTemplates() {
 }
 
 const ambassadorLink = computed(() => {
-    return `${UserUrl.main}?utm_source=ambassador&utm_medium=referral&utm_campaign=${user.value.sha256.slice(-10)}`
+    return `${UserUrl.main}/?utm_source=ambassador&utm_medium=referral&utm_campaign=${user.value.sha256.slice(-10)}`
 })
 
 function copyAmbassadorLink() {

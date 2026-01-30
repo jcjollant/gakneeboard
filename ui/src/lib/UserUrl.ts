@@ -2,7 +2,12 @@ export class UserUrl {
     // Within the GA Kneeboard
     static privacy: string = "/privacy.html"
     static eula: string = "/eula.html"
-    static main: string = 'https://kneeboard.ga'
+    static get main(): string {
+        if (typeof window !== 'undefined' && window.location && window.location.origin) {
+            return window.location.origin;
+        }
+        return 'https://kneeboard.ga';
+    }
     static press: string = '/press.html'
 
     // Blog stuff
