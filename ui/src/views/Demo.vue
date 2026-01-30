@@ -101,6 +101,8 @@ function onFlightConfirm(airports: {from: Airport | null, to: Airport | null, al
   try {
     if( demoName == SheetName.vfrFlight) {
       if (airports.from) {
+        // keep home airport in local storage for future use
+        localStorage.setItem(LocalStoreService.tempHomeAirport, airports.from.code)
         setAirportTile(templateData, airports.from, 0, 0)
         setTileData(templateData, 1, 3, {from: airports.from.code, to: airports.from.code, mode: DisplayModeSunlight.Flight})
       }

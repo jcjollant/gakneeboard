@@ -22,6 +22,7 @@ export class LocalStoreService {
     static thumbnailPrefix = 'tthumb-'
     static flightInfo = 'flightInfo'
     static attribution = 'channel-attribution'
+    static tempHomeAirport = 'temp-home-airport'
     static MAX_AIRPORTS = 30
     static MAX_APPROACHES = 5
     static LEAN_AIRPORTS = 24
