@@ -40,7 +40,7 @@
                 <Corner v-if="showCorners"  class="corner bottom right" :airport="airportData" :data="corners[3]"  :runway="mainRunway"  id="corner3"
                     @click="onCornerEdit(3, $event)"/>
                     
-                <NotamBadge v-if="showNotams" :count="notamsList.length" @click.stop="onNotamBadgeClick" class="notam-badge-pos" :class="{'expanded': span2}" />
+                <NotamBadge v-if="showNotams" :count="notamsList.length" :warning="!isSignedIn" @click.stop="onNotamBadgeClick" class="notam-badge-pos" :class="{'expanded': span2}" />
             </div>
             <PlaceHolder v-else title="No Airport" />
         </div>
@@ -49,10 +49,13 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, watch, computed} from 'vue';
+import {ref, onMounted, watch, computed, onUnmounted} from 'vue';
 
 import { getAirport, getNotams } from '../../services/AirportDataService'
 import { AirportService } from '../../services/AirportService';
+import { currentUser } from '../../assets/data';
+import { useToast } from "primevue/usetoast";
+import { useToaster } from '../../assets/Toaster';
 import { Airport, Runway } from '../../models/Airport.ts';
 import { AirportTileConfig } from './AirportTileConfig.ts';
 import { DisplayModeAirport } from '../../models/DisplayMode';
@@ -86,7 +89,7 @@ const showCorners = computed(() => {
     return !expanded.value
 })
 const showNotams = computed(() => {
-    return notamsList.value.length > 0
+    return notamsList.value.length > 0 || !isSignedIn.value
 })
 const showNotamsDialog = ref(false)
 
@@ -102,6 +105,24 @@ const mainRunway = ref<Runway>(Runway.noRunway())
 const corners = ref(defaultCornerFields)
 const cornerConfigEvent = ref(undefined)
 const cornerConfigIndex = ref(0)
+const toast = useToast()
+const toaster = useToaster(toast)
+const isSignedIn = ref(currentUser.loggedIn)
+
+function onUserUpdate() {
+    const signedIn = currentUser.loggedIn
+    if (signedIn !== isSignedIn.value) {
+        isSignedIn.value = signedIn
+        // If we just signed in, maybe refresh notams?
+        if (signedIn && airportData.value) {
+            getNotams(airportData.value.code).then(notams => notamsList.value = notams)
+        }
+    }
+}
+
+onUnmounted(() => {
+    currentUser.removeListener(onUserUpdate)
+})
 
 //-----------------------------------------------------
 // Props Management
@@ -197,15 +218,18 @@ function loadProps(newProps:any) {
     })
 
     // load notams
-    getNotams(propsConfig.code).then(notams => {
-        notamsList.value = notams
-    })
+    if(isSignedIn.value) {
+        getNotams(propsConfig.code).then(notams => {
+            notamsList.value = notams
+        })
+    }
 }
 
 onMounted(() => {
     // console.debug('Airport mounted with ' + JSON.stringify(props.params))
     // get this airport data from parameters
     loadProps(props)
+    currentUser.addListener(onUserUpdate)
 })
 
 watch( props, async() => {
@@ -252,6 +276,10 @@ function onHeaderClick() {
 }    
 
 function onNotamBadgeClick() {
+    if (!isSignedIn.value) {
+        toaster.warning('Aircraft Calling', 'Please sign in to view Notams')
+        return
+    }
     showNotamsDialog.value = true
 }
 
@@ -308,11 +336,13 @@ function showAirport( airport:Airport) {
     }
 
     // get notams
-    getNotams(airport.code).then((notams) => {
-        notamsList.value = notams
-    }).catch((error) => {
-        console.error('[AirportTile.showAirport] Failed to get notams', error)
-    })
+    if(isSignedIn.value) {
+        getNotams(airport.code).then((notams) => {
+            notamsList.value = notams
+        }).catch((error) => {
+            console.error('[AirportTile.showAirport] Failed to get notams', error)
+        })
+    }
 }
 
 // invoked whenever we want to save the current state

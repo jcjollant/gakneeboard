@@ -1,12 +1,13 @@
 <template>
-    <div class="notam-badge" @click="onClick" title="View Notams">
-        {{ count }}
+    <div class="notam-badge" :class="{'warning': warning}" @click="onClick" title="View Notams">
+        {{ warning ? '?' : count }}
     </div>
 </template>
 
 <script setup lang="ts">
 const props = defineProps({
-    count: { type: Number, required: true }
+    count: { type: Number, required: true },
+    warning: { type: Boolean, default: false }
 })
 
 const emits = defineEmits(['click'])
@@ -30,5 +31,10 @@ function onClick(event: MouseEvent) {
     font-weight: bold;
     z-index: 10;
     cursor: pointer;
+}
+
+.warning {
+    background-color: #FBC02D; /* Yellow-ish */
+    color: black;
 }
 </style>
