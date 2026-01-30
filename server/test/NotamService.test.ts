@@ -1,6 +1,5 @@
 import { describe, expect, it, jest, beforeEach, afterEach } from '@jest/globals';
 import { NotamService, NotamClassification, NmsResponseFormat } from '../backend/services/NotamService';
-import { GApiError } from '../backend/GApiError';
 
 // Mocking fetch
 const mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>;
@@ -25,18 +24,24 @@ describe('NotamService', () => {
         process.env.NMS_API_KEY = 'test-client-id';
         process.env.NMS_API_SECRET = 'test-client-secret';
         mockFetch.mockClear();
-        // Reset NotamService static state (token) if possible. 
-        // Since it's a static class with private fields, we can't easily reset it without 
-        // relying on internal implementation details or module reloading. 
-        // For this test, we might assume the token is cached. 
-        // A better approach would be to make NotamService instantiatable or expose a reset method for testing.
-        // Or simply mock the private fields if we use `any` cast.
         (NotamService as any).token = undefined;
         (NotamService as any).tokenExpiry = 0;
     });
 
     afterEach(() => {
         process.env = originalEnv;
+    });
+
+    describe('Configuration', () => {
+        it('should throw error if env vars are missing', async () => {
+            delete process.env.NMS_API_URL;
+
+            await expect(NotamService.getNotams({ nmsResponseFormat: NmsResponseFormat.GEOJSON }))
+                .rejects.toMatchObject({
+                    status: 500,
+                    message: expect.stringContaining('NMS_API_URL not configured')
+                });
+        });
     });
 
     describe('Authentication', () => {

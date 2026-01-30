@@ -80,14 +80,14 @@ export class NotamService {
 
     private static getUrl(): string {
         const url = process.env.NMS_API_URL;
-        if (!url) throw new Error("NMS_API_URL not configured");
+        if (!url) throw new GApiError(500, "NMS_API_URL not configured");
         return url;
     }
 
     private static getAuthCredentials() {
         const clientId = process.env.NMS_API_KEY;
         const clientSecret = process.env.NMS_API_SECRET;
-        if (!clientId || !clientSecret) throw new Error("NMS_API_KEY or NMS_API_SECRET not configured");
+        if (!clientId || !clientSecret) throw new GApiError(500, "NMS_API_KEY or NMS_API_SECRET not configured");
         return { clientId, clientSecret };
     }
 
