@@ -3,6 +3,12 @@
       <div class="accountDialog">
         <div class="account mb-5" v-if="!showSettings">
             <div class="key">Name</div><div class="value accountName">{{user.name}}</div>
+            <div class="key">Home Airport</div>
+            <div class="value">
+                <span v-if="user.homeAirport">{{user.homeAirport}}</span>
+                <span v-else style="color: grey;">(Not Set)</span>
+            </div>
+            <div style="grid-column: span 2"><hr></div>
             <div class="key">Account Type</div>
             <div class="value accountType">
               <div :class="{unlimited: user.accountType == AccountType.lifetime}">{{Formatter.accountType(user.accountType)}}</div>
