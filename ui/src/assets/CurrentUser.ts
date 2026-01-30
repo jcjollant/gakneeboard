@@ -1,11 +1,12 @@
-import axios, { AxiosResponse } from "axios";
-import { duplicate } from "./data";
-import { LocalStoreService } from "../services/LocalStoreService";
-import { User } from "../models/User";
 import { AccountType, UserView } from '@checklist/shared';
+import axios, { AxiosResponse } from "axios";
 import { Template } from "../models/Template";
+import { User } from "../models/User";
+import { LocalStoreService } from "../services/LocalStoreService";
+import { duplicate } from "./data";
 
 import { LibraryChecklist } from "../models/LibraryChecklist";
+import { UrlService } from "../services/UrlService";
 
 export class CurrentUser {
   loggedIn: boolean
@@ -208,5 +209,23 @@ export class CurrentUser {
       template.thumbHash = hash
       this.notify()
     }
+  }
+
+  async setHomeAirport(airportCode: string): Promise<boolean> {
+    if (this.loggedIn) {
+      try {
+        await this.postUrl(UrlService.root + '/user/homeAirport', { airportCode: airportCode })
+      } catch (e) {
+        console.error('[CurrentUser.setHomeAirport] failed', e)
+        return false
+      }
+    }
+    this.homeAirport = airportCode
+    // update local storage
+    const data = JSON.parse(localStorage.getItem(LocalStoreService.user) || '{}')
+    data.homeAirport = airportCode
+    localStorage.setItem(LocalStoreService.user, JSON.stringify(data))
+    this.notify()
+    return true
   }
 }

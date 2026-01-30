@@ -4,7 +4,7 @@
         <div class="account mb-5" v-if="!showSettings">
             <div class="key">Name</div><div class="value accountName">{{user.name}}</div>
             <div class="key">Home Airport</div>
-            <div class="value">
+            <div class="value" @click="showAirportSelection=true" style="cursor: pointer; text-decoration: underline;">
                 <span v-if="user.homeAirport">{{user.homeAirport}}</span>
                 <span v-else style="color: grey;">(Not Set)</span>
             </div>
@@ -67,6 +67,11 @@
             <QrcodeVue :value="ambassadorLink" :size="200" level="H" />
         </div>
     </Dialog>
+
+    <Dialog v-model:visible="showAirportSelection" modal header="Select Home Airport" :style="{ width: '35rem' }">
+        <AirportInput code="" :auto="true" :expanded="true"
+            @valid="onAirportSelected" />
+    </Dialog>
 </template>
 
 <script setup lang="ts">
@@ -80,12 +85,14 @@ import { UserUrl } from '../../lib/UserUrl';
 import { useToast } from 'primevue/usetoast';
 import { useToaster } from '../../assets/Toaster';
 import { useRouter } from 'vue-router';
+import { Airport } from '../../models/Airport';
 
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import UpdateButton from './UpdateButton.vue';
 import { currentUser } from '../../assets/data';
 import QrcodeVue from 'qrcode.vue'
+import AirportInput from '../shared/AirportInput.vue';
 
 
 const emits = defineEmits(['close','signout'])
@@ -94,6 +101,7 @@ const templateCount = ref(0)
 const pagesCount = ref(0)
 const showSettings = ref(false)
 const showQrcode = ref(false)
+const showAirportSelection = ref(false)
 const props = defineProps({
   user: {type: CurrentUser, required: true}
 })
@@ -170,6 +178,16 @@ function copyAmbassadorLink() {
     navigator.clipboard.writeText(ambassadorLink.value).then(() => {
         toaster.success('Clipboard', 'Ambassador link copied')
     })
+}
+
+async function onAirportSelected(airport: Airport) {
+    showAirportSelection.value = false
+    const success = await user.value.setHomeAirport(airport.code)
+    if (success) {
+        toaster.success('Account Updated', `Home airport set to ${airport.code}`)
+    } else {
+        toaster.error('Update Failed', `Could not save home airport`)
+    }
 }
 
 </script>
