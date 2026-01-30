@@ -9,11 +9,15 @@
             <span v-if="!expanded" class="recentAirport"  @click="name=''" title="Show Recent Airports">...</span>
         </div>
         <div v-else-if="!expanded" class="recentAirportList">
-            <button type="button" v-for="a in airports" class="recentAirport" @click="onRecentAirport(a)">{{ a }}</button>
+            <button type="button" v-for="a in airports" class="recentAirport" @click="onRecentAirport(a)">
+                <i v-if="a === homeAirportCode" class="pi pi-home" style="margin-right: 4px; font-size: 0.7rem;"></i>{{ a }}
+            </button>
         </div>
         <div v-if="expanded" class="recentAirportList expanded">
             <span>Recent:</span>
-            <button type="button" v-for="a in airports" class="recentAirport" @click="onRecentAirport(a)">{{ a }}</button>
+            <button type="button" v-for="a in airports" class="recentAirport" @click="onRecentAirport(a)">
+                <i v-if="a === homeAirportCode" class="pi pi-home" style="margin-right: 4px; font-size: 0.7rem;"></i>{{ a }}
+            </button>
         </div>
     </div>
 </template>
@@ -23,7 +27,7 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { Airport } from '../../models/Airport.ts'
 import { getAirport } from '../../services/AirportDataService'
 import { LocalStoreService } from '../../services/LocalStoreService'
-import { sessionAirports } from '../../assets/data'
+import { sessionAirports, currentUser } from '../../assets/data'
 import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../../assets/Toaster'
 
@@ -50,10 +54,10 @@ const valid = ref(false)
 let timeoutId:ReturnType<typeof setTimeout>|undefined = undefined
 const toaster = useToaster( useToast())
 let unsubscribe: (() => void) | undefined = undefined
+const homeAirportCode = ref<string|undefined>(undefined)
 
 async function loadProps(props:any) {
     // console.log('[AirportInput.loadProps]', props)
-    let airport:Airport|undefined = undefined
     if(model.value) {
         const airport = model.value as Airport;
         if(airport.isValid()) {
@@ -159,7 +163,16 @@ function onRecentAirport(airportCode:string) {
 }
 
 function refreshAirportList() {
-    airports.value =  LocalStoreService.airportRecentsGet(5).sort();
+    let recent = LocalStoreService.airportRecentsGet(5).sort();
+    homeAirportCode.value = currentUser.homeAirport
+    
+    if (homeAirportCode.value) {
+        // Remove home airport from the list if it is there
+        recent = recent.filter(a => a !== homeAirportCode.value)
+        // Add it to the top
+        recent.unshift(homeAirportCode.value)
+    }
+    airports.value = recent
 }
 
 </script>
