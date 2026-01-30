@@ -249,8 +249,12 @@ app.get('/maintenance/:code', async (req: Request, res: Response) => {
 
 app.get('/publication/:code', async (req: Request, res: Response) => {
     try {
-        let template = await GApi.publicationGet(req.params.code);
-        res.send(template)
+        const template = await GApi.publicationGet(req.params.code);
+        if (template) {
+            res.send(template)
+        } else {
+            res.status(404).send("Publication not found")
+        }
     } catch (e) {
         catchError(res, e, 'GET /publication/:code')
     }

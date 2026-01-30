@@ -1,29 +1,29 @@
 import axios from 'axios'
 import { AirportService } from './services/AirportService'
 // import { Adip } from '../backend/adip/Adip' // Removed
-import { Business } from './business/Business'
-import { Email, EmailType } from './Email'
-import { Exporter } from './Exporter'
-import { UserTools } from './UserTools'
 import { version } from '../package.json'
+import { Business } from './business/Business'
 import { UsageDao, UsageType } from './dao/UsageDao'
 import { UserDao } from './dao/UserDao'
-import { Airport } from './models/Airport' // Removed versionInvalid
-import { AirportView } from './models/AirportView'
+import { Email, EmailType } from './Email'
+import { Exporter } from './Exporter'
 import { FeedbackDao } from './FeedbackDao'
+import { GApiError } from './GApiError'
+import { Airport } from './models/Airport'; // Removed versionInvalid
+import { AirportView } from './models/AirportView'
 import { Publication } from './models/Publication'
-import { PublicationDao } from './PublicationDao'
 import { PublishedTemplate } from './models/PublishedTemplate'
 import { Sunlight } from './models/Sunlight'
-import { TemplateDao } from './TemplateDao'
+import { Template } from './models/Template'
 import { TemplateView } from './models/TemplateView'
 import { User } from './models/User'
 import { UserMiniView } from './models/UserMiniView'
-import { CodeAndAirport } from './models/CodeAndAirport'
-import { GApiError } from './GApiError'
-import { Template } from './models/Template'
+import { PublicationDao } from './PublicationDao'
+import { TemplateDao } from './TemplateDao'
+import { UserTools } from './UserTools'
 // import { AirportSketch } from './AirportSketch' // Removed
 import { SessionInfo } from './models/SessionInfo'
+import { TicketService } from './services/TicketService'
 
 // Google API key
 
@@ -197,9 +197,15 @@ export class GApi {
 
     public static async publicationGet(code: string): Promise<TemplateView | undefined> {
         const pub: Publication | undefined = await PublicationDao.findByCode(code)
-        if (!pub || !pub.templateId) throw new GApiError(404, 'Publication not found');
+        if (!pub || !pub.templateId) {
+            TicketService.create(3, "Pulication not found with code " + code)
+            return undefined
+        }
         const template: Template | undefined = await TemplateDao.readByIdStatic(pub.templateId)
-        if (!template) throw new GApiError(404, 'Template not found for publication ' + code);
+        if (!template) {
+            TicketService.create(2, `Template ${pub.templateId} not found for publication ${code}`)
+            return undefined
+        }
 
         return TemplateView.parseTemplate(template, pub)
     }
