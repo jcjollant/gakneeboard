@@ -39,6 +39,7 @@
 
 <script setup lang="ts">
 import {onMounted, ref, watch} from 'vue';
+import { useConfirm } from "primevue/useconfirm";
 import { TileType } from '../../models/TileType'
 import { TileData } from '../../models/TileData';
 
@@ -57,7 +58,8 @@ import NavlogTile from '../navlog/NavlogTile.vue';
 import NotesTile from '../notes/NotesTile.vue';
 import VfrTile from '../vfr/VfrTile.vue';
 
-const emits = defineEmits(['update','settings','capture'])
+const emits = defineEmits(['update','settings','capture', 'replacePage'])
+const confirm = useConfirm()
 
 const props = defineProps({
     tile: { type: Object, default: null},
@@ -105,7 +107,28 @@ function loadProps( props:any) {
 // replace current tile with a new one, which could be the selection tile
 function onReplace(newName = TileType.selection, mode=undefined) {
     // console.debug('[Tile.onReplace]', newName, mode)
+    
+    // Intercept replace on the top right tile
+    if( props.index == 1 && newName == TileType.selection) {
+        confirm.require({
+            message: 'Do you want to replace this Tile or the entire Page?',
+            header: 'Replace Tile or Page',
+            rejectLabel: 'Replace Page',
+            acceptLabel: 'Replace Tile',
+            accept: () => {
+                performReplace(newName, mode)
+            },
+            reject: () => {
+                emits('replacePage')
+            }
+        });
+        return
+    }
 
+    performReplace(newName, mode)
+}
+
+function performReplace(newName = TileType.selection, mode=undefined) {
     const tileName = newName.toLowerCase()
     // state = { id:tile.value.id,name: tileName, data:{}}
     state = new TileData(tileName)

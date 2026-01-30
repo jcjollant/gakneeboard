@@ -7,7 +7,8 @@
           :index="index"
           @update="onUpdate(index,$event)" 
           @settings="onSettingsOpen(index, $event)"
-          @capture="emits('capture', index)"/>
+          @capture="emits('capture', index)"
+          @replacePage="emits('replace')"/>
         
         <TileSettings v-if="editingTileIndex >= 0 && editingTileData" 
             :tile="editingTileData" 
@@ -42,7 +43,7 @@ import Tile from './Tile.vue';
 import TileSettings from './TileSettings.vue';
 
 const confirm = useConfirm()
-const emits = defineEmits(['update', 'capture'])
+const emits = defineEmits(['update', 'capture', 'replace'])
 const props = defineProps({
     data: { type: Object, default: null},
     format: { type: String, default: TemplateFormat.Kneeboard },

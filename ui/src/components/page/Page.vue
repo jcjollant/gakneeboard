@@ -9,7 +9,8 @@
     <PaperNavlogPage v-else-if="type==PageType.paperNavlog" :data="pageData" :format="format"
         @replace="onReplace" @update="onUpdate" />
     <TilePage v-else-if="type==PageType.tiles" :data="pageData" :format="format"
-        @update="onUpdate" :captureMode="captureMode" @capture="emits('capture', $event)"/>
+        @update="onUpdate" :captureMode="captureMode" @capture="emits('capture', $event)"
+        @replace="onReplace(PageType.selection)" />
     <NotesPage v-else-if="type==PageType.notes" 
         @replace="onReplace(PageType.selection)" />
     <ApproachPage v-else-if="type==PageType.approach" :data="pageData"
