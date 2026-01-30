@@ -3,6 +3,7 @@ import request from 'supertest';
 import app from '../../api/index';
 import { GApi } from '../../backend/GApi';
 import { TemplateService } from '../../backend/services/TemplateService';
+import { PublicationService } from '../../backend/services/publications/PublicationService';
 import { Maintenance } from '../../backend/Maintenance';
 import { AirportService } from '../../backend/services/AirportService';
 import { Authorization } from '../../backend/services/Authorization';
@@ -16,6 +17,7 @@ jest.mock('../../backend/GApi');
 jest.mock('../../backend/services/AirportService');
 jest.mock('../../backend/Maintenance');
 jest.mock('../../backend/services/TemplateService');
+jest.mock('../../backend/services/publications/PublicationService');
 jest.mock('../../backend/UserTools');
 jest.mock('../../backend/services/TicketService');
 jest.mock('../../backend/services/Authorization');
@@ -154,8 +156,8 @@ describe('index API', () => {
         // Mock TemplateService.get
         (TemplateService.get as unknown as jest.Mock<any>).mockResolvedValue({ id: templateId });
 
-        // Mock GApi.publicationGet
-        (GApi.publicationGet as unknown as jest.Mock<any>).mockResolvedValue({ id: templateId });
+        // Mock PublicationService.get
+        (PublicationService.get as unknown as jest.Mock<any>).mockResolvedValue({ id: templateId });
 
         // Test POST /template
         const postRes = await request(app)

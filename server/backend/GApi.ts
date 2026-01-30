@@ -11,19 +11,15 @@ import { FeedbackDao } from './FeedbackDao'
 import { GApiError } from './GApiError'
 import { Airport } from './models/Airport'; // Removed versionInvalid
 import { AirportView } from './models/AirportView'
-import { Publication } from './models/Publication'
-import { PublishedTemplate } from './models/PublishedTemplate'
 import { Sunlight } from './models/Sunlight'
 import { Template } from './models/Template'
 import { TemplateView } from './models/TemplateView'
 import { User } from './models/User'
 import { UserMiniView } from './models/UserMiniView'
-import { PublicationDao } from './PublicationDao'
 import { TemplateDao } from './TemplateDao'
 import { UserTools } from './UserTools'
 // import { AirportSketch } from './AirportSketch' // Removed
 import { SessionInfo } from './models/SessionInfo'
-import { TicketService } from './services/TicketService'
 
 // Google API key
 
@@ -195,26 +191,7 @@ export class GApi {
         }
     }
 
-    public static async publicationGet(code: string): Promise<TemplateView | undefined> {
-        const pub: Publication | undefined = await PublicationDao.findByCode(code)
-        if (!pub || !pub.templateId) {
-            TicketService.create(3, "Pulication not found with code " + code)
-            return undefined
-        }
-        const template: Template | undefined = await TemplateDao.readByIdStatic(pub.templateId)
-        if (!template) {
-            TicketService.create(2, `Template ${pub.templateId} not found for publication ${code}`)
-            return undefined
-        }
 
-        return TemplateView.parseTemplate(template, pub)
-    }
-
-    // Get a list of published templates
-    public static async publicationGetList(): Promise<PublishedTemplate[]> {
-        const pubs: PublishedTemplate[] = await PublicationDao.list()
-        return pubs
-    }
 
     /**
      * Finds a user id by it's sha256

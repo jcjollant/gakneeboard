@@ -11,6 +11,7 @@ import { NavlogTools } from "../backend/NavlogTools";
 import { TicketService } from "../backend/services/TicketService";
 import { Charts } from "../backend/Charts";
 import { TemplateService } from "../backend/services/TemplateService"
+import { PublicationService } from "../backend/services/publications/PublicationService";
 import { GApiError } from "../backend/GApiError";
 import { UserImage } from "../backend/UserImage";
 import { UserDao } from "../backend/dao/UserDao";
@@ -249,7 +250,7 @@ app.get('/maintenance/:code', async (req: Request, res: Response) => {
 
 app.get('/publication/:code', async (req: Request, res: Response) => {
     try {
-        const template = await GApi.publicationGet(req.params.code);
+        const template = await PublicationService.get(req.params.code);
         if (template) {
             res.send(template)
         } else {
@@ -280,7 +281,7 @@ app.get('/publications', async (req: Request, res: Response) => {
         if (!userId) {
             throw new GApiError(401, 'Please Sign In to access this resource')
         }
-        let pubs = await GApi.publicationGetList();
+        let pubs = await PublicationService.getList();
         res.send(pubs)
     } catch (e) {
         catchError(res, e, 'GET /publications')

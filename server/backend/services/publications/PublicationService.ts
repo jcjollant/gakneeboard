@@ -1,0 +1,31 @@
+import { PublicationDao } from '../../PublicationDao'
+import { TemplateDao } from '../../TemplateDao'
+import { TicketService } from '../TicketService'
+import { TemplateView } from '../../models/TemplateView'
+import { PublishedTemplate } from '../../models/PublishedTemplate'
+import { Publication } from '../../models/Publication'
+import { Template } from '../../models/Template'
+
+export class PublicationService {
+
+    public static async get(code: string): Promise<TemplateView | undefined> {
+        const pub: Publication | undefined = await PublicationDao.findByCode(code)
+        if (!pub || !pub.templateId) {
+            TicketService.create(3, "Pulication not found with code " + code)
+            return undefined
+        }
+        const template: Template | undefined = await TemplateDao.readByIdStatic(pub.templateId)
+        if (!template) {
+            TicketService.create(2, `Template ${pub.templateId} not found for publication ${code}`)
+            return undefined
+        }
+
+        return TemplateView.parseTemplate(template, pub)
+    }
+
+    // Get a list of published templates
+    public static async getList(): Promise<PublishedTemplate[]> {
+        const pubs: PublishedTemplate[] = await PublicationDao.list()
+        return pubs
+    }
+}
