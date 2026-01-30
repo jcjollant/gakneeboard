@@ -182,6 +182,7 @@ function copyAmbassadorLink() {
 
 async function onAirportSelected(airport: Airport) {
     showAirportSelection.value = false
+    toaster.info('Home Airport', `Changing to ${airport.code}`)
     const success = await user.value.setHomeAirport(airport.code)
     if (success) {
         toaster.success('Account Updated', `Home airport set to ${airport.code}`)
