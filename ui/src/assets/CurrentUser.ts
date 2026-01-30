@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { duplicate } from "./data";
 import { LocalStoreService } from "../services/LocalStoreService";
 import { User } from "../models/User";
-import { AccountType } from '@checklist/shared';
+import { AccountType, UserView } from '@checklist/shared';
 import { Template } from "../models/Template";
 
 import { LibraryChecklist } from "../models/LibraryChecklist";
@@ -20,6 +20,7 @@ export class CurrentUser {
   accountType: AccountType;
   printCredits: number;
   eulaCurrent: boolean;
+  homeAirport?: string;
 
   static noUser() { return new CurrentUser() }
 
@@ -139,7 +140,7 @@ export class CurrentUser {
     }
   }
 
-  update(data: any) {
+  update(data: UserView) {
     // console.log('[CurrentUser.update] updating', data)
     if (data) {
       this.sha256 = data.sha256;
@@ -147,13 +148,14 @@ export class CurrentUser {
       this.accountType = data.accountType;
 
       this.templates = data.templates ? data.templates.map(Template.parse) : [];
-      this.checklists = data.checklists ? data.checklists.map((c: any) => new LibraryChecklist(c.id, c.fullName, c.shortName, c.entries)) : [];
+      this.checklists = (data as any).checklists ? (data as any).checklists.map((c: any) => new LibraryChecklist(c.id, c.fullName, c.shortName, c.entries)) : [];
       this.sortTemplates()
       this.pageCount = this.templates.reduce((a, t) => a + t.pages, 0)
       this.maxPageCount = Number(data.maxPages || 0);
       this.maxTemplateCount = Number(data.maxTemp || 0);
       this.printCredits = Number(data.printCredits || 0)
       this.eulaCurrent = data.eulaCurrent || false
+      this.homeAirport = data.homeAirport
 
       // save new user data
       localStorage.setItem(LocalStoreService.user, JSON.stringify(data))

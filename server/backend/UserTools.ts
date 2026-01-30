@@ -1,5 +1,5 @@
 import { User } from './models/User'
-import { UserMiniView } from './models/UserMiniView';
+import { UserView } from './models/UserView';
 import { TemplateDao } from './TemplateDao';
 import { TemplateView } from './models/TemplateView';
 import { UserDao } from './dao/UserDao'
@@ -160,12 +160,9 @@ export class UserTools {
      * @param req Inbound request to parse
      * @returns Matching user or undefined if not found
      */
-    public static async userMini(user: User): Promise<UserMiniView | undefined> {
-        if (!user) return undefined
+    public static async userMini(user: User): Promise<UserView> {
         const templates: TemplateView[] = await TemplateDao.getOverviewListForUser(user.id)
-        const userMini: UserMiniView = new UserMiniView(user, templates)
-        // console.log('[userTools.userMiniFromRequest] userMini ' + JSON.stringify(userMini))
-        return userMini
+        return new UserView(user, templates)
     }
 
     /**

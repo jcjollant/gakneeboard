@@ -1,9 +1,9 @@
-import { UserMiniView } from "./UserMiniView"
+import { UserView } from "./UserView";
 
 export interface SessionInfo {
     version: string
     camv: number
     aced: number
-    user?: UserMiniView
+    user?: UserView
 
 }

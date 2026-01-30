@@ -1,6 +1,6 @@
 import { describe, expect, test, afterAll, jest, beforeEach } from '@jest/globals';
 import { GApi } from '../backend/GApi';
-import { UserMiniView } from '../backend/models/UserMiniView';
+import { UserView } from '../backend/models/UserView';
 import { UserTools } from '../backend/UserTools';
 import { UserDao } from '../backend/dao/UserDao';
 import { UsageDao } from '../backend/dao/UsageDao';
@@ -41,7 +41,7 @@ describe('GApi Tests', () => {
         // Mock TemplateDao.getOverviewListForUser
         (TemplateDao.getOverviewListForUser as unknown as jest.Mock<any>).mockResolvedValue([]);
 
-        await GApi.authenticate(body).then((user: UserMiniView) => {
+        await GApi.authenticate(body).then((user: UserView) => {
             expect(user.name).toBe(jcName)
             expect(user.sha256).toBe(jcHash)
             expect(user.templates).toBeDefined()
@@ -89,7 +89,7 @@ describe('GApi Tests', () => {
         (UserTools.userShaFromRequest as unknown as jest.Mock<any>).mockReturnValue(jcHash);
         const mockUser = new User(jcUserId, jcHash);
         (UserDao.getUserFromHash as unknown as jest.Mock<any>).mockResolvedValue(mockUser);
-        (UserTools.userMini as unknown as jest.Mock<any>).mockResolvedValue({ sha256: jcHash } as UserMiniView);
+        (UserTools.userMini as unknown as jest.Mock<any>).mockResolvedValue({ sha256: jcHash } as UserView);
 
         const req2 = { query: { user: jcHash } }
         const session2 = await GApi.getSession(req2)

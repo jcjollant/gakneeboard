@@ -1,6 +1,6 @@
 import { Check, HealthCheck } from './HealthChecks'
 import { Metrics, MetricKey } from '../backend/Metrics'
-import { UserMiniView } from './models/UserMiniView';
+import { UserView } from './models/UserView';
 import { Business } from './business/Business';
 import { sql } from '@vercel/postgres';
 import { UserDao } from './dao/UserDao';
@@ -29,7 +29,7 @@ export class Maintenance {
                 Maintenance.willie().then(res).catch(rej)
             } else if (this.code == Maintenance.codeLogin) {
                 const hash = "357c3920bbfc6eefef7e014ca49ef12c78bb875c0826efe90194c9978303a8d3"
-                UserMiniView.fromHash(hash).then((umv: UserMiniView | undefined) => {
+                UserView.fromHash(hash).then((umv: UserView | undefined) => {
                     if (umv) {
                         res(JSON.stringify(umv))
                     } else {

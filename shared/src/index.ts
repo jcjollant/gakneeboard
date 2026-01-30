@@ -3,3 +3,4 @@ export * from './models/PlanDescription';
 export * from './constants/Plans';
 export * from './models/Quotas';
 export * from './models/Notam';
+export * from './models/UserView';

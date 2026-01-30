@@ -1,6 +1,6 @@
 import { describe, expect, it, jest, afterAll } from '@jest/globals';
 import { newTestUser } from './common';
-import { UserMiniView } from '../backend/models/UserMiniView';
+import { UserView } from '../backend/models/UserView';
 import { UserDao } from '../backend/dao/UserDao';
 import { TemplateDao } from '../backend/TemplateDao';
 import { User } from '../backend/models/User';
@@ -16,31 +16,31 @@ jest.mock('@vercel/postgres', () => ({
 require('dotenv').config();
 
 
-describe('UserMiniView', () => {
+describe('UserView', () => {
 
     describe('constructor', () => {
-        it('should create UserMiniView instance with correct properties', () => {
+        it('should create UserView instance with correct properties', () => {
             const user = newTestUser()
             const maxTemplates = 3
             const printCredits = 7
             user.setMaxTemplates(maxTemplates)
             user.setPrintCredits(printCredits)
-            const userMiniView = new UserMiniView(user, [])
-            expect(userMiniView.sha256).toBe(user.sha256);
-            expect(userMiniView.name).toBe(user.name);
-            expect(userMiniView.accountType).toBe(user.accountType);
-            expect(userMiniView.printCredits).toBe(printCredits);
-            expect(userMiniView.templates).toHaveLength(0);
-            expect(userMiniView.templates).toHaveLength(0);
-            expect(userMiniView.maxTemp).toBe(maxTemplates)
-            expect(userMiniView.homeAirport).toBeUndefined()
+            const userView = new UserView(user, [])
+            expect(userView.sha256).toBe(user.sha256);
+            expect(userView.name).toBe(user.name);
+            expect(userView.accountType).toBe(user.accountType);
+            expect(userView.printCredits).toBe(printCredits);
+            expect(userView.templates).toHaveLength(0);
+            expect(userView.templates).toHaveLength(0);
+            expect(userView.maxTemp).toBe(maxTemplates)
+            expect(userView.homeAirport).toBeUndefined()
         });
 
         it('should include homeAirport if set in User', () => {
             const user = newTestUser()
             user.setHomeAirport('KSQL')
-            const userMiniView = new UserMiniView(user, [])
-            expect(userMiniView.homeAirport).toBe('KSQL')
+            const userView = new UserView(user, [])
+            expect(userView.homeAirport).toBe('KSQL')
         });
 
         it('should retrieve from hash', async () => {
@@ -51,12 +51,12 @@ describe('UserMiniView', () => {
             (UserDao.getUserFromHash as unknown as jest.Mock<any>).mockResolvedValue(mockUser);
             (TemplateDao.getOverviewListForUser as unknown as jest.Mock<any>).mockResolvedValue([]);
 
-            const umv: UserMiniView | undefined = await UserMiniView.fromHash(jcHash)
-            expect(umv).toBeDefined()
-            if (!umv) return;
-            expect(umv.sha256).toBe(jcHash)
-            expect(umv.name).toBe(jcName)
-            expect(umv.templates).toBeDefined()
+            const uv: UserView | undefined = await UserView.fromHash(jcHash)
+            expect(uv).toBeDefined()
+            if (!uv) return;
+            expect(uv.sha256).toBe(jcHash)
+            expect(uv.name).toBe(jcName)
+            expect(uv.templates).toBeDefined()
         })
     });
 });

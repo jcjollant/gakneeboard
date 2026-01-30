@@ -3,7 +3,7 @@ import { User } from '../backend/models/User'
 import { UserTools } from '../backend/UserTools'
 import { jcSource, MAX_PAGES_SIMMER, MAX_TEMPLATE_SIMMER } from './constants'
 import { jcHash, jcUserId, jcToken, jcName, jcEmail } from './constants'
-import { UserMiniView } from '../backend/models/UserMiniView';
+import { UserView } from '../backend/models/UserView';
 import { AccountType, PRINT_CREDIT_SIMMER } from '@checklist/shared';
 import { UserDao } from '../backend/dao/UserDao';
 import { Email } from '../backend/Email';
@@ -103,7 +103,7 @@ describe('UserTool', () => {
         const newUser = await UserTools.authenticate(body, mockUserDao)
         expect(newUser.name).toBe('user')
     })
-    test('Authenticate and UserMiniView', async () => {
+    test('Authenticate and UserView', async () => {
         const body = { 'source': UserTools.google, 'token': jcToken }
 
         const mockUserDao = new UserDao() as jest.Mocked<UserDao>;
@@ -135,7 +135,7 @@ describe('UserTool', () => {
         expect(user.email).toBe(jcEmail)
         expect(user.sha256).toBe(jcHash)
 
-        const miniUser: UserMiniView = new UserMiniView(user, [])
+        const miniUser: UserView = new UserView(user, [])
         // should only have sha256 and name
         expect(miniUser.sha256).toBe(jcHash)
         expect(miniUser.name).toBe(jcName)

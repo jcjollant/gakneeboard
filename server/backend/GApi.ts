@@ -15,7 +15,7 @@ import { Sunlight } from './models/Sunlight'
 import { Template } from './models/Template'
 import { TemplateView } from './models/TemplateView'
 import { User } from './models/User'
-import { UserMiniView } from './models/UserMiniView'
+import { UserView } from './models/UserView'
 import { TemplateDao } from './TemplateDao'
 import { UserTools } from './UserTools'
 // import { AirportSketch } from './AirportSketch' // Removed
@@ -43,11 +43,11 @@ export class GApi {
     }
 
 
-    public static async authenticate(body: any): Promise<UserMiniView> {
+    public static async authenticate(body: any): Promise<UserView> {
         try {
             const user: User = await UserTools.authenticate(body);
             const templates: TemplateView[] = await TemplateDao.getOverviewListForUser(user.id);
-            const output: UserMiniView = new UserMiniView(user, templates);
+            const output: UserView = new UserView(user, templates);
             return output;
         } catch (e) {
             let message = ''
