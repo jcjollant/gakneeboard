@@ -3,7 +3,7 @@ import request from 'supertest';
 import app from '../../api/index';
 import { GApi } from '../../backend/GApi';
 import { TemplateService } from '../../backend/services/TemplateService';
-import { PublicationService } from '../../backend/services/publications/PublicationService';
+import { PublicationService } from '../../backend/services/PublicationService';
 import { Maintenance } from '../../backend/Maintenance';
 import { AirportService } from '../../backend/services/AirportService';
 import { Authorization } from '../../backend/services/Authorization';

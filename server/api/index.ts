@@ -11,7 +11,7 @@ import { NavlogTools } from "../backend/NavlogTools";
 import { TicketService } from "../backend/services/TicketService";
 import { Charts } from "../backend/Charts";
 import { TemplateService } from "../backend/services/TemplateService"
-import { PublicationService } from "../backend/services/publications/PublicationService";
+import { PublicationService } from "../backend/services/PublicationService";
 import { GApiError } from "../backend/GApiError";
 import { UserImage } from "../backend/UserImage";
 import { UserDao } from "../backend/dao/UserDao";
