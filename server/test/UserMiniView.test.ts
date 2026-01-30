@@ -31,7 +31,16 @@ describe('UserMiniView', () => {
             expect(userMiniView.accountType).toBe(user.accountType);
             expect(userMiniView.printCredits).toBe(printCredits);
             expect(userMiniView.templates).toHaveLength(0);
+            expect(userMiniView.templates).toHaveLength(0);
             expect(userMiniView.maxTemp).toBe(maxTemplates)
+            expect(userMiniView.homeAirport).toBeUndefined()
+        });
+
+        it('should include homeAirport if set in User', () => {
+            const user = newTestUser()
+            user.setHomeAirport('KSQL')
+            const userMiniView = new UserMiniView(user, [])
+            expect(userMiniView.homeAirport).toBe('KSQL')
         });
 
         it('should retrieve from hash', async () => {

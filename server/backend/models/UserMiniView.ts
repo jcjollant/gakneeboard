@@ -14,6 +14,7 @@ export class UserMiniView {
     accountType: AccountType;
     printCredits: number;
     eulaCurrent: boolean;
+    homeAirport: string | undefined;
 
     constructor(user: User, templates: TemplateView[]) {
         this.sha256 = user.sha256;
@@ -24,6 +25,7 @@ export class UserMiniView {
         this.accountType = user.accountType;
         this.printCredits = user.printCredits;
         this.eulaCurrent = user.eula >= Business.latestEula;
+        this.homeAirport = user.homeAirport;
     }
 
     static fromHash(hash: string): Promise<UserMiniView | undefined> {

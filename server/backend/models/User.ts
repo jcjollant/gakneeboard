@@ -18,6 +18,7 @@ export class User {
     eula: number;
     attribution?: AttributionData;
     planId: string | undefined;
+    homeAirport: string | undefined;
 
     constructor(id: number, sha256: string) {
         this.id = id;
@@ -33,6 +34,7 @@ export class User {
         this.createDate = undefined;
         this.eula = 0;
         this.planId = undefined;
+        this.homeAirport = undefined;
     }
 
 
@@ -91,5 +93,9 @@ export class User {
 
     public setPlanId(planId: string) {
         this.planId = planId;
+    }
+
+    public setHomeAirport(airport: string) {
+        this.homeAirport = airport;
     }
 }
