@@ -16,7 +16,7 @@ cd "$REPO_ROOT/ui" || exit 1
 npm test || exit 1
 
 echo ">>> [UI] Running Cypress E2E..."
-npx cypress run || exit 1
+npm run e2e || exit 1
 
 echo ">>> [Pre-Push] All checks passed!"
 exit 0
