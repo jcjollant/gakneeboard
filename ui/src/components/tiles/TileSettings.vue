@@ -121,11 +121,11 @@ const title = computed(() => {
 .mini-cell {
     width: 5px;
     height: 5px;
-    background-color: darkgrey;
+    background-color: #d1d5db; /* Light grey for inactive */
     border-radius: 1px;
 }
 .mini-cell.active {
-    background-color: var(--primary-color, blue);
+    background-color: var(--primary-color, #3b82f6); /* Ensure active pops */
 }
 .actionBar {
     position: relative;
