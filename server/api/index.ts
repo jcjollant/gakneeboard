@@ -18,6 +18,7 @@ import { UserDao } from "../backend/dao/UserDao";
 import { UsageDao } from "../backend/dao/UsageDao";
 import { Authorization } from "../backend/services/Authorization";
 import { NotamService } from "../backend/services/NotamService";
+import { WeatherService } from "../backend/services/WeatherService";
 const port: number = 3000
 const app = express();
 
@@ -78,27 +79,6 @@ app.get('/airport/:id', async (req, res) => {
         res.send(output)
     } catch (e) {
         catchError(res, e, 'GET /airport')
-    }
-})
-
-/**
- * Get simplified NOTAMs for an airport
- */
-app.get('/notams/:airportCode', async (req: Request, res: Response) => {
-    try {
-        const airportCode = req.params.airportCode
-        const userId = await UserTools.userIdFromRequest(req)
-        if (!userId) {
-            res.status(401).send({ error: `Please sign in to view notams` })
-            return
-        }
-
-        const simplified = await NotamService.getSimplifiedNotams({
-            location: airportCode
-        })
-        res.send(simplified)
-    } catch (e) {
-        catchError(res, e, 'GET /notam/:airportCode')
     }
 })
 
@@ -248,6 +228,54 @@ app.get('/maintenance/:code', async (req: Request, res: Response) => {
         catchError(res, e, 'GET /maintenance/:code')
     })
 })
+
+/**
+ * Get Metar for an airport
+ */
+app.get('/metar/:airportCode', async (req: Request, res: Response) => {
+    try {
+        const airportCode = req.params.airportCode
+        const userId = await UserTools.userIdFromRequest(req)
+        if (!userId) {
+            res.status(401).send({ error: `Please sign in to view metar` })
+            return
+        }
+
+        const metar = await WeatherService.getMetar({
+            ids: airportCode,
+            format: 'json'
+        })
+        if (Array.isArray(metar) && metar.length > 0) {
+            res.send(metar[0])
+        } else {
+            res.status(404).send('No METAR found')
+        }
+    } catch (e) {
+        catchError(res, e, 'GET /metar/:airportCode')
+    }
+})
+
+/**
+ * Get simplified NOTAMs for an airport
+ */
+app.get('/notams/:airportCode', async (req: Request, res: Response) => {
+    try {
+        const airportCode = req.params.airportCode
+        const userId = await UserTools.userIdFromRequest(req)
+        if (!userId) {
+            res.status(401).send({ error: `Please sign in to view notams` })
+            return
+        }
+
+        const simplified = await NotamService.getSimplifiedNotams({
+            location: airportCode
+        })
+        res.send(simplified)
+    } catch (e) {
+        catchError(res, e, 'GET /notam/:airportCode')
+    }
+})
+
 
 app.get('/publication/:code', async (req: Request, res: Response) => {
     try {

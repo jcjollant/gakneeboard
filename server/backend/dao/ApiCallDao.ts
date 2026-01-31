@@ -3,7 +3,8 @@ import { db, sql } from "@vercel/postgres";
 export enum ApiName {
     Nms = 'nms',
     Adip = 'adip',
-    Skyvector = 'skyvector'
+    Skyvector = 'skyvector',
+    Metar = 'metar'
 }
 
 export class ApiCallDao {
