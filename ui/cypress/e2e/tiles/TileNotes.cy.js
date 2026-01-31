@@ -79,7 +79,8 @@ describe('Notes Tile', () => {
 
     cy.get('.tile2 .fa-gear').click({ force: true })
     // Type a new custome word
-    cy.get('#acronym-input').type('{selectall}').type('CUSTOM')
+    cy.wait(200)
+    cy.get('#acronym-input').type('{selectall}{backspace}CUSTOM')
     cy.get('[aria-label="Apply"]').click()
     cy.get('.tile2 > .tile > .tileContent > .letter0').contains('C')
     cy.get('.tile2 > .tile > .tileContent > .letter1').contains('U')
