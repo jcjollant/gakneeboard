@@ -58,9 +58,18 @@ describe('Tiles', () => {
 
     // Enter a new airport code and check it's data is loading
     settingsOpen(2)
+
+    cy.intercept({
+      method: 'GET',
+      url: '**/airport/**',
+    }).as('getOneAirport');
+
     cy.get('.p-inputtext').clear().type('KBLI')
     // wait for the reply
-    waitOneAirport()
+    cy.wait('@getOneAirport').then(interception => {
+      expect(interception.response.statusCode == 200 || interception.response.statusCode == 304).to.be.true
+    })
+
     cy.get('[aria-label="Apply"]').click()
 
     // Check for bellingham fields

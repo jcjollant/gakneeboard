@@ -13,6 +13,7 @@ describe('Print', () => {
             sha256: "mock_sha256",
             name: "Test Pilot",
             accountType: 1,
+            eulaCurrent: true,
             templates: [] // No saved templates needed for this test
         }
         cy.setLocalStorage('user', JSON.stringify(user))
