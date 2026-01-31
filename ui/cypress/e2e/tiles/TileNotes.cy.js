@@ -66,9 +66,9 @@ describe('Notes Tile', () => {
     loadNotesTestPage()
 
     // Enable wide mode
-    cy.get('.tile2 .fa-display').click({ force: true })
+    cy.get('.tile2 .fa-gear').click({ force: true })
     cy.get('.choiceOr').click()
-    cy.get('.tile2 .fa-display').click({ force: true })
+    cy.get('[aria-label="Apply"]').click()
     cy.get('.tile2').should('have.class', 'span-2')
     // tile 3 should be hidden
     cy.get('.tile3').should('have.css', 'display', 'none')
@@ -77,10 +77,9 @@ describe('Notes Tile', () => {
   it('Can customize word', () => {
     loadNotesTestPage()
 
-    // Enable wide mode
-    cy.get('.tile2 > .tile > .tileContent').click()
+    cy.get('.tile2 .fa-gear').click({ force: true })
     // Type a new custome word
-    cy.get('.p-inputtext').clear().type('CUSTOM')
+    cy.get('#acronym-input').type('{selectall}').type('CUSTOM')
     cy.get('[aria-label="Apply"]').click()
     cy.get('.tile2 > .tile > .tileContent > .letter0').contains('C')
     cy.get('.tile2 > .tile > .tileContent > .letter1').contains('U')
