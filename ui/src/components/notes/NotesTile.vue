@@ -2,32 +2,18 @@
     <div class="tile">
         <Header :title="displaySelection ? 'Notes Tile Mode' : 'Notes'"
             :stealth="!displaySelection && displayMode==DisplayModeNotes.Blank" :showReplace="displaySelection"
-            @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
+            leftButton="settings"
+            @replace="emits('replace')" @settings="emits('settings')" @display="displaySelection = !displaySelection"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" :expandable="true" :expanded="expanded"
             @expand="onExpand" @keep="displaySelection=false" />
-        <div v-else-if="editMode" class="edit">
-            <div class="paddedEdit" v-show="displayMode==DisplayModeNotes.Word">
-                <InputGroup>
-                    <InputGroupAddon>Word</InputGroupAddon>
-                    <InputText v-model="word" class="editWord"/>
-                </InputGroup>
-            </div>
-            <div class="paddedEdit" v-show="displayMode==DisplayModeNotes.Compass">
-                <div class="miniSection">Compass Mode</div>
-                <EitherOr v-model="compassHeading" either="Heading" or="Hold"/>
-            </div>
-            <ActionBar @apply="onEditApply" @cancel="onEditCancel" />
-        </div>
         <div v-else-if="displayMode==DisplayModeNotes.Blank" class="tileContent">
             <div class="blank">&nbsp;</div>
         </div>
         <div v-else-if="displayMode==DisplayModeNotes.Grid" class="modeGrid tileContent">
             <div v-for="i in [1,2,3,4,5,6,7,8,9,10,11,12]">&nbsp;</div>
         </div>
-        <CompassContent v-else-if="displayMode==DisplayModeNotes.Compass" :heading="compassHeading" class="clickable"
-            @click="onEditMode"/>
-        <WordContent v-else-if="displayMode==DisplayModeNotes.Word"  :word="word"
-             @letterclick="onEditMode" />
+        <CompassContent v-else-if="displayMode==DisplayModeNotes.Compass" :heading="compassHeading" />
+        <WordContent v-else-if="displayMode==DisplayModeNotes.Word"  :word="word" />
     </div>
 </template>
 
@@ -39,20 +25,14 @@ import { TileData } from '../../models/TileData';
 
 import WordContent from './WordContent.vue';
 import CompassContent from './CompassContent.vue';
-import InputGroup from 'primevue/inputgroup';
-import InputGroupAddon from 'primevue/inputgroupaddon';
-import InputText from 'primevue/inputtext';
-import ActionBar from '../shared/ActionBar.vue';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../shared/Header.vue';
-import EitherOr from '../shared/EitherOr.vue';
 
 // Enum with display modes
 
 const compassHeading = ref(true)
-let compassHeadingBeforeEdit = true
 const displayMode = ref(DisplayModeNotes.Unknown)
-const emits = defineEmits(['replace','update'])
+const emits = defineEmits(['replace','update','settings'])
 const displaySelection = ref(false)
 const word = ref('CRAFT')
 const displayModes = [
@@ -61,14 +41,13 @@ const displayModes = [
     new DisplayModeChoice('Compass',DisplayModeNotes.Compass, true, "A blank compass with numerical headings"),
     new DisplayModeChoice('Grid',DisplayModeNotes.Grid, true, "A blank grid to organize things"),
 ]
-const editMode = ref(false)
+
 // Props management
 const props = defineProps({
     params: { type: Object, default: null},
     span2: { type: Boolean, default: false}
 })
 const expanded = ref(false)
-let wordBeforeEdit = ''
 
 function loadProps(props:any) {
     // console.debug('[NotesTile.loadProps]', props)
@@ -104,7 +83,6 @@ watch(displayMode, (newValue, oldValue) => {
     if(!newValue) newValue = DisplayModeNotes.Blank
 
     displaySelection.value = false;
-    editMode.value = false
 
     if(oldValue != DisplayModeNotes.Unknown) {
         saveConfig()
@@ -119,25 +97,6 @@ function saveConfig() {
     if(compassHeading.value != true) data['comp'] = compassHeading.value
 
     emits('update', new TileData( TileType.notes, data, expanded.value))
-}
-
-function onEditApply() {
-    // console.log('NotesTiles.onEditApply]', word.value)
-    editMode.value = false;
-    saveConfig()
-}
-
-function onEditCancel() {
-    // console.log('[NotesTile] onEditCancel', word.value, wordBeforeEdit)
-    word.value = wordBeforeEdit
-    compassHeading.value = compassHeadingBeforeEdit
-    editMode.value = false;
-}
-
-function onEditMode() {
-    compassHeadingBeforeEdit = compassHeading.value
-    wordBeforeEdit = word.value
-    editMode.value = true
 }
 
 function onExpand(newValue:boolean) {

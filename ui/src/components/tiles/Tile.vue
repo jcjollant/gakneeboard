@@ -24,7 +24,7 @@
     <Hold v-else-if="tile.name==TileType.hold" @replace="onReplace" @update="onUpdate" />
     <NavlogTile v-else-if="tile.name==TileType.navlog" @replace="onReplace" />
     <NotesTile v-else-if="tile.name==TileType.notes" :params="tile.data" :span2="tile.span2"
-        @replace="onReplace" @update="onUpdate" />
+        @replace="onReplace" @update="onUpdate" @settings="emits('settings',tile)" />
     <RadioTile v-else-if="tile.name==TileType.radios" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate" @settings="emits('settings',tile)"/>
     <SunLight v-else-if="tile.name==TileType.sunlight" :params="tile.data" 
