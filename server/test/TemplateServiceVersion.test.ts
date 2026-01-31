@@ -74,7 +74,7 @@ describe('TemplateService.getVersion', () => {
         // Mock current template to get format
         const current = new Template(templateId, userId, {}, TemplateFormat.Kneeboard, 'Name', 'Desc', 6, 1);
         // Static method mock
-        (mockTemplateDao.readByIdStatic as unknown as jest.Mock).mockResolvedValue(current);
+        (mockTemplateDao.readByIdStatic as unknown as jest.Mock<any>).mockResolvedValue(current);
 
         const result = await TemplateService.getVersion(templateId, version, userId);
         expect(result).toBeDefined();
@@ -116,7 +116,7 @@ describe('TemplateService.getVersion', () => {
         mockHistoryDao.prototype.getTemplateVersion.mockResolvedValue(undefined);
 
         const current = new Template(templateId, userId, { current: true }, TemplateFormat.Kneeboard, 'Name', 'Desc', version, 1);
-        (mockTemplateDao.readByIdStatic as unknown as jest.Mock).mockResolvedValue(current);
+        (mockTemplateDao.readByIdStatic as unknown as jest.Mock<any>).mockResolvedValue(current);
 
         const result = await TemplateService.getVersion(templateId, version, userId);
         expect(result).toBeDefined();
@@ -131,7 +131,7 @@ describe('TemplateService.getVersion', () => {
         mockHistoryDao.prototype.getTemplateVersion.mockResolvedValue(undefined);
 
         const current = new Template(templateId, userId, {}, TemplateFormat.Kneeboard, 'Name', 'Desc', version + 1, 1);
-        (mockTemplateDao.readByIdStatic as unknown as jest.Mock).mockResolvedValue(current);
+        (mockTemplateDao.readByIdStatic as unknown as jest.Mock<any>).mockResolvedValue(current);
 
         await expect(TemplateService.getVersion(templateId, version, userId))
             .rejects.toEqual(new GApiError(404, 'Version not found'));
@@ -143,7 +143,7 @@ describe('TemplateService.getVersion', () => {
         mockUserDao.prototype.get.mockResolvedValue(validUser);
         mockHistoryDao.prototype.getTemplateVersion.mockResolvedValue(undefined);
 
-        (mockTemplateDao.readByIdStatic as unknown as jest.Mock).mockResolvedValue(undefined);
+        (mockTemplateDao.readByIdStatic as unknown as jest.Mock<any>).mockResolvedValue(undefined);
 
         await expect(TemplateService.getVersion(templateId, version, userId))
             .rejects.toEqual(new GApiError(404, 'Version not found'));

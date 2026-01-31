@@ -65,7 +65,7 @@ describe('UserView', () => {
             const airportCode = 'KSEA'
 
             // Mock UserDao
-            const mockUpdate = jest.fn().mockResolvedValue(true)
+            const mockUpdate = jest.fn<any>().mockResolvedValue(true)
             jest.spyOn(UserDao.prototype, 'updateHomeAirport' as any).mockImplementation(mockUpdate)
 
             await GApi.setHomeAirport(userId, airportCode)
