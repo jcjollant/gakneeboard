@@ -89,7 +89,8 @@ app.get('/notams/:airportCode', async (req: Request, res: Response) => {
         const airportCode = req.params.airportCode
         const userId = await UserTools.userIdFromRequest(req)
         if (!userId) {
-            throw new GApiError(401, `Unauthorized Notams request ${airportCode}`)
+            res.status(401).send({ error: `Please sign in to view notams` })
+            return
         }
 
         const simplified = await NotamService.getSimplifiedNotams({
