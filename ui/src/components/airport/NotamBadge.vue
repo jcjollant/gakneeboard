@@ -1,5 +1,5 @@
 <template>
-    <div class="notam-badge" :class="{'warning': warning}" @click="onClick" title="View Notams">
+    <div class="notam-badge" :class="{'warning': warning, 'has-notams': !warning && count > 0}" @click="onClick" title="View Notams">
         {{ warning ? '?' : count }}
     </div>
 </template>
@@ -36,5 +36,9 @@ function onClick(event: MouseEvent) {
 .warning {
     background-color: #FBC02D; /* Yellow-ish */
     color: black;
+}
+
+.has-notams {
+    background-color: #B71C1C; /* Dark Red */
 }
 </style>
