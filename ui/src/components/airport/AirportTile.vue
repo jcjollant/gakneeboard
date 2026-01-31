@@ -41,17 +41,20 @@
                     @click="onCornerEdit(3, $event)"/>
                     
                 <NotamBadge v-if="showNotams" :count="notamsList.length" :warning="!isSignedIn" @click.stop="onNotamBadgeClick" class="notam-badge-pos" :class="{'expanded': span2}" />
+                <MetarBadge v-if="metar" :metar="metar" class="metar-badge-pos" :class="{'expanded': span2}" @click.stop="onMetarBadgeClick" />
             </div>
             <PlaceHolder v-else title="No Airport" />
         </div>
         <NotamListDialog :visible="showNotamsDialog" :notams="notamsList" :airportCode="config.code" :airportName="title" @close="showNotamsDialog = false" />
+        <MetarDialog :visible="showMetarDialog" :metar="metar" :airportCode="config.code" :airportName="title" @close="showMetarDialog = false" />
     </div>    
 </template>
 
 <script setup lang="ts">
 import {ref, onMounted, watch, computed, onUnmounted} from 'vue';
+import { Metar } from '@checklist/shared';
 
-import { getAirport, getNotams } from '../../services/AirportDataService'
+import { getAirport, getNotams, getMetar } from '../../services/AirportDataService'
 import { AirportService } from '../../services/AirportService';
 import { currentUser } from '../../assets/data';
 import { useToast } from "primevue/usetoast";
@@ -73,6 +76,8 @@ import PlaceHolder from '../../components/shared/PlaceHolder.vue'
 import RunwaySketch from './RunwaySketch.vue'
 import NotamListDialog from './NotamListDialog.vue'
 import NotamBadge from './NotamBadge.vue'
+import MetarBadge from './MetarBadge.vue'
+import MetarDialog from './MetarDialog.vue'
 
 const defaultMode = DisplayModeAirport.RunwaySketch
 const emits = defineEmits(['replace','update', 'settings'])
@@ -85,6 +90,7 @@ const elevation = ref()
 const tpa = ref()
 const aptDiagram = ref('')
 const notamsList = ref<Notam[]>([])
+const metar = ref<Metar|null>(null)
 const showCorners = computed(() => {
     return !expanded.value
 })
@@ -92,6 +98,7 @@ const showNotams = computed(() => {
     return notamsList.value.length > 0 || !isSignedIn.value
 })
 const showNotamsDialog = ref(false)
+const showMetarDialog = ref(false)
 
 const airportData = ref<Airport|undefined>(undefined)
 const runwayViews = ref(<RunwayViewSettings[]>[])
@@ -109,20 +116,20 @@ const toast = useToast()
 const toaster = useToaster(toast)
 const isSignedIn = ref(currentUser.loggedIn)
 
-function onUserUpdate() {
-    const signedIn = currentUser.loggedIn
-    if (signedIn !== isSignedIn.value) {
-        isSignedIn.value = signedIn
-        // If we just signed in, maybe refresh notams?
-        if (signedIn && airportData.value) {
-            getNotams(airportData.value.code).then(notams => notamsList.value = notams)
-        }
-    }
+const getContext = (code: string) => {
+    getNotams(code).then(notams => {
+        notamsList.value = notams
+    }).catch(e => {
+        console.error('[AirportTile] Failed to get notams', e)
+    })
+    getMetar(code).then(m => {
+        // console.log('[AirportTile] Metar received', m)
+        metar.value = m
+    }).catch(e => {
+        console.error('[AirportTile] Failed to get metar', e)
+        metar.value = null
+    })
 }
-
-onUnmounted(() => {
-    currentUser.removeListener(onUserUpdate)
-})
 
 //-----------------------------------------------------
 // Props Management
@@ -235,6 +242,24 @@ onMounted(() => {
     currentUser.addListener(onUserUpdate)
 })
 
+onUnmounted(() => {
+    currentUser.removeListener(onUserUpdate)
+})
+
+function onUserUpdate() {
+    const signedIn = currentUser.loggedIn
+    if (signedIn !== isSignedIn.value) {
+        isSignedIn.value = signedIn
+        // If we just signed in, maybe refresh notams?
+        if (signedIn && airportData.value) {
+           getContext(airportData.value.code)
+        } else {
+            metar.value = null; // Clear metar if signed out
+        }
+    }
+}
+
+
 watch( props, async() => {
     // console.debug("Airport props changed " + JSON.stringify(props));
     loadProps(props)
@@ -286,6 +311,14 @@ function onNotamBadgeClick() {
     showNotamsDialog.value = true
 }
 
+function onMetarBadgeClick() {
+    if (!isSignedIn.value) {
+        toaster.warning('Aircraft Calling', 'Please sign in to view Metar')
+        return
+    }
+    showMetarDialog.value = true
+}
+
 /**
  * Parses new airport into global variables
  * @param airport
@@ -293,6 +326,7 @@ function onNotamBadgeClick() {
 function showAirport( airport:Airport) {
     // console.debug( "[AirportTile.showAirport] Showing airport ", JSON.stringify(airport))
     notamsList.value = []
+    metar.value = null;
 
     if( !airport) {
         // if airport data is missing, we switch to edit mode
@@ -346,13 +380,9 @@ function showAirport( airport:Airport) {
         mainRunway.value = Runway.noRunway()
     }
 
-    // get notams
+    // get notams and metar
     if(isSignedIn.value) {
-        getNotams(airport.code).then((notams) => {
-            notamsList.value = notams
-        }).catch((error) => {
-            console.error('[AirportTile.showAirport] Failed to get notams', error)
-        })
+        getContext(airport.code)
     }
 }
 
@@ -501,5 +531,16 @@ function saveConfig() {
 .notam-badge-pos.expanded {
     top: 5px;
     left: 135px;
+}
+
+.metar-badge-pos {
+    position: absolute;
+    top: 80px;
+    left: 5px;
+    z-index: 10;
+}
+.metar-badge-pos.expanded {
+    top: 5px;
+    left: 170px;
 }
 </style>

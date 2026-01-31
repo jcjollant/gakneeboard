@@ -1,3 +1,4 @@
+import { Metar } from '@checklist/shared'
 import axios from 'axios'
 import { Airport } from '../models/Airport'
 import { AirportCreationRequest } from '../models/AirportCreationRequest'
@@ -250,4 +251,29 @@ export async function getNotams(airportCode: string): Promise<Notam[]> {
             reportError('[AirportDataService.getNotams] error ' + JSON.stringify(error))
         })
     return notams;
+}
+
+export async function getMetar(airportCode: string): Promise<Metar | null> {
+    // Check local storage first
+    const localMetar = LocalStoreService.metarGet(airportCode);
+    if (localMetar) {
+        return localMetar;
+    }
+
+    const url = UrlService.root + 'metar/' + airportCode;
+    return await currentUser.getUrl(url)
+        .then(response => {
+            const metar = response.data;
+            if (metar) {
+                LocalStoreService.metarAdd(airportCode, metar);
+            }
+            return metar;
+        })
+        .catch(error => {
+            // report the error if it's not a 404
+            if (error.response && error.response.status != 404) {
+                reportError('[AirportDataService.getMetar] error ' + JSON.stringify(error))
+            }
+            return null;
+        })
 }

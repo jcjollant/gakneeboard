@@ -3,12 +3,14 @@ import { User } from "../models/User"
 import { Template } from "../models/Template"
 import { Notam } from '../models/Notam'
 
-const MAX_NOTAMS_AGE = 6 * 60 * 60 * 1000
+const MAX_NOTAMS_AGE = 6 * 60 * 60 * 1000 // 6 hours
+const MAX_METAR_AGE = 15 * 60 * 1000 // 15 minutes
 
 export class LocalStoreService {
     static airportPrefix: string = 'airport-'
     static approachPrefix: string = 'apch-'
     static notamsPrefix: string = 'notams-'
+    static metarPrefix: string = 'metar-'
     static user: string = 'user'
     static userOld: string = 'kb-user'
     static howDoesItWork_deprecated: string = 'howDoesItWork'
@@ -221,6 +223,7 @@ export class LocalStoreService {
             LocalStoreService.approachCleanUp()
             LocalStoreService.thumbnailCleanUp()
             LocalStoreService.notamsCleanUp()
+            LocalStoreService.metarCleanUp()
 
             resolve(true)
         })
@@ -299,6 +302,45 @@ export class LocalStoreService {
         const isCurrent = payload && payload.timestamp && new Date(payload.timestamp).getTime() > new Date().getTime() - MAX_NOTAMS_AGE
         if (!payload || !isCurrent) return []
         return payload.notams
+    }
+
+    static metarAdd(airportCode: string, metar: any) {
+        // create a metar key for this airport
+        const key = LocalStoreService.metarPrefix + airportCode
+        // create a payload with current time and metar data
+        const payload = {
+            timestamp: new Date().toISOString(),
+            metar: metar
+        }
+        // save the metar
+        localStorage.setItem(key, JSON.stringify(payload))
+    }
+
+    static metarCleanUp() {
+        const cleanUpTime = new Date().getTime() - MAX_METAR_AGE
+        const cleanUpList: string[] = []
+        // look for all metar entries
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i)
+            if (key && key.startsWith(LocalStoreService.metarPrefix)) {
+                // remove the item if time is more than Max Age
+                const payload = JSON.parse(localStorage.getItem(key) || '{}')
+                if (payload.timestamp && new Date(payload.timestamp).getTime() < cleanUpTime) {
+                    cleanUpList.push(key)
+                }
+            }
+        }
+        cleanUpList.forEach(key => {
+            localStorage.removeItem(key)
+        })
+    }
+
+    static metarGet(airportCode: string): any {
+        const key = LocalStoreService.metarPrefix + airportCode
+        const payload = JSON.parse(localStorage.getItem(key) || '{}')
+        const isCurrent = payload && payload.timestamp && new Date(payload.timestamp).getTime() > new Date().getTime() - MAX_METAR_AGE
+        if (!payload || !isCurrent) return null
+        return payload.metar
     }
 
     /**
