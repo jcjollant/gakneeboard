@@ -11,19 +11,18 @@
       <div v-if="printSingles" v-for="(page,index) in template.data" class="printOnePage printPageBreak">
         <div class="onePage" v-if="pageSelection[index]">
           <Page :data="page" :format="template.format"
-            :class="{flipMode:(index % 2 == 1 && printFlipMode)}"
-            :style="getPageStyle()" />
+            :style="getPageStyle(index % 2 == 1 && printFlipMode)" />
         </div>
       </div>
       <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages">
-        <Page :data="page.front" :format="template.format" :style="getPageStyle()" />
+        <Page :data="page.front" :format="template.format" :style="getPageStyle(false)" />
         <SideBar v-if="printVibOption != VerticalInfoBarOption.hide" class="sidebar" 
             :ver="template.ver" :option="printVibOption" :name="page.front.type == PageType.checklist ? template.name : ''"
             :style="getSideBarStyle(false)"/>
         <SideBar v-if="printVibOption != VerticalInfoBarOption.hide" class="sidebar back" 
             :ver="template.ver" :option="printVibOption" :name="page.back?.type == PageType.checklist ? template.name : ''"
             :style="getSideBarStyle(true)"/>
-        <Page v-if="page.back" :data="page.back" :format="template.format" :class="{flipMode:printFlipMode}" :style="getPageStyle()" />
+        <Page v-if="page.back" :data="page.back" :format="template.format" :style="getPageStyle(printFlipMode)" />
       </div>
     </div>
     <div v-else>No Template</div>
@@ -215,8 +214,9 @@ function redirectToPlansPage() {
   router.push('/plans?reason=out-of-credits');
 }
 
-function getPageStyle() {
-  if (printClipMargin.value === 0) return {};
+function getPageStyle(flipped: boolean) {
+  // console.log('[Print.getPageStyle]', flipped)
+  if (printClipMargin.value === 0 && !flipped) return {};
   
   // Determine base height based on format
   const isFullPage = template.value && template.value.format === TemplateFormat.FullPage;
@@ -224,10 +224,12 @@ function getPageStyle() {
   
   // Calculate scale
   const scale = (baseHeight - printClipMargin.value) / baseHeight;
-  
+  // console.log('[Print.getPageStyle]', scale)
+  const transformString = flipped ? `scale(${-scale}, ${-scale})` : `scale(${scale})`;
+  // console.log('[Print.getPageStyle]', transformString)
   return {
-    transform: `scale(${scale})`,
-    transformOrigin: 'top center',
+    transform: transformString,
+    // transformOrigin: 'top center',
     marginTop: `${printClipMargin.value}px`,
     marginBottom: '0px' // Ensure no extra space at bottom affects flow if possible
   };
@@ -261,9 +263,6 @@ function getSideBarStyle(isBack: boolean) {
 <style scoped>
 .print {
   background-color: white;
-}
-.flipMode {
-  transform: scale(-1,-1);
 }
 
 .onePage {

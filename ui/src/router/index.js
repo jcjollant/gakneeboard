@@ -2,12 +2,12 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import Home from '../views/Home.vue';
 import TemplateViewer from '../views/TemplateViewer.vue';
+import Print from '../views/Print.vue';
 import FTUX from '../views/FTUX.vue';
 import { affiliates } from '../lib/affiliates';
 
 const Admin = () => import('../views/Admin.vue');
 const PricingPlans = () => import('../views/PricingPlans.vue');
-const Print = () => import('../views/Print.vue');
 const ThankYou = () => import('../views/ThankYou.vue');
 const FormatSelector = () => import('../components/templates/FormatSelector.vue');
 const Demo = () => import('../views/Demo.vue');
