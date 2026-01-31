@@ -108,8 +108,16 @@ export class Maintenance {
 
             const data: string = JSON.stringify(checks)
             // console.log( '[HealthCheck.perform]', data, 'failures', failedChecks)
-            failedChecks = checks.filter((check) => check.status === Check.FAIL).length
-            messages.push('Found ' + failedChecks + ' fail(s)')
+            const failures = checks.filter((check) => check.status === Check.FAIL)
+            failedChecks = failures.length
+
+            if (failedChecks === 0) {
+                messages.push('All Clear')
+            } else {
+                for (const check of failures) {
+                    messages.push(check.name + ' : ' + check.msg)
+                }
+            }
             messages.push(data)
             // save record
             if (persistRecord) {
