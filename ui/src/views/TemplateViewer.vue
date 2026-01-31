@@ -871,7 +871,7 @@ async function onCaptureTile(pageIndex: number, tileIndex: number) {
   display: flex;
   flex-flow: column;
   gap: var(--menu-border-offset);
-  z-index: 2;
+  z-index: 20;
   top: -15px;
 }
 
