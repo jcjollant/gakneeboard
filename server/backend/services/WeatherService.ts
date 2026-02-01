@@ -41,7 +41,7 @@ export class WeatherService {
             const code = params.ids || params.bbox || 'unknown';
             const dataLength = JSON.stringify(response.data).length;
             ApiCallDao.save(ApiName.Metar, code, dataLength).catch(e => {
-                console.error('[WeatherService] Failed to log API call', e);
+                TicketService.create(5, '[WeatherService] Failed to log API call ' + e);
             });
 
             return response.data;
