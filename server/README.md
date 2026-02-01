@@ -66,9 +66,19 @@ see [Operations](documentation/Operations.md)
 stripe listen --forward-to locashost:3000/webhook
 Call http://localhost:3000/checkout with user and product
 
+
+# Data Utilities
+
+## Environment Check
+Run the following script to verify which database your local environment is currently interacting with (Production vs Test).
+```bash
+npx ts-node housekeeping/dbCheck.ts
+```
+
 ## Refreshing Sketch Data
 1. Set database to prod
 2. Run ga-api on port 3000 (vercel dev)
+
 3. Run gak-sketcher on port 3001 (vercel dev)
 4. Run ts-node housekeeping/manualSketchUpdate.ts
 
