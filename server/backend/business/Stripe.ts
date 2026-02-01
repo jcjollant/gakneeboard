@@ -2,7 +2,7 @@ import 'dotenv/config'
 import { UserDao } from '../dao/UserDao'
 import { SubscriptionDao } from '../dao/SubscriptionDao'
 import { AccountType, PlanDescription, PLANS } from '@checklist/shared';
-import { Stripe } from 'stripe'
+import Stripe from 'stripe'
 import { Business } from './Business'
 import { AttributionData } from '../models/AttributionData'
 
@@ -12,12 +12,6 @@ import { Request } from "express"
 import { PlanService } from '../services/PlanService';
 
 const planUrl = '/plans'
-const pp1Price = process.env.STRIPE_PP1_PRICE;
-const pp2Price = process.env.STRIPE_PP2_PRICE;
-const hh1Price = process.env.STRIPE_HH1_PRICE;
-const bd1Price = process.env.STRIPE_BD1_PRICE;
-const ld1Price = process.env.STRIPE_LD1_PRICE;
-const ff1Price = 'free';
 const SUB_UPDATE = 'customer.subscription.updated';
 const SUB_DELETE = 'customer.subscription.deleted';
 const CHECKOUT_COMPLETE = 'checkout.session.completed'
@@ -26,10 +20,9 @@ export class StripeClient {
     private static _instance: StripeClient;
     private stripe: Stripe | undefined = undefined;
 
-    private constructor() {
+    private constructor(key: string) {
         try {
-            if (!process.env.STRIPE_SECRET_KEY) throw new Error('Stripe secret key not found')
-            this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+            this.stripe = new Stripe(key)
         } catch (e) {
             console.log('Stripe initialization failed ' + e)
             this.stripe = undefined
@@ -37,7 +30,11 @@ export class StripeClient {
     }
 
     public static get instance() {
-        return this._instance || (this._instance = new this());
+        return this._instance || (this._instance = new this(process.env.STRIPE_SECRET_KEY));
+    }
+
+    public static get instanceProd() {
+        return this._instance || (this._instance = new this(process.env.STRIPE_SECRET_KEY_PROD));
     }
 
     async checkout(userHash: string, product: string, source: string, attribution?: AttributionData): Promise<string> {
@@ -98,6 +95,20 @@ export class StripeClient {
                 reject(err)
             }
         })
+    }
+
+    async getLineItems(sessionId: string): Promise<Stripe.LineItem[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                if (!this.stripe) throw new Error('Stripe not initialized');
+                const session = await this.stripe.checkout.sessions.listLineItems(sessionId);
+                resolve(session.data);
+            } catch (err) {
+                console.warn('[Stripe.getSession] error ' + err)
+                reject(err)
+            }
+        })
+
     }
 
     async manage(userHash: string, source: string): Promise<string> {
@@ -168,16 +179,40 @@ export class StripeClient {
                         const sessionId = event.data.object.id;
                         const customerId = String(event.data.object.customer);
                         await this.stripe.checkout.sessions.listLineItems(sessionId).then(async (li) => {
-                            const priceId = li.data[0].price?.id
-                            console.log('[Stripe.webhook] priceId', priceId)
+                            // Defensive coding: handle price as object (with .id) or as string ID directly
+                            const firstItem = li.data[0];
+                            let priceId: string | undefined = undefined;
+
+                            if (firstItem && firstItem.price) {
+                                if (typeof firstItem.price === 'string') {
+                                    priceId = firstItem.price;
+                                } else if (typeof firstItem.price === 'object' && 'id' in firstItem.price) {
+                                    priceId = firstItem.price.id;
+                                }
+                            }
+
+                            console.debug('[Stripe.webhook] listLineItems result', JSON.stringify(li.data))
+                            console.debug('[Stripe.webhook] resolved priceId', priceId)
+
+                            if (!priceId) {
+                                TicketService.create(2, '[Stripe.webhook] Could not resolve priceId for customer ' + customerId);
+                                return;
+                            }
+
                             const accountType = this.accountTypeFromPrice(priceId)
-                            if (accountType == AccountType.lifetime) {
+                            const planId = this.planIdFromPrice(priceId)
+                            console.debug('[Stripe.webhook] accountType', accountType, 'planId', planId)
+
+                            if (accountType == AccountType.lifetime && planId) {
                                 const userDao = new UserDao()
                                 const user = await userDao.getFromCustomerId(customerId)
-                                await Business.upgradeUser(user, AccountType.lifetime, 'ld1', userDao);
+                                await Business.upgradeUser(user, AccountType.lifetime, planId, userDao);
+                            } else {
+                                TicketService.create(2, `[Stripe.webhook] Cannot resolve account type or plan for customer ${customerId} - AccountType: ${accountType}, PlanId: ${planId}`);
                             }
                         })
                     }
+
                 }
             } catch (err) {
                 TicketService.create(2, '[Stripe.webhook] ' + err)
