@@ -1,5 +1,5 @@
 <template>
-    <div class="metar-badge" :class="flightCategoryClass" :title="tooltip">
+    <div class="badge metar-badge" :class="flightCategoryClass" :title="tooltip">
     </div>
 </template>
 
@@ -40,15 +40,7 @@ function getAge(time: string) {
 
 <style scoped>
 .metar-badge {
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10;
-    cursor: pointer;
-    border: 1px solid rgba(0,0,0,0.2);
+    border: 2px solid rgba(0,0,0,0.2);
 }
 
 .cat-vfr {
