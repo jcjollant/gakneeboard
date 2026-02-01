@@ -191,8 +191,8 @@ export class StripeClient {
                                 }
                             }
 
-                            console.debug('[Stripe.webhook] listLineItems result', JSON.stringify(li.data))
-                            console.debug('[Stripe.webhook] resolved priceId', priceId)
+                            // console.debug('[Stripe.webhook] listLineItems result', JSON.stringify(li.data))
+                            // console.debug('[Stripe.webhook] resolved priceId', priceId)
 
                             if (!priceId) {
                                 TicketService.create(2, '[Stripe.webhook] Could not resolve priceId for customer ' + customerId);
@@ -201,7 +201,7 @@ export class StripeClient {
 
                             const accountType = this.accountTypeFromPrice(priceId)
                             const planId = this.planIdFromPrice(priceId)
-                            console.debug('[Stripe.webhook] accountType', accountType, 'planId', planId)
+                            // console.debug('[Stripe.webhook] accountType:', accountType, 'planId:', planId)
 
                             if (accountType == AccountType.lifetime && planId) {
                                 const userDao = new UserDao()
