@@ -7,11 +7,11 @@
         @print="onPrint"
         @close="showOptions=false"
         />
-    <div v-if="template" id="printTemplate" :class="{'single':printSingles,'fullpage':template.format === TemplateFormat.FullPage}">
-      <div v-if="printSingles" v-for="(page,index) in template.data" class="printOnePage printPageBreak">
+    <div v-if="template" id="printTemplate" :class="{'single':printFullpage,'fullpage':template.format === TemplateFormat.FullPage}">
+      <div v-if="printFullpage" v-for="(page,index) in template.data" class="printOnePage printPageBreak">
         <div class="onePage" v-if="pageSelection[index]">
           <Page :data="page" :format="template.format"
-            :style="getPageStyle(index % 2 == 1 && printFlipMode)" />
+            :style="getPageStyle(false)" />
         </div>
       </div>
       <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages">
@@ -53,7 +53,7 @@ interface PrintSheet {
 const pages = ref<PrintSheet[]>([]) // pages that will be printed
 const pageSelection = ref<boolean[]>([])
 const printFlipMode = ref(false)
-const printSingles = ref(false)
+const printFullpage = ref(false)
 const printVibOption = ref(VerticalInfoBarOption.all)
 const printClipMargin = ref(0)
 const template = ref<Template|undefined>(undefined)
@@ -62,6 +62,27 @@ const route = useRoute()
 const router = useRouter()
 const showOptions = ref(true)
 let printing = false
+
+function getPageStyle(flipped: boolean) {
+  // console.log('[Print.getPageStyle]', flipped)
+  if (printClipMargin.value === 0 && !flipped) return {};
+  
+  // Determine base height based on format
+  const baseHeight = printFullpage.value ? 1050 : 800; // Matches CSS variables
+  
+  // Calculate scale
+  const scale = (baseHeight - printClipMargin.value) / baseHeight;
+  // console.log('[Print.getPageStyle]', scale)
+  const transformString = flipped ? `scale(${-scale}, ${-scale})` : `scale(${scale})`;
+  // console.log('[Print.getPageStyle]', transformString)
+  return {
+    transform: transformString,
+    // transformOrigin: 'top center',
+    marginTop: `${printClipMargin.value / 2}px`,
+    marginBottom: '0px' // Ensure no extra space at bottom affects flow if possible
+  };
+}
+
 
 onMounted(() => {
     // console.log('[Print.onMounted]')
@@ -85,7 +106,7 @@ onMounted(() => {
     
     // Set printSingles to true for full page templates
     if (template.value && template.value.format === TemplateFormat.FullPage) {
-      printSingles.value = true
+      printFullpage.value = true
     }
     
     // console.log('[Print.onMounted]', template.value)
@@ -106,14 +127,14 @@ function onOptionsUpdate(options:PrintOptions) {
   // console.log('[Print.onPrintOptions]', JSON.stringify(options))
   if( options) {
       printFlipMode.value = options.flipBackPage;
-      printSingles.value = (options.pagePerSheet == 1)
+
       pageSelection.value = options.pageSelection
       printVibOption.value = options.vibOption
       printClipMargin.value = options.clipMargin
       
       // Ensure full page templates always use one page per sheet
       if (template.value && template.value.format === TemplateFormat.FullPage) {
-        printSingles.value = true
+        printFullpage.value = true
       }
       
       refreshPages()
@@ -142,10 +163,10 @@ async function onPrint(options:PrintOptions|undefined) {
   // count sheets. 
   // Single must accounts for visible otherwise just use pages as is (already filtered)
   // const sheetsCount = printSingles.value ? pageSelection.value.reduce( (acc,visible) => visible ? acc + 1 : acc, 0) : pages.value.length
-  const elements = printSingles.value ? document.querySelectorAll('.printOnePage') : document.querySelectorAll('.printTwoPages')
+  const elements = printFullpage.value ? document.querySelectorAll('.printOnePage') : document.querySelectorAll('.printTwoPages')
   // we only print in landscape mode for double pages and paper navlog
   const paperNavlog = template.value && template.value.data.length > 0 && template.value.data[0].type === PageType.paperNavlog
-  const landscape:boolean = paperNavlog || !printSingles.value
+  const landscape:boolean = paperNavlog || !printFullpage.value
   // onePagePerSheet ? 'portrait' : 'landscape'
   if(element) await exportToPDF(elements, landscape)
   router.back()
@@ -162,7 +183,7 @@ function refreshPages() {
       
       // If there's only one page and we're printing two pages per sheet,
       // add a temporary blank page
-      if (pages.length === 1 && !printSingles.value) {
+      if (pages.length === 1 && !printFullpage.value) {
         // Create a blank page with the same structure as a regular page
         const blankPage = new TemplatePage(PageType.none)
         
@@ -212,27 +233,6 @@ function canUserPrint(): boolean {
 // Redirect user to plans page with out-of-credits indicator
 function redirectToPlansPage() {
   router.push('/plans?reason=out-of-credits');
-}
-
-function getPageStyle(flipped: boolean) {
-  // console.log('[Print.getPageStyle]', flipped)
-  if (printClipMargin.value === 0 && !flipped) return {};
-  
-  // Determine base height based on format
-  const isFullPage = template.value && template.value.format === TemplateFormat.FullPage;
-  const baseHeight = isFullPage ? 1050 : 800; // Matches CSS variables
-  
-  // Calculate scale
-  const scale = (baseHeight - printClipMargin.value) / baseHeight;
-  // console.log('[Print.getPageStyle]', scale)
-  const transformString = flipped ? `scale(${-scale}, ${-scale})` : `scale(${scale})`;
-  // console.log('[Print.getPageStyle]', transformString)
-  return {
-    transform: transformString,
-    // transformOrigin: 'top center',
-    marginTop: `${printClipMargin.value}px`,
-    marginBottom: '0px' // Ensure no extra space at bottom affects flow if possible
-  };
 }
 
 function getSideBarStyle(isBack: boolean) {

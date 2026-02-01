@@ -10,8 +10,7 @@
         <PageSelection v-model="pageSelection" @change="onNewOptions" />
         
         <template v-if="!isFullPageFormat">
-          <!-- <div class="pageOptionLabel">Pages per sheet</div>
-          <OneChoice v-model="pagePerSheet" :choices="[onePage,twoPages]" @change="onNewOptions"/> -->
+
           
           <div class="pageOptionLabel">Back Page Orientation</div>
           <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]" @change="onNewOptions" />
@@ -72,12 +71,9 @@ import { VerticalInfoBarOption } from '../../models/VerticalInfoBarOption';
 
 const emits = defineEmits(["print","options",'close']);
 
-const onePage = new OneChoiceValue('One', 1)
-const twoPages = new OneChoiceValue('Two', 2)
 const normalOrientation = new OneChoiceValue('Normal', false)
 const flippedOrientation = new OneChoiceValue('Flipped', true, 'You can read back page without unclipping')
 
-const pagePerSheet = ref(twoPages)
 const flipBackPage = ref(normalOrientation)
 const pageSelection = ref<boolean[]>([true, true, true])
 const simmer = ref(true)
@@ -113,18 +109,10 @@ function loadProps( props:any) {
 
 onMounted( () => {
   loadProps(props)
-  // Set pagePerSheet to onePage for fullpage format
-  if (props.format === 'fullpage') {
-    pagePerSheet.value = onePage
-  }
 })  
 
 // Watch for format changes
-watch(() => props.format, (newFormat) => {
-  if (newFormat === 'fullpage') {
-    pagePerSheet.value = onePage
-  }
-})
+
 
 watch( props, async() => {
   // console.debug('[PrintOptions] props changed', props)
@@ -134,11 +122,8 @@ watch( props, async() => {
 //---------------------
 
 function getOptions():PrintOptions|undefined {
-  if(!pagePerSheet.value) return undefined;
-  
   return new PrintOptions(
     flipBackPage.value?.value,
-    isFullPageFormat.value ? 1 : pagePerSheet.value.value,
     pageSelection.value,
     vibSelected.value.value,
     clipMarginSelected.value.value
