@@ -113,6 +113,18 @@ describe('Print', () => {
             // (800-24)/800 = 0.97
             expect(style).to.contain('scale(-0.94, -0.94)')
         })
+
+        // Verify VIB (Margin Notes) visibility toggle
+        // Default is Show
+        cy.get('button[aria-label="Show"]').should('have.class', 'choiceActive')
+        // Checkboxes should not be disabled
+        cy.get('.field-checkbox input[type="checkbox"]').should('not.be.disabled')
+
+        // Select "Hide"
+        cy.get('button[aria-label="Hide"]').click()
+        cy.get('button[aria-label="Hide"]').should('have.class', 'choiceActive')
+        // Checkboxes should be disabled
+        cy.get('.field-checkbox input[type="checkbox"]').should('be.disabled')
     })
 
 })

@@ -16,11 +16,11 @@
       </div>
       <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages">
         <Page :data="page.front" :format="template.format" :style="getPageStyle(false)" />
-        <SideBar v-if="printVibOption != VerticalInfoBarOption.hide" class="sidebar" 
-            :ver="template.ver" :option="printVibOption" :name="page.front.type == PageType.checklist ? template.name : ''"
+        <MarginNotes v-if="printVibShow" class="sidebar" 
+            :ver="template.ver" :show="printVibShow" :items="printVibItems" :name="template.name"
             :style="getSideBarStyle(false)"/>
-        <SideBar v-if="printVibOption != VerticalInfoBarOption.hide" class="sidebar back" 
-            :ver="template.ver" :option="printVibOption" :name="page.back?.type == PageType.checklist ? template.name : ''"
+        <MarginNotes v-if="printVibShow" class="sidebar back" 
+            :ver="template.ver" :show="printVibShow" :items="printVibItems" :name="template.name"
             :style="getSideBarStyle(true)"/>
         <Page v-if="page.back" :data="page.back" :format="template.format" :style="getPageStyle(printFlipMode)" />
       </div>
@@ -42,8 +42,8 @@ import { AccountType } from '@checklist/shared';
 import { PrintOptions } from '../components/print/PrintOptions.js';
 import Page from '../components/page/Page.vue';
 import PrintOptionsDialog from '../components/print/PrintOptionsDialog.vue';
-import SideBar from '../components/print/SideBar.vue';
-import { VerticalInfoBarOption } from '../models/VerticalInfoBarOption.js';
+import MarginNotes from '../components/print/MarginNotes.vue';
+import { VerticalInfoBarContent } from '../models/VerticalInfoBarOption.js';
 
 interface PrintSheet {
   front: TemplatePage,
@@ -54,7 +54,12 @@ const pages = ref<PrintSheet[]>([]) // pages that will be printed
 const pageSelection = ref<boolean[]>([])
 const printFlipMode = ref(false)
 const printFullpage = ref(false)
-const printVibOption = ref(VerticalInfoBarOption.all)
+const printVibShow = ref(true)
+const printVibItems = ref<VerticalInfoBarContent[]>([
+  VerticalInfoBarContent.Version,
+  VerticalInfoBarContent.Tail,
+  VerticalInfoBarContent.Date
+])
 const printClipMargin = ref(0)
 const template = ref<Template|undefined>(undefined)
 const templateModified = ref(false)
@@ -129,7 +134,8 @@ function onOptionsUpdate(options:PrintOptions) {
       printFlipMode.value = options.flipBackPage;
 
       pageSelection.value = options.pageSelection
-      printVibOption.value = options.vibOption
+      printVibShow.value = options.vibShow
+      printVibItems.value = options.vibItems
       printClipMargin.value = options.clipMargin
       
       // Ensure full page templates always use one page per sheet

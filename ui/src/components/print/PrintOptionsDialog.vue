@@ -15,8 +15,6 @@
           <div class="pageOptionLabel">Back Page Orientation</div>
           <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]" @change="onNewOptions" />
 
-          <div class="pageOptionLabel">Vertical Info Bar</div>
-          <OneChoice v-model="vibSelected" :choices="verticalInfoBarOptions" @change="onNewOptions" />
 
           <div class="pageOptionLabel">Clip Margin</div>
           <OneChoice v-model="clipMarginSelected" :choices="clipMarginOptions" @change="onNewOptions" />
@@ -27,6 +25,17 @@
           <div class="formatInfo">Full Page (one page per sheet)</div>
         </template>
       </div>
+      <FieldSet legend="Margin Notes" v-if="!isFullPageFormat">
+        <div class="vibContainer">
+          <OneChoice v-model="vibShowMode" :choices="[vibShowChoice, vibHideChoice]" @change="onNewOptions" />
+          <div class="vibItems">
+             <div v-for="item in vibContentOptions" :key="item.value" class="field-checkbox">
+                 <Checkbox v-model="vibSelectedItems" :inputId="item.value" :value="item.value" @change="onNewOptions" :disabled="!vibShowMode.value" />
+                 <label :for="item.value" :class="{ 'disabled-label': !vibShowMode.value }">{{ item.label }}</label>
+             </div>
+          </div>
+        </div>
+      </FieldSet>
       <FieldSet legend="Printing Tips">
         <ul class="note" v-if="!isFullPageFormat">
           <li>Two pages per sheet will fold to kneeboard size</li>
@@ -56,9 +65,6 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { UserUrl } from '../../lib/UserUrl';
 import { OneChoiceValue } from '../../models/OneChoiceValue';
-import { PrintOptions } from './PrintOptions';
-import { useRouter } from 'vue-router';
-
 import OneChoice from '../shared/OneChoice.vue';
 
 import Button from 'primevue/button'
@@ -67,7 +73,11 @@ import FieldSet from 'primevue/fieldset'
 import PageSelection from './PageSelection.vue';
 import { currentUser } from '../../assets/data';
 import { AccountType } from '@checklist/shared';
-import { VerticalInfoBarOption } from '../../models/VerticalInfoBarOption';
+
+import Checkbox from 'primevue/checkbox'
+import { VerticalInfoBarContent } from '../../models/VerticalInfoBarOption';
+import { PrintOptions } from './PrintOptions';
+import { useRouter } from 'vue-router';
 
 const emits = defineEmits(["print","options",'close']);
 
@@ -81,11 +91,24 @@ const upgrade = ref(false)
 // Computed property to check if the format is fullpage
 const isFullPageFormat = computed(() => props.format === 'fullpage')
 const router = useRouter()
-const vibAll = new OneChoiceValue('All', VerticalInfoBarOption.all, 'Show Version Number, Tail # and Date')
-const vibVersion = new OneChoiceValue('Version Only', VerticalInfoBarOption.version, 'Show Version Number')
-const vibHide = new OneChoiceValue('Hide', VerticalInfoBarOption.hide, 'Hide vertical info bar')
-const vibSelected = ref(vibAll)
-const verticalInfoBarOptions = ref([vibAll, vibVersion, vibHide])
+
+const vibShowChoice = new OneChoiceValue('Show', true, 'Show vertical info bar')
+const vibHideChoice = new OneChoiceValue('Hide', false, 'Hide vertical info bar')
+const vibShowMode = ref(vibShowChoice)
+
+const vibSelectedItems = ref<VerticalInfoBarContent[]>([
+  VerticalInfoBarContent.Version, 
+  VerticalInfoBarContent.Tail, 
+  VerticalInfoBarContent.Date,
+  VerticalInfoBarContent.PageName
+])
+
+const vibContentOptions = [
+  { label: 'Version', value: VerticalInfoBarContent.Version },
+  { label: 'Page Name', value: VerticalInfoBarContent.PageName },
+  { label: 'Tail #', value: VerticalInfoBarContent.Tail },
+  { label: 'Date', value: VerticalInfoBarContent.Date },
+]
 
 const clipMarginNone = new OneChoiceValue('None', 0)
 const clipMarginSmall = new OneChoiceValue('Small', 24) // ~0.25in
@@ -125,7 +148,8 @@ function getOptions():PrintOptions|undefined {
   return new PrintOptions(
     flipBackPage.value?.value,
     pageSelection.value,
-    vibSelected.value.value,
+    vibShowMode.value.value,
+    vibSelectedItems.value,
     clipMarginSelected.value.value
   )
 }
@@ -141,7 +165,10 @@ function onNewOptions() {
     if( simmer.value) { // free acounts cannot change options
       const unselected = options.pageSelection.find( (p:boolean) => !p)
       // user need to upgrade if they changed any default settings
-      upgrade.value = options.flipBackPage || !options.vibOption || (unselected === false) || (options.clipMargin > 0)
+      // Check if VIB options are modified from default (Show + All)
+      const isVibDefault = options.vibShow && options.vibItems.length >= 3; // Basic check, refining might be needed
+      
+      upgrade.value = options.flipBackPage || !isVibDefault || (unselected === false) || (options.clipMargin > 0)
     }
     emits('options', options)
   } 
@@ -219,7 +246,7 @@ function onUpgrade() {
   width:35rem;
 }
 .note {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
 }
 
 ul.note {
@@ -237,5 +264,25 @@ li {
 }
 :deep(.p-fieldset-content) {
   padding: 0;
+}
+.vibContainer {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.vibItems {
+  display: flex;
+  flex-flow: wrap;
+  gap: 1rem;
+  padding-left: 0.5rem;
+}
+.field-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.disabled-label {
+  color: #999;
+  cursor: not-allowed;
 }
 </style>
