@@ -46,4 +46,73 @@ describe('Print', () => {
         cy.url().should('include', '/print/0')
     })
 
+    it('applies scaling and flipping when printing options are selected', () => {
+        // Mock a local template
+        const template = {
+            name: "Test Template",
+            format: "kneeboard",
+            data: [
+                { type: "tiles", name: "Page 1", data: [] },
+                { type: "tiles", name: "Page 2", data: [] }
+            ],
+            id: 0,
+            ver: 1
+        }
+        cy.setLocalStorage('template', JSON.stringify(template))
+
+        // Go directly to print page
+        cy.visit('/print/0')
+
+        // Dialog should be open
+        cy.get('.p-dialog').should('be.visible')
+
+        // Verify the back page has the styles
+        // .printTwoPages > :last-child matches the back page component
+        cy.get('.printTwoPages > :last-child').should(($el) => {
+            const style = $el.attr('style')
+
+            // style should not be present
+            expect(style).to.not.be.null
+            // style should not have transform
+            // expect(style).to.not.contain('transform')
+            // Check for margin
+            // expect(style).to.not.contain('margin-top')
+        })
+
+
+        // Select "Flipped" (Back Page Orientation)
+        cy.get('button[aria-label="Flipped"]').click()
+        cy.get('button[aria-label="Flipped"]').should('have.class', 'choiceActive')
+
+        // Select "Small" (Clip Margin)
+        cy.get('button[aria-label="Small"]').click()
+        cy.get('button[aria-label="Small"]').should('have.class', 'choiceActive')
+
+        // Verify the back page has the styles
+        // .printTwoPages > :last-child matches the back page component
+        cy.get('.printTwoPages > :last-child').should(($el) => {
+            const style = $el.attr('style')
+            // Check for margin
+            expect(style).to.contain('margin-top: 12px')
+            // Check for negative scale transform (flip)
+            // (800-24)/800 = 0.97
+            expect(style).to.contain('scale(-0.97, -0.97)')
+        })
+
+        // Select "Large" (Clip Margin)
+        cy.get('button[aria-label="Large"]').click()
+        cy.get('button[aria-label="Large"]').should('have.class', 'choiceActive')
+
+        // Verify the back page has the styles
+        // .printTwoPages > :last-child matches the back page component
+        cy.get('.printTwoPages > :last-child').should(($el) => {
+            const style = $el.attr('style')
+            // Check for margin
+            expect(style).to.contain('margin-top: 24px')
+            // Check for negative scale transform (flip)
+            // (800-24)/800 = 0.97
+            expect(style).to.contain('scale(-0.94, -0.94)')
+        })
+    })
+
 })
