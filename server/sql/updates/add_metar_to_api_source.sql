@@ -1,0 +1,1 @@
+ALTER TYPE api_source ADD VALUE IF NOT EXISTS 'metar';
