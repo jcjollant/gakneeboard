@@ -174,7 +174,7 @@ describe('HealthChecks', () => {
 
             const result = await HealthCheck.environmentVariables();
             expect(result.status).toBe(Check.SUCCESS);
-            expect(result.msg).toContain('Found 13 variables');
+            expect(result.msg).toContain('Found 14 variables');
         });
 
         test('Failure: Missing variable', async () => {
