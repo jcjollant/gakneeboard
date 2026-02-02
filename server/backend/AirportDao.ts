@@ -108,6 +108,12 @@ export class AirportDao {
         }).filter(a => a.effectiveDate === currentEffectiveDate)
     }
 
+    public static async readMissingSketch(limit: number): Promise<Airport[]> {
+        const result = await sql`SELECT * FROM airports WHERE sketch ISNULL AND version != -1 LIMIT ${limit}`
+        return result.rows.map(row => AirportDao.parse(row))
+    }
+
+
 
     public static async readCustom(code: string, creatorId: number): Promise<string | undefined> {
         // console.log( "[AirportDao] readCustom " + code + " / " + creatorId);

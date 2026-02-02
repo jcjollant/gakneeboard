@@ -5,6 +5,9 @@ import { Business } from './business/Business';
 import { sql } from '@vercel/postgres';
 import { UserDao } from './dao/UserDao';
 import { Email, EmailType } from './Email';
+import { AirportSketch } from './AirportSketch';
+import { AirportDao } from './AirportDao';
+import { TicketService } from './services/TicketService';
 
 export class Maintenance {
     code: string;
@@ -12,7 +15,8 @@ export class Maintenance {
     static codeMetrics: string = 'd709064984df563c2d380045342e79902e32e769c11bd44c4a31c85ffa250992'
     static codeTest: string = '4d51414ceb16fe67ec67ef5194a76036fc54b59846c9e8da52841717fe4b6247'
     static codeHousekeeping = 'a4a474fbddd09c797707112a1c6f4f82b83a6e256ea562fb124739b3cdb888c4'
-    static allCodes: string[] = [Maintenance.codeLogin, Maintenance.codeMetrics, Maintenance.codeTest, Maintenance.codeHousekeeping]
+    static codeSketch = '8d4074fbddd09c797707112a1c6f4f82b83a6e256ea562fb124739b3cdb888c5'
+    static allCodes: string[] = [Maintenance.codeLogin, Maintenance.codeMetrics, Maintenance.codeTest, Maintenance.codeHousekeeping, Maintenance.codeSketch]
 
     constructor(code: string) {
         this.code = code
@@ -25,8 +29,13 @@ export class Maintenance {
 
     async perform(): Promise<string> {
         return new Promise<string>(async (res, rej) => {
+            const handleCrash = (e: any) => {
+                TicketService.create(3, `[Maintenance] crashed ${this.code}: ${e}`)
+                rej(e)
+            }
+
             if (this.code == Maintenance.codeHousekeeping) { // This is Willie
-                Maintenance.willie().then(res).catch(rej)
+                Maintenance.willie().then(res).catch(handleCrash)
             } else if (this.code == Maintenance.codeLogin) {
                 const hash = "357c3920bbfc6eefef7e014ca49ef12c78bb875c0826efe90194c9978303a8d3"
                 UserView.fromHash(hash).then((umv: UserView | undefined) => {
@@ -35,14 +44,15 @@ export class Maintenance {
                     } else {
                         rej('Invalid User')
                     }
-                }).catch(e => {
-                    rej(e)
-                })
+                }).catch(handleCrash)
             } else if (this.code == Maintenance.codeMetrics) { // This is Waylon
-                Maintenance.waylon().then(res).catch(rej)
+                Maintenance.waylon().then(res).catch(handleCrash)
             } else if (this.code == Maintenance.codeTest) {
                 res('OK')
+            } else if (this.code == Maintenance.codeSketch) { // This is Marge
+                Maintenance.sketchUpdate().then(res).catch(handleCrash)
             } else {
+                TicketService.create(3, `[Maintenance] Invalid Code: ${this.code}`)
                 rej('Invalid Code')
             }
         })
@@ -137,5 +147,43 @@ export class Maintenance {
             console.log('[Maintenance.willie] not sending email \n' + output)
         }
         return output
+    }
+    /**
+     * Update sketches for airports that miss one
+     */
+    static async sketchUpdate(): Promise<string> {
+        const cycle = process.env.AERONAV_DATA_CYCLE
+        const limit = 5
+        const airports = await AirportDao.readMissingSketch(limit)
+        let updated = 0
+        let logs: string[] = []
+
+        for (const airport of airports) {
+            try {
+                if (!airport.iap || airport.iap.length < 1) {
+                    await AirportSketch.resolve(airport)
+                    continue;
+                }
+                const before = airport.iap[0].pdf
+                const iap = before.split('/')[1]
+                airport.iap[0].pdf = cycle + '/' + iap
+
+                await AirportSketch.resolve(airport)
+                updated++
+                logs.push(`Updated ${airport.code}`)
+
+                // wait a bit to be nice to the APIs
+                await new Promise(resolve => setTimeout(resolve, 500))
+
+            } catch (err) {
+                logs.push(`Failed ${airport.code}: ${err}`)
+            }
+        }
+
+        const message = `Processed ${airports.length}. Updated ${updated}. \n` + logs.join('\n')
+        if (updated > 0) {
+            await Email.send(message, EmailType.SketchUpdate)
+        }
+        return message
     }
 }

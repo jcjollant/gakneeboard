@@ -14,7 +14,7 @@ import { AirportSketch } from "../backend/AirportSketch";
 import { AirportDao } from "../backend/AirportDao";
 import * as fs from 'fs';
 
-const cycle = '2513'
+const cycle = process.env.AERONAV_DATA_CYCLE
 
 // declare and execute
 async function doIt() {
@@ -39,15 +39,33 @@ async function doIt() {
         return;
     }
 
+    if (args.length === 1) {
+        const airportCode = args[0];
+        console.log(`Manual fetch (dry-run) for ${airportCode}`);
+
+        const { known } = await AirportDao.codesLookup([airportCode]);
+        if (known.length === 0) {
+            console.error(`Airport not found: ${airportCode}`);
+            return;
+        }
+
+        const airport = known[0].airport;
+        if (!airport.iap || airport.iap.length === 0) {
+            console.log(`No IAP for ${airportCode}`);
+            return;
+        }
+
+        const pdf = airport.iap[0].pdf;
+        await AirportSketch.get(airportCode, pdf, true);
+        return;
+    }
+
     let updated = 0;
-    const response = await sql`select * from airports where sketch ISNULL and version != -1`
-    // const response = await sql`SELECT * FROM airports where sketch isnull and version=15`
-    console.log('found rows', response.rowCount)
+    const airports = await AirportDao.readMissingSketch(1000)
+    console.log('found rows', airports.length)
     await new Promise(resolve => setTimeout(resolve, 2000))
-    for (const row of response.rows) {
-        const airport = AirportDao.parse(row)
+    for (const airport of airports) {
         try {
-            airport.code = row.code
             console.log('Getting', airport.code)
 
             if (!airport.iap || airport.iap.length < 1) {
@@ -62,11 +80,11 @@ async function doIt() {
             updated++;
             // wait random time between 1 and 5 seconds
             const time = Math.floor(Math.random() * 4000) + 3000
-            console.log('updated', updated, 'out of', response.rowCount)
+            console.log('updated', updated, 'out of', airports.length)
             console.log('Waiting', time, 'ms')
             await new Promise(resolve => setTimeout(resolve, time))
         } catch (err) {
-            console.log("failed to process ", row.code)
+            console.log("failed to process ", airport.code)
         }
     }
 }

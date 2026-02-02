@@ -6,6 +6,7 @@ export enum EmailType {
     NewUser = 2,
     Purchase = 3,
     UserFeedback = 4,
+    SketchUpdate = 5
 }
 
 export class Email {
@@ -47,6 +48,11 @@ export class Email {
                 // Apu Nahasapeemapetilon watches the store
                 subject = 'Account Type';
                 identity = 'Apu';
+                break;
+            case EmailType.SketchUpdate:
+                // Marge Simpson updates airport sketches
+                subject = 'Airport Sketches';
+                identity = 'Marge';
                 break;
         }
 
