@@ -48,7 +48,6 @@ export const NotamAbbreviations: Record<string, string> = {
     "DLY": "DAILY",
     "DME": "DISTANCE MEASURING EQUIPMENT",
     "DUR": "DURATION",
-    "E": "EAST",
     "EB": "EASTBOUND",
     "EBO": "EASTBOUND",
     "EFF": "EFFECTIVE",
@@ -90,7 +89,6 @@ export const NotamAbbreviations: Record<string, string> = {
     "INTL": "INTERNATIONAL",
     "INTST": "INTENSITY",
     "IR": "ICE ON RUNWAY",
-    "L": "LEFT",
     "LAT": "LATITUDE",
     "LB": "POUND",
     "LGT": "LIGHT",
@@ -135,7 +133,6 @@ export const NotamAbbreviations: Record<string, string> = {
     "OTS": "OUT OF SERVICE",
     "OVR": "OVER",
     "PAEW": "PERSONNEL AND EQUIPMENT WORKING",
-    "PAPI": "PRECISION APPROACH PATH INDICATOR",
     "PAR": "PRECISION APPROACH RADAR",
     "PERM": "PERMANENT",
     "PJE": "PARACHUTE JUMPING EXERCISE",
@@ -149,7 +146,6 @@ export const NotamAbbreviations: Record<string, string> = {
     "PSR": "PACKED SNOW ON RUNWAY",
     "PTN": "PROCEDURE TURN",
     "PVT": "PRIVATE",
-    "R": "RIGHT",
     "RAIL": "RUNWAY ALIGNMENT INDICATOR LETTERS",
     "RCAG": "REMOTE COMMUNICATIONS AIR/GROUND FACILITY",
     "RCL": "RUNWAY CENTERLINE",
@@ -174,7 +170,6 @@ export const NotamAbbreviations: Record<string, string> = {
     "RVRR": "RVR ROLLOUT",
     "RVRT": "RVR TOUCHDOWN",
     "RWY": "RUNWAY",
-    "S": "SOUTH",
     "SAT": "SATURDAY",
     "SB": "SOUTHBOUND",
     "SBO": "SOUTHBOUND",
@@ -229,9 +224,6 @@ export const NotamAbbreviations: Record<string, string> = {
     "VIS": "VISIBILITY",
     "VMC": "VISUAL METEOROLOGICAL CONDITIONS",
     "VOL": "VOLUME",
-    "VOR": "VHF OMNIDIRECTIONAL RADIO RANGE",
-    "VORTAC": "VOR AND TACAN (COLLOCATED)",
-    "W": "WEST",
     "WB": "WESTBOUND",
     "WBO": "WESTBOUND",
     "WED": "WEDNESDAY",
@@ -245,8 +237,6 @@ export const NotamAbbreviations: Record<string, string> = {
     "WPT": "WAYPOINT",
     "WSTCH": "WASATCH",
     "WX": "WEATHER",
-    "Y": "YELLOW",
-    "Z": "ZULU TIME"
 };
 
 export class NotamDecoder {
