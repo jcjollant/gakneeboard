@@ -7,37 +7,42 @@ import { Canvas, createCanvas } from "canvas";
 export class AirportSketch {
   static doesNotExist = "dne";
 
-  static async get(airportCode: string, pdf:string): Promise<string> {
+  static async get(airportCode: string, pdf: string, skipSave: boolean = false): Promise<string> {
     console.log("[AirportSketch.get] invoked for", airportCode, pdf);
 
     try {
-        // Get PDF from aeronav
-        const pdfName = pdf;
-        // const pdfBuffer = await Charts.getAeronavPdf(pdfName);
-        // .teh.catch((error) => {
-        //   // console.log('[AirportSketch.get] failed to get', pdfName, error)
-        //   throw new Error(`failed to get ${pdfName} from aeronav`);
-        // });
-        // console.log( "[AirportSketch.get] found pdf", pdfName, "length", pdfBuffer.length);
+      // Get PDF from aeronav
+      const pdfName = pdf;
+      // const pdfBuffer = await Charts.getAeronavPdf(pdfName);
+      // .teh.catch((error) => {
+      //   // console.log('[AirportSketch.get] failed to get', pdfName, error)
+      //   throw new Error(`failed to get ${pdfName} from aeronav`);
+      // });
+      // console.log( "[AirportSketch.get] found pdf", pdfName, "length", pdfBuffer.length);
 
-        // turn PDF into PNG
-        // const pngBuffer = await AirportSketch.pdfFirstPageToPng(pdfBuffer);
-        // console.log("[AirportSketch.get] created png size", pngBuffer.length);
+      // turn PDF into PNG
+      // const pngBuffer = await AirportSketch.pdfFirstPageToPng(pdfBuffer);
+      // console.log("[AirportSketch.get] created png size", pngBuffer.length);
 
-        // extract sketch from PNG
-        const response = await axios.post(
-            // "https://gak-sketcher.vercel.app/api", 
-            "http://localhost:3001/api",
-            {pdf:pdf}, 
-            {
-              headers: { "Content-Type": "image/png" },
-              responseType: "arraybuffer",
-            })
-        console.log( "[AirportSketch.get] completed for", airportCode, "size", response.data.length);
-        return await AirportSketch.save(airportCode, response.data);
+      // extract sketch from PNG
+      const response = await axios.post(
+        "https://gak-sketcher.vercel.app/api",
+        // "http://localhost:3001/api",
+        { pdf: pdf },
+        {
+          headers: { "Content-Type": "image/png" },
+          responseType: "arraybuffer",
+        })
+      console.log("[AirportSketch.get] completed for", airportCode, "size", response.data.length);
+
+      if (skipSave) {
+        console.log("[AirportSketch.get] skipping save for", airportCode);
+        return "";
+      }
+      return await AirportSketch.save(airportCode, response.data);
     } catch (error) {
-        console.log("[AirportSketch.get] failed for", airportCode, error);
-        throw error;
+      console.log("[AirportSketch.get] failed for", airportCode, error);
+      throw error;
     }
   }
 
@@ -48,7 +53,7 @@ export class AirportSketch {
    * @param skipGet Allows to skip the get if instrument approach is found
    * @returns 
    */
-  static async resolve(airport:Airport, code:string=undefined, skipGet:boolean=false) {
+  static async resolve(airport: Airport, code: string = undefined, skipGet: boolean = false) {
     console.log("[AirportSketch.hook] invoked for", airport.code);
 
     const airportCode = code ?? airport.code
@@ -57,8 +62,8 @@ export class AirportSketch {
       console.log("[AirportSketch.hook] no IAP for", airportCode);
       await AirportSketch.notFound(airportCode);
       airport.sketch = AirportSketch.doesNotExist;
-    } else if( !skipGet){
-      const sketch = await AirportSketch.get(airportCode, airport.iap[0].pdf)      
+    } else if (!skipGet) {
+      const sketch = await AirportSketch.get(airportCode, airport.iap[0].pdf)
       airport.sketch = sketch
     }
   }
@@ -100,12 +105,12 @@ export class AirportSketch {
       console.log('[AirportSketch.pdfFirstPageToPng] worker', value);
       pdfjs.GlobalWorkerOptions.workerSrc = value
 
-    const fakeWorker = {
-      postMessage: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-    };
-          pdfjs.GlobalWorkerOptions.workerPort = fakeWorker
+      const fakeWorker = {
+        postMessage: () => { },
+        addEventListener: () => { },
+        removeEventListener: () => { },
+      };
+      pdfjs.GlobalWorkerOptions.workerPort = fakeWorker
       // pdfjs.GlobalWorkerOptions.workerPort = fakeWorker();
       const scale = 300 / 72;
       const compression = 5; // Default compression level
@@ -159,19 +164,19 @@ export class AirportSketch {
    */
   static async save(airportCode: string, pngBuffer: Buffer): Promise<string> {
     const code = airportCode;
-        try {
-        const blob = await put(`sketch/${code}.png`, pngBuffer, {
-            access: "public",
-            contentType: "image/png",
-            token: process.env.BLOB_READ_WRITE_TOKEN,
-        })
-        // save url with associated airport
-        await AirportDao.updateSketch(code, blob.url)
-        console.log("[AirportSketch.save] uploaded", blob.url);
-        return blob.url;
-    } catch( err) {
-        console.log("[AirportSketch.save] failed for ", code, err);
-        throw err;
+    try {
+      const blob = await put(`sketch/${code}.png`, pngBuffer, {
+        access: "public",
+        contentType: "image/png",
+        token: process.env.BLOB_READ_WRITE_TOKEN,
+      })
+      // save url with associated airport
+      await AirportDao.updateSketch(code, blob.url)
+      console.log("[AirportSketch.save] uploaded", blob.url);
+      return blob.url;
+    } catch (err) {
+      console.log("[AirportSketch.save] failed for ", code, err);
+      throw err;
     }
   }
 }
