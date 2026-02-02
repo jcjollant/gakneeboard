@@ -154,8 +154,14 @@ export class NotamService {
         });
 
         if (!response.ok) {
-            // Handle 401 specifically if token expired mid-operation? 
-            // For now, simpler error handling.
+            if (response.status === 400) {
+                // parsed respone json and get code
+                const data = await response.json();
+                const code = data.errors[0].code;
+                if (code === '6.2') {
+                    throw new GApiError(404, `NMS API Invalid Location for endpoint ${endpoint}`);
+                }
+            }
             const text = await response.text();
             throw new GApiError(response.status, `NMS API Error: ${text}`);
         }
@@ -205,15 +211,19 @@ export class NotamService {
     }
 
     public static async getSimplifiedNotams(params: Omit<GetNotamsParams, 'nmsResponseFormat'>): Promise<SimplifiedNotam[]> {
-        const response = await this.getNotams({
-            ...params,
-            nmsResponseFormat: NmsResponseFormat.GEOJSON
-        });
+        try {
+            const response = await this.getNotams({
+                ...params,
+                nmsResponseFormat: NmsResponseFormat.GEOJSON
+            });
 
-        if (response.status === 'Success' && response.data.geojson) {
-            return response.data.geojson
-                .map((f: any) => this.simplify(f))
-                .filter((n: any) => n !== null) as SimplifiedNotam[];
+            if (response.status === 'Success' && response.data.geojson) {
+                return response.data.geojson
+                    .map((f: any) => this.simplify(f))
+                    .filter((n: any) => n !== null) as SimplifiedNotam[];
+            }
+        } catch (e) {
+            console.log('[NotamService.getSimplifiedNotams] could not fetch notams for ' + params.location)
         }
 
         return [];

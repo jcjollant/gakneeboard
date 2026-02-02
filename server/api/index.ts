@@ -181,7 +181,6 @@ app.get('/export/template/:id/:format', async (req: Request, res: Response) => {
             res.send(Buffer.from(arrayBuffer))
         })
     } catch (e) {
-        console.log('[index] /export error' + e)
         catchError(res, e, 'GET /export/template')
     }
 })
@@ -272,6 +271,7 @@ app.get('/notams/:airportCode', async (req: Request, res: Response) => {
         })
         res.send(simplified)
     } catch (e) {
+        // if this is a 404, just return
         catchError(res, e, 'GET /notam/:airportCode')
     }
 })
