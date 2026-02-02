@@ -64,6 +64,7 @@ describe('Tiles', () => {
       url: '**/airport/**',
     }).as('getOneAirport');
 
+    cy.wait(200)
     cy.get('.p-inputtext').clear().type('KBLI')
     // wait for the reply
     cy.wait('@getOneAirport').then(interception => {
