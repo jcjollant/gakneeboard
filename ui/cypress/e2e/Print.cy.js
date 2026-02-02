@@ -66,6 +66,9 @@ describe('Print', () => {
         // Dialog should be open
         cy.get('.p-dialog').should('be.visible')
 
+        // Verify Page Name is visible by default
+        cy.contains('.marginNotes', 'Test Template').should('exist')
+
         // Verify the back page has the styles
         // .printTwoPages > :last-child matches the back page component
         cy.get('.printTwoPages > :last-child').should(($el) => {

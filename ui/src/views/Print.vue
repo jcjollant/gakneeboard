@@ -58,7 +58,8 @@ const printVibShow = ref(true)
 const printVibItems = ref<VerticalInfoBarContent[]>([
   VerticalInfoBarContent.Version,
   VerticalInfoBarContent.Tail,
-  VerticalInfoBarContent.Date
+  VerticalInfoBarContent.Date,
+  VerticalInfoBarContent.PageName
 ])
 const printClipMargin = ref(0)
 const template = ref<Template|undefined>(undefined)

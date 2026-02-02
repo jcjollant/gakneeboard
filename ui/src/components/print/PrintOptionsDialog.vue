@@ -105,7 +105,7 @@ const vibSelectedItems = ref<VerticalInfoBarContent[]>([
 
 const vibContentOptions = [
   { label: 'Version', value: VerticalInfoBarContent.Version },
-  { label: 'Page Name', value: VerticalInfoBarContent.PageName },
+  { label: 'Name', value: VerticalInfoBarContent.PageName },
   { label: 'Tail #', value: VerticalInfoBarContent.Tail },
   { label: 'Date', value: VerticalInfoBarContent.Date },
 ]

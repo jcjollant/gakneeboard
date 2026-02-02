@@ -1,9 +1,8 @@
 <template>
     <div class="marginNotes">
         <div class="vibNotes">
-            <div v-if="showVersion">[v{{ version }}]</div>
-            <div v-if="showName">{{ name }}</div>
-            <div v-if="showFlight" class="vibTail">Tail#</div>
+            <div v-if="showVersionOrName">[{{ versionAndName }}]</div>
+            <div v-if="showTail" class="vibTail">Tail#</div>
             <div v-if="showDate" class="vibDate">Date</div>
         </div>
         <div v-if="showBrand" class="vibBrand">Kneeboard.ga</div>
@@ -19,13 +18,11 @@ const props = defineProps({
     ver: { type: Number, default: 0},
     name: { type: String, default: ''},
 })
-const showVersion = ref(true)
-const showFlight = ref(true)
+const showTail = ref(true)
 const showDate = ref(true)
 const showBrand = ref(true)
-const showName = ref(false)
-const version = ref(0)
-const currentDate = ref('')
+const showVersionOrName = ref(true)
+const versionAndName = ref('')
 
 onMounted(() => {
     loadProps( props)
@@ -36,7 +33,6 @@ watch(props, () => {
 })
 
 function loadProps(props:any) {
-    version.value = props.ver
     const items = props.items || []
     
     // Always show brand? The prompt didn't say. 'Kneeboard.ga' was "Brand" in old code.
@@ -44,16 +40,21 @@ function loadProps(props:any) {
     showBrand.value = props.show 
 
     if (!props.show) {
-        showVersion.value = false
-        showFlight.value = false
+        showVersionOrName.value = false
+        showTail.value = false
         showDate.value = false
-        showName.value = false
         return
     }
 
-    showVersion.value = items.includes(VerticalInfoBarContent.Version)
-    showName.value = items.includes(VerticalInfoBarContent.PageName) && props.name.length > 0
-    showFlight.value = items.includes(VerticalInfoBarContent.Tail)
+    const buffer = []
+    const showVersion = items.includes(VerticalInfoBarContent.Version)
+    const showName = items.includes(VerticalInfoBarContent.PageName)
+    if( props.ver > 0 && showVersion) buffer.push('v'+props.ver.toString())
+    if( props.name.length > 0 && showName) buffer.push(props.name)
+    versionAndName.value = buffer.join(' - ')
+
+    showVersionOrName.value = showVersion || showName
+    showTail.value = items.includes(VerticalInfoBarContent.Tail)
     showDate.value = items.includes(VerticalInfoBarContent.Date)
 }
 
@@ -67,7 +68,7 @@ function loadProps(props:any) {
 }
 .vibNotes {
     display: flex;
-    gap: 20px;
+    gap: 10px;
     color: darkblue;
 }
 .vibTail {

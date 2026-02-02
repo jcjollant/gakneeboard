@@ -1,10 +1,9 @@
-import { VerticalInfoBarContent, VerticalInfoBarOption } from "../../models/VerticalInfoBarOption";
+import { VerticalInfoBarContent } from "../../models/VerticalInfoBarOption";
 
 export class PrintOptions {
     flipBackPage: boolean;
 
     pageSelection: boolean[]
-    // vibOption: VerticalInfoBarOption;
     vibShow: boolean;
     vibItems: VerticalInfoBarContent[];
     clipMargin: number;
