@@ -10,13 +10,58 @@ export class TicketService {
      */
     public static async create(severity: number, message: string): Promise<void> {
         try {
-            await sql`INSERT INTO tickets (severity, message, status) VALUES (${severity}, ${message}, 'open')`;
-            console.log('[TicketService][' + severity + ']', message);
+            const safeMessage = this.truncateMessage(message);
+            await sql`INSERT INTO tickets (severity, message, status) VALUES (${severity}, ${safeMessage}, 'open')`;
+            console.log('[TicketService][' + severity + ']', safeMessage);
         } catch (error) {
             console.error('[TicketService] Failed to create ticket:', error);
             // Fallback logging if DB fails
             console.error('[Ticket][' + severity + ']', message);
         }
+    }
+
+    /**
+     * Truncate the message to prevent DB overflow.
+     * Max length is 1024.
+     */
+    public static truncateMessage(message: string): string {
+        const MAX_LENGTH = 1024;
+        if (message.length <= MAX_LENGTH) {
+            return message;
+        }
+
+        // We need to fit: kept_string + " [... NNN chars]" <= 1024
+        // Estimate suffix length conservatively.
+        // If we keep around 1000 chars, removed is roughly total - 1000.
+        // If total is huge, say 1MB, removed is ~1000000 (7 digits).
+        // Suffix: " [... 1000000 chars]" -> 5 + 7 + 7 = 19 chars.
+        // Let's reserve enough space.
+
+        let removedEstimate = message.length - MAX_LENGTH;
+        // Iterate a couple of times to find exact fit (overkill but correct)
+        // Or just reserve 30 chars effectively.
+
+        // Let's calculate exact available space.
+        // suffix = ` [... ${removed} chars]`
+
+        let keepLength = MAX_LENGTH - 30; // Start conservative
+        let removed = message.length - keepLength;
+        let suffix = ` [... ${removed} chars]`;
+
+        // Now maximize keepLength such that keepLength + suffix.length <= MAX_LENGTH
+        while (keepLength + suffix.length < MAX_LENGTH) {
+            keepLength++;
+            removed = message.length - keepLength;
+            suffix = ` [... ${removed} chars]`;
+        }
+        // If we overshot (unlikely with loop up), or ensuring safety:
+        while (keepLength + suffix.length > MAX_LENGTH) {
+            keepLength--;
+            removed = message.length - keepLength;
+            suffix = ` [... ${removed} chars]`;
+        }
+
+        return message.substring(0, keepLength) + suffix;
     }
 
     /**
