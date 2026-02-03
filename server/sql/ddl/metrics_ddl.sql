@@ -2,6 +2,6 @@
 CREATE TABLE metrics(
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
     create_time timestamp without time zone DEFAULT now(),
-    "data" varchar(1024),
+    "data" JSONB,
     PRIMARY KEY(id)
 );

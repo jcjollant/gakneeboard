@@ -2,7 +2,7 @@
 CREATE TABLE health_checks(
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
     create_time timestamp without time zone DEFAULT now(),
-    "data" varchar(1024),
+    "data" JSONB,
     failures integer DEFAULT 0,
     PRIMARY KEY(id)
 );

@@ -25,7 +25,7 @@ export class TicketService {
      * Max length is 1024.
      */
     public static truncateMessage(message: string): string {
-        const MAX_LENGTH = 1024;
+        const MAX_LENGTH = 65536;
         if (message.length <= MAX_LENGTH) {
             return message;
         }

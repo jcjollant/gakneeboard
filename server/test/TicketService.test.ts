@@ -73,34 +73,23 @@ describe('TicketService', () => {
         const shortMessage = "Short message";
         expect(TicketService.truncateMessage(shortMessage)).toBe(shortMessage);
 
-        const exactMessage = "a".repeat(1024);
+        const exactMessage = "a".repeat(65536);
         expect(TicketService.truncateMessage(exactMessage)).toBe(exactMessage);
 
-        const longMessage = "a".repeat(1030);
+        const longMessage = "a".repeat(66000);
         const truncated = TicketService.truncateMessage(longMessage);
 
-        expect(truncated.length).toBeLessThanOrEqual(1024);
-        expect(truncated.substring(truncated.length - 14)).toBe('[... 21 chars]');
+        expect(truncated.length).toBeLessThanOrEqual(65536);
+        // Suffix length logic is dynamic, just check it ends with the suffix pattern
+        expect(truncated).toMatch(/\[\.\.\. \d+ chars\]$/);
     });
 
     it('should calculate correct truncation length', () => {
-        // Case: 1025 characters. 
-        // 1 char removed. Suffix: " [... 1 chars]" (length 15)
-        // Kept = 1025 - 1 = 1024? No.
-        // Needs total <= 1024.
-        // Suffix length for "1 chars" is 14.
-        // So kept + 14 <= 1024 => kept <= 1010.
-        // Removed = 1025 - 1010 = 15.
-        // Suffix = " [... 15 chars]" (length 15).
-        // kept + 15 <= 1024 => 1010 + 15 = 1025 > 1024.
-        // So kept needs to be smaller.
-        // Let the algorithm handle it, just verify the contract.
-
-        const length = 2000;
+        const length = 70000;
         const message = "a".repeat(length);
         const truncated = TicketService.truncateMessage(message);
 
-        expect(truncated.length).toBeLessThanOrEqual(1024);
+        expect(truncated.length).toBeLessThanOrEqual(65536);
         // Verify the number in the suffix matches removed count
         const match = truncated.match(/\[\.\.\. (\d+) chars\]/);
         expect(match).not.toBeNull();

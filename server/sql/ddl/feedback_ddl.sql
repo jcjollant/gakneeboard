@@ -3,7 +3,7 @@ CREATE TABLE feedback(
     id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
     time date NOT NULL DEFAULT CURRENT_DATE,
     version varchar(64),
-    text varchar(1024),
+    text TEXT,
     user_id integer,
     contact boolean DEFAULT false,
     PRIMARY KEY(id),
