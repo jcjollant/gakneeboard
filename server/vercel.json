@@ -22,7 +22,7 @@
         },
         {
             "path": "/maintenance/8d4074fbddd09c797707112a1c6f4f82b83a6e256ea562fb124739b3cdb888c5",
-            "schedule": "0 */6 * * *"
+            "schedule": "5 6 * * *"
         }
     ]
 }
