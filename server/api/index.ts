@@ -19,6 +19,7 @@ import { UsageDao } from "../backend/dao/UsageDao";
 import { Authorization } from "../backend/services/Authorization";
 import { NotamService } from "../backend/services/NotamService";
 import { WeatherService } from "../backend/services/WeatherService";
+import { HealthCheck } from "../backend/HealthChecks";
 const port: number = 3000
 const app = express();
 
@@ -502,7 +503,7 @@ app.post('/tickets/:id/close', async (req: Request, res: Response) => {
 app.get('/admin/healthCheck', async (req: Request, res: Response) => {
     try {
         await Authorization.validateAdmin(req)
-        const result = await Maintenance.performHealthChecks()
+        const result = await HealthCheck.perform()
         res.send(result)
     } catch (e) {
         catchError(res, e, 'GET /admin/healthCheck')
