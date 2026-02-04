@@ -156,8 +156,8 @@ const failedTests = computed(() => {
     const data = healthData.value as any
     if (!data) return []
 
-    // Check for 'checks' array based on user provided JSON
-    const source = data.checks || data.entries || []
+    // Check if data itself is an array (new API behavior) or has checks property (old behavior)
+    const source = Array.isArray(data) ? data : (data.checks || data.entries || [])
     
     // Handle array format (checks: [...])
     if (Array.isArray(source)) {
