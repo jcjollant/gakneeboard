@@ -30,18 +30,14 @@ Run the actual test `npm test XXX`
 
 ## Simpsons Characters
 We have named some operational tasks and emails after simpsons characters. 
-Groundskeeper 'Willie' is a script that checks system heath . It is invoked everyday via a cron entry in `vercel.json` (6:05 PM PST / 7:05 PM PDT). 
-'Waylon' Smithers is reporting metrics and is also invoked everyday via cron (4:05 AM PST / 5:05 AM PDT)
-'Ralph' Wiggum is sending an email every time we receive user feedback
-'Ned' Flanders is sending an email every time we see a new user
-'Apu' Nahasapeemapetilon is sending an email every time a user becomes a customer
-'Marge' Simpson is updating airport sketches every day via cron (10:05 PM PST / 11:05 PM PDT)
+See [Operations](documentation/Operations.md) for a complete list of characters and their roles.
 
-Willie and Waylon can be executed manually as follows
+Willie, Dr Hibbert and Waylon can be executed manually as follows
 ```
 cd housekeeping
-ts-node .\willie.ts
-ts-node .\waylon.ts
+ts-node .\summon.ts willie
+ts-node .\summon.ts drhibbert
+ts-node .\summon.ts waylon
 ```
 
 
