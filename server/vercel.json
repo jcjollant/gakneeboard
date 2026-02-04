@@ -14,7 +14,11 @@
     "crons": [
         {
             "path": "/maintenance/a4a474fbddd09c797707112a1c6f4f82b83a6e256ea562fb124739b3cdb888c4",
-            "schedule": "5 2 * * *"
+            "schedule": "5 9 * * *"
+        },
+        {
+            "path": "/maintenance/a4a474fbddd09c797707112a1c6f4f82b83a6e256ea562fb124739b3cdb888c6",
+            "schedule": "5 8 * * *"
         },
         {
             "path": "/maintenance/d709064984df563c2d380045342e79902e32e769c11bd44c4a31c85ffa250992",
