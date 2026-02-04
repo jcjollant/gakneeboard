@@ -11,6 +11,7 @@ import { UserTools } from '../../backend/UserTools';
 import { UsageDao } from '../../backend/dao/UsageDao';
 import { version } from '../../package.json';
 import { currentAirportModelVersion, jcHash } from '../constants';
+import { HealthCheck } from '../../backend/HealthChecks';
 
 // Mock the dependencies
 jest.mock('../../backend/GApi');
@@ -22,6 +23,7 @@ jest.mock('../../backend/UserTools');
 jest.mock('../../backend/services/TicketService');
 jest.mock('../../backend/services/Authorization');
 jest.mock('../../backend/dao/UsageDao');
+jest.mock('../../backend/HealthChecks');
 jest.mock('@vercel/postgres', () => ({
     sql: jest.fn()
 }));
@@ -179,19 +181,16 @@ describe('index API', () => {
     });
 
     it('Admin healthCheck returns json', async () => {
-        const mockResult = {
-            checks: [{ name: 'test', status: 'success', msg: 'ok' }],
-            refills: []
-        };
+        const mockResult = [{ name: 'Name', status: 'Status', msg: 'Msg', startTime: 1, duration: 1000 }];
         (Authorization.validateAdmin as unknown as jest.Mock<any>).mockResolvedValue(1);
-        (Maintenance.performHealthChecks as unknown as jest.Mock<any>).mockResolvedValue(mockResult);
+        (HealthCheck.perform as unknown as jest.Mock<any>).mockResolvedValue(mockResult);
 
         const res = await request(app).get('/admin/healthCheck');
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual(mockResult);
         expect(Authorization.validateAdmin).toHaveBeenCalled();
-        expect(Maintenance.performHealthChecks).toHaveBeenCalled();
+        expect(HealthCheck.perform).toHaveBeenCalled();
     });
     it('Templates version restore records usage', async () => {
         const userSha = 'testuser';

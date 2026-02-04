@@ -358,18 +358,20 @@ describe('Business', () => {
 
             const mockUserDao = getMockUserDao(newTestUser())
 
-            const refills = await Business.freePrintRefills(mockUserDao)
+            const [refills, performed] = await Business.freePrintRefills(mockUserDao)
 
             expect(mockUserDao.refillAccountType).toHaveBeenCalledTimes(1)
             expect(refills).toHaveLength(4)
+            expect(performed).toBe(true)
         })
 
         it('doesn\'t do anything on the second day of the month', async () => {
             jest.useFakeTimers().setSystemTime(new Date('2023-01-03'));
             expect(new Date().getDate()).not.toBe(1)
 
-            const refills = await Business.freePrintRefills(testUserDao)
+            const [refills, performed] = await Business.freePrintRefills(testUserDao)
             expect(refills).toHaveLength(0)
+            expect(performed).toBe(false)
         })
 
         it('can be forced on second day of the month', async () => {
@@ -377,10 +379,11 @@ describe('Business', () => {
             expect(new Date().getDate()).not.toBe(1)
             const mockUserDao = getMockUserDao(testUser)
 
-            const refills = await Business.freePrintRefills(mockUserDao, true)
+            const [refills, performed] = await Business.freePrintRefills(mockUserDao, true)
 
             expect(mockUserDao.refillAccountType).toHaveBeenCalledTimes(1)
             expect(refills).toHaveLength(4)
+            expect(performed).toBe(true)
         })
     })
 

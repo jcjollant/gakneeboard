@@ -8,15 +8,17 @@ import { Email, EmailType } from './Email';
 import { AirportSketch } from './AirportSketch';
 import { AirportDao } from './AirportDao';
 import { TicketService } from './services/TicketService';
+import { HouseKeeping } from './HouseKeepings';
 
 export class Maintenance {
     code: string;
-    static codeLogin: string = '12b39a0daff8fc144fc678663395f6ce5706c778a259167ebc307144fcc96146'
-    static codeMetrics: string = 'd709064984df563c2d380045342e79902e32e769c11bd44c4a31c85ffa250992'
-    static codeTest: string = '4d51414ceb16fe67ec67ef5194a76036fc54b59846c9e8da52841717fe4b6247'
-    static codeHousekeeping = 'a4a474fbddd09c797707112a1c6f4f82b83a6e256ea562fb124739b3cdb888c4'
+    static codeLogin = '12b39a0daff8fc144fc678663395f6ce5706c778a259167ebc307144fcc96146'
+    static codeMetrics = 'd709064984df563c2d380045342e79902e32e769c11bd44c4a31c85ffa250992'
+    static codeTest = '4d51414ceb16fe67ec67ef5194a76036fc54b59846c9e8da52841717fe4b6247'
+    static codeHealthCheck = 'a4a474fbddd09c797707112a1c6f4f82b83a6e256ea562fb124739b3cdb888c4'
+    static codeHouseKeeping = 'a4a474fbddd09c797707112a1c6f4f82b83a6e256ea562fb124739b3cdb888c6'
     static codeSketch = '8d4074fbddd09c797707112a1c6f4f82b83a6e256ea562fb124739b3cdb888c5'
-    static allCodes: string[] = [Maintenance.codeLogin, Maintenance.codeMetrics, Maintenance.codeTest, Maintenance.codeHousekeeping, Maintenance.codeSketch]
+    static allCodes = [Maintenance.codeLogin, Maintenance.codeMetrics, Maintenance.codeTest, Maintenance.codeHealthCheck, Maintenance.codeHouseKeeping, Maintenance.codeSketch]
 
     constructor(code: string) {
         this.code = code
@@ -34,7 +36,9 @@ export class Maintenance {
                 rej(e)
             }
 
-            if (this.code == Maintenance.codeHousekeeping) { // This is Willie
+            if (this.code == Maintenance.codeHealthCheck) { // This is Dr Hibbert
+                Maintenance.drHibbert().then(res).catch(handleCrash)
+            } else if (this.code == Maintenance.codeHouseKeeping) { // This is Willie
                 Maintenance.willie().then(res).catch(handleCrash)
             } else if (this.code == Maintenance.codeLogin) {
                 const hash = "357c3920bbfc6eefef7e014ca49ef12c78bb875c0826efe90194c9978303a8d3"
@@ -50,7 +54,7 @@ export class Maintenance {
             } else if (this.code == Maintenance.codeTest) {
                 res('OK')
             } else if (this.code == Maintenance.codeSketch) { // This is Marge
-                Maintenance.sketchUpdate().then(res).catch(handleCrash)
+                Maintenance.marge().then(res).catch(handleCrash)
             } else {
                 TicketService.create(3, `[Maintenance] Invalid Code: ${this.code}`)
                 rej('Invalid Code')
@@ -98,23 +102,15 @@ export class Maintenance {
         })
     }
 
-    static async performHealthChecks() {
-        const [checks, refills] = await Promise.all([
-            HealthCheck.perform(),
-            Business.freePrintRefills(new UserDao())
-        ]);
-        return { checks, refills }
-    }
-
     /**
-     * Willie perform chechs and routine maintenance
+     * Dr Hibbert perform health checks and sends email
      */
-    static async willie(sendEmail: boolean = true, persistRecord: boolean = true): Promise<string> {
+    static async drHibbert(sendEmail: boolean = true, persistRecord: boolean = true): Promise<string> {
         let failedChecks: number = 0
-        let messages: string[] = []
+        let message: string = ''
 
         try {
-            const { checks, refills } = await Maintenance.performHealthChecks();
+            const checks = await HealthCheck.perform();
 
             const data: string = JSON.stringify(checks)
             // console.log( '[HealthCheck.perform]', data, 'failures', failedChecks)
@@ -122,36 +118,54 @@ export class Maintenance {
             failedChecks = failures.length
 
             if (failedChecks === 0) {
-                messages.push('All Clear')
+                message = 'All Clear'
             } else {
                 for (const check of failures) {
-                    messages.push(check.name + ' : ' + check.msg)
+                    message += check.name + ' : ' + check.msg + '\n'
                 }
             }
-            messages.push(data)
+            message += '\n' + data
             // save record
             if (persistRecord) {
                 await sql`INSERT INTO health_checks (data,failures) VALUES (${data},${failedChecks})`
             }
 
-            messages.push('Refilled ' + refills.length + ' users')
         } catch (e) {
             throw e
         }
 
         // cook email with business
-        const output = messages.join('\n\n')
         if (sendEmail) {
-            await Email.send(output, EmailType.Housekeeping)
+            await Email.send(message, EmailType.HealthCheck)
         } else {
-            console.log('[Maintenance.willie] not sending email \n' + output)
+            console.log('[Maintenance.drHibbert] not sending email \n' + message)
         }
-        return output
+        return message
     }
+
     /**
-     * Update sketches for airports that miss one
+     * Willie performs housekeeping
      */
-    static async sketchUpdate(): Promise<string> {
+    /**
+     * Willie performs housekeeping
+     */
+    static async willie(sendEmail: boolean = true): Promise<string> {
+        const tasks = await HouseKeeping.perform()
+
+        let message = tasks.map(t => `${t.name}: ${t.status} - ${t.message} (${t.duration}ms)`).join('\n')
+
+        if (sendEmail) {
+            await Email.send(message, EmailType.Housekeeping)
+        } else {
+            console.log('[Maintenance.willie] not sending email \n' + message)
+        }
+        return message
+    }
+
+    /**
+     * Marge updates sketches for airports that miss one and sends an email
+     */
+    static async marge(sendEmail: boolean = true, persistRecord: boolean = true): Promise<string> {
         const cycle = process.env.AERONAV_DATA_CYCLE
         const limit = 5
         const airports = await AirportDao.readMissingSketch(limit)

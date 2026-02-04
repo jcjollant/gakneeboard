@@ -112,13 +112,13 @@ export class Business {
      * Refills account if we are on the first day of the month or force is true
      * @param userDao
      * @param force If true, refills even if it's not the first day of the month
-     * @returns A map of updated counts
+     * @returns A map of updated counts and boolean that indicates if a refill was performed
      */
-    static async freePrintRefills(userDao: UserDao, force: boolean = false): Promise<Refill[]> {
+    static async freePrintRefills(userDao: UserDao, force: boolean = false): Promise<[Refill[], boolean]> {
         const dayOfTheMonth = new Date().getDate()
 
         // onyl refill on the first day of the month or when forced by parameter
-        if (!force && dayOfTheMonth != 1) return []
+        if (!force && dayOfTheMonth != 1) return [[], false]
 
         const refills = await userDao.refillAccountType(AccountType.simmer, PRINT_CREDIT_SIMMER)
         // create a usage record for each refill
@@ -126,7 +126,7 @@ export class Business {
             await UsageDao.refill(refill.userId, refill.previousCount, refill.newCount)
         }
 
-        return refills;
+        return [refills, true];
     }
 
     // revert the acount back to simmer
