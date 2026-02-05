@@ -9,8 +9,8 @@
         <div v-else-if="displayMode==DisplayModeNotes.Blank" class="tileContent">
             <div class="blank">&nbsp;</div>
         </div>
-        <div v-else-if="displayMode==DisplayModeNotes.Grid" class="modeGrid tileContent">
-            <div v-for="i in [1,2,3,4,5,6,7,8,9,10,11,12]">&nbsp;</div>
+        <div v-else-if="displayMode==DisplayModeNotes.Grid" class="modeGrid tileContent" :class="{ expanded: expanded }">
+            <div v-for="i in gridCells" :key="i">&nbsp;</div>
         </div>
         <CompassContent v-else-if="displayMode==DisplayModeNotes.Compass" :heading="compassHeading" />
         <WordContent v-else-if="displayMode==DisplayModeNotes.Word"  :word="word" />
@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch, ref } from 'vue'
+import { onMounted, watch, ref, computed } from 'vue'
 import { DisplayModeChoice, DisplayModeNotes } from '../../models/DisplayMode'; 
 import { TileType } from '../../models/TileType';
 import { TileData } from '../../models/TileData';
@@ -48,6 +48,7 @@ const props = defineProps({
     span2: { type: Boolean, default: false}
 })
 const expanded = ref(false)
+const gridCells = computed(() => expanded.value ? 24 : 12)
 
 function loadProps(props:any) {
     // console.debug('[NotesTile.loadProps]', props)
@@ -112,6 +113,10 @@ function onExpand(newValue:boolean) {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(6, 1fr);
+    width: auto;
+}
+.modeGrid.expanded {
+    grid-template-columns: repeat(4, 1fr);
 }
 .modeGrid div {
     border: 1px dashed lightgrey;
