@@ -47,7 +47,9 @@ xdescribe('Refill Reproduction', () => {
         await userDao.updatePrintCredit(simmerUser);
 
         // Force run the refill job (simulating 1st of month)
-        const refills = await Business.freePrintRefills(userDao, true);
+        const [refills, performed] = await Business.freePrintRefills(userDao, true);
+
+        expect(performed).toBe(true);
 
         // Refresh users from DB
         const refreshedStudent = await userDao.getFromHash(studentUser.sha256);
