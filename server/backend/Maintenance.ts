@@ -17,8 +17,7 @@ export class Maintenance {
     static codeTest = '4d51414ceb16fe67ec67ef5194a76036fc54b59846c9e8da52841717fe4b6247'
     static codeHealthCheck = 'a4a474fbddd09c797707112a1c6f4f82b83a6e256ea562fb124739b3cdb888c4'
     static codeHouseKeeping = 'a4a474fbddd09c797707112a1c6f4f82b83a6e256ea562fb124739b3cdb888c6'
-    static codeSketch = '8d4074fbddd09c797707112a1c6f4f82b83a6e256ea562fb124739b3cdb888c5'
-    static allCodes = [Maintenance.codeLogin, Maintenance.codeMetrics, Maintenance.codeTest, Maintenance.codeHealthCheck, Maintenance.codeHouseKeeping, Maintenance.codeSketch]
+    static allCodes = [Maintenance.codeLogin, Maintenance.codeMetrics, Maintenance.codeTest, Maintenance.codeHealthCheck, Maintenance.codeHouseKeeping]
 
     constructor(code: string) {
         this.code = code
@@ -53,8 +52,6 @@ export class Maintenance {
                 Maintenance.waylon().then(res).catch(handleCrash)
             } else if (this.code == Maintenance.codeTest) {
                 res('OK')
-            } else if (this.code == Maintenance.codeSketch) { // This is Marge
-                Maintenance.marge().then(res).catch(handleCrash)
             } else {
                 TicketService.create(3, `[Maintenance] Invalid Code: ${this.code}`)
                 rej('Invalid Code')
@@ -146,15 +143,14 @@ export class Maintenance {
     /**
      * Willie performs housekeeping
      */
-    /**
-     * Willie performs housekeeping
-     */
     static async willie(sendEmail: boolean = true): Promise<string> {
         const tasks = await HouseKeeping.perform()
 
         let message = tasks.map(t => `${t.name}: ${t.status} - ${t.message} (${t.duration}ms)`).join('\n')
 
-        if (sendEmail) {
+        // call marge
+
+        if (tasks.length > 0 && sendEmail) {
             await Email.send(message, EmailType.Housekeeping)
         } else {
             console.log('[Maintenance.willie] not sending email \n' + message)
@@ -162,42 +158,4 @@ export class Maintenance {
         return message
     }
 
-    /**
-     * Marge updates sketches for airports that miss one and sends an email
-     */
-    static async marge(sendEmail: boolean = true, persistRecord: boolean = true): Promise<string> {
-        const cycle = process.env.AERONAV_DATA_CYCLE
-        const limit = 5
-        const airports = await AirportDao.readMissingSketch(limit)
-        let updated = 0
-        let logs: string[] = []
-
-        for (const airport of airports) {
-            try {
-                if (!airport.iap || airport.iap.length < 1) {
-                    await AirportSketch.resolve(airport)
-                    continue;
-                }
-                const before = airport.iap[0].pdf
-                const iap = before.split('/')[1]
-                airport.iap[0].pdf = cycle + '/' + iap
-
-                await AirportSketch.resolve(airport)
-                updated++
-                logs.push(`Updated ${airport.code}`)
-
-                // wait a bit to be nice to the APIs
-                await new Promise(resolve => setTimeout(resolve, 500))
-
-            } catch (err) {
-                logs.push(`Failed ${airport.code}: ${err}`)
-            }
-        }
-
-        const message = `Processed ${airports.length}. Updated ${updated}. \n` + logs.join('\n')
-        if (updated > 0) {
-            await Email.send(message, EmailType.SketchUpdate)
-        }
-        return message
-    }
 }

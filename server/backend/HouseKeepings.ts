@@ -1,3 +1,5 @@
+import { AirportDao } from "./AirportDao"
+import { AirportSketch } from "./AirportSketch"
 import { Business } from "./business/Business"
 import { UserDao } from "./dao/UserDao"
 import { Email, EmailType } from "./Email"
@@ -64,9 +66,44 @@ export class HouseKeeping {
 
         return tasks
     }
-    public static async performAdipCleanup(): Promise<Metric> {
-        return new Promise((resolve, reject) => {
-            resolve(new Metric('Adip Clean Up', 0))
-        })
+
+    /**
+     * Updates sketches for airports that miss one
+     */
+    public static async performSketchUpdate(): Promise<Task> {
+        const task = new Task('Airport Sketch Update')
+        task.start()
+        const cycle = process.env.AERONAV_DATA_CYCLE
+        const limit = 50
+        const airports = await AirportDao.readMissingSketch(limit)
+        let updated = 0
+        let logs: string[] = []
+
+        for (const airport of airports) {
+            try {
+                if (!airport.iap || airport.iap.length < 1) {
+                    await AirportSketch.resolve(airport)
+                    continue;
+                }
+                const before = airport.iap[0].pdf
+                const iap = before.split('/')[1]
+                airport.iap[0].pdf = cycle + '/' + iap
+
+                await AirportSketch.resolve(airport)
+                updated++
+                logs.push(`Updated ${airport.code}`)
+
+                // wait a bit to be nice to the APIs
+                await new Promise(resolve => setTimeout(resolve, 500))
+
+            } catch (err) {
+                logs.push(`Failed ${airport.code}: ${err}`)
+            }
+        }
+
+        const message = `Processed ${airports.length}. Updated ${updated}. \n` + logs.join('\n')
+        task.finish(message)
+
+        return task
     }
 }

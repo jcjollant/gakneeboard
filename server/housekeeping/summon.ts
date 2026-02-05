@@ -28,10 +28,6 @@ async function summon(name: string) {
                 console.log("Summoning Dr. Hibbert...");
                 output = await Maintenance.drHibbert();
                 break;
-            case 'marge':
-                console.log("Summoning Marge...");
-                output = await Maintenance.marge();
-                break;
             default:
                 console.error(`Unknown character: ${name}`);
                 console.error("Available characters: willie, waylon, drhibbert, marge");
