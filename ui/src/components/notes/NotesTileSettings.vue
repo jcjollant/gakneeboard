@@ -7,7 +7,7 @@
             <EitherOr either="Normal" or="Wide" v-model="isNormal" />
         </div>
 
-        <!-- Word Mode Configuration -->
+        <!-- Acronym Mode Configuration -->
         <div v-if="currentMode === DisplayModeNotes.Word" class="settings-section">
             <Separator name="Custom Acronym" />
             <div class="input-container">
@@ -57,7 +57,7 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
 // Lists
 const modesList = ref([
     new DisplayModeChoice('Blank', DisplayModeNotes.Blank, true, "Well, A blank Tile", '/tiles/notes-blank.png'),
-    new DisplayModeChoice('Word', DisplayModeNotes.Word, true, "A configurable word on the left side", '/tiles/notes-word.png'),
+    new DisplayModeChoice('Acronym', DisplayModeNotes.Word, true, "A configurable acronym on the left side", '/tiles/notes-word.png'),
     new DisplayModeChoice('Compass', DisplayModeNotes.Compass, true, "A blank compass with numerical headings", '/tiles/notes-compass.png'),
     new DisplayModeChoice('Grid', DisplayModeNotes.Grid, true, "A blank grid to organize things", '/tiles/notes-grid.png'),
 ]);

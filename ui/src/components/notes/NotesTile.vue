@@ -37,7 +37,7 @@ const displaySelection = ref(false)
 const word = ref('CRAFT')
 const displayModes = [
     new DisplayModeChoice('Blank', DisplayModeNotes.Blank, true, "Well, A blank Tile"),
-    new DisplayModeChoice( word.value,DisplayModeNotes.Word, true, "A configurable word on the left side"),
+    new DisplayModeChoice( word.value,DisplayModeNotes.Word, true, "A configurable acronym on the left side"),
     new DisplayModeChoice('Compass',DisplayModeNotes.Compass, true, "A blank compass with numerical headings"),
     new DisplayModeChoice('Grid',DisplayModeNotes.Grid, true, "A blank grid to organize things"),
 ]
