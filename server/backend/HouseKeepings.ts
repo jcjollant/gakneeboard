@@ -50,21 +50,31 @@ export class HouseKeeping {
         const tasks: Task[] = []
 
         // Refill task
-        const refillTask = new Task('Monthly Refills')
-        refillTask.start()
+        await Promise.all([
+            HouseKeeping.performRefills(),
+            HouseKeeping.performSketchUpdate()
+        ]).then((t) => {
+            tasks.push(t[0])
+            tasks.push(t[1])
+        })
+
+        return tasks
+    }
+
+    public static async performRefills(): Promise<Task> {
+        const task = new Task('Monthly Refills')
+        task.start()
         try {
             const [refills, performed] = await Business.freePrintRefills(new UserDao())
             if (performed) {
-                refillTask.finish(`Refilled performed. ${refills.length} users benefitted`)
+                task.finish(`Refilled performed. ${refills.length} users benefitted`)
             } else {
-                refillTask.finish(`Skipped. Refills not due`)
+                task.finish(`Skipped. Refills not due`)
             }
         } catch (e: any) {
-            refillTask.fail(e.message)
+            task.fail(e.message)
         }
-        tasks.push(refillTask)
-
-        return tasks
+        return task
     }
 
     /**
