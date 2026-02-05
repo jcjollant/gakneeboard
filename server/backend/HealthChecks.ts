@@ -65,12 +65,15 @@ export class HealthCheck {
     }
 
     // figure out if the data is stale
-    static async effectiveDateCheck(): Promise<Check> {
-        const check: Check = new Check('effectiveDate')
+    static async adipEffectiveDate(): Promise<Check> {
+        const checkEffectiveDate: Check = new Check('Adip Effective Date')
         const rentonCode: string = "KRNT"
 
         // Force an Adip Check
-        await Promise.all([AirportDao.codesLookup([rentonCode]), new AdipService().fetchAirport(rentonCode, false)]).then((results) => {
+        await Promise.all([
+            AirportDao.codesLookup([rentonCode]),
+            new AdipService().fetchAirport(rentonCode, false),
+        ]).then((results) => {
             try {
                 const lookupResult = results[0] as { known: CodeAndAirport[], knownUnknown: CodeAndAirport[], notFound: string[] };
                 // Check we have found Renton in the database
@@ -91,14 +94,38 @@ export class HealthCheck {
                     throw new Error("effective date mismatch ExpectedADIP=" + AdipService.currentEffectiveDate() + ", ActualADIP=" + rentonAdip.effectiveDate)
                 }
 
-                check.pass("Matching " + rentonDb.effectiveDate)
-            } catch (e) {
-                console.log('[HealthCheck.effectiveDateCheck] ' + e.message)
-                check.fail(e.message)
+                checkEffectiveDate.pass("Matching " + rentonDb.effectiveDate)
+            } catch (e: any) {
+                checkEffectiveDate.fail(e.message)
             }
         })
-        return check
 
+        return checkEffectiveDate
+    }
+
+    static async adipDataCycle(): Promise<Check> {
+        const payload: string = '{ "locId": "RNT" }'
+        const config: any = {
+            headers: {
+                'Authorization': AdipService.basicAuth,
+                "Content-Type": "text/plain"
+            },
+        }
+
+        const checkDataCycle: Check = new Check('Adip Data Cycle')
+        await AdipService.fetchAirportChartData(payload, config).then(chartData => {
+            try {
+                const envCycle = process.env.AERONAV_DATA_CYCLE
+                if (chartData.cycle != envCycle) {
+                    throw new Error("Cycle mismatch Env=" + envCycle + ", ADIP=" + chartData.cycle)
+                }
+                checkDataCycle.pass("Matching " + chartData.cycle)
+            } catch (e: any) {
+                checkDataCycle.fail(e.message)
+            }
+        })
+
+        return checkDataCycle
     }
 
     static async environmentVariables(): Promise<Check> {
@@ -172,7 +199,8 @@ export class HealthCheck {
     public static async perform(): Promise<Check[]> {
         const airportChecks = await HealthCheck.airportChecks()
         const allChecks = await Promise.all([
-            HealthCheck.effectiveDateCheck(),
+            HealthCheck.adipEffectiveDate(),
+            HealthCheck.adipDataCycle(),
             HealthCheck.environmentVariables(),
             HealthCheck.availablePublicationsCheck(),
             HealthCheck.users(),

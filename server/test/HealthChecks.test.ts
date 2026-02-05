@@ -5,6 +5,7 @@ import { AirportDao } from '../backend/AirportDao';
 import { AdipService } from '../backend/services/AdipService';
 import { Airport } from '../backend/models/Airport';
 import { CodeAndAirport } from '../backend/models/CodeAndAirport';
+import { AirportChartData } from '../backend/models/AirportChartData';
 
 describe('HealthChecks', () => {
 
@@ -12,7 +13,7 @@ describe('HealthChecks', () => {
         jest.restoreAllMocks();
     });
 
-    describe('effectiveDateCheck', () => {
+    describe('adipEffectiveDate', () => {
         const rentonCode = "KRNT";
 
         test('Success', async () => {
@@ -26,7 +27,7 @@ describe('HealthChecks', () => {
             jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ known: [rentonCaa], knownUnknown: [], notFound: [] });
             jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(renton);
 
-            const result = await HealthCheck.effectiveDateCheck();
+            const result = await HealthCheck.adipEffectiveDate();
             expect(result.status).toBe(Check.SUCCESS);
             expect(result.msg).toContain("Matching " + currentEffectiveDate);
         });
@@ -40,7 +41,7 @@ describe('HealthChecks', () => {
             jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ known: [], knownUnknown: [], notFound: [rentonCode] });
             jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(renton);
 
-            const result = await HealthCheck.effectiveDateCheck();
+            const result = await HealthCheck.adipEffectiveDate();
             expect(result.status).toBe(Check.FAIL);
             expect(result.msg).toContain(rentonCode + " is not in the database");
         });
@@ -53,41 +54,11 @@ describe('HealthChecks', () => {
             const rentonCaa = new CodeAndAirport(rentonCode, renton);
 
             jest.spyOn(AdipService, 'currentEffectiveDate').mockReturnValue(currentEffectiveDate);
-            // Assuming codesLookup puts invalid version airports in knownUnknown, but HealthChecks logic might look at found.
-            // Wait, HealthCheck logic explicitly checks result.found[0].
-            // If we strictly follow the new signature, we need to adapt the test data or the HealthCheck logic.
-            // BUT, the HealthCheck code I read earlier uses `results[0].found`. 
-            // Wait, I ALREADY CHANGED `codesLookup` signature in `AirportDao.ts` to return `known` and `knownUnknown`.
-            // So `HealthChecks.ts` MUST BE BROKEN right now because it tries to access `.found`.
-            // I should have caught this in the refactor step! 
-            // I need to fix HealthChecks.ts first or simultaneously. 
-            // Let's assume for this test file that I am testing the Logic AS IT SHOULD BE or AS IT IS.
-            // If I write the test now, it will fail to compile or run because `found` property is missing on the result of `codesLookup`.
-
-            // Re-reading HealthChecks.ts content provided in Step 62:
-            // Line 67: if (results[0].found.length == 0)...
-
-            // My previous refactor removed `found`. 
-            // So `HealthChecks.ts` is currently broken. I missed this usage of `codesLookup`.
-
-            // I will implement the test expecting the FIX to HealthChecks.ts as well. 
-            // I will mock `codesLookup` to return the NEW structure.
-            // And I will update `HealthChecks.ts` in the next step to use `known` list.
-
-            // For this test "Invalid Version", it would come back in `knownUnknown` list from `codesLookup`.
-            // So `known` would be empty.
-
-            jest.spyOn(AdipService, 'currentEffectiveDate').mockReturnValue(currentEffectiveDate);
             jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ known: [], knownUnknown: [rentonCaa], notFound: [] });
             jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(renton);
 
-            const result = await HealthCheck.effectiveDateCheck();
+            const result = await HealthCheck.adipEffectiveDate();
             expect(result.status).toBe(Check.FAIL);
-            // The message depends on how I fix HealthChecks.ts. 
-            // If I look in knownUnknown, I can say "version is invalid".
-            // If I only look in known, I will say "not in database" (as known).
-            // The existing logic threw "version is invalid".
-            // So likely I should check if it is in knownUnknown.
             expect(result.msg).toMatch(new RegExp(`${rentonCode} .*invalid`));
         });
 
@@ -102,7 +73,7 @@ describe('HealthChecks', () => {
             jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ known: [rentonCaa], knownUnknown: [], notFound: [] });
             jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(undefined);
 
-            const result = await HealthCheck.effectiveDateCheck();
+            const result = await HealthCheck.adipEffectiveDate();
             expect(result.status).toBe(Check.FAIL);
             expect(result.msg).toContain(rentonCode + " is not in ADIP");
         });
@@ -122,10 +93,11 @@ describe('HealthChecks', () => {
             jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ known: [rentonCaa], knownUnknown: [], notFound: [] });
             jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(rentonAdip);
 
-            const result = await HealthCheck.effectiveDateCheck();
+            const result = await HealthCheck.adipEffectiveDate();
             expect(result.status).toBe(Check.FAIL);
             expect(result.msg).toContain("effective date mismatch db=");
         });
+
         test('Failure: ADIP effective date mismatch Current', async () => {
             const wrongEffectiveDate = "20251201";
             const currentEffectiveDate = "20260101";
@@ -139,9 +111,43 @@ describe('HealthChecks', () => {
             jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ known: [rentonCaa], knownUnknown: [], notFound: [] });
             jest.spyOn(AdipService.prototype, 'fetchAirport').mockResolvedValue(renton);
 
-            const result = await HealthCheck.effectiveDateCheck();
+            const result = await HealthCheck.adipEffectiveDate();
             expect(result.status).toBe(Check.FAIL);
             expect(result.msg).toContain("effective date mismatch ExpectedADIP=");
+        });
+    });
+
+    describe('adipDataCycle', () => {
+        const currentCycle = "2501";
+
+        beforeEach(() => {
+            process.env.AERONAV_DATA_CYCLE = currentCycle;
+        });
+
+        afterEach(() => {
+            delete process.env.AERONAV_DATA_CYCLE;
+        });
+
+        test('Success', async () => {
+            const acd = new AirportChartData();
+            acd.cycle = currentCycle;
+
+            jest.spyOn(AdipService, 'fetchAirportChartData').mockResolvedValue(acd);
+
+            const result = await HealthCheck.adipDataCycle();
+            expect(result.status).toBe(Check.SUCCESS);
+            expect(result.msg).toContain("Matching " + currentCycle);
+        });
+
+        test('Failure: Cycle mismatch', async () => {
+            const acd = new AirportChartData();
+            acd.cycle = "1900"; // Mismatch
+
+            jest.spyOn(AdipService, 'fetchAirportChartData').mockResolvedValue(acd);
+
+            const result = await HealthCheck.adipDataCycle();
+            expect(result.status).toBe(Check.FAIL);
+            expect(result.msg).toContain("Cycle mismatch Env=" + currentCycle + ", ADIP=1900");
         });
     });
 
@@ -171,6 +177,7 @@ describe('HealthChecks', () => {
             process.env.NMS_API_URL = 'test';
             process.env.NMS_API_KEY = 'test';
             process.env.NMS_API_SECRET = 'test';
+            process.env.AERONAV_DATA_CYCLE = 'test';
 
             const result = await HealthCheck.environmentVariables();
             expect(result.status).toBe(Check.SUCCESS);

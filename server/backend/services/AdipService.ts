@@ -364,6 +364,8 @@ export class AdipService implements AirportDataSource {
         const output = new AirportChartData()
         if (!data || !data.charts) return output
 
+        output.setCycle(data.cycle)
+
         for (const c of data.charts) {
             if (c.chartCode == 'IAP') {
                 // console.log('IAP', c.pdfName)
