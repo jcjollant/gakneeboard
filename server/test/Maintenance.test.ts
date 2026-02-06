@@ -1,7 +1,7 @@
 
 import { describe, expect, test, jest, afterEach } from '@jest/globals';
-import { Maintenance } from '../backend/Maintenance';
-import { Check, HealthCheck } from '../backend/HealthChecks';
+import { Maintenance } from '../backend/maintenance/Maintenance';
+import { Check, HealthCheck } from '../backend/maintenance/HealthChecks';
 
 describe('Maintenance', () => {
 

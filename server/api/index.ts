@@ -6,7 +6,7 @@ import { Admin } from "../backend/Admin"
 import { GApi } from '../backend/GApi'
 import { StripeClient } from '../backend/business/Stripe'
 import { UserTools } from '../backend/UserTools'
-import { Maintenance } from '../backend/Maintenance'
+import { Maintenance } from '../backend/maintenance/Maintenance'
 import { NavlogTools } from "../backend/NavlogTools";
 import { TicketService } from "../backend/services/TicketService";
 import { Charts } from "../backend/Charts";
@@ -19,7 +19,7 @@ import { UsageDao } from "../backend/dao/UsageDao";
 import { Authorization } from "../backend/services/Authorization";
 import { NotamService } from "../backend/services/NotamService";
 import { WeatherService } from "../backend/services/WeatherService";
-import { HealthCheck } from "../backend/HealthChecks";
+import { HealthCheck } from "../backend/maintenance/HealthChecks";
 const port: number = 3000
 const app = express();
 

@@ -2,7 +2,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-import { Maintenance } from '../backend/Maintenance';
+import { Maintenance } from '../backend/maintenance/Maintenance';
 
 const character = process.argv[2]?.toLowerCase();
 

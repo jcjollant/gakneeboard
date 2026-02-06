@@ -1,9 +1,7 @@
-import { AirportDao } from "./AirportDao"
-import { AirportSketch } from "./AirportSketch"
-import { Business } from "./business/Business"
-import { UserDao } from "./dao/UserDao"
-import { Email, EmailType } from "./Email"
-import { Metric } from "./Metrics"
+import { AirportDao } from "../AirportDao"
+import { AirportSketch } from "../AirportSketch"
+import { Business } from "../business/Business"
+import { UserDao } from "../dao/UserDao"
 
 export enum TaskStatus {
     NEW = 'new',

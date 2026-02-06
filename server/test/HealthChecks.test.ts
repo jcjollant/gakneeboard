@@ -1,6 +1,6 @@
 
 import { describe, expect, test, jest, afterEach, beforeEach, afterAll } from '@jest/globals';
-import { HealthCheck, Check } from '../backend/HealthChecks';
+import { HealthCheck, Check } from '../backend/maintenance/HealthChecks';
 import { AirportDao } from '../backend/AirportDao';
 import { AdipService } from '../backend/services/AdipService';
 import { Airport } from '../backend/models/Airport';

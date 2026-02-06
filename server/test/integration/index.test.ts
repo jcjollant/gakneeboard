@@ -4,26 +4,26 @@ import app from '../../api/index';
 import { GApi } from '../../backend/GApi';
 import { TemplateService } from '../../backend/services/TemplateService';
 import { PublicationService } from '../../backend/services/PublicationService';
-import { Maintenance } from '../../backend/Maintenance';
+import { Maintenance } from '../../backend/maintenance/Maintenance';
 import { AirportService } from '../../backend/services/AirportService';
 import { Authorization } from '../../backend/services/Authorization';
 import { UserTools } from '../../backend/UserTools';
 import { UsageDao } from '../../backend/dao/UsageDao';
 import { version } from '../../package.json';
 import { currentAirportModelVersion, jcHash } from '../constants';
-import { HealthCheck } from '../../backend/HealthChecks';
+import { HealthCheck } from '../../backend/maintenance/HealthChecks';
 
 // Mock the dependencies
 jest.mock('../../backend/GApi');
 jest.mock('../../backend/services/AirportService');
-jest.mock('../../backend/Maintenance');
+jest.mock('../../backend/maintenance/Maintenance');
 jest.mock('../../backend/services/TemplateService');
 jest.mock('../../backend/services/PublicationService');
 jest.mock('../../backend/UserTools');
 jest.mock('../../backend/services/TicketService');
 jest.mock('../../backend/services/Authorization');
 jest.mock('../../backend/dao/UsageDao');
-jest.mock('../../backend/HealthChecks');
+jest.mock('../../backend/maintenance/HealthChecks');
 jest.mock('@vercel/postgres', () => ({
     sql: jest.fn()
 }));

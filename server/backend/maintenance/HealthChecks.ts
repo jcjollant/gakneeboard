@@ -1,14 +1,15 @@
-import { AirportDao } from "./AirportDao";
-import { UserDao } from "./dao/UserDao";
-import { Airport } from "./models/Airport";
-import { User } from "./models/User";
-import { PublicationDao } from './PublicationDao';
-import { AdipService } from './services/AdipService';
-import { TicketService } from './services/TicketService';
+import { AirportDao } from "../AirportDao";
+import { UserDao } from "../dao/UserDao";
+import { Airport } from "../models/Airport";
+import { User } from "../models/User";
+import { PublicationDao } from '../PublicationDao';
+import { AdipService } from '../services/AdipService';
+import { TicketService } from '../services/TicketService';
 
-import { CodeAndAirport } from "./models/CodeAndAirport";
+import { CodeAndAirport } from "../models/CodeAndAirport";
 import dotenv from 'dotenv';
-import { UserTools } from "./UserTools";
+import { UserTools } from "../UserTools";
+
 dotenv.config()
 
 export class Check {
