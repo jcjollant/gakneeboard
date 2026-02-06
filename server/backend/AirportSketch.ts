@@ -13,16 +13,6 @@ export class AirportSketch {
     try {
       // Get PDF from aeronav
       const pdfName = pdf;
-      // const pdfBuffer = await Charts.getAeronavPdf(pdfName);
-      // .teh.catch((error) => {
-      //   // console.log('[AirportSketch.get] failed to get', pdfName, error)
-      //   throw new Error(`failed to get ${pdfName} from aeronav`);
-      // });
-      // console.log( "[AirportSketch.get] found pdf", pdfName, "length", pdfBuffer.length);
-
-      // turn PDF into PNG
-      // const pngBuffer = await AirportSketch.pdfFirstPageToPng(pdfBuffer);
-      // console.log("[AirportSketch.get] created png size", pngBuffer.length);
 
       // extract sketch from PNG
       const response = await axios.post(
@@ -88,19 +78,6 @@ export class AirportSketch {
     try {
       const pdfjs = await import("pdfjs-dist/legacy/build/pdf.min.mjs")
 
-      // Works in dev
-      // const value = 'pdfjs-dist/legacy/build/pdf.worker.min.mjs'
-      // works when copied to public
-      // const value = '/pdf.worker.min.mjs'
-      // const value = 'https://ga-api-seven.vercel.app/pdf.worker.min.mjs'
-      // const value = '//mozilla.github.io/pdf.js/build/pdf.worker.mjs'
-      // const value = new URL(`//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`).toString();
-      // const value = new URL(`//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`).toString();
-      // const value = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
-      // const value = 'pdf.worker.min.mjs'
-      // const value = '//ga-api-seven.vercel.app/pdf.worker.min.mjs'
-      // const value = workerPath
-      // const value = `${process.cwd()}/node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs`
       const value = '';
       console.log('[AirportSketch.pdfFirstPageToPng] worker', value);
       pdfjs.GlobalWorkerOptions.workerSrc = value
