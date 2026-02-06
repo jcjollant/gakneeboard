@@ -95,26 +95,7 @@ app.get('/airports/:list', async (req: Request, res: Response) => {
     res.send(output)
 })
 
-/**
- * Get approach plate PDF
- */
-app.get('/approach/plate/:cycle/:fileName', async (req: Request, res: Response) => {
-    // console.log('[index] /test')
-    try {
-        Charts.getAeronavTerminalProcedure(req.params.cycle, req.params.fileName).then(pdfBuffer => {
-            // console.log('[index] approach length', image.length)
-            res.set({
-                'Content-Type': 'application/pdf',
-                'Content-Disposition': 'inline',
-                'Cache-Control': 'no-cache'
-            })
-            res.send(pdfBuffer.toString('base64'))
-        });
-    } catch (e) {
-        console.log('[index] GET /approach error' + e)
-        catchError(res, e, 'GET /approach')
-    }
-})
+
 
 /**
  * User is autenticating
