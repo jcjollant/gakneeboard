@@ -219,6 +219,8 @@ export class Airport {
     navaids: Navaid[];
     atc: Atc[];
     sketch: string;
+    supp: string | undefined;
+    notice: string | undefined;
 
     constructor(code: string = '', name: string = '', elevation: number = 0) {
         this.code = code;
@@ -237,6 +239,8 @@ export class Airport {
         this.navaids = [];
         this.atc = [];
         this.sketch = ''
+        this.supp = undefined;
+        this.notice = undefined;
     }
 
     // copy constructor
@@ -258,6 +262,8 @@ export class Airport {
         newAirport.navaids = airport.navaids.map((navaid: any) => Navaid.copy(navaid))
         newAirport.atc = airport.atc.map((atc: any) => Atc.copy(atc))
         newAirport.sketch = airport.sketch
+        newAirport.supp = airport.supp
+        newAirport.notice = airport.notice
 
         return newAirport
     }

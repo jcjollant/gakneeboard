@@ -26,4 +26,15 @@ describe('Airport', () => {
         const invalid = new Airport();
         expect(invalid.isValid()).toBe(false)
     })
+
+    test('Supplement and Notice', () => {
+        const data = {
+            ...kpae,
+            supp: 'supp.pdf',
+            notice: 'notice.pdf'
+        }
+        const airport = Airport.copy(data)
+        expect(airport.supp).toBe('supp.pdf')
+        expect(airport.notice).toBe('notice.pdf')
+    })
 })
