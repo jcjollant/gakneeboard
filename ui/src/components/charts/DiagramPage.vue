@@ -11,23 +11,22 @@
                 </div> -->
                 <div class="known">
                     <div class="section pickNewAirport">Pick New Airport</div>
-                    <AirportInput label="Airport Code" :page="true" v-model="airport"/>
-                    <div v-if="airport.isValid()">
+                    <AirportInput v-model="airport" :page="true" :large="true" :expanded="true"/>
+                    <div v-if="airport.isValid()" class="chartsList">
                         <FAButton v-if="airport.diagram" label="Show Diagram" icon="road-circle-check" class="showDiagram"
                             @click="onSelection(airport)"/>
                         <div v-else class="notfound">(No Associated Airport Diagram for {{ airport.code }})</div>
-                    </div>
-                </div>
-                <div class="known" v-if="selectedPdf">
-                    <div class="section pickNewAirport">Current Selection</div>
-                    <div class="openpdf">
-                        <a :href="UserUrl.dtpp + selectedPdf" target="_blank">Open PDF in new tab</a>
+
+                        <FAButton v-if="airport.supp" label="Supplement" icon="book-open" class="showSupplement"
+                            @click="onSupplement(airport)"/>
+                        <FAButton v-if="airport.notice" label="Notice" icon="exclamation-circle" class="showNotice"
+                            @click="onNotice(airport)"/>
                     </div>
                 </div>
             </div>
         </div>
         <div v-else class="viewMode">
-            <Diagram :pdf="selectedPdf" />
+            <Diagram :pdf="selectedPdf" :type="selectedType" />
         </div>
     </div>
 </template>
@@ -42,6 +41,7 @@ import { getAirport } from '../../services/AirportDataService';
 import { sessionAirports } from '../../assets/data';
 import { UserUrl } from '../../lib/UserUrl';
 import { Airport } from '../../models/Airport';
+import { ChartType } from '../../services/DiagramService';
 
 const noAirport = new Airport()
 const airport = ref(noAirport)
@@ -49,7 +49,8 @@ const editMode = ref(false)
 const emits = defineEmits(['replace','update'])
 const knownAirports = ref(<any>[])
 const selectedPdf = ref('')
-const title = ref('Airport Diagram')
+const selectedType = ref(ChartType.Diagram)
+const title = ref('Airport Diagram & Chart Supplement')
 
 // Props Management
 const props = defineProps({
@@ -62,7 +63,22 @@ function loadProps(newProps:any) {
         getAirport(newProps.data.airport, true).then( a => {
             // console.log('[DiagramPage.loadProps]', JSON.stringify(a))
             airport.value = Airport.copy(a);
-            selectedPdf.value = airport.value.diagram ? airport.value.diagram : ''
+            const type = newProps.data.type ? newProps.data.type : ChartType.Diagram
+            selectedType.value = type
+            switch(type) {
+                case ChartType.Supplement:
+                    title.value = 'Chart Supplement'
+                    selectedPdf.value = airport.value.supp ? airport.value.supp : ''
+                    break;
+                case ChartType.Notice:
+                    title.value = 'Notice'
+                    selectedPdf.value = airport.value.notice ? airport.value.notice : ''
+                    break;
+                default:
+                    title.value = 'Airport Diagram'
+                    selectedPdf.value = airport.value.diagram ? airport.value.diagram : ''
+                    break;
+            }
         })
         // fetch airport with that code
     } else {
@@ -88,11 +104,24 @@ watch(props, () => {
 function onSelection(newAirport:Airport) {
     // console.log('[DiagramPage.onSelection]', newAirport)
     if(!newAirport || !newAirport.code || !newAirport.diagram) return;
-    selectedPdf.value = newAirport.diagram
-    // console.log('[DiagramPage.onSelection]', selectedPdf.value)
+    onUpdate(newAirport, newAirport.diagram, ChartType.Diagram)
+}
+
+function onSupplement(newAirport:Airport) {
+    if(!newAirport || !newAirport.code || !newAirport.supp) return;
+    onUpdate(newAirport, newAirport.supp, ChartType.Supplement)
+}
+
+function onNotice(newAirport:Airport) {
+    if(!newAirport || !newAirport.code || !newAirport.notice) return;
+    onUpdate(newAirport, newAirport.notice, ChartType.Notice)
+}
+
+function onUpdate(newAirport:Airport, pdfValue:string, typeValue:ChartType) {
+    selectedPdf.value = pdfValue
+    selectedType.value = typeValue
     editMode.value = false
-    // save data
-    emits('update', {airport:newAirport.code})
+    emits('update', {airport:newAirport.code, type:selectedType.value})
 }
 
 function refreshAirportList(airports:any[]) {
@@ -127,21 +156,17 @@ function toggleEditMode() {
     flex-flow: column;
     gap:30px;
 }
-.known {
-    display: flex;
-    flex-flow: column;
-    gap:5px;
-}
 .notfound {
     opacity: 0.5;
-}
-.openpdf {
-    font-size: 0.8rem;
-    padding-top: 10px;
 }
 .section {
     font-weight: 800;
     font-size: 0.8rem;
     opacity: 0.5;
+}
+.chartsList {
+    display: flex;
+    flex-flow: column;
+    gap:5px;
 }
 </style>
