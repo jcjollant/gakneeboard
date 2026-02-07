@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import { PageType } from '../../assets/PageType'
 import { TemplateFormat } from '../../models/TemplateFormat'
@@ -120,7 +120,7 @@ const allPages = ref([
     new PageItem('Checklist', PageType.checklist, 'list-check', 'A customizable checklist', Section.composable, true, true),
     new PageItem('Calculated NavLog', PageType.navLog, 'route', 'A Navigation Log with automated calculations', Section.navigation, true, false),
     new PageItem('Paper Navlog', PageType.paperNavlog, 'route', 'A Blank Template for hand built navlogs', Section.navigation, true, true),
-    new PageItem('Airport Diagram', PageType.diagram, 'road-circle-check', 'Airport Diagram (FAA)', Section.charts, true, false),
+    new PageItem('Diagram & Supplement', PageType.diagram, 'road-circle-check', 'Airport Diagram (FAA)', Section.charts, true, false),
     new PageItem('Instrument Approach', PageType.approach, 'plane-arrival', 'Instrument Approach Plates (FAA)', Section.charts, true, false),
     new PageItem('Personal Minimums', PageType.minimums, 'shield', 'Personal Minimums', Section.debrief, true, false),
     new PageItem('Flight Debrief', PageType.flightDebrief, 'pen-to-square', 'Debrief your flights per topic', Section.debrief, true, false),
@@ -129,7 +129,11 @@ const allPages = ref([
     new PageItem('Blank', PageType.none, '', 'A blank page', Section.cosmetics, true, false)
 ])
 
-const isExpanded = ref(false)
+const isExpanded = ref(localStorage.getItem('selection_page_expanded') === 'true')
+
+watch(isExpanded, (val: boolean) => {
+    localStorage.setItem('selection_page_expanded', val.toString())
+})
 
 const availableTemplates = computed(() => {
     return allPages.value.filter(page => isFullPage.value ? page.fullPage : page.smallPage)
