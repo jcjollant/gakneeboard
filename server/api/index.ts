@@ -328,6 +328,21 @@ app.post('/stripe/webhook', async (req: Request, res: Response) => {
     })
 })
 
+app.get('/supplement/:filename', async (req: Request, res: Response) => {
+    try {
+        const requester = await UserTools.userIdFromRequest(req)
+        if (!requester) {
+            throw new GApiError(401, `Unauthorized supplement request`)
+        }
+
+        const filename = req.params.filename
+        const pdfBuffer = await Charts.getAeronavSupplement(filename)
+        res.send(pdfBuffer)
+    } catch (e) {
+        catchError(res, e, 'GET /supplement/:filename')
+    }
+})
+
 
 /**
  * Get a specific template
