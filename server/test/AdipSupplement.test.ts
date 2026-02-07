@@ -26,12 +26,8 @@ describe('AdipService Supplement', () => {
         const result = await AdipService.fetchAirportChartSupplement('payload', {});
 
         expect(result).toBeDefined();
-        expect(result.airportName).toBe("RENTON MUNI");
-        expect(result.city).toBe("RENTON");
-        expect(result.locId).toBe("RNT");
-        expect(result.cycle).toBe("2405");
-        expect(result.supplementChartName).toBe("NW_130_20JUN2024.pdf");
-        expect(result.noticeChartName).toBe("NW_130_20JUN2024_notices_NW.pdf");
+        expect(result.supplementChartName).toBe("2405/NW_130_20JUN2024.pdf");
+        expect(result.noticeChartName).toBe("2405/NW_130_20JUN2024_notices_NW.pdf");
     });
 
     test('fetchAirportChartSupplement single chart', async () => {
@@ -47,7 +43,7 @@ describe('AdipService Supplement', () => {
 
         const result = await AdipService.fetchAirportChartSupplement('payload', {});
 
-        expect(result.supplementChartName).toBe("NW_130_20JUN2024.pdf");
+        expect(result.supplementChartName).toBe("2405/NW_130_20JUN2024.pdf");
         expect(result.noticeChartName).toBeUndefined();
     });
 
@@ -66,12 +62,8 @@ describe('AdipService Supplement', () => {
             chartName: 'supplement.pdf,supplement_notices_notice.pdf'
         };
         const result = AdipService.parseAirportChartSupplementData(data);
-        expect(result.airportName).toBe('Test Airport');
-        expect(result.city).toBe('Test City');
-        expect(result.locId).toBe('TST');
-        expect(result.cycle).toBe('2101');
-        expect(result.supplementChartName).toBe('supplement.pdf');
-        expect(result.noticeChartName).toBe('supplement_notices_notice.pdf');
+        expect(result.supplementChartName).toBe('2101/supplement.pdf');
+        expect(result.noticeChartName).toBe('2101/supplement_notices_notice.pdf');
     });
 
     test('parseAirportChartSupplementData - no notices', () => {
@@ -83,7 +75,7 @@ describe('AdipService Supplement', () => {
             chartName: 'supplement.pdf'
         };
         const result = AdipService.parseAirportChartSupplementData(data);
-        expect(result.supplementChartName).toBe('supplement.pdf');
+        expect(result.supplementChartName).toBe('2101/supplement.pdf');
         expect(result.noticeChartName).toBeUndefined();
     });
 });

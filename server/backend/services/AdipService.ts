@@ -90,8 +90,8 @@ export class AdipService implements AirportDataSource {
             airport.diagram = acd.diagram
         }
         if (airport && acsd) {
-            airport.supplement = acsd.cycle + '/' + acsd.supplementChartName
-            airport.notice = acsd.cycle + '/' + acsd.noticeChartName
+            airport.supplement = acsd.supplementChartName
+            airport.notice = acsd.noticeChartName
         }
 
         // console.log('[AdipService.fetchAirport]', JSON.stringify(airport))
@@ -410,12 +410,8 @@ export class AdipService implements AirportDataSource {
         const noticeChartName: string | undefined = chartNames.find((name: string) => name.includes('_notices_'))
         const supplementChartName: string | undefined = chartNames.find((name: string) => !name.includes('_notices_'))
         const output: AirportChartSupplementData = {
-            airportName: data.airportName,
-            city: data.city,
-            locId: data.locId,
-            cycle: data.cycle,
-            supplementChartName: supplementChartName,
-            noticeChartName: noticeChartName
+            supplementChartName: supplementChartName ? data.cycle + '/' + supplementChartName : undefined,
+            noticeChartName: noticeChartName ? data.cycle + '/' + noticeChartName : undefined
         }
         return output
     }
