@@ -34,13 +34,13 @@ export class Charts {
     }
     /**
      * Download PDF from aeronav
-     * @param cycleAndFileName Cycle and File name such as 2503/01234ILY16R.PDF
+     * @param fileName File name including cycle path such as 2503/01234ILY16R.PDF
      * @returns pdf Buffer
      */
-    public static async getAeronavTerminalProcedure(cycle: string, fileName: string): Promise<Buffer> {
+    public static async getAeronavTerminalProcedure(fileName: string): Promise<Buffer> {
         // console.log('[Charts.getAeronavTerminalProcedure] invoked with', cycle, fileName)
 
-        const url = `https://aeronav.faa.gov/d-tpp/${cycle}/${fileName}`
+        const url = `https://aeronav.faa.gov/d-tpp/${fileName}`
         return this.fetchPdf(url)
     }
 

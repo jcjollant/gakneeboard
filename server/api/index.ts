@@ -113,10 +113,10 @@ app.post('/authenticate', async (req, res) => {
 /**
  * Get airport diagram PDF
  */
-app.get('/diagram/:cycle/:fileName', async (req: Request, res: Response) => {
+app.get('/diagram/:fileName', async (req: Request, res: Response) => {
     // console.log('[index] /test')
     try {
-        Charts.getAeronavTerminalProcedure(req.params.cycle, req.params.fileName).then(pdfBuffer => {
+        Charts.getAeronavTerminalProcedure(req.params.fileName).then(pdfBuffer => {
             // console.log('[index] approach length', image.length)
             res.set({
                 'Content-Type': 'application/pdf',
