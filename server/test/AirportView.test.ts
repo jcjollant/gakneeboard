@@ -141,6 +141,19 @@ describe('Airport View', () => {
         expect(view.tpa).toBe(1229)
     })
 
+    test('Supplement and Notice view', () => {
+        const airportCode = 'CODE'
+        const airportName = 'NAME'
+        const airportElevation = 0
+        const airport = new Airport(airportCode, airportName, airportElevation)
+        airport.supplement = 'supplement.pdf'
+        airport.notice = 'notice.pdf'
+
+        const view = new AirportView(airport)
+        expect(view.supp).toBe('supplement.pdf')
+        expect(view.notice).toBe('notice.pdf')
+    })
+
     test('Format as of', () => {
         expect(AirportView.formatAsOf('bogus')).toBe(0)
         // "effectiveDate":"2024-07-11T00:00:00"

@@ -6,26 +6,28 @@ import { Navaid } from './Navaid'
 import { Runway } from './Runway'
 
 export class AirportView {
-    public static currentVersion:number = 10;
-    public static invalidVersion:number = -1;
+    public static currentVersion: number = 10;
+    public static invalidVersion: number = -1;
     code: string;
     name: string;
     elev: number;
-    tpa:number|undefined;
+    tpa: number | undefined;
     freq: Frequency[];
     rwys: Runway[];
     navaids: Navaid[];
-    atc:Atc[];
+    atc: Atc[];
     custom: boolean;
     asof: number;
-    version:number = AirportView.currentVersion;
+    version: number = AirportView.currentVersion;
     iap: Chart[];
     dep: Chart[];
-    diag: string|undefined;
-    sketch:string|undefined;
+    diag: string | undefined;
+    sketch: string | undefined;
+    supp: string | undefined;
+    notice: string | undefined;
 
-    constructor(airport:Airport|undefined) {
-        if(airport) {
+    constructor(airport: Airport | undefined) {
+        if (airport) {
             this.code = airport.code;
             this.name = airport.name;
             this.elev = airport.elev;
@@ -50,14 +52,16 @@ export class AirportView {
         this.dep = (airport && airport.dep) ? airport.dep : []
         this.diag = (airport && airport.diagram) ? airport.diagram : undefined
         this.sketch = (airport && airport.sketch) ? airport.sketch : undefined
+        this.supp = (airport && airport.supplement) ? airport.supplement : undefined
+        this.notice = (airport && airport.notice) ? airport.notice : undefined
     }
 
-    public static formatAsOf(date:string):number {
+    public static formatAsOf(date: string): number {
         // examples
         // "effectiveDate":"2024-07-11T00:00:00"
         // "effectiveDate":"2024-08-08T00:00:00"
         // extract year, month, and day from the string
-        if( date && date.length >= 10 && date[4] == '-' && date[7] == '-') {
+        if (date && date.length >= 10 && date[4] == '-' && date[7] == '-') {
             const year = parseInt(date.substring(0, 4));
             const month = parseInt(date.substring(5, 7));
             const day = parseInt(date.substring(8, 10));
@@ -74,7 +78,7 @@ export class AirportView {
         return view
     }
 
-    isValid():boolean {
+    isValid(): boolean {
         return this.version != AirportView.invalidVersion;
     }
 }
