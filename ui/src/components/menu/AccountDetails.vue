@@ -51,6 +51,11 @@
                 <div class="templateCount">{{ templateCount }}</div>
                 <Button icon="pi pi-trash" text severity="danger" @click="deleteTemplates" v-if="templateCount > 0" title="Empty Kneeboards Cache" />
             </div>
+            <div class="key">Charts Cached</div>
+            <div class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                <div class="chartCount">{{ chartCount }}</div>
+                <Button icon="pi pi-trash" text severity="danger" @click="deleteCharts" v-if="chartCount > 0" title="Empty Charts Cache" />
+            </div>
         </div>
 
         <div class="actions">
@@ -98,6 +103,7 @@ import AirportInput from '../shared/AirportInput.vue';
 const emits = defineEmits(['close','signout'])
 const airportCount = ref(0)
 const templateCount = ref(0)
+const chartCount = ref(0)
 const pagesCount = ref(0)
 const showSettings = ref(false)
 const showQrcode = ref(false)
@@ -115,9 +121,11 @@ onMounted(() => {
     loadProps(props)
     airportCount.value = LocalStoreService.airportRecentsGet().length
     templateCount.value = LocalStoreService.templateCount()
+    chartCount.value = LocalStoreService.chartsCount()
     unsubscribe.value = LocalStoreService.subscribe(() => {
         airportCount.value = LocalStoreService.airportRecentsGet().length
         templateCount.value = LocalStoreService.templateCount()
+        chartCount.value = LocalStoreService.chartsCount()
     })
 })
 
@@ -168,6 +176,12 @@ function deleteTemplates() {
     LocalStoreService.templateRemoveAll()
     templateCount.value = 0
     toaster.success('Local Storage', 'Kneeboards deleted')
+}
+
+function deleteCharts() {
+    LocalStoreService.chartsRemoveAll()
+    chartCount.value = 0
+    toaster.success('Local Storage', 'Charts deleted')
 }
 
 const ambassadorLink = computed(() => {

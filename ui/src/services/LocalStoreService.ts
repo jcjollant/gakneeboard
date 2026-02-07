@@ -413,6 +413,21 @@ export class LocalStoreService {
         }
     }
 
+    static chartsCount(): number {
+        return Object.keys(localStorage).filter(key => key.startsWith(LocalStoreService.approachPrefix)).length
+    }
+
+    static chartsRemoveAll() {
+        const keys = Object.keys(localStorage)
+        for (const key of keys) {
+            if (key.startsWith(LocalStoreService.approachPrefix)) {
+                localStorage.removeItem(key)
+            }
+        }
+        localStorage.removeItem(LocalStoreService.recentApproaches)
+        LocalStoreService.notify()
+    }
+
     /**
      * Retrieve thumbnail data 
      * @param id template id
