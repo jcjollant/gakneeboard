@@ -13,13 +13,13 @@
                     <div class="section pickNewAirport">Pick New Airport</div>
                     <AirportInput v-model="airport" :page="true" :large="true" :expanded="true"/>
                     <div v-if="airport.isValid()" class="chartsList">
-                        <FAButton v-if="airport.diagram" label="Show Diagram" icon="road-circle-check" class="showDiagram"
+                        <FAButton v-if="airport.diagram" label="Airport Diagram" icon="road-circle-check" class="showDiagram"
                             @click="onSelection(airport)"/>
                         <div v-else class="notfound">(No Associated Airport Diagram for {{ airport.code }})</div>
 
-                        <FAButton v-if="airport.supp" label="Supplement" icon="book-open" class="showSupplement"
+                        <FAButton v-if="airport.supp" label="Chart Supplement" icon="book-open" class="showSupplement"
                             @click="onSupplement(airport)"/>
-                        <FAButton v-if="airport.notice" label="Notice" icon="exclamation-circle" class="showNotice"
+                        <FAButton v-if="airport.notice" label="Special Notices" icon="exclamation-circle" class="showNotice"
                             @click="onNotice(airport)"/>
                     </div>
                 </div>
@@ -165,6 +165,7 @@ function toggleEditMode() {
     opacity: 0.5;
 }
 .chartsList {
+    padding: 10px;
     display: flex;
     flex-flow: column;
     gap:5px;
