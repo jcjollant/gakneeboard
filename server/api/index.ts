@@ -330,14 +330,19 @@ app.post('/stripe/webhook', async (req: Request, res: Response) => {
 
 app.get('/supplement/:filename', async (req: Request, res: Response) => {
     try {
-        const requester = await UserTools.userIdFromRequest(req)
-        if (!requester) {
-            throw new GApiError(401, `Unauthorized supplement request`)
-        }
+        // const requester = await UserTools.userIdFromRequest(req)
+        // if (!requester) {
+        //     throw new GApiError(401, `Unauthorized supplement request`)
+        // }
 
         const filename = req.params.filename
         const pdfBuffer = await Charts.getAeronavSupplement(filename)
-        res.send(pdfBuffer)
+        res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': 'inline',
+            'Cache-Control': 'no-cache'
+        })
+        res.send(pdfBuffer.toString('base64'))
     } catch (e) {
         catchError(res, e, 'GET /supplement/:filename')
     }
