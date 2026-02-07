@@ -3,7 +3,7 @@
         <Header :title="title" :page="true" leftButton="settings"
             @replace="emits('replace')" @settings="toggleEditMode"></Header>
         <div v-if="editMode" class="editMode">
-            <AirportInput label="Airport Code" :page="true" v-model="airport"/>
+            <AirportInput label="Code" :page="true" :large="true" :expanded="true" v-model="airport"/>
             <div v-if="selectedPdf && airport.isValid()" class="currentSelection">
                 <div>Selected Approach</div>
                 <a :href="UserUrl.dtpp + selectedPdf" target="_blank">{{ airport['iap'][selectedIndex]['name'] }}</a>
