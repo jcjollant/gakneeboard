@@ -9,6 +9,7 @@ import { Runway, RunwaySurface, RunwayEnd, PatternDirection } from '../models/Ru
 import axios from 'axios'
 import { AirportChartData } from '../models/AirportChartData'
 import { AirportDataSource } from '../models/AirportDataSource'
+import { AirportChartSupplementData } from '../models/AiportChartSupplementData'
 
 const maxNavaids: number = 10
 
@@ -77,16 +78,20 @@ export class AdipService implements AirportDataSource {
             },
         }
 
-        const [airport, acd] = await Promise.all([
+        const [airport, acd, acsd] = await Promise.all([
             AdipService.fetchAirportDetails(fetchCode, payload, config, saveRawData),
-            AdipService.fetchAirportChartData(payload, config)
+            AdipService.fetchAirportChartData(payload, config),
+            AdipService.fetchAirportChartSupplement(payload, config)
         ])
 
         // enrich airport with approaches if both are defined
         if (airport && acd) {
             airport.iap = acd.iap;
             airport.diagram = acd.diagram
-            // airport.dep = acd.dep
+        }
+        if (airport && acsd) {
+            airport.supplement = acsd.cycle + '/' + acsd.supplementChartName
+            airport.notice = acsd.cycle + '/' + acsd.noticeChartName
         }
 
         // console.log('[AdipService.fetchAirport]', JSON.stringify(airport))
@@ -101,6 +106,24 @@ export class AdipService implements AirportDataSource {
                 .then((response) => {
                     const acd = AdipService.parseAirportChartData(response.data)
                     resolve(acd)
+                })
+                .catch(error => {
+                    if (error.response) {
+                        console.log(error.response.data);
+                        console.log(error.response.status);
+                        console.log(error.response.headers);
+                    }
+                    reject(error)
+                })
+        })
+    }
+
+    static fetchAirportChartSupplement(payload: string, config: any): Promise<AirportChartSupplementData> {
+        return new Promise<AirportChartSupplementData>((resolve, reject) => {
+            axios.post('https://adip.faa.gov/agisServices/public-api/getAirportChartSupplementData', payload, config)
+                .then((response) => {
+                    const acsd = AdipService.parseAirportChartSupplementData(response.data)
+                    resolve(acsd)
                 })
                 .catch(error => {
                     if (error.response) {
@@ -375,6 +398,24 @@ export class AdipService implements AirportDataSource {
             } else if (c.chartCode == 'DP') {
                 output.addDeparture(new Chart(c.chartName, data.cycle + '/' + c.pdfName))
             }
+        }
+        return output
+    }
+
+    // turn the response from fetchAirportChartSupplementData into AirportChartSupplementData
+    static parseAirportChartSupplementData(data: any): AirportChartSupplementData {
+        // chartName can be a comma separated list of file names. Notices file name includes "_notices_" in the name
+        const chartNames: string[] = data.chartName.split(',')
+        // if there is a notice, we are get the filename
+        const noticeChartName: string | undefined = chartNames.find((name: string) => name.includes('_notices_'))
+        const supplementChartName: string | undefined = chartNames.find((name: string) => !name.includes('_notices_'))
+        const output: AirportChartSupplementData = {
+            airportName: data.airportName,
+            city: data.city,
+            locId: data.locId,
+            cycle: data.cycle,
+            supplementChartName: supplementChartName,
+            noticeChartName: noticeChartName
         }
         return output
     }

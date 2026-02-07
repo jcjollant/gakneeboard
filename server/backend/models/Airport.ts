@@ -1,4 +1,4 @@
-const modelVersion: number = 15;
+const modelVersion: number = 16;
 export const versionInvalid: number = -1
 
 import { Atc } from './Atc'
@@ -34,6 +34,8 @@ export class Airport {
     diagram: string | undefined;
     sketch: string | undefined;
     source: AirportSource;
+    supplement: string | undefined;
+    notice: string | undefined;
 
     constructor(code: string, name: string, elevation: number) {
         this.id = undefined;
@@ -54,6 +56,8 @@ export class Airport {
         this.dep = []
         this.diagram = undefined;
         this.source = AirportSource.Adip;
+        this.supplement = undefined;
+        this.notice = undefined;
     }
 
 
