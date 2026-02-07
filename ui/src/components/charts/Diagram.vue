@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="diagramContainer">
         <div v-if='placeHolderText.length' class="loading">{{ placeHolderText }}</div>
         <canvas v-else ref="pdfCanvas" class="pdfOutput"></canvas>
         <div v-if="pageCount > 1" class="pageSelector">
@@ -9,6 +9,9 @@
                 @click="setPage(n)">
                 {{ n }}
             </div>
+        </div>
+        <div class="openPdfBtn" v-if="!placeHolderText.length" @click="openPdf" title="Open PDF in new tab">
+             <font-awesome-icon :icon="['fas', 'external-link-alt']" />
         </div>
     </div>
 </template>
@@ -81,7 +84,7 @@ function loadPdf() {
             getDocument({data:atob(pdfDataBase64)}).promise.then( pdf => {
                 pdfDoc = pdf;
                 pageCount.value = pdf.numPages;
-                console.debug('[Diagram.loadPdf] pageCount', pageCount.value, 'pdf', pdfFile.value);
+                // console.debug('[Diagram.loadPdf] pageCount', pageCount.value, 'pdf', pdfFile.value);
                 setPage(1);
             })
         })
@@ -134,10 +137,20 @@ function setPage(n) {
     })
 }
 
+function openPdf() {
+    if(!pdfFile.value) return;
+    const url = DiagramService.getSourceUrl(pdfFile.value, pdfType.value);
+    window.open(url, '_blank');
+}
 
 </script>
 
 <style scoped>
+.diagramContainer {
+    height: 100%;
+    width: 100%;
+}
+
 .loading {
     font-size: 1.5rem;
     font-weight: 800;
@@ -174,5 +187,22 @@ function setPage(n) {
 
 .selected {
   background-color: var(--bg-choice-active);
+}
+
+.openPdfBtn {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--text-color);
+    background-color: var(--bg-overlay);
+    /* padding: 5px; */
+    border-radius: 4px;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+.openPdfBtn:hover {
+    opacity: 1;
 }
 </style>
