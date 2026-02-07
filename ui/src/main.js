@@ -2,10 +2,10 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faGoogle, faWordpress, faYoutube } from '@fortawesome/free-brands-svg-icons';
 import {
     faArrowDown, faArrowsDownToLine, faArrowsUpToLine, faArrowUp,
-    faBan, faBars, faBorderAll, faBuilding,
+    faBan, faBars, faBookOpen, faBorderAll, faBuilding,
     faCamera, faCheck, faChevronRight, faCircleInfo, faClock, faClone, faCloud, faCloudSunRain, faComments,
     faDisplay,
-    faEject, faExclamationTriangle, faEye,
+    faEject, faExclamationCircle, faExclamationTriangle, faEye,
     faFileExport, faFile, faFileCode,
     faFont, faBold,
     faGasPump, faGavel, faGear, faGripLines, faHeadset, faImage, faJetFighter,
@@ -35,10 +35,10 @@ import { showSplash } from './consoleSplash';
 
 library.add(
     faArrowDown, faArrowsDownToLine, faArrowsUpToLine, faArrowUp,
-    faBan, faBars, faBorderAll, faBuilding,
+    faBan, faBars, faBookOpen, faBorderAll, faBuilding,
     faCamera, faCheck, faChevronRight, faCircleInfo, faClock, faClone, faCloud, faCloudSunRain, faComments,
     faDisplay,
-    faEject, faExclamationTriangle, faEye,
+    faEject, faExclamationCircle, faExclamationTriangle, faEye,
     faFileExport, faFile, faFileCode, faFont, faBold, faGoogle, faGripLines,
     faGasPump, faGavel, faGear, faHeadset, faImage, faJetFighter,
     faLeftRight, faLink, faListCheck,
