@@ -2,7 +2,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-import { HouseKeeping, Task, TaskStatus } from "../backend/HouseKeepings";
+import { HouseKeeping, Task, TaskStatus } from "../backend/maintenance/HouseKeeping";
 
 const verbose = process.argv.includes('--verbose')
 

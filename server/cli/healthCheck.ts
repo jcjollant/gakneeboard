@@ -2,7 +2,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-import { HealthCheck, Check } from "../backend/HealthChecks";
+import { HealthCheck, Check } from "../backend/maintenance/HealthChecks";
 
 const verbose = process.argv.includes('--verbose')
 
