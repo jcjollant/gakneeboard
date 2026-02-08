@@ -304,16 +304,19 @@ app.post('/stripe/checkout', async (req, res) => {
     // console.debug('[index] POST /stripe/checkout', req.body)
     const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
     let promise = null;
-    if (payload.product === 'manage') {
-        promise = StripeClient.instance.manage(payload.user, payload.source)
-    } else {
-        promise = StripeClient.instance.checkout(payload.user, payload.product, payload.type || 'plan', payload.source, payload.attribution, payload.coupon)
+    try {
+        if (payload.product === 'manage') {
+            promise = StripeClient.instance.manage(payload.user, payload.source)
+        } else {
+            promise = StripeClient.instance.checkout(payload.user, payload.product, payload.type || 'plan', payload.source, payload.attribution, payload.coupon)
+        }
+        await promise.then((url) => {
+            res.send({ url: url })
+        })
+    } catch (e) {
+        // TicketService.create(2, 'Stripe failed checkout ' + e)
+        catchError(res, e, 'POST /stripe/checkout')
     }
-    await promise.then((url) => {
-        res.send({ url: url })
-    }).catch((e) => {
-        catchError(res, e, 'POST /checkout')
-    })
 })
 
 /**
