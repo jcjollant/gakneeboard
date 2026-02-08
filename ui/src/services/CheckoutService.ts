@@ -11,10 +11,22 @@ export class CheckoutService {
     }
 
 
+    static async product(id: string, user: CurrentUser, coupon?: string): Promise<string> {
+        return CheckoutService.checkout(id, user, 'product', coupon)
+    }
+
     static async plan(code: string, user: CurrentUser): Promise<string> {
+        return CheckoutService.checkout(code, user, 'plan')
+    }
+
+    static async checkout(itemId: string, user: CurrentUser, type: 'plan' | 'product', coupon?: string): Promise<string> {
         try {
             const url = UrlService.root + 'stripe/checkout'
-            const payload: any = { user: user.sha256, product: code, source: window.location.href }
+            const payload: any = { user: user.sha256, product: itemId, type: type, source: window.location.href }
+
+            if (coupon) {
+                payload.coupon = coupon;
+            }
 
             const attribution = AttributionService.getAttribution()
             if (attribution) {
