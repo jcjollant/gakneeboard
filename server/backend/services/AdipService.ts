@@ -405,7 +405,7 @@ export class AdipService implements AirportDataSource {
     // turn the response from fetchAirportChartSupplementData into AirportChartSupplementData
     static parseAirportChartSupplementData(data: any): AirportChartSupplementData {
         // chartName can be a comma separated list of file names. Notices file name includes "_notices_" in the name
-        const chartNames: string[] = data.chartName.split(',')
+        const chartNames: string[] = data.chartName ? data.chartName.split(',') : []
         // if there is a notice, we are get the filename
         const noticeChartName: string | undefined = chartNames.find((name: string) => name.includes('_notices_'))
         const supplementChartName: string | undefined = chartNames.find((name: string) => !name.includes('_notices_'))

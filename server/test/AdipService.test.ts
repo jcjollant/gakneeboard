@@ -328,4 +328,23 @@ describe('AdipService', () => {
         const dataBadRwy = { ...cypqData, runways: [rwyMissingId] };
         expect(() => AdipService.parseAirport(dataBadRwy)).not.toThrow();
     })
+
+    test('Airport Chart Supplement Data', () => {
+        // Test with chartName
+        const data = {
+            cycle: '2401',
+            chartName: 'test_supplement.pdf,test_notices_file.pdf'
+        }
+        const result = AdipService.parseAirportChartSupplementData(data)
+        expect(result.supplementChartName).toBe('2401/test_supplement.pdf')
+        expect(result.noticeChartName).toBe('2401/test_notices_file.pdf')
+
+        // Test without chartName
+        const dataNoChart = {
+            cycle: '2401'
+        }
+        const resultNoChart = AdipService.parseAirportChartSupplementData(dataNoChart)
+        expect(resultNoChart.supplementChartName).toBeUndefined()
+        expect(resultNoChart.noticeChartName).toBeUndefined()
+    })
 })
