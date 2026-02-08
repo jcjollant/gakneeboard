@@ -216,7 +216,12 @@ export class StripeClient {
                         const productId = session.metadata.productId;
                         const customerDetails = session.customer_details;
                         const shippingDetails = session.shipping_details;
-                        await Business.createProductPurchase(customerId, productId, customerDetails, shippingDetails);
+                        try {
+                            await Business.createProductPurchase(customerId, productId, customerDetails, shippingDetails);
+                        } catch (e) {
+                            await TicketService.create(1, `[Stripe.webhook] Failed to create product purchase: ${e}`);
+                            throw e;
+                        }
 
                         return resolve();
                     }
