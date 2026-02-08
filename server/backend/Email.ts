@@ -47,7 +47,7 @@ export class Email {
                 break;
             case EmailType.Purchase:
                 // Apu Nahasapeemapetilon watches the store
-                subject = 'Account Type';
+                subject = 'Thank you, come again!';
                 identity = 'Apu';
                 break;
             case EmailType.SketchUpdate:
