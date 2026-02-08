@@ -5,3 +5,5 @@ export * from './models/Quotas';
 export * from './models/Notam';
 export * from './models/UserView';
 export * from './models/Metar';
+export * from './models/Product';
+export * from './constants/Products';
