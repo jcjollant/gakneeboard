@@ -9,7 +9,7 @@
                 <div v-if="name" title="Active Template Name" class="templateName">{{name}}</div>
                 <div v-if="test" class="test">Test Backend</div>
             </div>
-            <div class="right">
+            <div v-if="showSession" class="right">
                 <div v-if="!currentUser.loggedIn" class="session-item" @click="showSignIn=true">
                     Sign In
                 </div>
@@ -43,7 +43,8 @@ import { AccountType } from '@checklist/shared';
 
 const emits = defineEmits(['about'])
 const props = defineProps({
-    name: String, default: null
+    name: { type: String, default: null },
+    showSession: { type: Boolean, default: true }
 })
 const confirm = useConfirm()
 const router = useRouter()
