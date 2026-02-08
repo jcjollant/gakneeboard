@@ -139,7 +139,7 @@ describe('StripeClient', () => {
             });
 
             // Mock Stripe instance methods
-            const mockCreateSession = jest.fn().mockResolvedValue({ url: 'http://stripe.url' });
+            const mockCreateSession = jest.fn<any>().mockResolvedValue({ url: 'http://stripe.url' });
             (stripe as any).stripe = {
                 customers: { create: jest.fn() },
                 checkout: { sessions: { create: mockCreateSession } }
