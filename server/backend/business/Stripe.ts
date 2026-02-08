@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import { UserDao } from '../dao/UserDao'
 import { SubscriptionDao } from '../dao/SubscriptionDao'
-import { AccountType, PlanDescription, PLANS } from '@checklist/shared';
+import { AccountType, PlanDescription, PLANS, PRODUCTS, Product } from '@checklist/shared';
 import Stripe from 'stripe'
 import { Business } from './Business'
 import { AttributionData } from '../models/AttributionData'
@@ -37,8 +37,8 @@ export class StripeClient {
         return this._instance || (this._instance = new this(process.env.STRIPE_SECRET_KEY_PROD));
     }
 
-    async checkout(userHash: string, product: string, source: string, attribution?: AttributionData): Promise<string> {
-        // console.log('[Stripe.checkout] user ' + userHash + ' product ' + product)
+    async checkout(userHash: string, itemId: string, type: 'plan' | 'product', source: string, attribution?: AttributionData, couponId?: string): Promise<string> {
+        // console.log('[Stripe.checkout] user ' + userHash + ' item ' + itemId + ' type ' + type)
         return new Promise(async (resolve, reject) => {
             try {
                 if (!this.stripe) throw new Error('Stripe not initialized');
@@ -57,7 +57,24 @@ export class StripeClient {
                     await UserDao.updateCustomerId(user)
                 }
 
-                const price = this.priceFromProduct(product)
+                let priceId: string;
+                let mode: Stripe.Checkout.SessionCreateParams.Mode = 'payment';
+                let shipping_address_collection: Stripe.Checkout.SessionCreateParams.ShippingAddressCollection | undefined = undefined;
+
+                if (type === 'plan') {
+                    const price = this.priceFromProduct(itemId)
+                    priceId = price.id
+                    mode = price.subscription ? 'subscription' : 'payment'
+                } else if (type === 'product') {
+                    const product = PRODUCTS.find(p => p.id === itemId);
+                    if (!product) throw new Error('Product not found: ' + itemId);
+                    const envPriceId = process.env[product.priceIdEnvVar];
+                    if (!envPriceId) throw new Error('Price ID missing for product ' + itemId);
+                    priceId = envPriceId;
+                    shipping_address_collection = { allowed_countries: ['US', 'CA'] };
+                } else {
+                    throw new Error('Invalid checkout type: ' + type);
+                }
                 const successUrl = source.replace(planUrl, '/thankyou')
                 const cancelUrl = source.replace(planUrl, '/')
                 // const eventId = PaymentEventDao.create(userId, priceId)
@@ -72,21 +89,36 @@ export class StripeClient {
                     if (attribution.content) metadata.utm_content = attribution.content;
                     if (attribution.timestamp) metadata.utm_timestamp = String(attribution.timestamp);
                 }
+                if (type === 'product') {
+                    metadata.type = 'product';
+                    metadata.productId = itemId;
+                }
 
-                const session = await this.stripe.checkout.sessions.create({
+                const sessionParams: Stripe.Checkout.SessionCreateParams = {
                     line_items: [
                         {
-                            price: price.id,
+                            price: priceId,
                             quantity: 1,
                         }
                     ],
                     customer: user.customerId,
-                    mode: price.subscription ? 'subscription' : 'payment',
+                    mode: mode,
                     success_url: successUrl,
                     cancel_url: cancelUrl,
-                    allow_promotion_codes: false,
-                    metadata: Object.keys(metadata).length > 0 ? metadata : undefined
-                })
+                    metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
+                };
+
+                if (shipping_address_collection) {
+                    sessionParams.shipping_address_collection = shipping_address_collection;
+                }
+
+                if (couponId) {
+                    sessionParams.discounts = [{ coupon: couponId }];
+                } else {
+                    sessionParams.allow_promotion_codes = true; // Allow if no specific coupon applied
+                }
+
+                const session = await this.stripe.checkout.sessions.create(sessionParams)
                 // return url if it's not null
                 if (!session.url) throw new Error('Session url is null')
                 resolve(session.url)
@@ -173,7 +205,33 @@ export class StripeClient {
                     // Record event into stripe_events table
                     const stripeId = event.data.object.id;
                     await sql`INSERT INTO stripe_events (type, stripe_id, data) VALUES (${event.type}, ${stripeId}, ${JSON.stringify(event.data.object)})`
-                    // console.log('[Stripe.webhook]', JSON.stringify(event.type), now)
+
+                    const session = event.data.object as Stripe.Checkout.Session;
+
+                    // Check if it is a product purchase
+                    if (session.metadata?.type === 'product') {
+                        const productId = session.metadata.productId;
+                        const customerDetails = session.customer_details;
+                        const shippingDetails = session.shipping_details;
+
+                        let message = `Product Purchase: ${productId}\n`;
+                        message += `User Email: ${customerDetails?.email}\n`;
+                        message += `Name: ${customerDetails?.name}\n`;
+                        if (shippingDetails) {
+                            message += `Shipping Address:\n`;
+                            message += `${shippingDetails.name}\n`;
+                            message += `${shippingDetails.address?.line1}\n`;
+                            if (shippingDetails.address?.line2) message += `${shippingDetails.address?.line2}\n`;
+                            message += `${shippingDetails.address?.city}, ${shippingDetails.address?.state} ${shippingDetails.address?.postal_code}\n`;
+                            message += `${shippingDetails.address?.country}\n`;
+                        } else {
+                            message += `No shipping details provided.\n`;
+                        }
+
+                        TicketService.create(3, message);
+                        return resolve();
+                    }
+
                     if (!event.data.object.subscription) { // not a subscription
                         // console.log('[Stripe.webhook] non subscription checkout complete', event.data.object.id)
                         const sessionId = event.data.object.id;

@@ -307,7 +307,7 @@ app.post('/stripe/checkout', async (req, res) => {
     if (payload.product === 'manage') {
         promise = StripeClient.instance.manage(payload.user, payload.source)
     } else {
-        promise = StripeClient.instance.checkout(payload.user, payload.product, payload.source, payload.attribution)
+        promise = StripeClient.instance.checkout(payload.user, payload.product, payload.type || 'plan', payload.source, payload.attribution, payload.coupon)
     }
     await promise.then((url) => {
         res.send({ url: url })
