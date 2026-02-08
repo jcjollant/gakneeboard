@@ -171,6 +171,7 @@ describe('HealthChecks', () => {
             process.env.STRIPE_PP2_PRICE = 'test';
             process.env.STRIPE_BD1_PRICE = 'test';
             process.env.STRIPE_LD1_PRICE = 'test';
+            process.env.STRIPE_PRODUCT_REFCARD_PRICE = 'test';
             process.env.BLOB_READ_WRITE_TOKEN = 'test';
             process.env.POSTGRES_URL = 'test';
             process.env.EFFECTIVE_DATE = 'test';
@@ -181,7 +182,7 @@ describe('HealthChecks', () => {
 
             const result = await HealthCheck.environmentVariables();
             expect(result.status).toBe(Check.SUCCESS);
-            expect(result.msg).toContain('Found 14 variables');
+            expect(result.msg).toContain('Found 15 variables');
         });
 
         test('Failure: Missing variable', async () => {
