@@ -38,12 +38,12 @@ export class StripeClient {
     }
 
     async checkout(userHash: string, itemId: string, type: 'plan' | 'product', source: string, attribution?: AttributionData, couponId?: string): Promise<string> {
-        // console.log('[Stripe.checkout] user ' + userHash + ' item ' + itemId + ' type ' + type)
+        console.debug(`[Stripe.checkout] user ${userHash}, item ${itemId}, type ${type}, source ${source}, coupon ${couponId}`)
         return new Promise(async (resolve, reject) => {
             try {
                 if (!this.stripe) throw new Error('Stripe not initialized');
                 const user = await UserDao.getUserFromHash(userHash)
-                if (!user) throw new Error('User not found ' + userHash);
+                if (!user) throw new Error(`User not found [${userHash}]`);
 
                 // does this user already have a customer id
                 if (!user.customerId) {

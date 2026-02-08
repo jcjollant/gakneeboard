@@ -60,7 +60,7 @@ export class Runway {
         this.ends = []
         this.ends.push(...ends.map((end) => new RunwayEnd(end, parseInt(end) * 10)));
         // Test ends are 180 degrees apart
-        if (Math.abs(this.ends[0].mag - this.ends[1].mag) != 180) throw new Error('Runway ends must be 180 degrees apart')
+        if (Math.abs(this.ends[0].mag - this.ends[1].mag) != 180) throw new Error(`Runway ends ${this.ends[0].mag} and ${this.ends[1].mag} must be 180 degrees apart for runway ${name}`)
 
         this.freq = undefined
         this.surface = undefined
