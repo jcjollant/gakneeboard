@@ -116,6 +116,8 @@ export class Maintenance {
                 for (const check of failures) {
                     message += check.name + ' : ' + check.msg + '\n'
                 }
+                // add link to admin based off ui host
+                message += '\n' + 'https://kneeboard.ga/admin'
             }
             message += '\n' + data
             // save record
