@@ -14,6 +14,7 @@ const Demo = () => import('../views/Demo.vue');
 const TileTest = () => import('../views/TileTest.vue');
 const PageTest = () => import('../views/PageTest.vue');
 const AffiliateRedirect = () => import('../views/AffiliateRedirect.vue');
+const ProductReferenceCard = () => import('../views/ProductReferenceCard.vue');
 
 export const RouterNames = {
     Admin: 'Admin',
@@ -27,6 +28,7 @@ export const RouterNames = {
     Demo: 'Demo',
     TileTest: 'Tile Test',
     PageTest: 'Page Test',
+    ProductReferenceCard: 'Product Reference Card',
 }
 
 const routes = [
@@ -45,6 +47,7 @@ const routes = [
     { path: '/demo/:name', name: RouterNames.Demo, component: Demo },
     { path: '/test/tile', name: RouterNames.TileTest, component: TileTest },
     { path: '/test/page', name: RouterNames.PageTest, component: PageTest },
+    { path: '/product/reference-card', name: RouterNames.ProductReferenceCard, component: ProductReferenceCard },
     {
         path: '/cfi',
         component: {
