@@ -75,8 +75,9 @@ export class StripeClient {
                 } else {
                     throw new Error('Invalid checkout type: ' + type);
                 }
-                const successUrl = source.replace(planUrl, '/thankyou')
-                const cancelUrl = source.replace(planUrl, '/')
+                const origin = new URL(source).origin
+                const successUrl = `${origin}/thankyou`
+                const cancelUrl = source
                 // const eventId = PaymentEventDao.create(userId, priceId)
 
                 // Prepare metadata from attribution
@@ -124,6 +125,7 @@ export class StripeClient {
                 resolve(session.url)
             } catch (err) {
                 TicketService.create(3, '[Stripe.checkout] error ' + err)
+                console.error('[Stripe.checkout] error ' + err)
                 reject(err)
             }
         })
@@ -168,6 +170,7 @@ export class StripeClient {
     }
 
     async webhook(req: Request): Promise<void> {
+        // console.debug('[Stripe.webhook] ' + req.body)
         return new Promise(async (resolve, reject) => {
             const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET
             const sig = req.headers['stripe-signature']
@@ -178,7 +181,6 @@ export class StripeClient {
                 if (!endpointSecret) throw new Error('Stripe webhook secret not found');
                 if (!sig) throw new Error('Stripe signature not found');
                 if (!req.body) throw new Error('Stripe request body not found');
-                // console.log('[Stripe.webhook]', req.body)
                 event = this.stripe.webhooks.constructEvent(String(req.body), sig, endpointSecret)
                 // console.log('[Stripe.webhook]', JSON.stringify(event.type), now)
 
@@ -210,25 +212,12 @@ export class StripeClient {
 
                     // Check if it is a product purchase
                     if (session.metadata?.type === 'product') {
+                        const customerId = String(event.data.object.customer);
                         const productId = session.metadata.productId;
                         const customerDetails = session.customer_details;
                         const shippingDetails = session.shipping_details;
+                        await Business.createProductPurchase(customerId, productId, customerDetails, shippingDetails);
 
-                        let message = `Product Purchase: ${productId}\n`;
-                        message += `User Email: ${customerDetails?.email}\n`;
-                        message += `Name: ${customerDetails?.name}\n`;
-                        if (shippingDetails) {
-                            message += `Shipping Address:\n`;
-                            message += `${shippingDetails.name}\n`;
-                            message += `${shippingDetails.address?.line1}\n`;
-                            if (shippingDetails.address?.line2) message += `${shippingDetails.address?.line2}\n`;
-                            message += `${shippingDetails.address?.city}, ${shippingDetails.address?.state} ${shippingDetails.address?.postal_code}\n`;
-                            message += `${shippingDetails.address?.country}\n`;
-                        } else {
-                            message += `No shipping details provided.\n`;
-                        }
-
-                        TicketService.create(3, message);
                         return resolve();
                     }
 
@@ -271,9 +260,13 @@ export class StripeClient {
                         })
                     }
 
+                } else {
+                    const stripeId = (event.data.object as any).id;
+                    await sql`INSERT INTO stripe_events (type, stripe_id) VALUES (${event.type}, ${stripeId})`
+                    // console.debug('[Stripe.webhook] Unhandled event type: ' + event.type)
                 }
             } catch (err) {
-                TicketService.create(2, '[Stripe.webhook] ' + err)
+                await TicketService.create(2, '[Stripe.webhook] ' + err)
                 reject(err)
             }
 
