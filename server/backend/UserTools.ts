@@ -1,11 +1,10 @@
-import { User } from './models/User'
+import { Business } from './business/Business';
+import { UserDao } from './dao/UserDao';
+import { Email, EmailType } from './Email';
+import { TemplateView } from './models/TemplateView';
+import { User } from './models/User';
 import { UserView } from './models/UserView';
 import { TemplateDao } from './TemplateDao';
-import { TemplateView } from './models/TemplateView';
-import { UserDao } from './dao/UserDao'
-import { Business } from './business/Business';
-import { Email, EmailType } from './Email';
-import { AccountType, PLAN_ID_SIM } from '@checklist/shared';
 
 export class UserTools {
     static apple: string = 'apple'
