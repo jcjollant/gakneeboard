@@ -7,8 +7,33 @@ import { Refill } from "../models/Refill";
 import { User } from "../models/User";
 import { TicketService } from "../services/TicketService";
 import { PlanService } from "../services/PlanService";
+import Stripe from "stripe";
 
 export class Business {
+    static async createProductPurchase(customerId: string, productId: string, customerDetails: Stripe.Checkout.Session.CustomerDetails, shippingDetails: Stripe.Checkout.Session.ShippingDetails) {
+        const userDao = new UserDao()
+        const user = await userDao.getFromCustomerId(customerId)
+        let message = `Product Purchase: ${productId}\n`;
+        message += `User Email: ${customerDetails?.email} , id: ${user.id}\n`;
+        message += `Name: ${customerDetails?.name}\n`;
+        if (shippingDetails) {
+            message += `Shipping Address:\n`;
+            message += `${shippingDetails.name}\n`;
+            message += `${shippingDetails.address?.line1}\n`;
+            if (shippingDetails.address?.line2) message += `${shippingDetails.address?.line2}\n`;
+            message += `${shippingDetails.address?.city}, ${shippingDetails.address?.state} ${shippingDetails.address?.postal_code}\n`;
+            message += `${shippingDetails.address?.country}\n`;
+        } else {
+            message += `No shipping details provided.\n`;
+        }
+
+        // create a ticket for follow up and send an email
+        await Promise.all([
+            TicketService.create(3, 'Product Purchase ' + productId + ' for user ' + user.id),
+            Email.send(message, EmailType.Purchase)
+        ])
+    }
+
     static latestEula: number = 20250821;
 
     public static calculatePrintCredits(user: User): number {
