@@ -6,6 +6,7 @@ import { UserDao } from "../dao/UserDao"
 export enum TaskStatus {
     NEW = 'new',
     STARTED = 'started',
+    SKIPPED = 'skipped',
     FINISHED = 'finished',
     FAILED = 'failed'
 }
@@ -41,6 +42,12 @@ export class Task {
         this.message = message
         this.duration = Date.now() - this.startTime
     }
+
+    skip(message: string) {
+        this.status = TaskStatus.SKIPPED
+        this.message = message
+        this.duration = Date.now() - this.startTime
+    }
 }
 
 export class HouseKeeping {
@@ -67,7 +74,7 @@ export class HouseKeeping {
             if (performed) {
                 task.finish(`Refilled performed. ${refills.length} users benefitted`)
             } else {
-                task.finish(`Skipped. Refills not due`)
+                task.skip(`Refills not due`)
             }
         } catch (e: any) {
             task.fail(e.message)
@@ -86,6 +93,11 @@ export class HouseKeeping {
         const airports = await AirportDao.readMissingSketch(limit)
         let updated = 0
         let logs: string[] = []
+
+        if (airports.length === 0) {
+            task.skip(`No airports missing sketches`)
+            return task
+        }
 
         for (const airport of airports) {
             try {
