@@ -50,8 +50,10 @@ describe('Stripe Checkout API', () => {
         expect(StripeClient.instance.checkout).toHaveBeenCalledWith(
             payload.user,
             payload.product,
+            'plan',
             payload.source,
-            expect.objectContaining(payload.attribution as unknown as Record<string, unknown>)
+            expect.objectContaining(payload.attribution as unknown as Record<string, unknown>),
+            undefined
         );
     });
 
@@ -75,7 +77,9 @@ describe('Stripe Checkout API', () => {
         expect(StripeClient.instance.checkout).toHaveBeenCalledWith(
             payload.user,
             payload.product,
+            'plan',
             payload.source,
+            undefined,
             undefined
         );
     });

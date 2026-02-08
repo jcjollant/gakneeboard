@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeAll, afterAll } from '@jest/globals';
+import { describe, expect, it, beforeAll, afterAll, jest } from '@jest/globals';
 
 // Set up environment variables
 // Note: 'dotenv/config' in the module might override these if we don't handle it.
@@ -117,6 +117,42 @@ describe('StripeClient', () => {
 
         it('should return undefined for unknown price', () => {
             expect(stripe.planIdFromPrice('unknown_price')).toBeUndefined();
+        });
+    });
+    describe('checkout', () => {
+        const stripe = StripeClient.instance;
+        // We need to mock the internal stripe instance or the method call
+        // Since stripe is private, we can't easily mock it without casting to any
+        // But the Stripe constructor is likely mocked or we can mock it.
+        // Given the file structure, we might need to rely on mocking the Stripe library if it's not already.
+
+        // However, the previous tests didn't mock Stripe library for static methods, but checkout uses existing instance.
+        // Let's create a partial mock of the StripeClient to avoid full Stripe library mocking complexity if possible,
+        // OR better, mock the 'stripe' property of the instance.
+
+        it('should generate correct success and cancel URLs', async () => {
+            // Mock UserDao
+            const UserDao = require('../backend/dao/UserDao').UserDao;
+            jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue({
+                customerId: 'cus_123',
+                setCustomerId: jest.fn()
+            });
+
+            // Mock Stripe instance methods
+            const mockCreateSession = jest.fn().mockResolvedValue({ url: 'http://stripe.url' });
+            (stripe as any).stripe = {
+                customers: { create: jest.fn() },
+                checkout: { sessions: { create: mockCreateSession } }
+            };
+
+            const source = 'https://example.com/some/path';
+            const result = await stripe.checkout('userHash', 'pp1', 'plan', source);
+
+            expect(result).toBe('http://stripe.url');
+            expect(mockCreateSession).toHaveBeenCalledWith(expect.objectContaining({
+                success_url: 'https://example.com/thankyou',
+                cancel_url: 'https://example.com/some/path'
+            }));
         });
     });
 });

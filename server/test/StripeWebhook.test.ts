@@ -135,4 +135,55 @@ describe('StripeWebhook', () => {
             expect.any(Object) // The UserDao instance passed
         );
     });
+
+    it('should process checkout.session.completed for Product Purchase', async () => {
+        // Override constructEvent for this test
+        const mockConstructEvent = (Stripe as any).mockConstructEvent;
+        mockConstructEvent.mockReturnValue({
+            type: 'checkout.session.completed',
+            data: {
+                object: {
+                    id: 'sess_123',
+                    customer: 'cus_TtsJn2A180rOIo',
+                    metadata: {
+                        type: 'product',
+                        productId: 'ref-card-lam'
+                    },
+                    customer_details: {
+                        email: 'test@example.com',
+                        name: 'Test User'
+                    },
+                    shipping_details: {
+                        name: 'Test User',
+                        address: {
+                            line1: '123 Test St',
+                            city: 'Test City',
+                            state: 'TS',
+                            postal_code: '12345',
+                            country: 'US'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Mock Business.createProductPurchase
+        (Business.createProductPurchase as any).mockResolvedValue(undefined);
+
+        const req = {
+            headers: {
+                'stripe-signature': 'test_signature'
+            },
+            body: 'raw_body_content'
+        } as any;
+
+        await StripeClient.instance.webhook(req);
+
+        expect(Business.createProductPurchase).toHaveBeenCalledWith(
+            'cus_TtsJn2A180rOIo',
+            'ref-card-lam',
+            expect.objectContaining({ email: 'test@example.com' }),
+            expect.objectContaining({ name: 'Test User' }) // checking shipping name
+        );
+    });
 });
