@@ -38,7 +38,7 @@ export class StripeClient {
     }
 
     async checkout(userHash: string, itemId: string, type: 'plan' | 'product', source: string, attribution?: AttributionData, couponId?: string): Promise<string> {
-        console.debug(`[Stripe.checkout] user ${userHash}, item ${itemId}, type ${type}, source ${source}, coupon ${couponId}`)
+        // console.debug(`[Stripe.checkout] user ${userHash}, item ${itemId}, type ${type}, source ${source}, coupon ${couponId}`)
         return new Promise(async (resolve, reject) => {
             try {
                 if (!this.stripe) throw new Error('Stripe not initialized');
@@ -205,14 +205,13 @@ export class StripeClient {
                 } else if (event.type == CHECKOUT_COMPLETE) {
                     // console.log('[Stripe.webhook]', JSON.stringify(event.data))
                     // Record event into stripe_events table
-                    const stripeId = event.data.object.id;
-                    await sql`INSERT INTO stripe_events (type, stripe_id, data) VALUES (${event.type}, ${stripeId}, ${JSON.stringify(event.data.object)})`
-
                     const session = event.data.object as Stripe.Checkout.Session;
+                    const stripeId = session.id;
+                    await sql`INSERT INTO stripe_events (type, stripe_id, data) VALUES (${event.type}, ${stripeId}, ${JSON.stringify(event.data.object)})`
 
                     // Check if it is a product purchase
                     if (session.metadata?.type === 'product') {
-                        const customerId = String(event.data.object.customer);
+                        const customerId = String(session.customer);
                         const productId = session.metadata.productId;
                         const customerDetails = session.customer_details;
                         const shippingDetails = session.shipping_details;
@@ -257,8 +256,7 @@ export class StripeClient {
 
                             if (accountType == AccountType.lifetime && planId) {
                                 const userDao = new UserDao()
-                                const user = await userDao.getFromCustomerId(customerId)
-                                await Business.upgradeUser(user, AccountType.lifetime, planId, userDao);
+                                await Business.upgradeUser(customerId, AccountType.lifetime, planId, userDao);
                             } else {
                                 TicketService.create(2, `[Stripe.webhook] Cannot resolve account type or plan for customer ${customerId} - AccountType: ${accountType}, PlanId: ${planId}`);
                             }
