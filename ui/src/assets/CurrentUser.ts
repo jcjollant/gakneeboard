@@ -84,7 +84,29 @@ export class CurrentUser {
     this.sha256 = "";
     this.name = "";
     this.templates = [];
-    localStorage.removeItem(LocalStoreService.user)
+    this.checklists = [];
+    this.pageCount = 0;
+    this.maxPageCount = 0;
+    this.maxTemplateCount = 0;
+    this.accountType = AccountType.unknown;
+    this.printCredits = 0;
+    this.eulaCurrent = false;
+    this.homeAirport = undefined;
+
+    // Clear user data from localStorage
+    localStorage.removeItem(LocalStoreService.user);
+
+    // Clear all user-specific cached data
+    LocalStoreService.templateRemoveAll();
+    LocalStoreService.chartsRemoveAll();
+    LocalStoreService.airportRemoveAll();
+
+    // Clear thumbnails (they're user-specific)
+    const thumbKeys = Object.keys(localStorage).filter(key =>
+      key.startsWith(LocalStoreService.thumbnailPrefix)
+    );
+    thumbKeys.forEach(key => localStorage.removeItem(key));
+
     this.notify()
   }
 
