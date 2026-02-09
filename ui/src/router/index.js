@@ -57,6 +57,7 @@ const routes = [
             }
         }
     },
+    { path: '/see-you-soon', name: 'SeeYouSoon', component: () => import('../views/SeeYouSoon.vue') },
     ...Object.keys(affiliates).map(path => ({ path: '/' + path, component: AffiliateRedirect }))
 ]
 

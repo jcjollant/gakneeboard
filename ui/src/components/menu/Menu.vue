@@ -74,10 +74,10 @@ function onSignOut() {
         header: 'Close Session',
         rejectLabel: 'Stay in',
         acceptLabel: 'Sign Out',
-        accept: () => {
+        accept: async () => {
             currentUser.logout()
             toaster.info('Signed Out', 'Log back in to access your templates')
-            router.push({name:'Home',query:{_r:Date.now()}})
+            await router.push('/see-you-soon')
         }
     })
 }

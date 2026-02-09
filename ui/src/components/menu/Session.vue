@@ -54,7 +54,7 @@ function onAuthentication(newUser:any) {
     // console.log('[Session.onAuthentication] ', newUser)
     toaster.success('Clear', 'Welcome ' + newUser.name)
     // reload Home Page
-    router.push({name:'Home',query:{_r:Date.now()}});
+    window.location.reload()
   } else {
     toaster.warning('Engine Roughness', 'Authentication failed');  
   }
@@ -67,13 +67,13 @@ function onSignOut() {
       header: 'Close Session',
       rejectLabel: 'Stay in',
       acceptLabel: 'Sign Out',
-      accept: () => {
+      accept: async () => {
         // logout and remo
         currentUser.logout()
         toaster.info('Signed Out', 'Log back in to access your templates')
 
         // reload Home Page
-        router.push({name:'Home',query:{_r:Date.now()}});
+        await router.push('/see-you-soon')
       }
     })
 }
