@@ -16,6 +16,27 @@ All automated agents send emails and save a record in the database.
 
 Note: Trigger times fluctuate sometimes by almost +/- 1h
 
+## Stripe Webhooks
+
+**Configuration**: https://dashboard.stripe.com/webhooks
+
+**Production Endpoint**: `https://api.kneeboard.ga/stripe/webhook`
+
+**Event Types**:
+- `customer.subscription.created` - New subscription started
+- `customer.subscription.deleted` - Subscription cancelled/ended
+- `customer.subscription.paused` - Subscription paused
+- `customer.subscription.updated` - Subscription modified (plan change, renewal, etc.)
+- `checkout.session.completed` - Payment completed (one-time purchases and subscription checkouts)
+
+**Implementation**: See [Stripe.ts](../backend/business/Stripe.ts) webhook handler
+
+**Important Notes**:
+- Webhook endpoint must use `express.raw()` middleware (configured in [api/index.ts](../api/index.ts))
+- Webhook signature verification uses `STRIPE_WEBHOOK_SECRET` environment variable
+- Product purchases are identified by `metadata.type === 'product'` in checkout session
+- Failed webhooks create tickets with severity 2 for investigation
+
 # Effective date management
 
 
