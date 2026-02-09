@@ -171,6 +171,7 @@ export class StripeClient {
 
     async webhook(req: Request): Promise<void> {
         // console.debug('[Stripe.webhook] ' + req.body)
+        const start = Date.now();
         return new Promise(async (resolve, reject) => {
             const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET
             const sig = req.headers['stripe-signature']
@@ -215,13 +216,8 @@ export class StripeClient {
                         const productId = session.metadata.productId;
                         const customerDetails = session.customer_details;
                         const shippingDetails = session.shipping_details;
-                        try {
-                            await Business.createProductPurchase(customerId, productId, customerDetails, shippingDetails);
-                        } catch (e) {
-                            await TicketService.create(1, `[Stripe.webhook] Failed to create product purchase: ${e}`);
-                            throw e;
-                        }
-
+                        await Business.createProductPurchase(customerId, productId, customerDetails, shippingDetails);
+                        console.debug('[Stripe.webhook] Product purchase created for customer ' + customerId + ' and product ' + productId + ' in ' + (Date.now() - start) + 'ms');
                         return resolve();
                     }
 

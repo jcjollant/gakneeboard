@@ -7,6 +7,7 @@ import { AccountType } from '@checklist/shared';
 // Import JSON data
 // We'll use require because importing JSON directly might require configuration
 const lineItems = require('./jsonData/checkout-session-ld-line-items.json');
+const productPurchaseSession = require('./jsonData/checkout-session-ref-card-lam.json');
 
 // Mock dependencies
 jest.mock('../backend/business/Business');
@@ -184,6 +185,48 @@ describe('StripeWebhook', () => {
             'ref-card-lam',
             expect.objectContaining({ email: 'test@example.com' }),
             expect.objectContaining({ name: 'Test User' }) // checking shipping name
+        );
+    });
+
+    it('should process checkout.session.completed for Product Purchase with mock data', async () => {
+        // Override constructEvent for this test
+        const mockConstructEvent = (Stripe as any).mockConstructEvent;
+        mockConstructEvent.mockReturnValue({
+            type: 'checkout.session.completed',
+            data: {
+                object: productPurchaseSession
+            }
+        });
+
+        // Mock Business.createProductPurchase
+        (Business.createProductPurchase as any).mockResolvedValue(undefined);
+
+        const req = {
+            headers: {
+                'stripe-signature': 'test_signature'
+            },
+            body: 'raw_body_content'
+        } as any;
+
+        await StripeClient.instance.webhook(req);
+
+        expect(Business.createProductPurchase).toHaveBeenCalledWith(
+            productPurchaseSession.customer,
+            productPurchaseSession.metadata.productId,
+            expect.objectContaining({
+                email: productPurchaseSession.customer_details.email,
+                name: productPurchaseSession.customer_details.name
+            }),
+            expect.objectContaining({
+                name: productPurchaseSession.shipping_details.name,
+                address: expect.objectContaining({
+                    line1: productPurchaseSession.shipping_details.address.line1,
+                    city: productPurchaseSession.shipping_details.address.city,
+                    postal_code: productPurchaseSession.shipping_details.address.postal_code,
+                    state: productPurchaseSession.shipping_details.address.state,
+                    country: productPurchaseSession.shipping_details.address.country
+                })
+            })
         );
     });
 });

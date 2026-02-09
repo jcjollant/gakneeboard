@@ -1,0 +1,178 @@
+{
+    "id": "cs_live_a1D3sgvAwFQDdNsiwV5VkqDrlTT3CoCJBKnlH0jCJdW3qZcW9ReFmqAZJy",
+    "object": "checkout.session",
+    "adaptive_pricing": {
+        "enabled": true
+    },
+    "after_expiration": null,
+    "allow_promotion_codes": null,
+    "amount_subtotal": 999,
+    "amount_total": 0,
+    "automatic_tax": {
+        "enabled": false,
+        "liability": null,
+        "provider": null,
+        "status": null
+    },
+    "billing_address_collection": null,
+    "branding_settings": {
+        "background_color": "#ffffff",
+        "border_style": "rounded",
+        "button_color": "#0074d4",
+        "display_name": "GA Kneeboard",
+        "font_family": "default",
+        "icon": {
+            "file": "file_1RtYgTG89XrbqGAI90kv6bcW",
+            "type": "file"
+        },
+        "logo": null
+    },
+    "cancel_url": "https://www.kneeboard.ga/product/reference-card?coupon=REF-CARD-FEB-2026&utm_source=test3",
+    "client_reference_id": null,
+    "client_secret": null,
+    "collected_information": {
+        "business_name": null,
+        "individual_name": null,
+        "shipping_details": {
+            "address": {
+                "city": "Sammamish",
+                "country": "US",
+                "line1": "22222 Northeast 12th Place",
+                "line2": null,
+                "postal_code": "98074",
+                "state": "WA"
+            },
+            "name": "JC"
+        }
+    },
+    "consent": null,
+    "consent_collection": null,
+    "created": 1770583381,
+    "currency": "usd",
+    "currency_conversion": null,
+    "custom_fields": [],
+    "custom_text": {
+        "after_submit": null,
+        "shipping_address": null,
+        "submit": null,
+        "terms_of_service_acceptance": null
+    },
+    "customer": "cus_RpNQUydHMyhBbD",
+    "customer_account": null,
+    "customer_creation": null,
+    "customer_details": {
+        "address": {
+            "city": "Sammamish",
+            "country": "US",
+            "line1": "22222 Northeast 12th Place",
+            "line2": null,
+            "postal_code": "98074",
+            "state": "WA"
+        },
+        "business_name": null,
+        "email": "jcjollant@gmail.com",
+        "individual_name": null,
+        "name": "JC",
+        "phone": null,
+        "tax_exempt": "none",
+        "tax_ids": []
+    },
+    "customer_email": null,
+    "discounts": [
+        {
+            "coupon": "REF-CARD-FEB-2026",
+            "promotion_code": null
+        }
+    ],
+    "expires_at": 1770669781,
+    "invoice": null,
+    "invoice_creation": {
+        "enabled": false,
+        "invoice_data": {
+            "account_tax_ids": null,
+            "custom_fields": null,
+            "description": null,
+            "footer": null,
+            "issuer": null,
+            "metadata": {},
+            "rendering_options": null
+        }
+    },
+    "livemode": true,
+    "locale": null,
+    "metadata": {
+        "utm_source": "test3",
+        "type": "product",
+        "utm_timestamp": "1770583376153",
+        "productId": "ref-card-lam"
+    },
+    "mode": "payment",
+    "origin_context": null,
+    "payment_intent": null,
+    "payment_link": null,
+    "payment_method_collection": "if_required",
+    "payment_method_configuration_details": {
+        "id": "pmc_1QfqvSG89XrbqGAI9n3ujzis",
+        "parent": null
+    },
+    "payment_method_options": {
+        "affirm": {},
+        "card": {
+            "request_three_d_secure": "automatic"
+        }
+    },
+    "payment_method_types": [
+        "card",
+        "klarna",
+        "cashapp",
+        "amazon_pay"
+    ],
+    "payment_status": "paid",
+    "permissions": null,
+    "phone_number_collection": {
+        "enabled": false
+    },
+    "recovered_from": null,
+    "saved_payment_method_options": {
+        "allow_redisplay_filters": [
+            "always"
+        ],
+        "payment_method_remove": "disabled",
+        "payment_method_save": null
+    },
+    "setup_intent": null,
+    "shipping_address_collection": {
+        "allowed_countries": [
+            "US",
+            "CA"
+        ]
+    },
+    "shipping_cost": null,
+    "shipping_details": {
+        "address": {
+            "city": "Sammamish",
+            "country": "US",
+            "line1": "22222 Northeast 12th Place",
+            "line2": null,
+            "postal_code": "98074",
+            "state": "WA"
+        },
+        "carrier": null,
+        "name": "JC",
+        "phone": null,
+        "tracking_number": null
+    },
+    "shipping_options": [],
+    "status": "complete",
+    "submit_type": null,
+    "subscription": null,
+    "success_url": "https://www.kneeboard.ga/thankyou",
+    "total_details": {
+        "amount_discount": 999,
+        "amount_shipping": 0,
+        "amount_tax": 0
+    },
+    "ui_mode": "hosted",
+    "url": null,
+    "wallet_options": null
+}

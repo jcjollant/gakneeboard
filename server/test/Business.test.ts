@@ -5,14 +5,17 @@ import { Business } from '../backend/business/Business';
 import { getMockBrandNewSubscription, getMockSubscriptionDao, getMockUserDao, newTestUser } from './common';
 import { MAX_TEMPLATE_SIMMER, MAX_PAGES_SIMMER, MAX_TEMPLATE_BETA, MAX_PAGES_BETA, PRINT_CREDIT_BETA, MAX_TEMPLATE_STUDENT, MAX_PAGES_STUDENT, PRINT_CREDIT_STUDENT, MAX_PAGES_PRIVATE, PRINT_CREDIT_PRIVATE } from './constants';
 import { Email } from '../backend/Email';
+import { TicketService } from '../backend/services/TicketService';
 import { User } from '../backend/models/User';
 import { UsageDao } from '../backend/dao/UsageDao';
 import { PlanService } from '../backend/services/PlanService';
+import { UserDao } from '../backend/dao/UserDao';
 
 // Mock the dependencies
 jest.mock('../backend/dao/UserDao');
 jest.mock('../backend/dao/SubscriptionDao');
 jest.mock('../backend/Email');
+jest.mock('../backend/services/TicketService');
 
 require('dotenv').config();
 
@@ -453,6 +456,31 @@ describe('Business', () => {
         })
 
 
+    })
+
+    describe('createProductPurchase', () => {
+        const productPurchaseSession = require('./jsonData/checkout-session-ref-card-lam.json');
+
+        it('should create a ticket and send an email', async () => {
+            const customerId = productPurchaseSession.customer;
+            const productId = productPurchaseSession.metadata.productId;
+            const customerDetails = productPurchaseSession.customer_details;
+            const shippingDetails = productPurchaseSession.shipping_details;
+
+            const mockGetFromCustomerId = jest.fn<any>().mockResolvedValue(newTestUser());
+            (UserDao as unknown as jest.Mock).mockImplementation(() => {
+                return {
+                    getFromCustomerId: mockGetFromCustomerId,
+                };
+            });
+
+            // call the method
+            await Business.createProductPurchase(customerId, productId, customerDetails, shippingDetails);
+
+            expect(mockGetFromCustomerId).toHaveBeenCalledWith(customerId);
+            expect(TicketService.create).toHaveBeenCalledWith(3, expect.stringContaining('Product Purchase ' + productId));
+            expect(Email.send).toHaveBeenCalledWith(expect.stringContaining('Product Purchase: ' + productId), expect.anything());
+        })
     })
 });
 
