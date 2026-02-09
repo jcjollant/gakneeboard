@@ -54,13 +54,8 @@ export class UserDao extends Dao<User> {
         return this.queryWhere(`sha256='${userSha}'`)
     }
 
-    public getFromCustomerId(customerId: string): Promise<User> {
-        const dao = new UserDao()
-        return new Promise<User>(async (resolve, reject) => {
-            const user = await dao.queryWhere(`customer_id='${customerId}'`)
-            if (!user) return reject('User not found with customer_id' + customerId)
-            resolve(user)
-        })
+    public async getFromCustomerId(customerId: string): Promise<User | undefined> {
+        return this.queryWhere(`customer_id='${customerId}'`)
     }
 
     // builds a user using the sha256 as a key

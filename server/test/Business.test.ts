@@ -175,51 +175,7 @@ describe('Business', () => {
         });
     });
 
-    describe('printPurchase', () => {
-        it('should reject if customerId is empty', async () => {
-            const newUser = newTestUser();
-            const mockUserDao = getMockUserDao(newUser);
-            await expect(Business.printPurchase('', 1, mockUserDao))
-                .rejects.toEqual('Customer Id is required');
-        });
 
-        it('should reject if count is invalid', async () => {
-            const newUser = newTestUser();
-            const mockUserDao = getMockUserDao(newUser);
-            await expect(Business.printPurchase('customer-id', 0, mockUserDao))
-                .rejects.toEqual('Count is invalid');
-        });
-
-        it('should successfully purchase prints from all account type', async () => {
-            const newUser = newTestUser();
-            newUser.setAccountType(AccountType.beta);
-            const mockUserDao = getMockUserDao(newUser);
-            jest.spyOn(Email, 'send').mockResolvedValue(true);
-
-            const result = await Business.printPurchase('customer-id', 5, mockUserDao);
-
-            expect(result).toBe(newUser);
-            expect(mockUserDao.getFromCustomerId).toHaveBeenCalledWith('customer-id');
-            expect(mockUserDao.addPrints).toHaveBeenCalledWith(newUser, 5);
-            expect(Email.send).toHaveBeenCalledTimes(1);
-
-            newUser.setAccountType(AccountType.private);
-            const result2 = await Business.printPurchase('customer-id', 5, mockUserDao);
-            expect(result2).toBe(newUser);
-            expect(Email.send).toHaveBeenCalledTimes(2);
-
-            newUser.setAccountType(AccountType.simmer);
-            const result3 = await Business.printPurchase('customer-id', 5, mockUserDao);
-            expect(result3).toBe(newUser);
-            expect(Email.send).toHaveBeenCalledTimes(3);
-
-            newUser.setAccountType(AccountType.student);
-            const result4 = await Business.printPurchase('customer-id', 5, mockUserDao);
-            expect(result4).toBe(newUser);
-            expect(Email.send).toHaveBeenCalledTimes(4);
-
-        });
-    });
 
     describe('subscriptionUpdate', () => {
         it('should reject unknown account type', async () => {
@@ -429,6 +385,7 @@ describe('Business', () => {
     describe('User upgrade', () => {
         it('from Simmer to Student', async () => {
             const user = newTestUser()
+            user.customerId = 'customer-id'
             const mockUserDao = getMockUserDao(user)
             mockEmail.mockReset()
             mockUsage.mockReset()
@@ -437,7 +394,7 @@ describe('Business', () => {
             expect(user.maxPages).toEqual(MAX_PAGES_SIMMER)
             expect(user.printCredits).toEqual(PRINT_CREDIT_SIMMER)
 
-            await Business.upgradeUser(user, AccountType.student, 'pp1', mockUserDao)
+            await Business.upgradeUser(user.customerId, AccountType.student, 'pp1', mockUserDao)
 
             expect(user.maxTemplates).toEqual(MAX_TEMPLATE_STUDENT)
             expect(user.maxPages).toEqual(MAX_PAGES_STUDENT)
@@ -451,6 +408,7 @@ describe('Business', () => {
 
         it('from Simmer to Private', async () => {
             const user = newTestUser()
+            user.customerId = 'customer-id'
             const mockUserDao = getMockUserDao(user)
             mockEmail.mockReset()
             mockUsage.mockReset()
@@ -459,7 +417,7 @@ describe('Business', () => {
             expect(user.maxPages).toEqual(MAX_PAGES_SIMMER)
             expect(user.printCredits).toEqual(PRINT_CREDIT_SIMMER)
 
-            await Business.upgradeUser(user, AccountType.private, 'pp2', mockUserDao)
+            await Business.upgradeUser(user.customerId, AccountType.private, 'pp2', mockUserDao)
 
             expect(user.maxTemplates).toEqual(MAX_TEMPLATE_PRIVATE)
             expect(user.maxPages).toEqual(MAX_PAGES_PRIVATE)
@@ -473,6 +431,7 @@ describe('Business', () => {
 
         it('from Simmer to Lifetime', async () => {
             const user = newTestUser()
+            user.customerId = 'customer-id'
             const mockUserDao = getMockUserDao(user)
             mockEmail.mockReset()
             mockUsage.mockReset()
@@ -481,7 +440,7 @@ describe('Business', () => {
             expect(user.maxPages).toEqual(MAX_PAGES_SIMMER)
             expect(user.printCredits).toEqual(PRINT_CREDIT_SIMMER)
 
-            await Business.upgradeUser(user, AccountType.lifetime, 'ld1', mockUserDao)
+            await Business.upgradeUser(user.customerId, AccountType.lifetime, 'ld1', mockUserDao)
 
             expect(user.maxTemplates).toEqual(MAX_TEMPLATE_PRIVATE)
             expect(user.maxPages).toEqual(MAX_PAGES_PRIVATE)

@@ -129,7 +129,7 @@ describe('StripeWebhook', () => {
 
         // Verify Business.upgradeUser was called
         expect(Business.upgradeUser).toHaveBeenCalledWith(
-            expect.objectContaining({ customerId: 'cus_TtsJn2A180rOIo' }), // The user object from UserDao
+            'cus_TtsJn2A180rOIo',
             AccountType.lifetime,
             'ld1',
             expect.any(Object) // The UserDao instance passed
