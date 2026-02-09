@@ -11,27 +11,33 @@ import Stripe from "stripe";
 
 export class Business {
     static async createProductPurchase(customerId: string, productId: string, customerDetails: Stripe.Checkout.Session.CustomerDetails, shippingDetails: Stripe.Checkout.Session.ShippingDetails) {
-        const userDao = new UserDao()
-        const user = await userDao.getFromCustomerId(customerId)
-        let message = `Product Purchase: ${productId}\n`;
-        message += `User Email: ${customerDetails?.email} , id: ${user.id}\n`;
-        message += `Name: ${customerDetails?.name}\n`;
-        if (shippingDetails) {
-            message += `Shipping Address:\n`;
-            message += `${shippingDetails.name}\n`;
-            message += `${shippingDetails.address?.line1}\n`;
-            if (shippingDetails.address?.line2) message += `${shippingDetails.address?.line2}\n`;
-            message += `${shippingDetails.address?.city}, ${shippingDetails.address?.state} ${shippingDetails.address?.postal_code}\n`;
-            message += `${shippingDetails.address?.country}\n`;
-        } else {
-            message += `No shipping details provided.\n`;
-        }
+        try {
+            const userDao = new UserDao()
+            const user = await userDao.getFromCustomerId(customerId)
+            const userId = user?.id || customerId
+            let message = `Product Purchase: ${productId}\n`;
+            message += `User Email: ${customerDetails?.email} , id: ${userId}\n`;
+            message += `Name: ${customerDetails?.name}\n`;
+            if (shippingDetails) {
+                message += `Shipping Address:\n`;
+                message += `${shippingDetails.name}\n`;
+                message += `${shippingDetails.address?.line1}\n`;
+                if (shippingDetails.address?.line2) message += `${shippingDetails.address?.line2}\n`;
+                message += `${shippingDetails.address?.city}, ${shippingDetails.address?.state} ${shippingDetails.address?.postal_code}\n`;
+                message += `${shippingDetails.address?.country}\n`;
+            } else {
+                message += `No shipping details provided.\n`;
+            }
 
-        // create a ticket for follow up and send an email
-        await Promise.all([
-            TicketService.create(3, 'Product Purchase ' + productId + ' for user ' + user.id),
-            Email.send(message, EmailType.Purchase)
-        ])
+            // create a ticket for follow up and send an email
+            await Promise.all([
+                TicketService.create(3, 'Product Purchase ' + productId + ' for user ' + userId),
+                Email.send(message, EmailType.Purchase)
+            ])
+        } catch (err) {
+            TicketService.create(2, 'Product Purchase creation failed ' + productId + ' for user ' + customerId + ' failed ' + err)
+            console.error('[Business.createProductPurchase] failed ' + err)
+        }
     }
 
     static latestEula: number = 20250821;
@@ -101,36 +107,7 @@ export class Business {
         user.printCredits--
         await userDao.updatePrintCredit(user)
 
-        // console.log('[Business.printConsume] ' + user.id + ' consumed a print, ' + user.printCredits + ' remaining')
         return true
-    }
-
-    /**
-     * This is a one off purchase
-     * @param customerId Customer whom made the purchase
-     * @param count Number of prints purchased
-     * @returns The corresponding user
-     */
-    static async printPurchase(customerId: string, count: number, userDao: UserDao): Promise<User> {
-        return new Promise(async (resolve, reject) => {
-            if (!customerId) return reject('Customer Id is required');
-            if (count <= 0) return reject('Count is invalid');
-
-            userDao.getFromCustomerId(customerId).then(async (user) => {
-                userDao.addPrints(user, count).then(async (user) => {
-                    const message = 'user ' + user.id + ' purchased ' + count + ' prints'
-                    // console.log('[Business.printPurchase] ' + message)
-                    await Email.send(message, EmailType.Purchase)
-                    resolve(user)
-                }).catch((err) => {
-                    console.log('[Business.printPurchase] failed to add prints ' + err)
-                    reject(err)
-                })
-            }).catch((err) => {
-                console.log('[Business.printPurchase] failed ' + err)
-                reject(err)
-            })
-        })
     }
 
     /**
@@ -161,6 +138,7 @@ export class Business {
             if (!customerId) return reject('Customer Id is required');
 
             const user = await userDao.getFromCustomerId(customerId)
+            if (!user) return reject('User not found ' + customerId);
             // update cancellation
             const subscriptionDao = new SubscriptionDao()
             // call both concurrently
@@ -195,15 +173,17 @@ export class Business {
         // console.log('[Business.subscriptionUpdate]', customerId, subscriptionId, plan.id, plan.accountType, periodEnd, cancelAt)
         // const sub:Subscription = await SubscriptionDao.update(subscriptionId, customerId, priceId, periodEnd, cancelAt, endedAt)
         // const user = await userDao.getUserFromCustomerId(customerId)
-        const [sub, user] = await Promise.all([
+        await Promise.all([
             subscriptionDao.update(subscriptionId, customerId, priceId, periodEnd, cancelAt, endedAt),
-            userDao.getFromCustomerId(customerId)])
-
-        // Refresh account type
-        await Business.upgradeUser(user, plan.accountType, plan.id, userDao)
+            Business.upgradeUser(customerId, plan.accountType, plan.id, userDao)])
     }
 
-    static async upgradeUser(user: User, newAccountType: AccountType, planId: string, userDao: UserDao) {
+    static async upgradeUser(customerId: string, newAccountType: AccountType, planId: string, userDao: UserDao) {
+        const user = await userDao.getFromCustomerId(customerId)
+        if (!user) {
+            TicketService.create(2, 'Cannot upgrade user, user not found ' + customerId)
+            return;
+        }
         const previousPrintCredits = user.printCredits
         await Business.updateAccountType(user, newAccountType, planId, userDao)
 
