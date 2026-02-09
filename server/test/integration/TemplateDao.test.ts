@@ -12,8 +12,10 @@ import { Template } from '../../backend/models/Template';
 import * as dotenv from 'dotenv'
 import { TemplateFormat } from '../../backend/models/TemplateFormat';
 dotenv.config()
+// Force test DB
+process.env.POSTGRES_URL = process.env.POSTGRES_TEST_URL
 
-xdescribe('Custom Templates', () => {
+describe('Custom Templates', () => {
     describe('countForUser', () => {
         it('Can CountForUser', async () => {
             const result = await sql`SELECT user_id, COUNT(*) FROM sheets GROUP BY user_id`

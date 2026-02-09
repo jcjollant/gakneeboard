@@ -8,8 +8,10 @@ import { AccountType, PLAN_ID_SIM } from '@checklist/shared';
 import { sql } from '@vercel/postgres';
 
 require('dotenv').config();
+// Force test DB
+process.env.POSTGRES_URL = process.env.POSTGRES_TEST_URL
 
-xdescribe('Refill Reproduction', () => {
+describe('Refill Reproduction', () => {
     let userDao: UserDao;
     const uniqueId = Math.floor(Math.random() * 100000);
     const studentUser = newTestUser(0, AccountType.student, 'pp1');

@@ -1,6 +1,6 @@
 
 import { AccountType } from '@checklist/shared';
-import { afterAll, beforeAll, expect, it, xdescribe } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, it, xdescribe } from '@jest/globals';
 import { db, sql } from '@vercel/postgres';
 import { UserDao } from '../../backend/dao/UserDao';
 import { User } from '../../backend/models/User';
@@ -8,8 +8,10 @@ import { newTestUser } from '../common';
 import { jcCustomerId, jcEmail, jcHash, jcName, jcSource, jcUserId, MAX_PAGES_BETA, MAX_PAGES_SIMMER, MAX_TEMPLATE_BETA, MAX_TEMPLATE_SIMMER } from '../constants';
 
 require('dotenv').config();
+// Force test DB
+process.env.POSTGRES_URL = process.env.POSTGRES_TEST_URL
 
-xdescribe('UserDao', () => {
+describe('UserDao', () => {
     let userDao: UserDao;
 
     beforeAll(async () => {
