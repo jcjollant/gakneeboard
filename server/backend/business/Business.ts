@@ -11,6 +11,7 @@ import Stripe from "stripe";
 
 export class Business {
     static async createProductPurchase(customerId: string, productId: string, customerDetails: Stripe.Checkout.Session.CustomerDetails, shippingDetails: Stripe.Checkout.Session.ShippingDetails) {
+        console.debug('[Business.createProductPurchase] Creating product purchase for customer ' + customerId + ' and product ' + productId);
         try {
             const userDao = new UserDao()
             const user = await userDao.getFromCustomerId(customerId)
@@ -35,7 +36,7 @@ export class Business {
                 Email.send(message, EmailType.Purchase)
             ])
         } catch (err) {
-            TicketService.create(2, 'Product Purchase creation failed ' + productId + ' for user ' + customerId + ' failed ' + err)
+            await TicketService.create(2, 'Product Purchase creation failed ' + productId + ' for user ' + customerId + ' failed ' + err)
             console.error('[Business.createProductPurchase] failed ' + err)
         }
     }
