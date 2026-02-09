@@ -611,7 +611,8 @@ function onNewSettings(settings:TemplateSettings) {
   // Hide settings
   showSettings.value = false;
 
-  if( settingsTemplate.value.name == settings.name 
+  if( activeTemplate.value.id > 0 
+    && settingsTemplate.value.name == settings.name 
     && settingsTemplate.value.desc == settings.desc 
     && settingsTemplate.value.publish == settings.publish) {
     toaster.warning('Repeat Last Transmission','Nothing to save, settings unchanged')
