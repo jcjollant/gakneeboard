@@ -49,7 +49,7 @@ describe('TicketService', () => {
         const result = await TicketService.create(2, "Another message");
 
         expect(result).toBe(false);
-        expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('[TicketService.create] FAILED'), expect.any(Error));
+        expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('[TicketService] Failed to create ticket:'), expect.any(Error));
         expect(consoleSpy).toHaveBeenCalledWith('[Ticket][2]', "Another message");
 
         consoleSpy.mockRestore();

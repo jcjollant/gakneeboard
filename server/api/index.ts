@@ -326,7 +326,7 @@ app.post('/stripe/webhook', async (req: Request, res: Response) => {
     await StripeClient.instance.webhook(req).then(() => {
         res.send()
     }).catch((e) => {
-        console.log(e)
+        console.error('[POST /stripe/webhook] Error:', e);
         res.status(400).send()
     })
 })

@@ -11,18 +11,11 @@ import Stripe from "stripe";
 
 export class Business {
     static async createProductPurchase(customerId: string, productId: string, customerDetails: Stripe.Checkout.Session.CustomerDetails, shippingDetails: Stripe.Checkout.Session.ShippingDetails) {
-        console.log('[Business.createProductPurchase] START - customer:', customerId, 'product:', productId);
+        console.debug('[Business.createProductPurchase] Creating product purchase for customer ' + customerId + ' and product ' + productId);
         try {
-            console.log('[Business.createProductPurchase] Step 1: Creating UserDao');
             const userDao = new UserDao()
-
-            console.log('[Business.createProductPurchase] Step 2: Querying user from customerId');
             const user = await userDao.getFromCustomerId(customerId)
-            console.log('[Business.createProductPurchase] Step 2 result: user found:', !!user, 'userId:', user?.id);
-
             const userId = user?.id || customerId
-
-            console.log('[Business.createProductPurchase] Step 3: Building message');
             let message = `Product Purchase: ${productId}\n`;
             message += `User Email: ${customerDetails?.email} , id: ${userId}\n`;
             message += `Name: ${customerDetails?.name}\n`;
@@ -36,35 +29,22 @@ export class Business {
             } else {
                 message += `No shipping details provided.\n`;
             }
-            console.log('[Business.createProductPurchase] Step 3 complete: message length:', message.length);
 
             // create a ticket for follow up and send an email
-            console.log('[Business.createProductPurchase] Step 4: Creating ticket and sending email');
             const [ticketCreated, emailSent] = await Promise.all([
                 TicketService.create(3, 'Product Purchase ' + productId + ' for user ' + userId),
                 Email.send(message, EmailType.Purchase)
             ]);
 
-            console.log('[Business.createProductPurchase] Step 4 results: ticket created:', ticketCreated, 'email sent:', emailSent);
-
-            if (!ticketCreated) {
-                console.error('[Business.createProductPurchase] WARNING: Ticket creation failed!');
+            if (!ticketCreated || !emailSent) {
+                console.error('[Business.createProductPurchase] Warning: ticket created:', ticketCreated, 'email sent:', emailSent);
             }
-            if (!emailSent) {
-                console.error('[Business.createProductPurchase] WARNING: Email send failed!');
-            }
-
-            console.log('[Business.createProductPurchase] Step 5: COMPLETE');
         } catch (err) {
-            console.error('[Business.createProductPurchase] EXCEPTION CAUGHT:', err);
-            console.error('[Business.createProductPurchase] Creating fallback ticket');
-            const fallbackTicketCreated = await TicketService.create(2, 'Product Purchase creation failed ' + productId + ' for user ' + customerId + ' failed ' + err);
-            if (fallbackTicketCreated) {
-                console.log('[Business.createProductPurchase] Fallback ticket created successfully');
-            } else {
-                console.error('[Business.createProductPurchase] CRITICAL: Fallback ticket creation also failed!');
+            console.error('[Business.createProductPurchase] Exception:', err);
+            const fallbackCreated = await TicketService.create(2, 'Product Purchase creation failed ' + productId + ' for user ' + customerId + ' failed ' + err);
+            if (!fallbackCreated) {
+                console.error('[Business.createProductPurchase] CRITICAL: Fallback ticket creation also failed');
             }
-            console.error('[Business.createProductPurchase] failed ' + err)
         }
     }
 
