@@ -15,8 +15,6 @@
 </template>
 
 <script setup lang="ts">
-import { OneChoiceValue } from '../../models/OneChoiceValue';
-
 
 const props = defineProps({
   choices: { type: Array<any>, default: []},

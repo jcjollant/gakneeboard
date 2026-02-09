@@ -13,6 +13,11 @@
       </div>
 
 
+      <div class="mb-5">
+        <div class="block mb-2">Help us help more pilots: Where did you hear about us?</div>
+        <OneChoice :choices="channels" v-model="selectedChannel" :full="true" @change="onChannelChange" />
+      </div>
+
       <div v-if="errorMessage" class="error-message mb-3">
         {{ errorMessage }}
       </div>
@@ -27,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue'
+import { ref } from 'vue'
 import { authenticationRequest } from '../../assets/data'
 
 // Components
@@ -36,8 +41,28 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 // import FacebookSignInButton from './FacebookSignInButton.vue'
 import GoogleSignInButton from './GoogleSignInButton.vue';
+import OneChoice from '../shared/OneChoice.vue';
+import { OneChoiceValue } from '../../models/OneChoiceValue';
+import { AttributionService } from '../../services/AttributionService';
 
 const emits = defineEmits(["close",'authentication']);
+
+const channels = [
+  new OneChoiceValue('?', ''),
+  new OneChoiceValue('Blog', 'Blog'),
+  new OneChoiceValue('Brochure', 'Brochure'),
+  new OneChoiceValue('Facebook', 'Facebook'),
+  new OneChoiceValue('Instagram', 'Instagram'),
+  new OneChoiceValue('Press', 'Press'),
+  new OneChoiceValue('YouTube', 'YouTube')
+]
+const selectedChannel = ref<OneChoiceValue | undefined>(channels[0])
+
+function onChannelChange() {
+  if (selectedChannel.value && selectedChannel.value.value != '') {
+    AttributionService.saveAttribution('source:' + selectedChannel.value.value)
+  }
+}
 const authenticating = ref(false)
 const errorMessage = ref('')
 
