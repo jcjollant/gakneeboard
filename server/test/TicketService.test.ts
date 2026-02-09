@@ -42,13 +42,14 @@ describe('TicketService', () => {
         expect(sql).toHaveBeenCalled();
     });
 
-    it('should handle db errors gracefully', async () => {
+    it('should handle db errors gracefully and return false', async () => {
         (sql as any).mockRejectedValueOnce(new Error("DB Error"));
         const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
 
-        await TicketService.create(2, "Another message");
+        const result = await TicketService.create(2, "Another message");
 
-        expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('[TicketService] Failed to create ticket:'), expect.any(Error));
+        expect(result).toBe(false);
+        expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('[TicketService.create] FAILED'), expect.any(Error));
         expect(consoleSpy).toHaveBeenCalledWith('[Ticket][2]', "Another message");
 
         consoleSpy.mockRestore();

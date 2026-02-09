@@ -7,8 +7,9 @@ export class TicketService {
      * Create a new ticket in the database.
      * @param severity Severity level (1-5)
      * @param message Error message or description
+     * @returns Promise<boolean> - true if ticket was created successfully, false otherwise
      */
-    public static async create(severity: number, message: string): Promise<void> {
+    public static async create(severity: number, message: string): Promise<boolean> {
         console.log('[TicketService.create] START - severity:', severity, 'message length:', message.length);
         try {
             console.log('[TicketService.create] Step 1: Truncating message');
@@ -16,6 +17,7 @@ export class TicketService {
             console.log('[TicketService.create] Step 2: Inserting into database, safe message length:', safeMessage.length);
             await sql`INSERT INTO tickets (severity, message, status) VALUES (${severity}, ${safeMessage}, 'open')`;
             console.log('[TicketService.create] Step 3: SUCCESS - Ticket created with severity', severity);
+            return true;
         } catch (error) {
             console.error('[TicketService.create] FAILED - Database insert error:', error);
             console.error('[TicketService.create] Error details:', {
@@ -26,8 +28,8 @@ export class TicketService {
             });
             // Fallback logging if DB fails
             console.error('[Ticket][' + severity + ']', message);
-            // RE-THROW to expose silent failures
-            throw error;
+            // DO NOT throw - maintain backward compatibility
+            return false;
         }
     }
 

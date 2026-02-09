@@ -26,6 +26,7 @@ const MAX_TEMPLATE_PRIVATE = 5
 describe('Business', () => {
 
     const mockEmail = jest.spyOn(Email, 'send').mockResolvedValue(true);
+    const mockTicket = jest.spyOn(TicketService, 'create').mockResolvedValue(true);
     const mockUsage = jest.spyOn(UsageDao, 'refill').mockResolvedValue();
 
     const testUser = newTestUser();
@@ -458,6 +459,7 @@ describe('Business', () => {
 
     })
 
+
     describe('createProductPurchase', () => {
         const productPurchaseSession = require('./jsonData/checkout-session-ref-card-lam.json');
 
@@ -473,6 +475,10 @@ describe('Business', () => {
                     getFromCustomerId: mockGetFromCustomerId,
                 };
             });
+
+            // Ensure mocks return expected values
+            mockEmail.mockResolvedValue(true);
+            mockTicket.mockResolvedValue(true);
 
             // call the method
             await Business.createProductPurchase(customerId, productId, customerDetails, shippingDetails);

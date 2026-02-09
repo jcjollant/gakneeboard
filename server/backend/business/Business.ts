@@ -40,28 +40,30 @@ export class Business {
 
             // create a ticket for follow up and send an email
             console.log('[Business.createProductPurchase] Step 4: Creating ticket and sending email');
-            const ticketPromise = TicketService.create(3, 'Product Purchase ' + productId + ' for user ' + userId)
-                .then(() => console.log('[Business.createProductPurchase] Step 4a: Ticket created successfully'))
-                .catch(err => {
-                    console.error('[Business.createProductPurchase] Step 4a FAILED: Ticket creation error:', err);
-                    throw err;
-                });
+            const [ticketCreated, emailSent] = await Promise.all([
+                TicketService.create(3, 'Product Purchase ' + productId + ' for user ' + userId),
+                Email.send(message, EmailType.Purchase)
+            ]);
 
-            const emailPromise = Email.send(message, EmailType.Purchase)
-                .then((result) => console.log('[Business.createProductPurchase] Step 4b: Email sent successfully, result:', result))
-                .catch(err => {
-                    console.error('[Business.createProductPurchase] Step 4b FAILED: Email send error:', err);
-                    throw err;
-                });
+            console.log('[Business.createProductPurchase] Step 4 results: ticket created:', ticketCreated, 'email sent:', emailSent);
 
-            await Promise.all([ticketPromise, emailPromise]);
-            console.log('[Business.createProductPurchase] Step 5: COMPLETE - All operations successful');
+            if (!ticketCreated) {
+                console.error('[Business.createProductPurchase] WARNING: Ticket creation failed!');
+            }
+            if (!emailSent) {
+                console.error('[Business.createProductPurchase] WARNING: Email send failed!');
+            }
+
+            console.log('[Business.createProductPurchase] Step 5: COMPLETE');
         } catch (err) {
             console.error('[Business.createProductPurchase] EXCEPTION CAUGHT:', err);
             console.error('[Business.createProductPurchase] Creating fallback ticket');
-            await TicketService.create(2, 'Product Purchase creation failed ' + productId + ' for user ' + customerId + ' failed ' + err)
-                .then(() => console.log('[Business.createProductPurchase] Fallback ticket created'))
-                .catch(fallbackErr => console.error('[Business.createProductPurchase] CRITICAL: Fallback ticket creation also failed:', fallbackErr));
+            const fallbackTicketCreated = await TicketService.create(2, 'Product Purchase creation failed ' + productId + ' for user ' + customerId + ' failed ' + err);
+            if (fallbackTicketCreated) {
+                console.log('[Business.createProductPurchase] Fallback ticket created successfully');
+            } else {
+                console.error('[Business.createProductPurchase] CRITICAL: Fallback ticket creation also failed!');
+            }
             console.error('[Business.createProductPurchase] failed ' + err)
         }
     }
