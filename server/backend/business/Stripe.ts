@@ -182,7 +182,6 @@ export class StripeClient {
                 if (!endpointSecret) throw new Error('Stripe webhook secret not found');
                 if (!sig) throw new Error('Stripe signature not found');
                 if (!req.body) throw new Error('Stripe request body not found');
-                // req.body is a Buffer from express.raw() middleware - pass it directly
                 event = this.stripe.webhooks.constructEvent(req.body, sig, endpointSecret)
                 // console.log('[Stripe.webhook]', JSON.stringify(event.type), now)
 
