@@ -186,12 +186,16 @@ export class StripeClient {
                 // console.log('[Stripe.webhook]', JSON.stringify(event.type), now)
 
                 if (event.type == SUB_UPDATE || event.type == SUB_DELETE) {
-                    const subscriptionId = event.data.object.id;
-                    const customerId = String(event.data.object.customer);
-                    const priceId = event.data.object.items.data[0].plan.id;
-                    const periodEnd = event.data.object.current_period_end;
-                    const cancelAt = event.data.object.cancel_at;
-                    const endedAt = event.data.object.ended_at
+                    const subscription = event.data.object as Stripe.Subscription;
+                    const subscriptionId = subscription.id;
+                    // save event for future reference
+                    await sql`INSERT INTO stripe_events (type, stripe_id, data) VALUES (${event.type}, ${subscriptionId}, ${JSON.stringify(subscription)})`
+
+                    const customerId = String(subscription.customer);
+                    const priceId = subscription.items.data[0].plan.id;
+                    const periodEnd = subscription.current_period_end;
+                    const cancelAt = subscription.cancel_at;
+                    const endedAt = subscription.ended_at
                     const userDao = new UserDao()
                     if (event.type == SUB_DELETE) {
                         await Business.subscriptionStop(subscriptionId, customerId, userDao, cancelAt, endedAt)
@@ -201,14 +205,12 @@ export class StripeClient {
                         if (!plan) throw new Error('Plan not found for price ' + priceId)
                         await Business.subscriptionUpdate(subscriptionId, customerId, priceId, plan, periodEnd, cancelAt, endedAt, userDao, subscriptionDao)
                     }
-                    // save event for future reference
-                    await sql`INSERT INTO stripe_events (type, stripe_id, data) VALUES (${event.type}, ${subscriptionId}, ${JSON.stringify(event.data.object)})`
                 } else if (event.type == CHECKOUT_COMPLETE) {
                     // console.log('[Stripe.webhook]', JSON.stringify(event.data))
                     // Record event into stripe_events table
                     const session = event.data.object as Stripe.Checkout.Session;
                     const stripeId = session.id;
-                    await sql`INSERT INTO stripe_events (type, stripe_id, data) VALUES (${event.type}, ${stripeId}, ${JSON.stringify(event.data.object)})`
+                    await sql`INSERT INTO stripe_events (type, stripe_id, data) VALUES (${event.type}, ${stripeId}, ${JSON.stringify(session)})`
 
                     // Check if it is a product purchase
                     if (session.metadata?.type === 'product') {
