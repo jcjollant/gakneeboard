@@ -4,20 +4,28 @@ import { AccountType } from '@checklist/shared';
 
 describe('Formatter', () => {
   describe('accountType', () => {
-    it('should format beta account type correctly', () => {
+    it('should format beta account type correctly from PLANS', () => {
       expect(Formatter.accountType(AccountType.beta)).toBe('Beta Deal');
     });
 
-    it('should format private account type correctly', () => {
+    it('should format private account type correctly from PLANS', () => {
       expect(Formatter.accountType(AccountType.private)).toBe('Private Pilot');
     });
 
-    it('should format instrument account type correctly', () => {
-      expect(Formatter.accountType(AccountType.instrument)).toBe('Instrument Pilot');
+    it('should format student account type correctly from PLANS', () => {
+      expect(Formatter.accountType(AccountType.student)).toBe('Student Pilot');
     });
 
-    it('should format simmer account type correctly', () => {
+    it('should format simmer account type correctly from PLANS', () => {
       expect(Formatter.accountType(AccountType.simmer)).toBe('Flight Simmer');
+    });
+
+    it('should format lifetime account type correctly from PLANS', () => {
+      expect(Formatter.accountType(AccountType.lifetime)).toBe('Lifetime Deal');
+    });
+
+    it('should format instrument account type correctly (fallback)', () => {
+      expect(Formatter.accountType(AccountType.instrument)).toBe('Instrument Pilot');
     });
 
     it('should return ? for unknown account type', () => {

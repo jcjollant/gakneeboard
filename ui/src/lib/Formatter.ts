@@ -1,4 +1,4 @@
-import { AccountType } from '@checklist/shared'
+import { AccountType, PLANS } from '@checklist/shared'
 
 export class Formatter {
     static noFuel: string = '-.-'
@@ -8,12 +8,17 @@ export class Formatter {
     static noSpeed: string = '--'
 
     static accountType(at: AccountType): string {
+        // Find the plan with matching accountType and return its displayName
+        const plan = PLANS.find(p => p.accountType === at);
+        if (plan) {
+            return plan.displayName;
+        }
+
+        // Fallback for account types not in PLANS
         switch (at) {
-            case AccountType.beta: return 'Beta Deal';
-            case AccountType.private: return 'Private Pilot';
             case AccountType.instrument: return 'Instrument Pilot';
-            case AccountType.simmer: return 'Flight Simmer';
-            case AccountType.lifetime: return 'Lifetime Deal';
+            case AccountType.hobbs: return 'Hobbs';
+            case AccountType.unknown: return 'Unknown';
             default: return '?';
         }
     }
