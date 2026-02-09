@@ -3,7 +3,7 @@
     <div class="printPopup">
       <div v-if="props.templateModified" class="versionWarning">
         <font-awesome-icon :icon="['fas', 'exclamation-triangle']"></font-awesome-icon>
-        <div>Unsaved changes.</div>
+        <div>Unsaved changes.<span class="goodEnough">If it's good enough to print, it's good enough.</span></div>
       </div>
       <div class="pageOptions">
         <div class="pageOptionLabel">Page Selection</div>
@@ -284,5 +284,11 @@ li {
 .disabled-label {
   color: #999;
   cursor: not-allowed;
+}
+.goodEnough {
+  padding-left: 10px;
+  font-weight: 400;
+  font-size: 0.8rem;
+  font-style: italic;
 }
 </style>

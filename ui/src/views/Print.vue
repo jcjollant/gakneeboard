@@ -1,7 +1,7 @@
 <template>
   <div class="print">
     <PrintOptionsDialog v-model:visible="showOptions" :pageSelection="pageSelection"
-        :templateModified="templateModified && template && template.ver > 0"
+        :templateModified="templateModified && !!template"
         :format="template?.format"
         @options="onOptionsUpdate"
         @print="onPrint"
