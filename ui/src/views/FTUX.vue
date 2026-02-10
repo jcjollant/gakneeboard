@@ -154,36 +154,36 @@
                 <h2>Our Plans</h2>
                 <div class="pricing-grid">
                     <div class="pricing-card">
-                        <h3>Student Pilot</h3>
-                        <div class="price">$2.99<span>/month</span></div>
+                        <h3>{{ planLeft?.displayName }}</h3>
+                        <div class="price">{{ planLeft?.displayPrice }}<span>/month</span></div>
                         <p>Occasional Use</p>
                         <ul>
-                            <li>8 prints per month</li>
-                            <li>2 templates</li>
-                            <li>4 pages</li>
+                            <li>{{ planLeft?.quotas.prints }} prints per month</li>
+                            <li>{{ planLeft?.quotas.templates }} templates</li>
+                            <li>{{ planLeft?.quotas.pages }} pages</li>
                         </ul>
                         <button class="btn-secondary" @click="loadDemo()">Start Free</button>
                     </div>
                     <div class="pricing-card popular">
                         <div class="badge">Limited Time Offer</div>
-                        <h3>Lifetime Deal</h3>
-                        <div class="price">$59</div>
+                        <h3>{{ planFeatured?.displayName }}</h3>
+                        <div class="price">{{ planFeatured?.displayPrice }}</div>
                         <p>One payment, no expiration 😯</p>
                         <ul>
-                            <li>16 prints per month</li>
-                            <li>5 templates</li>
-                            <li>20 pages</li>
+                            <li>{{ planFeatured?.quotas.prints }} prints per month</li>
+                            <li>{{ planFeatured?.quotas.templates }} templates</li>
+                            <li>{{ planFeatured?.quotas.pages }} pages</li>
                         </ul>
                         <button class="btn-primary" @click="loadDemo()">Start Free</button>
                     </div>
                     <div class="pricing-card">
-                        <h3>Private Pilot</h3>
-                        <div class="price">$4.49<span>/month</span></div>
+                        <h3>{{ planRight?.displayName }}</h3>
+                        <div class="price">{{ planRight?.displayPrice }}<span>/month</span></div>
                         <p>Normal Use</p>
                         <ul>
-                            <li>16 prints per month</li>
-                            <li>5 templates</li>
-                            <li>20 pages</li>
+                            <li>{{ planRight?.quotas.prints }} prints per month</li>
+                            <li>{{ planRight?.quotas.templates }} templates</li>
+                            <li>{{ planRight?.quotas.pages }} pages</li>
                         </ul>
                         <button class="btn-secondary" @click="loadDemo()">Start Free</button>
                     </div>
@@ -207,6 +207,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { LocalStoreService } from '../services/LocalStoreService'
 import { affiliates } from '../lib/affiliates'
 import GakBanner from '../components/ads/GakBanner.vue'
+import { PLANS, PLAN_ID_LIFETIME_DEAL, PLAN_ID_PRIVATE_PILOT, PLAN_ID_STUDENT_PILOT } from '@gak/shared'
 
 class Demo {
     title: string
@@ -241,6 +242,9 @@ const route = useRoute()
 const affiliateKey = route.query.affiliate as string
 const greeting = ref(affiliateKey && affiliates[affiliateKey]?.greeting ? affiliates[affiliateKey].greeting : '')
 const mobileMenuOpen = ref(false)
+const planLeft = PLANS.find((p) => p.id === PLAN_ID_STUDENT_PILOT)
+const planFeatured = PLANS.find((p) => p.id === PLAN_ID_LIFETIME_DEAL)
+const planRight = PLANS.find((p) => p.id === PLAN_ID_PRIVATE_PILOT)
 
 
 function loadDemo(page?: string) {
@@ -257,10 +261,6 @@ function skipDemo() {
 function goToPlans() {
     router.push('/plans')
 }
-
-
-
-
 
 </script>
 <style scoped>
@@ -687,7 +687,7 @@ h2 {
 
 .badge {
     position: absolute;
-    top: -20px;
+    top: -15px;
     left: 50%;
     transform: translateX(-50%);
     background: #f97316;
@@ -696,6 +696,7 @@ h2 {
     border-radius: 20px;
     font-size: 0.875rem;
     font-weight: 600;
+    width: auto;
 }
 
 .price {

@@ -2,7 +2,12 @@ import { AccountType } from "../models/AccountType";
 import { PlanDescription } from "../models/PlanDescription";
 
 export const bestValuePlan: string = 'ld2';
-export const PLAN_ID_SIM = 'sim'
+export const PLAN_ID_SIM: string = 'sim'
+export const PLAN_ID_STUDENT_PILOT: string = 'pp1'
+export const PLAN_ID_PRIVATE_PILOT: string = 'pp2'
+export const PLAN_ID_BETA_DEAL: string = 'bd1'
+export const PLAN_ID_LIFETIME_DEAL: string = 'ld2'
+
 export const PRINT_CREDIT_SIMMER = 4;
 
 export const PLANS: PlanDescription[] = [
@@ -28,7 +33,7 @@ export const PLANS: PlanDescription[] = [
         }
     },
     {
-        id: 'pp1', // old private pilot
+        id: PLAN_ID_STUDENT_PILOT,
         displayName: 'Student Pilot',
         subtitles: ['No Commitment', 'Best for Occasional Use'],
         active: true,
@@ -48,7 +53,7 @@ export const PLANS: PlanDescription[] = [
         }
     },
     {
-        id: 'pp2',
+        id: PLAN_ID_PRIVATE_PILOT,
         displayName: 'Private Pilot',
         active: true,
         show: false,
@@ -68,7 +73,7 @@ export const PLANS: PlanDescription[] = [
         accountType: AccountType.private
     },
     {
-        id: 'bd1',
+        id: PLAN_ID_BETA_DEAL,
         displayName: 'Beta Deal',
         active: false,
         show: false,
@@ -108,7 +113,7 @@ export const PLANS: PlanDescription[] = [
         }
     },
     {
-        id: 'ld2',
+        id: PLAN_ID_LIFETIME_DEAL,
         displayName: 'Lifetime Deal',
         subtitles: ['Pay once, use forever', 'Grab it while it lasts!'],
         active: true,
