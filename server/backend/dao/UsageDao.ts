@@ -141,4 +141,18 @@ export class UsageDao extends Dao<Usage> {
                 .catch(err => reject(err))
         })
     }
+
+    public async lastUsageDate(userId: number, usageType: UsageType): Promise<Date | null> {
+        return new Promise<Date | null>(async (resolve, reject) => {
+            this.db.query(`SELECT MAX(create_time) as last_usage FROM ${this.tableName} WHERE user_id=${userId} AND usage_type='${usageType}'`)
+                .then(res => {
+                    if (res.rows.length > 0 && res.rows[0].last_usage) {
+                        resolve(new Date(res.rows[0].last_usage))
+                    } else {
+                        resolve(null)
+                    }
+                })
+                .catch(err => reject(err))
+        })
+    }
 }
