@@ -1,8 +1,24 @@
 <template>
-    <Dialog v-model:visible="visible" modal :header="headerTitle" :style="{ width: '50rem' }" :closable="true" @update:visible="onUpdateVisible">
-        <NotamList :notams="notams" />
+    <Dialog v-model:visible="visible" modal :header="headerTitle" :style="{ width: '50rem', maxHeight: '90vh' }" :closable="true" @update:visible="onUpdateVisible">
+        <div class="scrollable-content">
+            <NotamList 
+                v-for="group in groupedNotams" 
+                :key="group.type" 
+                :title="group.type" 
+                :notams="group.notams" 
+                :showRaw="showRaw" 
+            />
+        </div>
+        
         <template #footer>
             <div class="dialog-footer">
+                <div class="footer-left">
+                    <a href="https://notams.aim.faa.gov/notamSearch/nsapp.html#/" target="_blank" class="faa-link">Official FAA Notam Search</a>
+                    <label class="checkbox-label">
+                        <input type="checkbox" v-model="showRaw" />
+                        Show Raw Text
+                    </label>
+                </div>
                 <Button label="Close" @click="closeDialog" />
             </div>
         </template>
@@ -26,6 +42,7 @@ const props = defineProps({
 const emits = defineEmits(['update:visible', 'close']);
 
 const visible = ref(props.visible);
+const showRaw = ref(false);
 
 watch(() => props.visible, (val) => {
     visible.value = val;
@@ -36,6 +53,39 @@ const headerTitle = computed(() => {
         return `NOTAMs for ${props.airportName} (${props.airportCode})`;
     }
     return `NOTAMs for ${props.airportCode}`;
+});
+
+const groupedNotams = computed(() => {
+    const groups: Record<string, Notam[]> = {};
+    
+    props.notams.forEach(notam => {
+        const type = notam.type || 'General';
+        
+        if (!groups[type]) {
+            groups[type] = [];
+        }
+        groups[type].push(notam);
+    });
+    
+    // Convert to array of objects for sorting
+    const sortedGroups = Object.keys(groups).map(type => ({
+        type,
+        notams: groups[type]
+    }));
+
+    // Custom sort order
+    sortedGroups.sort((a, b) => {
+        const typeA = a.type.toLowerCase();
+        const typeB = b.type.toLowerCase();
+        
+        if (typeA === 'obstruction') return 1;
+        if (typeB === 'obstruction') return -1;
+        
+        // Default alphabetical sort for others
+        return typeA.localeCompare(typeB);
+    });
+    
+    return sortedGroups;
 });
 
 function onUpdateVisible(val: boolean) {
@@ -53,10 +103,41 @@ function closeDialog() {
 </script>
 
 <style scoped>
+.scrollable-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
 .dialog-footer {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     width: 100%;
+}
+
+.footer-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    user-select: none;
+}
+
+.faa-link {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+.faa-link:hover {
+    text-decoration: underline;
 }
 </style>

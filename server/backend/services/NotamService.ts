@@ -223,7 +223,7 @@ export class NotamService {
                     .filter((n: any) => n !== null) as SimplifiedNotam[];
             }
         } catch (e) {
-            console.log('[NotamService.getSimplifiedNotams] could not fetch notams for ' + params.location)
+            console.log('[NotamService.getSimplifiedNotams] could not fetch notams for ' + params.location, e)
         }
 
         return [];

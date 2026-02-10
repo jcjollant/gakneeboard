@@ -1,18 +1,14 @@
 <template>
-    <div class="notam-list">
-        <div class="header-controls">
-            <span class="title">NOTAMs</span>
-            <div class="toggle-container">
-                <label for="raw-toggle">Show Raw Text</label>
-                <input type="checkbox" id="raw-toggle" v-model="showRaw" />
+    <div class="notam-group">
+        <div class="group-header" @click="toggleCollapse">
+            <span class="expand-icon">{{ collapsed ? '▶' : '▼' }}</span>
+            <span class="group-title">{{ title }} ({{ notams.length }})</span>
+        </div>
+        
+        <div v-if="!collapsed" class="notam-list">
+            <div v-for="(notam, index) in notams" :key="index" class="notam-item">
+                <div class="notam-text">{{ getNotamText(notam) }}</div>
             </div>
-        </div>
-        <div v-if="notams.length === 0">No NOTAMs found.</div>
-        <div v-for="(notam, index) in notams" :key="index" class="notam-item">
-            <div class="notam-text">{{ getNotamText(notam) }}</div>
-        </div>
-        <div class="footer">
-            <a href="https://notams.aim.faa.gov/notamSearch/nsapp.html#/" target="_blank" class="faa-link">Official FAA Notam Search</a>
         </div>
     </div>
 </template>
@@ -21,14 +17,20 @@
 import { ref } from 'vue';
 import { Notam } from '../../models/Notam';
 
-defineProps({
+const props = defineProps({
     notams: { type: Array as () => Notam[], default: () => [] },
+    title: { type: String, default: 'Notams' },
+    showRaw: { type: Boolean, default: false }
 });
 
-const showRaw = ref(false);
+const collapsed = ref(false);
+
+function toggleCollapse() {
+    collapsed.value = !collapsed.value;
+}
 
 function getNotamText(notam: Notam): string {
-    if (showRaw.value) {
+    if (props.showRaw) {
         return notam.text;
     }
     return notam.plainText || notam.text;
@@ -36,65 +38,51 @@ function getNotamText(notam: Notam): string {
 </script>
 
 <style scoped>
+.notam-group {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.group-header {
+    background-color: #f0f0f0;
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+    user-select: none;
+}
+
+.group-header:hover {
+    background-color: #e0e0e0;
+}
+
+.expand-icon {
+    font-size: 0.8em;
+    width: 12px;
+}
+
 .notam-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    height: 100%;
-    overflow-y: auto;
-    padding: 5px;
-}
-
-.header-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
-}
-
-.title {
-    font-weight: bold;
-    font-size: 1.1em;
-}
-
-.toggle-container {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.9em;
+    background-color: white;
 }
 
 .notam-item {
     padding: 10px;
-    border-bottom: 1px solid #ccc;
+    border-top: 1px solid #eee;
     font-size: 12px;
     text-align: left;
 }
 
-.notam-item:last-child {
-    border-bottom: none;
+.notam-item:first-child {
+    border-top: none;
 }
 
 .notam-text {
     white-space: pre-wrap;
     word-break: break-word;
-}
-
-.footer {
-    margin-top: auto;
-    padding-top: 10px;
-    text-align: center;
-}
-
-.faa-link {
-    color: #007bff;
-    text-decoration: none;
-    font-size: 0.9em;
-}
-
-.faa-link:hover {
-    text-decoration: underline;
 }
 </style>
