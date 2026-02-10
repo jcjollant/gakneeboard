@@ -1,14 +1,14 @@
-import 'dotenv/config'
-import { UserDao } from '../dao/UserDao'
-import { SubscriptionDao } from '../dao/SubscriptionDao'
-import { AccountType, PlanDescription, PLANS, PRODUCTS, Product } from '@checklist/shared';
-import Stripe from 'stripe'
-import { Business } from './Business'
-import { AttributionData } from '../models/AttributionData'
+import 'dotenv/config';
+import { UserDao } from '../dao/UserDao';
+import { SubscriptionDao } from '../dao/SubscriptionDao';
+import { AccountType, PlanDescription, PRODUCTS } from '../../../shared';
+import Stripe from 'stripe';
+import { Business } from './Business';
+import { AttributionData } from '../models/AttributionData';
 
-import { sql } from '@vercel/postgres'
+import { sql } from '@vercel/postgres';
 import { TicketService } from "../services/TicketService";
-import { Request } from "express"
+import { Request } from "express";
 import { PlanService } from '../services/PlanService';
 
 const planUrl = '/plans'
@@ -254,7 +254,7 @@ export class StripeClient {
 
                             if (accountType == AccountType.lifetime && planId) {
                                 const userDao = new UserDao()
-                                await Business.upgradeUser(customerId, AccountType.lifetime, planId, userDao);
+                                await Business.upgradeUser(customerId, AccountType.lifetime, planId, userDao, 'stripe webhook');
                             } else {
                                 TicketService.create(2, `[Stripe.webhook] Cannot resolve account type or plan for customer ${customerId} - AccountType: ${accountType}, PlanId: ${planId}`);
                             }

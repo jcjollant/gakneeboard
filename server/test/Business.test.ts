@@ -256,7 +256,7 @@ describe('Business', () => {
             await expect(Business.subscriptionStop('sub-id', '', mockUserDao, now, now)).rejects.toEqual('Customer Id is required')
         })
 
-        it('should stop subscription', async () => {
+        it('should stop subscription and downgrade to simmer', async () => {
             const user = newTestUser()
             user.accountType = AccountType.private
             const mockUserDao = getMockUserDao(user)
@@ -264,6 +264,17 @@ describe('Business', () => {
             await Business.subscriptionStop('customer-id', 'sub-id', mockUserDao, now, now).then(u => {
                 // Account should be downgraded to simmer
                 expect(u.accountType).toBe(AccountType.simmer)
+            })
+        })
+
+        it('should NOT downgrade lifetime accounts', async () => {
+            const user = newTestUser()
+            user.accountType = AccountType.lifetime
+            const mockUserDao = getMockUserDao(user)
+            const now = new Date().getTime()
+            await Business.subscriptionStop('customer-id', 'sub-id', mockUserDao, now, now).then(u => {
+                // Account should remain lifetime
+                expect(u.accountType).toBe(AccountType.lifetime)
             })
         })
     })

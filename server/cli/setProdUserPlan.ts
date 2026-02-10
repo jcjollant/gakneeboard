@@ -43,7 +43,7 @@ async function upgrade() {
             process.exit(1);
         }
 
-        await Business.upgradeUser(user.customerId, plan.accountType, plan.id, userDao);
+        await Business.upgradeUser(user.customerId, plan.accountType, plan.id, userDao, 'cli upgrade');
         console.log(`Successfully upgraded user ${userId} to ${plan.id}`);
 
     } catch (err) {

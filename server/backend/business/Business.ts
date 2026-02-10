@@ -149,12 +149,10 @@ export class Business {
             if (!user) return reject('User not found ' + customerId);
             // update cancellation
             const subscriptionDao = new SubscriptionDao()
-            // call both concurrently
-            await Promise.all([
-                // downgrade to simmer
-                Business.updateAccountType(user, AccountType.simmer, PLAN_ID_SIM, userDao),
-                subscriptionDao.updateCancellation(subscriptionId, cancelAt, endedAt)
-            ])
+            await subscriptionDao.updateCancellation(subscriptionId, cancelAt, endedAt)
+            if (user.accountType != AccountType.lifetime) {
+                await Business.updateAccountType(user, AccountType.simmer, PLAN_ID_SIM, userDao, 'subscription stop')
+            }
 
             resolve(user)
         })
@@ -183,17 +181,17 @@ export class Business {
         // const user = await userDao.getUserFromCustomerId(customerId)
         await Promise.all([
             subscriptionDao.update(subscriptionId, customerId, priceId, periodEnd, cancelAt, endedAt),
-            Business.upgradeUser(customerId, plan.accountType, plan.id, userDao)])
+            Business.upgradeUser(customerId, plan.accountType, plan.id, userDao, 'subscription update')])
     }
 
-    static async upgradeUser(customerId: string, newAccountType: AccountType, planId: string, userDao: UserDao) {
+    static async upgradeUser(customerId: string, newAccountType: AccountType, planId: string, userDao: UserDao, trigger?: string) {
         const user = await userDao.getFromCustomerId(customerId)
         if (!user) {
             TicketService.create(2, 'Cannot upgrade user, user not found ' + customerId)
             return;
         }
         const previousPrintCredits = user.printCredits
-        await Business.updateAccountType(user, newAccountType, planId, userDao)
+        await Business.updateAccountType(user, newAccountType, planId, userDao, trigger)
 
         // update print credits
         try {
@@ -207,7 +205,7 @@ export class Business {
         }
     }
 
-    static async updateAccountType(user: User, newAccountType: AccountType, planId: string, userDao: UserDao): Promise<User> {
+    static async updateAccountType(user: User, newAccountType: AccountType, planId: string, userDao: UserDao, trigger?: string): Promise<User> {
         // update account type
         user.accountType = newAccountType
         user.planId = planId
@@ -218,7 +216,8 @@ export class Business {
 
         await userDao.updateType(user)
 
-        const message = 'user ' + user.id + ' updated to ' + user.accountType
+        let message = 'User ' + user.id + ' updated to ' + user.accountType
+        if (trigger) message += '\nTriggered by ' + trigger
         // console.log('[Business.updateAccountType]', message)
         await Email.send(message, EmailType.Purchase)
 

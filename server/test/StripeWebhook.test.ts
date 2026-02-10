@@ -133,7 +133,8 @@ describe('StripeWebhook', () => {
             'cus_TtsJn2A180rOIo',
             AccountType.lifetime,
             'ld1',
-            expect.any(Object) // The UserDao instance passed
+            expect.any(Object), // The UserDao instance passed
+            'stripe webhook'
         );
     });
 
