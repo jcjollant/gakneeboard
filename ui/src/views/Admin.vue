@@ -47,31 +47,7 @@
             </div>
         </div>
         <div v-if="selectedApi === 'profile' && userId > 0">
-            <h2>Properties</h2>
-            <div class="props">
-                <div class="prop-name">Id</div>
-                <div class="prop-value">{{ userId }}</div>
-                <div class="prop-name">Email</div>
-                <div class="prop-value">{{ userEmail }}</div>
-                <div class="prop-name">Account Type</div>
-                <div class="prop-value">{{ userAccountType }}</div>
-                <div class="prop-name">Eula</div>
-                <div class="prop-value">{{ userEula }}</div>
-                <div class="prop-name">Create Time</div>
-                <div class="prop-value">{{ userCreateTime }}</div>
-            </div>
-
-            <h2>Usage 90</h2>
-            <div class="usage">
-                <div>Type</div><div>Count</div>
-                <template v-for="u in usage">
-                    <div class="prop-value">{{ u.type }}</div>
-                    <div class="prop-value">{{ u.count }}</div>
-                </template>
-            </div>
-            
-            <h2>Raw JSON Data</h2>
-            <pre class="json-display">{{ JSON.stringify(rawJsonData, null, 2) }}</pre>
+            <UserProfile :user-profile="userProfileData" />
         </div>
         
         <div v-if="selectedApi === 'active' && Object.keys(activeUsersRaw).length > 0">
@@ -131,18 +107,14 @@ import { useToast } from 'primevue/usetoast';
 import { useRoute, useRouter } from 'vue-router';
 import AirportCreationForm from '../components/admin/AirportCreationForm.vue';
 import TicketManager from '../components/admin/TicketManager.vue';
+import UserProfile from '../components/admin/UserProfile.vue';
 
 const route = useRoute()
 const router = useRouter()
 const inputValue = ref('')
 const toaster = useToaster(useToast())
-const userEmail = ref('')
-const userName = ref('')
 const userId = ref(0)
-const userAccountType = ref('')
-const userEula = ref(0)
-const userCreateTime = ref('')
-const usage = ref<Usage[]>([])
+const userProfileData = ref({})
 const rawJsonData = ref({})
 const selectedApi = ref('profile')
 const activeUsersRaw = ref({})
@@ -185,14 +157,7 @@ const failedTests = computed(() => {
     return failures
 })
 
-class Usage {
-    type: string
-    count: number
-    constructor(type: string, count: number) {
-        this.type = type
-        this.count = count
-    }
-}
+
 
 
 
@@ -213,22 +178,15 @@ function selectApi(api: string) {
 }
 
 
+
+
+
 function handleSubmit() {
     console.debug('[Admin.handleSubmit]', inputValue.value)
-    // Avoid re-fetching if already same ID? No, explicit refresh is good.
     currentUser.getUrl(UrlService.root + 'user/profile/' + inputValue.value).then(res => {
         const userProfile = res.data
         userId.value = userProfile.id
-        userName.value = userProfile.name
-        userEmail.value = userProfile.email
-        userAccountType.value = userProfile.accountType
-        userEula.value = userProfile.eula
-        if (userProfile.create_time) {
-            userCreateTime.value = new Date(userProfile.create_time).toLocaleDateString()
-        } else {
-            userCreateTime.value = 'N/A'
-        }
-        usage.value = userProfile.usage.map((u:any) => new Usage(u.usage_type, u.count))
+        userProfileData.value = userProfile
         rawJsonData.value = res.data
     }).catch(err => {
         toaster.error('Failed', err.message)
@@ -402,30 +360,7 @@ onMounted(() => {
     cursor: not-allowed;
 }
 
-.props {
-    display: grid;
-    grid-template-columns: 1fr 3fr;
-    gap: 0.5rem;
-    background: white;
-    padding: 1rem;
-    border-radius: 6px;
-    margin: 1rem 0;
-}
 
-.prop-name {
-    font-weight: bold;
-    color: #2c3e50;
-}
-
-.usage {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-    background: white;
-    padding: 1rem;
-    border-radius: 6px;
-    margin: 1rem 0;
-}
 
 
 
