@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 import { Formatter } from '../src/lib/Formatter';
-import { AccountType } from '@checklist/shared';
+import { AccountType } from '@gak/shared';
 
 describe('Formatter', () => {
   describe('accountType', () => {

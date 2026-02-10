@@ -5,7 +5,7 @@ import { UserTools } from "../backend/UserTools"
 import { Subscription } from '../backend/models/Subscription'
 import { SubscriptionDao } from '../backend/dao/SubscriptionDao'
 import { Refill } from '../backend/models/Refill'
-import { AccountType, PLAN_ID_SIM } from '@checklist/shared';
+import { AccountType, PLAN_ID_SIM } from '@gak/shared';
 import { Business } from '../backend/business/Business'
 import { TemplateDao } from '../backend/TemplateDao'
 import { TemplateView } from '../backend/models/TemplateView'

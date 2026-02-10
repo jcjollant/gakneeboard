@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@checklist/shared": "file:../shared",
+    "@gak/shared": "file:../shared",
     "@types/cheerio": "^0.22.35",
     "@vercel/blob": "^2.0.0",
     "@vercel/node": "^3.0.27",

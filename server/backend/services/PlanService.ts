@@ -1,4 +1,4 @@
-import { PlanDescription, PLANS } from "@checklist/shared";
+import { PlanDescription, PLANS } from "@gak/shared";
 
 export class PlanService {
     public static getPlan(id: string): PlanDescription | undefined {

@@ -2,7 +2,7 @@
 import { describe, expect, it } from '@jest/globals'
 import { User } from '../backend/models/User';
 import { Business } from '../backend/business/Business';
-import { AccountType, PLAN_ID_SIM } from '@checklist/shared';
+import { AccountType, PLAN_ID_SIM } from '@gak/shared';
 
 describe('New User Defaults', () => {
     it('should initialize empty and then be primed to sim', () => {

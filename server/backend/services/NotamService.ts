@@ -1,5 +1,5 @@
 import { GApiError } from "../GApiError";
-import { SimplifiedNotam, NotamType } from "@checklist/shared";
+import { SimplifiedNotam, NotamType } from "@gak/shared";
 import { NotamDecoder } from "./NotamDecoder";
 
 export enum NotamClassification {

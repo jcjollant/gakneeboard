@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { PLANS, bestValuePlan } from '@checklist/shared';
+import { PLANS, bestValuePlan } from '@gak/shared';
 import { PlanService } from '../backend/services/PlanService';
 
 describe('Plans', () => {

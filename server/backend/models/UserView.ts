@@ -1,7 +1,7 @@
 import { TemplateDao } from '../TemplateDao';
 import { Business } from '../business/Business';
 import { UserDao } from '../dao/UserDao';
-import { AccountType, UserView as IUserView } from '@checklist/shared';
+import { AccountType, UserView as IUserView } from '@gak/shared';
 import { TemplateView } from './TemplateView';
 import { User } from './User'
 

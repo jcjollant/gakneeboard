@@ -4,7 +4,7 @@ import { describe, expect, it, beforeAll, afterAll, xdescribe } from '@jest/glob
 import { UserDao } from '../../backend/dao/UserDao';
 import { Business } from '../../backend/business/Business';
 import { newTestUser } from '../common';
-import { AccountType, PLAN_ID_SIM } from '@checklist/shared';
+import { AccountType, PLAN_ID_SIM } from '@gak/shared';
 import { sql } from '@vercel/postgres';
 
 require('dotenv').config();

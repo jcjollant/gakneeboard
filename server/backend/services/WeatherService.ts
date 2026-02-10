@@ -4,7 +4,7 @@ import { GApiError } from '../GApiError';
 import { ApiCallDao, ApiName } from '../dao/ApiCallDao';
 import { TicketService } from './TicketService';
 
-import { Metar } from '@checklist/shared';
+import { Metar } from '@gak/shared';
 
 export interface FullMetar extends Metar {
     lat: number;

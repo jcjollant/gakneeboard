@@ -72,7 +72,7 @@ import Dialog from 'primevue/dialog'
 import FieldSet from 'primevue/fieldset'
 import PageSelection from './PageSelection.vue';
 import { currentUser } from '../../assets/data';
-import { AccountType } from '@checklist/shared';
+import { AccountType } from '@gak/shared';
 
 import Checkbox from 'primevue/checkbox'
 import { VerticalInfoBarContent } from '../../models/VerticalInfoBarOption';

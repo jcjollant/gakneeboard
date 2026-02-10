@@ -1,4 +1,4 @@
-import { AccountType, PLANS } from '@checklist/shared'
+import { AccountType, PLANS } from '@gak/shared'
 
 export class Formatter {
     static noFuel: string = '-.-'

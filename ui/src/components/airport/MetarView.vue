@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import { PropType, computed } from 'vue';
-import { Metar } from '@checklist/shared';
+import { Metar } from '@gak/shared';
 
 const props = defineProps({
     metar: { type: Object as PropType<Metar>, required: true }

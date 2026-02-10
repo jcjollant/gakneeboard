@@ -2,7 +2,7 @@ import { Business } from "../business/Business"
 import { UsageDao, UsageType } from "../dao/UsageDao"
 import { UserDao } from "../dao/UserDao"
 import { GApiError } from "../GApiError"
-import { AccountType } from '@checklist/shared';
+import { AccountType } from '@gak/shared';
 import { Publication } from "../models/Publication"
 import { Template } from "../models/Template"
 import { TemplateView } from "../models/TemplateView"

@@ -2,7 +2,7 @@ import { SubscriptionDao } from "../dao/SubscriptionDao";
 import { UsageDao } from "../dao/UsageDao";
 import { UserDao } from "../dao/UserDao";
 import { Email, EmailType } from "../Email";
-import { AccountType, PLAN_ID_SIM, PlanDescription, PLANS, PRINT_CREDIT_SIMMER, Quotas } from '@checklist/shared';
+import { AccountType, PLAN_ID_SIM, PlanDescription, PLANS, PRINT_CREDIT_SIMMER, Quotas } from '@gak/shared';
 import { Refill } from "../models/Refill";
 import { User } from "../models/User";
 import { TicketService } from "../services/TicketService";

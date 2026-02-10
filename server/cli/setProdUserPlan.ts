@@ -5,7 +5,7 @@ process.env.POSTGRES_URL = process.env.POSTGRES_PROD_URL;
 
 import { UserDao } from '../backend/dao/UserDao';
 import { Business } from '../backend/business/Business';
-import { PLANS } from '@checklist/shared';
+import { PLANS } from '@gak/shared';
 
 async function upgrade() {
     const args = process.argv.slice(2);

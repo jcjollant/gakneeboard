@@ -9,7 +9,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
-      '@checklist/shared': fileURLToPath(new URL('../shared/src/index.ts', import.meta.url))
+      '@gak/shared': fileURLToPath(new URL('../shared/src/index.ts', import.meta.url))
     },
   },
   build: {

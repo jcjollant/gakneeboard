@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { AccountType, parseAccountType } from '@checklist/shared';
+import { AccountType, parseAccountType } from '@gak/shared';
 import { Formatter } from '../../lib/Formatter';
 
 const props = defineProps({

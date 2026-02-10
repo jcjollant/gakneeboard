@@ -1,4 +1,4 @@
-import { AccountType, PLAN_ID_SIM, PLANS } from '@checklist/shared';
+import { AccountType, PLAN_ID_SIM, PLANS } from '@gak/shared';
 import { describe, expect, it, jest } from '@jest/globals';
 import * as dotenv from 'dotenv';
 import { GApiError } from '../backend/GApiError';

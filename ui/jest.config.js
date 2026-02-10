@@ -5,10 +5,10 @@ export default {
         '^.+\\.(ts|tsx|js|jsx)$': 'babel-jest',
     },
     transformIgnorePatterns: [
-        'node_modules/(?!(@checklist/shared)/)',
+        'node_modules/(?!(@gak/shared)/)',
     ],
     moduleNameMapper: {
-        '^@checklist/shared$': '<rootDir>/../shared/src/index.ts',
+        '^@gak/shared$': '<rootDir>/../shared/src/index.ts',
     },
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
     testMatch: ['**/test/**/*.test.ts'],

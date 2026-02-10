@@ -1,6 +1,6 @@
 
 import { describe, expect, jest, it } from '@jest/globals'
-import { AccountType, PLAN_ID_SIM, PLANS, PRINT_CREDIT_SIMMER } from '@checklist/shared';
+import { AccountType, PLAN_ID_SIM, PLANS, PRINT_CREDIT_SIMMER } from '@gak/shared';
 import { Business } from '../backend/business/Business';
 import { getMockBrandNewSubscription, getMockSubscriptionDao, getMockUserDao, newTestUser } from './common';
 import { MAX_TEMPLATE_SIMMER, MAX_PAGES_SIMMER, MAX_TEMPLATE_BETA, MAX_PAGES_BETA, PRINT_CREDIT_BETA, MAX_TEMPLATE_STUDENT, MAX_PAGES_STUDENT, PRINT_CREDIT_STUDENT, MAX_PAGES_PRIVATE, PRINT_CREDIT_PRIVATE } from './constants';

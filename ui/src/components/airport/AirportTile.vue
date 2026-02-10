@@ -52,7 +52,7 @@
 
 <script setup lang="ts">
 import {ref, onMounted, watch, computed, onUnmounted} from 'vue';
-import { Metar } from '@checklist/shared';
+import { Metar } from '@gak/shared';
 
 import { getAirport, getNotams, getMetar } from '../../services/AirportDataService'
 import { AirportService } from '../../services/AirportService';

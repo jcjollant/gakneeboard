@@ -1,5 +1,5 @@
 {
-  "name": "@checklist/shared",
+  "name": "@gak/shared",
   "version": "6.7.6",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

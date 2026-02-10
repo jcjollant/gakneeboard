@@ -1,4 +1,4 @@
-import { AccountType, UserView } from '@checklist/shared';
+import { AccountType, UserView } from '@gak/shared';
 import axios, { AxiosResponse } from "axios";
 import { Template } from "../models/Template";
 import { User } from "../models/User";

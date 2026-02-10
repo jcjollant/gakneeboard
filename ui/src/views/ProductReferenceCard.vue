@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { PRODUCTS } from '@checklist/shared'
+import { PRODUCTS } from '@gak/shared'
 import { DemoData } from '../assets/DemoData'
 import { SheetName } from '../assets/sheetData'
 import { CheckoutService } from '../services/CheckoutService'

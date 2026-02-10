@@ -1,5 +1,5 @@
 import { createHash } from 'crypto'
-import { AccountType, PLAN_ID_SIM } from '@checklist/shared';
+import { AccountType, PLAN_ID_SIM } from '@gak/shared';
 import { Business } from '../business/Business';
 import { AttributionData } from './AttributionData';
 

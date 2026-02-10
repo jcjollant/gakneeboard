@@ -1,5 +1,5 @@
 
-import { AccountType } from '@checklist/shared';
+import { AccountType } from '@gak/shared';
 import { afterAll, beforeAll, describe, expect, it, xdescribe } from '@jest/globals';
 import { db, sql } from '@vercel/postgres';
 import { UserDao } from '../../backend/dao/UserDao';

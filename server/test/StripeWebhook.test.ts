@@ -3,7 +3,7 @@ import { describe, expect, it, jest, beforeEach } from '@jest/globals';
 import { StripeClient } from '../backend/business/Stripe';
 import { Business } from '../backend/business/Business';
 import { UserDao } from '../backend/dao/UserDao';
-import { AccountType } from '@checklist/shared';
+import { AccountType } from '@gak/shared';
 // Import JSON data
 // We'll use require because importing JSON directly might require configuration
 const lineItems = require('./jsonData/checkout-session-ld-line-items.json');
@@ -31,7 +31,7 @@ jest.mock('../backend/Email', () => {
 
 // Mock PlanService to return a lifetime plan for the price in the JSON
 jest.mock('../backend/services/PlanService', () => {
-    const { AccountType } = require('@checklist/shared');
+    const { AccountType } = require('@gak/shared');
     return {
         PlanService: {
             getPlanByPriceId: jest.fn((priceId) => {

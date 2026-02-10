@@ -1,4 +1,4 @@
-import { Metar } from '@checklist/shared'
+import { Metar } from '@gak/shared'
 import axios from 'axios'
 import { Airport } from '../models/Airport'
 import { AirportCreationRequest } from '../models/AirportCreationRequest'

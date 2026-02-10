@@ -89,7 +89,7 @@ import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../assets/Toaster';
 
 import Menu from '../components/menu/Menu.vue';
-import { AccountType, PlanDescription } from '@checklist/shared';
+import { AccountType, PlanDescription } from '@gak/shared';
 
 const toaster = useToaster(useToast())
 const route = useRoute()
@@ -100,7 +100,7 @@ const showOutOfCreditsBanner = computed(() => {
 })
 
 // import plans from '../constants/Plans'
-import { PLANS, bestValuePlan } from '@checklist/shared'
+import { PLANS, bestValuePlan } from '@gak/shared'
 
 const plans = PLANS.filter( p => p.show )
 const router = useRouter()

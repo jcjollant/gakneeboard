@@ -7,7 +7,7 @@ import { TemplateDao } from '../backend/TemplateDao';
 import { TemplateView } from '../backend/models/TemplateView';
 import { Template } from '../backend/models/Template';
 import { User } from '../backend/models/User';
-import { AccountType, PLAN_ID_SIM } from '@checklist/shared';
+import { AccountType, PLAN_ID_SIM } from '@gak/shared';
 import { GApiError } from '../backend/GApiError';
 import { TemplateFormat } from '../backend/models/TemplateFormat';
 

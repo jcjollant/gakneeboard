@@ -4,7 +4,7 @@ import { UserTools } from '../backend/UserTools'
 import { jcSource, MAX_PAGES_SIMMER, MAX_TEMPLATE_SIMMER } from './constants'
 import { jcHash, jcUserId, jcToken, jcName, jcEmail } from './constants'
 import { UserView } from '../backend/models/UserView';
-import { AccountType, PRINT_CREDIT_SIMMER } from '@checklist/shared';
+import { AccountType, PRINT_CREDIT_SIMMER } from '@gak/shared';
 import { UserDao } from '../backend/dao/UserDao';
 import { Email } from '../backend/Email';
 

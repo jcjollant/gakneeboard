@@ -16,7 +16,7 @@ process.env.STRIPE_BD1_PRICE = 'price_1QzroGG89XrbqGAIUhzCrr5F';
 process.env.STRIPE_LD1_PRICE = 'price_1SRl2PG89XrbqGAIJSHioW7g';
 
 import { StripeClient, Price } from '../backend/business/Stripe';
-import { AccountType } from '@checklist/shared';
+import { AccountType } from '@gak/shared';
 
 describe('StripeClient', () => {
     describe('isSubscription', () => {

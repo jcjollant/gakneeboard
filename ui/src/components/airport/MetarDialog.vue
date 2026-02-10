@@ -14,7 +14,7 @@
 import { computed, ref, watch, PropType } from 'vue';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
-import { Metar } from '@checklist/shared';
+import { Metar } from '@gak/shared';
 import MetarView from './MetarView.vue';
 
 const props = defineProps({
