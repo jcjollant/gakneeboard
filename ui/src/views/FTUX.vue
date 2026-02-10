@@ -25,17 +25,13 @@
                     <h1 class="hero-title">Better Kneeboards For Safer Pilots</h1>
                     <p class="hero-subtitle">Improve your situational awareness and confidence with a custom kneeboard template that gives you exactly what you want when you need it.</p>
                     <button class="cta-primary" @click="loadDemo()">Create Your First Template</button>
-                    <p class="trust-indicator">Join 150+ pilots using GA Kneeboard</p>
+                    <p class="trust-indicator">Join 190+ pilots using GA Kneeboard</p>
                 </div>
                 <div class="hero-visual">
-                    <div class="visual-split">
-                        <div class="visual-before">
-                            <h4>Replace Confusion</h4>
-                            <img src="/assets/renton-sectional.png" alt="Sectional chart" class="visual-image" />
-                        </div>
+                    <div class="visual-single">
                         <div class="visual-after" @click="loadDemo()">
-                            <h4>By Clear Visuals</h4>
-                            <img src="/assets/renton-tile.png" alt="Organized kneeboard" class="visual-image" />
+                            <h4>Not Your Granddad's Kneeboard</h4>
+                            <img src="/assets/solution.jpg" alt="Organized kneeboard" class="visual-image" />
                         </div>
                     </div>
                 </div>
@@ -53,18 +49,26 @@
                         <p>{{demo.description}}</p>
                     </div>
                 </div>
-                <div class="feature-callouts">
-                    <div class="callout">
-                        <div class="callout-icon">✅</div>
-                        <h4>Custom Checklists</h4>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="testimonials">
+            <div class="container">
+                <h2>Pilots Love GA Kneeboard</h2>
+                <p class="section-subtitle">Actual feedback from pilots using the app</p>
+                <div class="testimonial-grid">
+                    <div class="testimonial">
+                        <p>"I have been using The Entire Flight VFR & IFR flight pad but with your product I get the frequencies already added along with traffic pattern for the runway.  Thanks for the wonderful product."</p>
+                        <cite>- Mike C.</cite>
                     </div>
-                    <div class="callout">
-                        <div class="callout-icon">🛩️</div>
-                        <h4>Airport Data</h4>
+                    <div class="testimonial">
+                        <p>"I fly with my iPad but I really like having all the information handy as a quick reference. I have really enjoyed watching the product grow and become more useful."</p>
+                        <cite>- Leonardo M.</cite>
                     </div>
-                    <div class="callout">
-                        <div class="callout-icon">📻</div>
-                        <h4>Comm Frequencies</h4>
+                    <div class="testimonial">
+                        <p>"I love the ability to enter the flight plan and the app populates the kneeboard with airport information ... frequencies, rwy drawings etc."</p>
+                        <cite>- Trevor M.</cite>
                     </div>
                 </div>
             </div>
@@ -84,62 +88,27 @@
             </div>
         </section>
 
-        <!-- Testimonials -->
-        <section class="testimonials">
-            <div class="container">
-                <h2>Pilots Love GA Kneeboard</h2>
-                <div class="testimonial-grid">
-                    <div class="testimonial">
-                        <div class="avatar">👨🎓</div>
-                        <p>"Custom Checklists save my bacon multiple times a flight"</p>
-                        <cite>- Student Pilot</cite>
-                    </div>
-                    <div class="testimonial">
-                        <div class="avatar">👨✈️</div>
-                        <p>"Traffic patterns visualization is a blessing for non towered airports"</p>
-                        <cite>- Private Pilot</cite>
-                    </div>
-                    <div class="testimonial">
-                        <div class="avatar">👩✈️</div>
-                        <p>"I capture clearance way faster than my old CRAFT (on first pass)"</p>
-                        <cite>- Instrument Pilot</cite>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- Problem/Solution -->
         <section class="problem-solution">
             <div class="container">
                 <div class="solution-grid">
                     <div class="problem">
                         <h3>The Problem</h3>
-                        <div class="problem-icon">🤹</div>
                         <ul>
-                            <li>iPads are cluttered when they don't fail</li>
-                            <li>The data you want is somewhere, right?</li>
-                            <li>Was that a 0 or a 6?</li>
+                            <li>iPads are great moving maps, but...</li>
+                            <li>Screens go dark in awkward moments</li>
+                            <li>The data you want is buried in submenus</li>
+                            <li>Your hand writing is even worse with a stylus</li>
                         </ul>
                     </div>
                     <div class="solution">
                         <h3>The Solution</h3>
-                        <div class="solution-icon">📋</div>
                         <ul>
                             <li>Everything in one place</li>
+                            <li>Customizable for VFR and IFR</li>
                             <li>Paper Never Runs out of battery</li>
                             <li>Write things down faster and cleaner</li>
                         </ul>
-                    </div>
-                </div>
-                <div class="benefits">
-                    <div class="benefit">
-                        <h4>Checklists That Work For You</h4>
-                    </div>
-                    <div class="benefit">
-                        <h4>The Right Data At The Right Time</h4>
-                    </div>
-                    <div class="benefit">
-                        <h4>Optimized Notepads</h4>
                     </div>
                 </div>
             </div>
@@ -234,7 +203,6 @@ const readyToPrintTemplates = ref<Demo[]>([
     new Demo('Reference Card', ThumbnailImage.reference0, 'Quick reference for important information', SheetName.reference),
     new Demo('Acronyms', ThumbnailImage.acronyms0, 'Aviation acronyms and abbreviations', SheetName.acronyms),
     new Demo('IFR Training', ThumbnailImage.ifrTraining, 'Instrument training aids and procedures', SheetName.ifrStrips),
-    new Demo('IFR Training', ThumbnailImage.ifrTraining, 'Instrument training aids and procedures', SheetName.ifrStrips),
 ])
 
 const router = useRouter()
@@ -268,6 +236,33 @@ function goToPlans() {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     line-height: 1.6;
     color: #1e3a8a;
+}
+
+/* Common Styles */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+section {
+    padding: 4rem 0;
+}
+
+h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 3rem;
+    color: #1e3a8a;
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 1.125rem;
+    color: #64748b;
+    margin-top: -2rem;
+    margin-bottom: 2rem;
 }
 
 /* Navigation */
@@ -350,7 +345,7 @@ function goToPlans() {
 
 /* Hero Section */
 .hero {
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
     padding: 4rem 0;
 }
 
@@ -413,28 +408,22 @@ function goToPlans() {
     font-size: 0.875rem;
 }
 
-.visual-split {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+.visual-single {
+    display: flex;
+    justify-content: center;
     text-align: center;
 }
 
-.visual-before, .visual-after {
-    padding: 1rem;
+.visual-after {
+    padding: 1.5rem;
     border-radius: 12px;
     background: white;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
-
-.visual-before {
-    border-left: 4px solid #ef4444;
-}
-
-.visual-after {
     border-left: 4px solid #10b981;
     cursor: pointer;
     transition: all 0.3s;
+    max-width: 500px;
+    width: 100%;
 }
 
 .visual-after:hover {
@@ -442,50 +431,30 @@ function goToPlans() {
     box-shadow: 0 8px 30px rgba(0,0,0,0.15);
 }
 
-.scattered-items, .organized-board {
-    font-size: 2rem;
-    margin-top: 1rem;
-}
-
 .visual-image {
-    width: 200px;
-    height: 200px;
-    object-fit: contain;
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    object-position: top;
     border-radius: 8px;
 }
 
-/* Sections */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-}
-
-section {
-    padding: 4rem 0;
-}
-
-h2 {
-    font-size: 2.5rem;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 3rem;
-    color: #1e3a8a;
-}
-
-/* Demo Section */
-.demo-section {
+/* Card Styles - Shared between demo and template cards */
+.demo-section, .ready-to-print {
     background: white;
 }
 
-.demo-grid {
+.demo-grid, .template-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 2rem;
+}
+
+.demo-grid {
     margin-bottom: 3rem;
 }
 
-.demo-card {
+.demo-card, .template-card {
     background: white;
     border-radius: 12px;
     padding: 1.5rem;
@@ -495,12 +464,12 @@ h2 {
     text-align: center;
 }
 
-.demo-card:hover {
+.demo-card:hover, .template-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 30px rgba(0,0,0,0.15);
 }
 
-.demo-card img {
+.demo-card img, .template-card img {
     width: 100%;
     height: 350px;
     object-fit: cover;
@@ -508,28 +477,16 @@ h2 {
     margin-bottom: 1rem;
 }
 
-.demo-card h3 {
+.demo-card h3, .template-card h3 {
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
     color: #1e3a8a;
 }
 
-.feature-callouts {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    text-align: center;
-}
-
-.callout-icon {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-}
-
 /* Testimonials */
 .testimonials {
-    background: #f8fafc;
+    background: #e2e8f0;
 }
 
 .testimonial-grid {
@@ -546,55 +503,9 @@ h2 {
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 
-.avatar {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-}
-
-/* Ready To Print */
-.ready-to-print {
-    background: white;
-}
-
-.template-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-}
-
-.template-card {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    cursor: pointer;
-    transition: all 0.3s;
-    text-align: center;
-}
-
-.template-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-}
-
-.template-card img {
-    width: 100%;
-    height: 350px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-}
-
-.template-card h3 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #1e3a8a;
-}
-
 /* Problem/Solution */
 .problem-solution {
-    background: #f8fafc;
+    background: #e2e8f0;
 }
 
 .solution-grid {
@@ -620,9 +531,8 @@ h2 {
     border: 2px solid #bbf7d0;
 }
 
-.problem-icon, .solution-icon {
-    font-size: 3rem;
-    margin: 1rem 0;
+.problem ul, .solution ul {
+    text-align: left;
 }
 
 .benefits {
@@ -641,24 +551,7 @@ h2 {
 
 /* Pricing */
 .pricing {
-    background: #f8fafc;
-}
-
-.urgency-banner {
-    background: #f97316;
-    color: white;
-    padding: 1rem;
-    border-radius: 8px;
-    text-align: center;
-    margin-bottom: 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.countdown {
-    font-weight: bold;
-    font-size: 1.125rem;
+    background: white;
 }
 
 .pricing-grid {
@@ -685,6 +578,10 @@ h2 {
     transform: scale(1.05);
 }
 
+.pricing-card ul {
+    text-align: left !important;
+}
+
 .badge {
     position: absolute;
     top: -15px;
@@ -696,7 +593,6 @@ h2 {
     border-radius: 20px;
     font-size: 0.875rem;
     font-weight: 600;
-    width: auto;
 }
 
 .price {
@@ -740,19 +636,17 @@ h2 {
     background: #cbd5e1;
 }
 
-.guarantee {
-    text-align: center;
-    color: #64748b;
-    font-size: 0.875rem;
-}
-
 .pricing-card .btn-primary,
 .pricing-card .btn-secondary {
     margin-top: auto !important;
 }
 
-.pricing-card ul {
-    text-align: left !important;
+/* Banner */
+.banner-section {
+    padding: 2rem 0;
+    background: #e2e8f0;
+    display: flex;
+    justify-content: center;
 }
 
 /* Mobile Responsive */
@@ -787,42 +681,12 @@ h2 {
         font-size: 2rem;
     }
     
-    .visual-split {
-        grid-template-columns: 1fr;
-    }
-    
-    .solution-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .pricing-grid {
+    .solution-grid, .pricing-grid, .benefits {
         grid-template-columns: 1fr;
     }
     
     .pricing-card.popular {
         transform: none;
     }
-    
-    .feature-callouts, .benefits {
-        grid-template-columns: 1fr;
-    }
-    
-    .urgency-banner {
-        flex-direction: column;
-        gap: 1rem;
-    }
-}
-
-.banner-section {
-    padding: 2rem 0;
-    background: #f8fafc;
-    display: flex;
-    justify-content: center;
-}
-
-.flex-center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 </style>
