@@ -179,10 +179,12 @@ describe('HealthChecks', () => {
             process.env.NMS_API_KEY = 'test';
             process.env.NMS_API_SECRET = 'test';
             process.env.AERONAV_DATA_CYCLE = 'test';
+            process.env.SUPABASE_URL = 'test';
+            process.env.SUPABASE_SERVICE_ROLE_KEY = 'test';
 
             const result = await HealthCheck.environmentVariables();
             expect(result.status).toBe(Check.SUCCESS);
-            expect(result.msg).toContain('Found 15 variables');
+            expect(result.msg).toContain('Found 17 variables');
         });
 
         test('Failure: Missing variable', async () => {

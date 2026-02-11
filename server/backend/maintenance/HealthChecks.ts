@@ -146,7 +146,9 @@ export class HealthCheck {
             'NMS_API_URL',
             'NMS_API_KEY',
             'NMS_API_SECRET',
-            'AERONAV_DATA_CYCLE']
+            'AERONAV_DATA_CYCLE',
+            'SUPABASE_URL',
+            'SUPABASE_SERVICE_ROLE_KEY']
 
         const check: Check = new Check("Environment Variables")
         for (const envVar of envVars) {
