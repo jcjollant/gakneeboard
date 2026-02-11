@@ -1,5 +1,5 @@
 <template>
-    <div class="menuButton" :class="{'passive':!(active||disabled),'active':active,'danger':danger,'disabled':disabled}">
+    <div class="menuButton" :class="{'passive':!(active||disabled||primary),'active':active,'primary':primary,'danger':danger,'disabled':disabled}">
         <font-awesome-icon :icon="['fas', icon]"></font-awesome-icon>
         <div v-if="label" class="label">{{ label }}</div>
     </div>
@@ -8,6 +8,7 @@
 <script setup lang="ts">
 const props = defineProps({
     active: { type: Boolean, default: false},
+    primary: { type: Boolean, default: false},
     danger: { type: Boolean, default: false},
     icon: { type: String, default: 'question' },
     label: { type: String, default: null},
@@ -37,12 +38,27 @@ const props = defineProps({
 
 .passive, .active:hover {
     color: white;
+    background-color: var(--bg-secondary);
+}
+
+.passive:hover {
+    background-color: var(--bg-secondary-hover);
+}
+
+.primary {
+    color: white;
+    background-color: var(--bg);
+}
+
+.primary:hover {
     background-color: var(--bg-hover);
+    box-shadow: 0 0 10px rgba(33, 150, 243, 0.5);
 }
 
 .passive.danger {
     background-color: #F33;
 }
+
 
 .menuButton:hover {
     box-shadow: rgba(0, 0, 0, 0.8) 0px 3px 8px;

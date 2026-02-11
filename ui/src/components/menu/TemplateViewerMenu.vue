@@ -14,7 +14,7 @@
       @click="$emit('update:isCollapsed', true)"/>
     
     <!-- Always visible in Expanded modes -->
-    <MenuButton id="btnPrint" icon="print" title="Print Kneeboard" label="Print"
+    <MenuButton id="btnPrint" icon="print" title="Print Kneeboard" label="Print" primary
       @click="$emit('print')"/>
     
     <MenuButton id="btnSave" icon="save" title="Save Kneeboard to the Cloud" label="Save" :disabled="!isTemplateValid"
