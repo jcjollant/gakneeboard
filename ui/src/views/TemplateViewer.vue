@@ -8,31 +8,20 @@
     <!-- <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
       @offset="onOffset" @update="onPageUpdate" /> -->
     <div class="pageGroup">
-        <div v-if="menuCollapased" class="templateMenu collapsed">
-          <MenuButton id="btnExpand" icon="bars" title="Show Action Buttons" label="Show Actions"
-            @click="menuCollapased=false"/>
-        </div>
-        <div v-else class="templateMenu">
-          <MenuButton id="btnExpand" icon="bars" title="Hide Action Buttons" label="Hide Actions" :active="true"
-            @click="menuCollapased=true"/>
-            <MenuButton id="btnPrint" icon="print" title="Print Kneeboard" label="Print"
-            @click="onPrint"/>
-            <MenuButton id="btnSave" icon="save" title="Save Kneeboard to the Cloud" label="Save" :disabled="activeTemplate.isInvalid()"
-            @click="onSave(false)"/>
-            <MenuButton id="btnDuplicate" v-if="activeTemplate.ver > 0" icon="clone" title="Save as a duplicate new kneeboard" label="Duplicate" @click="onSave(true)" />
-            <MenuButton id="btnRoll" icon="scroll" title="Toggle Scroll View" label="Toggle Scroll" :active="showScroll"
-              @click="onScroll"/>
-            <MenuButton id="btnEditor"
-            icon="screwdriver-wrench" title="Toggle Editor mode" label="Toggle Editor" :active="showEditor"
-            :class="{'editorButtonActive':showEditor}" class="editorButton" 
-            @click="onEditor"/>
-          <MenuButton id="btnExport" icon="file-export" title="Export Kneeboard to Various Formats" label="Export"
-            @click="onExport"/>
-          <MenuButton id="btnSettings" icon="gear" title="Kneeboard Name and Description" label="Properties"
-            @click="onSettings"/>
-          <MenuButton id="btnDelete" icon="trash" title="Delete Kneeboard" label="Delete" :danger="true" :disabled="activeTemplate.isInvalid()"
-            @click="onDelete"/>
-        </div>
+        <TemplateViewerMenu
+          v-model:isCollapsed="menuCollapsed"
+          :isTemplateValid="!activeTemplate.isInvalid()"
+          :hasVersion="activeTemplate.ver > 0"
+          :showScroll="showScroll"
+          :showEditor="showEditor"
+          @print="onPrint"
+          @save="onSave"
+          @scroll="onScroll"
+          @editor="onEditor"
+          @export="onExport"
+          @settings="onSettings"
+          @delete="onDelete"
+        />
       </div>
       <div v-if="showScroll && activeTemplate" class="scrollView">
           <Tile v-for="(item, index) in scrollTiles" :key="index"
@@ -97,7 +86,7 @@ import { useToaster } from '../assets/Toaster.ts'
 // Components
 import html2canvas from 'html2canvas-pro'
 import Menu from '../components/menu/Menu.vue'
-import MenuButton from '../components/menu/MenuButton.vue'
+import TemplateViewerMenu from '../components/menu/TemplateViewerMenu.vue'
 import LoadingPage from '../components/page/LoadingPage.vue'
 import Page from '../components/page/Page.vue'
 import TemplateExport from '../components/templates/TemplateExport.vue'
@@ -113,7 +102,7 @@ let cssPageGap = -1
 let cssPageWidth = -1
 const emits = defineEmits(['about','template'])
 const confirm = useConfirm()
-const menuCollapased = ref(false)
+const menuCollapsed = ref(false)
 const offset = ref(0)
 const offsetLast = ref(0)
 const route = useRoute()
@@ -679,7 +668,7 @@ function updateOffsets() {
   offsetLast.value = maxOffset;
   // console.log('[TemplateViewer.updateOffset] offsetLast', maxOffset)
 
-  menuCollapased.value = window.innerWidth <= cssPageWidth + cssPageGap
+  menuCollapsed.value = window.innerWidth <= cssPageWidth + cssPageGap
 }
 
 function updateThumbnail(template:Template) {
@@ -810,9 +799,7 @@ async function onCaptureTile(pageIndex: number, tileIndex: number) {
 </script>
 
 <style scoped>
-#btnDelete {
-  margin-top: 40px;;
-}
+
 
 .main {
   position: relative;
@@ -865,16 +852,7 @@ async function onCaptureTile(pageIndex: number, tileIndex: number) {
   min-height: 100vh;
 }
 
-.templateMenu {
-  position: absolute;
-  left: calc( var(--menu-border-offset) / 2);
-  top: 0;
-  display: flex;
-  flex-flow: column;
-  gap: var(--menu-border-offset);
-  z-index: 20;
-  top: -15px;
-}
+
 
 .twoPages {
     display: flex;
