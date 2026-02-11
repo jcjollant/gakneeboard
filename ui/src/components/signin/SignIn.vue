@@ -1,6 +1,6 @@
 <template>
     <Dialog modal header="Sign In">
-      <div class="mb-5">
+      <!-- <div class="mb-5">
         <span>Signing In will enable the following features:</span>
         <span>
           <ul class="benefits-list">
@@ -10,7 +10,7 @@
             <li>📝 Feedback follow up</li>
           </ul>
         </span>
-      </div>
+      </div> -->
 
 
       <div class="mb-5">
@@ -22,11 +22,24 @@
         {{ errorMessage }}
       </div>
       <div class="pending" v-if="authenticating">Working on it...</div>
-      <div class="actions" v-else>
-        <Button label="Do not sign in" @click="emits('close')" link></Button>
+      <div class="auth-divider" v-if="!authenticating">
+        <span>Use a social account</span>
+      </div>
+      <div class="actions" v-if="!authenticating">
+        <!-- <Button label="Do not sign in" @click="emits('close')" link></Button> -->
         <AppleSignInButton @success="onAppleSuccess" @error="onLoginError" />
         <GoogleSignInButton @success="onGoogleSuccess" @error="onLoginError" />
         <!-- <FacebookSignInButton @onSuccess="onFacebookSuccess" @onFailure="onLoginError" /> -->
+      </div>
+
+      <!-- Divider -->
+      <div class="auth-divider" v-if="!authenticating">
+        <span>or</span>
+      </div>
+
+      <!-- Email/Password Authentication -->
+      <div v-if="!authenticating">
+        <EmailPasswordAuth @success="onEmailPasswordSuccess" @error="onLoginError" />
       </div>
     </Dialog>
 </template>
@@ -39,6 +52,7 @@ import { authenticationRequest } from '../../assets/data'
 import AppleSignInButton from "./AppleSignInButton.vue"
 import Button from 'primevue/button'; 
 import Dialog from 'primevue/dialog';
+import EmailPasswordAuth from './EmailPasswordAuth.vue'
 // import FacebookSignInButton from './FacebookSignInButton.vue'
 import GoogleSignInButton from './GoogleSignInButton.vue';
 import OneChoice from '../shared/OneChoice.vue';
@@ -106,12 +120,23 @@ function onGoogleSuccess( response:any) {
   authenticate('google', credential)
 }
 
+function onEmailPasswordSuccess( data:any) {
+  // console.log('[SignIn.onEmailPasswordSuccess]', data)
+  // For Supabase auth, we need to get the access token from the session
+  const { session, user } = data
+  if (session && session.access_token) {
+    authenticate('supabase', session.access_token, user)
+  }
+}
+
 </script>
 
 <style scoped>
 .actions {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content: center;
   gap: 1rem;
 }
 .pending {
@@ -133,5 +158,28 @@ function onGoogleSuccess( response:any) {
   text-align: center;
   font-weight: bold;
 }
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.auth-divider span {
+  padding: 0 1rem;
+  color: var(--text-color-secondary);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 </style>
   

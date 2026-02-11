@@ -5,11 +5,13 @@ import { TemplateView } from './models/TemplateView';
 import { User } from './models/User';
 import { UserView } from './models/UserView';
 import { TemplateDao } from './TemplateDao';
+import { SupabaseService } from './services/SupabaseService';
 
 export class UserTools {
     static apple: string = 'apple'
     static facebook: string = 'facebook'
     static google: string = 'google'
+    static supabase: string = 'supabase'
     static test: string = 'test'
     static defaultUserName: string = 'user'
 
@@ -24,6 +26,9 @@ export class UserTools {
             user = UserTools.decodeGoogle(body.token);
         } else if (body.source == UserTools.apple) {
             user = UserTools.decodeApple(body.token, body.user);
+        } else if (body.source == UserTools.supabase) {
+            // Verify Supabase token and create user
+            user = await UserTools.decodeSupabase(body.token, body.user);
         } else if (body.source == UserTools.test) {
             user = body.testUser;
         } else {
@@ -150,6 +155,41 @@ export class UserTools {
         return user
     }
 
+    /**
+     * Decode and verify a Supabase access token into a user
+     * @param token Supabase access token
+     * @param userData Optional user data from Supabase
+     * @returns A well formed user object on success, throws error on failure
+     */
+    static async decodeSupabase(token: string, userData: any = undefined): Promise<User> {
+        // Verify the token with Supabase
+        const supabaseUser = await SupabaseService.verifyToken(token)
+
+        if (!supabaseUser || !supabaseUser.email) {
+            throw new Error('Invalid Supabase token or missing email')
+        }
+
+        // Create user hash from email
+        const sha256: string = UserTools.createUserSha(UserTools.supabase, supabaseUser.email)
+        const user: User = new User(0, sha256)
+        user.setSource(UserTools.supabase)
+        user.setEmail(supabaseUser.email)
+
+        // Extract name from user metadata or email
+        let userName = ''
+        if (userData && userData.user_metadata && userData.user_metadata.full_name) {
+            userName = userData.user_metadata.full_name
+        } else if (supabaseUser.user_metadata && supabaseUser.user_metadata.full_name) {
+            userName = supabaseUser.user_metadata.full_name
+        } else {
+            // Default to email username
+            userName = supabaseUser.email.split('@')[0]
+        }
+        user.setName(userName)
+
+        return user
+    }
+
     static isAdmin(requester: number) {
         return requester == 1
     }
@@ -198,6 +238,9 @@ export class UserTools {
     }
 
     public static hasValidSource(user: User): boolean {
-        return user.source === UserTools.google || user.source === UserTools.apple || user.source === UserTools.facebook
+        return user.source === UserTools.google ||
+            user.source === UserTools.apple ||
+            user.source === UserTools.facebook ||
+            user.source === UserTools.supabase
     }
 }

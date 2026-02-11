@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest",
     "debug": "node --debug-brk --inspect ./node_modules/jest/bin/jest -i",
+    "cleanup-test-users": "tsx cli/cleanupTestUsers.ts",
     "prepare": "husky",
     "postinstall": "cd ../shared && npm install && npm run build"
   },
@@ -14,6 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "@gak/shared": "file:../shared",
+    "@supabase/supabase-js": "^2.95.3",
     "@types/cheerio": "^0.22.35",
     "@vercel/blob": "^2.0.0",
     "@vercel/node": "^3.0.27",
