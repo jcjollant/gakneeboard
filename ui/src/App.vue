@@ -82,6 +82,14 @@ onMounted( () => {
 
     // test current route name
     if(window.location.pathname == '/') {
+
+      // Check for password recovery hash (Supabase Auth)
+      if (window.location.hash && window.location.hash.includes('type=recovery')) {
+          console.log('[App] Recovery hash detected, redirecting to reset password page')
+          router.push({ name: RouterNames.ResetPassword, hash: window.location.hash })
+          return
+      }
+
       // Do we have anything to load from URL?
       let urlParams = new URLSearchParams(window.location.search);
   

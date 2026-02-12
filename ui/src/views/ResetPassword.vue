@@ -79,20 +79,35 @@ onMounted(async () => {
     return
   }
 
-  // Check if we have a session
+  // Set a timeout to prevent infinite loading
+  const timeoutId = setTimeout(() => {
+    if (loading.value) {
+      console.warn('[ResetPassword] Session check timed out')
+      errorMessage.value = 'Invalid or expired reset link. Please request a new one.'
+      loading.value = false
+      setTimeout(() => router.push('/'), 3000)
+    }
+  }, 5000)
+
+  // specific check for recovery flow
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    console.log('[ResetPassword] Auth State Change:', event)
+    if (event === 'PASSWORD_RECOVERY' || (event === 'SIGNED_IN' && session)) {
+      clearTimeout(timeoutId)
+      loading.value = false
+    }
+  })
+
+  // Initial check (in case we are already authenticated)
   const { data: { session }, error } = await supabase.auth.getSession()
   
-  if (error || !session) {
-    errorMessage.value = 'Invalid or expired reset link. Please try again.'
+  if (session) {
+    clearTimeout(timeoutId)
     loading.value = false
-    // Redirect to login after a delay
-    setTimeout(() => {
-      router.push('/')
-    }, 3000)
-    return
+  } else if (error) {
+    console.error('[ResetPassword] Session error:', error)
+    // Don't fail immediately, wait for onAuthStateChange
   }
-  
-  loading.value = false
 })
 
 async function handleUpdatePassword() {
