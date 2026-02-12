@@ -16,10 +16,12 @@ const PageTest = () => import('../views/PageTest.vue');
 const AffiliateRedirect = () => import('../views/AffiliateRedirect.vue');
 const ProductReferenceCard = () => import('../views/ProductReferenceCard.vue');
 const AuthCallback = () => import('../views/AuthCallback.vue');
+const ResetPassword = () => import('../views/ResetPassword.vue');
 
 export const RouterNames = {
     Admin: 'Admin',
     AuthCallback: 'AuthCallback',
+    ResetPassword: 'Reset Password',
     Home: 'Home',
     Plans: 'Plans',
     ThankYou: 'Thank you',
@@ -41,6 +43,7 @@ const routes = [
     { path: '/f', redirect: { name: RouterNames.FTUX, query: { utm_source: 'facebook', utm_medium: 'comment', utm_campaign: 'weekly' } } },
     { path: '/admin', name: RouterNames.Admin, component: Admin },
     { path: '/auth/callback', name: RouterNames.AuthCallback, component: AuthCallback },
+    { path: '/auth/reset-password', name: RouterNames.ResetPassword, component: ResetPassword },
     { path: '/plans', name: RouterNames.Plans, component: PricingPlans },
     { path: '/thankyou', name: RouterNames.ThankYou, component: ThankYou },
     { path: '/print/:id', name: RouterNames.Print, component: Print },
