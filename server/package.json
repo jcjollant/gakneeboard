@@ -1,6 +1,6 @@
 {
   "name": "gak-server",
-  "version": "6.7.16",
+  "version": "6.7.18",
   "description": "run `vercel dev` to run the local service",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,8 @@
     "cleanup-test-users": "tsx cli/cleanupTestUsers.ts",
     "sketch": "tsx cli/manualSketchUpdate.ts",
     "prepare": "husky",
-    "postinstall": "cd ../shared && npm install && npm run build"
+    "postinstall": "cd ../shared && npm install && npm run build",
+    "version": "tsx cli/updateVersion.ts"
   },
   "keywords": [],
   "author": "",
