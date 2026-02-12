@@ -65,6 +65,7 @@
 <script setup lang="ts">
 import { computeSHA256 } from '../assets/Sha.ts'
 import { currentUser } from '../assets/data.js'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { DemoData } from '../assets/DemoData.ts'
 import { duplicate } from '../assets/data'
 import { EditorAction } from '../assets/EditorAction.ts'

@@ -20,7 +20,10 @@ export class PublicationService {
             return undefined
         }
 
-        return TemplateView.parseTemplate(template, pub)
+        const view = TemplateView.parseTemplate(template, pub)
+        // Force the id to 0 because the requester is most likely not the creator and we don't want to expose the source template id
+        view.id = 0
+        return view
     }
 
     // Get a list of published templates
