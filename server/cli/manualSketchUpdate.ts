@@ -9,15 +9,14 @@ if (process.env.POSTGRES_PROD_URL) {
 
 //===============================================================================
 // Update all airports that do not have a sketch, with version 15 and are current
-import { sql } from "@vercel/postgres";
-import { AirportSketch } from "../backend/AirportSketch";
-import { AirportDao } from "../backend/AirportDao";
 import * as fs from 'fs';
 
 const cycle = process.env.AERONAV_DATA_CYCLE
 
 // declare and execute
 async function doIt() {
+    const { AirportSketch } = await import("../backend/AirportSketch.js");
+    const { AirportDao } = await import("../backend/AirportDao.js");
     const args = process.argv.slice(2);
     if (args.length >= 2) {
         const airportCode = args[0];

@@ -20,6 +20,7 @@ import { Authorization } from "../backend/services/Authorization";
 import { NotamService } from "../backend/services/NotamService";
 import { WeatherService } from "../backend/services/WeatherService";
 import { HealthCheck } from "../backend/maintenance/HealthChecks";
+import { Ticket } from "../backend/models/Ticket";
 const port: number = 3000
 const app = express();
 
@@ -419,13 +420,13 @@ app.post('/template', async (req: Request, res: Response) => {
     TemplateService.save(payload.user, payload.sheet).then((status) => {
         // console.log('[index.post/sheet]', JSON.stringify(sheet))
         res.status(status.code).send(status.template)
-    }).catch((e) => {
-        if (e instanceof GApiError && e.status == 402) {
-            TicketService.create(5, 'User ' + payload.user.id + ' cannot save template ' + payload.sheet.id + ': ' + e.message)
+    }).catch(async (e) => {
+        let ticket = undefined
+        if (e instanceof GApiError && e.status === 402) {
             res.status(e.status).send(e.message)
-        } else {
-            catchError(res, e, 'POST /template')
+            ticket = TicketService.getTicket(5, 'Template save failed for ' + payload.user + ' ' + e)
         }
+        catchError(res, e, 'POST /template', ticket)
     })
 })
 
@@ -449,18 +450,23 @@ app.delete('/template/:id', async (req: Request, res: Response) => {
             catchError(res, e, 'DELETE /template/:id')
         }
     }
-    // console.log( "[index] DELETE sheet " + req.params.id
 })
 
 app.post('/templateThumbnail', upload.single('image'), async (req: Request, res: Response) => {
+    let userId = undefined
+    let templateId = undefined
     try {
-        const userId = await UserTools.userIdFromRequest(req)
-        const templateId = Number(req.body.templateId)
+        userId = await UserTools.userIdFromRequest(req)
+        templateId = Number(req.body.templateId)
         const thumbnailHash = req.body.sha256;
         const thumbnailData = await TemplateService.updateThumbnail(templateId, userId, req.file.buffer, thumbnailHash)
         res.send(thumbnailData)
     } catch (e) {
-        catchError(res, e, 'POST /templateThumbnail')
+        let ticket = undefined
+        if (e instanceof GApiError && e.status === 404) {
+            ticket = TicketService.getTicket(5, `Template ${templateId} not found for user ${userId}`)
+        }
+        catchError(res, e, 'POST /templateThumbnail', ticket)
     }
 })
 
@@ -472,7 +478,6 @@ app.get('/sunlight/:from/:to/:dateFrom/:dateTo?', async (req: Request, res: Resp
             res.send(sunlight)
         })
     } catch (e) {
-        console.log(e)
         catchError(res, e, 'GET /sunlight/:from/:to/:date')
     }
 })
@@ -589,7 +594,7 @@ if (process.env.__VERCEL_DEV_RUNNING != "1" && process.env.VERCEL != "1" && proc
  * @param {*} e 
  * @param {*} context
  */
-function catchError(res, e, context): void {
+async function catchError(res: Response, e: any, context: string, ticket?: Ticket): Promise<void> {
     // console.log( "[index] " + msg + " error " + JSON.stringify(e))
     let status = 500
     let message = e
@@ -598,7 +603,11 @@ function catchError(res, e, context): void {
         message = e.message
     }
     res.status(status).send(message)
-    TicketService.create(3, message + ' ' + context)
+    if (ticket) {
+        await TicketService.createFromTicket(ticket)
+    } else {
+        await TicketService.create(3, message + ' ' + context)
+    }
 }
 
 export default app;

@@ -23,6 +23,14 @@ export class TicketService {
         }
     }
 
+    public static async createFromTicket(ticket: Ticket): Promise<boolean> {
+        return this.create(ticket.severity, ticket.message);
+    }
+
+    public static getTicket(severity: number, message: string): Ticket {
+        return new Ticket(0, new Date(), severity, message, 'open');
+    }
+
     /**
      * Truncate the message to prevent DB overflow.
      * Max length is 1024.

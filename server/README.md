@@ -73,11 +73,8 @@ npx ts-node housekeeping/dbCheck.ts
 ```
 
 ## Refreshing Sketch Data
-1. Set database to prod
-2. Run ga-api on port 3000 (vercel dev)
-
-3. Run gak-sketcher on port 3001 (vercel dev)
-4. Run ts-node housekeeping/manualSketchUpdate.ts
+Missing sketch data is refreshed every day by Willie.
+This can be done manualy using `npm run sketch`
 
 ## Authentication
 ### Apple
