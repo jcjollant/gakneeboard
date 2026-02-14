@@ -3,10 +3,10 @@
     <div class="drawer" :class="{'open':isOpen}">
         <textarea class="feedbackText" rows="10"  autoResize v-model="feedbackText" placeholder="Enter your feedback here"></textarea>
         <div class="actions" v-if="isOpen">
-          <div v-if="user && user.loggedIn" class="followup">
+          <!-- <div v-if="user && user.loggedIn" class="followup">
             <Checkbox v-model="contactMeValue" inputId="contact" name="reply" value="no" />
             <label for="contact" class="ml-2">Do not contact me about this feedback</label>
-          </div>
+          </div> -->
           <div>
             <Button label="Do Not Send" @click="emits('submit')" link></Button>
             <Button label="Send" @click="send" :disabled="feedbackText.length==0"></Button>
@@ -109,7 +109,8 @@ async function send() {
 }
 .actions {
   display: flex;
-  justify-content: space-between;
+  align-items: end;
+  justify-content: end;
   gap: 10px;
 }
 </style>
