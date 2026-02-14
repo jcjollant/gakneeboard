@@ -2,7 +2,7 @@
   <Menu></Menu>
   <div class="store-container">
     <div class="store-header">
-      <h1>Store</h1>
+      <h1>Welcome to our new Store!</h1>
       <button @click="showCart = true" class="cart-button">
         <font-awesome-icon icon="shopping-cart" /> Cart
       </button>
