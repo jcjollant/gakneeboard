@@ -21,7 +21,10 @@
       <div v-if="errorMessage" class="error-message mb-3">
         {{ errorMessage }}
       </div>
-      <div class="pending" v-if="authenticating">Working on it...</div>
+      <div class="pending" v-if="authenticating">
+        <div class="mb-2">Working on it...</div>
+        <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="4" />
+      </div>
       <div class="auth-divider" v-if="!authenticating">
         <span>Use a social account</span>
       </div>
@@ -56,6 +59,7 @@ import EmailPasswordAuth from './EmailPasswordAuth.vue'
 // import FacebookSignInButton from './FacebookSignInButton.vue'
 import GoogleSignInButton from './GoogleSignInButton.vue';
 import OneChoice from '../shared/OneChoice.vue';
+import ProgressSpinner from 'primevue/progressspinner';
 import { OneChoiceValue } from '../../models/OneChoiceValue';
 import { AttributionService } from '../../services/AttributionService';
 
