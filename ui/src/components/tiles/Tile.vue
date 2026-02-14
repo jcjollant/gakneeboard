@@ -31,9 +31,6 @@
         @replace="onReplace" @update="onUpdate" />
     <VfrTile v-else-if="tile.name==TileType.vfr" :params="tile.data"
         @replace="onReplace" @update="onUpdate" />
-    <div v-if="captureMode" class="capture-overlay" @click.stop="emits('capture', index)" title="Click to Capture Image">
-        <font-awesome-icon icon="camera" class="capture-icon" />
-    </div>
     </div>
 </template>
 
@@ -58,7 +55,7 @@ import NavlogTile from '../navlog/NavlogTile.vue';
 import NotesTile from '../notes/NotesTile.vue';
 import VfrTile from '../vfr/VfrTile.vue';
 
-const emits = defineEmits(['update','settings','capture', 'replacePage'])
+const emits = defineEmits(['update','settings', 'replacePage'])
 const confirm = useConfirm()
 
 const props = defineProps({
@@ -152,6 +149,10 @@ function onUpdate(newState:TileData) {
     // console.debug('[Tile.onUpdate]', newState)
     state = newState
     emits('update',state)
+}
+
+function onCapture(event: MouseEvent) {
+    emits('capture', { index: props.index, shift: event.shiftKey });
 }
 
 </script>

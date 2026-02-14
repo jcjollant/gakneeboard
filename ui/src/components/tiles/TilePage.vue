@@ -7,7 +7,6 @@
           :index="index"
           @update="onUpdate(index,$event)" 
           @settings="onSettingsOpen(index, $event)"
-          @capture="emits('capture', index)"
           @replacePage="emits('replace')"/>
         
         <TileSettings v-if="editingTileIndex >= 0 && editingTileData" 

@@ -1,4 +1,5 @@
 <template>
+    <div class="page-wrapper">
     <BlankPage v-if="type==PageType.none" @replace="onReplace(PageType.selection)" />
     <ChecklistPage v-else-if="type==PageType.checklist" :data="pageData" :format="format"
         @replace="onReplace" @update="onUpdate" />
@@ -27,6 +28,11 @@
     <StripPage v-else-if="type==PageType.strips" :data="pageData"
         @replace="onReplace" @update="onUpdate" />
     <SelectionPage v-else @replace="onReplace" @load="onLoad" @delete="onDelete" :format="format" />
+    
+    <div v-if="captureMode" class="capture-overlay" @click.stop="emits('capture', { page: true })" title="Click to Capture Page">
+        <font-awesome-icon icon="camera" class="capture-icon" />
+    </div>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -134,3 +140,38 @@ function onUpdateType( newType:string) {
 }
 
 </script>
+
+<style scoped>
+.page-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.capture-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 8px;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.capture-overlay:hover {
+    opacity: 1;
+}
+
+.capture-icon {
+    font-size: 3rem;
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+}
+</style>

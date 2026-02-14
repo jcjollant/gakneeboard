@@ -6,7 +6,7 @@
         @click="onAction(EditorAction.pastePage(index))"></Button>
         <Button icon="pi pi-eject" label="Replace" title="Replace Page" 
         @click="onAction(EditorAction.reset(index))"></Button>
-        <Button v-if="isTilePage" icon="pi pi-camera" label="" title="Toggle Capture Mode" 
+        <Button icon="pi pi-camera" label="" title="Toggle Capture Mode" 
         :class="{'inverted': captureMode}"
         @click="onAction(EditorAction.toggleCapture())"></Button>
         <Button icon="pi pi-trash" label="" title="Delete Page" severity="warning" class="btnDelete"

@@ -33,7 +33,7 @@
         <div v-for="(data,index) in activeTemplate.data" class="pageGrid" :class="{'fullpage-grid': activeTemplate.format === TemplateFormat.FullPage}">
           <Page :data="data" :class="'page'+index"
             :format="activeTemplate.format" @update="onPageUpdate(index, $event)" @delete="onPageDelete(index)" 
-            :captureMode="showCapture" @capture="onCaptureTile(index, $event)"/>
+            :captureMode="showCapture" @capture="handleCaptureEvent(index, $event)"/>
           
           <VerticalActionBar v-if="showEditor" :offset="index" :last="index == activeTemplate.data.length - 1"
             @action="onAction" />
@@ -773,6 +773,45 @@ function onScrollUpdate(pageIndex: number, tileIndex: number, newTile: TileData)
   saveTemplateToLocalStoreService()
 }
 
+
+function handleCaptureEvent(pageIndex: number, event: any) {
+  if (event.page || (event.shift === false)) {
+      onCapturePage(pageIndex);
+  } else {
+      onCaptureTile(pageIndex, event.index);
+  }
+}
+
+async function onCapturePage(pageIndex: number) {
+    if(!showCapture.value) return;
+
+  const selector = `.page${pageIndex}`;
+  const element = document.querySelector(selector) as HTMLElement;
+  if(!element) {
+        toaster.error('Capture', 'Could not find page to capture')
+        return
+  }
+
+  try {
+      toaster.info('Capture', 'Capturing page...')
+      const canvas = await html2canvas(element, { 
+          useCORS: true, 
+          logging: false, 
+          scale: 2,
+          ignoreElements: (element) => element.classList.contains('capture-overlay')
+      })
+      canvas.toBlob(blob => {
+            if(blob) {
+                const url = URL.createObjectURL(blob);
+                window.open(url, '_blank')
+            }
+      })
+  } catch(e) {
+      // console.error(e)
+      toaster.error('Capture', 'Failed to capture page')
+  }
+}
+
 async function onCaptureTile(pageIndex: number, tileIndex: number) {
   if(!showCapture.value) return;
 
@@ -785,7 +824,12 @@ async function onCaptureTile(pageIndex: number, tileIndex: number) {
 
   try {
       toaster.info('Capture', 'Capturing tile...')
-      const canvas = await html2canvas(element, { useCORS: true, logging: false, scale: 1 })
+      const canvas = await html2canvas(element, { 
+          useCORS: true, 
+          logging: false, 
+          scale: 2,
+          ignoreElements: (element) => element.classList.contains('capture-overlay')
+      })
       canvas.toBlob(blob => {
             if(blob) {
                 const url = URL.createObjectURL(blob);
