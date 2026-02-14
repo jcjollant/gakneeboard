@@ -17,6 +17,7 @@ const AffiliateRedirect = () => import('../views/AffiliateRedirect.vue');
 const ProductReferenceCard = () => import('../views/ProductReferenceCard.vue');
 const AuthCallback = () => import('../views/AuthCallback.vue');
 const ResetPassword = () => import('../views/ResetPassword.vue');
+const Store = () => import('../views/Store.vue');
 
 export const RouterNames = {
     Admin: 'Admin',
@@ -33,6 +34,7 @@ export const RouterNames = {
     TileTest: 'Tile Test',
     PageTest: 'Page Test',
     ProductReferenceCard: 'Product Reference Card',
+    Store: 'Store',
 }
 
 const routes = [
@@ -54,6 +56,7 @@ const routes = [
     { path: '/test/tile', name: RouterNames.TileTest, component: TileTest },
     { path: '/test/page', name: RouterNames.PageTest, component: PageTest },
     { path: '/product/reference-card', name: RouterNames.ProductReferenceCard, component: ProductReferenceCard },
+    { path: '/store', name: RouterNames.Store, component: Store },
     {
         path: '/cfi',
         component: {

@@ -2,6 +2,9 @@ import { AirportDao } from "../AirportDao"
 import { AirportSketch } from "../AirportSketch"
 import { Business } from "../business/Business"
 import { UserDao } from "../dao/UserDao"
+import { PrintOrderDao } from '../dao/PrintOrderDao';
+import { PrintService } from '../services/PrintService';
+import { PrintProductType, PrintOrderStatus } from '../../../shared';
 
 export enum TaskStatus {
     NEW = 'new',
@@ -57,10 +60,12 @@ export class HouseKeeping {
         // Refill task
         await Promise.all([
             HouseKeeping.performRefills(),
-            HouseKeeping.performSketchUpdate()
+            HouseKeeping.performSketchUpdate(),
+            HouseKeeping.cleanAbandonedOrders()
         ]).then((t) => {
             tasks.push(t[0])
             tasks.push(t[1])
+            tasks.push(t[2])
         })
 
         return tasks
@@ -124,6 +129,41 @@ export class HouseKeeping {
         const message = `Processed ${airports.length}. Updated ${updated}. \n` + logs.join('\n')
         task.finish(message)
 
+        return task
+    }
+
+    public static async cleanAbandonedOrders(): Promise<Task> {
+        const task = new Task('Clean Abandoned Orders')
+        task.start()
+        try {
+            const drafts = await PrintOrderDao.getAbandonedDrafts(7);
+            if (drafts.length === 0) {
+                task.skip('No abandoned drafts found')
+                return task;
+            }
+
+            let deleted = 0;
+            for (const draft of drafts) {
+                // Delete blobs for custom items
+                if (draft.items) {
+                    for (const item of draft.items) {
+                        if (item.productType === PrintProductType.CUSTOM && item.pdfUrl) {
+                            try {
+                                await PrintService.deletePdf(item.pdfUrl);
+                            } catch (e) {
+                                console.error('[HouseKeeping.cleanAbandonedOrders] Failed to delete blob', item.pdfUrl, e);
+                            }
+                        }
+                    }
+                }
+                // Mark as ABANDONED
+                await PrintOrderDao.updateStatus(draft.id, PrintOrderStatus.ABANDONED);
+                deleted++;
+            }
+            task.finish(`Cleaned ${deleted} abandoned orders`);
+        } catch (e: any) {
+            task.fail(e.message)
+        }
         return task
     }
 }

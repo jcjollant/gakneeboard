@@ -10,12 +10,17 @@
                 <div v-if="test" class="test">Test Backend</div>
             </div>
             <div v-if="showSession" class="right">
-                <div v-if="!currentUser.loggedIn" class="session-item" @click="showSignIn=true">
-                    Sign In
+                <div v-if="!currentUser.loggedIn">
+                     <div class="session-item store-btn" @click="router.push('/store')">
+                         <font-awesome-icon icon="store" class="mr-2" /> Store
+                    </div>
+                    <div class="session-item" @click="showSignIn=true">
+                        Sign In
+                    </div>
                 </div>
                 <div v-else class="session-info">
-                    <div class="session-item" @click="router.push('/plans')">
-                        {{ currentUser.accountType === AccountType.simmer ? 'Upgrade' : 'Plans' }}
+                    <div class="session-item store-btn" @click="router.push('/store')">
+                         <font-awesome-icon icon="store" class="mr-2" /> Store
                     </div>
                     <div class="user-name" @click="showAccountDetails=true" title="Account Details">
                         <span class="pilot-icon">👨‍✈️</span>
@@ -160,6 +165,16 @@ function onSignOut() {
     background: var(--bg-hover);
 }
 
+.store-btn {
+    background-color: white !important;
+    color: var(--bg-store) !important;
+    border: 2px solid var(--bg-store) !important;
+}
+.store-btn:hover {
+    background-color: var(--bg-store) !important;
+    color: white !important;
+}
+
 .user-name {
     cursor: pointer;
     color: #64748b;
@@ -195,5 +210,11 @@ function onSignOut() {
     .user-name {
         max-width: 100px;
     }
+}
+
+.right > div {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
 }
 </style>

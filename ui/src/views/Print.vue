@@ -5,6 +5,7 @@
         :format="template?.format"
         @options="onOptionsUpdate"
         @print="onPrint"
+        @laminate="onLaminate"
         @close="showOptions=false"
         />
     <div v-if="template" id="printTemplate" :class="{'single':printFullpage,'fullpage':template.format === TemplateFormat.FullPage}">
@@ -35,7 +36,7 @@ import { LocalStoreService } from '../services/LocalStoreService';
 import { useRoute, useRouter } from 'vue-router';
 import { postPrint, currentUser } from '../assets/data.js';
 import { Template, TemplatePage } from '../models/Template';
-import { exportToPDF } from '../assets/pdf'
+import { exportToPDF, createPDF } from '../assets/pdf'
 import { PageType } from '../assets/PageType.js';
 import { TemplateFormat } from '../models/TemplateFormat.js';
 import { AccountType } from '@gak/shared';
@@ -44,6 +45,7 @@ import Page from '../components/page/Page.vue';
 import PrintOptionsDialog from '../components/print/PrintOptionsDialog.vue';
 import MarginNotes from '../components/print/MarginNotes.vue';
 import { VerticalInfoBarContent } from '../models/VerticalInfoBarOption.js';
+import { StoreService } from '../services/StoreService';
 
 interface PrintSheet {
   front: TemplatePage,
@@ -70,67 +72,49 @@ const showOptions = ref(true)
 let printing = false
 
 function getPageStyle(flipped: boolean) {
-  // console.log('[Print.getPageStyle]', flipped)
   if (printClipMargin.value === 0 && !flipped) return {};
   
-  // Determine base height based on format
   const baseHeight = printFullpage.value ? 1050 : 800; // Matches CSS variables
   
-  // Calculate scale
   const scale = (baseHeight - printClipMargin.value) / baseHeight;
-  // console.log('[Print.getPageStyle]', scale)
   const transformString = flipped ? `scale(${-scale}, ${-scale})` : `scale(${scale})`;
-  // console.log('[Print.getPageStyle]', transformString)
   return {
     transform: transformString,
-    // transformOrigin: 'top center',
     marginTop: `${printClipMargin.value / 2}px`,
-    marginBottom: '0px' // Ensure no extra space at bottom affects flow if possible
+    marginBottom: '0px' 
   };
 }
 
-
 onMounted(() => {
-    // console.log('[Print.onMounted]')
-    // Check if user can print before showing print options
     if (!canUserPrint()) {
       redirectToPlansPage()
       return
     }
     
-    // load last template into active template
     template.value = LocalStoreService.getTemplate()
     
-    // Ensure the format property is correctly set
     if (!template.value.format) {
-      template.value.format = TemplateFormat.Kneeboard; // Default to kneeboard if not set
+      template.value.format = TemplateFormat.Kneeboard; 
     }
     
     pageSelection.value = Array(template.value.data.length).fill(true)
-    // Check if template is modified from route query params
     templateModified.value = route.query.modified === '1'
     
-    // Set printSingles to true for full page templates
     if (template.value && template.value.format === TemplateFormat.FullPage) {
       printFullpage.value = true
     }
     
-    // console.log('[Print.onMounted]', template.value)
     refreshPages()
 });
 
 watch(showOptions, (value) => {
-    // console.log('[Print.showOptions]', value, printing)
     if(!value && !printing) {
         showOptions.value = false
-        // go back to template mode
         router.back()
     }
 })
 
-// New Options have been selected
 function onOptionsUpdate(options:PrintOptions) {
-  // console.log('[Print.onPrintOptions]', JSON.stringify(options))
   if( options) {
       printFlipMode.value = options.flipBackPage;
 
@@ -139,7 +123,6 @@ function onOptionsUpdate(options:PrintOptions) {
       printVibItems.value = options.vibItems
       printClipMargin.value = options.clipMargin
       
-      // Ensure full page templates always use one page per sheet
       if (template.value && template.value.format === TemplateFormat.FullPage) {
         printFullpage.value = true
       }
@@ -150,12 +133,37 @@ function onOptionsUpdate(options:PrintOptions) {
   }
 }
 
-
-// Start printing
-async function onPrint(options:PrintOptions|undefined) {
-  // console.log('[Print.onPrint]')
+async function onLaminate(options: PrintOptions | undefined) {
+  if (!options) return;
   
-  // Double-check if user can still print before proceeding
+  printing = true
+  showOptions.value = false
+  onOptionsUpdate(options)
+  
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  const element = document.getElementById('printTemplate')
+  const elements = printFullpage.value ? document.querySelectorAll('.printOnePage') : document.querySelectorAll('.printTwoPages')
+  const paperNavlog = template.value && template.value.data.length > 0 && template.value.data[0].type === PageType.paperNavlog
+  const landscape:boolean = paperNavlog || !printFullpage.value
+
+  try {
+      const blob = await createPDF(elements, landscape);
+      
+      const file = new File([blob], "kneeboard.pdf", { type: "application/pdf" });
+      const result = await StoreService.uploadPdf(currentUser, file);
+      
+      router.push({ path: '/store', query: { pdfUrl: result.url, pages: result.pagesCount } });
+      
+  } catch(e) {
+      console.error(e);
+      alert('Failed to process print for lamination: ' + e);
+      printing = false;
+      showOptions.value = true;
+  }
+}
+
+async function onPrint(options:PrintOptions|undefined) {
   if (!canUserPrint()) {
     printing = false
     redirectToPlansPage()
@@ -167,45 +175,29 @@ async function onPrint(options:PrintOptions|undefined) {
   postPrint(route.params.id, options)
 
   const element = document.getElementById('printTemplate')
-  // count sheets. 
-  // Single must accounts for visible otherwise just use pages as is (already filtered)
-  // const sheetsCount = printSingles.value ? pageSelection.value.reduce( (acc,visible) => visible ? acc + 1 : acc, 0) : pages.value.length
   const elements = printFullpage.value ? document.querySelectorAll('.printOnePage') : document.querySelectorAll('.printTwoPages')
-  // we only print in landscape mode for double pages and paper navlog
   const paperNavlog = template.value && template.value.data.length > 0 && template.value.data[0].type === PageType.paperNavlog
   const landscape:boolean = paperNavlog || !printFullpage.value
-  // onePagePerSheet ? 'portrait' : 'landscape'
   if(element) await exportToPDF(elements, landscape)
   router.back()
 }
 
 function refreshPages() {
-    // build a list of side by side pages, used for printing
     const pageList:PrintSheet[] = []
     if(template.value) {
       const templateData = template.value.data
-      // create a list of selected pages
       const pages:TemplatePage[] = templateData.filter( (page:TemplatePage, index:number) => pageSelection.value[index])
-      // console.log('[Print.refreshPages]', pages.length)
       
-      // If there's only one page and we're printing two pages per sheet,
-      // add a temporary blank page
       if (pages.length === 1 && !printFullpage.value) {
-        // Create a blank page with the same structure as a regular page
         const blankPage = new TemplatePage(PageType.none)
-        
-        // Add the blank page to the list
         const printSheet:PrintSheet = {front:pages[0], back:blankPage}
         pageList.push(printSheet)
       } else {
-        // Normal case with multiple pages or single page mode
         for( let index = 0; index < pages.length; index+=2) {
-            // Only create a printSheet with back page if it exists
             if (index + 1 < pages.length) {
               const printSheet:PrintSheet = {front:pages[index], back:pages[index+1]}
               pageList.push(printSheet)
             } else {
-              // For the last page when there's an odd number of pages
               const blankPage = new TemplatePage(PageType.none)
               const printSheet:PrintSheet = {front:pages[index], back:blankPage}
               pageList.push(printSheet)
@@ -217,35 +209,25 @@ function refreshPages() {
 }
 
 function restorePrintOptions() {
-    // Bring everything back to normal
     printFlipMode.value = false;
 }
 
-// Check if the current user can print (has credits if they're a free user)
 function canUserPrint(): boolean {
-  // If user is not logged in, allow printing (guest mode)
   if (!currentUser.loggedIn) {
     return true;
   }
-  
-  // If user is not a free user (simmer), allow printing
   if (currentUser.accountType !== AccountType.simmer) {
     return true;
   }
-  
-  // For free users (simmers), check if they have print credits
   return currentUser.printCredits > 0;
 }
 
-// Redirect user to plans page with out-of-credits indicator
 function redirectToPlansPage() {
   router.push('/plans?reason=out-of-credits');
 }
 
 function getSideBarStyle(isBack: boolean) {
   if (printClipMargin.value === 0) return {};
-  
-  // Sidebar only used for Kneeboard so height is 800
   const baseHeight = 800;
   const newWidth = baseHeight - printClipMargin.value;
   
@@ -255,16 +237,12 @@ function getSideBarStyle(isBack: boolean) {
       width: `${newWidth}px`
     };
   } else {
-    // Back sidebar
     return {
-      bottom: 'calc(-1.5rem)', // Keep pinned to bottom
+      bottom: 'calc(-1.5rem)', 
       width: `${newWidth}px`,
-      // Adjust pivot? No, changing width changes the box size
-      // We might need to adjust right/left if width change affects position
     };
   }
 }
-
 </script>
 
 <style scoped>
@@ -289,7 +267,6 @@ function getSideBarStyle(isBack: boolean) {
   width: fit-content;
   height: var(--page-height);
 }
-/* Add a class to handle single page in two-page layout */
 .printTwoPages:has(> :only-child) {
   grid-template-columns: auto;
 }
@@ -303,7 +280,6 @@ function getSideBarStyle(isBack: boolean) {
   width: var(--fullpage-width);
 }
 
-/* Full page format adjustments */
 #printTemplate:has(.contentPage.fullpage) {
   width: calc(var(--fullpage-width) * 2 + var(--pages-gap));
 }
@@ -317,13 +293,11 @@ function getSideBarStyle(isBack: boolean) {
   top: 0;
   width: var(--page-height);
   height: calc( var(--pages-gap) / 2);
-  /* border: 1px solid blue; */
   transform: rotate(90deg);
   transform-origin: top left;
 }
 .sidebar.back {
   transform: rotate(-90deg);
-  /* left: calc( var(--page-width) + var(--pages-gap) / 2); */
   top:unset;
   bottom:-1.5rem;
 }

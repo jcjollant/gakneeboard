@@ -1,9 +1,9 @@
 
 export enum PrintFormat {
-    HALF_LOOSE = 'HALF_LOOSE',
-    HALF_RING = 'HALF_RING',
-    HALF_SPIRAL = 'HALF_SPIRAL',
-    FULL_STD = 'FULL_STD'
+    KB_LOOSE = 'KB_LOOSE',
+    KB_RING = 'KB_RING',
+    KB_SPIRAL = 'KB_SPIRAL',
+    LETTER_LOOSE = 'LETTER_LOOSE'
 }
 
 export enum PrintProductType {
@@ -43,10 +43,10 @@ export interface PrintOrderItem {
 }
 
 export const PRINT_PRICING: Record<PrintFormat, { basePriceCents: number, description: string }> = {
-    [PrintFormat.HALF_LOOSE]: { basePriceCents: 1900, description: 'Kneeboard (No Binding)' },
-    [PrintFormat.HALF_RING]: { basePriceCents: 2400, description: 'Kneeboard, Ring Bound' },
-    [PrintFormat.HALF_SPIRAL]: { basePriceCents: 2900, description: 'Kneeboard, Spiral Bound' },
-    [PrintFormat.FULL_STD]: { basePriceCents: 2500, description: 'Letter (No Binding)' }
+    [PrintFormat.KB_LOOSE]: { basePriceCents: 1900, description: 'Kneeboard (No Binding)' },
+    [PrintFormat.KB_RING]: { basePriceCents: 2400, description: 'Kneeboard, Ring Bound' },
+    [PrintFormat.KB_SPIRAL]: { basePriceCents: 2900, description: 'Kneeboard, Spiral Bound' },
+    [PrintFormat.LETTER_LOOSE]: { basePriceCents: 2500, description: 'Letter (No Binding)' }
 }
 
 export const PRINT_OVERAGE_CENTS = 200;

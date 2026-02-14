@@ -10,6 +10,10 @@ import { sql } from '@vercel/postgres';
 import { TicketService } from "../services/TicketService";
 import { Request } from "express";
 import { PlanService } from '../services/PlanService';
+import { PrintOrder } from '../../../shared';
+import { PrintOrderDao } from '../dao/PrintOrderDao';
+import { PrintService } from '../services/PrintService';
+import { Email, EmailType } from '../Email';
 
 const planUrl = '/plans'
 const SUB_UPDATE = 'customer.subscription.updated';
@@ -107,6 +111,9 @@ export class StripeClient {
                     success_url: successUrl,
                     cancel_url: cancelUrl,
                     metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
+                    automatic_tax: {
+                        enabled: type === 'product' // Only calculate tax for one-time products, not subscriptions
+                    }
                 };
 
                 if (shipping_address_collection) {
@@ -126,6 +133,82 @@ export class StripeClient {
             } catch (err) {
                 TicketService.create(3, '[Stripe.checkout] error ' + err)
                 console.error('[Stripe.checkout] error ' + err)
+                reject(err)
+            }
+        })
+    }
+
+
+    async checkoutCart(userHash: string, cart: PrintOrder, source: string): Promise<string> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                if (!this.stripe) throw new Error('Stripe not initialized');
+                const user = await UserDao.getUserFromHash(userHash)
+                if (!user) throw new Error(`User not found [${userHash}]`);
+
+                // does this user already have a customer id
+                if (!user.customerId) {
+                    const customer = await this.stripe.customers.create({
+                        name: user.name,
+                        email: user.email
+                    })
+                    user.setCustomerId(customer.id)
+                    await UserDao.updateCustomerId(user)
+                }
+
+                if (!cart.items || cart.items.length === 0) throw new Error('Cart is empty');
+
+                const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = cart.items.map(item => ({
+                    price_data: {
+                        currency: 'usd',
+                        product_data: {
+                            name: item.displayName,
+                            tax_code: 'txcd_99999999', // General - Tangible Goods
+                            metadata: {
+                                product_type: item.productType,
+                                format: item.formatCode
+                            }
+                        },
+                        unit_amount: item.priceCents,
+                        tax_behavior: 'exclusive',
+                    },
+                    quantity: 1
+                }));
+
+                const origin = new URL(source).origin
+                const successUrl = `${origin}/thankyou`
+                const cancelUrl = source
+
+                const session = await this.stripe.checkout.sessions.create({
+                    line_items,
+                    customer: user.customerId,
+                    customer_update: {
+                        shipping: 'auto'
+                    },
+                    mode: 'payment',
+                    success_url: successUrl,
+                    cancel_url: cancelUrl,
+                    client_reference_id: cart.id,
+                    metadata: {
+                        type: 'print_order'
+                    },
+                    shipping_address_collection: {
+                        allowed_countries: ['US', 'CA']
+                    },
+                    automatic_tax: {
+                        enabled: true
+                    }
+                })
+
+                if (!session.url) throw new Error('Session url is null')
+
+                // Update order with session ID
+                await PrintOrderDao.updateStripeSession(cart.id, session.id);
+
+                resolve(session.url)
+            } catch (err) {
+                TicketService.create(3, '[Stripe.checkoutCart] error ' + err)
+                console.error('[Stripe.checkoutCart] error ' + err)
                 reject(err)
             }
         })
@@ -220,6 +303,25 @@ export class StripeClient {
                         const shippingDetails = session.shipping_details;
                         await Business.createProductPurchase(customerId, productId, customerDetails, shippingDetails);
                         console.debug('[Stripe.webhook] Product purchase created for customer ' + customerId + ' and product ' + productId + ' in ' + (Date.now() - start) + 'ms');
+                        return resolve();
+                    } else if (session.metadata?.type === 'print_order' && session.client_reference_id) {
+                        // Handle Print Order
+                        const orderId = session.client_reference_id;
+                        const shippingDetails = session.shipping_details;
+                        await PrintService.fulfillOrder(orderId, shippingDetails);
+                        console.debug('[Stripe.webhook] Print Order fulfilled: ' + orderId);
+
+                        // Send Admin Email
+                        const message = `New Print Order Paid!\nOrder ID: ${orderId}\nCustomer: ${session.customer_details?.email}\nAmount: $${(session.amount_total || 0) / 100}`;
+                        // Assuming Email class is available via Business or direct import. 
+                        // It is not imported in Stripe.ts. I need to check imports.
+                        // I'll skip email here and rely on PrintService.fulfillOrder doing it or add Todo.
+                        // Actually PrintService uses PrintOrderDao.fulfillOrder. The Plan said PrintService handles "Send email to Admin".
+                        // But I commented out email in PrintService.ts.
+                        // I should add Email import here or enable it in PrintService.
+                        // I will add Email import to Stripe.ts and send it here.
+                        await Email.send(message, EmailType.Purchase);
+
                         return resolve();
                     }
 

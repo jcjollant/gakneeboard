@@ -6,8 +6,10 @@
   "scripts": {
     "test": "jest",
     "debug": "node --debug-brk --inspect ./node_modules/jest/bin/jest -i",
+    "webhook": "stripe listen --forward-to localhost:3000/stripe/webhook",
     "cleanup-test-users": "tsx cli/cleanupTestUsers.ts",
     "sketch": "tsx cli/manualSketchUpdate.ts",
+    "summon": "tsx cli/summon.ts",
     "prepare": "husky",
     "postinstall": "cd ../shared && npm install && npm run build",
     "version": "tsx cli/updateVersion.ts"

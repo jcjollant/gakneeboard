@@ -1,13 +1,14 @@
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas-pro';
 
-export async function exportToPDF(elements: NodeListOf<Element>, landscape: boolean): Promise<void> {
+
+export async function createPDF(elements: NodeListOf<Element>, landscape: boolean): Promise<Blob> {
   // console.debug('[pdf.exportToPDF]', elements.length, landscape);
 
 
   if (!elements.length) {
     console.error('[pdf.exportToPDF] Element not found');
-    return;
+    throw new Error('Element not found');
   }
 
   const pdf = new jsPDF({
@@ -76,8 +77,11 @@ export async function exportToPDF(elements: NodeListOf<Element>, landscape: bool
     imageCount++;
   }
 
-  // At the end of exportToPDF
-  const blob = pdf.output('blob');
+  return pdf.output('blob');
+}
+
+export async function exportToPDF(elements: NodeListOf<Element>, landscape: boolean): Promise<void> {
+  const blob = await createPDF(elements, landscape);
   const url = URL.createObjectURL(blob);
   window.open(url, '_blank'); // Open PDF in a new browser tab
 

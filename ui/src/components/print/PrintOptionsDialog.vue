@@ -55,6 +55,9 @@
         </div>
         <Button label="Do Not Print" @click="emits('close')" link></Button>
         <Button v-if="upgrade" label="Upgrade to use Print Options" @click="onUpgrade" severity="warning"></Button>
+        <Button v-if="FeatureFlags.CUSTOM_KNEEBOARD_LAMINATION" @click="emits('laminate', getOptions())" class="store-btn" title="We print, laminate, and ship it to you!">
+            <font-awesome-icon icon="store" class="mr-2" /> Laminate (Print & Ship)
+        </Button>
         <Button label="Print" @click="onPrint" :disabled="upgrade"></Button>
       </div>
     </div>
@@ -72,14 +75,14 @@ import Dialog from 'primevue/dialog'
 import FieldSet from 'primevue/fieldset'
 import PageSelection from './PageSelection.vue';
 import { currentUser } from '../../assets/data';
-import { AccountType } from '@gak/shared';
+import { AccountType, FeatureFlags } from '@gak/shared';
 
 import Checkbox from 'primevue/checkbox'
 import { VerticalInfoBarContent } from '../../models/VerticalInfoBarOption';
 import { PrintOptions } from './PrintOptions';
 import { useRouter } from 'vue-router';
 
-const emits = defineEmits(["print","options",'close']);
+const emits = defineEmits(["print","options",'close', 'laminate']);
 
 const normalOrientation = new OneChoiceValue('Normal', false)
 const flippedOrientation = new OneChoiceValue('Flipped', true, 'You can read back page without unclipping')
@@ -290,5 +293,16 @@ li {
   font-weight: 400;
   font-size: 0.8rem;
   font-style: italic;
+}
+
+:deep(.store-btn) {
+    background-color: white !important;
+    color: var(--bg-store) !important;
+    border: 2px solid var(--bg-store) !important;
+    font-weight: bold !important;
+}
+:deep(.store-btn:hover) {
+    background-color: var(--bg-store) !important;
+    color: white !important;
 }
 </style>

@@ -8,17 +8,20 @@ import {
     faEject, faEllipsis, faExclamationCircle, faExclamationTriangle, faExternalLinkAlt, faEye,
     faFileExport, faFile, faFileCode,
     faFont, faBold,
-    faGasPump, faGavel, faGear, faGripLines, faHeadset, faImage, faJetFighter,
-    faLeftRight, faLink, faListCheck,
+    faGasPump, faGavel, faGear, faGripLines,
+    faHeadset,
+    faImage,
+    faJetFighter,
+    faLeftRight, faLink, faListCheck, faLock,
     faPenNib, faPenToSquare, faPhone, faPlane, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, faPlus, faPrint,
     faQuestion,
-    faRoadCircleCheck,
-    faRotateLeft,
-    faRoute,
-    faSave, faScroll, faScrewdriverWrench, faShield, faStarOfLife, faSun,
+    faRoadCircleCheck, faRotateLeft, faRoute,
+    faSave, faScroll, faScrewdriverWrench, faShield, faShoppingCart, faSpinner, faStarOfLife, faStore, faSun,
     faTowerCell, faTowerObservation, faTrash, faTruckFast,
     faUser,
-    faVideo, faWalkieTalkie, faXmark,
+    faVideo,
+    faWalkieTalkie,
+    faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { faFaceFrown, faFaceMeh, faFaceSmile } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -40,15 +43,20 @@ library.add(
     faDisplay,
     faEject, faEllipsis, faExclamationCircle, faExclamationTriangle, faExternalLinkAlt, faEye,
     faFileExport, faFile, faFileCode, faFont, faBold, faGoogle, faGripLines,
-    faGasPump, faGavel, faGear, faHeadset, faImage, faJetFighter,
-    faLeftRight, faLink, faListCheck,
+    faGasPump, faGavel, faGear,
+    faHeadset,
+    faImage,
+    faJetFighter,
+    faLeftRight, faLink, faListCheck, faLock,
     faPenNib, faPenToSquare, faPhone, faPlane, faPlaneArrival, faPlaneCircleCheck, faPlaneDeparture, faPlus, faPrint,
     faQuestion,
     faRoadCircleCheck, faRotateLeft, faRoute,
-    faSave, faScroll, faScrewdriverWrench, faShield, faStarOfLife, faSun,
+    faSave, faScroll, faScrewdriverWrench, faShield, faShoppingCart, faSpinner, faStarOfLife, faStore, faSun,
     faTowerCell, faTowerObservation, faTrash, faTruckFast,
-    faUser,
-    faVideo, faWalkieTalkie, faWordpress, faXmark, faYoutube)
+    faUser, faSpinner,
+    faVideo, faWalkieTalkie, faWordpress,
+    faXmark,
+    faYoutube)
 library.add(faFaceFrown, faFaceMeh, faFaceSmile)
 
 import { AttributionService } from '@/services/AttributionService';

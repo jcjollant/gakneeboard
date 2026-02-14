@@ -36,7 +36,7 @@ We utilize a split pricing strategy: **Fixed** for standard inventory and **Dyna
 
 #### 1. Standard Kneeboards (Fixed Price)
 Pre-designed reference cards (e.g., "Seattle GA Airports").
-* **Format:** Half Page, Double Sided, No Binding (`HALF_LOOSE`).
+* **Format:** Half Page, Double Sided, No Binding (`KB_LOOSE`).
 * **Price:** **$9.99** (Flat rate, includes shipping).
 * **Logic:** These ignore page counts; the price is hardcoded.
 
@@ -49,10 +49,10 @@ User-generated checklists. Prices are calculated based on the **Binding Format**
 **Base Prices (Includes 1st Sheet + Shipping):**
 | Format Code | Description | Base Price |
 | :--- | :--- | :--- |
-| `HALF_LOOSE` | Half Page (No Binding) | **$19.00** |
-| `HALF_RING` | Half Page (Ring Bound) | **$24.00** |
-| `HALF_SPIRAL` | Half Page (Spiral Bound) | **$29.00** |
-| `FULL_STD` | Full Page (8.5 x 11) | **$25.00** |
+| `KB_LOOSE` | Half Page (No Binding) | **$19.00** |
+| `KB_RING` | Half Page (Ring Bound) | **$24.00** |
+| `KB_SPIRAL` | Half Page (Spiral Bound) | **$29.00** |
+| `LETTER_LOOSE` | Full Page (8.5 x 11) | **$25.00** |
 
 **Calculation Example (Custom Spiral, 6 Pages):**
 1.  **Sheets:** `CEILING(6 pages / 2)` = 3 Sheets.
@@ -63,7 +63,7 @@ User-generated checklists. Prices are calculated based on the **Binding Format**
 
 #### 3. Database & Implementation Note
 To support this in the `print_orders` table, the backend should treat "Standard" items as:
-* `print_format`: `HALF_LOOSE`
+* `print_format`: `KB_LOOSE`
 * `amount_cents`: 999
 * `sheets_count`: 1 (Fixed)
 * **Constraint:** The frontend must flag these as "Standard" so the dynamic pricing logic is bypassed.
@@ -144,7 +144,7 @@ A new 'print_order_items' table should persist print items information until the
 | order_id | UUID | Foreign Key to print_orders |
 | product_type | ENUM | STANDARD, CUSTOM |
 | display_name | STRING | e.g., "Seattle Airports" or "My C172 Checklist" |
-| format_code | ENUM | HALF_LOOSE, HALF_RING, HALF_SPIRAL, FULL_STD |
+| format_code | ENUM | KB_LOOSE, KB_RING, KB_SPIRAL, LETTER_LOOSE |
 | pdf_url | STRING | URL to Blob (Custom) or Static Asset (Standard) |
 | pages_count | INTEGER | Page count (Used for pricing) |
 | sheets_count | INTEGER | Calculated physical sheets |

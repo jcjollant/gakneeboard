@@ -23,6 +23,11 @@
                     <h3>Ticket Management</h3>
                     <p>View and manage support tickets</p>
                 </div>
+                <div class="api-card" :class="{ active: selectedApi === 'store-orders' }" @click="selectApi('store-orders')">
+                    <div class="api-icon">📦</div>
+                    <h3>Store Orders</h3>
+                    <p>View and manage print orders</p>
+                </div>
                 <div class="api-card" :class="{ active: selectedApi === 'health-check' }" @click="selectApi('health-check')">
                     <div class="api-icon">❤️</div>
                     <h3>Health Check</h3>
@@ -72,6 +77,10 @@
             <TicketManager />
         </div>
 
+        <div v-if="selectedApi === 'store-orders'">
+            <StoreOrders />
+        </div>
+
         <div v-if="selectedApi === 'health-check'" class="input-section">
             <h2>System Health Check</h2>
             <div class="input-group">
@@ -108,6 +117,7 @@ import { useRoute, useRouter } from 'vue-router';
 import AirportCreationForm from '../components/admin/AirportCreationForm.vue';
 import TicketManager from '../components/admin/TicketManager.vue';
 import UserProfile from '../components/admin/UserProfile.vue';
+import StoreOrders from '../components/admin/StoreOrders.vue';
 
 const route = useRoute()
 const router = useRouter()

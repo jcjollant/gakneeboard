@@ -4,6 +4,8 @@ import { StripeClient } from '../backend/business/Stripe';
 import { Business } from '../backend/business/Business';
 import { UserDao } from '../backend/dao/UserDao';
 import { AccountType } from '@gak/shared';
+import { PrintService } from '../backend/services/PrintService';
+
 // Import JSON data
 // We'll use require because importing JSON directly might require configuration
 const lineItems = require('./jsonData/checkout-session-ld-line-items.json');
@@ -14,6 +16,7 @@ jest.mock('../backend/business/Business');
 jest.mock('../backend/dao/UserDao');
 jest.mock('../backend/dao/SubscriptionDao');
 jest.mock('../backend/services/TicketService');
+jest.mock('../backend/services/PrintService');
 jest.mock('@vercel/postgres', () => ({
     sql: jest.fn(() => Promise.resolve({ rows: [], rowCount: 0 }))
 }));
@@ -228,6 +231,56 @@ describe('StripeWebhook', () => {
                     country: productPurchaseSession.shipping_details.address.country
                 })
             })
+        );
+    });
+
+    it('should process checkout.session.completed for Print Order', async () => {
+        // Override constructEvent for this test
+        const mockConstructEvent = (Stripe as any).mockConstructEvent;
+        mockConstructEvent.mockReturnValue({
+            type: 'checkout.session.completed',
+            data: {
+                object: {
+                    id: 'sess_print_123',
+                    client_reference_id: 'order_uuid_123',
+                    customer: 'cus_PrintTest',
+                    metadata: {
+                        type: 'print_order',
+                        order_id: 'order_uuid_123'
+                    },
+                    customer_details: {
+                        email: 'print@example.com',
+                        name: 'Print User'
+                    },
+                    shipping_details: {
+                        name: 'Print User',
+                        address: {
+                            line1: '123 Print St',
+                            city: 'Print City',
+                            state: 'PS',
+                            postal_code: '12345',
+                            country: 'US'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Mock PrintService.fulfillOrder
+        (PrintService.fulfillOrder as any).mockResolvedValue(undefined);
+
+        const req = {
+            headers: {
+                'stripe-signature': 'test_signature'
+            },
+            body: {}
+        } as any;
+
+        await StripeClient.instance.webhook(req);
+
+        expect(PrintService.fulfillOrder).toHaveBeenCalledWith(
+            'order_uuid_123',
+            expect.objectContaining({ name: 'Print User' })
         );
     });
 });

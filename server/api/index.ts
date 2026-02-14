@@ -21,6 +21,8 @@ import { NotamService } from "../backend/services/NotamService";
 import { WeatherService } from "../backend/services/WeatherService";
 import { HealthCheck } from "../backend/maintenance/HealthChecks";
 import { Ticket } from "../backend/models/Ticket";
+import { PrintService } from "../backend/services/PrintService";
+import { PrintOrderDao } from "../backend/dao/PrintOrderDao";
 const port: number = 3000
 const app = express();
 
@@ -580,6 +582,111 @@ app.post('/user/homeAirport', async (req: Request, res: Response) => {
         res.sendStatus(200)
     } catch (e) {
         catchError(res, e, 'POST /user/homeAirport')
+    }
+})
+
+/**
+ * STORE API
+ */
+
+app.post('/store/custom/upload', upload.single('file'), async (req: Request, res: Response) => {
+    try {
+        if (!req.file) throw new GApiError(400, 'No file uploaded')
+        const userId = await UserTools.userIdFromRequest(req)
+        if (!userId) throw new GApiError(401, 'Unauthorized')
+
+        // Upload to blob
+        const url = await PrintService.uploadPdf(String(userId), req.file.buffer);
+
+        // Count pages 
+        const pagesCount = await PrintService.countPdfPages(req.file.buffer);
+
+        res.send({ url, pagesCount });
+    } catch (e) {
+        catchError(res, e, 'POST /store/custom/upload')
+    }
+})
+
+app.get('/store/cart', async (req: Request, res: Response) => {
+    try {
+        const userId = await UserTools.userIdFromRequest(req)
+        if (!userId) throw new GApiError(401, 'Unauthorized')
+
+        const cart = await PrintService.getCart(String(userId));
+        res.send(cart);
+    } catch (e) {
+        catchError(res, e, 'GET /store/cart')
+    }
+})
+
+app.post('/store/cart/item', async (req: Request, res: Response) => {
+    // console.debug('POST /store/cart/item', req.body)
+    try {
+        const userId = await UserTools.userIdFromRequest(req)
+        if (!userId) throw new GApiError(401, 'Unauthorized')
+
+        const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+        let cart;
+
+        if (payload.productType === 'STANDARD') {
+            cart = await PrintService.addStandardItem(String(userId), payload.displayName, payload.formatCode);
+        } else {
+            cart = await PrintService.addCustomItem(String(userId), payload.displayName, payload.formatCode, payload.pdfUrl, payload.pagesCount);
+        }
+        res.send(cart);
+    } catch (e) {
+        catchError(res, e, 'POST /store/cart/item')
+    }
+})
+
+app.delete('/store/cart/item/:id', async (req: Request, res: Response) => {
+    try {
+        const userId = await UserTools.userIdFromRequest(req)
+        if (!userId) throw new GApiError(401, 'Unauthorized')
+
+        const cart = await PrintService.removeItem(String(userId), req.params.id);
+        res.send(cart);
+    } catch (e) {
+        catchError(res, e, 'DELETE /store/cart/item')
+    }
+})
+
+app.post('/store/checkout', async (req: Request, res: Response) => {
+    try {
+        const userId = await UserTools.userIdFromRequest(req)
+        if (!userId) throw new GApiError(401, 'Unauthorized')
+        const user = await new UserDao().get(userId);
+        if (!user) throw new GApiError(401, 'User not found'); // Should not happen given userIdFromRequest check mostly
+
+        const cart = await PrintService.getCart(String(userId));
+        if (!cart.items || cart.items.length === 0) throw new GApiError(400, 'Cart is empty');
+
+        const source = (req.body && (typeof req.body === 'string' ? JSON.parse(req.body) : req.body).source) || 'https://kneeboard.ga/store';
+
+        const url = await StripeClient.instance.checkoutCart(user.sha256, cart, source);
+        res.send({ url });
+    } catch (e) {
+        catchError(res, e, 'POST /store/checkout')
+    }
+})
+
+app.get('/admin/orders', async (req: Request, res: Response) => {
+    try {
+        await Authorization.validateAdmin(req)
+        const orders = await PrintOrderDao.listOpenOrders();
+        res.send(orders);
+    } catch (e) {
+        catchError(res, e, 'GET /admin/orders')
+    }
+})
+
+app.post('/admin/orders/:id/ship', async (req: Request, res: Response) => {
+    try {
+        await Authorization.validateAdmin(req)
+        await PrintOrderDao.updateStatus(req.params.id as string, 'SHIPPED' as any);
+        res.send({ status: 'SHIPPED' });
+    } catch (e) {
+        catchError(res, e, 'POST /admin/orders/:id/ship')
     }
 })
 
