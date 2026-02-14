@@ -86,6 +86,7 @@ export enum MetricKey {
     usersGoogle = 'usersGoogle',
     usersApple = 'usersApple',
     usersFacebook = 'usersFacebook',
+    usersSupabase = 'usersSupabase',
     userCat0 = 'cat-0',
     userCat1 = 'cat-1-4',
     userCat5 = 'cat-5-19',
@@ -156,6 +157,8 @@ export class Metrics {
         allMetrics.push(appleUsers)
         const facebookUsers = new Metric(MetricKey.usersFacebook)
         allMetrics.push(facebookUsers)
+        const supabaseUsers = new Metric(MetricKey.usersSupabase)
+        allMetrics.push(supabaseUsers)
         const onboarded28 = new Metric(MetricKey.onboard28)
         allMetrics.push(onboarded28)
         const customers = new Metric(MetricKey.customers)
@@ -173,6 +176,8 @@ export class Metrics {
                 appleUsers.addOne()
             } else if (user.source == UserTools.facebook) {
                 facebookUsers.addOne()
+            } else if (user.source == UserTools.supabase) {
+                supabaseUsers.addOne()
             } else {
                 // console.log('Unknown source for user ', user.id)
             }
