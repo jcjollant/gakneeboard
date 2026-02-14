@@ -84,7 +84,7 @@ const cardStyle = computed(() => {
 .scene {
   width: 100%;
   max-width: 240px;
-  aspect-ratio: 0.7;
+  aspect-ratio: 0.6;
   perspective: 1000px;
   margin: 0 auto 1.5rem;
   padding-top: 10px;
