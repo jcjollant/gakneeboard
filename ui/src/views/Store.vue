@@ -82,8 +82,8 @@
             <div class="product-card">
                 <div class="badge-free-shipping">FREE SHIPPING</div>
                 <Kneeboard3D 
-                    frontSrc="/thumbnails/seattle.png" 
-                    backSrc="/thumbnails/default.png" 
+                    frontSrc="/thumbnails/seattle-ga-0.png" 
+                    backSrc="/thumbnails/seattle-ga-1.png" 
                 />
                 <div class="product-info">
                     <h3>Seattle GA Airports</h3>
