@@ -41,7 +41,7 @@
                     @click="onCornerEdit(3, $event)"/>
                     
                 <NotamBadge v-if="showNotams" :count="notamsList.length" :warning="!isSignedIn" @click.stop="onNotamBadgeClick" class="notam-badge-pos" :class="{'expanded': span2}" />
-                <MetarBadge v-if="metar" :metar="metar" class="metar-badge-pos" :class="{'expanded': span2}" @click.stop="onMetarBadgeClick" />
+                <MetarBadge v-if="showMetar && metar" :metar="metar" class="metar-badge-pos" :class="{'expanded': span2}" @click.stop="onMetarBadgeClick" />
             </div>
             <PlaceHolder v-else title="No Airport" />
         </div>
@@ -95,7 +95,12 @@ const showCorners = computed(() => {
     return !expanded.value
 })
 const showNotams = computed(() => {
+    if (config.value?.showNotams === false) return false;
     return notamsList.value.length > 0 || !isSignedIn.value
+})
+const showMetar = computed(() => {
+    if (config.value?.showMetar === false) return false;
+    return !!metar.value
 })
 const showNotamsDialog = ref(false)
 const showMetarDialog = ref(false)
@@ -195,6 +200,9 @@ function loadProps(newProps:any) {
     propsConfig.mode = params?.mode ?? defaultMode
     // displayMode.value = propsConfig.mode;
     // console.debug('[AirportTile.loadProps] displayMode', displayMode.value)
+
+    propsConfig.showMetar = params.showMetar ?? true;
+    propsConfig.showNotams = params.showNotams ?? true;
 
     expanded.value = newProps.span2
     // console.debug('[AirportTile.loadProps] expanded', expanded.value)

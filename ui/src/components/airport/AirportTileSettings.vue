@@ -51,6 +51,19 @@
             </div>
         </div>
 
+        <!-- Conditions Section -->
+        <Separator name="Conditions" />
+        <div class="conditions-selector">
+            <div class="checkbox-field">
+                <Checkbox v-model="showMetar" :binary="true" inputId="chkMetar" />
+                <label for="chkMetar">Show METAR</label>
+            </div>
+            <div class="checkbox-field">
+                <Checkbox v-model="showNotams" :binary="true" inputId="chkNotams" />
+                <label for="chkNotams">Show NOTAMs</label>
+            </div>
+        </div>
+
     </div>
 </template>
 
@@ -58,6 +71,7 @@
 import { ref, onMounted, watch, computed, inject } from 'vue';
 import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
+import Checkbox from 'primevue/checkbox';
 import DisplayModeSelector from '../shared/DisplayModeSelector.vue';
 import AirportInput from '../shared/AirportInput.vue';
 import EitherOr from '../shared/EitherOr.vue';
@@ -100,6 +114,8 @@ const selectedRwyNames = ref<string[]>([]);
 const verticalOrientation = ref(true);
 const showHeadings = ref(true);
 const patternChoice = ref<TrafficPatternDisplay>(TrafficPatternDisplay.Entry45); // Default
+const showMetar = ref(true);
+const showNotams = ref(true);
 
 // Lists
 const modesList = ref([
@@ -135,7 +151,7 @@ watch(() => props.tileData, (newTileData) => {
 }, { deep: true });
 
 // Watch for changes to emit update candidates
-watch([currentMode, airportCode, selectedRwyNames, verticalOrientation, showHeadings, patternChoice], () => {
+watch([currentMode, airportCode, selectedRwyNames, verticalOrientation, showHeadings, patternChoice, showMetar, showNotams], () => {
     if (!isInternalUpdate.value) {
         emitUpdate();
     }
@@ -174,6 +190,9 @@ function loadFromTileData(tile: TileData) {
     } else {
         patternChoice.value = TrafficPatternDisplay.Entry45;
     }
+
+    showMetar.value = config.showMetar ?? true;
+    showNotams.value = config.showNotams ?? true;
 
     if (config.code) {
         // Fetch airport data to populate lists
@@ -254,6 +273,8 @@ function emitUpdate() {
         orientation,
         showHeadings.value,
         currentMode.value,
+        showMetar.value,
+        showNotams.value
     );
 
     tileData.value.data = newConfig;
@@ -362,5 +383,23 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
 .display-onechoice {
     display: flex;
     justify-content: center;
+}
+
+.conditions-selector {
+    display: flex;
+    gap: 20px;
+    padding: 0 10px;
+}
+
+.checkbox-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.checkbox-field label {
+    font-size: 0.9rem;
+    cursor: pointer;
+    user-select: none;
 }
 </style>
