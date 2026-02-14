@@ -173,7 +173,7 @@ export class DemoData {
         { name: "vfr", data: { mode: "alt", "airport": "" } },
         { name: "sunlight", data: { mode: "ref" } },
         { name: "vfr", data: { mode: "nordo", "airport": "" } },
-        { name: "checklist", data: { name: "Checklist", "items": [{ c: "Vne", "r": "163" }, { c: "Vno", "r": "129" }, { c: "Va @ 2,550", "r": "105" }, { c: "Va @ 2,200", "r": "98" }, { c: "Va @ 1,900", "r": "90" }, { c: "Vy", "r": "74" }, { c: "Vg", "r": "68" }, { c: "Vx", "r": "62" }, { c: "Vs1", "r": "48" }, { c: "Vs0", "r": "40" }], "theme": "blue" } }
+        { name: "checklist", data: { name: "Checklist", displayMode: "compact", font: "medium", items: [{ s: " Cigar" }, { c: "Controls" }, { c: "Instruments" }, { c: "Gas" }, { c: "Attitude" }, { c: "Run-up" }, { s: " Gumps" }, { c: "Gas" }, { c: "Undercarriage" }, { c: "Mixture" }, { c: "Prop" }, { c: "Switches" }, { s: " 5Ps" }, { c: "Plan" }, { c: "Plane" }, { c: "Pilot" }, { c: "Passengers" }, { c: "Programming" }, { s: " Safety" }, { c: "Seatbelts" }, { c: "Air Vents" }, { c: "Fire Ext." }, { c: "Exit Doors" }, { c: "Your Q?" }, { s: " Takeoffs are optional ..." }], "theme": "blue" } }
     ])
 
     static ifrReportingList0 = [{ c: "Missed", "r": "M" }, { c: "Airspeed ±10kts ", "r": "A" }, { c: "Reaching Fix", "r": "R" }, { c: "Vacating Altitude", "r": "V" }, { c: "ETA ±2min", "r": "E" }, { c: "Leaving Hold", "r": "L" }, { c: "Outer Marker", "r": "O" }, { c: "Unforecasted Weather", "r": "U" }, { c: "Safety of flight", "r": "S" }, { c: "VFR on Top", "r": "V" }, { c: "Final Approach Fix", "r": "F" }]
