@@ -7,3 +7,4 @@ export * from './models/UserView';
 export * from './models/Metar';
 export * from './models/Product';
 export * from './constants/Products';
+export * from './models/PrintOrder';
