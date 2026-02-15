@@ -29,7 +29,9 @@
                     <p>View and manage support tickets</p>
                 </div>
                 <div class="api-card" :class="{ active: selectedApi === 'store-orders' }" @click="selectApi('store-orders')">
-                    <div class="api-icon">📦</div>
+                    <div class="api-icon">
+                        <img src="/img/apu-nahasapeemapetillon.png" alt="Store Orders" class="api-image" />
+                    </div>
                     <h3>Store Orders</h3>
                     <p>View and manage print orders</p>
                 </div>
