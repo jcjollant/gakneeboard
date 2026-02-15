@@ -234,7 +234,7 @@ function fetchHealthCheck() {
     loadingHealth.value = true
     healthData.value = {}
     
-    currentUser.getUrl(UrlService.adminRoot + 'healthCheck').then(res => {
+    currentUser.getUrl(UrlService.healthCheckUrl).then(res => {
         healthData.value = res.data
         loadingHealth.value = false
     }).catch(err => {

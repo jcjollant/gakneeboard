@@ -17,6 +17,19 @@ export class UrlService {
         return config.public.IS_TEST_DB as boolean;
     }
 
+    static get isProdDB(): boolean {
+        const config = useRuntimeConfig();
+        return config.public.IS_PROD_DB as boolean;
+    }
+
+    static get healthCheckUrl(): string {
+        if (UrlService.isProdDB) {
+            return 'https://api.kneeboard.ga/admin/healthCheck'
+        }
+        return 'http://localhost:3000/admin/healthCheck'
+    }
+
+
     static publications(): string {
         return UrlService.root + 'publications'
     }
