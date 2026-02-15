@@ -4,7 +4,7 @@
 
         <Menu></Menu>
         <div class="section templateSection kneeboardSection">
-            <div class="header">My Kneeboards</div>
+            <div class="header">My Custom Kneeboards</div>
             <div class="templateList">
                 <TemplateSelector :template="newTemplate" :temporary="true" :clipped="true" src="/thumbnails/new.png" class="templateNew"
                     @selection="onNewTemplate"/>
@@ -13,8 +13,9 @@
                 <TemplateSelector v-if="kneeboards.length > 0" v-for="(template,index) in kneeboards" 
                     :template="template" :clipped="true"
                     @selection="onTemplateSelection(template.id)" />
-                <div v-else>
-                    <PlaceHolder title="No Templates (yet)" subtitle="Your saved templates will show here"/>
+                <div v-else class="startHere">
+                    <h2>⬅️ Start Here</h2>
+                    <div>Your saved kneeboards will be listed here</div>
                 </div>
             </div>
         </div>
@@ -271,6 +272,18 @@ function userUpdate() {
     font-size: 0.6em;
     vertical-align: middle;
     margin-left: 5px;
+}
+
+.startHere {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    text-align: left;
+    justify-content: center;
+}
+.startHere h2 {
+    margin: 0;
 }
 
 </style>
