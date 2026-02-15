@@ -1,10 +1,10 @@
 <template>
     <Feedback v-if="route.name!=RouterNames.Print" :open="showFeedback" @submit="feedbackSubmitted"  />
-    <About v-model:visible="showAbout" @close="showAbout=false" />
+    <About v-model:visible="showAbout" @close="showAbout=false" :activeTab="activeAboutTab" :versionFront="versionFront" :versionBack="backend.version" />
     <Maintenance v-model:visible="showMaintenance" @close="showMaintenance=false" />
 
     <Eula v-model:visible="showEula" @close="showEula=false" />
-    <Version v-model:visible="showVersion" @close="showVersion=false" :front="versionFront" :back="backend.version" />
+
     <Toast style="z-index: 10000" />
     <ConfirmDialog />
     <div class="application">
@@ -18,8 +18,8 @@
     <MenuButton v-if="route.name!='Print'" icon="comments" class="feedbackButton" label="Give Feedback"
       @click="showFeedback=!showFeedback" />
     <MenuButton v-if="route.name!='Print'" icon="circle-info" class="aboutButton" label="About GA Kneeboard"
-      @click="showAbout=true" />
-    <div v-if="route.name!='Print'" class="versionDialog" title="Version Number. Click for details." @click="showVersion=true">v{{ versionFront }}
+      @click="activeAboutTab='about';showAbout=true" />
+    <div v-if="route.name!='Print'" class="versionDialog" title="Version Number. Click for details." @click="activeAboutTab='version';showAbout=true">v{{ versionFront }}
       <span class="maintenanceButton" v-show="true"
         @click="showMaintenance=true" @close="showMaintenance=false">&nbsp</span></div>
 </template>
@@ -44,7 +44,7 @@ import MenuButton from './components/menu/MenuButton.vue';
 import Toast from 'primevue/toast'
 
 import Eula from './components/menu/Eula.vue';
-import Version from './components/menu/Version.vue';
+
 
 const route = useRoute()
 const router = useRouter()
@@ -53,7 +53,7 @@ const showEula = ref(false)
 const showFeedback = ref(false)
 const showMaintenance = ref(false)
 
-const showVersion = ref(false)
+const activeAboutTab = ref('about')
 const versionFront = ref('')
 const toast = useToast()
 const toaster = useToaster( toast)

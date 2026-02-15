@@ -1,18 +1,21 @@
 <template>
-  <Dialog modal header="About GA Kneeboard">
+  <Dialog modal header="About GA Kneeboard" :visible="visible" @update:visible="emit('update:visible', $event)">
     <div class="aboutPopup">
       <div class="pageOptions mb-5">
         <OneChoice v-model="activeTopic" :choices="topics" class="mb-2" />
       </div>
       <div v-if="activeTopic.value==topicAbout.value">
-        <div class="mb-2 justify"><strong>GA Kneeboard</strong> was created by general aviation pilots that want to be safer through information clarity. Here are ways to stay tuned with our progress:</div>
+        <div class="mb-2 justify"><strong>GA Kneeboard</strong> purpose is to make general aviation pilots safer by providing clear information on a media that never fails. Hence <strong>Better Kneeboards, Safer Pilots</strong>.</div>
+        <div class="mb-2 justify">Stay tuned with our progress:</div>
         <div class="allButtons">
           <div v-for="guide in guides">
             <FAButton :iconclass="guide.iconclass || 'fab'" :icon="guide.icon" :label="guide.name" @click="openUrl(guide.url)" :link="true" class="oneButton" />
             <div class="buttonDesc">{{ guide.subtitle }}</div>
           </div>
         </div>
-        <div class="justify"><strong>Thanks</strong> to Ash, Jason, Nando, Steve, Stewart and Trenton for their repeated feedback</div>
+        <div>GA Kneeboard is proudly created in the <strong>USA 🇺🇸</strong> since 2024.</div>
+        <div class="bottom mb-5">Original artwork is copyrighted by Aviate Software LLC</div>
+        <div class="justify"><strong>Thanks</strong> to Ash, Jason, Mike, Nando, Steve, Stewart and Trenton for their repeated feedback</div>
       </div>
       <div v-else-if="activeTopic.value==topicGuide.value" class="mb-5">
         <div class="mb-2 justify"><strong>You can help</strong> in many ways : 
@@ -49,20 +52,37 @@
         <div class="warning-item mr-3">Magnetic Headings</div>
         <div>Always take time to confirm all data points as a good preflight</div>
       </div>
-      <div class="bottom">GA Kneeboard original artwork is copyrighted by Aviate Software LLC</div>
+      <div v-else-if="activeTopic.value==topicVersion.value" class="version-content mb-5">
+        <div class="versions-container mb-5">
+          <div class="version-item">
+              <div class="mb-2 font-bold text-lg">Interface</div>
+              <font-awesome-icon icon="fa-solid fa-display" class="large-icon mb-2"/>
+              <div class="text-3xl">v{{ versionFront }}</div>
+          </div>
+          <div class="version-item">
+              <div class="mb-2 font-bold text-lg">Backend</div>
+              <font-awesome-icon icon="fa-solid fa-cloud" class="large-icon mb-2" />
+              <div class="text-3xl">v{{ versionBack }}</div>
+          </div>
+        </div>
+        <div class="info-box mb-5">
+            <div class="font-bold mb-1">Stay Current</div>
+            <div>We publish updates on a regular basis. Check <a :href="UserUrl.blog" target="_blank" class="no-underline text-primary">GA Kneeboard blog</a> for the most current posts.</div>
+        </div>
+      </div>
       <div class="actionDialog gap-2">
         <Button label="Privacy Policy" @click="openUrl(UserUrl.privacy)" link></Button>
         <Button label="End User License Agreement" @click="openUrl(UserUrl.eula)" link></Button>
         <Button label="Accept EULA" @click="acceptEula" link></Button>
         <!-- <Button label="How Does It Work?" @click="emits('hdiw')" link></Button> -->
-        <Button label="Got it" @click="emits('close')"></Button>
+        <Button label="Got it" @click="emit('close')"></Button>
       </div>
     </div>
   </Dialog>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { UserUrl } from '@/lib/UserUrl.ts'
 
 import Button from 'primevue/button'
@@ -71,7 +91,14 @@ import FAButton from "../shared/FAButton.vue";
 import OneChoice from "../shared/OneChoice.vue";
 import { postEula } from "../../assets/data";
 
-const emits = defineEmits(["close","hdiw"]);
+const props = defineProps({
+  visible: { type: Boolean, default: false },
+  activeTab: { type: String, default: 'about' },
+  versionFront: { type: String, default: '' },
+  versionBack: { type: String, default: '' },
+})
+
+const emit = defineEmits(["close","hdiw", "update:visible"]);
 
 const guides = [
   {name:'',icon:'wordpress',subtitle:'Updates', url:UserUrl.blog},
@@ -82,8 +109,17 @@ const guides = [
 const topicAbout = {label:'About',value:'about'}
 const topicWarning = {label:'Warnings',value:'warning'}
 const topicGuide = {label:'Help',value:'guide'}
-const topics = ref([topicAbout,topicGuide,topicWarning])
+const topicVersion = {label:'Version',value:'version'}
+const topics = ref([topicAbout,topicGuide,topicWarning,topicVersion])
 const activeTopic = ref(topicAbout)
+
+watch(() => props.visible, (newVal) => {
+  if (newVal) {
+    const target = topics.value.find(t => t.value === props.activeTab)
+    if (target) activeTopic.value = target
+    else activeTopic.value = topicAbout
+  }
+})
 
 function openUrl(url) {
   window.open(url, '_blank')
@@ -165,5 +201,29 @@ ol {
   font-size: 0.75rem;
   text-align: center;
   margin-top: 0.5rem;
+}
+
+.versions-container {
+    display: flex;
+    justify-content: center;
+    gap: 5rem;
+}
+
+.version-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.large-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+}
+
+.info-box {
+    background-color: var(--surface-100);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--primary-color);
 }
 </style>
