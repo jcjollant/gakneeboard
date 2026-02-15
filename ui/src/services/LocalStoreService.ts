@@ -337,9 +337,11 @@ export class LocalStoreService {
 
     static metarGet(airportCode: string): any {
         const key = LocalStoreService.metarPrefix + airportCode
-        const payload = JSON.parse(localStorage.getItem(key) || '{}')
+        const item = localStorage.getItem(key)
+        if (!item) return undefined
+        const payload = JSON.parse(item)
         const isCurrent = payload && payload.timestamp && new Date(payload.timestamp).getTime() > new Date().getTime() - MAX_METAR_AGE
-        if (!payload || !isCurrent) return null
+        if (!isCurrent) return undefined
         return payload.metar
     }
 

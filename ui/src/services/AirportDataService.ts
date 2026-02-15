@@ -256,7 +256,7 @@ export async function getNotams(airportCode: string): Promise<Notam[]> {
 export async function getMetar(airportCode: string): Promise<Metar | null> {
     // Check local storage first
     const localMetar = LocalStoreService.metarGet(airportCode);
-    if (localMetar) {
+    if (localMetar !== undefined) {
         return localMetar;
     }
 
@@ -271,7 +271,10 @@ export async function getMetar(airportCode: string): Promise<Metar | null> {
         })
         .catch(error => {
             // report the error if it's not a 404
-            if (error.response && error.response.status != 404) {
+            if (error.response && error.response.status === 404) {
+                // save the 404 to local storage to prevent future requests
+                LocalStoreService.metarAdd(airportCode, null);
+            } else if (error.response && error.response.status !== 404) {
                 reportError('[AirportDataService.getMetar] error ' + JSON.stringify(error))
             }
             return null;
