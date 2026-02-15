@@ -103,7 +103,7 @@ export class PrintOrderDao {
         const result = await sql`
             SELECT * FROM print_orders 
             WHERE status = ${PrintOrderStatus.DRAFT} 
-            AND created_at < NOW() - INTERVAL '${daysOld} days'
+            AND created_at < NOW() - (${daysOld} * INTERVAL '1 day')
         `;
         const orders: PrintOrder[] = result.rows.map(row => this.mapOrderRow(row));
 
