@@ -4,7 +4,7 @@
             <h1>
                 Admin API Dashboard
                 <span :class="['env-tag', isTestEnv ? 'env-test' : 'env-prod']">
-                    {{ isTestEnv ? 'TEST' : 'PROD' }}
+                    {{ isTestEnv ? 'TEST' : isProdEnv ? 'PROD' : '???' }}
                 </span>
             </h1>
             <div class="api-cards">
@@ -141,7 +141,9 @@ const loadingHealth = ref(false)
 const isTestEnv = computed(() => {
     return UrlService.isTestDB
 })
-
+const isProdEnv = computed(() => {
+    return UrlService.isProdDB
+})
 
 
 const failedTests = computed(() => {

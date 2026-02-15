@@ -17,7 +17,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       GAK_API_URL: process.env.GAK_API_URL || 'https://api.kneeboard.ga/',
-      IS_TEST_DB: (process.env.POSTGRES_URL || '').includes('neondb_owner')
+      IS_PROD_DB: (process.env.POSTGRES_URL || '').includes('ep-shrill-silence-a6ypne6y-pooler'),
+      IS_TEST_DB: (process.env.POSTGRES_URL || '').includes('ep-proud-field-a6tfe60l-pooler')
     }
   },
   css: [
