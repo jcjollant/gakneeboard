@@ -26,7 +26,17 @@ import { PrintOrderDao } from "../backend/dao/PrintOrderDao";
 const port: number = 3000
 const app = express();
 
-app.use(cors())
+app.use(cors({
+    origin: [
+        'http://localhost:5173',
+        'http://localhost:3001',
+        'https://kneeboard.ga',
+        'https://www.kneeboard.ga',
+        'https://admin.kneeboard.ga',
+        'https://gak-server.vercel.app'
+    ],
+    credentials: true
+}))
 app.use('/stripe/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json()) // for parsing application/json
 
