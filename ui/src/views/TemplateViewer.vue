@@ -14,6 +14,8 @@
           :hasVersion="activeTemplate.ver > 0"
           :showScroll="showScroll"
           :showEditor="showEditor"
+          :isModified="templateModified"
+          :hasId="activeTemplate.id > 0"
           @print="onPrint"
           @save="onSave"
           @scroll="onScroll"
@@ -21,6 +23,7 @@
           @export="onExport"
           @settings="onSettings"
           @delete="onDelete"
+          @undo="onUndo"
         />
       </div>
       <div v-if="showScroll && activeTemplate" class="scrollView">
@@ -70,7 +73,7 @@ import { DemoData } from '../assets/DemoData.ts'
 import { duplicate } from '../assets/data'
 import { EditorAction } from '../assets/EditorAction.ts'
 import { LocalStoreService } from '../services/LocalStoreService.ts'
-import { onMounted, onUnmounted, ref, computed } from 'vue'
+import { onMounted, onUnmounted, ref, computed, watch, nextTick } from 'vue'
 import { TemplateFormat } from '../models/TemplateFormat.ts'
 import { PageType } from '../assets/PageType.ts'
 import { RouterNames } from '../router/index.js'
@@ -113,15 +116,29 @@ const showCapture = ref(false)
 const showScroll = ref(false)
 const showExport = ref(false)
 const showSettings = ref(false)
+const isInitializing = ref(false)
 const singlePage = ref(false)
 const templateModified = ref(false)
 const toast = useToast()
 const toaster = useToaster(toast)
 
+watch([templateModified, () => activeTemplate.value?.id], ([newMod, newId]: [boolean, number|undefined]) => {
+    if (newId !== undefined) {
+        localStorage.setItem('template-modified-id', String(newId))
+        localStorage.setItem('template-modified', newMod ? '1' : '0')
+    }
+})
+
 onMounted(() =>{
   // console.log('[TemplateViewer.onMounted]')
   try {
     const templateId = Number(route.params.id) || 0
+    // Check if we have a current session in the generic 'template' slot
+    const sessionTemplate = LocalStoreService.getTemplate()
+    const savedModifiedId = localStorage.getItem('template-modified-id')
+    const savedIsModified = localStorage.getItem('template-modified') === '1'
+    const isSessionModified = (savedModifiedId === String(templateId) && savedIsModified)
+
     if(templateId) {
       // Create a temporary template with a matching number of pages
       const userTemplate = currentUser.templates.find( t => t.id == templateId)
@@ -133,7 +150,15 @@ onMounted(() =>{
 
       // Check if we have a local copy that matches the expected version
       const localTemplate = LocalStoreService.getTemplateById(templateId)
-      if (userTemplate && localTemplate && localTemplate.ver >= userTemplate.ver) {
+
+      // Priority 1: Current session that matches the requested ID
+      if (sessionTemplate && sessionTemplate.id === templateId) {
+          // console.debug('[TemplateViewer.onMounted] loading from generic session', templateId)
+          loadTemplate(sessionTemplate, false, isSessionModified)
+          emits('template', sessionTemplate)
+      } 
+      // Priority 2: Local cache that is up to date with the user object
+      else if (userTemplate && localTemplate && localTemplate.ver >= userTemplate.ver) {
           // console.debug('[TemplateViewer.onMounted] loading from local cache', templateId)
           loadTemplate(localTemplate, true)
           emits('template', localTemplate)
@@ -163,7 +188,7 @@ onMounted(() =>{
       }
     } else { 
       // no template id => load local template active session
-      loadTemplate(LocalStoreService.getTemplate())
+      loadTemplate(sessionTemplate, false, isSessionModified)
     }
   } catch(e) {
     console.log('[TemplateViewer.onMounted] failed loading template ' + e)
@@ -252,8 +277,9 @@ function doSave() {
 }
 
 // update all widgets with provided data
-function loadTemplate(template:Template,saveToLocalStorage:boolean=false) {
+function loadTemplate(template:Template,saveToLocalStorage:boolean=false, isModified:boolean=false) {
   // console.log( '[TemplateViewer.loadTemplate]', template)
+  isInitializing.value = true
 
   // if we don't know what to show, we load a copy of the demo page
   if( template.isInvalid()) {
@@ -266,9 +292,9 @@ function loadTemplate(template:Template,saveToLocalStorage:boolean=false) {
   // we are on the first page and last page is calculated based on number of pages
   offset.value = 0
   template.data = data
-  templateModified.value = false;
-
+  
   activeTemplate.value = template;
+  templateModified.value = isModified;
   // console.log('[TemplateViewer.loadTemplate] template version', JSON.stringify(template.ver))
   updateOffsets()
   
@@ -289,6 +315,11 @@ function loadTemplate(template:Template,saveToLocalStorage:boolean=false) {
       resolve()
     })
   }, 1000)
+
+  nextTick(() => {
+    // necessary to correctly update the modified flag
+    isInitializing.value = false
+  })
 }
 
 function onAction(action:EditorAction) {
@@ -491,6 +522,7 @@ async function onEditorAction(ea:EditorAction) {
     // emits('update', index, activeTemplate.value.data[index]) 
   }
 
+  if(isInitializing.value) return
   templateModified.value = true
 }
 
@@ -523,6 +555,7 @@ function onExported(format:any) {
 
 function onPageDelete(index:number) {
   // console.debug('[TemplateViewer.onPageDelete]', index)
+    if(isInitializing.value) return
     templateModified.value = true
     activeTemplate.value.data.splice(index, 1)
     saveTemplateToLocalStoreService()
@@ -530,6 +563,7 @@ function onPageDelete(index:number) {
 
 function onPageUpdate(index:number, pageData:TemplatePage) {
   // console.debug('[TemplateViewer.onPageUpdate]', index, pageData)
+  if(isInitializing.value) return
   templateModified.value = true
 
   // save template data for that page
@@ -616,6 +650,36 @@ function onNewSettings(settings:TemplateSettings) {
   templateModified.value = settingsTemplate.value.id > 0
   saveTemplateToLocalStoreService()
   doSave()
+}
+
+
+function onUndo() {
+  const templateId = activeTemplate.value.id
+  if (!templateId) return
+
+  confirm.require({
+    message: 'Discard all unsaved changes to "' + activeTemplate.value.name + '"?',
+    header: 'Undo Changes',
+    rejectLabel: 'Cancel',
+    acceptLabel: 'Yes, Undo',
+    accept: () => {
+      const savedTemplate = LocalStoreService.getTemplateById(templateId)
+      if (savedTemplate) {
+        loadTemplate(savedTemplate, true, false)
+        toaster.success('Undo', 'Changes discarded')
+      } else {
+        // Fetch from server if not in local cache
+        toaster.info('Undo', 'Reloading template from server...')
+        TemplateService.get(templateId).then(template => {
+          loadTemplate(template, true, false)
+          LocalStoreService.saveTemplateById(template.id, template)
+          toaster.success('Undo', 'Changes discarded')
+        }).catch(e => {
+          toaster.error('Undo', 'Failed to reload template: ' + e.message)
+        })
+      }
+    }
+  })
 }
 
 function onRecallVersion({id, ver}: {id:number, ver:number}) {
@@ -710,6 +774,7 @@ function updateThumbnail(template:Template) {
 }
 
 function onAddPage() {
+    if(isInitializing.value) return
     if(!activeTemplate.value) return;
     activeTemplate.value.data.push(duplicate(TemplatePage.SELECTION));
     templateModified.value = true;
@@ -769,7 +834,7 @@ function onScrollUpdate(pageIndex: number, tileIndex: number, newTile: TileData)
 
   // Update the template
   activeTemplate.value.data[pageIndex].data[tileIndex] = finalTile
-  templateModified.value = true
+  if(!isInitializing.value) templateModified.value = true
   saveTemplateToLocalStoreService()
 }
 

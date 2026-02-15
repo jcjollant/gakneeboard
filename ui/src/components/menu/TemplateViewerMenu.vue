@@ -19,6 +19,9 @@
     
     <MenuButton id="btnSave" icon="save" title="Save Kneeboard to the Cloud" label="Save" :disabled="!isTemplateValid"
       @click="$emit('save', false)"/>
+
+    <MenuButton v-if="isModified && hasId" id="btnUndo" icon="rotate-left" title="Discard unsaved changes" label="Undo"
+      @click="$emit('undo')"/>
     
     <!-- Only visible in Full Mode -->
     <template v-if="isFullMode">
@@ -55,6 +58,8 @@ const props = defineProps<{
   showScroll?: boolean
   showEditor?: boolean
   hasVersion?: boolean
+  isModified?: boolean
+  hasId?: boolean
 }>()
 
 defineEmits<{
@@ -66,6 +71,7 @@ defineEmits<{
   (e: 'export'): void
   (e: 'settings'): void
   (e: 'delete'): void
+  (e: 'undo'): void
 }>()
 
 const isFullMode = ref(false)
