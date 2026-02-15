@@ -6,7 +6,7 @@ import Print from '../views/Print.vue';
 import FTUX from '../views/FTUX.vue';
 import { affiliates } from '../lib/affiliates';
 
-const Admin = () => import('../views/Admin.vue');
+// const Admin = () => import('../views/Admin.vue');
 const PricingPlans = () => import('../views/PricingPlans.vue');
 const ThankYou = () => import('../views/ThankYou.vue');
 const FormatSelector = () => import('../components/templates/FormatSelector.vue');
@@ -43,7 +43,7 @@ const routes = [
     { path: '/y', redirect: { name: RouterNames.FTUX, query: { utm_source: 'youtube', utm_medium: 'comment', utm_campaign: 'weekly' } } },
     { path: '/i', redirect: { name: RouterNames.FTUX, query: { utm_source: 'instagran', utm_medium: 'comment', utm_campaign: 'weekly' } } },
     { path: '/f', redirect: { name: RouterNames.FTUX, query: { utm_source: 'facebook', utm_medium: 'comment', utm_campaign: 'weekly' } } },
-    { path: '/admin', name: RouterNames.Admin, component: Admin },
+    // { path: '/admin', name: RouterNames.Admin, component: Admin },
     { path: '/auth/callback', name: RouterNames.AuthCallback, component: AuthCallback },
     { path: '/auth/reset-password', name: RouterNames.ResetPassword, component: ResetPassword },
     { path: '/plans', name: RouterNames.Plans, component: PricingPlans },

@@ -1,5 +1,6 @@
 {
   "name": "admin",
+  "version": "1.0.0",
   "type": "module",
   "private": true,
   "scripts": {
@@ -10,6 +11,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@primevue/themes": "^4.5.4",
     "@supabase/supabase-js": "^2.95.3",
     "@vercel/blob": "^2.2.0",
     "@vercel/postgres": "^0.10.0",
@@ -20,13 +22,18 @@
     "multer": "^2.0.2",
     "nodemailer": "^8.0.1",
     "nuxt": "^4.3.1",
+    "primeicons": "^7.0.0",
+    "primevue": "^4.5.4",
     "stripe": "^20.3.1",
     "vue": "^3.5.28",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@primevue/nuxt-module": "^4.5.4",
     "@types/express": "^5.0.6",
     "@types/node": "^25.2.3",
-    "postgres": "^3.4.8"
+    "postgres": "^3.4.8",
+    "sass": "^1.97.3",
+    "sass-loader": "^16.0.7"
   }
 }
