@@ -34,7 +34,9 @@
                     <p>View and manage print orders</p>
                 </div>
                 <div class="api-card" :class="{ active: selectedApi === 'health-check' }" @click="selectApi('health-check')">
-                    <div class="api-icon">❤️</div>
+                    <div class="api-icon">
+                        <img src="/img/dr-hibbert.png" alt="Health Check" class="api-image" />
+                    </div>
                     <h3>Health Check</h3>
                     <p>Run system health check</p>
                 </div>
@@ -348,6 +350,15 @@ onMounted(() => {
 .api-icon {
     font-size: 3rem;
     margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.api-image {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
 }
 
 .api-card h3 {
