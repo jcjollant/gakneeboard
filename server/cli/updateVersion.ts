@@ -10,9 +10,10 @@ import path from 'path';
 const args = process.argv.slice(2);
 
 if (args.length < 1 || args.length > 2) {
-    console.error('Usage: npx tsx housekeeping/updateVersion.ts <new-version> [target]');
-    console.error('Example: npx tsx housekeeping/updateVersion.ts 1.0.1');
-    console.error('Example: npx tsx housekeeping/updateVersion.ts 1.0.1 ui');
+    console.error('Usage: npx tsx server/cli/updateVersion.ts <new-version> [target]');
+    console.error('Example: npx tsx server/cli/updateVersion.ts 1.0.1');
+    console.error('Example: npx tsx server/cli/updateVersion.ts 1.0.1 ui');
+    console.error('Example: npx tsx server/cli/updateVersion.ts 1.0.1 admin');
     process.exit(1);
 }
 
@@ -26,15 +27,16 @@ if (!versionRegex.test(newVersion)) {
     process.exit(1);
 }
 
-if (target && !['ui', 'server'].includes(target)) {
-    console.error(`Invalid target: ${target}. Expected 'ui' or 'server'.`);
+if (target && !['ui', 'server', 'admin'].includes(target)) {
+    console.error(`Invalid target: ${target}. Expected 'ui', 'server', or 'admin'.`);
     process.exit(1);
 }
 
 let filesToUpdate = [
     { key: 'server', path: path.resolve(__dirname, '../package.json') },      // server
     { key: 'shared', path: path.resolve(__dirname, '../../shared/package.json') }, // shared
-    { key: 'ui', path: path.resolve(__dirname, '../../ui/package.json') }      // ui
+    { key: 'ui', path: path.resolve(__dirname, '../../ui/package.json') },      // ui
+    { key: 'admin', path: path.resolve(__dirname, '../../admin/package.json') }    // admin
 ];
 
 if (target) {
