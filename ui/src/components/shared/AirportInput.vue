@@ -118,8 +118,8 @@ function fetchAirport() {
                 toaster.warning( 'Invalid Airport', code.value + ' may not be valid');
                 valid.value = false
                 name.value = "Unknown"
-                model.value = invalidAirport
-                emits('invalid', code.value)
+                // model.value = invalidAirport
+                // emits('invalid', code.value)
             }
         })
 }
