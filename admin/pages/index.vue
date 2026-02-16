@@ -84,31 +84,8 @@
             <StoreOrders />
         </div>
 
-        <div v-if="selectedApi === 'health-check'" class="input-section">
-            <h2>System Health Check</h2>
-            <div class="health-url-info">
-                Testing Server: <code>{{ healthCheckUrl }}</code>
-            </div>
-            <div class="input-group">
-                <button @click="fetchHealthCheck" :disabled="loadingHealth">{{ loadingHealth ? 'Running...' : 'Run Health Check' }}</button>
-            </div>
-            
-            <div v-if="Object.keys(healthData).length > 0">
-                <div v-if="failedTests.length > 0" class="failures-section">
-                    <h3>Failed Tests</h3>
-                    <ul>
-                        <li v-for="fail in failedTests" :key="fail.name" class="failure-item">
-                            <strong>{{ fail.name }}</strong>: {{ fail.message }}
-                        </li>
-                    </ul>
-                </div>
-                <div v-else class="success-message">
-                    <h3>No Failures</h3>
-                </div>
-
-                 <h2>Health Check Results</h2>
-                 <pre class="json-display">{{ JSON.stringify(healthData, null, 2) }}</pre>
-            </div>
+        <div v-if="selectedApi === 'health-check'">
+            <HealthCheck />
         </div>
     </div>
 </template>
@@ -121,9 +98,10 @@ import { useToaster } from '~/utils/Toaster';
 import { useToast } from 'primevue/usetoast'; 
 import { useRoute, useRouter } from 'vue-router';
 
-import TicketManager from '~/components/admin/TicketManager.vue';
-import UserProfile from '~/components/admin/UserProfile.vue';
-import StoreOrders from '~/components/admin/StoreOrders.vue';
+import TicketManager from '~/components/TicketManager.vue';
+import UserProfile from '~/components/UserProfile.vue';
+import StoreOrders from '~/components/StoreOrders.vue';
+import HealthCheck from '~/components/HealthCheck.vue';
 
 const route = useRoute()
 const router = useRouter()
@@ -136,8 +114,6 @@ const selectedApi = ref('profile')
 const activeUsersRaw = ref({})
 const loadingActive = ref(false)
 const daysValue = ref(1)
-const healthData = ref({})
-const loadingHealth = ref(false)
 
 const isTestEnv = computed(() => {
     return UrlService.isTestDB
@@ -146,44 +122,6 @@ const isProdEnv = computed(() => {
     return UrlService.isProdDB
 })
 
-const healthCheckUrl = computed(() => {
-    return UrlService.healthCheckUrl
-})
-
-
-const failedTests = computed(() => {
-    const failures: { name: string, message: string }[] = []
-    const data = healthData.value as any
-    if (!data) return []
-
-    // Check if data itself is an array (new API behavior) or has checks property (old behavior)
-    const source = Array.isArray(data) ? data : (data.checks || data.entries || [])
-    
-    // Handle array format (checks: [...])
-    if (Array.isArray(source)) {
-        source.forEach((item: any) => {
-            if (item && item.status === 'fail') {
-                failures.push({
-                    name: item.name,
-                    message: item.msg || item.message || item.description || ''
-                })
-            }
-        })
-    } else {
-        // Fallback for object format just in case
-        Object.keys(source).forEach(key => {
-            const item = source[key]
-            if (item && item.status === 'fail') {
-                failures.push({
-                    name: key,
-                    message: item.msg || item.message || item.description || ''
-                })
-            }
-        })
-    }
-    
-    return failures
-})
 
 
 
@@ -192,16 +130,10 @@ const failedTests = computed(() => {
 function selectApi(api: string) {
     selectedApi.value = api
     if (api === 'profile') {
-        // activeUsersRaw.value = {} // Commented out to preserve list if switching back and forth? 
-        // Actually, existing code clears it. Let's keep it consistent with previous logic or adapt.
-        // If I want to keep the list visible when I click back?
-        // The original code cleared it: activeUsersRaw.value = {}
-        // Let's stick to original behavior for now, but be careful.
         activeUsersRaw.value = {}
     } else {
         userId.value = 0
         rawJsonData.value = {}
-        healthData.value = {}
     }
 }
 
@@ -234,23 +166,6 @@ function fetchActiveUsers() {
     })
 }
 
-function fetchHealthCheck() {
-    if (loadingHealth.value) return
-    loadingHealth.value = true
-    healthData.value = {}
-    
-    const headers = {
-        'x-health-check-access-key': process.env.HEALTH_CHECK_ACCESS_KEY
-    }
-    api.get(UrlService.healthCheckUrl, { headers }).then(res => {
-        healthData.value = res.data
-        loadingHealth.value = false
-    }).catch(err => {
-        toaster.error('Health Check Failed', err.message)
-        healthData.value = { error: err.message }
-        loadingHealth.value = false
-    })
-}
 
 function openUserProfile(id: any) {
     // This function is still used by the template in my previous edit.
@@ -470,55 +385,4 @@ onMounted(() => {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.failures-section {
-    background-color: #fee2e2;
-    border: 1px solid #ef4444;
-    border-radius: 6px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    text-align: left;
-}
-
-.failures-section ul {
-    list-style-type: none;
-    padding-left: 0;
-    margin: 0;
-}
-
-.failures-section h3 {
-    color: #b91c1c;
-    margin-top: 0;
-}
-
-.failure-item {
-    color: #b91c1c;
-    margin-bottom: 0.5rem;
-}
-
-.success-message {
-    background-color: #dcfce7;
-    border: 1px solid #22c55e;
-    border-radius: 6px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-}
-
-.success-message h3 {
-    color: #15803d;
-    margin: 0;
-}
-
-.health-url-info {
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    background-color: #f1f5f9;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    color: #475569;
-}
-
-.health-url-info code {
-    font-weight: bold;
-    color: #1e293b;
-}
 </style>
