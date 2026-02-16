@@ -18,7 +18,7 @@ describe('HealthChecks', () => {
 
         test('Success', async () => {
             const currentEffectiveDate = "20260101";
-            const renton = new Airport(rentonCode, "Renton", 42);
+            const renton = new Airport(rentonCode, undefined, "Renton", 42);
             renton.effectiveDate = currentEffectiveDate;
             renton.version = Airport.currentVersion;
             const rentonCaa = new CodeAndAirport(rentonCode, renton);
@@ -34,7 +34,7 @@ describe('HealthChecks', () => {
 
         test('Failure: Airport not in DB', async () => {
             const currentEffectiveDate = "20260101";
-            const renton = new Airport(rentonCode, "Renton", 42);
+            const renton = new Airport(rentonCode, undefined, "Renton", 42);
             renton.effectiveDate = currentEffectiveDate;
 
             jest.spyOn(AdipService, 'currentEffectiveDate').mockReturnValue(currentEffectiveDate);
@@ -48,7 +48,7 @@ describe('HealthChecks', () => {
 
         test('Failure: Airport in DB but invalid version', async () => {
             const currentEffectiveDate = "20260101";
-            const renton = new Airport(rentonCode, "Renton", 42);
+            const renton = new Airport(rentonCode, undefined, "Renton", 42);
             renton.effectiveDate = currentEffectiveDate;
             renton.version = -1; // Invalid version
             const rentonCaa = new CodeAndAirport(rentonCode, renton);
@@ -64,7 +64,7 @@ describe('HealthChecks', () => {
 
         test('Failure: Airport not in ADIP', async () => {
             const currentEffectiveDate = "20260101";
-            const renton = new Airport(rentonCode, "Renton", 42);
+            const renton = new Airport(rentonCode, undefined, "Renton", 42);
             renton.effectiveDate = currentEffectiveDate;
             renton.version = Airport.currentVersion;
             const rentonCaa = new CodeAndAirport(rentonCode, renton);
@@ -81,12 +81,12 @@ describe('HealthChecks', () => {
         test('Failure: DB effective date mismatch ADIP', async () => {
             const currentEffectiveDate = "20260101";
             const oldEffectiveDate = "20251201";
-            const rentonDb = new Airport(rentonCode, "Renton", 42);
+            const rentonDb = new Airport(rentonCode, undefined, "Renton", 42);
             rentonDb.effectiveDate = oldEffectiveDate;
             rentonDb.version = Airport.currentVersion;
             const rentonCaa = new CodeAndAirport(rentonCode, rentonDb);
 
-            const rentonAdip = new Airport(rentonCode, "Renton", 42);
+            const rentonAdip = new Airport(rentonCode, undefined, "Renton", 42);
             rentonAdip.effectiveDate = currentEffectiveDate;
 
             jest.spyOn(AdipService, 'currentEffectiveDate').mockReturnValue(currentEffectiveDate);
@@ -102,7 +102,7 @@ describe('HealthChecks', () => {
             const wrongEffectiveDate = "20251201";
             const currentEffectiveDate = "20260101";
 
-            const renton = new Airport(rentonCode, "Renton", 42);
+            const renton = new Airport(rentonCode, undefined, "Renton", 42);
             renton.effectiveDate = wrongEffectiveDate;
             renton.version = Airport.currentVersion;
             const rentonCaa = new CodeAndAirport(rentonCode, renton);

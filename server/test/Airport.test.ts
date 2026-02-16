@@ -7,7 +7,7 @@ import { PatternDirection, Runway, RunwayEnd } from '../backend/models/Runway'
 
 describe('Airport', () => {
     test('Airport should be an object', () => {
-        const airport = new Airport("name", "JCJ", 32);
+        const airport = new Airport("name", undefined, "JCJ", 32);
         expect(typeof airport).toBe('object');
         expect(airport.freq.length).toBe(0)
         expect(airport.rwys.length).toBe(0)
@@ -17,7 +17,7 @@ describe('Airport', () => {
 
 
     test('Frequencies, ATC', () => {
-        const airport = new Airport("name", "JCJ", 32);
+        const airport = new Airport("name", undefined, "JCJ", 32);
         const ctaf: string = "CTAF"
         const ctafFreq = 124.7
         const gnd: string = "GND"
@@ -67,7 +67,7 @@ describe('Airport', () => {
     })
 
     test('Runways', () => {
-        const airport = new Airport("name", "JCJ", 32);
+        const airport = new Airport("name", undefined, "JCJ", 32);
         const rwy = new Runway("16-34", 5400, 150)
         expect(rwy.getOrientation('16')).toBe(160)
         expect(rwy.getOrientation('34')).toBe(340)
