@@ -13,8 +13,7 @@
             <div class="buttonDesc">{{ guide.subtitle }}</div>
           </div>
         </div>
-        <div>GA Kneeboard is proudly created in the <strong>USA 🇺🇸</strong> since 2024.</div>
-        <div class="bottom mb-5">Original artwork is copyrighted by Aviate Software LLC</div>
+        <div class="mb-5">GA Kneeboard is proudly made in the <strong>USA 🇺🇸</strong> since 2024. Original artwork is copyrighted © 2024-{{ new Date().getFullYear() }} by <strong>Aviate Software LLC</strong></div>
         <div class="justify"><strong>Thanks</strong> to Ash, Jason, Mike, Nando, Steve, Stewart and Trenton for their repeated feedback</div>
       </div>
       <div v-else-if="activeTopic.value==topicGuide.value" class="mb-5">
