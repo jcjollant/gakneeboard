@@ -56,6 +56,7 @@ export class TemplateService {
      * @throws 404 if not found
      */
     public static async get(templateId: number, requester: number): Promise<TemplateView | undefined> {
+        // If admin, get any template. Otherwise, get only user's template.
         const userId = UserTools.isAdmin(requester) ? undefined : requester;
         const template: Template | undefined = await TemplateDao.readByIdStatic(templateId, userId)
         // console.log( '[GApiTemplate.get] ' + sheetId + ' -> ' + output)
