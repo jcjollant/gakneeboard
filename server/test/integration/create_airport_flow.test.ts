@@ -19,8 +19,8 @@ describe('Airport Creation Integration Flow', () => {
     }
 
     const testCode = `T${Math.floor(Math.random() * 900) + 100}`; // Random T100-T999
-    const testUser = 1; // Assuming a valid user ID for testing, or use a setup step to get one if needed. Using 1 for now as a likely existing ID or stub.
-    // Actually, createAirport doesn't take userId directly for creation, it takes a request object.
+
+    // actually, createAirport doesn't take userId directly for creation, it takes a request object.
     // But reading might wait, let's see.
 
     beforeAll(async () => {

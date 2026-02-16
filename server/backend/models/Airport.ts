@@ -1,4 +1,4 @@
-const modelVersion: number = 16;
+const modelVersion: number = 17;
 export const versionInvalid: number = -1
 
 import { Atc } from './Atc'
@@ -33,7 +33,6 @@ export class Airport {
     rwys: Runway[];
     navaids: Navaid[];
     atc: Atc[];
-    custom: boolean;
     version: number;
     effectiveDate: string;
     fetchTime: number;
@@ -57,7 +56,7 @@ export class Airport {
         this.rwys = [];
         this.navaids = [];
         this.atc = [];
-        this.custom = false;
+        this.atc = [];
         this.version = modelVersion;
         this.effectiveDate = '';
         this.fetchTime = 0;

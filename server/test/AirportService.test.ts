@@ -24,6 +24,26 @@ describe('AirportService Tests', () => {
         // just right x 2
         expect(AirportService.isValidCode("JCJC")).toBeTruthy()
         expect(AirportService.isValidCode("JCJ")).toBeTruthy()
+        // ICAO specific checks
+        expect(AirportService.isValidIcaoId("KSEA")).toBeTruthy()
+        expect(AirportService.isValidIcaoId("krnt")).toBeTruthy() // Case insensitive
+        // expect(AirportService.isValidIcaoId("1234")).toBeFalsy() // Now valid as alphanumeric
+        expect(AirportService.isValidIcaoId("ISEA")).toBeFalsy() // Starts with I
+        expect(AirportService.isValidIcaoId("QSEA")).toBeFalsy() // Starts with Q
+        expect(AirportService.isValidIcaoId("XSEA")).toBeFalsy() // Starts with X
+        expect(AirportService.isValidIcaoId("SE A")).toBeFalsy() // Space
+
+        // Only keep invalid ones (symbols, spaces, starting with I/Q/X)
+        const invalidIcaoList = ["ASD;", "6 AM", "5:00", "122.", "ZZZZ"] // Z? Z is valid starting char?
+        // ZZZZ is valid ICAO generic code?
+        // Let's keep ZZZZ out of invalid list if it passes regex and not I/Q/X.
+        // I/Q/X are restricted. Z is not. So ZZZZ is valid.
+        const trulyInvalidIcaoList = ["ASD;", "6 AM", "5:00", "122.", "ISEA", "QSEA", "XSEA"]
+
+        trulyInvalidIcaoList.forEach(icao => {
+            expect(AirportService.isValidIcaoId(icao)).toBeFalsy()
+        })
+
         // too short all the way down
         expect(AirportService.isValidCode("JC")).toBeFalsy()
         expect(AirportService.isValidCode("J")).toBeFalsy()
@@ -110,7 +130,7 @@ describe('AirportService Tests', () => {
     })
 
     // test('Update airport', async () => {
-    //     const customRnt = {"code":"TEST","name":"Test Airport JC","elev":1000,"freq":[{"name":"CTAF","mhz":124.7},{"name":"TWR","mhz":null},{"name":"Weather","mhz":126.95},{"name":"GND","mhz":121.6}],"rwys":[{"name":"16-34","length":5400,"width":120,"ends":[null]}],"custom":false,"version":6,"effectiveDate":""}
+    //     const customRnt = {"code":"TEST","name":"Test Airport JC","elev":1000,"freq":[{"name":"CTAF","mhz":124.7},{"name":"TWR","mhz":null},{"name":"Weather","mhz":126.95},{"name":"GND","mhz":121.6}],"rwys":[{"name":"16-34","length":5400,"width":120,"ends":[null]}],"source":"user","version":6,"effectiveDate":""}
     //     expect(await AirportService.createCustomAirport(jcHash,customRnt)).toBe('TEST')
     // })
 
@@ -121,7 +141,7 @@ describe('AirportService Tests', () => {
             new CodeAndAirport('TEST', new Airport('TEST', undefined, 'Test Airport', 0))
         ])
 
-        const airport = await AirportService.getAirportView("TEST", jcUserId)
+        const airport = await AirportService.getAirportView("TEST")
         // console.log(airport)
         expect(airport).toBeDefined()
         expect(airport?.code).toBe('TEST')
@@ -144,10 +164,10 @@ describe('AirportService Tests', () => {
             const output = await AirportService.getAirport('ABCD')
             expect(output).toBeUndefined()
 
-            const output2 = await AirportService.getAirport('ABCD', undefined)
+            const output2 = await AirportService.getAirport('ABCD')
             expect(output2).toBeUndefined()
 
-            const output3 = await AirportService.getAirport('ABCD', jcUserId)
+            const output3 = await AirportService.getAirport('ABCD')
             expect(output3).toBeUndefined()
         })
     })
@@ -218,7 +238,7 @@ describe('AirportService Tests', () => {
             jest.resetAllMocks()
             const customCode = "CUST"
             const customAirport = new Airport(customCode, undefined, "Custom Airport", 42)
-            customAirport.custom = true
+            customAirport.source = AirportSource.User
             const customCaa = new CodeAndAirport(customCode, customAirport)
 
             jest.spyOn(AirportDao, 'codesLookup').mockResolvedValue({ known: [customCaa], knownUnknown: [], notFound: [] })
@@ -438,14 +458,14 @@ describe('AirportService Tests', () => {
 
     it('Creates a new airport from fixture', async () => {
         const cnf4Data: any = cnf4;
-        const request: AirportCreationRequest = { ...cnf4Data, icaoId: 'CNF4' }; // Ensure 4 char code
+        const request: AirportCreationRequest = { ...cnf4Data, icaoId: 'CNFF' }; // Ensure 4 char code
 
         jest.spyOn(AdipService, 'currentEffectiveDate').mockReturnValue('20250101')
         jest.spyOn(AirportDao, 'create').mockResolvedValue(undefined)
 
         const result = await AirportService.createAirport(request)
 
-        expect(result.code).toBe('CNF4')
+        expect(result.code).toBe('CNFF')
         expect(result.name).toBe(cnf4.name)
         expect(result.elev).toBe(cnf4.elevation)
         expect(result.tpa).toBe(cnf4.trafficPatternAltitude)

@@ -6,7 +6,7 @@ import { Navaid } from './Navaid'
 import { Runway } from './Runway'
 
 export class AirportView {
-    public static currentVersion: number = 11;
+    public static currentVersion: number = 12;
     public static invalidVersion: number = -1;
     code: string;
     name: string;
@@ -16,7 +16,6 @@ export class AirportView {
     rwys: Runway[];
     navaids: Navaid[];
     atc: Atc[];
-    custom: boolean;
     asof: number;
     version: number = AirportView.currentVersion;
     iap: Chart[];
@@ -31,7 +30,6 @@ export class AirportView {
             this.code = airport.code;
             this.name = airport.name;
             this.elev = airport.elev;
-            this.custom = airport.custom;
             // rewrite this
             this.tpa = airport.tpa || undefined;
             this.asof = AirportView.formatAsOf(airport.effectiveDate);
@@ -40,7 +38,6 @@ export class AirportView {
             this.name = '';
             this.elev = 0;
             this.tpa = undefined;
-            this.custom = false;
             this.asof = 0;
             this.version = AirportView.invalidVersion;
         }

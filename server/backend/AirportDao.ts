@@ -35,14 +35,13 @@ export class AirportDao {
         await sql`INSERT INTO Airports (icao_id,Version) VALUES (${code},${versionInvalid})`;
     }
 
-    public static parse(row: any, creatorId: number | undefined = undefined): Airport {
+    public static parse(row: any): Airport {
         const airport: Airport = row.data ? JSON.parse(row.data) : new Airport(undefined, undefined, "", 0); // Handle new undefined constructor
         // Do we need to salvage the code?
         if (!airport.icaoId) airport.icaoId = row.icao_id || row.code; // Handle transition
         if (!airport.locId) airport.locId = row.loc_id;
 
         // It's a custom airport if creatorId matches
-        airport.custom = (creatorId ? (creatorId == row.creatorid) : false)
         airport.id = row.id;
         airport.version = row.version;
         airport.sketch = row.sketch;
@@ -76,18 +75,13 @@ export class AirportDao {
     /**
      * Read a list of airports from DB
      * @param list 
-     * @param creatorId 
      * @returns two lists, one of CodeAndAirport found, and a list of unknown codes
      */
-    public static async codesLookup(list: any, creatorId: number | undefined = undefined): Promise<{ known: CodeAndAirport[], knownUnknown: CodeAndAirport[], notFound: string[] }> {
-        // console.log( '[AirportDao.codesLookup] ' + JSON.stringify(list) + ' / ' + creatorId)
+    public static async codesLookup(list: any): Promise<{ known: CodeAndAirport[], knownUnknown: CodeAndAirport[], notFound: string[] }> {
+        // console.log( '[AirportDao.codesLookup] ' + JSON.stringify(list))
 
         let result: QueryResult;
-        if (creatorId) {
-            result = await sql`SELECT id,icao_id, loc_id,data,creatorId,version,sketch,source FROM airports WHERE (icao_id = ANY (${list}) OR loc_id = ANY (${list})) AND (creatorId =${creatorId} OR creatorId IS NULL) ORDER BY creatorId`;
-        } else { // do not include creatorId
-            result = await sql`SELECT id, icao_id, loc_id,data,creatorId,version,sketch,source FROM airports WHERE (icao_id = ANY (${list}) OR loc_id = ANY (${list})) AND creatorId is NULL`;
-        }
+        result = await sql`SELECT id, icao_id, loc_id,data,version,sketch,source FROM airports WHERE (icao_id = ANY (${list}) OR loc_id = ANY (${list}))`;
         // console.log( '[AirportDoa.readList] found', result.rowCount, 'entries for', JSON.stringify(list))
 
         const known: CodeAndAirport[] = []
@@ -106,7 +100,7 @@ export class AirportDao {
             // Create the airport object once
             let airport: Airport | undefined = undefined;
             if (row.data) {
-                airport = AirportDao.parse(row, creatorId)
+                airport = AirportDao.parse(row)
             }
 
             // Find which requested codes this row satisfies
@@ -154,8 +148,5 @@ export class AirportDao {
         await sql`DELETE FROM airports WHERE icao_id='TEST'`;
     }
 
-    public static async countDuplicates(): Promise<number> {
-        const result = await sql`SELECT COUNT(*) as count, icao_id from Airports WHERE creatorid IS NULL GROUP BY icao_id HAVING COUNT(*) > 1 ORDER BY count DESC`;
-        return result.rowCount
-    }
+
 }

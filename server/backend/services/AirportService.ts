@@ -19,7 +19,6 @@ export class AirportService {
     /**
      * Get an airport either from postgres or ADIP
      * @param {*} codeParam airport code
-     * @param {*} userId pass a value consider custom airports
      * @returns airport object or undefined if not found
      * @throws 400 if code is invalid 
     */
@@ -47,29 +46,26 @@ export class AirportService {
      * @returns 
      */
     public static isValidCode(code: string): boolean {
-        return code != null && (code.length == 3 || code.length == 4)
+        return code != null && (code.length == 3 || (code.length == 4 && AirportService.isValidIcaoId(code)))
     }
 
     public static isValidIcaoId(code: string): boolean {
-        // code should be 4 characters long and cannot start with I, Q or X
-        const firstChar = code.charAt(0)
-        return code != null && (code.length == 4) && !['I', 'Q', 'X'].includes(firstChar)
+        // code should be 4 letters and cannot start with I, Q or X
+        const regex = /^[a-zA-Z0-9]{4}$/;
+        return code != null && regex.test(code) && !['I', 'Q', 'X'].includes(code.charAt(0).toUpperCase())
     }
 
     /**
      * Get one airport, which calls getAirports with a single code. The jey difference is getAirport fails with 400 is the code is invalid
      * @param codeParam airportCode
-     * @param userId requestorId
-     * @returns airport object or undefined if not found
-     * @throws 400 if code is invalid 
      */
-    public static async getAirport(codeParam: string, userId: any = undefined): Promise<Airport | undefined> {
+    public static async getAirport(codeParam: string): Promise<Airport | undefined> {
         return new Promise(async (resolve, reject) => {
-            // console.log( "[AirportService.getAirport] " + codeParam + ' user=' + userId);
+            // console.log( "[AirportService.getAirport] " + codeParam);
             // there is only one element and we only care about the airport
             if (!AirportService.isValidCode(codeParam)) return reject(new GApiError(400, "Invalid Airport Code"));
 
-            const codeAndAirportList = (await AirportService.getAirports([codeParam], userId));
+            const codeAndAirportList = (await AirportService.getAirports([codeParam]));
             if (!codeAndAirportList.length) return resolve(undefined)
             resolve(codeAndAirportList[0].airport)
         })
@@ -98,10 +94,8 @@ export class AirportService {
     /**
      * Builds a list of airports from a list of codes this is the entry point for getting airports
      * @param airportCodes a dirty list of codes
-     * @param userId whoever is asking for the airports
-     * @returns a list of CodeAndAirport objects
      */
-    public static async getAirports(airportCodes: string[], userId: any = undefined): Promise<(CodeAndAirport)[]> {
+    public static async getAirports(airportCodes: string[]): Promise<(CodeAndAirport)[]> {
         // Our objective is to populate the output array with all codes and matching airports when possible otherwise unknown airports 
         const output: (Promise<CodeAndAirport>)[] = []
         const dbWork: (Promise<void>)[] = []
@@ -110,7 +104,7 @@ export class AirportService {
         const cleanCodes: { valid: string[], invalid: string[] } = AirportService.cleanUpCodes(airportCodes)
 
         // lookup clean codes in DB
-        const dbCodesLookup: { known: CodeAndAirport[], knownUnknown: CodeAndAirport[], notFound: string[] } = await AirportDao.codesLookup(cleanCodes.valid, userId)
+        const dbCodesLookup: { known: CodeAndAirport[], knownUnknown: CodeAndAirport[], notFound: string[] } = await AirportDao.codesLookup(cleanCodes.valid)
         // console.debug('[AirportService.getAirports] dbCodesLookup', dbCodesLookup)
 
         // Processing codes that are not in the DB yet
@@ -148,7 +142,7 @@ export class AirportService {
             const modelIsStale = found.airport.version < Airport.currentVersion
             const dataIsStale = dataSource ? await dataSource.airportIsStale(found.airport) : false
             // the airport must be refreshed if the model stale or the data source says it is stale and it is not a custom airport
-            const needRefresh = dataSource && (modelIsStale || dataIsStale) && !found.airport.custom
+            const needRefresh = dataSource && (modelIsStale || dataIsStale) && found.airport.source !== AirportSource.User
             if (needRefresh) {
                 console.debug(`[AirportService.getAirports] Refreshing ${found.code}: modelStale=${modelIsStale}, dataStale=${dataIsStale}, version=${found.airport.version}, effectiveDate=${found.airport.effectiveDate}`)
                 const refresher = await dataSource?.fetchAirport(found.code)
@@ -184,9 +178,9 @@ export class AirportService {
         return Promise.all(output)
     }
 
-    public static async getAirportView(codeParam: string, userId: any = undefined): Promise<AirportView> {
+    public static async getAirportView(codeParam: string): Promise<AirportView> {
         if (!AirportService.isValidCode(codeParam)) throw new GApiError(400, "Invalid Airport Code");
-        const list = await AirportService.getAirportViewList([codeParam], userId)
+        const list = await AirportService.getAirportViewList([codeParam])
         if (!list.length) throw new GApiError(404, "Airport not found");
         return list[0]
     }
@@ -196,9 +190,9 @@ export class AirportService {
      * @param {*} airportCodes A list of airport codes
      * @returns a list of corresponding airport data, which may be undefined
     */
-    public static async getAirportViewList(airportCodes: string[], userId = undefined): Promise<AirportView[]> {
-        // console.log('[AirportService.getAirportViewList] codes', JSON.stringify(airportCodes), 'user', userId)
-        const airports: (CodeAndAirport)[] = await AirportService.getAirports(airportCodes, userId)
+    public static async getAirportViewList(airportCodes: string[]): Promise<AirportView[]> {
+        // console.log('[AirportService.getAirportViewList] codes', JSON.stringify(airportCodes))
+        const airports: (CodeAndAirport)[] = await AirportService.getAirports(airportCodes)
         // console.log('[AirportService.getAirportViewList]', JSON.stringify(airports))
 
         const output = airports.map((codeAndAirport) => {
