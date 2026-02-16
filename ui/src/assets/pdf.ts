@@ -80,9 +80,19 @@ export async function createPDF(elements: NodeListOf<Element>, landscape: boolea
   return pdf.output('blob');
 }
 
-export async function exportToPDF(elements: NodeListOf<Element>, landscape: boolean): Promise<void> {
+export async function exportToPDF(elements: NodeListOf<Element>, landscape: boolean, filename?: string): Promise<void> {
   const blob = await createPDF(elements, landscape);
   const url = URL.createObjectURL(blob);
-  window.open(url, '_blank'); // Open PDF in a new browser tab
 
+  if (filename) {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename.endsWith('.pdf') ? filename : `${filename}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  } else {
+    window.open(url, '_blank'); // Open PDF in a new browser tab
+  }
 }

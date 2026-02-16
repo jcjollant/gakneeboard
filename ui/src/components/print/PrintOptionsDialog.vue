@@ -36,16 +36,15 @@
           </div>
         </div>
       </FieldSet>
-      <FieldSet legend="Printing Tips">
+      <FieldSet legend="Hints">
         <ul class="note" v-if="!isFullPageFormat">
-          <li>Two pages per sheet will fold to kneeboard size</li>
-          <li>Flipped back page can be read when front page is clipped</li>
-          <li>You can save to PDF format from the next screen</li>
+          <li>Two pages prints will fold to kneeboard size</li>
+          <li><strong>Flipped</strong> back page can be read when front page is clipped</li>
+          <li>Use <strong>Create Document</strong> to import in Foreflight</li>
         </ul>
         <ul class="note" v-else>
           <li>Full page templates print one page per sheet in portrait mode</li>
           <li>The number of printed pages will match the template page count</li>
-          <li>You can save to PDF format from the next screen</li>
         </ul>
       </FieldSet>
       <div class="actionDialog gap-2">
@@ -58,6 +57,7 @@
         <Button v-if="FeatureFlags.CUSTOM_KNEEBOARD_LAMINATION" @click="emits('laminate', getOptions())" class="store-btn" title="We print, laminate, and ship it to you!">
             <font-awesome-icon icon="store" class="mr-2" /> Laminate (Print & Ship)
         </Button>
+        <Button label="Create Document" @click="onExportPdf" :disabled="upgrade" link></Button>
         <Button label="Print" @click="onPrint" :disabled="upgrade"></Button>
       </div>
     </div>
@@ -82,7 +82,7 @@ import { VerticalInfoBarContent } from '../../models/VerticalInfoBarOption';
 import { PrintOptions } from './PrintOptions';
 import { useRouter } from 'vue-router';
 
-const emits = defineEmits(["print","options",'close', 'laminate']);
+const emits = defineEmits(["print", "export-pdf", "options", 'close', 'laminate']);
 
 const normalOrientation = new OneChoiceValue('Normal', false)
 const flippedOrientation = new OneChoiceValue('Flipped', true, 'You can read back page without unclipping')
@@ -180,6 +180,10 @@ function onNewOptions() {
 function onPrint() {
   // console.log('[Print.onPrint] options', JSON.stringify(getOptions()),'pageOptions', JSON.stringify(pageSelection.value))
   emits('print', getOptions())
+}
+
+function onExportPdf() {
+  emits('export-pdf', getOptions())
 }
 
 function onUpgrade() {

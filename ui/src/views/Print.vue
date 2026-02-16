@@ -5,12 +5,13 @@
         :format="template?.format"
         @options="onOptionsUpdate"
         @print="onPrint"
+        @export-pdf="onExportPdf"
         @laminate="onLaminate"
         @close="showOptions=false"
         />
     <div v-if="template" id="printTemplate" :class="{'single':printFullpage,'fullpage':template.format === TemplateFormat.FullPage}">
       <div v-if="printFullpage" v-for="(page,index) in template.data" class="printOnePage printPageBreak">
-        <div class="onePage" v-if="pageSelection[index]">
+        <div class="onePager" v-if="pageSelection[index]">
           <Page :data="page" :format="template.format"
             :style="getPageStyle(false)" />
         </div>
@@ -31,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { nextTick, onMounted, ref, watch } from 'vue';
 import { LocalStoreService } from '../services/LocalStoreService';
 import { useRoute, useRouter } from 'vue-router';
 import { postPrint, currentUser } from '../assets/data.js';
@@ -133,6 +134,41 @@ function onOptionsUpdate(options:PrintOptions) {
   }
 }
 
+/**
+ * Create a downloadable PDF document
+ * @param options 
+ */
+async function onExportPdf(options: PrintOptions | undefined) {
+  if (!options) return;
+  
+  if (!canUserPrint()) {
+      printing = false
+      redirectToPlansPage()
+      return
+  }
+  
+  printFullpage.value = true
+
+  await nextTick()
+    printing = true
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+
+    try {
+      const elements = document.querySelectorAll('.onePager')
+      console.debug('[Print.onExportPdf] Creating PDF from elements:', elements)
+      const paperNavlog = template.value && template.value.data.length > 0 && template.value.data[0].type === PageType.paperNavlog
+      const landscape = paperNavlog || false
+      if(elements) await exportToPDF(elements, landscape, template.value ? template.value.name : 'kneeboard')
+      router.back()
+    } catch (error) {
+        console.error('Error printing:', error);
+    } finally {
+        printing = false
+        printFullpage.value = false
+    }
+}
+
 async function onLaminate(options: PrintOptions | undefined) {
   if (!options) return;
   
@@ -163,6 +199,10 @@ async function onLaminate(options: PrintOptions | undefined) {
   }
 }
 
+/**
+ * Create a PDF that will be printable from the next page
+ * @param options 
+ */
 async function onPrint(options:PrintOptions|undefined) {
   if (!canUserPrint()) {
     printing = false
@@ -250,7 +290,7 @@ function getSideBarStyle(isBack: boolean) {
   background-color: white;
 }
 
-.onePage {
+.onePager {
   display:flex;
   justify-content: center;
 }
