@@ -521,7 +521,7 @@ app.post('/tickets/:id/close', async (req: Request, res: Response) => {
 
 app.get('/admin/healthCheck', async (req: Request, res: Response) => {
     try {
-        await Authorization.validateAdmin(req)
+        await Authorization.validateHealthCheck(req)
         const result = await HealthCheck.perform()
         res.send(result)
     } catch (e) {

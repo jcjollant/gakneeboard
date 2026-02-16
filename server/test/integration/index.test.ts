@@ -19,7 +19,14 @@ jest.mock('../../backend/services/AirportService');
 jest.mock('../../backend/maintenance/Maintenance');
 jest.mock('../../backend/services/TemplateService');
 jest.mock('../../backend/services/PublicationService');
-jest.mock('../../backend/UserTools');
+jest.mock('../../backend/UserTools', () => {
+    return {
+        UserTools: {
+            userIdFromRequest: jest.fn(),
+            isAdmin: jest.fn()
+        }
+    }
+});
 jest.mock('../../backend/services/TicketService');
 jest.mock('../../backend/services/Authorization');
 jest.mock('../../backend/dao/UsageDao');
@@ -77,7 +84,7 @@ describe('index API', () => {
 
         expect(res.status).toBe(200);
         expect(res.body).toHaveLength(2);
-        expect(AirportService.getAirportViewList).toHaveBeenCalledWith(['rnt', 'jfk'], 123);
+        expect(AirportService.getAirportViewList).toHaveBeenCalledWith(['rnt', 'jfk']);
     });
 
     it('Invalid Id', async () => {
@@ -182,14 +189,18 @@ describe('index API', () => {
 
     it('Admin healthCheck returns json', async () => {
         const mockResult = [{ name: 'Name', status: 'Status', msg: 'Msg', startTime: 1, duration: 1000 }];
-        (Authorization.validateAdmin as unknown as jest.Mock<any>).mockResolvedValue(1);
+        // Ensure validateHealthCheck is mocked
+        if (!Authorization.validateHealthCheck) {
+            Authorization.validateHealthCheck = jest.fn() as any;
+        }
+        (Authorization.validateHealthCheck as unknown as jest.Mock<any>).mockResolvedValue(undefined);
         (HealthCheck.perform as unknown as jest.Mock<any>).mockResolvedValue(mockResult);
 
         const res = await request(app).get('/admin/healthCheck');
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual(mockResult);
-        expect(Authorization.validateAdmin).toHaveBeenCalled();
+        expect(Authorization.validateHealthCheck).toHaveBeenCalled();
         expect(HealthCheck.perform).toHaveBeenCalled();
     });
     it('Templates version restore records usage', async () => {

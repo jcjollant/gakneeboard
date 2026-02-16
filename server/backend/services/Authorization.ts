@@ -18,4 +18,15 @@ export class Authorization {
         }
         return userId
     }
+
+    public static async validateHealthCheck(req: Request): Promise<void> {
+        const healthCheckKey = process.env.HEALTH_CHECK_ACCESS_KEY
+        const requestKey = req.headers['x-health-check-access-key']
+
+        if (healthCheckKey && requestKey === healthCheckKey) {
+            return
+        }
+
+        await Authorization.validateAdmin(req)
+    }
 }

@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { currentUser } from '~/utils/data'
+import { api } from '~/utils/api'
 import { UrlService } from '~/utils/UrlService'
 import { useToaster } from '~/utils/Toaster'
 import { useToast } from 'primevue/usetoast'
@@ -71,7 +71,7 @@ function fetchTickets() {
     ticketsLoaded.value = false
     selectedTickets.value = []
     
-    currentUser.getUrl(UrlService.adminRoot + 'tickets').then(res => {
+    api.get(UrlService.adminRoot + 'tickets').then(res => {
         tickets.value = res.data
         loadingTickets.value = false
         ticketsLoaded.value = true
@@ -84,7 +84,7 @@ function fetchTickets() {
 function closeTicket(id: number) {
     if (!confirm('Are you sure you want to close ticket #' + id + '?')) return
     
-    currentUser.postUrl(UrlService.adminRoot + 'tickets/' + id + '/close', {}).then(() => {
+    api.post(UrlService.adminRoot + 'tickets/' + id + '/close', {}).then(() => {
         toaster.success('Ticket Closed', 'Ticket #' + id + ' has been closed')
         // Remove from list
         tickets.value = tickets.value.filter(t => t.id !== id)
@@ -105,7 +105,7 @@ async function closeSelected() {
     // Show some loading state if needed, but for now we just process
     
     const promises = idsToClose.map(id => {
-        return currentUser.postUrl(UrlService.adminRoot + 'tickets/' + id + '/close', {})
+        return api.post(UrlService.adminRoot + 'tickets/' + id + '/close', {})
             .then(() => {
                 successCount++
                 // Optimistically remove or wait for refresh?

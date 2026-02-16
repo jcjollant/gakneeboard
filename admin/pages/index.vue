@@ -4,7 +4,7 @@
             <h1>
                 Admin API Dashboard
                 <span :class="['env-tag', isTestEnv ? 'env-test' : 'env-prod']">
-                    {{ isTestEnv ? 'TEST' : isProdEnv ? 'PROD' : '???' }}
+                    {{ isTestEnv ? 'TEST DB' : isProdEnv ? 'PROD DB' : '???' }}
                 </span>
             </h1>
             <div class="api-cards">
@@ -18,11 +18,7 @@
                     <h3>Active Users</h3>
                     <p>Monitor currently active users and system usage</p>
                 </div>
-                <div class="api-card" :class="{ active: selectedApi === 'create-airport' }" @click="selectApi('create-airport')">
-                    <div class="api-icon">🛫</div>
-                    <h3>Create Airport</h3>
-                    <p>Add a new airport to the database</p>
-                </div>
+
                 <div class="api-card" :class="{ active: selectedApi === 'tickets' }" @click="selectApi('tickets')">
                     <div class="api-icon">🎫</div>
                     <h3>Ticket Management</h3>
@@ -78,9 +74,7 @@
             <pre class="json-display">{{ JSON.stringify(activeUsersRaw, null, 2) }}</pre>
         </div>
 
-        <div v-if="selectedApi === 'create-airport'">
-            <AirportCreationForm />
-        </div>
+
 
         <div v-if="selectedApi === 'tickets'">
             <TicketManager />
@@ -92,6 +86,9 @@
 
         <div v-if="selectedApi === 'health-check'" class="input-section">
             <h2>System Health Check</h2>
+            <div class="health-url-info">
+                Testing Server: <code>{{ healthCheckUrl }}</code>
+            </div>
             <div class="input-group">
                 <button @click="fetchHealthCheck" :disabled="loadingHealth">{{ loadingHealth ? 'Running...' : 'Run Health Check' }}</button>
             </div>
@@ -118,12 +115,12 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue'
-import { currentUser } from '~/utils/data'
+import { api } from '~/utils/api'
 import { UrlService } from '~/utils/UrlService'
 import { useToaster } from '~/utils/Toaster';
 import { useToast } from 'primevue/usetoast'; 
 import { useRoute, useRouter } from 'vue-router';
-import AirportCreationForm from '~/components/admin/AirportCreationForm.vue';
+
 import TicketManager from '~/components/admin/TicketManager.vue';
 import UserProfile from '~/components/admin/UserProfile.vue';
 import StoreOrders from '~/components/admin/StoreOrders.vue';
@@ -147,6 +144,10 @@ const isTestEnv = computed(() => {
 })
 const isProdEnv = computed(() => {
     return UrlService.isProdDB
+})
+
+const healthCheckUrl = computed(() => {
+    return UrlService.healthCheckUrl
 })
 
 
@@ -210,7 +211,7 @@ function selectApi(api: string) {
 
 function handleSubmit() {
     console.debug('[Admin.handleSubmit]', inputValue.value)
-    currentUser.getUrl(UrlService.adminRoot + 'user/profile/' + inputValue.value).then(res => {
+    api.get(UrlService.adminRoot + 'user/profile/' + inputValue.value).then(res => {
         const userProfile = res.data
         userId.value = userProfile.id
         userProfileData.value = userProfile
@@ -224,7 +225,7 @@ function fetchActiveUsers() {
     if (loadingActive.value || !daysValue.value) return
     loadingActive.value = true
     console.debug('[Admin.fetchActiveUsers]', daysValue.value)
-    currentUser.getUrl(UrlService.adminRoot + 'usage/active?days=' + daysValue.value).then(res => {
+    api.get(UrlService.adminRoot + 'usage/active?days=' + daysValue.value).then(res => {
         activeUsersRaw.value = res.data
         loadingActive.value = false
     }).catch(err => {
@@ -238,7 +239,10 @@ function fetchHealthCheck() {
     loadingHealth.value = true
     healthData.value = {}
     
-    currentUser.getUrl(UrlService.healthCheckUrl).then(res => {
+    const headers = {
+        'x-health-check-access-key': process.env.HEALTH_CHECK_ACCESS_KEY
+    }
+    api.get(UrlService.healthCheckUrl, { headers }).then(res => {
         healthData.value = res.data
         loadingHealth.value = false
     }).catch(err => {
@@ -502,5 +506,19 @@ onMounted(() => {
 .success-message h3 {
     color: #15803d;
     margin: 0;
+}
+
+.health-url-info {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background-color: #f1f5f9;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+.health-url-info code {
+    font-weight: bold;
+    color: #1e293b;
 }
 </style>

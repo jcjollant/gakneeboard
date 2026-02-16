@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { currentUser } from '~/utils/data'
+import { api } from '~/utils/api'
 import { UrlService } from '~/utils/UrlService'
 import { useToaster } from '~/utils/Toaster'
 import { useToast } from 'primevue/usetoast'
@@ -38,7 +38,7 @@ function fetchActiveUsers() {
     if (loadingActive.value || !daysValue.value) return
     loadingActive.value = true
     console.debug('[ActiveUsers.fetchActiveUsers]', daysValue.value)
-    currentUser.getUrl(UrlService.root + 'usage/active?days=' + daysValue.value).then(res => {
+    api.get(UrlService.root + 'usage/active?days=' + daysValue.value).then(res => {
         activeUsersRaw.value = res.data
         loadingActive.value = false
     }).catch(err => {

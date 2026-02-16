@@ -46,7 +46,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { currentUser } from '~/utils/data';
+import { api } from '~/utils/api';
 import { UrlService } from '~/utils/UrlService';
 import { useToaster } from '~/utils/Toaster';
 import { useToast } from 'primevue/usetoast';
@@ -58,7 +58,7 @@ const toaster = useToaster(useToast());
 const fetchOrders = async () => {
     loading.value = true;
     try {
-        const res = await currentUser.getUrl(UrlService.adminRoot + 'orders');
+        const res = await api.get(UrlService.adminRoot + 'orders');
         orders.value = res.data;
     } catch (e: any) {
         toaster.error('Failed to fetch orders', e.message);
@@ -70,13 +70,14 @@ const fetchOrders = async () => {
 const markShipped = async (orderId: string) => {
     if (!confirm('Are you sure you want to mark this order as shipped?')) return;
     try {
-        await currentUser.postUrl(UrlService.adminRoot + 'orders/' + orderId + '/ship');
+        await api.post(UrlService.adminRoot + 'orders/' + orderId + '/ship');
         toaster.success('Order Shipped', 'Order marked as shipped successfully.');
         fetchOrders(); // Refresh
     } catch (e: any) {
         toaster.error('Failed to update order', e.message);
     }
 }
+
 
 onMounted(() => {
     fetchOrders();
