@@ -115,7 +115,7 @@ export class SkyvectorService implements AirportDataSource {
             }
         })
 
-        const airport = new Airport(code, name, elevation)
+        const airport = new Airport(code, undefined, name, elevation)
         if (lat !== 0 || lon !== 0) {
             airport.location = { lat, lon }
         }

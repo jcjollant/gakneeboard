@@ -58,16 +58,6 @@ export class GApi {
         }
     }
 
-    // public static async createCustomAirport(userSha256:string,airport:any) {
-    //     // console.log('[gapi.createCustomAirport]', userSha256, airport)
-    //     // resolve user
-    //     const userId = await UserDao.getIdFromHash(userSha256)
-    //     // update record
-    //     if( !userId) throw new GApiError(400,"Invalid User"); 
-
-    //     return await AirportDao.createOrUpdateCustom(airport, userId)
-    // }
-
     /**
      * Export a template into one of the supported formats
      * @param templateId Source template id

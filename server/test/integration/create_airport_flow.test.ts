@@ -37,7 +37,7 @@ describe('Airport Creation Integration Flow', () => {
 
     test('Should create an airport and persist it with source=user', async () => {
         const payload: AirportCreationRequest = {
-            code: testCode,
+            icaoId: testCode,
             name: 'Integration Test Airport',
             elevation: 100,
             trafficPatternAltitude: 1000,

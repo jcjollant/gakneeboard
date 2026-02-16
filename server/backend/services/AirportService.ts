@@ -24,11 +24,11 @@ export class AirportService {
      * @throws 400 if code is invalid 
     */
     public static async createAirport(request: AirportCreationRequest): Promise<Airport> {
-        if (!AirportService.isValidCode(request.code)) {
+        if (!AirportService.isValidIcaoId(request.icaoId)) {
             throw new GApiError(400, "Invalid Airport Code");
         }
 
-        const airport = new Airport(request.code, request.name, request.elevation);
+        const airport = new Airport(request.icaoId, undefined, request.name, request.elevation);
         airport.tpa = request.trafficPatternAltitude;
         airport.freq = request.frequencies;
         airport.rwys = request.runways.map((rwy) => new Runway(rwy.name, rwy.length, rwy.width));
@@ -37,7 +37,7 @@ export class AirportService {
         airport.effectiveDate = AdipService.currentEffectiveDate();
         airport.source = AirportSource.User;
 
-        await AirportDao.create(request.code, airport);
+        await AirportDao.create(airport);
         return airport;
     }
 
@@ -48,6 +48,12 @@ export class AirportService {
      */
     public static isValidCode(code: string): boolean {
         return code != null && (code.length == 3 || code.length == 4)
+    }
+
+    public static isValidIcaoId(code: string): boolean {
+        // code should be 4 characters long and cannot start with I, Q or X
+        const firstChar = code.charAt(0)
+        return code != null && (code.length == 4) && !['I', 'Q', 'X'].includes(firstChar)
     }
 
     /**
@@ -121,7 +127,7 @@ export class AirportService {
             if (newAirport) {
                 output.push(Promise.resolve(new CodeAndAirport(newCode, newAirport)))
                 // remember this as a valid airport
-                dbWork.push(AirportDao.create(newCode, newAirport))
+                await AirportDao.create(newAirport)
                 dbWork.push(AirportSketch.resolve(newAirport, newCode, true))
             } else {
                 output.push(Promise.resolve(CodeAndAirport.undefined(newCode)))
@@ -236,7 +242,7 @@ export class AirportService {
     }
 
     static undefinedCodeAndAirport(code: string): CodeAndAirport {
-        const airport: Airport = new Airport(code, '', 0)
+        const airport: Airport = new Airport(code, undefined, '', 0)
         airport.version = versionInvalid;
         return new CodeAndAirport(code, airport)
     }

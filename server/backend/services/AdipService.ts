@@ -271,10 +271,11 @@ export class AdipService implements AirportDataSource {
      */
     static parseAirport(adip: any): Airport {
         if (!adip || adip.error == 'noAirportData') throw new Error('No adip data')
-        const code: string = ('icaoId' in adip ? adip.icaoId : 'locId' in adip ? adip.locId : '?')
+        const icaoId: string | undefined = ('icaoId' in adip ? adip.icaoId : undefined)
+        const locId: string | undefined = ('locId' in adip ? adip.locId : undefined)
         const name: string = AdipService.getName(adip)
         const elevation: number = adip.elevation
-        const airport = new Airport(code, name, elevation)
+        const airport = new Airport(icaoId, locId, name, elevation)
 
         // Scan adip.facility.frequencies
         if (adip.ctaf) {

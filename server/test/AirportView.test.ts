@@ -53,7 +53,7 @@ describe('Airport View', () => {
         const airportCode = 'code'
         const airportName = 'name'
         const airportElevation = 1234
-        const airport = new Airport(airportCode, airportName, airportElevation)
+        const airport = new Airport(airportCode, undefined, airportName, airportElevation)
         const view = new AirportView(airport)
         expect(view).toBeDefined()
         expect(view.asof).toBe(0)
@@ -145,7 +145,7 @@ describe('Airport View', () => {
         const airportCode = 'CODE'
         const airportName = 'NAME'
         const airportElevation = 0
-        const airport = new Airport(airportCode, airportName, airportElevation)
+        const airport = new Airport(airportCode, undefined, airportName, airportElevation)
         airport.supplement = 'supplement.pdf'
         airport.notice = 'notice.pdf'
 

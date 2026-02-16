@@ -16,7 +16,16 @@ export enum AirportSource {
 export class Airport {
     static currentVersion: number = modelVersion;
     id: number | undefined;
-    code: string;
+    icaoId: string | undefined;
+    locId: string | undefined;
+    get code(): string { return this.icaoId || this.locId || '?' }
+
+    toJSON() {
+        return {
+            ...this,
+            code: this.code
+        }
+    }
     name: string;
     elev: number;
     tpa: number | undefined;
@@ -37,9 +46,10 @@ export class Airport {
     supplement: string | undefined;
     notice: string | undefined;
 
-    constructor(code: string, name: string, elevation: number) {
+    constructor(icaoId: string | undefined, locId: string | undefined, name: string, elevation: number) {
         this.id = undefined;
-        this.code = code;
+        this.icaoId = icaoId;
+        this.locId = locId;
         this.name = name;
         this.elev = elevation;
         this.tpa = undefined;
