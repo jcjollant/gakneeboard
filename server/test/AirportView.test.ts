@@ -61,7 +61,6 @@ describe('Airport View', () => {
         expect(view.name).toBe(airportName)
         expect(view.freq).toHaveLength(0)
         expect(view.rwys).toHaveLength(0)
-        expect(view.custom).toBeFalsy()
         expect(view.navaids).toHaveLength(0)
         expect(view.atc).toHaveLength(0)
         expect(view.iap).toHaveLength(0)

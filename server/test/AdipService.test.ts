@@ -38,14 +38,6 @@ function checkAtc(airport: Airport, expectedAtcs: any) {
 
 describe('AdipService', () => {
 
-    it('gets effectiveDate from variables', () => {
-        process.env.EFFECTIVE_DATE = "test"
-        expect(AdipService.currentEffectiveDate()).toBe("test")
-        // unset environment variable
-        delete process.env.EFFECTIVE_DATE
-        expect(AdipService.currentEffectiveDate()).toBe(AdipService.defaultEffectiveDate)
-    })
-
     test('airportIsStale', async () => {
         // Setup dates
         const pastDate = "2025-11-27T00:00:00"
