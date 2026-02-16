@@ -89,7 +89,7 @@ app.get('/airport/:id', async (req, res) => {
     // console.log( "[index.get.airport]", req.params.id, userId);
 
     try {
-        const output = await AirportService.getAirportView(req.params.id, userId)
+        const output = await AirportService.getAirportView(req.params.id)
         res.send(output)
     } catch (e) {
         catchError(res, e, 'GET /airport')
@@ -103,7 +103,7 @@ app.get('/airports/:list', async (req: Request, res: Response) => {
 
     const userId = await UserTools.userIdFromRequest(req)
     // console.log( "[index] /airports/", req.params.list, "userId", userId);
-    const output = await AirportService.getAirportViewList(req.params.list.split('-'), userId);
+    const output = await AirportService.getAirportViewList(req.params.list.split('-'));
     // console.log( "[index] Returning airports " + JSON.stringify(airports));
     res.send(output)
 })

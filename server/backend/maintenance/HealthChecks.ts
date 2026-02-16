@@ -46,14 +46,7 @@ export class Check {
 export class HealthCheck {
 
     static async airportChecks(): Promise<Check[]> {
-        const dupeCheck: Check = new Check('airportDuplicates')
         const missingSketches: Check = new Check('airportMissingSketches')
-        const dupeCount = await AirportDao.countDuplicates()
-        if (dupeCount > 0) {
-            dupeCheck.fail("Found " + dupeCount + " duplicates")
-        } else {
-            dupeCheck.pass("No duplicates found")
-        }
 
         const missingSketchesCount = await AirportDao.countMissingSketches()
         const validCount = await AirportDao.countValid()
@@ -62,7 +55,7 @@ export class HealthCheck {
         } else {
             missingSketches.pass(`${validCount} airports have valid sketches`)
         }
-        return [dupeCheck, missingSketches]
+        return [missingSketches]
     }
 
     // figure out if the data is stale
