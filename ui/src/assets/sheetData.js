@@ -34,7 +34,7 @@ export class ThumbnailImage {
 }
 
 import { duplicate } from './data'
-import { TemplateFormat } from '../models/TemplateFormat'
+import { TemplateFormat } from '@gak/shared'
 
 // used to check if a sheet name is already taken by defaults
 const defaultNames = [SheetName.default, SheetName.tiles, SheetName.checklist, SheetName.reset]

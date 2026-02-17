@@ -6,7 +6,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import PlaceHolder from '../shared/PlaceHolder.vue';
-import { TemplateFormat } from '../../models/TemplateFormat';
+import { TemplateFormat } from '@gak/shared';
 
 const props = defineProps({
     format: { type: String, default: TemplateFormat.Kneeboard }

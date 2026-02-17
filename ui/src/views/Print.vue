@@ -38,8 +38,7 @@ import { postPrint, currentUser } from '../assets/data.js';
 import { Template, TemplatePage } from '../models/Template';
 import { exportToPDF, createPDF } from '../assets/pdf'
 import { PageType } from '../assets/PageType.js';
-import { TemplateFormat } from '../models/TemplateFormat.js';
-import { AccountType } from '@gak/shared';
+import { TemplateFormat, AccountType } from '@gak/shared';
 import { PrintOptions } from '../components/print/PrintOptions.js';
 import Page from '../components/page/Page.vue';
 import PrintOptionsDialog from '../components/print/PrintOptionsDialog.vue';

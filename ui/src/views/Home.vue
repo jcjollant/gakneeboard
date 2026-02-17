@@ -80,7 +80,7 @@ import TemplateSelector from '../components/templates/TemplateSelector.vue';
 import ChecklistSelector from '../components/checklist/ChecklistSelector.vue';
 import LibraryChecklistDialog from '../components/checklist/LibraryChecklistDialog.vue';
 import PricingPlans from './PricingPlans.vue';
-import { TemplateFormat } from '../models/TemplateFormat';
+import { TemplateFormat } from '@gak/shared';
 import { LibraryChecklist } from '../models/LibraryChecklist';
 import { Template, TemplatePage } from '../models/Template';
 

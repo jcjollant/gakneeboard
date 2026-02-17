@@ -39,7 +39,7 @@
 import { onMounted, ref, watch } from 'vue'
 
 import { PageType } from '../../assets/PageType'
-import { TemplateFormat } from '../../models/TemplateFormat'
+import { TemplateFormat } from '@gak/shared'
 import { useConfirm } from 'primevue/useconfirm'
 
 import ApproachPage from '../charts/ApproachPage.vue'

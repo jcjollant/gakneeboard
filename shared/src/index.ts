@@ -1,4 +1,5 @@
 export { AccountType, parseAccountType } from './models/AccountType';
+export { TemplateFormat } from './models/TemplateFormat';
 export * from './models/KneeboardView';
 export * from './models/PlanDescription';
 export * from './constants/Plans';

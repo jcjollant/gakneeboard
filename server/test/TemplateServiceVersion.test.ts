@@ -7,9 +7,8 @@ import { TemplateDao } from '../backend/TemplateDao';
 import { TemplateKneeboardView } from '../backend/models/TemplateKneeboardView';
 import { Template } from '../backend/models/Template';
 import { User } from '../backend/models/User';
-import { AccountType, PLAN_ID_SIM } from '@gak/shared';
+import { AccountType, PLAN_ID_SIM, TemplateFormat } from '@gak/shared';
 import { GApiError } from '../backend/GApiError';
-import { TemplateFormat } from '../backend/models/TemplateFormat';
 
 // Mock dependencies
 jest.mock('../backend/dao/UserDao');

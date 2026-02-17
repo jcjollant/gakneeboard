@@ -35,13 +35,13 @@
       <div v-else-if="activeTemplate" class="pageAll" :class="{'editor':showEditor}">
         <div v-for="(data,index) in activeTemplate.data" class="pageGrid" :class="{'fullpage-grid': activeTemplate.format === TemplateFormat.FullPage}">
           <Page :data="data" :class="'page'+index"
-            :format="activeTemplate.format" @update="onPageUpdate(index, $event)" @delete="onPageDelete(index)" 
-            :captureMode="showCapture" @capture="handleCaptureEvent(index, $event)"/>
+            :format="activeTemplate.format" @update="onPageUpdate(Number(index), $event)" @delete="onPageDelete(Number(index))" 
+            :captureMode="showCapture" @capture="handleCaptureEvent(Number(index), $event)"/>
           
-          <VerticalActionBar v-if="showEditor" :offset="index" :last="index == activeTemplate.data.length - 1"
+          <VerticalActionBar v-if="showEditor" :offset="Number(index)" :last="Number(index) == activeTemplate.data.length - 1"
             @action="onAction" />
           <div v-else></div>
-          <HorizontalActionBar v-if="showEditor" @action="onAction" :index="index" :blockDelete="activeTemplate.data.length < 2" 
+          <HorizontalActionBar v-if="showEditor" @action="onAction" :index="Number(index)" :blockDelete="activeTemplate.data.length < 2" 
             :isTilePage="data.type == PageType.tiles" :captureMode="showCapture"/>
           <div></div>
           <div></div>
@@ -74,7 +74,7 @@ import { duplicate } from '../assets/data'
 import { EditorAction } from '../assets/EditorAction.ts'
 import { LocalStoreService } from '../services/LocalStoreService.ts'
 import { onMounted, onUnmounted, ref, computed, watch, nextTick } from 'vue'
-import { TemplateFormat } from '../models/TemplateFormat.ts'
+import { TemplateFormat } from '@gak/shared'
 import { PageType } from '../assets/PageType.ts'
 import { RouterNames } from '../router/index.js'
 import { Template, TemplatePage } from '../models/Template'

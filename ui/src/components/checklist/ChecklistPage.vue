@@ -25,7 +25,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { UserUrl } from '../../lib/UserUrl'
 import { ChecklistPage } from '../../models/ChecklistPage'
 import { ChecklistSettingsParams } from '../../models/ChecklistSettingsParams'
-import { TemplateFormat } from '../../models/TemplateFormat'
+import { TemplateFormat } from '@gak/shared'
 import { ChecklistService } from '../../services/ChecklistService'
 
 import { Checklist, ChecklistFont } from '../../models/Checklist'

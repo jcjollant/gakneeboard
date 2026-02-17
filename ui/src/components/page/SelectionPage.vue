@@ -41,7 +41,7 @@
 import { computed, ref, watch } from 'vue'
 
 import { PageType } from '../../assets/PageType'
-import { TemplateFormat } from '../../models/TemplateFormat'
+import { TemplateFormat } from '@gak/shared'
 
 import Header from '../shared/Header.vue'
 import FAButton from '../shared/FAButton.vue'

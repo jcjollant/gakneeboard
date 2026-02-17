@@ -3,7 +3,7 @@ import { AceChecklist } from '../backend/exporters/AceChecklist'
 import { TemplateChecklist } from '../backend/exporters/TemplateChecklist';
 import { FmdChecklist } from '../backend/exporters/FmdChecklist';
 import { TemplateKneeboardView } from '../backend/models/TemplateKneeboardView';
-import { TemplateFormat } from '../backend/models/TemplateFormat';
+import { TemplateFormat } from '@gak/shared';
 
 describe('Checklist', () => {
     const templateName = "template name"

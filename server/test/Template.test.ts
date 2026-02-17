@@ -1,7 +1,7 @@
 import { describe, expect, it, jest, test } from '@jest/globals';
 import { TemplateKneeboardView } from '../backend/models/TemplateKneeboardView';
 import { Template } from '../backend/models/Template';
-import { TemplateFormat } from '../backend/models/TemplateFormat';
+import { TemplateFormat } from '@gak/shared';
 
 describe('Template', () => {
     describe('fromView', () => {

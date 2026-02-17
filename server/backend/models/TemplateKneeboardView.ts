@@ -1,8 +1,6 @@
 import { Publication } from "./Publication";
 import { Template } from "./Template";
-import { TemplateFormat } from "./TemplateFormat";
-
-import { KneeboardView } from "@gak/shared";
+import { KneeboardView, TemplateFormat } from "@gak/shared";
 
 export class TemplateKneeboardView extends KneeboardView {
 

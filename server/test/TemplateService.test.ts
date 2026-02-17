@@ -1,4 +1,4 @@
-import { AccountType, PLAN_ID_SIM, PLANS } from '@gak/shared';
+import { AccountType, PLAN_ID_SIM, PLANS, TemplateFormat } from '@gak/shared';
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import * as dotenv from 'dotenv';
 import { GApiError } from '../backend/GApiError';
@@ -9,7 +9,6 @@ import { UserDao } from '../backend/dao/UserDao';
 import { TemplateHistoryDao, TemplateHistory, TemplateOperation } from '../backend/dao/TemplateHistoryDao';
 import { Publication } from '../backend/models/Publication';
 import { Template } from '../backend/models/Template';
-import { TemplateFormat } from '../backend/models/TemplateFormat';
 import { TemplateKneeboardView } from '../backend/models/TemplateKneeboardView';
 import { User } from '../backend/models/User';
 import { TemplateService } from '../backend/services/TemplateService';

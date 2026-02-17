@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { useConfirm } from "primevue/useconfirm";
 import { computed, onMounted, ref, watch } from 'vue';
-import { TemplateFormat } from '../../models/TemplateFormat';
+import { TemplateFormat } from '@gak/shared';
 import { TileData } from '../../models/TileData';
 import { TileType } from '../../models/TileType';
 

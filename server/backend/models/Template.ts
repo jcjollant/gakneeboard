@@ -1,4 +1,4 @@
-import { TemplateFormat } from "./TemplateFormat"
+import { TemplateFormat } from "@gak/shared"
 
 export class PageType {
     static selection = 'selection'

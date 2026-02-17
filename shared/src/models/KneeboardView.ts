@@ -1,3 +1,5 @@
+import { TemplateFormat } from './TemplateFormat';
+
 export abstract class KneeboardView {
     id: number;
     name: string;
@@ -7,7 +9,7 @@ export abstract class KneeboardView {
     desc: string | undefined;
     ver: number;
     pages: number;
-    format: string;
+    format: TemplateFormat;
     thumbUrl: string | undefined;
     thumbHash: string | undefined;
     system: boolean | undefined;
@@ -21,7 +23,7 @@ export abstract class KneeboardView {
         desc: string | undefined,
         ver: number,
         pages: number,
-        format: string,
+        format: TemplateFormat,
         thumbUrl: string | undefined,
         thumbHash: string | undefined,
         system: boolean | undefined

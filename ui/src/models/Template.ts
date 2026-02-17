@@ -1,6 +1,5 @@
-import { KneeboardView } from "@gak/shared";
+import { KneeboardView, TemplateFormat } from "@gak/shared";
 import { PageType } from "../assets/PageType";
-import { TemplateFormat } from "./TemplateFormat";
 
 export class Template extends KneeboardView {
     constructor(name: string, description: string, publish: boolean = false, data: TemplatePage[] = [], format: TemplateFormat = TemplateFormat.Kneeboard, version: number = 0, system: boolean = false) {

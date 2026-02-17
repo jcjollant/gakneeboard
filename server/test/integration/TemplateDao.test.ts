@@ -9,7 +9,7 @@ import { PublicationDao } from '../../backend/PublicationDao';
 import { Template } from '../../backend/models/Template';
 
 import * as dotenv from 'dotenv'
-import { TemplateFormat } from '../../backend/models/TemplateFormat';
+import { TemplateFormat } from '@gak/shared';
 dotenv.config()
 // Force test DB
 process.env.POSTGRES_URL = process.env.POSTGRES_TEST_URL
