@@ -13,6 +13,10 @@
     </div>
     
     <NuxtPage />
+    
+    <div class="version-badge">
+      v{{ version }}
+    </div>
   </div>
 </template>
 
@@ -20,6 +24,10 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useSupabaseClient } from '~/utils/supabase'
+import { useRuntimeConfig } from '#app'
+
+const config = useRuntimeConfig()
+const version = config.public.APP_VERSION
 
 const router = useRouter()
 const route = useRoute()
@@ -102,5 +110,18 @@ const handleLogout = async () => {
 
 .logout-button i {
   font-size: 0.9rem;
+}
+
+.version-badge {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  font-size: 1rem;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 2px 6px;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 9999;
 }
 </style>

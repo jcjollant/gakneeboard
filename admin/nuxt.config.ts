@@ -1,6 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
+import pkg from './package.json'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -19,6 +20,7 @@ export default defineNuxtConfig({
       SUPABASE_URL: process.env.SUPABASE_URL,
       SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
       POSTGRES_URL: process.env.POSTGRES_URL,
+      APP_VERSION: pkg.version
     }
   },
   css: [
