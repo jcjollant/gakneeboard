@@ -10,7 +10,7 @@
         />
     <div v-if="template" id="printTemplate" :class="{'single':printFullpage,'fullpage':template.format === TemplateFormat.FullPage}">
       <div v-if="printFullpage" v-for="(page,index) in template.data" class="printOnePage printPageBreak">
-        <div class="onePager" v-if="pageSelection[index]">
+        <div class="onePager" v-if="pageSelection[Number(index)]">
           <Page :data="page" :format="template.format"
             :style="getPageStyle(false)" />
         </div>
