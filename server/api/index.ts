@@ -369,8 +369,8 @@ app.get('/supplement/:filename', async (req: Request, res: Response) => {
  * Get a specific template
  */
 app.get('/template/:id', async (req: Request, res: Response) => {
-    const requester = await UserTools.userIdFromRequest(req)
     try {
+        const requester = await UserTools.userIdFromRequest(req)
         // console.log( "[index] GET template " + req.params.id + " userId " + userId);
         const templateId = Number(req.params.id)
         if (!requester) {

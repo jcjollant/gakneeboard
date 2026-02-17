@@ -57,9 +57,10 @@ export class TemplateService {
      * @throws 404 if not found
      */
     public static async get(templateId: number, requester: number): Promise<TemplateKneeboardView | undefined> {
+        // console.debug(`[TemplateService.get] templateId: ${templateId}, requester: ${requester}`)
         // If admin, get any template. Otherwise, get only user's template.
-        const userId = UserTools.isAdmin(requester) ? undefined : requester;
-        const template: Template | undefined = await TemplateDao.readByIdStatic(templateId, userId)
+        const isAdmin = UserTools.isAdmin(requester);
+        const template: Template | undefined = await TemplateDao.readByIdStatic(templateId, requester, isAdmin)
         // console.log( '[GApiTemplate.get] ' + sheetId + ' -> ' + output)
         if (!template) return undefined;
         // is this published?
@@ -152,8 +153,8 @@ export class TemplateService {
      * For new templates, we have a two steps lock down, which will happen gradually
      * Step 1) Customer can save existing templates above the limit
      * Step 2) Customers cannot save existing templates until they are above the limit
-     * @param userSha256 User reference
-     * @param templateView Whatever needs tob e saved
+     * @param userSha256 The user requesting the save
+     * @param templateView Whatever needs to be saved
      * @returns A Template status should be 200 if everything goes fine, 202 if user is within tolerance or 402 if user is over limit
      * @throws
      */
@@ -199,8 +200,9 @@ export class TemplateService {
                 }
             }
 
+            const isAdmin = UserTools.isAdmin(user.id)
             await Promise.all([
-                templateDao.createOrUpdate(templateView, user.id),
+                templateDao.createOrUpdate(templateView, user.id, isAdmin),
                 UsageDao.create(UsageType.Save, user.id, templateView.id ? JSON.stringify({ id: templateView.id }) : undefined)
             ])
 
@@ -221,18 +223,6 @@ export class TemplateService {
             return resolve(new TemplateStatus(200, templateView));
         })
 
-    }
-
-    public static async saveSystemTemplate(requesterId: number, sheet: any): Promise<TemplateKneeboardView> {
-        if (!UserTools.isAdmin(requesterId)) {
-            throw new GApiError(403, 'Unauthorized')
-        }
-        if (!sheet) {
-            throw new GApiError(400, 'Invalid template')
-        }
-        const templateView: TemplateKneeboardView = TemplateKneeboardView.parse(sheet)
-        const templateDao = TemplateDao.getInstance()
-        return await templateDao.createOrUpdate(templateView, undefined)
     }
 
     /*

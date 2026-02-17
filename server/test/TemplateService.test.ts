@@ -1,5 +1,5 @@
 import { AccountType, PLAN_ID_SIM, PLANS } from '@gak/shared';
-import { describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import * as dotenv from 'dotenv';
 import { GApiError } from '../backend/GApiError';
 import { PublicationDao } from '../backend/PublicationDao';
@@ -28,6 +28,9 @@ const MAX_TEMPLATES_EXCEEDED_MESSAGE = "Maximum templates exceeded"
 
 
 describe('TemplateService Tests', () => {
+    beforeEach(() => {
+        jest.clearAllMocks()
+    })
 
     describe('templateDelete', () => {
         it('Returns 404 on not found', async () => {
@@ -105,7 +108,7 @@ describe('TemplateService Tests', () => {
 
             const templateId = 0
             const tv = await TemplateService.get(templateId, adminUserId)
-            expect(TemplateDao.readByIdStatic).toBeCalledWith(templateId, undefined)
+            expect(TemplateDao.readByIdStatic).toBeCalledWith(templateId, adminUserId, true)
         })
         it('Request template with userId for non admin user', async () => {
             const template = new Template(0, jcUserId, jcTestTemplateData, TemplateFormat.Kneeboard, jcTestTemplateName, undefined, 1, 2)
@@ -113,7 +116,7 @@ describe('TemplateService Tests', () => {
 
             const templateId = 0
             const tv = await TemplateService.get(templateId, nonAdminUserId)
-            expect(TemplateDao.readByIdStatic).toBeCalledWith(templateId, nonAdminUserId)
+            expect(TemplateDao.readByIdStatic).toBeCalledWith(templateId, nonAdminUserId, false)
         })
     })
 
@@ -182,7 +185,6 @@ describe('TemplateService Tests', () => {
 
     describe('templateSave', () => {
         it('dodges invalid and unknown user', async () => {
-            jest.clearAllMocks()
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(undefined)
             jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
             const template = new TemplateKneeboardView(0, jcTestTemplateName, jcTestTemplateData)
@@ -194,7 +196,6 @@ describe('TemplateService Tests', () => {
         })
 
         it('dodges invalid tempalte', async () => {
-            jest.clearAllMocks()
             const simUser = newTestUser()
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(simUser)
             jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
@@ -203,7 +204,6 @@ describe('TemplateService Tests', () => {
         })
 
         it('Can create new template BELOW max but not AT max', async () => {
-            jest.clearAllMocks()
             const simUserId = 55
             const simUser = newTestUser(simUserId, AccountType.simmer)
 
@@ -299,7 +299,6 @@ describe('TemplateService Tests', () => {
         })
 
         it('Can save existing template AT max but not OVER max', async () => {
-            jest.clearAllMocks()
             const simUserId = 55
             const simUser = newTestUser(simUserId, AccountType.simmer)
             const templateId = 66
@@ -352,13 +351,11 @@ describe('TemplateService Tests', () => {
             expect(t.publish).toBeTruthy()
             expect(t.id).toBe(publicTemplateView.id)
 
-            expect(mockTemplateDao.createOrUpdate).lastCalledWith(t, jcUserId)
+            expect(mockTemplateDao.createOrUpdate).lastCalledWith(t, jcUserId, true)
             expect(PublicationDao.publish).lastCalledWith(publicTemplateView.id)
         })
 
         it('sends error if publication failed', async () => {
-            jest.clearAllMocks()
-
             const templateId = 33;
             const publicTemplateView = new TemplateKneeboardView(templateId, jcTestTemplateName, jcTestTemplateData)
             publicTemplateView.publish = true
@@ -375,8 +372,6 @@ describe('TemplateService Tests', () => {
         })
 
         it('works with unpublished templates', async () => {
-            jest.clearAllMocks()
-
             const templateId = 44;
             const privateTemplateView = new TemplateKneeboardView(templateId, jcTestTemplateName, ['a', 'b'], TemplateFormat.Kneeboard, '', 1, false)
 
@@ -403,8 +398,6 @@ describe('TemplateService Tests', () => {
         })
 
         it('Can unpublish a previously published template', async () => {
-            jest.clearAllMocks()
-
             const templateId = 11;
             const templateView = new TemplateKneeboardView(templateId, 'name', {}, TemplateFormat.Kneeboard, '', 1, false)
             expect(templateView.publish).toBeFalsy()

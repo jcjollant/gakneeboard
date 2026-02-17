@@ -24,13 +24,20 @@ export class TemplateDao extends Dao<Template> {
      * Create or update a template for a given user
      * @param templateView Template to create or update
      * @param userId User id which can be undefined for system templates
+     * @param isAdmin True if the user is an admin
      * @returns The updated template
      */
-    public async createOrUpdate(templateView: TemplateKneeboardView, userId: number | undefined): Promise<TemplateKneeboardView> {
+    public async createOrUpdate(templateView: TemplateKneeboardView, userId: number, isAdmin: boolean = false): Promise<TemplateKneeboardView> {
         templateView.ver++;
         if (templateView.id) {
             // Get the current template before updating it
             const currentTemplate = await this.readById(templateView.id, userId);
+            const isSystemTemplate = !currentTemplate?.userId;
+
+            // System templates can only be updated by any admin
+            if (!isAdmin && isSystemTemplate) {
+                throw new Error("Non Admin user can't update system template");
+            }
 
             // If the template exists, save it to history before updating
             if (currentTemplate) {
@@ -38,33 +45,20 @@ export class TemplateDao extends Dao<Template> {
             }
 
             // console.log( "[SheetDao.createOrUpdate] updating", pageId);
-            const result = userId
-                ? await sql`UPDATE sheets SET data=${JSON.stringify(templateView.data)},name=${templateView.name},description=${templateView.desc},pages=${templateView.pages},version=${templateView.ver} WHERE id=${templateView.id} AND user_id=${userId}`
-                : await sql`UPDATE sheets SET data=${JSON.stringify(templateView.data)},name=${templateView.name},description=${templateView.desc},pages=${templateView.pages},version=${templateView.ver} WHERE id=${templateView.id} AND user_id IS NULL`
+            const result = isSystemTemplate
+                ? await sql`UPDATE sheets SET data=${JSON.stringify(templateView.data)},name=${templateView.name},description=${templateView.desc},pages=${templateView.pages},version=${templateView.ver} WHERE id=${templateView.id}`
+                : await sql`UPDATE sheets SET data=${JSON.stringify(templateView.data)},name=${templateView.name},description=${templateView.desc},pages=${templateView.pages},version=${templateView.ver} WHERE id=${templateView.id} AND user_id=${userId}`
 
             // we should update something
             if (result.rowCount == 0) {
                 throw new Error("Invalid template or user id")
             }
-        } else { // new Tempalte creation
-            const result = userId
-                ? await sql`INSERT INTO sheets (name, data, format, description, pages, version, user_id) VALUES (${templateView.name}, ${JSON.stringify(templateView.data)}, ${templateView.format}, ${templateView.desc}, ${templateView.pages}, 1, ${userId}) RETURNING id;`
-                : await sql`INSERT INTO sheets (name, data, format, description, pages, version) VALUES (${templateView.name}, ${JSON.stringify(templateView.data)}, ${templateView.format}, ${templateView.desc}, ${templateView.pages}, 1) RETURNING id;`
+        } else { // new template creation
+            const result = await sql`INSERT INTO sheets (name, data, format, description, pages, version, user_id) VALUES (${templateView.name}, ${JSON.stringify(templateView.data)}, ${templateView.format}, ${templateView.desc}, ${templateView.pages}, 1, ${userId}) RETURNING id;`
 
             templateView.id = result.rows[0]['id']
         }
         return templateView
-    }
-
-    /**
-     * Create a new Sheet or update and existing one for a given user   .
-     * @param templateView Template to create or update
-     * @param userId User id which can be undefined for system templates
-     * @returns The updated template
-     */
-    public static async createOrUpdateViewStatic(templateView: TemplateKneeboardView, userId: number | undefined): Promise<TemplateKneeboardView> {
-        const templateDao = this.getInstance()
-        return templateDao.createOrUpdate(templateView, userId)
     }
 
     /**
@@ -199,9 +193,9 @@ export class TemplateDao extends Dao<Template> {
      * @param userId 
      * @returns 
      */
-    public static async readByIdStatic(templateId: number, userId: number | undefined = undefined): Promise<Template | undefined> {
+    public static async readByIdStatic(templateId: number, userId: number, isAdmin: boolean = false): Promise<Template | undefined> {
         const templateDao = new TemplateDao();
-        return templateDao.readById(templateId, userId)
+        return templateDao.readById(templateId, userId, isAdmin)
     }
 
     /**
@@ -210,15 +204,15 @@ export class TemplateDao extends Dao<Template> {
      * @param userId 
      * @returns 
      */
-    async readById(templateId: number, userId: number | undefined = undefined): Promise<Template | undefined> {
+    async readById(templateId: number, userId: number, isAdmin: boolean = false): Promise<Template | undefined> {
         let result: any;
-        if (userId) {
+        if (isAdmin) {
             result = await this.db.query(`
-                SELECT * FROM ${this.tableName} WHERE id=${templateId} AND user_id=${userId};
+                SELECT * FROM ${this.tableName} WHERE id=${templateId};
             `)
         } else {
             result = await this.db.query(`
-                SELECT * FROM ${this.tableName} WHERE id=${templateId} AND user_id IS NULL;
+                SELECT * FROM ${this.tableName} WHERE id=${templateId} AND user_id=${userId};
             `)
         }
         if (result.rowCount == 0) return undefined

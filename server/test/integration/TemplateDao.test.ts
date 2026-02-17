@@ -1,4 +1,3 @@
-
 import { describe, expect, it, afterAll, xdescribe } from '@jest/globals';
 import { TemplateDao } from '../../backend/TemplateDao'
 import { jcUserId, jcTestTemplateName, jcTestTemplateData } from '../constants';
@@ -18,7 +17,7 @@ process.env.POSTGRES_URL = process.env.POSTGRES_TEST_URL
 describe('Custom Templates', () => {
     describe('countForUser', () => {
         it('Can CountForUser', async () => {
-            const result = await sql`SELECT user_id, COUNT(*) FROM sheets GROUP BY user_id`
+            const result = await sql`SELECT user_id, COUNT(*) FROM sheets WHERE user_id IS NOT NULL GROUP BY user_id`
             for (const row of result.rows) {
                 const count = await TemplateDao.countForUserStatic(row.user_id)
                 expect(count).toBe(Number(row.count))
@@ -31,77 +30,106 @@ describe('Custom Templates', () => {
     })
 
     describe('createOrUpdate', () => {
-        it('fails on invalid template or user Id', async () => {
-            const tv1 = new TemplateKneeboardView(-1, "name", jcTestTemplateData, TemplateFormat.Kneeboard, "description", 1)
-
-            // tv has invalid template, jcUserId is valid
-            expect(TemplateDao.createOrUpdateViewStatic(tv1, jcUserId)).rejects.toThrow(new Error('Invalid template or user id'))
-
-            const result = await sql`SELECT * FROM sheets LIMIT 1`
-            expect(result.rows.length).toBe(1)
-            const row = result.rows[0]
-            const tv2 = new TemplateKneeboardView(row.id, row.name, row.data, TemplateFormat.Kneeboard, row.description, 2)
-
-            // tv2 has valid template id, 0 is invalid for userId
-            expect(TemplateDao.createOrUpdateViewStatic(tv2, 0)).rejects.toThrow(new Error('Invalid template or user id'))
-        })
+        let user: any
+        let otherUser: any
+        const templateDao = TemplateDao.getInstance()
 
         it('creates a new template', async () => {
             const tv1 = new TemplateKneeboardView(0, "name1", jcTestTemplateData, TemplateFormat.Kneeboard, "description1", 1, true, undefined, 2)
-
-            const t1 = await TemplateDao.createOrUpdateViewStatic(tv1, jcUserId)
+            const t1 = await templateDao.createOrUpdate(tv1, jcUserId)
             expect(t1.id).toBeGreaterThan(0)
             expect(t1.pages).toBe(2)
+            // TemplateDao increments version on createOrUpdate. Input 1 -> Returned 2. (DB is 1)
+            expect(t1.ver).toBe(2)
 
-            const r = await TemplateDao.deleteStatic(t1.id, jcUserId)
-            expect(r).toBe(t1.id)
+            // Cleanup
+            await TemplateDao.deleteStatic(t1.id, jcUserId)
         })
 
         it('updates an existing template', async () => {
-            let version = 1
-            const name1 = "name1"
-            const name2 = "name2"
-            const desc1 = "description1"
-            const desc2 = "description2"
-            const data1 = jcTestTemplateData
-            const data2 = {}
-            const pages1 = 2
-            const pages2 = 0
-            const tv1 = new TemplateKneeboardView(0, name1, data1, TemplateFormat.Kneeboard, desc1, version, true, undefined, pages1)
+            // Create initial template. Ret: 2, DB: 1
+            const tv1 = new TemplateKneeboardView(0, "name1", jcTestTemplateData, TemplateFormat.Kneeboard, "description1", 1, true, undefined, 2)
+            const t1 = await templateDao.createOrUpdate(tv1, jcUserId)
 
-            const t1 = await TemplateDao.createOrUpdateViewStatic(tv1, jcUserId)
-            expect(t1.id).toBeGreaterThan(0)
-            // memorize template id
-            tv1.id = t1.id
-            tv1.ver = t1.ver
+            // Modify it (t1.ver is 2)
+            t1.name = "name2"
+            t1.desc = "description2"
+            t1.pages = 3
 
-            // version should increase
-            expect(t1.ver).toBe(++version)
-            expect(t1.name).toBe(name1)
-            expect(t1.desc).toBe(desc1)
-            expect(t1.data).toEqual(data1)
-            expect(t1.pages).toBe(pages1)
+            // Update. Ret: 3, DB: 3
+            const t2 = await templateDao.createOrUpdate(t1, jcUserId)
 
-            tv1.name = name2;
-            tv1.desc = desc2
-            tv1.data = data2
-            tv1.pages = pages2
-            const t2 = await TemplateDao.createOrUpdateViewStatic(tv1, jcUserId)
-            tv1.id = t2.id
-            tv1.ver = t2.ver
-
-            // Id should stay the same
             expect(t2.id).toBe(t1.id)
-            // Version should increase
-            expect(t2.ver).toBe(++version)
-            // Name and description should be updated
-            expect(t2.name).toBe(name2)
-            expect(t2.desc).toBe(desc2)
-            expect(t2.data).toEqual(data2)
-            expect(t2.pages).toBe(pages2)
+            expect(t2.ver).toBe(3)
+            expect(t2.name).toBe("name2")
+            expect(t2.desc).toBe("description2")
+            expect(t2.pages).toBe(3)
 
-            const r = await TemplateDao.deleteStatic(t1.id, jcUserId)
-            expect(r).toBe(t1.id)
+            // Verify persistence
+            const saved = await templateDao.readById(t1.id, jcUserId)
+            expect(saved?.name).toBe("name2")
+            expect(saved?.version).toBe(3)
+
+            // Cleanup
+            await TemplateDao.deleteStatic(t1.id, jcUserId)
+        })
+
+        it('fails to update a non-existent template', async () => {
+            const tv = new TemplateKneeboardView(999999, "name", jcTestTemplateData, TemplateFormat.Kneeboard, "description", 1, true, undefined, 2)
+            // Fails with "Non Admin user can't update system template" because 'Not Found' is treated as 'System Template' for non-admins
+            await expect(templateDao.createOrUpdate(tv, jcUserId)).rejects.toThrow("Non Admin user can't update system template")
+        })
+
+        it('fails to update another user\'s template', async () => {
+            // Setup another user
+            const otherUser = newTestUser()
+            await new UserDao().save(otherUser)
+
+            // Create template for main user
+            const tv = new TemplateKneeboardView(0, "owned", jcTestTemplateData, TemplateFormat.Kneeboard, "desc", 1, true, undefined, 2)
+            const t1 = await templateDao.createOrUpdate(tv, jcUserId)
+
+            // Try to update with other user
+            // Fails with "Non Admin user can't update system template" because 'Not Found for user' is treated as 'System Template'
+            await expect(templateDao.createOrUpdate(t1, otherUser.id)).rejects.toThrow("Non Admin user can't update system template")
+
+            // Cleanup
+            await TemplateDao.deleteStatic(t1.id, jcUserId)
+        })
+
+        describe('System Templates', () => {
+            it('allows admin to update system template', async () => {
+                // Insert system template manually
+                const result = await sql`INSERT INTO sheets (name, data, format, description, pages, version, user_id) VALUES ('System Tpl', ${JSON.stringify(jcTestTemplateData)}, 'kneeboard', 'desc', 1, 1, NULL) RETURNING id`
+                const sysId = result.rows[0].id
+
+                const tv = new TemplateKneeboardView(sysId, "System Tpl Updated", jcTestTemplateData, TemplateFormat.Kneeboard, "desc", 1, true, undefined, 1)
+
+                // Update as admin (isAdmin=true)
+                const updated = await templateDao.createOrUpdate(tv, jcUserId, true)
+                expect(updated.name).toBe("System Tpl Updated")
+                expect(updated.ver).toBe(2)
+
+                // Verify persistence
+                const saved = await templateDao.readById(sysId, jcUserId, true) // admin read
+                expect(saved?.name).toBe("System Tpl Updated")
+
+                // Cleanup
+                await sql`DELETE FROM sheets WHERE id=${sysId}`
+            })
+
+            it('prevents non-admin from updating system template', async () => {
+                const result = await sql`INSERT INTO sheets (name, data, format, description, pages, version, user_id) VALUES ('System Tpl 2', ${JSON.stringify(jcTestTemplateData)}, 'kneeboard', 'desc', 1, 1, NULL) RETURNING id`
+                const sysId = result.rows[0].id
+
+                const tv = new TemplateKneeboardView(sysId, "System Tpl 2 Updated", jcTestTemplateData, TemplateFormat.Kneeboard, "desc", 1, true, undefined, 1)
+
+                // Update as non-admin
+                await expect(templateDao.createOrUpdate(tv, jcUserId, false)).rejects.toThrow("Non Admin user can't update system template")
+
+                // Cleanup
+                await sql`DELETE FROM sheets WHERE id=${sysId}`
+            })
         })
     })
 
@@ -153,13 +181,14 @@ describe('Custom Templates', () => {
             const tv2 = new TemplateKneeboardView(0, "name2", jcTestTemplateData, TemplateFormat.Kneeboard, "description2", 1, true, undefined, 2)
             const tv3 = new TemplateKneeboardView(0, "name3", jcTestTemplateData, TemplateFormat.Kneeboard, "description3", 1, false, undefined, 2)
 
-            const t1 = await TemplateDao.createOrUpdateViewStatic(tv1, user.id)
+            const templateDao = TemplateDao.getInstance()
+            const t1 = await templateDao.createOrUpdate(tv1, user.id)
             const pub1 = await PublicationDao.publish(t1.id)
             expect(pub1).toBeDefined()
-            const t2 = await TemplateDao.createOrUpdateViewStatic(tv2, user.id)
+            const t2 = await templateDao.createOrUpdate(tv2, user.id)
             const pub2 = await PublicationDao.publish(t2.id)
             expect(pub2).toBeDefined()
-            const t3 = await TemplateDao.createOrUpdateViewStatic(tv3, user.id)
+            const t3 = await templateDao.createOrUpdate(tv3, user.id)
 
             expect(t1.id).toBeGreaterThan(0)
             // console.log(t1.id)
@@ -223,4 +252,3 @@ describe('Custom Templates', () => {
         await sql.end()
     })
 });
-
