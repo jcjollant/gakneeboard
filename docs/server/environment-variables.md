@@ -13,6 +13,7 @@ The GAKneeboard server relies on the following environment variables for configu
 | `STRIPE_LD1_PRICE` | Stripe Price ID | Price ID for a specific product/plan (LD1). |
 | `STRIPE_PRODUCT_REFCARD_PRICE` | Stripe Price ID | Price ID for the reference card product. |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob Token | Authentication token for Vercel Blob storage (read/write). |
+| `BLOB_THUMBNAILS_DIRECTORY` | Vercel Blob Directory | Optional directory for storing thumbnails in Vercel Blob storage. |
 | `POSTGRES_URL` | Database Connection String | URL for connecting to the PostgreSQL database. |
 | `EFFECTIVE_DATE` | Date String | Overrides the current effective date for testing/historical data. |
 | `NMS_API_URL` | NMS API URL | URL for the external NMS service (if used). |

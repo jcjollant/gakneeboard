@@ -470,6 +470,7 @@ app.post('/templateThumbnail', upload.single('image'), async (req: Request, res:
     try {
         userId = await UserTools.userIdFromRequest(req)
         templateId = Number(req.body.templateId)
+        // console.debug(`[index.post/templateThumbnail] templateId ${templateId} userId ${userId}`)
         const thumbnailHash = req.body.sha256;
         const thumbnailData = await TemplateService.updateThumbnail(templateId, userId, req.file.buffer, thumbnailHash)
         res.send(thumbnailData)

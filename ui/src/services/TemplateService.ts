@@ -199,8 +199,7 @@ export class TemplateService {
             }
             const formData = new FormData();
             formData.append('image', imageBlob, 'thumbnail.png')
-            const sentId = UrlService.isTest() ? -id : id
-            formData.append('templateId', sentId.toString())
+            formData.append('templateId', id.toString())
             formData.append('user', currentUser.sha256)
             formData.append('sha256', sha256)
 

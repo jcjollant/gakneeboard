@@ -244,19 +244,20 @@ export class TemplateService {
 
     /**
      * Captures a new thumbnail for a template
-     * @param templateIdParam 
+     * @param templateId 
      * @param userId 
      * @param pngBuffer 
      * @param hash 
      * @returns 
      */
-    static async updateThumbnail(templateIdParam: number, userId: number, pngBuffer: Buffer, hash: string): Promise<ThumbnailData> {
+    static async updateThumbnail(templateId: number, userId: number, pngBuffer: Buffer, hash: string): Promise<ThumbnailData> {
         // console.log('[GApiTemplate.updateThumbnail] ' + templateIdParam + ' for ' + userId + ' length ' + pngBuffer.length + ' with ' + hash)
         return new Promise<ThumbnailData>(async (resolve, reject) => {
             // console.log('[GApiTemplate.updateThumbnail] ' + templateIdParam + ' for ' + userId)
             const templateDao = new TemplateDao()
-            const templateId = Math.abs(templateIdParam)
-            const template: Template | undefined = await templateDao.readById(templateId, userId)
+            // we use Math.abs because test templates come with a negative number
+            const isAdmin = UserTools.isAdmin(userId)
+            const template: Template | undefined = await templateDao.readById(templateId, userId, isAdmin)
 
             // unknown template for that user Id => 404
             if (!template) return reject(new GApiError(404, 'Template not found'))
@@ -266,7 +267,8 @@ export class TemplateService {
             // save image data to blob
             try {
                 // Always save to blob storage
-                const blob = await put(`thumbnails/${templateIdParam}.png`, pngBuffer, {
+                const blobDirectory = process.env.BLOB_THUMBNAILS_DIRECTORY || 'thumbnails'
+                const blob = await put(`${blobDirectory}/${templateId}.png`, pngBuffer, {
                     access: "public",
                     contentType: "image/png",
                     token: process.env.BLOB_READ_WRITE_TOKEN,
@@ -287,7 +289,7 @@ export class TemplateService {
                 return resolve(output)
             } catch (error) {
                 console.log('[GApiTemplate.updateThumbnail] ' + error)
-                return reject(new GApiError(500, `Could not update thumbnail ${templateIdParam} for ${userId}`))
+                return reject(new GApiError(500, `Could not update thumbnail ${templateId} for ${userId}`))
             }
         })
     }
