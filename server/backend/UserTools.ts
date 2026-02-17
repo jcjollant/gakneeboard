@@ -200,7 +200,8 @@ export class UserTools {
      * @returns Matching user or undefined if not found
      */
     public static async userMini(user: User): Promise<UserView> {
-        const templates: TemplateKneeboardView[] = await TemplateDao.getOverviewListForUser(user.id)
+        const isAdmin = UserTools.isAdmin(user.id)
+        const templates: TemplateKneeboardView[] = await TemplateDao.getOverviewListForUser(user.id, isAdmin)
         return new UserView(user, templates)
     }
 

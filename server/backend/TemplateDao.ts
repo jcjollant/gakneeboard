@@ -139,15 +139,24 @@ export class TemplateDao extends Dao<Template> {
      * @returns list of found sheets which could be empty
      */
     public static async getOverviewListForUser(userId: number, isAdmin: boolean = false): Promise<TemplateKneeboardView[]> {
-        // console.log('[SheetDao.getListForUser] user', userId)
-        const result = isAdmin
-            ? await sql`
-                SELECT s.id,s.name,s.description,s.pages,s.format,s.thumbnail,s.thumbhash,s.version,p.active,p.code as code FROM sheets AS s LEFT JOIN publications AS p ON s.id = p.sheetid WHERE user_id=${userId} OR s.user_id IS NULL
+        // console.debug('[TemplateDao.getOverviewListForUser] user', userId, isAdmin)
+        if (isAdmin) {
+            // admin users see their own stuff and system templates, so we also request user_id
+            const result = await sql`
+                SELECT s.id,s.user_id,s.name,s.description,s.pages,s.format,s.thumbnail,s.thumbhash,s.version,p.active,p.code as code FROM sheets AS s LEFT JOIN publications AS p ON s.id = p.sheetid WHERE user_id=${userId} OR s.user_id IS NULL
             `
-            : await sql`
+            return result.rows.length ? result.rows.map((row) => {
+                // System templates have no user_id
+                const system: boolean | undefined = row['user_id'] === null || undefined
+                return new TemplateKneeboardView(row['id'], row['name'], [], row['format'], row['description'], row['version'], row['active'], row['code'], row['pages'], row['thumbnail'], row['thumbhash'], system)
+            }) : []
+        } else {
+            // Non admin users only see their own templates
+            const result = await sql`
                 SELECT s.id,s.name,s.description,s.pages,s.format,s.thumbnail,s.thumbhash,s.version,p.active,p.code as code FROM sheets AS s LEFT JOIN publications AS p ON s.id = p.sheetid WHERE user_id=${userId}
             `
-        return result.rows.length ? result.rows.map((row) => new TemplateKneeboardView(row['id'], row['name'], [], row['format'], row['description'], row['version'], row['active'], row['code'], row['pages'], row['thumbnail'], row['thumbhash'])) : []
+            return result.rows.length ? result.rows.map((row) => new TemplateKneeboardView(row['id'], row['name'], [], row['format'], row['description'], row['version'], row['active'], row['code'], row['pages'], row['thumbnail'], row['thumbhash'])) : []
+        }
     }
 
     /**
