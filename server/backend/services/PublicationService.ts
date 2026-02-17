@@ -14,7 +14,7 @@ export class PublicationService {
             await TicketService.create(3, "Publication not found with code " + code)
             return undefined
         }
-        const template: Template | undefined = await TemplateDao.readByIdStatic(pub.templateId)
+        const template: Template | undefined = await TemplateDao.readByIdStatic(pub.templateId, 0, true)
         if (!template) {
             await TicketService.create(2, `Template ${pub.templateId} not found for publication ${code}`)
             return undefined

@@ -34,6 +34,6 @@ describe('PublicationService', () => {
         expect(result?.id).toBe(0);
         expect(result?.name).toBe('Original Name');
         expect(PublicationDao.findByCode).toHaveBeenCalledWith('TESTCODE');
-        expect(TemplateDao.readByIdStatic).toHaveBeenCalledWith(100);
+        expect(TemplateDao.readByIdStatic).toHaveBeenCalledWith(100, 0, true);
     })
 });
