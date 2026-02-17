@@ -1,4 +1,4 @@
-import { viewport } from './shared.js'
+import { viewport, mockUser } from './shared.js'
 
 describe('Print', () => {
 
@@ -16,7 +16,7 @@ describe('Print', () => {
             eulaCurrent: true,
             templates: [] // No saved templates needed for this test
         }
-        cy.setLocalStorage('user', JSON.stringify(user))
+        mockUser(user)
     })
 
     it('opens print mode when a template is loaded', () => {
