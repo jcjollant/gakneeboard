@@ -38,6 +38,11 @@
                     <h3>Health Check</h3>
                     <p>Run system health check</p>
                 </div>
+                <div class="api-card" :class="{ active: selectedApi === 'promote' }" @click="selectApi('promote')">
+                    <div class="api-icon">🚀</div>
+                    <h3>Template Promotion</h3>
+                    <p>Promote user template to system global template</p>
+                </div>
             </div>
         </div>
         
@@ -87,6 +92,10 @@
         <div v-if="selectedApi === 'health-check'">
             <HealthCheck />
         </div>
+
+        <div v-if="selectedApi === 'promote'">
+            <TemplatePromoter />
+        </div>
     </div>
 </template>
 
@@ -102,6 +111,7 @@ import TicketManager from '~/components/TicketManager.vue';
 import UserProfile from '~/components/UserProfile.vue';
 import StoreOrders from '~/components/StoreOrders.vue';
 import HealthCheck from '~/components/HealthCheck.vue';
+import TemplatePromoter from '~/components/TemplatePromoter.vue';
 
 const route = useRoute()
 const router = useRouter()
