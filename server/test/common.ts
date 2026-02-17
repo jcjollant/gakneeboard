@@ -8,7 +8,7 @@ import { Refill } from '../backend/models/Refill'
 import { AccountType, PLAN_ID_SIM } from '@gak/shared';
 import { Business } from '../backend/business/Business'
 import { TemplateDao } from '../backend/TemplateDao'
-import { TemplateView } from '../backend/models/TemplateView'
+import { TemplateKneeboardView } from '../backend/models/TemplateKneeboardView'
 import { PageType, Template } from '../backend/models/Template'
 import { MAX_TEMPLATE_SIMMER } from './constants'
 
@@ -39,7 +39,7 @@ export function getMockBrandNewSubscription(): Subscription {
     return mockSubscription;
 }
 
-export function getMockTemplateDao(tv: TemplateView, numTemplates: number = MAX_TEMPLATE_SIMMER, numPages: number = 0, prevPages: number = 0): TemplateDao {
+export function getMockTemplateDao(tv: TemplateKneeboardView, numTemplates: number = MAX_TEMPLATE_SIMMER, numPages: number = 0, prevPages: number = 0): TemplateDao {
     const mockTemplateDao = new TemplateDao() as jest.Mocked<TemplateDao>;
     jest.spyOn(mockTemplateDao, 'createOrUpdate').mockResolvedValue(tv)
     jest.spyOn(mockTemplateDao, 'countForUser').mockResolvedValue(numTemplates)
@@ -48,9 +48,9 @@ export function getMockTemplateDao(tv: TemplateView, numTemplates: number = MAX_
     return mockTemplateDao
 }
 
-export function getTemplateView(numPages: number, id: number = 0): TemplateView {
+export function getTemplateView(numPages: number, id: number = 0): TemplateKneeboardView {
     const data = Array(numPages).fill({ type: PageType.notes })
-    const tv = new TemplateView(id, 'someName', data)
+    const tv = new TemplateKneeboardView(id, 'someName', data)
     return tv
 }
 

@@ -10,7 +10,7 @@ import { TemplateHistoryDao, TemplateHistory, TemplateOperation } from '../backe
 import { Publication } from '../backend/models/Publication';
 import { Template } from '../backend/models/Template';
 import { TemplateFormat } from '../backend/models/TemplateFormat';
-import { TemplateView } from '../backend/models/TemplateView';
+import { TemplateKneeboardView } from '../backend/models/TemplateKneeboardView';
 import { User } from '../backend/models/User';
 import { TemplateService } from '../backend/services/TemplateService';
 import { PlanService } from '../backend/services/PlanService';
@@ -83,7 +83,7 @@ describe('TemplateService Tests', () => {
 
         it('Returns template with publication status', async () => {
             const template = new Template(0, jcUserId, jcTestTemplateData, TemplateFormat.Kneeboard, jcTestTemplateName, undefined, 1, 2)
-            const templateView = TemplateView.parseTemplate(template)
+            const templateView = TemplateKneeboardView.parseTemplate(template)
 
             jest.spyOn(PublicationDao, 'findByTemplate').mockResolvedValue(undefined);
             jest.spyOn(TemplateDao, 'readByIdStatic').mockResolvedValue(template)
@@ -176,7 +176,7 @@ describe('TemplateService Tests', () => {
 
             await TemplateService.getList(jcUserId)
 
-            expect(TemplateDao.getOverviewListForUser).toBeCalledWith(jcUserId)
+            expect(TemplateDao.getOverviewListForUser).toBeCalledWith(jcUserId, true)
         })
     })
 
@@ -185,7 +185,7 @@ describe('TemplateService Tests', () => {
             jest.clearAllMocks()
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(undefined)
             jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
-            const template = new TemplateView(0, jcTestTemplateName, jcTestTemplateData)
+            const template = new TemplateKneeboardView(0, jcTestTemplateName, jcTestTemplateData)
 
             await expect(TemplateService.save(jcHash, template)).rejects.toEqual(new GApiError(400, "Invalid user"))
             expect(UserDao.getUserFromHash).toBeCalledWith(jcHash)
@@ -199,7 +199,7 @@ describe('TemplateService Tests', () => {
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(simUser)
             jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
 
-            await expect(TemplateService.save(simUser.sha256, null as unknown as TemplateView)).rejects.toEqual(new GApiError(400, "Invalid template"))
+            await expect(TemplateService.save(simUser.sha256, null as unknown as TemplateKneeboardView)).rejects.toEqual(new GApiError(400, "Invalid template"))
         })
 
         it('Can create new template BELOW max but not AT max', async () => {
@@ -208,7 +208,7 @@ describe('TemplateService Tests', () => {
             const simUser = newTestUser(simUserId, AccountType.simmer)
 
             const t = new Template(0, simUserId, jcTestTemplateData, TemplateFormat.Kneeboard, jcTestTemplateName, "Some Description", 1, 2)
-            const tv = TemplateView.parseTemplate(t)
+            const tv = TemplateKneeboardView.parseTemplate(t)
 
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(simUser)
             jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
@@ -304,7 +304,7 @@ describe('TemplateService Tests', () => {
             const simUser = newTestUser(simUserId, AccountType.simmer)
             const templateId = 66
             const publicTemplate = new Template(templateId, jcUserId, jcTestTemplateData, TemplateFormat.Kneeboard, jcTestTemplateName, jcTestTemplateDescription, 0, 0)
-            const publicTemplateView = TemplateView.parseTemplate(publicTemplate)
+            const publicTemplateView = TemplateKneeboardView.parseTemplate(publicTemplate)
 
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(simUser)
             jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
@@ -314,7 +314,7 @@ describe('TemplateService Tests', () => {
             // User already has max templates
             jest.spyOn(PublicationDao, 'unpublish').mockResolvedValue()
 
-            const tv = new TemplateView(1, jcTestTemplateName, jcTestTemplateData)
+            const tv = new TemplateKneeboardView(1, jcTestTemplateName, jcTestTemplateData)
 
             await TemplateService.save(simUser.sha256, tv).then(ts => {
                 expect(ts.code).toBe(200)
@@ -334,7 +334,7 @@ describe('TemplateService Tests', () => {
         it('finds publication code', async () => {
             jest.clearAllMocks()
             const templateId = 33;
-            const publicTemplateView = new TemplateView(templateId, jcTestTemplateName, jcTestTemplateData)
+            const publicTemplateView = new TemplateKneeboardView(templateId, jcTestTemplateName, jcTestTemplateData)
             publicTemplateView.publish = true
             const publicationCode = 'ZZ'
             const publication = new Publication(0, publicationCode, publicTemplateView.id, true)
@@ -360,7 +360,7 @@ describe('TemplateService Tests', () => {
             jest.clearAllMocks()
 
             const templateId = 33;
-            const publicTemplateView = new TemplateView(templateId, jcTestTemplateName, jcTestTemplateData)
+            const publicTemplateView = new TemplateKneeboardView(templateId, jcTestTemplateName, jcTestTemplateData)
             publicTemplateView.publish = true
 
             const userJc = new User(jcUserId, jcHash)
@@ -378,7 +378,7 @@ describe('TemplateService Tests', () => {
             jest.clearAllMocks()
 
             const templateId = 44;
-            const privateTemplateView = new TemplateView(templateId, jcTestTemplateName, ['a', 'b'], TemplateFormat.Kneeboard, '', 1, false)
+            const privateTemplateView = new TemplateKneeboardView(templateId, jcTestTemplateName, ['a', 'b'], TemplateFormat.Kneeboard, '', 1, false)
 
             const userJc = newTestUser(jcUserId, AccountType.private, 'pp2')
             expect(userJc.maxTemplates).toBe(MAX_TEMPLATE_PRIVATE)
@@ -406,7 +406,7 @@ describe('TemplateService Tests', () => {
             jest.clearAllMocks()
 
             const templateId = 11;
-            const templateView = new TemplateView(templateId, 'name', {}, TemplateFormat.Kneeboard, '', 1, false)
+            const templateView = new TemplateKneeboardView(templateId, 'name', {}, TemplateFormat.Kneeboard, '', 1, false)
             expect(templateView.publish).toBeFalsy()
             const template = new Template(templateId, jcUserId, jcTestTemplateData, TemplateFormat.Kneeboard, jcTestTemplateName, jcTestTemplateDescription, 0, 0)
 

@@ -2,7 +2,7 @@ import { TemplateDao } from '../TemplateDao';
 import { Business } from '../business/Business';
 import { UserDao } from '../dao/UserDao';
 import { AccountType, UserView as IUserView } from '@gak/shared';
-import { TemplateView } from './TemplateView';
+import { TemplateKneeboardView } from './TemplateKneeboardView';
 import { User } from './User'
 
 export class UserView implements IUserView {
@@ -10,13 +10,13 @@ export class UserView implements IUserView {
     name: string;
     maxPages: number; // max pages across all templates
     maxTemp: number; // max templates
-    templates: TemplateView[];
+    templates: TemplateKneeboardView[];
     accountType: AccountType;
     printCredits: number;
     eulaCurrent: boolean;
     homeAirport?: string;
 
-    constructor(user: User, templates: TemplateView[]) {
+    constructor(user: User, templates: TemplateKneeboardView[]) {
         this.sha256 = user.sha256;
         this.name = user.name;
         this.maxPages = user.maxPages

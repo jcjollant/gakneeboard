@@ -7,7 +7,7 @@ import { PageType } from '../TemplateTools'
 import { PublicationDao } from '../PublicationDao'
 import { UsageDao, UsageType } from "../dao/UsageDao";
 import { TemplateDao } from "../TemplateDao";
-import { TemplateView } from "../models/TemplateView";
+import { TemplateKneeboardView } from "../models/TemplateKneeboardView";
 import { UserDao } from "../dao/UserDao"
 import { UserTemplateData } from "../models/UserTemplateData";
 import { UserTools } from '../UserTools'
@@ -229,7 +229,7 @@ export class Metrics {
     }
 
     static async templateDetails(): Promise<Metric[]> {
-        const templates: TemplateView[] = await TemplateDao.getAllTemplateData()
+        const templates: TemplateKneeboardView[] = await TemplateDao.getAllTemplateData()
 
         // build a list of all metrics
         const metricsKeys: MetricKey[] = [MetricKey.pagesTotal, MetricKey.pageTiles, MetricKey.pageChecklist, MetricKey.pageStrip, MetricKey.pageCover, MetricKey.pageSelection, MetricKey.pageNavlog, MetricKey.pageNotes, MetricKey.pageApproach, MetricKey.pageDiagram,
@@ -377,7 +377,7 @@ export class Metrics {
     }
 
     public static async topAirports() {
-        const templates: TemplateView[] = await TemplateDao.getAllTemplateData()
+        const templates: TemplateKneeboardView[] = await TemplateDao.getAllTemplateData()
 
         let map = {}
 

@@ -4,7 +4,7 @@ import { TemplateDao } from '../../backend/TemplateDao'
 import { jcUserId, jcTestTemplateName, jcTestTemplateData } from '../constants';
 import { sql } from '@vercel/postgres';
 import { newTestUser } from '../common';
-import { TemplateView } from '../../backend/models/TemplateView';
+import { TemplateKneeboardView } from '../../backend/models/TemplateKneeboardView';
 import { UserDao } from '../../backend/dao/UserDao';
 import { PublicationDao } from '../../backend/PublicationDao';
 import { Template } from '../../backend/models/Template';
@@ -32,7 +32,7 @@ describe('Custom Templates', () => {
 
     describe('createOrUpdate', () => {
         it('fails on invalid template or user Id', async () => {
-            const tv1 = new TemplateView(-1, "name", jcTestTemplateData, TemplateFormat.Kneeboard, "description", 1)
+            const tv1 = new TemplateKneeboardView(-1, "name", jcTestTemplateData, TemplateFormat.Kneeboard, "description", 1)
 
             // tv has invalid template, jcUserId is valid
             expect(TemplateDao.createOrUpdateViewStatic(tv1, jcUserId)).rejects.toThrow(new Error('Invalid template or user id'))
@@ -40,14 +40,14 @@ describe('Custom Templates', () => {
             const result = await sql`SELECT * FROM sheets LIMIT 1`
             expect(result.rows.length).toBe(1)
             const row = result.rows[0]
-            const tv2 = new TemplateView(row.id, row.name, row.data, TemplateFormat.Kneeboard, row.description, 2)
+            const tv2 = new TemplateKneeboardView(row.id, row.name, row.data, TemplateFormat.Kneeboard, row.description, 2)
 
             // tv2 has valid template id, 0 is invalid for userId
             expect(TemplateDao.createOrUpdateViewStatic(tv2, 0)).rejects.toThrow(new Error('Invalid template or user id'))
         })
 
         it('creates a new template', async () => {
-            const tv1 = new TemplateView(0, "name1", jcTestTemplateData, TemplateFormat.Kneeboard, "description1", 1, true, undefined, 2)
+            const tv1 = new TemplateKneeboardView(0, "name1", jcTestTemplateData, TemplateFormat.Kneeboard, "description1", 1, true, undefined, 2)
 
             const t1 = await TemplateDao.createOrUpdateViewStatic(tv1, jcUserId)
             expect(t1.id).toBeGreaterThan(0)
@@ -67,7 +67,7 @@ describe('Custom Templates', () => {
             const data2 = {}
             const pages1 = 2
             const pages2 = 0
-            const tv1 = new TemplateView(0, name1, data1, TemplateFormat.Kneeboard, desc1, version, true, undefined, pages1)
+            const tv1 = new TemplateKneeboardView(0, name1, data1, TemplateFormat.Kneeboard, desc1, version, true, undefined, pages1)
 
             const t1 = await TemplateDao.createOrUpdateViewStatic(tv1, jcUserId)
             expect(t1.id).toBeGreaterThan(0)
@@ -149,9 +149,9 @@ describe('Custom Templates', () => {
             const userDao = new UserDao()
             await userDao.save(user)
             // Create 3 templates for this user with different publication statuses
-            const tv1 = new TemplateView(0, "name1", jcTestTemplateData, TemplateFormat.Kneeboard, "description1", 1, true, undefined, 2)
-            const tv2 = new TemplateView(0, "name2", jcTestTemplateData, TemplateFormat.Kneeboard, "description2", 1, true, undefined, 2)
-            const tv3 = new TemplateView(0, "name3", jcTestTemplateData, TemplateFormat.Kneeboard, "description3", 1, false, undefined, 2)
+            const tv1 = new TemplateKneeboardView(0, "name1", jcTestTemplateData, TemplateFormat.Kneeboard, "description1", 1, true, undefined, 2)
+            const tv2 = new TemplateKneeboardView(0, "name2", jcTestTemplateData, TemplateFormat.Kneeboard, "description2", 1, true, undefined, 2)
+            const tv3 = new TemplateKneeboardView(0, "name3", jcTestTemplateData, TemplateFormat.Kneeboard, "description3", 1, false, undefined, 2)
 
             const t1 = await TemplateDao.createOrUpdateViewStatic(tv1, user.id)
             const pub1 = await PublicationDao.publish(t1.id)

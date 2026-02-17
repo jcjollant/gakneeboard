@@ -4,7 +4,7 @@ import { UserDao } from '../backend/dao/UserDao';
 import { UsageDao } from '../backend/dao/UsageDao';
 import { TemplateHistoryDao, TemplateHistory, TemplateOperation } from '../backend/dao/TemplateHistoryDao';
 import { TemplateDao } from '../backend/TemplateDao';
-import { TemplateView } from '../backend/models/TemplateView';
+import { TemplateKneeboardView } from '../backend/models/TemplateKneeboardView';
 import { Template } from '../backend/models/Template';
 import { User } from '../backend/models/User';
 import { AccountType, PLAN_ID_SIM } from '@gak/shared';

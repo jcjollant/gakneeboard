@@ -1,6 +1,6 @@
 import { describe, expect, it, jest } from '@jest/globals';
 import { TemplateDao } from '../backend/TemplateDao';
-import { TemplateView } from '../backend/models/TemplateView';
+import { TemplateKneeboardView } from '../backend/models/TemplateKneeboardView';
 
 // Mock sql function
 const mockSql = jest.fn() as any;
@@ -36,7 +36,7 @@ describe('TemplateDao', () => {
             const result = await TemplateDao.getOverviewListForUser(userId);
 
             expect(result).toHaveLength(1);
-            expect(result[0]).toBeInstanceOf(TemplateView);
+            expect(result[0]).toBeInstanceOf(TemplateKneeboardView);
             expect(result[0].id).toBe(1);
             // Verify version is populated
             // Currently implementation passes 0, so this expectation mirrors the bug/missing feature or the desired state

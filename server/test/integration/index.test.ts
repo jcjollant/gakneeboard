@@ -36,7 +36,7 @@ jest.mock('@vercel/postgres', () => ({
 }));
 
 // Mock simple classes that might be used as types or simple logic
-jest.mock('../../backend/models/TemplateView');
+jest.mock('../../backend/models/TemplateKneeboardView');
 
 describe('index API', () => {
     beforeEach(() => {

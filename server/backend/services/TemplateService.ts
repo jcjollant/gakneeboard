@@ -5,13 +5,14 @@ import { GApiError } from "../GApiError"
 import { AccountType } from '@gak/shared';
 import { Publication } from "../models/Publication"
 import { Template } from "../models/Template"
-import { TemplateView } from "../models/TemplateView"
+import { TemplateKneeboardView } from "../models/TemplateKneeboardView"
 import { ThumbnailData } from "../models/ThumbnailData"
 import { PublicationDao } from "../PublicationDao"
 import { TemplateDao } from "../TemplateDao"
 import { TemplateHistoryDao } from "../dao/TemplateHistoryDao"
 import { TemplateFormat } from "../models/TemplateFormat"
 import { put } from "@vercel/blob"
+import { sql } from "@vercel/postgres"
 import { UserTools } from "../UserTools"
 import { PlanService } from "./PlanService";
 import { TicketService } from "./TicketService";
@@ -19,8 +20,8 @@ import { TicketService } from "./TicketService";
 
 export class TemplateStatus {
     code: number; // HttpsStatusCode
-    template: TemplateView;
-    constructor(code: number, template: TemplateView) {
+    template: TemplateKneeboardView;
+    constructor(code: number, template: TemplateKneeboardView) {
         this.code = code
         this.template = template
     }
@@ -55,7 +56,7 @@ export class TemplateService {
      * @returns 
      * @throws 404 if not found
      */
-    public static async get(templateId: number, requester: number): Promise<TemplateView | undefined> {
+    public static async get(templateId: number, requester: number): Promise<TemplateKneeboardView | undefined> {
         // If admin, get any template. Otherwise, get only user's template.
         const userId = UserTools.isAdmin(requester) ? undefined : requester;
         const template: Template | undefined = await TemplateDao.readByIdStatic(templateId, userId)
@@ -63,15 +64,18 @@ export class TemplateService {
         if (!template) return undefined;
         // is this published?
         const pub: Publication | undefined = await PublicationDao.findByTemplate(template.id)
-        const templateView: TemplateView = TemplateView.parseTemplate(template, pub)
+        const templateView: TemplateKneeboardView = TemplateKneeboardView.parseTemplate(template, pub)
 
         return templateView;
     }
 
-    public static async getList(userId: number): Promise<TemplateView[]> {
-        const templates: TemplateView[] = await TemplateDao.getOverviewListForUser(userId)
+    public static async getList(userId: number): Promise<TemplateKneeboardView[]> {
+        const isAdmin = UserTools.isAdmin(userId);
+        const templates: TemplateKneeboardView[] = await TemplateDao.getOverviewListForUser(userId, isAdmin)
         return templates
     }
+
+
 
     /**
      * Get a specific version of a template
@@ -80,7 +84,7 @@ export class TemplateService {
      * @param requesterId 
      * @returns 
      */
-    public static async getVersion(templateId: number, version: number, requesterId: number): Promise<TemplateView | undefined> {
+    public static async getVersion(templateId: number, version: number, requesterId: number): Promise<TemplateKneeboardView | undefined> {
         // Check user type
         const userDao = new UserDao()
         const user = await userDao.get(requesterId)
@@ -114,7 +118,7 @@ export class TemplateService {
             } catch (ignore) { }
 
 
-            return new TemplateView(
+            return new TemplateKneeboardView(
                 history.templateId,
                 history.name,
                 history.data,
@@ -132,7 +136,7 @@ export class TemplateService {
         // Check if current version matches
         const currentTemplate = await TemplateDao.readByIdStatic(templateId, requesterId)
         if (currentTemplate && currentTemplate.version === version) {
-            return TemplateView.parseTemplate(currentTemplate)
+            return TemplateKneeboardView.parseTemplate(currentTemplate)
         }
 
         // If simple readByIdStatic returned something, checking version failed.
@@ -160,7 +164,7 @@ export class TemplateService {
                 // console.log('[GApiTemplate.save]', JSON.stringify(sheet))
                 return reject(new GApiError(400, 'Invalid template'))
             }
-            const templateView: TemplateView = TemplateView.parse(sheet)
+            const templateView: TemplateKneeboardView = TemplateKneeboardView.parse(sheet)
 
             const user = await UserDao.getUserFromHash(userSha256)
             // check user is in good shape
@@ -217,6 +221,36 @@ export class TemplateService {
             return resolve(new TemplateStatus(200, templateView));
         })
 
+    }
+
+    public static async saveSystemTemplate(requesterId: number, sheet: any): Promise<TemplateKneeboardView> {
+        if (!UserTools.isAdmin(requesterId)) {
+            throw new GApiError(403, 'Unauthorized')
+        }
+        if (!sheet) {
+            throw new GApiError(400, 'Invalid template')
+        }
+        const templateView: TemplateKneeboardView = TemplateKneeboardView.parse(sheet)
+        const templateDao = TemplateDao.getInstance()
+        return await templateDao.createOrUpdate(templateView, undefined)
+    }
+
+    /*
+     * Delete a system template
+     */
+    public static async deleteSystemTemplate(requesterId: number, templateId: number): Promise<string> {
+        if (!UserTools.isAdmin(requesterId)) {
+            throw new GApiError(403, 'Unauthorized')
+        }
+        const templateDao = TemplateDao.getInstance()
+        const template: Template | undefined = await templateDao.readById(templateId, undefined)
+
+        if (template) {
+            // we have to delete it via SQL because delete() is user scoped
+            await sql`DELETE FROM sheets WHERE id=${templateId} AND user_id IS NULL`
+            return template.name
+        }
+        throw new GApiError(404, 'Template not found')
     }
 
     /**

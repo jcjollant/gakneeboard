@@ -1,14 +1,14 @@
 import { PublicationDao } from '../PublicationDao'
 import { TemplateDao } from '../TemplateDao'
 import { TicketService } from './TicketService'
-import { TemplateView } from '../models/TemplateView'
+import { TemplateKneeboardView } from '../models/TemplateKneeboardView'
 import { PublishedTemplate } from '../models/PublishedTemplate'
 import { Publication } from '../models/Publication'
 import { Template } from '../models/Template'
 
 export class PublicationService {
 
-    public static async get(code: string): Promise<TemplateView | undefined> {
+    public static async get(code: string): Promise<TemplateKneeboardView | undefined> {
         const pub: Publication | undefined = await PublicationDao.findByCode(code)
         if (!pub || !pub.templateId) {
             await TicketService.create(3, "Publication not found with code " + code)
@@ -20,7 +20,7 @@ export class PublicationService {
             return undefined
         }
 
-        const view = TemplateView.parseTemplate(template, pub)
+        const view = TemplateKneeboardView.parseTemplate(template, pub)
         // Force the id to 0 because the requester is most likely not the creator and we don't want to expose the source template id
         view.id = 0
         return view

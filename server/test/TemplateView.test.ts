@@ -1,7 +1,7 @@
-import { describe, expect, it, test} from '@jest/globals';
+import { describe, expect, it, test } from '@jest/globals';
 import { Publication } from '../backend/models/Publication'
 import { jcTestTemplateData, jcUserId } from './constants';
-import { TemplateView } from '../backend/models/TemplateView';
+import { TemplateKneeboardView } from '../backend/models/TemplateKneeboardView';
 import { Template } from '../backend/models/Template';
 import e from 'express';
 import { TemplateFormat } from '../backend/models/TemplateFormat';
@@ -11,15 +11,15 @@ describe('Sheet class', () => {
         it('Consumes parameters', () => {
             const id2 = 2
             const name2 = ''
-            const data2 = [{value:'nothing'}]
+            const data2 = [{ value: 'nothing' }]
             const description2 = 'description deux'
-            const publicationCode:string = "AB"
+            const publicationCode: string = "AB"
             const version = 12;
             const pages = 13
             const thumbnail = 'https://some.url'
             const thumbhash = '1236549871563546asdqweasd'
             const format = TemplateFormat.FullPage
-            const t = new TemplateView(id2, name2, data2, format, description2, version, true, publicationCode, pages, thumbnail, thumbhash)
+            const t = new TemplateKneeboardView(id2, name2, data2, format, description2, version, true, publicationCode, pages, thumbnail, thumbhash)
             expect(t.id).toBe(id2)
             expect(t.name).toBe(name2)
             expect(t.data).toBe(data2)
@@ -32,12 +32,12 @@ describe('Sheet class', () => {
             expect(t.thumbHash).toBe(thumbhash)
             expect(t.format).toBe(format)
         })
-    
+
         it('Creates default values', () => {
             const id = 1
             const name = "name"
-            const data = ['a','b','c']
-            const t = new TemplateView(id, name, data)
+            const data = ['a', 'b', 'c']
+            const t = new TemplateKneeboardView(id, name, data)
             expect(t).toBeDefined()
             expect(t.id).toBe(id)
             expect(t.name).toBe(name)
@@ -51,7 +51,7 @@ describe('Sheet class', () => {
             expect(t.thumbHash).toBeUndefined()
             expect(t.format).toBe(TemplateFormat.Kneeboard)
         })
-    
+
     })
 
     it('Can Parse Template', async () => {
@@ -61,7 +61,7 @@ describe('Sheet class', () => {
         const version = 6
         const description = "Some Description"
         const pages = jcTestTemplateData.length
-        const thumbnail = "http://thumbnail.url"  
+        const thumbnail = "http://thumbnail.url"
         const thumbhash = "1236549871563546asdqweasd"
         const format = TemplateFormat.FullPage
         // default values
@@ -69,7 +69,7 @@ describe('Sheet class', () => {
         const publicationCode = "AB"
         const t = new Template(id, jcUserId, jcTestTemplateData, format, name, description, version, pages, thumbnail, thumbhash)
         const pub = new Publication(0, publicationCode, id, true)
-        const tv = TemplateView.parseTemplate(t, pub)
+        const tv = TemplateKneeboardView.parseTemplate(t, pub)
         expect(tv).toBeDefined()
         expect(tv.id).toBe(id)
         expect(tv.name).toBe(name)
@@ -90,9 +90,9 @@ describe('Sheet class', () => {
         const description = "Some Description"
         const version = 28
         const code = "AB"
-        const sheet  = {id:sheetId, name:name, data:data, format:'fullpage', description:description, ver:version, publish:false, code:code}
+        const sheet = { id: sheetId, name: name, data: data, format: 'fullpage', description: description, ver: version, publish: false, code: code }
 
-        const parsed = TemplateView.parse(sheet)
+        const parsed = TemplateKneeboardView.parse(sheet)
         expect(parsed).toBeDefined()
         expect(parsed.id).toBe(sheetId)
         expect(parsed.name).toBe(name)
@@ -100,7 +100,7 @@ describe('Sheet class', () => {
         expect(parsed.desc).toBe(description)
         expect(parsed.ver).toBe(version)
         expect(parsed.publish).toBeFalsy()
-        expect(parsed.code).toBe(code)  
+        expect(parsed.code).toBe(code)
         expect(parsed.format).toBe(TemplateFormat.FullPage)
     })
 })

@@ -1,6 +1,6 @@
 import { PageType } from "../models/Template";
 import { TemplateChecklist, TemplateChecklistItem, TemplateChecklistSection } from "./TemplateChecklist";
-import { TemplateView } from "../models/TemplateView";
+import { TemplateKneeboardView } from "../models/TemplateKneeboardView";
 
 // Fmd Hierarchy Checklist : Groups[] > GroupList[] > ItemList[] > Items
 // Template Hierachy : Checklists[] > Section[] > Items
@@ -14,15 +14,15 @@ import { TemplateView } from "../models/TemplateView";
     detail: response    
 */
 class FmdItem {
-    objectId:string;
+    objectId: string;
     // type:string;
-    title:string;
-    detail:string;
+    title: string;
+    detail: string;
 
-    constructor(title:string,detail:string) {
+    constructor(title: string, detail: string) {
         this.objectId = FmdChecklist.uuid()
         this.title = title
-        this.detail = detail?.toUpperCase()??'?'
+        this.detail = detail?.toUpperCase() ?? '?'
         // this.type = ''
     }
 }
@@ -34,11 +34,11 @@ class FmdItem {
     items: []
  */
 class FmdItemList {
-    objectId:string;
-    title:string
-    items:FmdItem[]
+    objectId: string;
+    title: string
+    items: FmdItem[]
 
-    constructor(name:string) {
+    constructor(name: string) {
         this.objectId = FmdChecklist.uuid()
         this.title = name
         this.items = []
@@ -46,11 +46,11 @@ class FmdItemList {
 }
 
 class FmdGroupList {
-    objectId:string;
-    title:string
-    items:FmdItemList[]
+    objectId: string;
+    title: string
+    items: FmdItemList[]
 
-    constructor(name:string) {
+    constructor(name: string) {
         this.objectId = FmdChecklist.uuid()
         this.title = name
         this.items = []
@@ -63,15 +63,15 @@ class FmdGroupList {
     items: []
 */
 class FmdGroup {
-    objectId:string
-    groupType:string;
-    items:FmdGroupList[]
+    objectId: string
+    groupType: string;
+    items: FmdGroupList[]
 
-    static TYPE_NORMAL:string = 'normal'
-    static TYPE_ABNORMAL:string = 'abnormal'
-    static TYPE_EMERGENCY:string = 'emergency'
+    static TYPE_NORMAL: string = 'normal'
+    static TYPE_ABNORMAL: string = 'abnormal'
+    static TYPE_EMERGENCY: string = 'emergency'
 
-    constructor(type:string) {
+    constructor(type: string) {
         this.objectId = FmdChecklist.uuid()
         this.groupType = type
         this.items = []
@@ -79,23 +79,23 @@ class FmdGroup {
 }
 
 export class FmdChecklist {
-    objectId:string = FmdChecklist.uuid()
-    schemaVersion:string = '1.0'
-    metadata:any;
-    groups:FmdGroup[]
+    objectId: string = FmdChecklist.uuid()
+    schemaVersion: string = '1.0'
+    metadata: any;
+    groups: FmdGroup[]
 
-    constructor(name:string, detail:string) {
+    constructor(name: string, detail: string) {
         this.metadata =
         {
             name: name,
             detail: detail,
             tailNumber: '',
         },
-        this.groups = []
+            this.groups = []
     }
 
-    static fromTemplate(template:TemplateView):FmdChecklist {
-        const output = new FmdChecklist(template.name, template.desc??'')
+    static fromTemplate(template: TemplateKneeboardView): FmdChecklist {
+        const output = new FmdChecklist(template.name, template.desc ?? '')
 
         // extract Template Checklists from source template
         const tcList = TemplateChecklist.fromTemplate(template)
@@ -104,11 +104,11 @@ export class FmdChecklist {
             objectId: FmdChecklist.uuid(),
             groupType: FmdGroup.TYPE_NORMAL,
             items: tcList.map(FmdChecklist.mapGroupList)
-        },{
+        }, {
             objectId: FmdChecklist.uuid(),
             groupType: FmdGroup.TYPE_ABNORMAL,
             items: []
-        },{
+        }, {
             objectId: FmdChecklist.uuid(),
             groupType: FmdGroup.TYPE_EMERGENCY,
             items: []
@@ -117,14 +117,14 @@ export class FmdChecklist {
         return output;
     }
 
-    static mapItem(item:TemplateChecklistItem):FmdItem {
-        const output = new FmdItem( item.c, item.r)
+    static mapItem(item: TemplateChecklistItem): FmdItem {
+        const output = new FmdItem(item.c, item.r)
         // output.type = 'comment'
         return output
     }
 
-    static reduceItem(output:FmdItem[], item:TemplateChecklistItem):FmdItem[] {
-        if(item.c == '') return output
+    static reduceItem(output: FmdItem[], item: TemplateChecklistItem): FmdItem[] {
+        if (item.c == '') return output
         output.push(FmdChecklist.mapItem(item))
         return output
     }
@@ -134,22 +134,22 @@ export class FmdChecklist {
      * @param section 
      * @returns new subgroup
      */
-    static mapGroupList(checklist:TemplateChecklist):FmdGroupList {
+    static mapGroupList(checklist: TemplateChecklist): FmdGroupList {
         const output = new FmdGroupList(checklist.name)
         output.items = checklist.sections.map(FmdChecklist.mapItemList)
         return output
     }
 
-    static mapItemList(section:TemplateChecklistSection):FmdItemList {
+    static mapItemList(section: TemplateChecklistSection): FmdItemList {
         const output = new FmdItemList(section.name)
         output.items = section.items.reduce(FmdChecklist.reduceItem, [])
         return output
     }
 
     // Unique Identifier
-    static uuid():string {
+    static uuid(): string {
         // generate a new uuidv4
-        return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
             var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8)
             return v.toString(16)
         })

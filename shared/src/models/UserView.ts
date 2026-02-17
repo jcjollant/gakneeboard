@@ -1,5 +1,4 @@
 import { AccountType } from './AccountType';
-// import { TemplateView } from './TemplateView'; // TemplateView is not in shared?
 
 export interface UserView {
     sha256: string;

@@ -1,7 +1,7 @@
 import { Business } from './business/Business';
 import { UserDao } from './dao/UserDao';
 import { Email, EmailType } from './Email';
-import { TemplateView } from './models/TemplateView';
+import { TemplateKneeboardView } from './models/TemplateKneeboardView';
 import { User } from './models/User';
 import { UserView } from './models/UserView';
 import { TemplateDao } from './TemplateDao';
@@ -200,7 +200,7 @@ export class UserTools {
      * @returns Matching user or undefined if not found
      */
     public static async userMini(user: User): Promise<UserView> {
-        const templates: TemplateView[] = await TemplateDao.getOverviewListForUser(user.id)
+        const templates: TemplateKneeboardView[] = await TemplateDao.getOverviewListForUser(user.id)
         return new UserView(user, templates)
     }
 

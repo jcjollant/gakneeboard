@@ -13,7 +13,7 @@ import { Airport } from './models/Airport'; // Removed versionInvalid
 import { AirportView } from './models/AirportView'
 import { Sunlight } from './models/Sunlight'
 import { Template } from './models/Template'
-import { TemplateView } from './models/TemplateView'
+import { TemplateKneeboardView } from './models/TemplateKneeboardView'
 import { User } from './models/User'
 import { UserView } from './models/UserView'
 import { TemplateDao } from './TemplateDao'
@@ -46,7 +46,7 @@ export class GApi {
     public static async authenticate(body: any): Promise<UserView> {
         try {
             const user: User = await UserTools.authenticate(body);
-            const templates: TemplateView[] = await TemplateDao.getOverviewListForUser(user.id);
+            const templates: TemplateKneeboardView[] = await TemplateDao.getOverviewListForUser(user.id);
             const output: UserView = new UserView(user, templates);
             return output;
         } catch (e) {
@@ -75,7 +75,7 @@ export class GApi {
         if (!template) throw new GApiError(400, "Invalid Template");
 
         const exportData = { format: format }
-        const templateView = TemplateView.parseTemplate(template)
+        const templateView = TemplateKneeboardView.parseTemplate(template)
         // perform export and save usage
         const [exporter, isSaved] = await Promise.all([
             // retrieve this template for this user

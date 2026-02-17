@@ -1,12 +1,12 @@
-import { describe, expect, it, jest, test} from '@jest/globals';
-import { TemplateView } from '../backend/models/TemplateView';
+import { describe, expect, it, jest, test } from '@jest/globals';
+import { TemplateKneeboardView } from '../backend/models/TemplateKneeboardView';
 import { Template } from '../backend/models/Template';
 import { TemplateFormat } from '../backend/models/TemplateFormat';
 
 describe('Template', () => {
     describe('fromView', () => {
         it('Constructor works', () => {
-            const data = {data:'data'}
+            const data = { data: 'data' }
             const templateId = 1
             const userId = 2
             const version = 3
