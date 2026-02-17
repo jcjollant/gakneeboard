@@ -789,7 +789,8 @@ const scrollTiles = computed(() => {
   const tiles: { tile: TileData, pageIndex: number, tileIndex: number }[] = []
   if (!activeTemplate.value) return []
   
-  activeTemplate.value.data.forEach((page, pageIndex) => {
+  // typecast data into array of Pages
+  activeTemplate.value.data.forEach((page: TemplatePage, pageIndex: number) => {
     if (page.type === PageType.tiles) {
       page.data.forEach((tile: TileData, tileIndex: number) => {
          // Create a copy to avoid mutating original immediately and to force single column
