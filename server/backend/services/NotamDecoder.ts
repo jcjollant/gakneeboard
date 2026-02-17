@@ -78,7 +78,7 @@ export const NotamAbbreviations: Record<string, string> = {
     "HWY": "HIGHWAY",
     "IAP": "INSTRUMENT APPROACH PROCEDURE",
     "IDENT": "IDENTIFICATION",
-    "ILS": "INSTRUMENT LANDING SYSTEM",
+    // "ILS": "INSTRUMENT LANDING SYSTEM",
     "IM": "INNER MARKER",
     "INBD": "INBOUND",
     "INDEF": "INDEFINITELY",
