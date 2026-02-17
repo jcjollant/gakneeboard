@@ -1,7 +1,6 @@
 <template>
   <div class="print">
     <PrintOptionsDialog v-model:visible="showOptions" :pageSelection="pageSelection"
-        :templateModified="templateModified && !!template"
         :format="template?.format"
         @options="onOptionsUpdate"
         @print="onPrint"
@@ -66,7 +65,7 @@ const printVibItems = ref<VerticalInfoBarContent[]>([
 ])
 const printClipMargin = ref(0)
 const template = ref<Template|undefined>(undefined)
-const templateModified = ref(false)
+
 const route = useRoute()
 const router = useRouter()
 const showOptions = ref(true)
@@ -99,7 +98,7 @@ onMounted(() => {
     }
     
     pageSelection.value = Array(template.value.data.length).fill(true)
-    templateModified.value = route.query.modified === '1'
+
     
     if (template.value && template.value.format === TemplateFormat.FullPage) {
       printFullpage.value = true

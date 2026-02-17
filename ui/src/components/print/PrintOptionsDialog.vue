@@ -1,10 +1,7 @@
 <template>
   <Dialog modal header="Print">
     <div class="printPopup">
-      <div v-if="props.templateModified" class="versionWarning">
-        <font-awesome-icon :icon="['fas', 'exclamation-triangle']"></font-awesome-icon>
-        <div>Unsaved changes.<span class="goodEnough">If it's good enough to print, it's good enough.</span></div>
-      </div>
+
       <div class="pageOptions">
         <div class="pageOptionLabel">Page Selection</div>
         <PageSelection v-model="pageSelection" @change="onNewOptions" />
@@ -123,7 +120,7 @@ const clipMarginOptions = ref([clipMarginNone, clipMarginSmall, clipMarginLarge]
 // Props management
 const props = defineProps({
   pageSelection: { type: Array<boolean>, required: true},
-  templateModified: { type: Boolean, default: false },
+
   format: { type: String, default: 'kneeboard' },
 })
 
@@ -193,18 +190,7 @@ function onUpgrade() {
 </script>
 
 <style scoped>
-.versionWarning {
-  color: #ff8800;
-  background-color: #fff8f0;
-  border: 1px solid #ff8800;
-  border-radius: 4px;
-  padding: 10px;
-  margin-bottom: 15px;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+
 
 .floatLeft {
     position:absolute;
@@ -292,12 +278,7 @@ li {
   color: #999;
   cursor: not-allowed;
 }
-.goodEnough {
-  padding-left: 10px;
-  font-weight: 400;
-  font-size: 0.8rem;
-  font-style: italic;
-}
+
 
 :deep(.store-btn) {
     background-color: white !important;
