@@ -10,13 +10,21 @@
                     @selection="onNewTemplate"/>
                 <!-- <TemplateSelector :template="localTemplate" :temporary="true" src="local"
                     @selection="onTemplateSelection('local')"/> -->
-                <TemplateSelector v-if="kneeboards.length > 0" v-for="(template,index) in kneeboards" 
+                <TemplateSelector v-if="userKneeboards.length > 0" v-for="(template,index) in userKneeboards" 
                     :template="template" :clipped="true"
                     @selection="onTemplateSelection(template.id)" />
                 <div v-else class="startHere">
                     <h2>⬅️ Start Here</h2>
                     <div>Your saved kneeboards will be listed here</div>
                 </div>
+            </div>
+        </div>
+        <div class="section templateSection kneeboardSection systemKneeboards" v-if="systemKneeboards.length > 0">
+            <div class="header">System Kneeboards</div>
+            <div class="templateList">
+                <TemplateSelector v-for="(template,index) in systemKneeboards" 
+                    :template="template" :clipped="true"
+                    @selection="onTemplateSelection(template.id)" />
             </div>
         </div>
         <div class="section templateSection" v-if="false">
@@ -68,7 +76,6 @@ import { useToaster } from '../assets/Toaster';
 import { UserUrl } from '../lib/UserUrl';
 
 import Menu from '../components/menu/Menu.vue';
-import PlaceHolder from '../components/shared/PlaceHolder.vue';
 import TemplateSelector from '../components/templates/TemplateSelector.vue';
 import ChecklistSelector from '../components/checklist/ChecklistSelector.vue';
 import LibraryChecklistDialog from '../components/checklist/LibraryChecklistDialog.vue';
@@ -76,7 +83,6 @@ import PricingPlans from './PricingPlans.vue';
 import { TemplateFormat } from '../models/TemplateFormat';
 import { LibraryChecklist } from '../models/LibraryChecklist';
 import { Template, TemplatePage } from '../models/Template';
-import { PageType } from '../assets/PageType';
 
 
 class DemoSelector {
@@ -122,6 +128,8 @@ const router = useRouter()
 const templates = ref<Template[]>([])
 const checklists = ref<LibraryChecklist[]>([])
 const kneeboards = computed(() => templates.value.filter(t => t.format === TemplateFormat.Kneeboard))
+const userKneeboards = computed(() => kneeboards.value.filter(t => !t.system))
+const systemKneeboards = computed(() => kneeboards.value.filter(t => t.system))
 
 const toast = useToast()
 const toaster = useToaster(toast)
@@ -262,6 +270,15 @@ function userUpdate() {
 
 .kneeboardSection .header {
     border-bottom-color: #57422a;
+}
+
+.systemKneeboards {
+    background-color: #aaeeaa;
+    border-color: #22aa22;
+}
+
+.systemKneeboards .header {
+    border-bottom-color: #22aa22;
 }
 
 .badge {
