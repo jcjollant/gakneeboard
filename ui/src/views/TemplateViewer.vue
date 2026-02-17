@@ -11,9 +11,14 @@
         <TemplateViewerMenu
           v-model:isCollapsed="menuCollapsed"
           :isTemplateValid="!activeTemplate.isInvalid()"
+          :activeEditor="showEditor"
+          :activeScroll="showScroll"
           :hasVersion="activeTemplate.ver > 0"
-          :showScroll="showScroll"
-          :showEditor="showEditor"
+          :showDelete="activeTemplate.id > 0"
+          :showEditor="activeTemplate.format === TemplateFormat.Kneeboard"
+          :showExport="templateContainsChecklist"
+          :showSave="activeTemplate.format === TemplateFormat.Kneeboard"
+          :showScroll="templateContainsTiles"
           :isModified="templateModified"
           :hasId="activeTemplate.id > 0"
           @print="onPrint"
@@ -797,7 +802,7 @@ const scrollTiles = computed(() => {
          // We assume TileData.copy or simple JSON copy works. 
          // Since we imported TileData, let's try to use a static copy method if it exists, 
          // but TilePage used TileData.copy(tile).
-         const tileCopy = TileData.copy(tile) 
+         const tileCopy = JSON.parse(JSON.stringify(tile))
          tileCopy.span2 = false
          tileCopy.hide = false
          tiles.push({ tile: tileCopy, pageIndex, tileIndex })
@@ -805,6 +810,20 @@ const scrollTiles = computed(() => {
     }
   })
   return tiles
+})
+
+/**
+ * Computed property to check if the template contains at least one checklist page.
+ */
+const templateContainsChecklist = computed(() => {
+  return activeTemplate.value?.data.some((page: TemplatePage) => page.type === PageType.checklist) || false
+})
+
+/**
+ * Computed property to check if the template contains at least one tile page.
+ */
+const templateContainsTiles = computed(() => {
+  return activeTemplate.value?.data.some((page: TemplatePage) => page.type === PageType.tiles) || false
 })
 
 function onScrollUpdate(pageIndex: number, tileIndex: number, newTile: TileData) {
