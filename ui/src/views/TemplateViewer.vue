@@ -528,7 +528,11 @@ async function onEditorAction(ea:EditorAction) {
   }
 
   if(isInitializing.value) return
-  templateModified.value = true
+
+  // only mark as modified if we actually changed something
+  if (ea.action != EditorAction.COPY_PAGE_TO_CLIPBOARD && ea.action != EditorAction.COPY_TILE_TO_CLIPBOARD && ea.action != EditorAction.TOGGLE_CAPTURE) {
+    templateModified.value = true
+  }
 }
 
 

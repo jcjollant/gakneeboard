@@ -223,7 +223,11 @@ async function onEditorAction(ea:EditorAction) {
     // console.log('[Editor.editoAction] updatePage', ea.action, index)
     emits('update', index, model.value.data[index]) 
   }
-  modified.value = true
+
+  // only mark as modified if we actually changed something
+  if (ea.action != EditorAction.COPY_PAGE_TO_CLIPBOARD && ea.action != EditorAction.COPY_TILE_TO_CLIPBOARD && ea.action != EditorAction.TOGGLE_CAPTURE) {
+    modified.value = true
+  }
   // LocalStoreService.saveTemplate(model.value)
 }
 
