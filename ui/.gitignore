@@ -28,5 +28,6 @@ cypress/downloads/downloads.htm
 .vercel
 docs/~$Tiles.pptx
 .env
+.env.*
 cypress/screenshots
 cypress/videos
