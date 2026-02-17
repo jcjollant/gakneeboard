@@ -181,6 +181,7 @@ describe('HealthChecks', () => {
             process.env.AERONAV_DATA_CYCLE = 'test';
             process.env.SUPABASE_URL = 'test';
             process.env.SUPABASE_SERVICE_ROLE_KEY = 'test';
+            process.env.HEALTH_CHECK_ACCESS_KEY = 'test';
 
             const result = await HealthCheck.environmentVariables();
             expect(result.status).toBe(Check.SUCCESS);
