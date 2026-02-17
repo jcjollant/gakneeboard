@@ -29,7 +29,7 @@ const app = express();
 app.use(cors({
     origin: [
         'http://localhost:5173',
-        'http://localhost:3001',
+        'http://localhost:3002',
         'https://kneeboard.ga',
         'https://www.kneeboard.ga',
         'https://admin.kneeboard.ga',

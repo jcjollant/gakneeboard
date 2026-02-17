@@ -4,6 +4,7 @@
   "description": "run `vercel dev` to run the local service",
   "main": "index.js",
   "scripts": {
+    "start": "tsx --env-file=.env api/index.ts",
     "test": "jest",
     "debug": "node --debug-brk --inspect ./node_modules/jest/bin/jest -i",
     "webhook": "stripe listen --forward-to localhost:3000/stripe/webhook",
