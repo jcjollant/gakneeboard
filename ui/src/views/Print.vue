@@ -38,13 +38,14 @@ import { postPrint, currentUser } from '../assets/data.js';
 import { Template, TemplatePage } from '../models/Template';
 import { exportToPDF, createPDF } from '../assets/pdf'
 import { PageType } from '../assets/PageType.js';
-import { TemplateFormat, AccountType } from '@gak/shared';
+import { TemplateFormat, AccountType, UsageType } from '@gak/shared';
 import { PrintOptions } from '../components/print/PrintOptions.js';
 import Page from '../components/page/Page.vue';
 import PrintOptionsDialog from '../components/print/PrintOptionsDialog.vue';
 import MarginNotes from '../components/print/MarginNotes.vue';
 import { VerticalInfoBarContent } from '../models/VerticalInfoBarOption.js';
 import { StoreService } from '../services/StoreService';
+import { UsageService } from '../services/UsageService';
 import { useToaster } from '../assets/Toaster.js';
 import { useToast } from 'primevue/usetoast';
 
@@ -157,6 +158,8 @@ async function onExportPdf(options: PrintOptions | undefined) {
   }
   
   printFullpage.value = true
+
+  UsageService.declare(UsageType.CreateDoc, { templateId: route.params.id })
 
   await nextTick()
     printing = true
