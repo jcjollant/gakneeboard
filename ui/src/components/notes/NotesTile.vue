@@ -14,6 +14,13 @@
         </div>
         <CompassContent v-else-if="displayMode==DisplayModeNotes.Compass" :heading="compassHeading" />
         <WordContent v-else-if="displayMode==DisplayModeNotes.Word"  :word="word" />
+        
+        <TileModeDots 
+            v-if="!displaySelection"
+            v-model="displayMode" 
+            :modes="displayModes" 
+            class="mode-dots"
+        />
     </div>
 </template>
 
@@ -26,6 +33,7 @@ import { TileData } from '../../models/TileData';
 import WordContent from './WordContent.vue';
 import CompassContent from './CompassContent.vue';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
+import TileModeDots from '../shared/TileModeDots.vue';
 import Header from '../shared/Header.vue';
 
 // Enum with display modes
@@ -154,6 +162,22 @@ function onExpand(newValue:boolean) {
     font-weight: bold;
     padding-bottom: 10px;
     justify-content: center;
+}
+
+.tile:hover .mode-dots {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.mode-dots {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 10;
 }
 
 </style>
