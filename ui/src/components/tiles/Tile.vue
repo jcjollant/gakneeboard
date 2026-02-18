@@ -1,16 +1,6 @@
 <template>
     <div class="tile-wrapper">
-    <div v-if="!tile || tile.name==''" class="tile">
-        <Header :title="title" :replace="restorable" :clickable="restorable" :leftButton="''"
-            @replace="tile=previousTile"></Header>
-        <div class="tileContent list">
-            <FAButton v-for="tile in knownTiles" class="tileButton"
-                :icon="tile.icon" 
-                :label="tile.name" :class="tile.class" :title="tile.tooltip"
-                @click="onReplace(tile.tile)"/>
-        </div>
-    </div>
-    <AirportTile v-else-if="tile.name==TileType.airport" :params="tile.data" :span2="tile.span2"
+    <AirportTile v-if="tile.name==TileType.airport" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate" @settings="emits('settings',tile)"/>
     <AtisTile v-else-if="tile.name==TileType.atis" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate"/>
@@ -31,6 +21,16 @@
         @replace="onReplace" @update="onUpdate" />
     <VfrTile v-else-if="tile.name==TileType.vfr" :params="tile.data"
         @replace="onReplace" @update="onUpdate" />
+    <div v-else class="tile">
+        <Header :title="title" :replace="restorable" :clickable="restorable" :leftButton="''"
+            @replace="tile=previousTile"></Header>
+        <div class="tileContent list">
+            <FAButton v-for="tile in knownTiles" class="tileButton"
+                :icon="tile.icon" 
+                :label="tile.name" :class="tile.class" :title="tile.tooltip"
+                @click="onReplace(tile.tile)"/>
+        </div>
+    </div>
     </div>
 </template>
 
@@ -55,7 +55,7 @@ import NavlogTile from '../navlog/NavlogTile.vue';
 import NotesTile from '../notes/NotesTile.vue';
 import VfrTile from '../vfr/VfrTile.vue';
 
-const emits = defineEmits(['update','settings', 'replacePage'])
+const emits = defineEmits(['update','settings', 'replacePage', 'capture'])
 const confirm = useConfirm()
 
 const props = defineProps({
