@@ -22,7 +22,7 @@
         {{ errorMessage }}
       </div>
       <div class="pending" v-if="authenticating">
-        <div class="mb-2">Working on it...</div>
+        <div class="mb-2">Waiting for release, stand by...</div>
         <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="4" />
       </div>
       <div class="auth-divider" v-if="!authenticating">
