@@ -29,6 +29,7 @@ export const PLANS: PlanDescription[] = [
         },
         features: {
             advancedPrinting: false,
+            export: false,
             restoreOldVersion: false
         }
     },
@@ -44,11 +45,12 @@ export const PLANS: PlanDescription[] = [
         priceEnvironmentVariable: 'STRIPE_PP1_PRICE',
         quotas: {
             prints: 8,
-            pages: 4,
+            pages: 8,
             templates: 2
         },
         features: {
             advancedPrinting: true,
+            export: true,
             restoreOldVersion: false
         }
     },
@@ -68,6 +70,7 @@ export const PLANS: PlanDescription[] = [
         },
         features: {
             advancedPrinting: true,
+            export: true,
             restoreOldVersion: true
         },
         accountType: AccountType.private
@@ -88,6 +91,7 @@ export const PLANS: PlanDescription[] = [
         },
         features: {
             advancedPrinting: true,
+            export: true,
             restoreOldVersion: true
         },
         accountType: AccountType.beta
@@ -109,6 +113,7 @@ export const PLANS: PlanDescription[] = [
         },
         features: {
             advancedPrinting: true,
+            export: true,
             restoreOldVersion: true
         }
     },
@@ -129,6 +134,7 @@ export const PLANS: PlanDescription[] = [
         },
         features: {
             advancedPrinting: true,
+            export: true,
             restoreOldVersion: true
         }
     }

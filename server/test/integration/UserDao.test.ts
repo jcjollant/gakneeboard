@@ -5,7 +5,7 @@ import { db, sql } from '@vercel/postgres';
 import { UserDao } from '../../backend/dao/UserDao';
 import { User } from '../../backend/models/User';
 import { newTestUser } from '../common';
-import { jcCustomerId, jcEmail, jcHash, jcName, jcSource, jcUserId, MAX_PAGES_BETA, MAX_PAGES_SIMMER, MAX_TEMPLATE_BETA, MAX_TEMPLATE_SIMMER } from '../constants';
+import { jcCustomerId, jcEmail, jcHash, jcName, jcSource, jcUserId } from '../constants';
 
 require('dotenv').config();
 // Force test DB
@@ -175,22 +175,21 @@ describe('UserDao', () => {
     it('updateType', async () => {
         const existingUser: User = new User(jcUserId, jcHash)
         existingUser.accountType = AccountType.simmer
-        existingUser.maxTemplates = MAX_TEMPLATE_SIMMER
-        existingUser.maxPages = MAX_PAGES_SIMMER
+        existingUser.maxTemplates = 1
+        existingUser.maxPages = 2
         await userDao.updateType(existingUser)
         const readUser = await userDao.get(jcUserId)
         expect(readUser.id).toBe(jcUserId)
-        expect(readUser.maxTemplates).toBe(MAX_TEMPLATE_SIMMER)
-        expect(readUser.maxPages).toBe(MAX_PAGES_SIMMER)
+        expect(readUser.maxTemplates).toBe(1)
+        expect(readUser.maxPages).toBe(2)
 
         // Switch this user to Beta and check wether values are saved
         existingUser.accountType = AccountType.beta
-        existingUser.maxTemplates = MAX_TEMPLATE_BETA
-        existingUser.maxPages = MAX_PAGES_BETA
+        existingUser.maxTemplates = 10
+        existingUser.maxPages = 50
         await userDao.updateType(existingUser)
         const readUser2 = await userDao.get(jcUserId)
-        expect(readUser2.maxTemplates).toBe(MAX_TEMPLATE_BETA)
-        expect(readUser2.maxPages).toBe(MAX_PAGES_BETA)
+        expect(readUser2.maxTemplates).toBe(10)
+        expect(readUser2.maxPages).toBe(50)
     })
 });
-

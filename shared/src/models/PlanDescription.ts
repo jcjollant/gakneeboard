@@ -14,6 +14,7 @@ export interface PlanDescription {
     quotas: Quotas;
     features: {
         advancedPrinting: boolean;
+        export: boolean;
         restoreOldVersion: boolean;
     }
 }

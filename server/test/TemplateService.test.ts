@@ -17,7 +17,7 @@ import { TicketService } from '../backend/services/TicketService';
 import { getMockTemplateDao, getTemplateView, newTestUser } from './common';
 
 jest.mock('../backend/services/TicketService');
-import { adminUserId, asUserId, jcHash, jcTestTemplateData, jcTestTemplateDescription, jcTestTemplateName, jcUserId, MAX_PAGES_BETA, MAX_TEMPLATE_BETA, MAX_TEMPLATE_PRIVATE, MAX_TEMPLATE_SIMMER, nonAdminUserId } from './constants';
+import { adminUserId, asUserId, jcHash, jcTestTemplateData, jcTestTemplateDescription, jcTestTemplateName, jcUserId, nonAdminUserId } from './constants';
 dotenv.config()
 
 const MAX_PAGES_MESSAGE = "Maximum pages reached"
@@ -215,7 +215,7 @@ describe('TemplateService Tests', () => {
             // User below max
             const mockTemplateDao = new TemplateDao() as jest.Mocked<TemplateDao>;
             jest.spyOn(mockTemplateDao, 'createOrUpdate').mockResolvedValue(tv)
-            jest.spyOn(mockTemplateDao, 'countForUser').mockResolvedValue(MAX_TEMPLATE_SIMMER - 1)
+            jest.spyOn(mockTemplateDao, 'countForUser').mockResolvedValue(0)
             jest.spyOn(mockTemplateDao, 'pageCount').mockResolvedValue([0, 0])
             jest.spyOn(TemplateDao, 'getInstance').mockReturnValue(mockTemplateDao)
 
@@ -225,15 +225,15 @@ describe('TemplateService Tests', () => {
             })
 
             // User at max
-            jest.spyOn(mockTemplateDao, 'countForUser').mockResolvedValue(MAX_TEMPLATE_SIMMER)
+            jest.spyOn(mockTemplateDao, 'countForUser').mockResolvedValue(1)
             await expect(TemplateService.save(simUser.sha256, tv)).rejects.toEqual(new GApiError(402, MAX_TEMPLATES_REACHED_MESSAGE))
 
             // User over max
-            jest.spyOn(mockTemplateDao, 'countForUser').mockResolvedValue(MAX_TEMPLATE_SIMMER + 1)
+            jest.spyOn(mockTemplateDao, 'countForUser').mockResolvedValue(2)
             await expect(TemplateService.save(simUser.sha256, tv)).rejects.toEqual(new GApiError(402, MAX_TEMPLATES_EXCEEDED_MESSAGE))
 
             // Boost Max Templates
-            simUser.maxTemplates = MAX_TEMPLATE_SIMMER + 2;
+            simUser.maxTemplates = 3;
             await TemplateService.save(simUser.sha256, tv).then(ts => {
                 expect(ts.code).toBe(200)
             })
@@ -250,7 +250,7 @@ describe('TemplateService Tests', () => {
 
             // disable unpublish
             jest.spyOn(PublicationDao, 'unpublish').mockResolvedValue()
-            getMockTemplateDao(tv4pages, MAX_TEMPLATE_SIMMER - 1)
+            getMockTemplateDao(tv4pages, 0)
 
             // Sim user cannot save more than two pages on new templates
             await expect(TemplateService.save(simUser.sha256, tv4pages)).rejects.toEqual(new GApiError(402, MAX_PAGES_MESSAGE))
@@ -262,7 +262,7 @@ describe('TemplateService Tests', () => {
             // Sim user can save more than two pages when reducing page size
             const tv3pages = getTemplateView(3, 1)
 
-            getMockTemplateDao(tv3pages, MAX_TEMPLATE_SIMMER - 1, 4, 4)
+            getMockTemplateDao(tv3pages, 0, 4, 4)
 
             await TemplateService.save(simUser.sha256, tv3pages).then(ts => {
                 expect(ts.code).toBe(200)
@@ -272,13 +272,13 @@ describe('TemplateService Tests', () => {
         it('Enforces Beta user page restriction', async () => {
             // Beta users can save maxPages
             const betaUser = newTestUser(66, AccountType.beta, 'bd1')
-            const tvMax = getTemplateView(MAX_PAGES_BETA, 1)
+            const tvMax = getTemplateView(50, 1)
 
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(betaUser)
             jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
             jest.spyOn(PublicationDao, 'unpublish').mockResolvedValue()
             //
-            const mockTemplateDao = getMockTemplateDao(tvMax, MAX_TEMPLATE_BETA, 0, 0)
+            const mockTemplateDao = getMockTemplateDao(tvMax, 10, 0, 0)
 
             // Should be able to update a template at max pages
             await TemplateService.save(betaUser.sha256, tvMax).then(ts => {
@@ -286,12 +286,12 @@ describe('TemplateService Tests', () => {
             })
 
             // Should not be able to update over max pages
-            const tvOVerMax = getTemplateView(MAX_PAGES_BETA + 1, 1)
+            const tvOVerMax = getTemplateView(51, 1)
             await expect(TemplateService.save(betaUser.sha256, tvOVerMax)).rejects.toEqual(new GApiError(402, MAX_PAGES_MESSAGE))
 
             // Should be able update over max when decreasing page count
             // We are decreasing from MAX+2 to MAX+1
-            jest.spyOn(mockTemplateDao, 'pageCount').mockResolvedValue([MAX_PAGES_BETA + 10, MAX_PAGES_BETA + 2])
+            jest.spyOn(mockTemplateDao, 'pageCount').mockResolvedValue([60, 52])
             await TemplateService.save(betaUser.sha256, tvMax).then(ts => {
                 expect(ts.code).toBe(200)
             })
@@ -319,11 +319,11 @@ describe('TemplateService Tests', () => {
             })
 
             // One above should fail
-            jest.spyOn(mockTemplateDao, 'countForUser').mockResolvedValue(MAX_TEMPLATE_SIMMER + 1)
+            jest.spyOn(mockTemplateDao, 'countForUser').mockResolvedValue(2)
             await expect(TemplateService.save(simUser.sha256, tv)).rejects.toEqual(new GApiError(402, MAX_TEMPLATES_EXCEEDED_MESSAGE))
 
             // Boost Max Templates
-            simUser.maxTemplates = MAX_TEMPLATE_SIMMER * 2
+            simUser.maxTemplates = 2
             await TemplateService.save(simUser.sha256, tv).then(ts => {
                 expect(ts.code).toBe(200)
             })
@@ -341,7 +341,7 @@ describe('TemplateService Tests', () => {
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(userJc)
             jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
             jest.spyOn(PublicationDao, 'publish').mockResolvedValue(publication)
-            const mockTemplateDao = getMockTemplateDao(publicTemplateView, MAX_TEMPLATE_PRIVATE - 1, 2, 0)
+            const mockTemplateDao = getMockTemplateDao(publicTemplateView, 4, 2, 0)
 
             const ts = await TemplateService.save(jcHash, publicTemplateView)
             const t = ts.template
@@ -375,7 +375,7 @@ describe('TemplateService Tests', () => {
             const privateTemplateView = new TemplateKneeboardView(templateId, jcTestTemplateName, ['a', 'b'], TemplateFormat.Kneeboard, '', 1, false)
 
             const userJc = newTestUser(jcUserId, AccountType.private, 'pp2')
-            expect(userJc.maxTemplates).toBe(MAX_TEMPLATE_PRIVATE)
+            expect(userJc.maxTemplates).toBe(5)
 
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(userJc)
             jest.spyOn(UsageDao, 'create').mockResolvedValue(true)

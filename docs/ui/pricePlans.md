@@ -6,7 +6,7 @@ Best for Occasional Use
 Prints per Month : 8
 Advanced Print Options
 Templates : 2
-Pages : 4
+Pages : 8
 
 ### Private Pilot
 $4.49/month Charged $53.88/year

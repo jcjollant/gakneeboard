@@ -52,7 +52,10 @@
               </span>
             </li>
 
-            <li v-for="(value) in [{name:'Advanced Printing', enabled: plan.features.advancedPrinting}, {name:'Restore Old Versions', enabled: plan.features.restoreOldVersion}]">
+            <li v-for="(value) in [
+              {name:'Print Options', enabled: plan.features.advancedPrinting}, 
+              {name:'Exports to EFB', enabled: plan.features.export}, 
+              {name:'Restore Old Versions', enabled: plan.features.restoreOldVersion}]">
               <span>
                 <svg v-if="value.enabled" class="icon check" viewBox="0 0 24 24">
                   <path d="M20 6L9 17L4 12"></path>

@@ -1,7 +1,7 @@
 import { describe, expect, test, it, jest, beforeAll, afterAll } from '@jest/globals';
 import { User } from '../backend/models/User'
 import { UserTools } from '../backend/UserTools'
-import { jcSource, MAX_PAGES_SIMMER, MAX_TEMPLATE_SIMMER } from './constants'
+import { jcSource } from './constants'
 import { jcHash, jcUserId, jcToken, jcName, jcEmail } from './constants'
 import { UserView } from '../backend/models/UserView';
 import { AccountType, PRINT_CREDIT_SIMMER } from '@gak/shared';
@@ -85,8 +85,8 @@ describe('UserTool', () => {
 
         const newUser = await UserTools.authenticate(body, mockUserDao)
         expect(newUser.printCredits).toBe(PRINT_CREDIT_SIMMER)
-        expect(newUser.maxTemplates).toBe(MAX_TEMPLATE_SIMMER)
-        expect(newUser.maxPages).toBe(MAX_PAGES_SIMMER)
+        expect(newUser.maxTemplates).toBe(1)
+        expect(newUser.maxPages).toBe(2)
 
         // Cannot check savedUser via dao since we mocked it and didn't implement back store.
         // We can verify mock call if needed, but the original test checked logic on returned object from dao.

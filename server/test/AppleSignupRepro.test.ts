@@ -34,8 +34,6 @@ jest.mock('../backend/business/Business', () => {
             calculatePrintCredits: jest.fn().mockReturnValue(10),
             maxTemplates: jest.fn().mockReturnValue(5),
             getQuotas: jest.fn().mockReturnValue({ prints: 10, templates: 5, pages: 10 }),
-            MAX_PAGES_SIMMER: 10,
-            MAX_TEMPLATE_SIMMER: 5,
         }
     };
 });
