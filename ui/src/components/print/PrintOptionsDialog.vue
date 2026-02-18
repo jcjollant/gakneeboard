@@ -1,6 +1,15 @@
 <template>
   <Dialog modal header="Print">
     <div class="printPopup">
+      <div v-if="upgrade" class="upgrade-banner">
+        <div class="banner-content">
+          <font-awesome-icon icon="circle-info" class="banner-icon" />
+          <div class="banner-text">
+            Print Options are available from the <strong>Student Pilot</strong> membership and above. You can print using the default options on your free account or upgrade.
+          </div>
+          <Button label="View Plans" class="p-button-sm p-button-warning" @click="onUpgrade" />
+        </div>
+      </div>
 
       <div class="pageOptions">
         <div class="pageOptionLabel">Page Selection</div>
@@ -48,7 +57,6 @@
                 @click="onHelp" title="Perfect Prints help"></font-awesome-icon>
         </div>
         <Button label="Do Not Print" @click="emits('close')" link></Button>
-        <Button v-if="upgrade" label="Upgrade to use Print Options" @click="onUpgrade" severity="warning"></Button>
         <Button v-if="FeatureFlags.CUSTOM_KNEEBOARD_LAMINATION" @click="emits('laminate', getOptions())" class="store-btn" title="We print, laminate, and ship it to you!">
             <font-awesome-icon icon="store" class="mr-2" /> Laminate (Print & Ship)
         </Button>
@@ -297,5 +305,35 @@ li {
 :deep(.store-btn:hover) {
     background-color: var(--bg-store) !important;
     color: white !important;
+}
+
+.upgrade-banner {
+  background-color: var(--yellow-50, #fffcf0);
+  border: 1px solid var(--yellow-200, #ffe082);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.banner-icon {
+  color: var(--yellow-600, #fbc02d);
+  font-size: 1.2rem;
+}
+
+.banner-text {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--yellow-900, #3e2723);
+  line-height: 1.3;
+}
+
+.p-button-sm {
+  white-space: nowrap;
 }
 </style>
