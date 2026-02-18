@@ -45,6 +45,8 @@ import PrintOptionsDialog from '../components/print/PrintOptionsDialog.vue';
 import MarginNotes from '../components/print/MarginNotes.vue';
 import { VerticalInfoBarContent } from '../models/VerticalInfoBarOption.js';
 import { StoreService } from '../services/StoreService';
+import { useToaster } from '../assets/Toaster.js';
+import { useToast } from 'primevue/usetoast';
 
 interface PrintSheet {
   front: TemplatePage,
@@ -69,6 +71,7 @@ const template = ref<Template|undefined>(undefined)
 const route = useRoute()
 const router = useRouter()
 const showOptions = ref(true)
+const toaster = useToaster(useToast())
 let printing = false
 
 function getPageStyle(flipped: boolean) {
@@ -142,6 +145,11 @@ function onOptionsUpdate(options:PrintOptions) {
 async function onExportPdf(options: PrintOptions | undefined) {
   if (!options) return;
   
+  if (currentUser.isSim) {
+      toaster.upgrade()
+      return
+  }
+  
   if (!canUserPrint()) {
       printing = false
       redirectToPlansPage()
@@ -193,7 +201,7 @@ async function onLaminate(options: PrintOptions | undefined) {
       
   } catch(e) {
       console.error(e);
-      alert('Failed to process print for lamination: ' + e);
+      toaster.error('That didn\'t work', 'Failed to process print for lamination: ');
       printing = false;
       showOptions.value = true;
   }
@@ -269,12 +277,10 @@ function restorePrintOptions() {
 
 function canUserPrint(): boolean {
   if (!currentUser.loggedIn) {
-    return true;
+    return false;
   }
-  if (currentUser.accountType !== AccountType.simmer) {
-    return true;
-  }
-  return currentUser.printCredits > 0;
+  if( currentUser.isSim) return  currentUser.printCredits > 0
+  return true
 }
 
 function redirectToPlansPage() {

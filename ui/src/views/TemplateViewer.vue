@@ -538,6 +538,10 @@ async function onEditorAction(ea:EditorAction) {
 
 
 function onExport() {
+  if (currentUser.isSim) {
+    toaster.upgrade()
+    return
+  }
   if(activeTemplate.value.id == 0) {
     toaster.warning('Line up and Wait','Please save your template before exporting')
     return
@@ -614,6 +618,10 @@ async function onSave(clone:boolean=false) {
 
   // to duplicate this template, we reset the id to 0 while keeping the data
   if(clone) { 
+    if (currentUser.isSim) {
+      toaster.warning('Upgrade Required', 'Please upgrade to a student or private pilot plan to use this feature.')
+      return
+    }
     const newTemplate = Template.copy(activeTemplate.value)
     // console.debug('[TemplateViewer.onSave]', newTemplate)
     newTemplate.id = 0

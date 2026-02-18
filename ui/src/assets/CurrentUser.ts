@@ -42,6 +42,10 @@ export class CurrentUser {
     this.listeners = [];
   }
 
+  get isSim(): boolean {
+    return this.accountType === AccountType.simmer;
+  }
+
   addListener(listener: any) {
     // console.log('[CurrentUser.addListener] Adding listener', listener)
     this.listeners.push(listener)
