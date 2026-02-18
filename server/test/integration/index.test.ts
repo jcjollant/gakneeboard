@@ -12,6 +12,7 @@ import { UsageDao } from '../../backend/dao/UsageDao';
 import { version } from '../../package.json';
 import { currentAirportModelVersion, jcHash } from '../constants';
 import { HealthCheck } from '../../backend/maintenance/HealthChecks';
+import { UsageType, UsagePayload } from '@gak/shared';
 
 // Mock the dependencies
 jest.mock('../../backend/GApi');
@@ -224,6 +225,27 @@ describe('index API', () => {
 
         // UsageDao.create verification moved to TemplateService.test.ts
         // expect(createSpy).toHaveBeenCalledWith('restore', 1, JSON.stringify({ templateId: templateId, version: version }));
+    });
+
+    it('POST /usage records usage', async () => {
+        const userId = 1;
+        (UserTools.userIdFromRequest as unknown as jest.Mock<any>).mockResolvedValue(userId);
+
+        const payload: UsagePayload = {
+            type: UsageType.Export,
+            data: JSON.stringify({ some: 'data' })
+        };
+
+        const createSpy = jest.spyOn(UsageDao, 'create').mockResolvedValue(true);
+
+        const res = await request(app)
+            .post('/usage')
+            .send(payload);
+
+        expect(res.status).toBe(200);
+        expect(UsageDao.create).toHaveBeenCalledWith(payload.type, userId, payload.data);
+
+        createSpy.mockRestore();
     });
 });
 

@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express"
+import { UsagePayload } from "@gak/shared";
 import cors from "cors";
 import multer from "multer"
 import { AirportService } from "../backend/services/AirportService";
@@ -563,6 +564,17 @@ app.get('/usage/chi', async (req: Request, res: Response) => {
         res.send(chiList)
     } catch (e) {
         catchError(res, e, 'GET /usage/chi')
+    }
+})
+
+app.post('/usage', async (req: Request, res: Response) => {
+    try {
+        const userId = await UserTools.userIdFromRequest(req)
+        const payload: UsagePayload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+        const success = await UsageDao.create(payload.type, userId, payload.data)
+        res.sendStatus(success ? 200 : 500)
+    } catch (e) {
+        catchError(res, e, 'POST /usage')
     }
 })
 
