@@ -42,4 +42,8 @@ export class UrlService {
     static templateThumbnail(): string {
         return UrlService.root + 'templateThumbnail'
     }
+
+    static usage(): string {
+        return UrlService.root + 'usage'
+    }
 }
