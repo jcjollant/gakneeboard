@@ -1,6 +1,7 @@
 import { defineEventHandler, getRouterParam } from 'h3'
 import { UserDao } from '@server/backend/dao/UserDao'
-import { UsageDao, UsageType } from '@server/backend/dao/UsageDao'
+import { UsageDao } from '@server/backend/dao/UsageDao'
+import { UsageType } from '@gak/shared'
 // import { UserProfile } from '~/utils/models/UserProfile'
 import { User } from '@server/backend/models/User'
 
