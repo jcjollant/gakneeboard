@@ -1,17 +1,8 @@
 import { sql } from "@vercel/postgres";
+import { UsageType } from "@gak/shared";
 import { Dao } from "./Dao";
 import { Usage } from "../models/Usage";
 import { UsageCount } from "../models/UsageCount";
-
-export enum UsageType {
-    Eula = 'eula',
-    Export = 'export',
-    Print = 'print',
-    Refill = 'refill',
-    Restore = 'restore',
-    Save = 'save',
-    Session = 'session'
-}
 
 export class UsageByType {
     type: UsageType = UsageType.Session

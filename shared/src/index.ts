@@ -11,3 +11,5 @@ export * from './models/Product';
 export * from './constants/Products';
 export * from './models/PrintOrder';
 export * from './FeatureFlags';
+export * from './models/UsageType';
+export * from './models/UsagePayload';

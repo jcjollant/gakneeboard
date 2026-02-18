@@ -1,4 +1,5 @@
-import { UsageDao, UsageType } from "./dao/UsageDao";
+import { UsageType } from "@gak/shared";
+import { UsageDao } from "./dao/UsageDao";
 import { UserDao } from "./dao/UserDao";
 import { UserProfile } from "./models/UserProfile";
 import { TemplateDao } from "./TemplateDao";

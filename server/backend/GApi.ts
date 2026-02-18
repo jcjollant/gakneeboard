@@ -3,7 +3,8 @@ import { AirportService } from './services/AirportService'
 // import { Adip } from '../backend/adip/Adip' // Removed
 import { version } from '../package.json'
 import { Business } from './business/Business'
-import { UsageDao, UsageType } from './dao/UsageDao'
+import { UsageType } from "@gak/shared"
+import { UsageDao } from './dao/UsageDao'
 import { UserDao } from './dao/UserDao'
 import { Email, EmailType } from './Email'
 import { Exporter } from './Exporter'

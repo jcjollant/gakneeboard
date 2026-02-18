@@ -1,5 +1,6 @@
 import { describe, expect, it, jest } from '@jest/globals';
-import { UsageDao, UsageType } from '../backend/dao/UsageDao';
+import { UsageType } from '@gak/shared';
+import { UsageDao } from '../backend/dao/UsageDao';
 
 // Mock sql function and its query method
 jest.mock('@vercel/postgres', () => {

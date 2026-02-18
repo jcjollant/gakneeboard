@@ -1,8 +1,8 @@
 import { Business } from "../business/Business"
-import { UsageDao, UsageType } from "../dao/UsageDao"
+import { UsageDao } from "../dao/UsageDao"
 import { UserDao } from "../dao/UserDao"
 import { GApiError } from "../GApiError"
-import { TemplateFormat, AccountType } from '@gak/shared';
+import { TemplateFormat, AccountType, UsageType } from '@gak/shared';
 import { Publication } from "../models/Publication"
 import { Template } from "../models/Template"
 import { TemplateKneeboardView } from "../models/TemplateKneeboardView"

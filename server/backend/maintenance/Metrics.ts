@@ -5,7 +5,8 @@ import { Email, EmailType } from "../Email";
 import { FeedbackDao } from "../FeedbackDao"
 import { PageType } from '../TemplateTools'
 import { PublicationDao } from '../PublicationDao'
-import { UsageDao, UsageType } from "../dao/UsageDao";
+import { UsageType } from "@gak/shared";
+import { UsageDao } from "../dao/UsageDao";
 import { TemplateDao } from "../TemplateDao";
 import { TemplateKneeboardView } from "../models/TemplateKneeboardView";
 import { UserDao } from "../dao/UserDao"
