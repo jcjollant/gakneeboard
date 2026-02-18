@@ -55,12 +55,7 @@ const tileData = ref<TileData>(props.tileData);
 const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void) | undefined;
 
 // Lists
-const modesList = ref([
-    new DisplayModeChoice('Blank', DisplayModeNotes.Blank, true, "Well, A blank Tile", '/tiles/notes-blank.png'),
-    new DisplayModeChoice('Acronym', DisplayModeNotes.Word, true, "A configurable acronym on the left side", '/tiles/notes-word.png'),
-    new DisplayModeChoice('Compass', DisplayModeNotes.Compass, true, "A blank compass with numerical headings", '/tiles/notes-compass.png'),
-    new DisplayModeChoice('Grid', DisplayModeNotes.Grid, true, "A blank grid to organize things", '/tiles/notes-grid.png'),
-]);
+const modesList = ref( NotesTileConfig.modesList)
 
 const selectedModeChoice = computed({
     get: () => modesList.value.find(c => c.value === currentMode.value),

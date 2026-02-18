@@ -2,7 +2,7 @@
     <div class="tile">
         <Header :title="getTitle()" :showReplace="displaySelection"
             @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
-        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" @keep="displaySelection=false" />
+        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList" @keep="displaySelection=false" />
         <div v-else-if="displayMode==DisplayModeRegulations.Night">
             <ImageContent src="nights.png"/>
             <RegLink :regs="nightRegs" />
@@ -15,6 +15,11 @@
             <ImageContent src="safe-altitudes.png"/>
             <RegLink :regs="msaRegs" />
         </div>
+        <TileModeDots 
+            v-if="!displaySelection"
+            v-model="displayMode" 
+            :modes="modesList" 
+        />
     </div>
 </template>
 
@@ -29,15 +34,15 @@ import Header from '../shared/Header.vue'
 import ImageContent from '../shared/ImageContent.vue'
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue'
 import RegLink from './RegLink.vue'
+import TileModeDots from '../shared/TileModeDots.vue'
 
 const emits = defineEmits(['replace','update'])
-const defaultMode = DisplayModeRegulations.Night
 const displayMode = ref(DisplayModeRegulations.Unknown)
 const props = defineProps({
     params: { type: Object, default: null},
 })
 const displaySelection = ref(false)
-const displayModes = [
+const modesList = [
     new DisplayModeChoice('Definitions of Night', DisplayModeRegulations.Night),
     new DisplayModeChoice('Supplemental Oxygen', DisplayModeRegulations.Oxygen),
     new DisplayModeChoice('Minimum Safe Altitudes', DisplayModeRegulations.MinSafeAltitudes),

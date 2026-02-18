@@ -7,9 +7,9 @@
             <FrequencyBox :freq="freqTower" class="preTower"/>
         </div>
         <div v-else class="leftColumn">
-            <div class="atis box br bb"><div class="tileBoxLabel">Weather</div></div>
-            <div class="atc box br bb"><div class="tileBoxLabel">Clearance</div></div>
-            <div class="gnd box br bb"><div class="tileBoxLabel">Ground</div></div>
+            <div class="atis box br bb"><div class="tileBoxLabel">Weather Freq</div></div>
+            <div class="atc box br bb"><div class="tileBoxLabel">Clear. Freq</div></div>
+            <div class="gnd box br bb"><div class="tileBoxLabel">Ground Freq</div></div>
             <div class="twr box br"><div class="tileBoxLabel">Tower / CTAF</div></div>
         </div>
         <div class="boxFiled bb">

@@ -19,14 +19,13 @@
             v-if="!displaySelection"
             v-model="displayMode" 
             :modes="displayModes" 
-            class="mode-dots"
         />
     </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, watch, ref, computed } from 'vue'
-import { DisplayModeChoice, DisplayModeNotes } from '../../models/DisplayMode'; 
+import { DisplayModeNotes } from '../../models/DisplayMode'; 
 import { TileType } from '../../models/TileType';
 import { TileData } from '../../models/TileData';
 
@@ -35,6 +34,7 @@ import CompassContent from './CompassContent.vue';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import TileModeDots from '../shared/TileModeDots.vue';
 import Header from '../shared/Header.vue';
+import { NotesTileConfig } from './NotesTileConfig';
 
 // Enum with display modes
 
@@ -43,12 +43,7 @@ const displayMode = ref(DisplayModeNotes.Unknown)
 const emits = defineEmits(['replace','update','settings'])
 const displaySelection = ref(false)
 const word = ref('CRAFT')
-const displayModes = [
-    new DisplayModeChoice('Blank', DisplayModeNotes.Blank, true, "Well, A blank Tile"),
-    new DisplayModeChoice( word.value,DisplayModeNotes.Word, true, "A configurable acronym on the left side"),
-    new DisplayModeChoice('Compass',DisplayModeNotes.Compass, true, "A blank compass with numerical headings"),
-    new DisplayModeChoice('Grid',DisplayModeNotes.Grid, true, "A blank grid to organize things"),
-]
+const displayModes = NotesTileConfig.modesList
 
 // Props management
 const props = defineProps({
@@ -162,22 +157,6 @@ function onExpand(newValue:boolean) {
     font-weight: bold;
     padding-bottom: 10px;
     justify-content: center;
-}
-
-.tile:hover .mode-dots {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.mode-dots {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    z-index: 10;
 }
 
 </style>

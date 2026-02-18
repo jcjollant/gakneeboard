@@ -31,6 +31,15 @@ function selectMode(value: any) {
 
 <style scoped>
 .tile-mode-dots {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+    
     display: flex;
     gap: 8px;
     padding: 8px;

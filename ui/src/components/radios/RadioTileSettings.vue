@@ -40,8 +40,9 @@ import { useToast } from 'primevue/usetoast';
 import { ref, onMounted, watch, computed, inject } from 'vue';
 import { useToaster } from '../../assets/Toaster';
 import { TileData } from '../../models/TileData';
-import { DisplayModeRadios, DisplayModeChoice } from '../../models/DisplayMode';
+import { DisplayModeRadios } from '../../models/DisplayMode';
 import { Frequency, FrequencyType } from '../../models/Frequency';
+import { RadioTileConfig } from './RadioTileConfig';
 
 
 import Separator from '../../components/shared/Separator.vue';
@@ -72,12 +73,7 @@ const freqLight = new Frequency('Light', '123.45', FrequencyType.ctaf)
 const freqShade = new Frequency('Shade', '123.45', FrequencyType.ctaf)
 const freqDark = new Frequency('Dark', '123.45', FrequencyType.ctaf)
 
-const modesList = ref([
-    new DisplayModeChoice('Frequencies', DisplayModeRadios.FreqList, true, 'List of Radio frequencies', '/tiles/radio-frequencies.png'),
-    new DisplayModeChoice('Lost Comms VFR', DisplayModeRadios.LostComms, false, 'Lost Comms VFR', '/tiles/radio-lostcomm-vfr.png'),
-    new DisplayModeChoice('Lost Comms IFR', DisplayModeRadios.LostCommsIFR, false, 'Lost Comms IFR', '/tiles/radio-lostcomm-ifr.png'),
-    new DisplayModeChoice('Service Volumes', DisplayModeRadios.ServiceVolumes, false, 'Service Volumes', '/tiles/radio-sv.png'),
-])
+const modesList = ref(RadioTileConfig.modesList)
 
 const selectedModeChoice = computed({
     get: () => modesList.value.find(c => c.value === currentMode.value),

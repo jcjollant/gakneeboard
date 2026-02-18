@@ -13,6 +13,11 @@
             <RegLink :regs="[Regulation.MinimumSafeAltitudes]" />
         </div>
         <CloudClearance v-else />
+        <TileModeDots 
+            v-if="!displaySelection"
+            v-model="displayMode" 
+            :modes="displayModes" 
+        />
     </div>
 
 </template>
@@ -22,16 +27,17 @@ import { onMounted, ref, watch } from 'vue'
 import { Airport } from '../../models/Airport.ts';
 import { DisplayModeChoice, DisplayModeVfr } from '../../models/DisplayMode.ts';
 import { getAirport } from '../../services/AirportDataService';
+import { Regulation } from '../../models/Regulation.ts';
+import { TileData } from '../../models/TileData.ts';
+import { TileType } from '../../models/TileType.ts';
 
 import Header from '../shared/Header.vue';
 import ImageContent from '../shared/ImageContent.vue';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
-import { TileData } from '../../models/TileData.ts';
-import { TileType } from '../../models/TileType.ts';
 import Nordo from '../radios/Nordo.vue';
 import CloudClearance from '../atis/CloudClearance.vue';
 import RegLink from '../regulations/RegLink.vue';
-import { Regulation } from '../../models/Regulation.ts';
+import TileModeDots from '../shared/TileModeDots.vue';
 
 // Enum with display modes
 

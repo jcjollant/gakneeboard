@@ -20,6 +20,11 @@
                 <PlaceHolder title="Radios" subtitle="Configure in Settings" />
             </div>
         </div>
+        <TileModeDots 
+            v-if="!displaySelection"
+            v-model="displayMode" 
+            :modes="modesList" 
+        />
     </div>
 </template>
 
@@ -29,15 +34,17 @@ import { onMounted, ref, watch } from 'vue';
 import { useToaster } from '../../assets/Toaster';
 import { DisplayModeRadios } from '../../models/DisplayMode';
 import { Frequency } from '../../models/Frequency';
+import { RadioTileConfig } from './RadioTileConfig';
 import { TileData } from '../../models/TileData';
 import { TileType } from '../../models/TileType';
 
 import FrequencyBox from '../shared/FrequencyBox.vue';
 import Header from '../shared/Header.vue';
 import ImageContent from '../shared/ImageContent.vue';
-import PlaceHolder from '../shared/PlaceHolder.vue';
 import LookupDialog from './LookupDialog.vue';
 import Nordo from './Nordo.vue';
+import PlaceHolder from '../shared/PlaceHolder.vue';
+import TileModeDots from '../shared/TileModeDots.vue';
 import VorServiceVolumes from './VorServiceVolumes.vue';
 
 const displayMode = ref(DisplayModeRadios.FreqList) // active display mode
@@ -57,6 +64,9 @@ const props = defineProps({
 })
 const showLookup = ref(false)
 const toaster = useToaster(useToast())
+
+const modesList = ref(RadioTileConfig.modesList)
+
 
 onMounted(() => {
     // console.log('onMounted ' + JSON.stringify(props.params))
@@ -135,7 +145,6 @@ function loadData(data:any) {
 
 }
 
-
 function loadProps(props:any) {
     loadData(props.params)
     expanded.value = props.span2 || false;
@@ -152,7 +161,6 @@ function addFrequency(freq:Frequency) {
 
     saveConfig()
 }
-
 
 function saveConfig() {
     // console.debug('[RadioTile.saveConfig]')

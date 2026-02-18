@@ -54,7 +54,7 @@
                 </div>
             </div>
         </div>
-        <div v-else-if="displayMode==DisplayModeAtis.FullATIS" class="tileContent full" @click="cycleMode">
+        <div v-else-if="displayMode==DisplayModeAtis.FullATIS" class="tileContent full">
             <div class="info br">
                 <div class="tileBoxLabel">Info</div>
             </div>
@@ -105,7 +105,7 @@
                 </div>
             </div>
         </div>
-        <div v-else-if="displayMode==DisplayModeAtis.CompactATIS" class="tileContent" @click="cycleMode">
+        <div v-else-if="displayMode==DisplayModeAtis.CompactATIS" class="tileContent">
             <div v-for="n in 4" class="compact">
                 <div class="info br" :class="{bb: n < 4 }">
                     <div class="tileBoxLabel">Info</div>
@@ -129,6 +129,12 @@
         </div>
         <CloudClearance v-else-if="displayMode==DisplayModeAtis.CloudClearance" />
         <NoSettings v-else />
+
+        <TileModeDots 
+            v-if="!displaySelection"
+            v-model="displayMode" 
+            :modes="modesList" 
+        />
     </div>
 </template>
 
@@ -141,6 +147,7 @@ import { AtisTileDisplayModeLabels } from './AtisTileDisplayModeLabel';
 
 import CloudClearance from './CloudClearance.vue';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
+import TileModeDots from '../shared/TileModeDots.vue';
 import Header from '../shared/Header.vue';
 import ImageContent from '../shared/ImageContent.vue';
 import NoSettings from '../shared/NoSettings.vue'
@@ -198,14 +205,6 @@ watch(displayMode, (newValue, oldValue) => {
     saveConfig()
 })
 
-
-function cycleMode() {
-    if(displayMode.value == '') {
-        displayMode.value = DisplayModeAtis.CompactATIS
-    } else {
-        displayMode.value = defaultMode
-    }
-}
 
 function getTitle() {
     if( displaySelection.value) return "Weather Tile Mode"
@@ -381,4 +380,5 @@ function saveConfig() {
     font-weight: bold;
     line-height: 12px;
 }
+
 </style>

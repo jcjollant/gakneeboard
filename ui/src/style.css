@@ -332,6 +332,12 @@ body {
   opacity: 0.3;
 }
 
+.tile:hover .tile-mode-dots {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
 @media print {
   @page {
     margin: 0.25in;

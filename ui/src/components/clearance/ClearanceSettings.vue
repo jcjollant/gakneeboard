@@ -2,7 +2,7 @@
     <div class="settings">
         <div class="field">
             <Separator name="Display" />
-            <DisplayModeSelector :choices="displayModes" v-model="selectedModeChoice" :showPreviews="true" />
+            <DisplayModeSelector :choices="modesList" v-model="selectedModeChoice" :showPreviews="true" />
         </div>
         <div class="field" v-if="showAirportInput">
             <Separator name="Airport" />
@@ -25,6 +25,7 @@ import { getAirport } from '../../services/AirportDataService';
 import AirportInput from '../shared/AirportInput.vue';
 import DisplayModeSelector from '../shared/DisplayModeSelector.vue';
 import Separator from '../shared/Separator.vue';
+import { IfrTileConfig } from './IfrTileConfig.ts';
 
 
 const emits = defineEmits(['update'])
@@ -37,16 +38,10 @@ const props = defineProps({
 const airport = ref(new Airport())
 const displayMode = ref(DisplayModeIfr.BoxV)
 
-const displayModes = [
-    new DisplayModeChoice( IfrTileDisplayModeLabels.craft, DisplayModeIfr.BoxV, false, 'Notes with CRAFT elements', '/tiles/ifr-craft.png'),
-    new DisplayModeChoice( IfrTileDisplayModeLabels.departure, DisplayModeIfr.Departure, false, 'Notes with DEPARTURE elements', '/tiles/ifr-departure.png'),
-    new DisplayModeChoice( IfrTileDisplayModeLabels.appraoch, DisplayModeIfr.Approach, false, 'Notes with APPROACH elements', '/tiles/ifr-approach.png'),
-    new DisplayModeChoice( IfrTileDisplayModeLabels.alternate, DisplayModeIfr.Alternate, false, 'IFR Alternate Requirements', '/tiles/ifr-alternate.png'),
-    new DisplayModeChoice( IfrTileDisplayModeLabels.lostComms, DisplayModeIfr.LostComms, false, 'IFR Lost Comms Pointers', '/tiles/ifr-lostcomms.png'),
-]
+const modesList = ref(IfrTileConfig.modesList)
 
 const selectedModeChoice = computed({
-    get: () => displayModes.find(c => c.value === displayMode.value),
+    get: () => modesList.value.find(c => c.value === displayMode.value),
     set: (val) => { 
         if(val) displayMode.value = val.value as DisplayModeIfr 
     }

@@ -25,6 +25,11 @@
             :airportCode="airport.code" 
             :airportName="airport.name" 
             @close="showNotamsDialog = false" />
+
+        <TileModeDots 
+            v-model="displayMode" 
+            :modes="modesList" 
+        />
     </div>
 
 </template>
@@ -34,6 +39,7 @@ import { onMounted, ref, watch } from 'vue'
 import { Airport } from '../../models/Airport.ts';
 import { DisplayModeIfr } from '../../models/DisplayMode.ts';
 import { getAirport, getNotams } from '../../services/AirportDataService';
+import { IfrTileConfig } from './IfrTileConfig.ts';
 import { Regulation } from '../../models/Regulation.ts';
 import { Notam } from '../../models/Notam.ts';
 
@@ -45,6 +51,7 @@ import ImageContent from '../shared/ImageContent.vue';
 import RegLink from '../regulations/RegLink.vue';
 import NotamBadge from '../airport/NotamBadge.vue';
 import NotamListDialog from '../airport/NotamListDialog.vue';
+import TileModeDots from '../shared/TileModeDots.vue';
 
 // Enum with display modes
 
@@ -53,6 +60,7 @@ const airport = ref(noAirport)
 const emits = defineEmits(['replace','update','settings'])
 const defaultMode = DisplayModeIfr.BoxV
 const displayMode=ref(DisplayModeIfr.Unknown)
+const modesList = IfrTileConfig.modesList
 const notamsList = ref<Notam[]>([])
 const showNotamsDialog = ref(false)
 
@@ -112,7 +120,7 @@ function getTitle() {
     } else if( displayMode.value==DisplayModeIfr.Departure) {
         title = airportCode.length ? `Depart ${airportCode} IFR` : 'IFR Departure'
     } else {
-        title = 'IFR Flight'
+        title = 'IFR CRAFT Clearance'
     }
 
     return title
