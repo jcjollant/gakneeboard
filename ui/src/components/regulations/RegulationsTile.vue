@@ -15,6 +15,10 @@
             <ImageContent src="safe-altitudes.png"/>
             <RegLink :regs="msaRegs" />
         </div>
+        <div v-else-if="displayMode==DisplayModeRegulations.VfrAltitudes">
+            <ImageContent src="vfr-altitudes.png"/>
+            <RegLink :regs="vfrAltitudesRegs" />
+        </div>
         <TileModeDots 
             v-if="!displaySelection"
             v-model="displayMode" 
@@ -46,10 +50,12 @@ const modesList = [
     new DisplayModeChoice('Definitions of Night', DisplayModeRegulations.Night),
     new DisplayModeChoice('Supplemental Oxygen', DisplayModeRegulations.Oxygen),
     new DisplayModeChoice('Minimum Safe Altitudes', DisplayModeRegulations.MinSafeAltitudes),
+    new DisplayModeChoice('VFR Altitudes', DisplayModeRegulations.VfrAltitudes),
 ]
 const nightRegs = ref([Regulation.RecentFlightExperiencePic, Regulation.Far1_1, Regulation.AircraftLights])
 const oxygenRegs = ref([Regulation.SupplementalOxygen])
 const msaRegs = ref([Regulation.MinimumSafeAltitudes])
+const vfrAltitudesRegs = ref([Regulation.VfrAltitudes])
 
 onMounted(() => {   
     loadProps(props)
@@ -88,6 +94,8 @@ function getTitle() {
         return 'Supplemental Oxygen'
     } else if(displayMode.value == DisplayModeRegulations.MinSafeAltitudes) {
         return 'Minimum Safe Altitudes'
+    } else if(displayMode.value == DisplayModeRegulations.VfrAltitudes) {
+        return 'VFR Altitudes'
     } else {
         return 'Regulations'
     }
