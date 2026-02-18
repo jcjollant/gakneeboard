@@ -56,6 +56,7 @@ const pageSelection = ref<boolean[]>([])
 const printFlipMode = ref(false)
 const printFullpage = ref(false)
 const printVibShow = ref(true)
+const printBackToBack = ref(false)
 const printVibItems = ref<VerticalInfoBarContent[]>([
   VerticalInfoBarContent.Version,
   VerticalInfoBarContent.Tail,
@@ -103,7 +104,7 @@ onMounted(() => {
       printFullpage.value = true
     }
     
-    refreshPages()
+    refreshPrintSheets()
 });
 
 watch(showOptions, (value) => {
@@ -115,18 +116,20 @@ watch(showOptions, (value) => {
 
 function onOptionsUpdate(options:PrintOptions) {
   if( options) {
+    console.debug('[Print.onOptionsUpdate] Options:', options)
       printFlipMode.value = options.flipBackPage;
 
       pageSelection.value = options.pageSelection
       printVibShow.value = options.vibShow
       printVibItems.value = options.vibItems
       printClipMargin.value = options.clipMargin
+      printBackToBack.value = options.backToBack
       
       if (template.value && template.value.format === TemplateFormat.FullPage) {
         printFullpage.value = true
       }
       
-      refreshPages()
+      refreshPrintSheets()
   } else {
       restorePrintOptions();
   }
@@ -176,7 +179,6 @@ async function onLaminate(options: PrintOptions | undefined) {
   
   await new Promise(resolve => setTimeout(resolve, 500));
 
-  const element = document.getElementById('printTemplate')
   const elements = printFullpage.value ? document.querySelectorAll('.printOnePage') : document.querySelectorAll('.printTwoPages')
   const paperNavlog = template.value && template.value.data.length > 0 && template.value.data[0].type === PageType.paperNavlog
   const landscape:boolean = paperNavlog || !printFullpage.value
@@ -220,30 +222,45 @@ async function onPrint(options:PrintOptions|undefined) {
   router.back()
 }
 
-function refreshPages() {
-    const pageList:PrintSheet[] = []
-    if(template.value) {
-      const templateData = template.value.data
-      const pages:TemplatePage[] = templateData.filter( (page:TemplatePage, index:number) => pageSelection.value[index])
-      
-      if (pages.length === 1 && !printFullpage.value) {
-        const blankPage = new TemplatePage(PageType.none)
-        const printSheet:PrintSheet = {front:pages[0], back:blankPage}
-        pageList.push(printSheet)
-      } else {
-        for( let index = 0; index < pages.length; index+=2) {
-            if (index + 1 < pages.length) {
-              const printSheet:PrintSheet = {front:pages[index], back:pages[index+1]}
-              pageList.push(printSheet)
-            } else {
-              const blankPage = new TemplatePage(PageType.none)
-              const printSheet:PrintSheet = {front:pages[index], back:blankPage}
-              pageList.push(printSheet)
-            }
-        }
-      }
+function refreshPrintSheets() {
+  if(!template.value) {
+    pages.value = []
+    return
+  }
+  
+  const output:PrintSheet[] = []
+  const templateData = template.value.data
+  const selectedPages:TemplatePage[] = templateData.filter( (page:TemplatePage, index:number) => pageSelection.value[index])
+  
+  if (selectedPages.length === 1 && !printFullpage.value) {
+    // add one blank page padding to the right
+    const blankPage = new TemplatePage(PageType.none)
+    const printSheet:PrintSheet = {front:selectedPages[0], back:blankPage}
+    output.push(printSheet)
+  } else if (printBackToBack.value){
+    for( let index = 0; index < selectedPages.length; index+=4) {
+      const pageOne = selectedPages[index]
+      const pageTwo = index+2 < selectedPages.length ? selectedPages[index+2] : new TemplatePage(PageType.none)
+      const printSheet1:PrintSheet = {front:pageOne, back:pageTwo}
+      output.push(printSheet1)
+      const pageThree = index+3 < selectedPages.length ? selectedPages[index+3] : new TemplatePage(PageType.none)
+      const pageFour = index+1 < selectedPages.length ? selectedPages[index+1] : new TemplatePage(PageType.none)
+      const printSheet2:PrintSheet = {front:pageThree, back:pageFour}
+      output.push(printSheet2)
     }
-    pages.value = pageList
+  } else {
+    for( let index = 0; index < selectedPages.length; index+=2) {
+        if (index + 1 < selectedPages.length) {
+          const printSheet:PrintSheet = {front:selectedPages[index], back:selectedPages[index+1]}
+          output.push(printSheet)
+        } else {
+          const blankPage = new TemplatePage(PageType.none)
+          const printSheet:PrintSheet = {front:selectedPages[index], back:blankPage}
+          output.push(printSheet)
+        }
+    }
+  }
+  pages.value = output
 }
 
 function restorePrintOptions() {

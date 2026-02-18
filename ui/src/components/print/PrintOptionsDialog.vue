@@ -6,20 +6,17 @@
         <div class="pageOptionLabel">Page Selection</div>
         <PageSelection v-model="pageSelection" @change="onNewOptions" />
         
-        <template v-if="!isFullPageFormat">
-
-          
-          <div class="pageOptionLabel">Back Page Orientation</div>
-          <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]" @change="onNewOptions" />
-
-
-          <div class="pageOptionLabel">Clip Margin</div>
-          <OneChoice v-model="clipMarginSelected" :choices="clipMarginOptions" @change="onNewOptions" />
-        </template>
-        
-        <template v-else>
+        <template v-if="isFullPageFormat">
           <div class="pageOptionLabel">Format</div>
           <div class="formatInfo">Full Page (one page per sheet)</div>
+        </template>
+        <template v-else>
+          <div class="pageOptionLabel">Back Page Orientation</div>
+          <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]" @change="onNewOptions" />
+          <div class="pageOptionLabel">Page Sequence</div>
+          <OneChoice v-model="backToBackSelected" :choices="backToBackOptions" @change="onNewOptions" />
+          <div class="pageOptionLabel">Clip Margin</div>
+          <OneChoice v-model="clipMarginSelected" :choices="clipMarginOptions" @change="onNewOptions" />
         </template>
       </div>
       <FieldSet legend="Margin Notes" v-if="!isFullPageFormat">
@@ -35,7 +32,8 @@
       </FieldSet>
       <FieldSet legend="Hints">
         <ul class="note" v-if="!isFullPageFormat">
-          <li>Two pages prints will fold to kneeboard size</li>
+          <li><strong>Side by Side</strong> prints will fold to kneeboard size</li>
+          <li>For <strong>Back to Back</strong> print on both sides AND flip on the <strong>short</strong> edge</li>
           <li><strong>Flipped</strong> back page can be read when front page is clipped</li>
           <li>Use <strong>Create Document</strong> to import in Foreflight</li>
         </ul>
@@ -96,6 +94,8 @@ const vibShowChoice = new OneChoiceValue('Show', true, 'Show vertical info bar')
 const vibHideChoice = new OneChoiceValue('Hide', false, 'Hide vertical info bar')
 const vibShowMode = ref(vibShowChoice)
 
+const backToBack = ref(false)
+
 const vibSelectedItems = ref<VerticalInfoBarContent[]>([
   VerticalInfoBarContent.Version, 
   VerticalInfoBarContent.Tail, 
@@ -109,6 +109,13 @@ const vibContentOptions = [
   { label: 'Tail #', value: VerticalInfoBarContent.Tail },
   { label: 'Date', value: VerticalInfoBarContent.Date },
 ]
+
+const backToBackOptions = [
+  new OneChoiceValue('Side by Side', false),
+  new OneChoiceValue('Back to Back', true)
+]
+
+const backToBackSelected = ref(backToBackOptions[0])
 
 const clipMarginNone = new OneChoiceValue('None', 0)
 const clipMarginSmall = new OneChoiceValue('Small', 24) // ~0.25in
@@ -150,7 +157,8 @@ function getOptions():PrintOptions|undefined {
     pageSelection.value,
     vibShowMode.value.value,
     vibSelectedItems.value,
-    clipMarginSelected.value.value
+    clipMarginSelected.value.value,
+    backToBackSelected.value.value
   )
 }
 
