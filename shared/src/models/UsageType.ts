@@ -1,4 +1,5 @@
 export enum UsageType {
+    CreateDoc = 'create-doc',
     Eula = 'eula',
     Export = 'export',
     Print = 'print',
