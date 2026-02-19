@@ -28,4 +28,10 @@ describe('NotamDecoder', () => {
         const expected = "TAXIWAY A CLOSED DUPE";
         expect(NotamDecoder.decode(input)).toBe(expected);
     });
+
+    it('should NOT decode GPS or RNAV', () => {
+        const input = "GPS AND RNAV APCH";
+        const expected = "GPS AND RNAV APPROACH";
+        expect(NotamDecoder.decode(input)).toBe(expected);
+    });
 });
