@@ -6,6 +6,10 @@ REPO_ROOT=$(cd "$SCRIPT_DIR/../../" && pwd)
 
 echo ">>> [Pre-Push] Starting checks..."
 
+echo ">>> [Shared] Running tests..."
+cd "$REPO_ROOT/shared" || exit 1
+npm test || exit 1
+
 echo ">>> [Server] Running tests..."
 cd "$REPO_ROOT/server" || exit 1
 npm test || exit 1
