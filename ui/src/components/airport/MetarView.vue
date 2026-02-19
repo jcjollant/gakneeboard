@@ -29,7 +29,7 @@
                 </span>
             </div>
              <div class="grid-item">
-                <span class="label">Temp/Dew:</span>
+                <span class="label">Temp/Dew (Saturation Alt):</span>
                 <span class="value">
                     {{ Math.round(metar?.temp ?? 0) }}°C / {{ Math.round(metar?.dewp ?? 0) }}°C
                     <span v-if="saturationAltitude !== null">({{ saturationAltitude }} ft)</span>
@@ -204,12 +204,13 @@ const ceilingHighlightClass = computed(() => {
     display: flex;
     flex-direction: column;
     padding: 5px;
-    border: 1px solid #eee;
+    border: 2px solid #ccc;
     border-radius: 4px;
 }
 
 .density-altitude {
-    border: 1px dashed #999;
+    border-style: dashed;
+    border-color: #eee;
 }
 
 .label {
