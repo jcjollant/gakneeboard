@@ -17,14 +17,15 @@
             </div>
             <div class="grid-item">
                 <span class="label">Visibility:</span>
-                <span class="value">{{ metar?.visib }} SM</span>
+                <span class="value" :class="visHighlightClass">{{ metar?.visib }} SM</span>
             </div>
              <div class="grid-item">
                 <span class="label">Clouds:</span>
-                <span class="value">
+                <span class="value" :class="ceilingHighlightClass">
                     <span v-for="(cloud, index) in metar?.clouds" :key="index" class="cloud-layer">
                         {{ cloud.cover }} {{ cloud.base }}
                     </span>
+                    <span v-if="!metar?.clouds || metar?.clouds.length === 0">Clear</span>
                 </span>
             </div>
              <div class="grid-item">
@@ -63,6 +64,56 @@ const flightCategoryClass = computed(() => {
         default: return 'unknown';
     }
 })
+
+const CAT_RANK: Record<string, number> = { 'LIFR': 3, 'IFR': 2, 'MVFR': 1, 'VFR': 0 };
+
+const visibilityCategory = computed(() => {
+    if (!props.metar) return 'VFR';
+    const visStr = String(props.metar.visib).replace('+', '');
+    const vis = parseFloat(visStr);
+    if (isNaN(vis)) return 'VFR';
+
+    if (vis < 1) return 'LIFR';
+    if (vis < 3) return 'IFR';
+    if (vis <= 5) return 'MVFR';
+    return 'VFR';
+});
+
+const ceiling = computed(() => {
+    if (!props.metar || !props.metar.clouds || !Array.isArray(props.metar.clouds)) return null;
+    const layers = props.metar.clouds
+        .filter(c => ['BKN', 'OVC', 'OVX', 'VV'].includes(c.cover))
+        .map(c => c.base)
+        .sort((a, b) => a - b);
+    return layers.length > 0 ? layers[0] : null;
+});
+
+const ceilingCategory = computed(() => {
+    const ceil = ceiling.value;
+    if (ceil === null) return 'VFR';
+    if (ceil < 500) return 'LIFR';
+    if (ceil < 1000) return 'IFR';
+    if (ceil <= 3000) return 'MVFR';
+    return 'VFR';
+});
+
+const visHighlightClass = computed(() => {
+    if (!props.metar || props.metar.fltCat === 'VFR') return '';
+    const cat = visibilityCategory.value;
+    if (CAT_RANK[cat] >= CAT_RANK[props.metar.fltCat]) {
+        return flightCategoryClass.value;
+    }
+    return '';
+});
+
+const ceilingHighlightClass = computed(() => {
+    if (!props.metar || props.metar.fltCat === 'VFR') return '';
+    const cat = ceilingCategory.value;
+    if (CAT_RANK[cat] >= CAT_RANK[props.metar.fltCat]) {
+        return flightCategoryClass.value;
+    }
+    return '';
+});
 
 </script>
 <style scoped>
