@@ -12,9 +12,11 @@
       </div>
 
       <div class="pageOptions">
-        <div class="pageOptionLabel">Page Selection</div>
+        <div class="pageOptionLabel">Pages</div>
         <PageSelection v-model="pageSelection" @change="onNewOptions" />
-        
+      </div>
+      <FieldSet legend="Layout">
+      <div class="pageOptions">
         <template v-if="isFullPageFormat">
           <div class="pageOptionLabel">Format</div>
           <div class="formatInfo">Full Page (one page per sheet)</div>
@@ -28,6 +30,7 @@
           <OneChoice v-model="clipMarginSelected" :choices="clipMarginOptions" @change="onNewOptions" />
         </template>
       </div>
+      </FieldSet>
       <FieldSet legend="Margin Notes" v-if="!isFullPageFormat">
         <div class="vibContainer">
           <OneChoice v-model="vibShowMode" :choices="[vibShowChoice, vibHideChoice]" @change="onNewOptions" />
@@ -41,10 +44,11 @@
       </FieldSet>
       <FieldSet legend="Hints">
         <ul class="note" v-if="!isFullPageFormat">
-          <li><strong>Side by Side</strong> prints will fold to kneeboard size</li>
-          <li>For <strong>Back to Back</strong> print on both sides AND flip on the <strong>short</strong> edge</li>
           <li><strong>Flipped</strong> back page can be read when front page is clipped</li>
+          <li><strong>Side by Side</strong> prints will fold to kneeboard size</li>
+          <li>For <strong>Back to Back</strong>, print on both sides AND flip on the <strong>short</strong> edge</li>
           <li>Use <strong>Create Document</strong> to import in Foreflight</li>
+          <li>If Print Preview doesn't show, check your browser is not blocking popups</li>
         </ul>
         <ul class="note" v-else>
           <li>Full page templates print one page per sheet in portrait mode</li>
