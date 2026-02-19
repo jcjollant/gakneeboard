@@ -2,7 +2,6 @@ import { put } from "@vercel/blob";
 import { AirportDao } from "./AirportDao";
 import { Airport } from "./models/Airport";
 import axios from "axios";
-import { Canvas, createCanvas } from "canvas";
 
 export class AirportSketch {
   static doesNotExist = "dne";
@@ -74,64 +73,6 @@ export class AirportSketch {
     );
   }
 
-  static async pdfFirstPageToPng(pdfBuffer: Buffer): Promise<Buffer> {
-    try {
-      const pdfjs = await import("pdfjs-dist/legacy/build/pdf.min.mjs")
-
-      const value = '';
-      console.log('[AirportSketch.pdfFirstPageToPng] worker', value);
-      pdfjs.GlobalWorkerOptions.workerSrc = value
-
-      const fakeWorker = {
-        postMessage: () => { },
-        addEventListener: () => { },
-        removeEventListener: () => { },
-      };
-      pdfjs.GlobalWorkerOptions.workerPort = fakeWorker
-      // pdfjs.GlobalWorkerOptions.workerPort = fakeWorker();
-      const scale = 300 / 72;
-      const compression = 5; // Default compression level
-
-      // Load the PDF from buffer
-      const pdf = await pdfjs.getDocument({
-        data: new Uint8Array(pdfBuffer),
-        standardFontDataUrl: "node_modules/pdfjs-dist/standard_fonts/",
-      }).promise;
-
-      // Get the page
-      const page = await pdf.getPage(1);
-
-      // Get viewport with scale
-      const viewport = page.getViewport({ scale });
-
-      // Create a canvas with the page dimensions
-      const canvas = createCanvas(viewport.width, viewport.height);
-      const context = canvas.getContext("2d");
-
-      // Set white background (PDF pages can be transparent)
-      context.fillStyle = "#FFFFFF";
-      context.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Render the page to canvas
-      await page.render({
-        canvasContext: context,
-        viewport: viewport,
-      }).promise;
-
-      // Get PNG as buffer with specified compression
-      const pngBuffer = canvas.toBuffer("image/png", {
-        compressionLevel: compression,
-        filters: Canvas.PNG_FILTER_NONE,
-      });
-      return pngBuffer;
-    } catch (error) {
-      console.error(
-        "[AirportSketch.pdfFirstPageToPng] Error converting PDF to PNG:",
-        error
-      );
-      throw error;
-    }
-  }
 
   /**
    * Save sketch to Blob and update Airport DB record
