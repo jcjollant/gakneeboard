@@ -63,7 +63,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { getSunlight } from '@/assets/data'
+import { getSunlight, currentUser } from '@/assets/data'
 import { UserUrl } from '@/lib/UserUrl'
 import { TileType } from '../../models/TileType'
 import { TileData } from '../../models/TileData'
@@ -139,6 +139,13 @@ watch(displayMode, (newValue, oldValue) => {
 function loadProps(newProps) {
     // console.debug('[SunLight.loadProps]', props)
     state = newProps.params
+
+    // If we have no airport specified and we have a home airport, use it
+    if (!state.from && currentUser.homeAirport) {
+        state.from = currentUser.homeAirport
+        state.mode = DisplayModeSunlight.Flight
+    }
+
     airportFromCode.value = state.from
     airportToCode.value = state.to ? state.to : state.from
     // default to today if we don't have a date
@@ -151,7 +158,7 @@ function loadProps(newProps) {
     state.mode = displayMode.value
     displayModeSelection.value = displayMode.value == DisplayModeSunlight.Unknown
 
-    if( displayMode.value == DisplayModeSunlight.Flight) {
+    if( displayMode.value == DisplayModeSunlight.Flight && airportFromCode.value) {
         getData(false)
     }
 }
