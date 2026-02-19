@@ -1,6 +1,6 @@
 <template>
     <Dialog v-model:visible="visible" modal :header="headerTitle" :style="{ width: '50rem' }" :closable="true" @update:visible="onUpdateVisible">
-        <MetarView v-if="metar" :metar="metar" />
+        <MetarView v-if="metar" :metar="metar" :elevation="elevation" />
         <div v-else>No METAR data available</div>
         <template #footer>
             <div class="dialog-footer">
@@ -21,7 +21,8 @@ const props = defineProps({
     visible: { type: Boolean, default: false },
     metar: { type: Object as PropType<Metar | null>, default: null },
     airportCode: { type: String, default: '' },
-    airportName: { type: String, default: '' }
+    airportName: { type: String, default: '' },
+    elevation: { type: Number, default: 0 }
 });
 
 const emits = defineEmits(['update:visible', 'close']);

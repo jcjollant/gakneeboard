@@ -46,7 +46,7 @@
             <PlaceHolder v-else title="No Airport" />
         </div>
         <NotamListDialog :visible="showNotamsDialog" :notams="notamsList" :airportCode="config.code" :airportName="title" @close="showNotamsDialog = false" />
-        <MetarDialog :visible="showMetarDialog" :metar="metar" :airportCode="config.code" :airportName="title" @close="showMetarDialog = false" />
+        <MetarDialog :visible="showMetarDialog" :metar="metar" :airportCode="config.code" :airportName="title" :elevation="airportData?.elev" @close="showMetarDialog = false" />
     </div>    
 </template>
 

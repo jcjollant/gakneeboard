@@ -32,9 +32,13 @@
                 <span class="label">Temp/Dew:</span>
                 <span class="value">{{ metar?.temp }}°C / {{ metar?.dewp }}°C</span>
             </div>
-             <div class="grid-item">
+            <div class="grid-item">
                 <span class="label">Altimeter:</span>
                 <span class="value">{{ formattedAltimeter }}"Hg</span>
+            </div>
+            <div class="grid-item density-altitude">
+                <span class="label">Density Altitude (Theoretical):</span>
+                <span class="value">{{ densityAltitude !== null ? densityAltitude + ' ft' : '---' }}</span>
             </div>
         </div>
     </div>
@@ -45,8 +49,25 @@ import { PropType, computed } from 'vue';
 import { Metar } from '@gak/shared';
 
 const props = defineProps({
-    metar: { type: Object as PropType<Metar>, required: true }
+    metar: { type: Object as PropType<Metar>, required: true },
+    elevation: { type: Number, default: 0 }
 })
+
+const densityAltitude = computed(() => {
+    if (!props.metar || props.metar.temp === undefined || props.metar.altim === undefined) return null;
+    
+    // Formula for Density Altitude:
+    // 1. Pressure Altitude (PA) = Elevation + (29.92 - Altimeter_inHg) * 1000
+    // 2. ISA Temperature at Elevation = 15 - (1.98 * Elevation / 1000)
+    // 3. Density Altitude (DA) = PA + (118.8 * (Outside_Air_Temp - ISA_Temp))
+    
+    const altimInHg = props.metar.altim / 33.864;
+    const pa = props.elevation + (29.92 - altimInHg) * 1000;
+    const isaTemp = 15 - (1.98 * props.elevation / 1000);
+    const da = pa + (118.8 * (props.metar.temp - isaTemp));
+    
+    return Math.round(da);
+});
 
 const formattedAltimeter = computed(() => {
     if (!props.metar || !props.metar.altim) return '---';
@@ -164,6 +185,10 @@ const ceilingHighlightClass = computed(() => {
     padding: 5px;
     border: 1px solid #eee;
     border-radius: 4px;
+}
+
+.density-altitude {
+    border: 1px dashed #999;
 }
 
 .label {
