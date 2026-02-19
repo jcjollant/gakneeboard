@@ -11,9 +11,9 @@
                 <span class="label">Local Time (Age):</span>
                 <span class="value">{{ localTimeWithAge }}</span>
             </div>
-             <div class="grid-item">
+            <div class="grid-item">
                 <span class="label">Wind:</span>
-                <span class="value">{{ metar?.wdir }} @ {{ metar?.wspd }} kts <span v-if="metar?.wgst">(Gusts {{ metar?.wgst }})</span></span>
+                <span class="value">{{ formattedWind }}</span>
             </div>
             <div class="grid-item">
                 <span class="label">Visibility:</span>
@@ -73,6 +73,18 @@ const formattedAltimeter = computed(() => {
     if (!props.metar || !props.metar.altim) return '---';
     return (props.metar.altim / 33.864).toFixed(2);
 })
+
+const formattedWind = computed(() => {
+    if (!props.metar) return '---';
+    if (props.metar.wdir === 0 && props.metar.wspd === 0) {
+        return 'Calm';
+    }
+    let wind = `${props.metar.wdir} @ ${props.metar.wspd} kts`;
+    if (props.metar.wgst) {
+        wind += ` (Gusts ${props.metar.wgst})`;
+    }
+    return wind;
+});
 
 const metarAge = computed(() => {
     if (!props.metar || !props.metar.receiptTime) return 'unknown';
