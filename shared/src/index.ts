@@ -13,3 +13,4 @@ export * from './models/PrintOrder';
 export * from './FeatureFlags';
 export * from './models/UsageType';
 export * from './models/UsagePayload';
+export * from './services';
