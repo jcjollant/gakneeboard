@@ -30,7 +30,10 @@
             </div>
              <div class="grid-item">
                 <span class="label">Temp/Dew:</span>
-                <span class="value">{{ metar?.temp }}°C / {{ metar?.dewp }}°C</span>
+                <span class="value">
+                    {{ Math.round(metar?.temp ?? 0) }}°C / {{ Math.round(metar?.dewp ?? 0) }}°C
+                    <span v-if="saturationAltitude !== null">({{ saturationAltitude }} ft)</span>
+                </span>
             </div>
             <div class="grid-item">
                 <span class="label">Altimeter:</span>
@@ -67,6 +70,12 @@ const densityAltitude = computed(() => {
     const da = pa + (118.8 * (props.metar.temp - isaTemp));
     
     return Math.round(da);
+});
+
+const saturationAltitude = computed(() => {
+    if (!props.metar || props.metar.temp === undefined || props.metar.dewp === undefined) return null;
+    const spread = props.metar.temp - props.metar.dewp;
+    return Math.round(spread * 400);
 });
 
 const formattedAltimeter = computed(() => {
