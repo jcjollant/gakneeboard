@@ -109,7 +109,7 @@ const airportData = ref<Airport|undefined>(undefined)
 const runwayViews = ref(<RunwayViewSettings[]>[])
 
 const defaultCornerFields = ['weather','twr','field','#FGND','#FCD/P','tpa','?Custom?Custom','#FUNICOM']
-const defaultPatternMode = TrafficPatternDisplay.Entry45
+const defaultPatternMode = TrafficPatternDisplay.Downwind
 const defaultHeadings = true
 const defaultTitle = 'Airport'
 const config = ref<AirportTileConfig>(new AirportTileConfig())

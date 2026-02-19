@@ -113,7 +113,7 @@ const rwyList = ref<AirportRunway[]>([]);
 const selectedRwyNames = ref<string[]>([]);
 const verticalOrientation = ref(true);
 const showHeadings = ref(true);
-const patternChoice = ref<TrafficPatternDisplay>(TrafficPatternDisplay.Entry45); // Default
+const patternChoice = ref<TrafficPatternDisplay>(TrafficPatternDisplay.Downwind); // Default
 const showMetar = ref(true);
 const showNotams = ref(true);
 
@@ -188,7 +188,7 @@ function loadFromTileData(tile: TileData) {
     if (config.pattern && validValues.includes(config.pattern)) {
         patternChoice.value = config.pattern as TrafficPatternDisplay;
     } else {
-        patternChoice.value = TrafficPatternDisplay.Entry45;
+        patternChoice.value = TrafficPatternDisplay.Downwind;
     }
 
     showMetar.value = config.showMetar ?? true;

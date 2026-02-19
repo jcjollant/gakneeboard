@@ -10,7 +10,7 @@ export class RunwayViewSettings {
     label: string | undefined
     headings: boolean
 
-    constructor(runway: Runway | undefined = undefined, patternMode: TrafficPatternDisplay = TrafficPatternDisplay.Entry45, orientation: RunwayOrientation = RunwayOrientation.Vertical, label: string | undefined = undefined, headings: boolean = true) {
+    constructor(runway: Runway | undefined = undefined, patternMode: TrafficPatternDisplay = TrafficPatternDisplay.Downwind, orientation: RunwayOrientation = RunwayOrientation.Vertical, label: string | undefined = undefined, headings: boolean = true) {
         this.runway = runway
         this.patternMode = patternMode
         this.orientation = orientation

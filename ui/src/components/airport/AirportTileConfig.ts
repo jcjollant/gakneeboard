@@ -16,7 +16,7 @@ export class AirportTileConfig {
   constructor(
     code: string = "",
     rwys: string[] = [],
-    pattern: TrafficPatternDisplay = TrafficPatternDisplay.Entry45,
+    pattern: TrafficPatternDisplay = TrafficPatternDisplay.Downwind,
 
     corners: string[] = [],
     rwyOrientation: RunwayOrientation = RunwayOrientation.Vertical,
