@@ -95,10 +95,20 @@ const formattedWind = computed(() => {
     return wind;
 });
 
+const metarTime = computed(() => {
+    if (!props.metar) return null;
+    if (props.metar.obsTime) return new Date(props.metar.obsTime * 1000);
+    if (props.metar.reportTime) return new Date(props.metar.reportTime);
+    if (props.metar.receiptTime) return new Date(props.metar.receiptTime);
+    return null;
+});
+
 const metarAge = computed(() => {
-    if (!props.metar || !props.metar.receiptTime) return 'unknown';
-    const diff = new Date().getTime() - new Date(props.metar.receiptTime).getTime();
+    const time = metarTime.value;
+    if (!time) return 'unknown';
+    const diff = new Date().getTime() - time.getTime();
     const minutes = Math.floor(diff / 60000);
+    if (minutes < 0) return '0m ago';
     if (minutes < 60) return `${minutes}m ago`;
     const hours = Math.floor(minutes / 60);
     if (hours < 24) return `${hours}h ago`;
@@ -106,13 +116,13 @@ const metarAge = computed(() => {
 });
 
 const localTime = computed(() => {
-    if (!props.metar || !props.metar.receiptTime) return '---';
-    const date = new Date(props.metar.receiptTime);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    const time = metarTime.value;
+    if (!time) return '---';
+    return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 });
 
 const localTimeWithAge = computed(() => {
-    if (!props.metar || !props.metar.receiptTime) return '---';
+    if (!metarTime.value) return '---';
     return `${localTime.value} (${metarAge.value})`;
 });
 
