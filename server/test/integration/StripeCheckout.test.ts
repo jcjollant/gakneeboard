@@ -4,6 +4,7 @@ import request from 'supertest';
 import app from '../../api/index';
 import { StripeClient } from '../../backend/business/Stripe';
 import { AttributionData } from '../../backend/models/AttributionData';
+import { UserTools } from '../../backend/UserTools';
 
 // Mock dependencies
 jest.mock('../../backend/business/Stripe', () => {
@@ -18,9 +19,19 @@ jest.mock('../../backend/business/Stripe', () => {
     };
 });
 
+jest.mock('../../backend/UserTools', () => {
+    return {
+        UserTools: {
+            userIdFromRequest: jest.fn(),
+            userShaFromRequest: jest.fn()
+        }
+    };
+});
+
 describe('Stripe Checkout API', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        (UserTools.userIdFromRequest as any).mockResolvedValue(1); // Default to admin user for tests
     });
 
     it('should pass attribution data to StripeClient.checkout', async () => {
@@ -82,5 +93,23 @@ describe('Stripe Checkout API', () => {
             undefined,
             undefined
         );
+    });
+
+    it('should return 401 if user is not authenticated', async () => {
+        (UserTools.userIdFromRequest as any).mockResolvedValue(undefined);
+
+        const payload = {
+            user: 'unknownUser',
+            product: 'pp1',
+            source: 'http://localhost:3000/plans',
+        };
+
+        const res = await request(app)
+            .post('/stripe/checkout')
+            .send(payload);
+
+        expect(res.status).toBe(401);
+        expect(res.text).toBe('Please sign in to continue');
+        expect(StripeClient.instance.checkout).not.toHaveBeenCalled();
     });
 });

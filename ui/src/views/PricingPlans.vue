@@ -73,18 +73,19 @@
 
         <div class="plan-footer">
           <button v-if="plan.active" :class="['subscribe-button', 'primary']" @click="onPlan(plan)">
-            Select Plan
+            {{ currentUser.loggedIn ? 'Select Plan' : 'Sign In to Select Plan' }}
           </button>
           <div v-else>Comming Soon</div>
         </div>
       </div>
 
     </div>
+    <SignIn v-model:visible="showSignIn" @close="showSignIn=false" @authentication="onAuthentication" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router';
 import { CheckoutService } from '../services/CheckoutService';
 import { currentUser } from '../assets/data';
@@ -92,10 +93,12 @@ import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../assets/Toaster';
 
 import Menu from '../components/menu/Menu.vue';
+import SignIn from '../components/signin/SignIn.vue';
 import { AccountType, PlanDescription } from '@gak/shared';
 
 const toaster = useToaster(useToast())
 const route = useRoute()
+const showSignIn = ref(false)
 
 // Check if user came here due to being out of print credits
 const showOutOfCreditsBanner = computed(() => {
@@ -111,6 +114,11 @@ const router = useRouter()
 function onPlan(plan:PlanDescription) {
   // console.log('[PricingPlans.onPlan]',code)
 
+  if (!currentUser.loggedIn) {
+    showSignIn.value = true
+    return
+  }
+
   if( plan.accountType == AccountType.simmer) {
     // There is no change in type, just go back to the home page
     router.push('/')
@@ -122,6 +130,15 @@ function onPlan(plan:PlanDescription) {
     }).catch( (err:any) => {
       console.error(err)
     })
+  }
+}
+
+function onAuthentication(newUser: any) {
+  showSignIn.value = false
+  if (newUser) {
+    toaster.success('Clear', 'Welcome ' + newUser.name)
+  } else {
+    toaster.warning('Engine Roughness', 'Authentication failed')
   }
 }
 

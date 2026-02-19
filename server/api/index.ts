@@ -316,9 +316,15 @@ app.get('/publications', async (req: Request, res: Response) => {
  */
 app.post('/stripe/checkout', async (req, res) => {
     // console.debug('[index] POST /stripe/checkout', req.body)
-    const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
-    let promise = null;
     try {
+        const userId = await UserTools.userIdFromRequest(req)
+        if (!userId) {
+            res.status(401).send('Please sign in to continue')
+            return
+        }
+
+        const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+        let promise = null;
         if (payload.product === 'manage') {
             promise = StripeClient.instance.manage(payload.user, payload.source)
         } else {
@@ -733,6 +739,12 @@ async function catchError(res: Response, e: any, context: string, ticket?: Ticke
         message = e.message
     }
     res.status(status).send(message)
+
+    if (status === 401) {
+        // Don't create tickets for unauthorized requests (bots, sessions expired, etc.)
+        return
+    }
+
     if (ticket) {
         await TicketService.createFromTicket(ticket)
     } else {
