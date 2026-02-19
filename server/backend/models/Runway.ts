@@ -1,3 +1,5 @@
+import { RunwayService } from '@gak/shared';
+
 export enum PatternDirection {
     Left = 'L',
     Right = 'R'
@@ -59,8 +61,7 @@ export class Runway {
         const ends: string[] = name.split(/[-/]/)
         this.ends = []
         this.ends.push(...ends.map((end) => new RunwayEnd(end, parseInt(end) * 10)));
-        // Test ends are 180 degrees apart
-        if (Math.abs(this.ends[0].mag - this.ends[1].mag) != 180) throw new Error(`Runway ends ${this.ends[0].mag} and ${this.ends[1].mag} must be 180 degrees apart for runway ${name}`)
+        // if (!RunwayService.isValidName(name)) throw new Error(`Invalid runway name ${name}`)
 
         this.freq = undefined
         this.surface = undefined
@@ -102,32 +103,6 @@ export class Runway {
 
     public setRunwaySurface(rwySurface: RunwaySurface) {
         this.surface = rwySurface
-    }
-
-    static isValidEndName(name: string): boolean {
-        // catch too short and too long runway names 
-        if (name.length < 2 || name.length > 3) return false
-
-        if (name.length == 3) {
-            const position: string = name.charAt(2)
-            // position must be L, R or C
-            if (position != 'L' && position != 'R' && position != 'C') return false
-        }
-
-        // validate runway number
-        const number: number = parseInt(name.substring(0, 2))
-
-        return number >= 1 && number <= 36
-    }
-    // this method checks wether a runway name is valid
-    public static isValidName(name: string): boolean {
-        const ends: string[] = name.split(/[-/]/)
-        // we need exactly 2 runway ends
-        if (ends.length != 2) return false
-        // both ends must be valid
-        if (!Runway.isValidEndName(ends[0]) || !Runway.isValidEndName(ends[1])) return false
-
-        return true
     }
 
 }
