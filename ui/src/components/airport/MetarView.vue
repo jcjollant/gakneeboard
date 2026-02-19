@@ -8,8 +8,8 @@
                 <span class="value" :class="flightCategoryClass">{{ metar?.fltCat }}</span>
             </div>
             <div class="grid-item">
-                <span class="label">Time:</span>
-                <span class="value">{{ metar?.receiptTime }}</span>
+                <span class="label">Local Time (Age):</span>
+                <span class="value">{{ localTimeWithAge }}</span>
             </div>
              <div class="grid-item">
                 <span class="label">Wind:</span>
@@ -52,6 +52,27 @@ const formattedAltimeter = computed(() => {
     if (!props.metar || !props.metar.altim) return '---';
     return (props.metar.altim / 33.864).toFixed(2);
 })
+
+const metarAge = computed(() => {
+    if (!props.metar || !props.metar.receiptTime) return 'unknown';
+    const diff = new Date().getTime() - new Date(props.metar.receiptTime).getTime();
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    return `${Math.floor(hours / 24)}d ago`;
+});
+
+const localTime = computed(() => {
+    if (!props.metar || !props.metar.receiptTime) return '---';
+    const date = new Date(props.metar.receiptTime);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+});
+
+const localTimeWithAge = computed(() => {
+    if (!props.metar || !props.metar.receiptTime) return '---';
+    return `${localTime.value} (${metarAge.value})`;
+});
 
 const flightCategoryClass = computed(() => {
     if (!props.metar || !props.metar.fltCat) return 'unknown';
