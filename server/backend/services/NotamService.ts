@@ -270,6 +270,11 @@ export class NotamService {
         // Handle GeoJSON format
         if (item.type === 'Feature' && item.properties && item.properties.coreNOTAMData && item.properties.coreNOTAMData.notam) {
             const notam = item.properties.coreNOTAMData.notam;
+
+            if (notam.text && notam.text.trim().endsWith('CANCELED')) {
+                return null;
+            }
+
             // Decoded text from raw text as per user request
             const plainText = NotamDecoder.decode(notam.text);
 

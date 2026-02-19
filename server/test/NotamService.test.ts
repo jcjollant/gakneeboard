@@ -188,4 +188,61 @@ describe('NotamService', () => {
             expect(mockFetch).toHaveBeenCalledWith('https://api.example.com/notams/checklist?location=KSEA', expect.any(Object));
         });
     });
+    describe('getSimplifiedNotams', () => {
+        beforeEach(() => {
+            (NotamService as any).token = 'valid-token';
+            (NotamService as any).tokenExpiry = Date.now() + 10000;
+        });
+
+        it('should filter out cancelled NOTAMs, including real-world examples with whitespace', async () => {
+            mockFetch.mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({
+                    status: 'Success',
+                    data: {
+                        geojson: [
+                            {
+                                type: 'Feature',
+                                properties: {
+                                    coreNOTAMData: {
+                                        notam: {
+                                            number: '1',
+                                            text: 'ACTIVE NOTAM'
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                type: 'Feature',
+                                properties: {
+                                    coreNOTAMData: {
+                                        notam: {
+                                            number: 'A0083/26',
+                                            text: "A0083/26 NOTAMC A0075/26 \nQ) KZSE/QMXXX////000/999/4754N12217W005 \nA) KPAE\nB) 2602171644\nE)  PAE TWY C BTN TWY A AND TERMINAL RAMP FICON WET DEICED SOLID OBS\nCANCELED"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                type: 'Feature',
+                                properties: {
+                                    coreNOTAMData: {
+                                        notam: {
+                                            number: 'A0084/26',
+                                            text: "A0084/26 NOTAMC A0076/26 \n... CANCELED \n  " // Trailing newline and spaces
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                })
+            } as Response);
+
+            const result = await NotamService.getSimplifiedNotams({ location: 'KJFK' });
+
+            expect(result).toHaveLength(1);
+            expect(result[0].id).toBe('1');
+        });
+    });
 });
