@@ -1,5 +1,6 @@
 import { Formatter } from "../lib/Formatter";
 import { Frequency, FrequencyType } from "./Frequency";
+import { RunwayService } from "@gak/shared";
 
 const modelVersion: number = 10;
 
@@ -127,31 +128,6 @@ export class Runway {
     static noRunway(): Runway {
         return new Runway('', 0, 0);
     }
-
-    static isValidEndName(name: string): boolean {
-        // catch too short and too long runway names 
-        if (name.length < 2 || name.length > 3) return false
-
-        if (name.length == 3) {
-            const position: string = name.charAt(2)
-            // position must be L, R or C
-            if (position != 'L' && position != 'R' && position != 'C') return false
-        }
-
-        // validate runway number
-        const number: number = parseInt(name.substring(0, 2))
-
-        return number > 0 && number < 37
-    }
-    // this method checks wether a runway name is valid
-    public static isValidName(name: string): boolean {
-        const ends: string[] = name.split('-')
-        // we need exactly 2 runway ends
-        if (ends.length != 2) return false
-        // both ends must be valid
-        return Runway.isValidEndName(ends[0]) && Runway.isValidEndName(ends[1])
-    }
-
 }
 
 export class Chart {
