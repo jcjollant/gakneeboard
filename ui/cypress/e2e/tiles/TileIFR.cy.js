@@ -1,7 +1,7 @@
 import { approachTitle, TileTypeLabel, loadTestTile, displayModesCheck, displaySelectionTestTile, loadTestTileWithData, checkImageContentTestTile, loadTestPage, PageTypeLabel, settingsOpen } from '../shared.js'
 
 
-const titleCraftClearance = "IFR Flight"
+const titleCraftClearance = "IFR CRAFT Clearance"
 const titleDisplayMode = "IFR Tile Mode"
 
 const IfrTileDisplayModeLabels = {
@@ -34,9 +34,9 @@ const expectedDepartureFields = [
 ]
 
 const expectedDepartureManual = [
-    { class: '.atis', label: 'Weather' },
-    { class: '.atc', label: 'Clearance' },
-    { class: '.gnd', label: 'Ground' },
+    { class: '.atis', label: 'Weather Freq' },
+    { class: '.atc', label: 'Clear. Freq' },
+    { class: '.gnd', label: 'Ground Freq' },
     { class: '.twr', label: 'Tower' },
 ]
 
