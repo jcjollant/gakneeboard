@@ -43,6 +43,13 @@
                     <h3>Template Promotion</h3>
                     <p>Promote user template to system global template</p>
                 </div>
+                <div class="api-card" :class="{ active: selectedApi === 'willie' }" @click="selectApi('willie')">
+                    <div class="api-icon">
+                        <img src="/img/groundskeeper-wllie.png" alt="Housekeeping" class="api-image" />
+                    </div>
+                    <h3>Housekeeping</h3>
+                    <p>Summon Willie for system maintenance</p>
+                </div>
             </div>
         </div>
         
@@ -96,6 +103,10 @@
         <div v-if="selectedApi === 'promote'">
             <TemplatePromoter />
         </div>
+
+        <div v-if="selectedApi === 'willie'">
+            <Housekeeping />
+        </div>
     </div>
 </template>
 
@@ -112,6 +123,7 @@ import UserProfile from '~/components/UserProfile.vue';
 import StoreOrders from '~/components/StoreOrders.vue';
 import HealthCheck from '~/components/HealthCheck.vue';
 import TemplatePromoter from '~/components/TemplatePromoter.vue';
+import Housekeeping from '~/components/Housekeeping.vue';
 
 const route = useRoute()
 const router = useRouter()

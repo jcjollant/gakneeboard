@@ -4,7 +4,7 @@ import { Business } from "../business/Business"
 import { UserDao } from "../dao/UserDao"
 import { PrintOrderDao } from '../dao/PrintOrderDao';
 import { PrintService } from '../services/PrintService';
-import { PrintProductType, PrintOrderStatus } from '../../../shared';
+import { PrintProductType, PrintOrderStatus } from '@gak/shared';
 
 export enum TaskStatus {
     NEW = 'new',
