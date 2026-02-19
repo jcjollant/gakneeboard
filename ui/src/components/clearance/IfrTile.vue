@@ -42,6 +42,8 @@ import { getAirport, getNotams } from '../../services/AirportDataService';
 import { IfrTileConfig } from './IfrTileConfig.ts';
 import { Regulation } from '../../models/Regulation.ts';
 import { Notam } from '../../models/Notam.ts';
+import { TileData } from '../../models/TileData.ts';
+import { TileType } from '../../models/TileType.ts';
 
 import ApproachContent from './ApproachContent.vue';
 import CraftBoxedContent from './CraftBoxedContent.vue';
@@ -75,6 +77,16 @@ onMounted(() => {
 watch( props, async() => {
     loadProps(props)
 })
+
+watch( displayMode, (newValue, oldValue) => {
+    if( newValue == oldValue || oldValue == DisplayModeIfr.Unknown) return;
+    saveConfig()
+})
+
+function saveConfig() {
+    const params = {mode:displayMode.value, airport:airport.value.code}
+    emits('update', new TileData( TileType.clearance, params))
+}
 
 function loadProps(props:any) {
     // console.debug('[Clearance.loadProps]', JSON.stringify(props))
