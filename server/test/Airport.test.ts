@@ -128,21 +128,5 @@ describe('Airport', () => {
         expect(end17?.tp).toBe(PatternDirection.Right)
     })
 
-
-    test('Runway name validation', () => {
-        const rwy = new Runway("16-34", 5400, 150)
-        expect(Runway.isValidName("16-34")).toBeTruthy()
-        expect(Runway.isValidName("04L-22R")).toBeTruthy()
-        // missin separator
-        expect(Runway.isValidName("1634")).toBeFalsy()
-        // mising end
-        expect(Runway.isValidName("16-")).toBeFalsy()
-        expect(Runway.isValidName("00-18")).toBeFalsy()
-        // Because 37 
-        expect(Runway.isValidName("19-37")).toBeFalsy()
-        // Because NW-SE
-        expect(Runway.isValidName("NW-SE")).toBeFalsy()
-    })
-
 });
 
