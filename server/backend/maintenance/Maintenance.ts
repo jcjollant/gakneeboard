@@ -117,7 +117,7 @@ export class Maintenance {
                     message += check.name + ' : ' + check.msg + '\n'
                 }
                 // add link to admin based off ui host
-                message += '\n' + 'https://kneeboard.ga/admin'
+                message += '\n' + 'https://admin.kneeboard.ga/'
             }
             message += '\n' + data
             // save record
