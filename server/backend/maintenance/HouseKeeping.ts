@@ -5,6 +5,7 @@ import { UserDao } from "../dao/UserDao"
 import { PrintOrderDao } from '../dao/PrintOrderDao';
 import { PrintService } from '../services/PrintService';
 import { PrintProductType, PrintOrderStatus } from '@gak/shared';
+import { TemplateHistoryDao } from "../dao/TemplateHistoryDao";
 
 export enum TaskStatus {
     NEW = 'new',
@@ -61,11 +62,13 @@ export class HouseKeeping {
         await Promise.all([
             HouseKeeping.performRefills(),
             HouseKeeping.performSketchUpdate(),
-            HouseKeeping.cleanAbandonedOrders()
+            HouseKeeping.cleanAbandonedOrders(),
+            HouseKeeping.cleanTemplateHistory()
         ]).then((t) => {
             tasks.push(t[0])
             tasks.push(t[1])
             tasks.push(t[2])
+            tasks.push(t[3])
         })
 
         return tasks
@@ -161,6 +164,22 @@ export class HouseKeeping {
                 deleted++;
             }
             task.finish(`Cleaned ${deleted} abandoned orders`);
+        } catch (e: any) {
+            task.fail(e.message)
+        }
+        return task
+    }
+
+    public static async cleanTemplateHistory(): Promise<Task> {
+        const task = new Task('Template History Cleanup')
+        task.start()
+        try {
+            const deleted = await TemplateHistoryDao.cleanHistory(30)
+            if (deleted > 0) {
+                task.finish(`Cleaned ${deleted} old template history entries`)
+            } else {
+                task.skip(`No old template history entries to clean`)
+            }
         } catch (e: any) {
             task.fail(e.message)
         }

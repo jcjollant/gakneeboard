@@ -156,4 +156,31 @@ export class TemplateHistoryDao extends Dao<TemplateHistory> {
         if (result.rows.length === 0) return undefined
         return this.parseRow(result.rows[0])
     }
+
+    /**
+     * Clean up old template history entries, keeping only the most recent ones.
+     * Hard limit of 10 entries per template.
+     * @returns Number of rows deleted
+     */
+    public static async cleanHistory(desiredLimit?: number): Promise<number> {
+        const limit = desiredLimit ? Math.max(10, desiredLimit) : 10 // Hard threshold of 10 entries per template
+        try {
+            // Delete entries where row number is greater than the limit when ordered by created_at DESC per template_id
+            const result = await sql`
+                DELETE FROM template_history
+                WHERE id IN (
+                    SELECT id
+                    FROM (
+                        SELECT id, ROW_NUMBER() OVER (PARTITION BY template_id ORDER BY created_at DESC) as rn
+                        FROM template_history
+                    ) t
+                    WHERE rn > ${limit}
+                )
+            `
+            return result.rowCount || 0
+        } catch (error) {
+            console.error(`[TemplateHistoryDao.cleanHistory] Error cleaning template history: ${error}`)
+            return 0
+        }
+    }
 }
