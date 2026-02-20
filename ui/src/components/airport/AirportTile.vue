@@ -8,9 +8,12 @@
         
         <div class="tileContent"> <!-- Runway Sketch or Diagram -->
             <div v-if="config?.code">
-                <div v-if="config?.mode==DisplayModeAirport.Diagram" class="aptDiagram clickable" @click="onHeaderClick()">
+                <div v-if="displayMode==DisplayModeAirport.Diagram" class="aptDiagram clickable" @click="onHeaderClick()">
                     <PlaceHolder v-if="!aptDiagram || aptDiagram=='dne'" title="No Diagram" subtitle="Consider sending feedback" />
                     <img v-else class="aptDiagram" :src="aptDiagram" />
+                </div>
+                <div v-else-if="displayMode==DisplayModeAirport.Charts">
+                    <ChartLinks :airport="airportData" />
                 </div>
                 <div v-else><!-- Runway Sketch(es) -->
                     <div class="airportCode">{{config.code.toUpperCase()}}</div>
@@ -23,11 +26,11 @@
                     </div>
                     <div v-else class="unknownRwy">Unknown Runway</div>
                 </div>
-                <div v-if="expanded" class="top left cornerColumn">
+                <div v-if="expanded && displayMode !== DisplayModeAirport.Charts" class="top left cornerColumn">
                     <Corner v-for="index in [0,4,6,2]" :airport="airportData" :data="corners[index]" :runway="mainRunway" :big="true" :class="['corner'+index]"
                         @click="onCornerEdit(index, $event)"/>
                 </div>
-                <div v-if="expanded" class="top right cornerColumn">
+                <div v-if="expanded && displayMode !== DisplayModeAirport.Charts" class="top right cornerColumn">
                     <Corner v-for="index in [1,5,7,3]" :airport="airportData" :data="corners[index]" :runway="mainRunway" :big="true" :class="['corner'+index]"
                         @click="onCornerEdit(index, $event)" />
                 </div>
@@ -47,6 +50,7 @@
         </div>
         <NotamListDialog :visible="showNotamsDialog" :notams="notamsList" :airportCode="config.code" :airportName="title" @close="showNotamsDialog = false" />
         <MetarDialog :visible="showMetarDialog" :metar="metar" :airportCode="config.code" :airportName="title" :elevation="airportData?.elev" @close="showMetarDialog = false" />
+        <TileModeDots v-model="displayMode" :modes="modesList" />
     </div>    
 </template>
 
@@ -78,6 +82,9 @@ import NotamListDialog from './NotamListDialog.vue'
 import NotamBadge from './NotamBadge.vue'
 import MetarBadge from './MetarBadge.vue'
 import MetarDialog from './MetarDialog.vue'
+import Button from 'primevue/button';
+import TileModeDots from '../shared/TileModeDots.vue';
+import ChartLinks from './ChartLinks.vue';
 
 const defaultMode = DisplayModeAirport.RunwaySketch
 const emits = defineEmits(['replace','update', 'settings'])
@@ -92,13 +99,15 @@ const aptDiagram = ref('')
 const notamsList = ref<Notam[]>([])
 const metar = ref<Metar|null>(null)
 const showCorners = computed(() => {
-    return !expanded.value
+    return !expanded.value && displayMode.value !== DisplayModeAirport.Charts
 })
 const showNotams = computed(() => {
+    if (displayMode.value === DisplayModeAirport.Charts) return false;
     if (config.value?.showNotams === false) return false;
     return notamsList.value.length > 0 || !isSignedIn.value
 })
 const showMetar = computed(() => {
+    if (displayMode.value === DisplayModeAirport.Charts) return false;
     if (config.value?.showMetar === false) return false;
     return !!metar.value
 })
@@ -120,6 +129,15 @@ const cornerConfigIndex = ref(0)
 const toast = useToast()
 const toaster = useToaster(toast)
 const isSignedIn = ref(currentUser.loggedIn)
+const modesList = AirportTileConfig.modesList
+const displayMode = ref(DisplayModeAirport.RunwaySketch)
+
+watch(displayMode, (val) => {
+    if (config.value && config.value.mode !== val) {
+        config.value.mode = val
+        saveConfig()
+    }
+})
 
 const getContext = (code: string) => {
     getNotams(code).then(notams => {
@@ -198,6 +216,7 @@ function loadProps(newProps:any) {
 
     // Display mode
     propsConfig.mode = params?.mode ?? defaultMode
+    displayMode.value = propsConfig.mode
     // displayMode.value = propsConfig.mode;
     // console.debug('[AirportTile.loadProps] displayMode', displayMode.value)
 
@@ -404,7 +423,6 @@ function saveConfig() {
 
     emits( 'update', new TileData( TileType.airport, config.value, expanded.value));
 }
-
 </script>
 <style scoped>
 .tileContent {
@@ -551,4 +569,5 @@ function saveConfig() {
     top: 5px;
     left: 170px;
 }
+
 </style>

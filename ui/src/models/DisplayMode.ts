@@ -23,6 +23,7 @@ export enum DisplayModeAirport {
     // FourRunways = 'four',
     // RunwayList = 'list',
     Diagram = 'diag',
+    Charts = 'charts',
 }
 
 export enum DisplayModeNotes {

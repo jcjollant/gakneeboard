@@ -1,6 +1,3 @@
-import { Formatter } from "../lib/Formatter";
-import { Frequency, FrequencyType } from "./Frequency";
-import { RunwayService } from "@gak/shared";
 
 const modelVersion: number = 10;
 
@@ -233,7 +230,7 @@ export class Airport {
         newAirport.effectiveDate = airport.effectiveDate
         newAirport.asof = airport.asof;
         newAirport.iap = airport.iap.map((chart: any) => Chart.copy(chart))
-        newAirport.dep = airport.iap.map((chart: any) => Chart.copy(chart))
+        newAirport.dep = airport.dep.map((chart: any) => Chart.copy(chart))
         newAirport.diagram = airport.diagram ? airport.diagram : airport.diag
         newAirport.navaids = airport.navaids.map((navaid: any) => Navaid.copy(navaid))
         newAirport.atc = airport.atc.map((atc: any) => Atc.copy(atc))

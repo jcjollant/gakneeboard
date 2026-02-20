@@ -17,7 +17,7 @@
         <ProgressSpinner v-if="loading" class="spinner"></ProgressSpinner>
         
         <!-- Runway & Pattern Section -->
-        <div v-else-if="currentMode !== DisplayModeAirport.Diagram" class="rwyChoices">
+        <div v-else-if="currentMode !== DisplayModeAirport.Diagram && currentMode !== DisplayModeAirport.Charts" class="rwyChoices">
             <Separator name="Runway(s)" />
             <div v-if="validAirport">
                 <div class="rwySelector" title="Select 1 or 2 runways">
@@ -52,17 +52,19 @@
         </div>
 
         <!-- Conditions Section -->
-        <Separator name="Conditions" />
-        <div class="conditions-selector">
-            <div class="checkbox-field">
-                <Checkbox v-model="showMetar" :binary="true" inputId="chkMetar" />
-                <label for="chkMetar">Show METAR</label>
+        <template v-if="currentMode !== DisplayModeAirport.Charts">
+            <Separator name="Conditions" />
+            <div class="conditions-selector">
+                <div class="checkbox-field">
+                    <Checkbox v-model="showMetar" :binary="true" inputId="chkMetar" />
+                    <label for="chkMetar">Show METAR</label>
+                </div>
+                <div class="checkbox-field">
+                    <Checkbox v-model="showNotams" :binary="true" inputId="chkNotams" />
+                    <label for="chkNotams">Show NOTAMs</label>
+                </div>
             </div>
-            <div class="checkbox-field">
-                <Checkbox v-model="showNotams" :binary="true" inputId="chkNotams" />
-                <label for="chkNotams">Show NOTAMs</label>
-            </div>
-        </div>
+        </template>
 
     </div>
 </template>
@@ -118,10 +120,7 @@ const showMetar = ref(true);
 const showNotams = ref(true);
 
 // Lists
-const modesList = ref([
-    new DisplayModeChoice('Runway Sketch', DisplayModeAirport.RunwaySketch, true, "Simplified vue of runway(s) with airport data", '/tiles/airport-sketch.png'),
-    new DisplayModeChoice('Airport Diagram', DisplayModeAirport.Diagram, true, "Small Airport Diagram with airport data", "/tiles/airport-diagram.png"),
-]);
+const modesList = ref(AirportTileConfig.modesList);
 
 const selectedModeChoice = computed({
     get: () => modesList.value.find(c => c.value === currentMode.value),
