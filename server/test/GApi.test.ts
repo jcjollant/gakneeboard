@@ -8,7 +8,7 @@ import { TemplateDao } from '../backend/TemplateDao';
 import { AirportService } from '../backend/services/AirportService';
 import { jcHash, jcName, jcToken, jcUserId } from './constants';
 import { User } from '../backend/models/User';
-import { AccountType } from '@gak/shared';
+import { AccountType, UsageType } from '@gak/shared';
 
 // Mock dependencies
 jest.mock('../backend/UserTools');
@@ -91,13 +91,16 @@ describe('GApi Tests', () => {
         (UserDao.getUserFromHash as unknown as jest.Mock<any>).mockResolvedValue(mockUser);
         (UserTools.userMini as unknown as jest.Mock<any>).mockResolvedValue({ sha256: jcHash } as UserView);
 
-        const req2 = { query: { user: jcHash } }
+        const req2 = { query: { user: jcHash, version: '1.2.3' } }
         const session2 = await GApi.getSession(req2)
         expect(session2).toBeDefined()
         expect(session2.version).toBeDefined()
         expect(session2.aced).toBeDefined()
         expect(session2.camv).toBeDefined()
         expect(session2.user).toBeDefined()
+
+        // Verify UsageDao.create was called with the version
+        expect(UsageDao.create).toHaveBeenCalledWith(UsageType.Session, jcUserId, JSON.stringify({ version: '1.2.3' }));
     })
 
     afterAll(async () => {

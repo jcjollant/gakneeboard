@@ -71,7 +71,7 @@ export function duplicate(source) {
  */
 export async function getBackend() {
   backend.promise = new Promise((resolve) => {
-    currentUser.getUrl(UrlService.root)
+    currentUser.getUrl(UrlService.root + '?version=' + version)
       .then(response => {
         // console.log('[data.getBackend]', JSON.stringify(response.data))
         if (!response || !response.data) {

@@ -111,7 +111,11 @@ export class GApi {
             if (user) {
                 const userMini = await UserTools.userMini(user)
                 output.user = userMini
-                UsageDao.create(UsageType.Session, user.id)
+
+                // Extract UI version from query or headers
+                let uiVersion = req?.query?.version || req?.headers?.version || undefined;
+                let usageData = uiVersion ? JSON.stringify({ version: uiVersion }) : undefined;
+                UsageDao.create(UsageType.Session, user.id, usageData)
             }
         }
         // console.log('[GApi.getSession]', JSON.stringify(output))    
