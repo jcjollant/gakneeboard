@@ -6,7 +6,7 @@ export class AirportTileConfig {
   static modesList = [
     new DisplayModeChoice('Runway Sketch', DisplayModeAirport.RunwaySketch, true, "Simplified vue of runway(s) with airport data", '/tiles/airport-sketch.png'),
     new DisplayModeChoice('Mini Diagram', DisplayModeAirport.Diagram, true, "Small Airport Diagram with airport data", "/tiles/airport-diagram.png"),
-    new DisplayModeChoice('Chart Links', DisplayModeAirport.Charts, true, "List of available charts (Diagram, Notices, Approaches)", "/tiles/airport-diagram.png"), // Placeholder icon
+    new DisplayModeChoice('Chart Links', DisplayModeAirport.Charts, true, "List of available charts (Diagram, Notices, Approaches)", "/tiles/chart-links.png"),
   ];
 
   code: string;

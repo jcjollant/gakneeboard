@@ -1,17 +1,18 @@
 <template>
     <div class="airport-settings">
-        <!-- Display Mode Section -->
-        <Separator name="Display" class="separator" />
-        <DisplayModeSelector :choices="modesList" v-model="selectedModeChoice" :show-previews="true" />
-        <div class="display-onechoice">
-            <EitherOr either="Normal" or="Wide" v-model="isNormal" />
-        </div>
         <!-- Airport Section -->
         <Separator name="Airport" />
         <div class="airport-selection">
             <AirportInput :code="airportCode" :auto="true" :expanded="true" :large="true"
                 @valid="onUserSelectAirport"
                 @invalid="onInvalidAirport" />
+        </div>
+
+        <!-- Display Mode Section -->
+        <Separator name="Display" class="separator" />
+        <DisplayModeSelector :choices="modesList" v-model="selectedModeChoice" :show-previews="true" />
+        <div class="display-onechoice">
+            <EitherOr either="Normal" or="Wide" v-model="isNormal" />
         </div>
 
         <ProgressSpinner v-if="loading" class="spinner"></ProgressSpinner>
