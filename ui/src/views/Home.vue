@@ -139,6 +139,7 @@ onMounted( () => {
     templates.value = currentUser.templates
     checklists.value = currentUser.checklists
     currentUser.addListener(userUpdate);
+    document.title = 'GA Kneeboard | Aviation Kneeboard. Your way.';
 })
 
 onUnmounted( () => {

@@ -2,7 +2,7 @@
   <Menu></Menu>
   <div class="store-container">
     <div class="store-header">
-      <h1>Welcome to our new Store!</h1>
+      <h1>GA Kneeboard Store</h1>
       <button @click="showCart = true" class="cart-button">
         <font-awesome-icon icon="shopping-cart" /> Cart
       </button>
@@ -183,6 +183,7 @@ onMounted(() => {
         customPdfUrl.value = route.query.pdfUrl as string;
         customPagesCount.value = Number(route.query.pages) || 0;
     }
+    document.title = 'GA Kneeboard Store';
 });
 
 const calculatePrice = (formatCode: string, pages: number) => {
