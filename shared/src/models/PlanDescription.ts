@@ -15,6 +15,8 @@ export interface PlanDescription {
     features: {
         advancedPrinting: boolean;
         export: boolean;
+        metars: boolean;
+        notams: boolean;
         restoreOldVersion: boolean;
     }
 }

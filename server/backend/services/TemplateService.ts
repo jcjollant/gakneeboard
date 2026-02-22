@@ -175,27 +175,31 @@ export class TemplateService {
             const templateCountForUser = await templateDao.countForUser(user.id)
             // console.log('[GApiTemplate.save]', templateCountForUser, user.accountType)
 
-            // Max limit control
-            const maxTemplates = Math.max(Business.maxTemplates(user), user.maxTemplates)
-            // We don't allow anything if you are above max 
-            if (templateCountForUser > maxTemplates) {
-                return reject(new GApiError(402, "Maximum templates exceeded"))
-            }
-            // We don't allow creation if you are at max
-            if (templateView.id == 0 && templateCountForUser == maxTemplates) {
-                return reject(new GApiError(402, "Maximum templates reached"))
-            }
-
-            // Block page augmentation over the limit
-            const [totalPageCount, previousPageCount] = await templateDao.pageCount(user.id, templateView.id)
-            if (templateView.pages >= previousPageCount) { // page augmentation
-                if (totalPageCount - previousPageCount + templateView.pages > user.maxPages) {
-                    return reject(new GApiError(402, "Maximum pages reached"))
+            // Max templates check
+            if (user.maxTemplates !== -1) {
+                const maxTemplates = Math.max(Business.maxTemplates(user), user.maxTemplates)
+                // We don't allow anything if you are above max 
+                if (templateCountForUser > maxTemplates) {
+                    return reject(new GApiError(402, "Maximum templates exceeded"))
                 }
+                // We don't allow creation if you are at max
+                if (templateView.id == 0 && templateCountForUser == maxTemplates) {
+                    return reject(new GApiError(402, "Maximum templates reached"))
+                }
+            }
 
-                // Flight Simmers cannot save templates above 2 pages.
-                if (user.accountType == AccountType.simmer && templateView.pages > 2) {
-                    return reject(new GApiError(402, "Maximum 2 pages per template reached"))
+            // Max pages check
+            if (user.maxPages !== -1) {
+                const [totalPageCount, previousPageCount] = await templateDao.pageCount(user.id, templateView.id)
+                if (templateView.pages >= previousPageCount) { // page augmentation
+                    if (totalPageCount - previousPageCount + templateView.pages > user.maxPages) {
+                        return reject(new GApiError(402, "Maximum pages reached"))
+                    }
+
+                    // Flight Simmers cannot save templates above 2 pages.
+                    if (user.accountType == AccountType.simmer && templateView.pages > 2) {
+                        return reject(new GApiError(402, "Maximum 2 pages per template reached"))
+                    }
                 }
             }
 

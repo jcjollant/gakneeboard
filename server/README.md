@@ -2,22 +2,7 @@
 run `vercel dev` to run the local service
 
 # Setting up the environment
-Create a .env file in the server directory with the following content
-```
-EFFECTIVE_DATE={whatever is current}
-STRIPE_LD1_PRICE=
-STRIPE_PP2_PRICE=
-STRIPE_BD1_PRICE=
-STRIPE_PP1_PRICE=
-STRIPE_HH1_PRICE=
-STRIPE_IP1_PRICE=
-STRIPE_IP2_PRICE=
-STRIPE_WEBHOOK_SECRET=
-STRIPE_SECRET_KEY={test value}
-BLOB_READ_WRITE_TOKEN={prod value}
-POSTGRES_URL={we recommend the test value}
-POSTGRES_PROD_URL={we recommend the production value which will be picked up by manualSketchUpdate.ts}
-```
+Create a .env file in the server directory with the variables detailed in [environment variables](environment-variables.md)
 
 # Testing
 ## Unit testing

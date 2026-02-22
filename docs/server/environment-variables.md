@@ -6,11 +6,12 @@ The GAKneeboard server relies on the following environment variables for configu
 | :--- | :--- | :--- |
 | `STRIPE_SECRET_KEY` | Stripe Secret API Key | Used for payment processing and subscription management. |
 | `STRIPE_WEBHOOK_SECRET` | Stripe Webhook Secret | Verifies that incoming webhooks are from Stripe. |
-| `STRIPE_HH1_PRICE` | Stripe Price ID | Price ID for a specific product/plan (HH1). |
-| `STRIPE_PP1_PRICE` | Stripe Price ID | Price ID for a specific product/plan (PP1). |
-| `STRIPE_PP2_PRICE` | Stripe Price ID | Price ID for a specific product/plan (PP2). |
-| `STRIPE_BD1_PRICE` | Stripe Price ID | Price ID for a specific product/plan (BD1). |
-| `STRIPE_LD1_PRICE` | Stripe Price ID | Price ID for a specific product/plan (LD1). |
+| `STRIPE_HH1_PRICE` | Stripe Price ID | **[Deprecated]** Old HH1 price ID. |
+| `STRIPE_PRICE_SP1` | Stripe Price ID | Price ID for the Student Pilot plan (SP1). |
+| `STRIPE_PRICE_CR1` | Stripe Price ID | Price ID for the Checkride Ready plan (CR1). |
+| `STRIPE_PRICE_PP3` | Stripe Price ID | Price ID for the Private Pilot plan (PP3). |
+| `STRIPE_BD1_PRICE` | Stripe Price ID | **[Deprecated]** Old BD1 price ID. |
+| `STRIPE_LD1_PRICE` | Stripe Price ID | **[Deprecated]** Old lifetime deal price ID. |
 | `STRIPE_PRODUCT_REFCARD_PRICE` | Stripe Price ID | Price ID for the reference card product. |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob Token | Authentication token for Vercel Blob storage (read/write). |
 | `BLOB_THUMBNAILS_DIRECTORY` | Vercel Blob Directory | Optional directory for storing thumbnails in Vercel Blob storage. |

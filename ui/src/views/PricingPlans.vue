@@ -35,6 +35,7 @@
           <div class="price">
             <span class="amount">{{ plan.displayPrice}}</span>
             <span class="period" v-if="plan.chargeFrequency === 'monthly'">/month</span>
+            <span class="period" v-if="plan.chargeFrequency === 'yearly'">/year</span>
           </div>
           <p v-for="subtitle in plan.subtitles" class="description">{{ subtitle }}</p>
         </div>
@@ -48,12 +49,15 @@
                 </svg>
               </span>
               <span class="feature-text">
-                {{value.name}} : {{ value.quota }}
+                {{value.name}} : 
+                <span v-if="value.quota === -1" class="unlimited-badge">Unlimited</span>
+                <span v-else>{{ value.quota }}</span>
               </span>
             </li>
 
             <li v-for="(value) in [
-              {name:'Print Options', enabled: plan.features.advancedPrinting}, 
+              {name:'METARs', enabled: plan.features.metars},
+              {name:'NOTAMs', enabled: plan.features.notams},
               {name:'Exports to EFB', enabled: plan.features.export}, 
               {name:'Restore Old Versions', enabled: plan.features.restoreOldVersion}]">
               <span>
@@ -79,6 +83,9 @@
         </div>
       </div>
 
+    </div>
+    <div class="pricing-footer">
+      <p>Not ready for a subscription? All accounts start with the <strong>Flight Simmer</strong> plan, which includes 4 print credits, 1 template, and 2 pages.</p>
     </div>
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" @authentication="onAuthentication" />
   </div>
@@ -384,5 +391,18 @@ function onAuthentication(newUser: any) {
 .subscribe-button.primary:hover {
   background-color: #2563EB;
   color: white;
+}
+
+.unlimited-badge {
+  background-color: #10B981;
+  color: white;
+  padding: 0.05rem 0.4rem;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-left: 0.25rem;
+  display: inline-block;
+  vertical-align: middle;
 }
 </style>

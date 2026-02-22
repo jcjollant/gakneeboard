@@ -51,7 +51,9 @@ export class Business {
     static latestEula: number = 20250821;
 
     public static calculatePrintCredits(user: User): number {
-        return Math.max(user.printCredits, Business.getQuotas(user).prints)
+        const quotas = Business.getQuotas(user);
+        if (quotas.prints === -1) return -1;
+        return Math.max(user.printCredits, quotas.prints)
     }
 
     public static getQuotas(user: User): Quotas {
@@ -71,7 +73,9 @@ export class Business {
     static monthlyRevenue(user: User): number {
         switch (user.accountType) {
             case AccountType.private:
-                return 4.49;
+                return 4.16; // $49.99/12
+            case AccountType.checkride:
+                return 4.99;
             case AccountType.beta:
                 return 3.49;
             case AccountType.student:

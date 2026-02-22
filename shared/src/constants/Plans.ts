@@ -1,10 +1,11 @@
 import { AccountType } from "../models/AccountType";
 import { PlanDescription } from "../models/PlanDescription";
 
-export const bestValuePlan: string = 'ld2';
 export const PLAN_ID_SIM: string = 'sim'
 export const PLAN_ID_STUDENT_PILOT: string = 'pp1'
-export const PLAN_ID_PRIVATE_PILOT: string = 'pp2'
+export const PLAN_ID_PRIVATE_PILOT: string = 'pp3'
+export const PLAN_ID_CHECKRIDE_READY: string = 'cr1'
+export const bestValuePlan: string = PLAN_ID_PRIVATE_PILOT;
 export const PLAN_ID_BETA_DEAL: string = 'bd1'
 export const PLAN_ID_LIFETIME_DEAL: string = 'ld2'
 
@@ -17,7 +18,7 @@ export const PLANS: PlanDescription[] = [
         displayName: 'Flight Simmer',
         subtitles: ['Just Testing', 'Get A Feel For The System'],
         active: true,
-        show: true,
+        show: false,
         displayPrice: 'Free',
         accountType: AccountType.simmer,
         chargeFrequency: 'never',
@@ -30,6 +31,8 @@ export const PLANS: PlanDescription[] = [
         features: {
             advancedPrinting: false,
             export: false,
+            metars: false,
+            notams: false,
             restoreOldVersion: false
         }
     },
@@ -42,7 +45,7 @@ export const PLANS: PlanDescription[] = [
         displayPrice: '$2.99',
         accountType: AccountType.student,
         chargeFrequency: 'monthly',
-        priceEnvironmentVariable: 'STRIPE_PP1_PRICE',
+        priceEnvironmentVariable: 'STRIPE_PRICE_SP1',
         quotas: {
             prints: 8,
             pages: 8,
@@ -50,27 +53,54 @@ export const PLANS: PlanDescription[] = [
         },
         features: {
             advancedPrinting: true,
-            export: true,
+            export: false,
+            metars: true,
+            notams: false,
             restoreOldVersion: false
         }
     },
     {
-        id: PLAN_ID_PRIVATE_PILOT,
-        displayName: 'Private Pilot',
+        id: PLAN_ID_CHECKRIDE_READY,
+        displayName: 'Checkride Ready',
+        subtitles: ['Perfect for Final Prep', 'More pages when you need them'],
         active: true,
-        show: false,
-        displayPrice: '$4.49',
-        subtitles: ['Charged $53.88/year', 'This is our regular price'],
-        chargeFrequency: 'yearly',
-        priceEnvironmentVariable: 'STRIPE_PP2_PRICE',
+        show: true,
+        displayPrice: '$4.99',
+        accountType: AccountType.checkride,
+        chargeFrequency: 'monthly',
+        priceEnvironmentVariable: 'STRIPE_PRICE_CR1',
         quotas: {
-            prints: 16,
+            prints: 24,
             pages: 20,
             templates: 5
         },
         features: {
             advancedPrinting: true,
             export: true,
+            metars: true,
+            notams: true,
+            restoreOldVersion: true
+        }
+    },
+    {
+        id: PLAN_ID_PRIVATE_PILOT,
+        displayName: 'Private Pilot',
+        active: true,
+        show: true,
+        displayPrice: '$49.99',
+        subtitles: ['No Brainer', 'Unlimited Features and Prints'],
+        chargeFrequency: 'yearly',
+        priceEnvironmentVariable: 'STRIPE_PRICE_PP3',
+        quotas: {
+            prints: -1,
+            pages: -1,
+            templates: -1
+        },
+        features: {
+            advancedPrinting: true,
+            export: true,
+            metars: true,
+            notams: true,
             restoreOldVersion: true
         },
         accountType: AccountType.private
@@ -83,7 +113,7 @@ export const PLANS: PlanDescription[] = [
         displayPrice: '$4.49',
         subtitles: ['Charged $53.88/year', 'This is our regular price'],
         chargeFrequency: 'yearly',
-        priceEnvironmentVariable: 'STRIPE_BD1_PRICE',
+        priceEnvironmentVariable: 'STRIPE_PRICE_BD1',
         quotas: {
             prints: -1,
             pages: 50,
@@ -92,6 +122,8 @@ export const PLANS: PlanDescription[] = [
         features: {
             advancedPrinting: true,
             export: true,
+            metars: true,
+            notams: true,
             restoreOldVersion: true
         },
         accountType: AccountType.beta
@@ -105,7 +137,7 @@ export const PLANS: PlanDescription[] = [
         displayPrice: '$59',
         accountType: AccountType.lifetime,
         chargeFrequency: 'onetime',
-        priceEnvironmentVariable: 'STRIPE_LD1_PRICE',
+        priceEnvironmentVariable: 'STRIPE_PRICE_LD1',
         quotas: {
             prints: 16,
             pages: 20,
@@ -114,6 +146,8 @@ export const PLANS: PlanDescription[] = [
         features: {
             advancedPrinting: true,
             export: true,
+            metars: true,
+            notams: true,
             restoreOldVersion: true
         }
     },
@@ -122,11 +156,11 @@ export const PLANS: PlanDescription[] = [
         displayName: 'Lifetime Deal',
         subtitles: ['Pay once, use forever', 'Grab it while it lasts!'],
         active: true,
-        show: true,
+        show: false,
         displayPrice: '$69',
         accountType: AccountType.lifetime,
         chargeFrequency: 'onetime',
-        priceEnvironmentVariable: 'STRIPE_LD2_PRICE',
+        priceEnvironmentVariable: 'STRIPE_PRICE_LD2',
         quotas: {
             prints: 16,
             pages: 20,
@@ -135,6 +169,8 @@ export const PLANS: PlanDescription[] = [
         features: {
             advancedPrinting: true,
             export: true,
+            metars: true,
+            notams: true,
             restoreOldVersion: true
         }
     }

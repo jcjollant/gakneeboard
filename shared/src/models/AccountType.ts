@@ -1,6 +1,7 @@
 export enum AccountType {
     beta = 'beta',
     student = 'sp',
+    checkride = 'cr',
     private = 'pp',
     instrument = 'ip',
     simmer = 'sim',
@@ -13,6 +14,7 @@ export function parseAccountType(from: string): AccountType {
     switch (from) {
         case 'beta': return AccountType.beta;
         case 'sp': return AccountType.student;
+        case 'cr': return AccountType.checkride;
         case 'pp': return AccountType.private;
         case 'ip': return AccountType.instrument;
         case 'sim': return AccountType.simmer;

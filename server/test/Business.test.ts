@@ -57,8 +57,8 @@ describe('Business', () => {
         });
 
         it('should return correct credits for private account', () => {
-            const expectedRefill = 16
-            const newUser = newTestUser(0, AccountType.private, 'pp2')
+            const expectedRefill = -1
+            const newUser = newTestUser(0, AccountType.private, 'pp3')
             newUser.printCredits = 0; // no credits
             const c1 = Business['calculatePrintCredits'](newUser);
             expect(c1).toBe(expectedRefill);
@@ -88,11 +88,11 @@ describe('Business', () => {
 
         it('should return private account quotas', () => {
             user.accountType = AccountType.private
-            user.planId = 'pp2'
+            user.planId = 'pp3'
             const quotas = Business.getQuotas(user);
-            expect(quotas.pages).toBe(20);
-            expect(quotas.prints).toBe(16);
-            expect(quotas.templates).toBe(5);
+            expect(quotas.pages).toBe(-1);
+            expect(quotas.prints).toBe(-1);
+            expect(quotas.templates).toBe(-1);
         });
 
         it('should return lifetime deal account quotas', () => {
@@ -116,7 +116,7 @@ describe('Business', () => {
 
     describe('printConsume', () => {
 
-        const meteredAccounts = [{ type: AccountType.simmer, planId: PLAN_ID_SIM }, { type: AccountType.student, planId: 'pp1' }, { type: AccountType.private, planId: 'pp2' }, { type: AccountType.lifetime, planId: 'ld1' }]
+        const meteredAccounts = [{ type: AccountType.simmer, planId: PLAN_ID_SIM }, { type: AccountType.student, planId: 'pp1' }]
 
         it('should decrease print credits for all metered account types', async () => {
             for (const account of meteredAccounts) {
@@ -204,7 +204,7 @@ describe('Business', () => {
                 testSubsciption.id,
                 testSubsciption.customerId,
                 testSubsciption.priceId,
-                PlanService.getPlan('pp2')!,
+                PlanService.getPlan('pp3')!,
                 123456,
                 null,
                 null,
@@ -379,7 +379,10 @@ describe('Business', () => {
     describe('monthlyRevenue', () => {
         it('should return correct revenue for each account type', () => {
             const userPrivate = newTestUser(0, AccountType.private)
-            expect(Business.monthlyRevenue(userPrivate)).toBe(4.49)
+            expect(Business.monthlyRevenue(userPrivate)).toBe(4.16)
+
+            const userCheckride = newTestUser(0, AccountType.checkride)
+            expect(Business.monthlyRevenue(userCheckride)).toBe(4.99)
 
             const userBeta = newTestUser(0, AccountType.beta)
             expect(Business.monthlyRevenue(userBeta)).toBe(3.49)
@@ -430,11 +433,11 @@ describe('Business', () => {
             expect(user.maxPages).toEqual(2)
             expect(user.printCredits).toEqual(PRINT_CREDIT_SIMMER)
 
-            await Business.upgradeUser(user.customerId, AccountType.private, 'pp2', mockUserDao)
+            await Business.upgradeUser(user.customerId, AccountType.private, 'pp3', mockUserDao)
 
-            expect(user.maxTemplates).toEqual(5)
-            expect(user.maxPages).toEqual(20)
-            expect(user.printCredits).toEqual(16)
+            expect(user.maxTemplates).toEqual(-1)
+            expect(user.maxPages).toEqual(-1)
+            expect(user.printCredits).toEqual(-1)
 
             expect(mockUserDao.updateType).toHaveBeenCalledTimes(1);
             expect(mockUserDao.updatePrintCredit).toHaveBeenCalledTimes(1);

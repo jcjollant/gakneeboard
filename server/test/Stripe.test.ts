@@ -9,12 +9,11 @@ import { describe, expect, it, beforeAll, afterAll, jest } from '@jest/globals';
 // But simpler: overwrite process.env properties forcefully.
 
 process.env.STRIPE_SECRET_KEY = 'mock_key';
-process.env.STRIPE_PP1_PRICE = 'price_1QqiSCG89XrbqGAIuHSrFEOT';
-process.env.STRIPE_PP2_PRICE = 'price_1RtYk6G89XrbqGAIRdgdHEkd';
-process.env.STRIPE_HH1_PRICE = 'price_1QyFNWG89XrbqGAI2oQFv629';
-process.env.STRIPE_BD1_PRICE = 'price_1QzroGG89XrbqGAIUhzCrr5F';
-process.env.STRIPE_LD1_PRICE = 'price_1SRl2PG89XrbqGAIJSHioW7g';
-
+process.env.STRIPE_PRICE_SP1 = 'price_1QqiSCG89XrbqGAIuHSrFEOT';
+process.env.STRIPE_PRICE_PP3 = 'price_1SRwC1G89XrbqGAItxkMp2dq';
+process.env.STRIPE_PRICE_CR1 = 'price_1T3jivG89XrbqGAI0Z3VdqcH';
+process.env.STRIPE_PRICE_LD1 = 'price_1SRl2PG89XrbqGAIJSHioW7g';
+process.env.STRIPE_PRICE_BD1 = 'price_1QzroGG89XrbqGAIUhzCrr5F';
 import { StripeClient, Price } from '../backend/business/Stripe';
 import { AccountType } from '@gak/shared';
 
@@ -42,19 +41,25 @@ describe('StripeClient', () => {
 
         it('should return correct price for PP1 (Student Pilot)', () => {
             const price = stripe.priceFromProduct('pp1');
-            expect(price.id).toBe(process.env.STRIPE_PP1_PRICE);
+            expect(price.id).toBe(process.env.STRIPE_PRICE_SP1);
             expect(price.subscription).toBe(true);
         });
 
-        it('should return correct price for PP2 (Private Pilot)', () => {
-            const price = stripe.priceFromProduct('pp2');
-            expect(price.id).toBe(process.env.STRIPE_PP2_PRICE);
+        it('should return correct price for PP3 (Private Pilot)', () => {
+            const price = stripe.priceFromProduct('pp3');
+            expect(price.id).toBe(process.env.STRIPE_PRICE_PP3);
+            expect(price.subscription).toBe(true);
+        });
+
+        it('should return correct price for CR1 (Checkride)', () => {
+            const price = stripe.priceFromProduct('cr1');
+            expect(price.id).toBe(process.env.STRIPE_PRICE_CR1);
             expect(price.subscription).toBe(true);
         });
 
         it('should return correct price for LD1 (Lifetime Deal)', () => {
             const price = stripe.priceFromProduct('ld1');
-            expect(price.id).toBe(process.env.STRIPE_LD1_PRICE);
+            expect(price.id).toBe(process.env.STRIPE_PRICE_LD1);
             expect(price.subscription).toBe(false);
         });
 
@@ -76,19 +81,19 @@ describe('StripeClient', () => {
 
         it('should return AccountType.student for PP1 price', () => {
             // TS detects mapping from env var
-            expect(stripe.accountTypeFromPrice(process.env.STRIPE_PP1_PRICE!)).toBe(AccountType.student);
+            expect(stripe.accountTypeFromPrice(process.env.STRIPE_PRICE_SP1!)).toBe(AccountType.student);
         });
 
-        it('should return AccountType.private for PP2 price', () => {
-            expect(stripe.accountTypeFromPrice(process.env.STRIPE_PP2_PRICE!)).toBe(AccountType.private);
+        it('should return AccountType.private for PP3 price', () => {
+            expect(stripe.accountTypeFromPrice(process.env.STRIPE_PRICE_PP3!)).toBe(AccountType.private);
         });
 
         it('should return AccountType.beta for BD1 price', () => {
-            expect(stripe.accountTypeFromPrice(process.env.STRIPE_BD1_PRICE!)).toBe(AccountType.beta);
+            expect(stripe.accountTypeFromPrice(process.env.STRIPE_PRICE_BD1!)).toBe(AccountType.beta);
         });
 
         it('should return AccountType.lifetime for LD1 price', () => {
-            expect(stripe.accountTypeFromPrice(process.env.STRIPE_LD1_PRICE!)).toBe(AccountType.lifetime);
+            expect(stripe.accountTypeFromPrice(process.env.STRIPE_PRICE_LD1!)).toBe(AccountType.lifetime);
         });
 
         it('should return AccountType.unknown for unknown price', () => {
@@ -100,19 +105,19 @@ describe('StripeClient', () => {
         const stripe = StripeClient.instance;
 
         it('should return "pp1" for PP1 price', () => {
-            expect(stripe.planIdFromPrice(process.env.STRIPE_PP1_PRICE!)).toBe('pp1');
+            expect(stripe.planIdFromPrice(process.env.STRIPE_PRICE_SP1!)).toBe('pp1');
         });
 
-        it('should return "pp2" for PP2 price', () => {
-            expect(stripe.planIdFromPrice(process.env.STRIPE_PP2_PRICE!)).toBe('pp2');
+        it('should return "pp3" for PP3 price', () => {
+            expect(stripe.planIdFromPrice(process.env.STRIPE_PRICE_PP3!)).toBe('pp3');
         });
 
         it('should return "bd1" for BD1 price', () => {
-            expect(stripe.planIdFromPrice(process.env.STRIPE_BD1_PRICE!)).toBe('bd1');
+            expect(stripe.planIdFromPrice(process.env.STRIPE_PRICE_BD1!)).toBe('bd1');
         });
 
         it('should return "ld1" for LD1 price', () => {
-            expect(stripe.planIdFromPrice(process.env.STRIPE_LD1_PRICE!)).toBe('ld1');
+            expect(stripe.planIdFromPrice(process.env.STRIPE_PRICE_LD1!)).toBe('ld1');
         });
 
         it('should return undefined for unknown price', () => {

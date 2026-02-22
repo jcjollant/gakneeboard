@@ -128,7 +128,7 @@ describe('TemplateService Tests', () => {
 
         it('throws 404 if version not found', async () => {
             const user = newTestUser(jcUserId)
-            user.planId = 'pp2'
+            user.planId = 'pp3'
             jest.spyOn(UserDao.prototype, 'get').mockResolvedValue(user)
             jest.spyOn(TemplateHistoryDao.prototype, 'getTemplateVersion').mockResolvedValue(undefined)
             jest.spyOn(TemplateDao, 'readByIdStatic').mockResolvedValue(undefined)
@@ -139,7 +139,7 @@ describe('TemplateService Tests', () => {
 
         it('Records usage on success', async () => {
             const user = newTestUser(jcUserId)
-            user.planId = 'pp2'
+            user.planId = 'pp3'
             jest.spyOn(UserDao.prototype, 'get').mockResolvedValue(user)
 
             // Mock successful retrieval
@@ -337,10 +337,11 @@ describe('TemplateService Tests', () => {
             const publicationCode = 'ZZ'
             const publication = new Publication(0, publicationCode, publicTemplateView.id, true)
 
-            const userJc = newTestUser(jcUserId, AccountType.private, 'pp2')
+            const userJc = newTestUser(jcUserId, AccountType.private, 'pp3')
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(userJc)
             jest.spyOn(UsageDao, 'create').mockResolvedValue(true)
             jest.spyOn(PublicationDao, 'publish').mockResolvedValue(publication)
+
             const mockTemplateDao = getMockTemplateDao(publicTemplateView, 4, 2, 0)
 
             const ts = await TemplateService.save(jcHash, publicTemplateView)
@@ -374,8 +375,8 @@ describe('TemplateService Tests', () => {
             const templateId = 44;
             const privateTemplateView = new TemplateKneeboardView(templateId, jcTestTemplateName, ['a', 'b'], TemplateFormat.Kneeboard, '', 1, false)
 
-            const userJc = newTestUser(jcUserId, AccountType.private, 'pp2')
-            expect(userJc.maxTemplates).toBe(5)
+            const userJc = newTestUser(jcUserId, AccountType.private, 'pp3')
+            expect(userJc.maxTemplates).toBe(-1)
 
             jest.spyOn(UserDao, 'getUserFromHash').mockResolvedValue(userJc)
             jest.spyOn(UsageDao, 'create').mockResolvedValue(true)

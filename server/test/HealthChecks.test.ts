@@ -166,11 +166,9 @@ describe('HealthChecks', () => {
         test('Success: All variables present', async () => {
             process.env.STRIPE_SECRET_KEY = 'test';
             process.env.STRIPE_WEBHOOK_SECRET = 'test';
-            process.env.STRIPE_HH1_PRICE = 'test';
-            process.env.STRIPE_PP1_PRICE = 'test';
-            process.env.STRIPE_PP2_PRICE = 'test';
-            process.env.STRIPE_BD1_PRICE = 'test';
-            process.env.STRIPE_LD1_PRICE = 'test';
+            process.env.STRIPE_PRICE_SP1 = 'test';
+            process.env.STRIPE_PRICE_PP3 = 'test';
+            process.env.STRIPE_PRICE_CR1 = 'test';
             process.env.STRIPE_PRODUCT_REFCARD_PRICE = 'test';
             process.env.BLOB_READ_WRITE_TOKEN = 'test';
             process.env.POSTGRES_URL = 'test';
@@ -188,7 +186,7 @@ describe('HealthChecks', () => {
 
             const result = await HealthCheck.environmentVariables();
             expect(result.status).toBe(Check.SUCCESS);
-            expect(result.msg).toContain('Found 21 variables');
+            expect(result.msg).toContain('Found 19 variables');
         });
 
         test('Failure: Missing variable', async () => {

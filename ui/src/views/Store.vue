@@ -117,7 +117,7 @@
         </div>
     </div>
 
-    <div v-if="showPlans" class="products-section">
+    <div class="products-section">
         <div class="divider"></div>
         <h2>Available Memberships</h2>
         <div class="products-grid">
@@ -125,9 +125,9 @@
                 v-for="plan in plans" 
                 :key="plan.id" 
                 class="product-card plan-card"
-                :class="{ 'featured-plan': plan.id === 'pro' }"
+                :class="{ 'featured-plan': plan.id === bestValuePlan }"
               >
-                <div v-if="plan.id === 'pro'" class="badge-free-shipping bg-orange-500">BEST VALUE</div>
+                <div v-if="plan.id === bestValuePlan" class="badge-free-shipping bg-orange-500">BEST VALUE</div>
                 <div class="product-info">
                    <h3>{{ plan.displayName }}</h3>
                    <ul class="plan-features">
@@ -138,6 +138,7 @@
                    <div class="price-container">
                        <span class="price">{{ plan.displayPrice }}</span>
                        <span class="text-sm text-gray-500" v-if="plan.chargeFrequency === 'monthly'">/mo</span>
+                       <span class="text-sm text-gray-500" v-if="plan.chargeFrequency === 'yearly'">/year</span>
                    </div>
                    <button @click="onPlan(plan)" class="btn btn-primary">
                        View Plan
@@ -157,7 +158,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { currentUser } from '../assets/data';
 import { StoreService } from '../services/StoreService';
 import { CheckoutService } from '../services/CheckoutService';
-import { PrintFormat, PRINT_PRICING, PRINT_OVERAGE_CENTS, PLANS, AccountType, PlanDescription, FeatureFlags } from '@gak/shared';
+import { PrintFormat, PRINT_PRICING, PRINT_OVERAGE_CENTS, PLANS, bestValuePlan, AccountType, PlanDescription, FeatureFlags } from '@gak/shared';
 import CartDialog from '../components/store/CartDialog.vue';
 import Menu from '../components/menu/Menu.vue';
 import { useToast } from 'primevue/usetoast';
@@ -227,9 +228,7 @@ const addStandardToCart = async (name: string, format: string) => {
 
 const plans = PLANS.filter(p => p.show);
 
-const showPlans = computed(() => {
-    return !user.loggedIn || user.accountType === AccountType.simmer;
-});
+const showPlans = true;
 
 const onPlan = async (plan: PlanDescription) => {
     router.push('/plans');
