@@ -6,6 +6,9 @@ import { PrintOrderDao } from '../dao/PrintOrderDao';
 import { PrintService } from '../services/PrintService';
 import { PrintProductType, PrintOrderStatus } from '@gak/shared';
 import { TemplateHistoryDao } from "../dao/TemplateHistoryDao";
+import { AdipService } from "../services/AdipService";
+import { VercelService } from "../services/VercelService";
+
 
 export enum TaskStatus {
     NEW = 'new',
@@ -59,17 +62,27 @@ export class HouseKeeping {
         const tasks: Task[] = []
 
         // Refill task
-        await Promise.all([
+        const tasksResults = await Promise.all([
             HouseKeeping.performRefills(),
             HouseKeeping.performSketchUpdate(),
             HouseKeeping.cleanAbandonedOrders(),
-            HouseKeeping.cleanTemplateHistory()
-        ]).then((t) => {
-            tasks.push(t[0])
-            tasks.push(t[1])
-            tasks.push(t[2])
-            tasks.push(t[3])
-        })
+            HouseKeeping.cleanTemplateHistory(),
+            HouseKeeping.autoUpdateAeronavCycle()
+        ])
+
+        tasks.push(...tasksResults)
+
+        // Check if any task updated environment variables and trigger redeploy if needed
+        const updateTask = tasksResults.find(t => t.name === 'Aeronav Cycle Update')
+        if (updateTask && updateTask.status === TaskStatus.FINISHED) {
+            console.log('[HouseKeeping.perform] Aeronav cycle updated, triggering redeploy...')
+            try {
+                await VercelService.triggerRedeploy()
+            } catch (e: any) {
+                console.error('[HouseKeeping.perform] Failed to trigger redeploy', e.message)
+                // We don't fail the whole perform, but we log the error
+            }
+        }
 
         return tasks
     }
@@ -185,4 +198,35 @@ export class HouseKeeping {
         }
         return task
     }
+
+    /**
+     * Checks ADIP for new cycle and updates Vercel environment variables if needed
+     */
+    public static async autoUpdateAeronavCycle(): Promise<Task> {
+        const task = new Task('Aeronav Cycle Update')
+        task.start()
+        try {
+            const currentCycle = process.env.AERONAV_DATA_CYCLE
+            const currentEffectiveDate = process.env.EFFECTIVE_DATE
+
+            const adipInfo = await AdipService.fetchCurrentCycleInfo()
+
+            if (adipInfo.cycle !== currentCycle || adipInfo.effectiveDate !== currentEffectiveDate) {
+                console.log(`[HouseKeeping.autoUpdateAeronavCycle] New cycle detected: ${adipInfo.cycle} (${adipInfo.effectiveDate})`)
+
+                // Update Vercel environment variables
+                await VercelService.setEnvVar('AERONAV_DATA_CYCLE', adipInfo.cycle)
+                await VercelService.setEnvVar('EFFECTIVE_DATE', adipInfo.effectiveDate)
+
+                task.finish(`Updated to ${adipInfo.cycle} (${adipInfo.effectiveDate})`)
+            } else {
+                task.skip(`Already up to date: ${currentCycle}`)
+            }
+        } catch (e: any) {
+            console.error('[HouseKeeping.autoUpdateAeronavCycle] Failed', e.message)
+            task.fail(e.message)
+        }
+        return task
+    }
+
 }

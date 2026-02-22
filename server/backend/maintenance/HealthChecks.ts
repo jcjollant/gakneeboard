@@ -142,7 +142,10 @@ export class HealthCheck {
             'AERONAV_DATA_CYCLE',
             'SUPABASE_URL',
             'SUPABASE_SERVICE_ROLE_KEY',
-            'HEALTH_CHECK_ACCESS_KEY']
+            'HEALTH_CHECK_ACCESS_KEY',
+            'VERCEL_TOKEN',
+            'VERCEL_PROJECT_ID',
+            'VERCEL_TEAM_ID']
 
         const check: Check = new Check("Environment Variables")
         for (const envVar of envVars) {

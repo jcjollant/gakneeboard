@@ -182,10 +182,13 @@ describe('HealthChecks', () => {
             process.env.SUPABASE_URL = 'test';
             process.env.SUPABASE_SERVICE_ROLE_KEY = 'test';
             process.env.HEALTH_CHECK_ACCESS_KEY = 'test';
+            process.env.VERCEL_TOKEN = 'test';
+            process.env.VERCEL_PROJECT_ID = 'test';
+            process.env.VERCEL_TEAM_ID = 'test';
 
             const result = await HealthCheck.environmentVariables();
             expect(result.status).toBe(Check.SUCCESS);
-            expect(result.msg).toContain('Found 18 variables');
+            expect(result.msg).toContain('Found 21 variables');
         });
 
         test('Failure: Missing variable', async () => {

@@ -39,17 +39,19 @@ Note: Trigger times fluctuate sometimes by almost +/- 1h
 
 # Effective date management
 
+The Aeronav effective date and data cycle management is now automated.
 
+## Automation Logic
+The **Willie** task (Housekeeping) invokes `HouseKeeping.autoUpdateAeronavCycle()` daily. This task:
+1.  Fetches current cycle info from the FAA ADIP API.
+2.  Compares it with the environment variables `EFFECTIVE_DATE` and `AERONAV_DATA_CYCLE`.
+3.  If a new cycle is active, it updates the Vercel project environment variables and triggers a redeployment.
 
-
-Adip is returning effective data in getAirportCurrentEffectiveDate() which is reading from EFFECTIVE_DATE environment variable, defaulting to 
-
-## Refresh effective date
-* Refresh EFFECTIVE_DATE in Vercel environment variables for ga-api
-* Refresh AERONAV_DATA_CYCLE in Vercel environment variables for ga-api
-  -> This is used by automated sketch updates and manualSketchUpdate
-  -> Value comes from Adip API getAirportChartData(cycle)
-* Refresh Adip.defaultEffectiveDate in [AdipService.ts](../backend/services/AdipService.ts) (starting date)
+## Manual Management (Legacy/Override)
+If manual intervention is needed, you can:
+*   Update `EFFECTIVE_DATE` and `AERONAV_DATA_CYCLE` in the Vercel Dashboard.
+*   Trigger a redeploy manually.
+*   Refer to `AdipService.ts` for how these values are consumed by the application logic.
 
 ## Checks
 Effective date is checked by Dr Hibbert every day which invokes HealthChecks.perform()

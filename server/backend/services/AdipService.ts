@@ -31,6 +31,37 @@ export class AdipService implements AirportDataSource {
     }
 
     /**
+     * Fetches the current FAA cycle info from ADIP
+     * @returns { cycle: string, effectiveDate: string }
+     */
+    public static async fetchCurrentCycleInfo(): Promise<{ cycle: string, effectiveDate: string }> {
+        const rentonCode = 'KRNT';
+        const payload = `{ "locId": "${rentonCode}" }`;
+        const config = {
+            headers: {
+                'Authorization': AdipService.basicAuth,
+                "Content-Type": "text/plain"
+            },
+        };
+
+        const chartData = await AdipService.fetchAirportChartData(payload, config);
+        const airportDetails = await AdipService.fetchAirportDetails(rentonCode, payload, config, false);
+
+        if (!chartData || !chartData.cycle) {
+            throw new Error('Failed to fetch cycle from ADIP');
+        }
+
+        if (!airportDetails || !airportDetails.effectiveDate) {
+            throw new Error('Failed to fetch effective date from ADIP');
+        }
+
+        return {
+            cycle: chartData.cycle,
+            effectiveDate: airportDetails.effectiveDate
+        };
+    }
+
+    /**
      * Fetch airport details from Adip then parse it into an Airport object
      * @param code Airport code 
      * @param saveRawData boolean flag indicating whether we should record request data

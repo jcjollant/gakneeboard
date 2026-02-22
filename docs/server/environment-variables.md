@@ -23,6 +23,9 @@ The GAKneeboard server relies on the following environment variables for configu
 | `SUPABASE_URL` | Supabase URL | URL for the Supabase project. |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase Service Role Key | Admin key for Supabase operations (bypasses RLS). |
 | `HEALTH_CHECK_ACCESS_KEY` | Health Check API Key | **[Required]** Key to bypass admin session requirement for `/admin/healthCheck`. Also checked by health monitors. |
+| `VERCEL_TOKEN` | Vercel Access Token | **[Required]** Used by the Aeronav automation to update environment variables and trigger redeployments. |
+| `VERCEL_PROJECT_ID` | Vercel Project ID | **[Required]** The ID of the Vercel project for the server. |
+| `VERCEL_TEAM_ID` | Vercel Team ID | **[Required]** The ID of the Vercel team (or user) associated with the project. |
 
 ## Usage Details
 

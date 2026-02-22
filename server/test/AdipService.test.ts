@@ -1,4 +1,4 @@
-import { describe, expect, it, test } from '@jest/globals';
+import { describe, expect, it, test, jest, afterEach } from '@jest/globals';
 import { AdipService } from '../backend/services/AdipService'
 import { Airport } from '../backend/models/Airport';
 import { PatternDirection, Runway, RunwaySurface } from '../backend/models/Runway'
@@ -13,6 +13,7 @@ import kpaeChartData from './jsonData/chart/kpae.json'
 import s43Data from './jsonData/airport/s43.json'
 import cypqData from './jsonData/airport/cypq.json'
 import { krntAtcs, krntIap, krntApd, krntDep } from './constants';
+import { AirportChartData } from '../backend/models/AirportChartData';
 
 // combines airport details with chart data
 export function airportFromData(airportDetails: any, airportChartData: any): Airport {
@@ -37,6 +38,10 @@ function checkAtc(airport: Airport, expectedAtcs: any) {
 }
 
 describe('AdipService', () => {
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
 
     test('airportIsStale', async () => {
         // Setup dates
@@ -75,6 +80,49 @@ describe('AdipService', () => {
             delete process.env.EFFECTIVE_DATE
         }
     })
+
+    describe('fetchCurrentCycleInfo', () => {
+        test('Success', async () => {
+            const mockCycle = '2501';
+            const mockEffectiveDate = '20260122';
+
+            const acd = new AirportChartData();
+            acd.cycle = mockCycle;
+
+            const airport = new Airport('KRNT', undefined, 'Renton', 42);
+            airport.effectiveDate = mockEffectiveDate;
+
+            jest.spyOn(AdipService, 'fetchAirportChartData').mockResolvedValue(acd);
+            jest.spyOn(AdipService, 'fetchAirportDetails').mockResolvedValue(airport);
+
+            const result = await AdipService.fetchCurrentCycleInfo();
+
+            expect(result.cycle).toBe(mockCycle);
+            expect(result.effectiveDate).toBe(mockEffectiveDate);
+        });
+
+        test('Failure: No cycle', async () => {
+            const acd = new AirportChartData();
+            // cycle is undefined
+
+            jest.spyOn(AdipService, 'fetchAirportChartData').mockResolvedValue(acd);
+
+            await expect(AdipService.fetchCurrentCycleInfo()).rejects.toThrow('Failed to fetch cycle from ADIP');
+        });
+
+        test('Failure: No effective date', async () => {
+            const acd = new AirportChartData();
+            acd.cycle = '2501';
+
+            const airport = new Airport('KRNT', undefined, 'Renton', 42);
+            // effectiveDate is undefined
+
+            jest.spyOn(AdipService, 'fetchAirportChartData').mockResolvedValue(acd);
+            jest.spyOn(AdipService, 'fetchAirportDetails').mockResolvedValue(airport);
+
+            await expect(AdipService.fetchCurrentCycleInfo()).rejects.toThrow('Failed to fetch effective date from ADIP');
+        });
+    });
 
     test('Military frequencies', () => {
         expect(AdipService.isMilitary(123.0)).toBeFalsy()
@@ -129,7 +177,6 @@ describe('AdipService', () => {
     })
 
     test('Renton fields', async () => {
-        const before = Date.now()
         const airport = airportFromData(krntData, krntChartData)
         // console.log(JSON.stringify(airport))
         expect(airport.code).toBe('KRNT')
@@ -202,7 +249,6 @@ describe('AdipService', () => {
     })
 
     test('S43 fields', () => {
-        const before = Date.now()
         const airport = AdipService.parseAirport(s43Data)
         expect(airport.code).toBe('S43')
         expect(airport.name).toBe('Harvey Fld')
