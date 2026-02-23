@@ -23,7 +23,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      GAK_AP_URL: process.env.GAK_AP_URL || 'https://api.kneeboard.ga/',
+      GAK_API_URL: process.env.GAK_API_URL || 'https://api.kneeboard.ga/',
       SUPABASE_URL: process.env.SUPABASE_URL,
       SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
       POSTGRES_URL: process.env.POSTGRES_URL,
