@@ -1,6 +1,6 @@
 {
   "name": "@gak/shared",
-  "version": "6.9.9",
+  "version": "6.9.10",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
