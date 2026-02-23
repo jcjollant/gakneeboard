@@ -6,6 +6,7 @@ export interface PlanDescription {
     displayName: string; // Display name of the plan in the UI
     active: boolean; // Whether this plan is active
     show: boolean; // Whether to show this plan in the UI
+    showInFtux: boolean; // Whether to show this plan in FTUX
     displayPrice: string;
     subtitles?: string[];
     accountType: AccountType;
