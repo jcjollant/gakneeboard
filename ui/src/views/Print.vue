@@ -146,7 +146,7 @@ function onOptionsUpdate(options:PrintOptions) {
 async function onExportPdf(options: PrintOptions | undefined) {
   if (!options) return;
   
-  if (currentUser.isSim) {
+  if (!currentUser.canExportPdf) {
       toaster.upgrade()
       return
   }

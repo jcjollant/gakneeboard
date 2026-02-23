@@ -24,6 +24,7 @@ export class CurrentUser {
   homeAirport?: string;
   canViewNotams: boolean;
   canViewMetars: boolean;
+  canExportPdf: boolean;
 
   static noUser() { return new CurrentUser() }
 
@@ -42,6 +43,7 @@ export class CurrentUser {
     this.eulaCurrent = false;
     this.canViewNotams = false;
     this.canViewMetars = false;
+    this.canExportPdf = false;
 
     this.listeners = [];
   }
@@ -102,6 +104,7 @@ export class CurrentUser {
     this.homeAirport = undefined;
     this.canViewNotams = false;
     this.canViewMetars = false;
+    this.canExportPdf = false;
 
     // Clear user data from localStorage
     localStorage.removeItem(LocalStoreService.user);
@@ -198,14 +201,16 @@ export class CurrentUser {
         }
       }
 
-      // Update canViewNotams based on plan
+      // Update feature flags based on plan
       const plan = PLANS.find(p => p.accountType === this.accountType);
       if (plan) {
         this.canViewNotams = (plan as any).features.notams;
         this.canViewMetars = (plan as any).features.metars;
+        this.canExportPdf = (plan as any).features.export;
       } else {
         this.canViewNotams = false;
         this.canViewMetars = false;
+        this.canExportPdf = false;
       }
 
       // save new user data
