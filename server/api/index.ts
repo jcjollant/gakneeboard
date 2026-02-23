@@ -35,6 +35,7 @@ app.use(cors({
         'https://www.kneeboard.ga',
         'https://admin.kneeboard.ga',
         'https://preview.kneeboard.ga',
+        'https://admin-preview.kneeboard.ga',
         'https://gak-server.vercel.app'
     ],
     credentials: true
