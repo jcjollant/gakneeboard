@@ -1,4 +1,4 @@
-import { AccountType, UserView } from '@gak/shared';
+import { AccountType, UserView, PLANS } from '@gak/shared';
 import axios, { AxiosResponse } from "axios";
 import { Template } from "../models/Template";
 import { User } from "../models/User";
@@ -22,6 +22,7 @@ export class CurrentUser {
   printCredits: number;
   eulaCurrent: boolean;
   homeAirport?: string;
+  canViewNotams: boolean;
 
   static noUser() { return new CurrentUser() }
 
@@ -38,6 +39,7 @@ export class CurrentUser {
     this.accountType = AccountType.unknown
     this.printCredits = 0;
     this.eulaCurrent = false;
+    this.canViewNotams = false;
 
     this.listeners = [];
   }
@@ -96,6 +98,7 @@ export class CurrentUser {
     this.printCredits = 0;
     this.eulaCurrent = false;
     this.homeAirport = undefined;
+    this.canViewNotams = false;
 
     // Clear user data from localStorage
     localStorage.removeItem(LocalStoreService.user);
@@ -190,6 +193,14 @@ export class CurrentUser {
           this.homeAirport = tempHome
           data.homeAirport = tempHome
         }
+      }
+
+      // Update canViewNotams based on plan
+      const plan = PLANS.find(p => p.accountType === this.accountType);
+      if (plan) {
+        this.canViewNotams = (plan as any).features.notams;
+      } else {
+        this.canViewNotams = false;
       }
 
       // save new user data

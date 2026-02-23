@@ -104,7 +104,7 @@ const showCorners = computed(() => {
 const showNotams = computed(() => {
     if (displayMode.value === DisplayModeAirport.Charts) return false;
     if (config.value?.showNotams === false) return false;
-    return notamsList.value.length > 0 || !isSignedIn.value
+    return currentUser.canViewNotams && notamsList.value.length > 0
 })
 const showMetar = computed(() => {
     if (displayMode.value === DisplayModeAirport.Charts) return false;
@@ -255,11 +255,9 @@ function loadProps(newProps:any) {
     })
 
     // load notams
-    if(isSignedIn.value) {
-        getNotams(propsConfig.code).then(notams => {
-            notamsList.value = notams
-        })
-    }
+    getNotams(propsConfig.code).then(notams => {
+        notamsList.value = notams
+    })
 }
 
 onMounted(() => {
@@ -331,8 +329,8 @@ function onHeaderClick() {
 }    
 
 function onNotamBadgeClick() {
-    if (!isSignedIn.value) {
-        toaster.warning('Aircraft Calling', 'Please sign in to view Notams')
+    if (!currentUser.canViewNotams) {
+        toaster.warning('Aircraft Calling', 'Please upgrade your plan to view Notams')
         return
     }
     showNotamsDialog.value = true
@@ -408,9 +406,7 @@ function showAirport( airport:Airport) {
     }
 
     // get notams and metar
-    if(isSignedIn.value) {
-        getContext(airport.code)
-    }
+    getContext(airport.code)
 }
 
 // invoked whenever we want to save the current state

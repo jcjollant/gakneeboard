@@ -15,7 +15,7 @@
         </div>
         <CraftBoxedContent v-else />
 
-        <NotamBadge v-if="displayMode==DisplayModeIfr.Departure && notamsList.length > 0" 
+        <NotamBadge v-if="displayMode==DisplayModeIfr.Departure && currentUser.canViewNotams && notamsList.length > 0" 
             :count="notamsList.length" 
             class="notam-badge-pos" 
             @click.stop="showNotamsDialog = true" />
@@ -39,6 +39,7 @@ import { onMounted, ref, watch } from 'vue'
 import { Airport } from '../../models/Airport.ts';
 import { DisplayModeIfr } from '../../models/DisplayMode.ts';
 import { getAirport, getNotams } from '../../services/AirportDataService';
+import { currentUser } from '../../assets/data';
 import { IfrTileConfig } from './IfrTileConfig.ts';
 import { Regulation } from '../../models/Regulation.ts';
 import { Notam } from '../../models/Notam.ts';

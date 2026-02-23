@@ -230,6 +230,10 @@ export async function createAirport(request: AirportCreationRequest) {
 }
 
 export async function getNotams(airportCode: string): Promise<Notam[]> {
+    if (!currentUser.canViewNotams) {
+        // console.debug('[AirportDataService.getNotams] notam access disabled for current user')
+        return [];
+    }
     const notams: Notam[] = [];
 
     // check local storage first
