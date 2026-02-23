@@ -456,4 +456,18 @@ export class LocalStoreService {
         LocalStoreService.notify()
     }
 
+    static metarsCount(): number {
+        return Object.keys(localStorage).filter(key => key.startsWith(LocalStoreService.metarPrefix)).length
+    }
+
+    static metarsRemoveAll() {
+        const keys = Object.keys(localStorage)
+        for (const key of keys) {
+            if (key.startsWith(LocalStoreService.metarPrefix)) {
+                localStorage.removeItem(key)
+            }
+        }
+        LocalStoreService.notify()
+    }
+
 }

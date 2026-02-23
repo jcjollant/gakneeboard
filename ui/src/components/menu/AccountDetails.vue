@@ -41,26 +41,35 @@
         </div>
         
         <div class="account mb-5" v-else>
-            <div class="key">Airports Cached</div>
-            <div class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                <div class="airportCount">{{ airportCount }}</div>
-                <Button icon="pi pi-trash" text severity="danger" @click="deleteAirports" v-if="airportCount > 0" title="Empty Airports Cache" />
-            </div>
-            <div class="key">Kneeboards Cached</div>
-            <div class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                <div class="templateCount">{{ templateCount }}</div>
-                <Button icon="pi pi-trash" text severity="danger" @click="deleteTemplates" v-if="templateCount > 0" title="Empty Kneeboards Cache" />
-            </div>
-            <div class="key">Charts Cached</div>
-            <div class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                <div class="chartCount">{{ chartCount }}</div>
-                <Button icon="pi pi-trash" text severity="danger" @click="deleteCharts" v-if="chartCount > 0" title="Empty Charts Cache" />
-            </div>
-            <div class="key">Notams Cached</div>
-            <div class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                <div class="notamCount">{{ notamCount }}</div>
-                <Button icon="pi pi-trash" text severity="danger" @click="deleteNotams" v-if="notamCount > 0" title="Empty Notams Cache" />
-            </div>
+            <FieldSet legend="Cache" style="grid-column: span 2">
+                <div class="account">
+                    <div class="key">Airports</div>
+                    <div class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                        <div class="airportCount">{{ airportCount }}</div>
+                        <Button icon="pi pi-trash" text severity="danger" @click="deleteAirports" v-if="airportCount > 0" title="Empty Airports Cache" />
+                    </div>
+                    <div class="key">Kneeboards</div>
+                    <div class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                        <div class="templateCount">{{ templateCount }}</div>
+                        <Button icon="pi pi-trash" text severity="danger" @click="deleteTemplates" v-if="templateCount > 0" title="Empty Kneeboards Cache" />
+                    </div>
+                    <div class="key">Charts</div>
+                    <div class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                        <div class="chartCount">{{ chartCount }}</div>
+                        <Button icon="pi pi-trash" text severity="danger" @click="deleteCharts" v-if="chartCount > 0" title="Empty Charts Cache" />
+                    </div>
+                    <div class="key">Notams</div>
+                    <div class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                        <div class="notamCount">{{ notamCount }}</div>
+                        <Button icon="pi pi-trash" text severity="danger" @click="deleteNotams" v-if="notamCount > 0" title="Empty Notams Cache" />
+                    </div>
+                    <div class="key">Metars</div>
+                    <div class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                        <div class="metarCount">{{ metarCount }}</div>
+                        <Button icon="pi pi-trash" text severity="danger" @click="deleteMetars" v-if="metarCount > 0" title="Empty Metars Cache" />
+                    </div>
+                </div>
+            </FieldSet>
         </div>
 
         <div class="actions">
@@ -99,6 +108,7 @@ import { Airport } from '../../models/Airport';
 
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
+import FieldSet from 'primevue/fieldset';
 import UpdateButton from './UpdateButton.vue';
 import { currentUser } from '../../assets/data';
 import QrcodeVue from 'qrcode.vue'
@@ -110,6 +120,7 @@ const airportCount = ref(0)
 const templateCount = ref(0)
 const chartCount = ref(0)
 const notamCount = ref(0)
+const metarCount = ref(0)
 const pagesCount = ref(0)
 const showSettings = ref(false)
 const showQrcode = ref(false)
@@ -129,11 +140,13 @@ onMounted(() => {
     templateCount.value = LocalStoreService.templateCount()
     chartCount.value = LocalStoreService.chartsCount()
     notamCount.value = LocalStoreService.notamsCount()
+    metarCount.value = LocalStoreService.metarsCount()
     unsubscribe.value = LocalStoreService.subscribe(() => {
         airportCount.value = LocalStoreService.airportRecentsGet().length
         templateCount.value = LocalStoreService.templateCount()
         chartCount.value = LocalStoreService.chartsCount()
         notamCount.value = LocalStoreService.notamsCount()
+        metarCount.value = LocalStoreService.metarsCount()
     })
 })
 
@@ -196,6 +209,12 @@ function deleteNotams() {
     LocalStoreService.notamsRemoveAll()
     notamCount.value = 0
     toaster.success('Local Storage', 'Notams deleted')
+}
+
+function deleteMetars() {
+    LocalStoreService.metarsRemoveAll()
+    metarCount.value = 0
+    toaster.success('Local Storage', 'Metars deleted')
 }
 
 const ambassadorLink = computed(() => {
@@ -266,5 +285,14 @@ async function onAirportSelected(airport: Airport) {
     font-family: var(--font-family);
     transition-duration: 0.2s;
     padding: 4px 10px;
+}
+
+:deep(.p-fieldset-legend) {
+  border: none;
+  background: none;
+  padding: 0.5rem;
+}
+:deep(.p-fieldset-content) {
+  padding: 0;
 }
 </style>
