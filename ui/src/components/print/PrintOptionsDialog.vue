@@ -64,7 +64,10 @@
         <Button v-if="FeatureFlags.CUSTOM_KNEEBOARD_LAMINATION" @click="emits('laminate', getOptions())" class="store-btn" title="We print, laminate, and ship it to you!">
             <font-awesome-icon icon="store" class="mr-2" /> Laminate (Print & Ship)
         </Button>
-        <Button label="Create Document" @click="onExportPdf" :disabled="upgrade" link></Button>
+        <div class="action-with-requirement">
+          <Button label="Create Document" @click="onExportPdf" :disabled="upgrade || !currentUser.canExportPdf" link></Button>
+          <!-- <span v-if="!currentUser.canExportPdf" class="requirement font-semibold">(Checkride Ready+)</span> -->
+        </div>
         <Button label="Print" @click="onPrint" :disabled="upgrade"></Button>
       </div>
     </div>
@@ -339,5 +342,15 @@ li {
 
 .p-button-sm {
   white-space: nowrap;
+}
+.action-with-requirement {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.requirement {
+    font-size: 0.75rem;
+    font-style: italic;
+    color: #f97316;
 }
 </style>
