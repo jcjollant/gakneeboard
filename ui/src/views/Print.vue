@@ -282,8 +282,7 @@ function canUserPrint(): boolean {
   if (!currentUser.loggedIn) {
     return false;
   }
-  if( currentUser.isSim) return  currentUser.printCredits > 0
-  return true
+  return currentUser.printCredits == -1 || currentUser.printCredits > 0
 }
 
 function redirectToPlansPage() {
