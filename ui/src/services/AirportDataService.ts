@@ -258,6 +258,10 @@ export async function getNotams(airportCode: string): Promise<Notam[]> {
 }
 
 export async function getMetar(airportCode: string): Promise<Metar | null> {
+    if (!currentUser.canViewMetars) {
+        // console.debug('[AirportDataService.getMetar] metar access disabled for current user')
+        return null;
+    }
     // Check local storage first
     const localMetar = LocalStoreService.metarGet(airportCode);
     if (localMetar !== undefined) {

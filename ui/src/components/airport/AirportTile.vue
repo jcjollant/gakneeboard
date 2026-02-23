@@ -109,7 +109,7 @@ const showNotams = computed(() => {
 const showMetar = computed(() => {
     if (displayMode.value === DisplayModeAirport.Charts) return false;
     if (config.value?.showMetar === false) return false;
-    return !!metar.value
+    return !!metar.value && currentUser.canViewMetars
 })
 const showNotamsDialog = ref(false)
 const showMetarDialog = ref(false)
@@ -337,8 +337,8 @@ function onNotamBadgeClick() {
 }
 
 function onMetarBadgeClick() {
-    if (!isSignedIn.value) {
-        toaster.warning('Aircraft Calling', 'Please sign in to view Metar')
+    if (!currentUser.canViewMetars) {
+        toaster.warning('Aircraft Calling', 'Please upgrade your plan to view Metar')
         return
     }
     showMetarDialog.value = true

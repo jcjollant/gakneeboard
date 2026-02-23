@@ -57,12 +57,16 @@
             <Separator name="Conditions" />
             <div class="conditions-selector">
                 <div class="checkbox-field">
-                    <Checkbox v-model="showMetar" :binary="true" inputId="chkMetar" />
-                    <label for="chkMetar">Show METAR</label>
+                    <Checkbox v-model="showMetar" :binary="true" inputId="chkMetar" :disabled="!currentUser.canViewMetars" />
+                    <label for="chkMetar" :class="{ 'disabled-label': !currentUser.canViewMetars }">
+                        Show METAR <span v-if="!currentUser.canViewMetars" class="requirement">(Student Pilot+)</span>
+                    </label>
                 </div>
                 <div class="checkbox-field">
-                    <Checkbox v-model="showNotams" :binary="true" inputId="chkNotams" />
-                    <label for="chkNotams">Show NOTAMs</label>
+                    <Checkbox v-model="showNotams" :binary="true" inputId="chkNotams" :disabled="!currentUser.canViewNotams" />
+                    <label for="chkNotams" :class="{ 'disabled-label': !currentUser.canViewNotams }">
+                        Show NOTAMs <span v-if="!currentUser.canViewNotams" class="requirement">(Checkride Ready+)</span>
+                    </label>
                 </div>
             </div>
         </template>
@@ -78,6 +82,7 @@ import Checkbox from 'primevue/checkbox';
 import DisplayModeSelector from '../shared/DisplayModeSelector.vue';
 import AirportInput from '../shared/AirportInput.vue';
 import EitherOr from '../shared/EitherOr.vue';
+import { currentUser } from '../../assets/data';
 
 import Separator from '../../components/shared/Separator.vue';
 
@@ -401,5 +406,17 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
     font-size: 0.9rem;
     cursor: pointer;
     user-select: none;
+}
+
+.disabled-label {
+    color: #999;
+    cursor: not-allowed !important;
+}
+
+.requirement {
+    font-size: 0.75rem;
+    font-style: italic;
+    color: #f97316;
+    margin-left: 4px;
 }
 </style>

@@ -23,6 +23,7 @@ export class CurrentUser {
   eulaCurrent: boolean;
   homeAirport?: string;
   canViewNotams: boolean;
+  canViewMetars: boolean;
 
   static noUser() { return new CurrentUser() }
 
@@ -40,6 +41,7 @@ export class CurrentUser {
     this.printCredits = 0;
     this.eulaCurrent = false;
     this.canViewNotams = false;
+    this.canViewMetars = false;
 
     this.listeners = [];
   }
@@ -99,6 +101,7 @@ export class CurrentUser {
     this.eulaCurrent = false;
     this.homeAirport = undefined;
     this.canViewNotams = false;
+    this.canViewMetars = false;
 
     // Clear user data from localStorage
     localStorage.removeItem(LocalStoreService.user);
@@ -199,8 +202,10 @@ export class CurrentUser {
       const plan = PLANS.find(p => p.accountType === this.accountType);
       if (plan) {
         this.canViewNotams = (plan as any).features.notams;
+        this.canViewMetars = (plan as any).features.metars;
       } else {
         this.canViewNotams = false;
+        this.canViewMetars = false;
       }
 
       // save new user data
