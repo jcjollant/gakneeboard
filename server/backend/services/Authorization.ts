@@ -27,6 +27,19 @@ export class Authorization {
             return
         }
 
+        if (!healthCheckKey) {
+            console.error('[Authorization] HEALTH_CHECK_ACCESS_KEY is missing on this server')
+            // Don't fall back to admin validation if the key is missing to avoid confusion
+            // and throw a specific message that the client can parse.
+            throw new GApiError(401, 'HEALTH_CHECK_ACCESS_KEY not set on server')
+        }
+
+        if (!requestKey) {
+            console.warn('[Authorization] Health check request missing x-health-check-access-key header')
+        } else if (healthCheckKey !== requestKey) {
+            console.warn('[Authorization] Health check key mismatch.')
+        }
+
         await Authorization.validateAdmin(req)
     }
 }
