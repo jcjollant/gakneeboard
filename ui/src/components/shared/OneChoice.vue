@@ -1,10 +1,11 @@
 <template>
-    <div class="oneChoice" :class="{'full':full}">
+    <div class="oneChoice" :class="{'full':full, 'disabled': disabled}">
         <button type="button" v-if="model" v-for="(c,index) in choices" :aria-label="c.label" 
             @click="onChoice(c)" 
             class="choice" 
             :class="[{'choiceActive':(model.label==c.label),'choiceInactive':(model.label!=c.label),'thinPad':thinpad}, `choice${index}`]"
-            :title="c.title || c.description || undefined">
+            :title="c.title || c.description || undefined"
+            :disabled="disabled">
             <slot :choice="c">
                 <font-awesome-icon v-if="c.label && c.label.startsWith('fa-')" :icon="c.label" />
                 <span v-else>{{c.label}}</span>
@@ -20,6 +21,7 @@ const props = defineProps({
   choices: { type: Array<any>, default: []},
   thinpad: { type: Boolean, default: false },
   full: { type: Boolean, default: false },
+  disabled: { type: Boolean, default: false },
 })
 
 
@@ -42,6 +44,17 @@ function onChoice(choice:any) {
     cursor: pointer;
     width: fit-content;
     line-height: 1.5rem;
+}
+
+.oneChoice.disabled {
+    border-color: #ddd;
+    cursor: not-allowed;
+    background-color: #f9f9f9;
+}
+
+.oneChoice.disabled .choice {
+    cursor: not-allowed;
+    color: #999;
 }
 
 .oneChoice.full {

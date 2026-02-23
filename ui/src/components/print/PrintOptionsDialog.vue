@@ -23,25 +23,28 @@
         </template>
         <template v-else>
           <div class="pageOptionLabel">Back Page Orientation</div>
-          <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]" @change="onNewOptions" />
+          <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" />
           <div class="pageOptionLabel">Page Sequence</div>
-          <OneChoice v-model="backToBackSelected" :choices="backToBackOptions" @change="onNewOptions" />
+          <OneChoice v-model="backToBackSelected" :choices="backToBackOptions" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" />
           <div class="pageOptionLabel">Clip Margin</div>
-          <OneChoice v-model="clipMarginSelected" :choices="clipMarginOptions" @change="onNewOptions" />
+          <OneChoice v-model="clipMarginSelected" :choices="clipMarginOptions" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" />
         </template>
       </div>
       </FieldSet>
       <FieldSet legend="Margin Notes" v-if="!isFullPageFormat">
         <div class="vibContainer">
-          <OneChoice v-model="vibShowMode" :choices="[vibShowChoice, vibHideChoice]" @change="onNewOptions" />
+          <OneChoice v-model="vibShowMode" :choices="[vibShowChoice, vibHideChoice]" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" />
           <div class="vibItems">
              <div v-for="item in vibContentOptions" :key="item.value" class="field-checkbox">
-                 <Checkbox v-model="vibSelectedItems" :inputId="item.value" :value="item.value" @change="onNewOptions" :disabled="!vibShowMode.value" />
-                 <label :for="item.value" :class="{ 'disabled-label': !vibShowMode.value }">{{ item.label }}</label>
+                 <Checkbox v-model="vibSelectedItems" :inputId="item.value" :value="item.value" @change="onNewOptions" :disabled="!vibShowMode.value || !currentUser.canUseAdvancedPrinting" />
+                 <label :for="item.value" :class="{ 'disabled-label': !vibShowMode.value || !currentUser.canUseAdvancedPrinting }">{{ item.label }}</label>
              </div>
           </div>
         </div>
       </FieldSet>
+      <div v-if="!currentUser.canUseAdvancedPrinting" class="advanced-printing-hint">
+        Advanced Layout and Margin options are available with a higher membership.
+      </div>
       <FieldSet legend="Hints">
         <ul class="note" v-if="!isFullPageFormat">
           <li><strong>Flipped</strong> back page can be read when front page is clipped</li>
@@ -349,5 +352,12 @@ li {
     font-size: 0.75rem;
     font-style: italic;
     color: #f97316;
+}
+.advanced-printing-hint {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: #f97316;
+    text-align: center;
+    padding: 0.5rem;
 }
 </style>

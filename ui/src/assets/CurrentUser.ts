@@ -25,6 +25,7 @@ export class CurrentUser {
   canViewNotams: boolean;
   canViewMetars: boolean;
   canExportPdf: boolean;
+  canUseAdvancedPrinting: boolean;
 
   static noUser() { return new CurrentUser() }
 
@@ -44,6 +45,7 @@ export class CurrentUser {
     this.canViewNotams = false;
     this.canViewMetars = false;
     this.canExportPdf = false;
+    this.canUseAdvancedPrinting = false;
 
     this.listeners = [];
   }
@@ -101,6 +103,7 @@ export class CurrentUser {
     this.canViewNotams = false;
     this.canViewMetars = false;
     this.canExportPdf = false;
+    this.canUseAdvancedPrinting = false;
 
     // Clear user data from localStorage
     localStorage.removeItem(LocalStoreService.user);
@@ -200,13 +203,15 @@ export class CurrentUser {
       // Update feature flags based on plan
       const plan = PLANS.find(p => p.accountType === this.accountType);
       if (plan) {
-        this.canViewNotams = (plan as any).features.notams;
-        this.canViewMetars = (plan as any).features.metars;
-        this.canExportPdf = (plan as any).features.export;
+        this.canViewNotams = plan.features.notams;
+        this.canViewMetars = plan.features.metars;
+        this.canExportPdf = plan.features.export;
+        this.canUseAdvancedPrinting = plan.features.advancedPrinting;
       } else {
         this.canViewNotams = false;
         this.canViewMetars = false;
         this.canExportPdf = false;
+        this.canUseAdvancedPrinting = false;
       }
 
       // save new user data
