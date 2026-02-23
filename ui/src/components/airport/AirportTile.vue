@@ -43,8 +43,10 @@
                 <Corner v-if="showCorners"  class="corner bottom right" :airport="airportData" :data="corners[3]"  :runway="mainRunway"  id="corner3"
                     @click="onCornerEdit(3, $event)"/>
                     
-                <NotamBadge v-if="showNotams" :count="notamsList.length" :warning="!isSignedIn" @click.stop="onNotamBadgeClick" class="notam-badge-pos" :class="{'expanded': span2}" />
-                <MetarBadge v-if="showMetar && metar" :metar="metar" class="metar-badge-pos" :class="{'expanded': span2}" @click.stop="onMetarBadgeClick" />
+                <div class="conditions" :class="{'expanded': span2}">
+                    <NotamBadge v-if="showNotams" :count="notamsList.length" :warning="!isSignedIn" @click.stop="onNotamBadgeClick" />
+                    <MetarBadge v-if="showMetar && metar" :metar="metar" @click.stop="onMetarBadgeClick" />
+                </div>
             </div>
             <PlaceHolder v-else title="No Airport" />
         </div>
@@ -544,26 +546,20 @@ function saveConfig() {
     height: 150px;
 }
 
-.notam-badge-pos {
+.conditions {
     position: absolute;
     top: 45px;
     left: 5px;
     z-index: 10;
-}
-.notam-badge-pos.expanded {
-    top: 5px;
-    left: 135px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
-.metar-badge-pos {
-    position: absolute;
-    top: 80px;
-    left: 5px;
-    z-index: 10;
-}
-.metar-badge-pos.expanded {
+.conditions.expanded {
     top: 5px;
-    left: 170px;
+    left: 135px;
+    flex-direction: row;
 }
 
 </style>
