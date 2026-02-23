@@ -442,4 +442,18 @@ export class LocalStoreService {
         localStorage.setItem(LocalStoreService.thumbnailPrefix + id, data)
     }
 
+    static notamsCount(): number {
+        return Object.keys(localStorage).filter(key => key.startsWith(LocalStoreService.notamsPrefix)).length
+    }
+
+    static notamsRemoveAll() {
+        const keys = Object.keys(localStorage)
+        for (const key of keys) {
+            if (key.startsWith(LocalStoreService.notamsPrefix)) {
+                localStorage.removeItem(key)
+            }
+        }
+        LocalStoreService.notify()
+    }
+
 }
