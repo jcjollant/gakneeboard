@@ -19,11 +19,7 @@ export class UrlService {
     }
 
     static get healthCheckUrl(): string {
-        if (UrlService.isProdDB) {
-            return 'https://api.kneeboard.ga/admin/healthCheck'
-        } else if (UrlService.isTestDB) {
-            return 'http://localhost:3000/admin/healthCheck'
-        }
-        return '???'
+        const root = this.root.endsWith('/') ? this.root.slice(0, -1) : this.root
+        return `${root}/admin/healthCheck`
     }
 }

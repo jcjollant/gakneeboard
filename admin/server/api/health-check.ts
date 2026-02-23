@@ -1,21 +1,13 @@
 import { defineEventHandler, createError } from 'h3'
+import { UrlService } from '~/utils/UrlService'
 
 export default defineEventHandler(async (event) => {
-    const config = useRuntimeConfig()
-    // Replicating UrlService logic to ensure availability in server context
-    const postgresUrl = config.public.POSTGRES_URL || ''
-
-    let targetUrl = ''
-    if (postgresUrl.includes('ep-shrill-silence-a6ypne6y-pooler')) { // Prod
-        targetUrl = 'https://api.kneeboard.ga/admin/healthCheck'
-    } else if (postgresUrl.includes('ep-proud-field-a6tfe60l-pooler')) { // Test
-        targetUrl = 'http://localhost:3000/admin/healthCheck'
-    }
+    const targetUrl = UrlService.healthCheckUrl
 
     if (!targetUrl) {
         throw createError({
             statusCode: 500,
-            statusMessage: 'Unknown environment, cannot determine health check URL'
+            statusMessage: 'GAK_API_URL not configured, cannot determine health check URL'
         })
     }
 
