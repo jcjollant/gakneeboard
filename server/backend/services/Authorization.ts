@@ -1,6 +1,8 @@
 import { Request } from "express";
 import { UserTools } from "../UserTools";
 import { GApiError } from "../GApiError";
+import { PlanService } from "./PlanService";
+import { UserDao } from "../dao/UserDao";
 
 export class Authorization {
     /**
@@ -41,5 +43,47 @@ export class Authorization {
         }
 
         await Authorization.validateAdmin(req)
+    }
+
+    /**
+     * Validates that the request is from a user with NOTAM access.
+     * @param req Express Request object
+     * @returns The userId
+     * @throws GApiError if not authorized
+     */
+    public static async validateNotamAccess(req: Request): Promise<number> {
+        const userId = await UserTools.userIdFromRequest(req)
+        if (!userId) {
+            throw new GApiError(401, 'Please sign in to view notams')
+        }
+        const user = await new UserDao().get(userId)
+        if (!user) throw new GApiError(401, 'User not found')
+
+        const plan = PlanService.getPlan(user.planId)
+        if (!plan?.features.notams) {
+            throw new GApiError(403, 'Your plan does not include NOTAM access')
+        }
+        return userId
+    }
+
+    /**
+     * Validates that the request is from a user with METAR access.
+     * @param req Express Request object
+     * @returns The userId
+     * @throws GApiError if not authorized
+     */
+    public static async validateMetarAccess(req: Request): Promise<number> {
+        const userId = await UserTools.userIdFromRequest(req)
+        if (!userId) {
+            throw new GApiError(401, 'Please sign in to view metar')
+        }
+        const user = await new UserDao().get(userId)
+        if (!user) throw new GApiError(401, 'User not found')
+
+        const plan = PlanService.getPlan(user.planId)
+        if (!plan?.features.metars) {
+            throw new GApiError(403, 'Your plan does not include METAR access')
+        }
+        return userId
     }
 }

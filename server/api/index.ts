@@ -230,11 +230,7 @@ app.get('/maintenance/:code', async (req: Request, res: Response) => {
 app.get('/metar/:airportCode', async (req: Request, res: Response) => {
     try {
         const airportCode = req.params.airportCode
-        const userId = await UserTools.userIdFromRequest(req)
-        if (!userId) {
-            res.status(401).send({ error: `Please sign in to view metar` })
-            return
-        }
+        await Authorization.validateMetarAccess(req)
 
         const metar = await WeatherService.getMetar({
             ids: airportCode,
@@ -256,11 +252,7 @@ app.get('/metar/:airportCode', async (req: Request, res: Response) => {
 app.get('/notams/:airportCode', async (req: Request, res: Response) => {
     try {
         const airportCode = req.params.airportCode
-        const userId = await UserTools.userIdFromRequest(req)
-        if (!userId) {
-            res.status(401).send({ error: `Please sign in to view notams` })
-            return
-        }
+        await Authorization.validateNotamAccess(req)
 
         const simplified = await NotamService.getSimplifiedNotams({
             location: airportCode
