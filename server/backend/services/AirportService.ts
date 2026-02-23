@@ -24,7 +24,7 @@ export class AirportService {
     */
     public static async createAirport(request: AirportCreationRequest): Promise<Airport> {
         if (!AirportService.isValidIcaoId(request.icaoId)) {
-            throw new GApiError(400, "Invalid Airport Code");
+            throw new GApiError(400, `Invalid ICAO identifier [${request.icaoId}]`);
         }
 
         const airport = new Airport(request.icaoId, undefined, request.name, request.elevation);
@@ -63,7 +63,7 @@ export class AirportService {
         return new Promise(async (resolve, reject) => {
             // console.log( "[AirportService.getAirport] " + codeParam);
             // there is only one element and we only care about the airport
-            if (!AirportService.isValidCode(codeParam)) return reject(new GApiError(400, "Invalid Airport Code"));
+            if (!AirportService.isValidCode(codeParam)) return reject(new GApiError(400, `Invalid Airport Code [${codeParam}]`));
 
             const codeAndAirportList = (await AirportService.getAirports([codeParam]));
             if (!codeAndAirportList.length) return resolve(undefined)
@@ -179,7 +179,7 @@ export class AirportService {
     }
 
     public static async getAirportView(codeParam: string): Promise<AirportView> {
-        if (!AirportService.isValidCode(codeParam)) throw new GApiError(400, "Invalid Airport Code");
+        if (!AirportService.isValidCode(codeParam)) throw new GApiError(400, `Invalid Airport Code [${codeParam}]`);
         const list = await AirportService.getAirportViewList([codeParam])
         if (!list.length) throw new GApiError(404, "Airport not found");
         return list[0]

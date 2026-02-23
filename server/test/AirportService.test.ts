@@ -154,9 +154,9 @@ describe('AirportService Tests', () => {
 
     describe('getAirport', () => {
         it('Handles invalid code', async () => {
-            await expect(AirportService.getAirport('')).rejects.toEqual(new GApiError(400, 'Invalid Airport Code'));
-            await expect(AirportService.getAirport('A')).rejects.toEqual(new GApiError(400, 'Invalid Airport Code'));
-            await expect(AirportService.getAirport('ABCDE')).rejects.toEqual(new GApiError(400, 'Invalid Airport Code'));
+            await expect(AirportService.getAirport('')).rejects.toEqual(new GApiError(400, 'Invalid Airport Code []'));
+            await expect(AirportService.getAirport('A')).rejects.toEqual(new GApiError(400, 'Invalid Airport Code [A]'));
+            await expect(AirportService.getAirport('ABCDE')).rejects.toEqual(new GApiError(400, 'Invalid Airport Code [ABCDE]'));
         })
 
         it('Handles unknown codes with or w/o user', async () => {
@@ -451,7 +451,7 @@ describe('AirportService Tests', () => {
                 throw new Error('Should have thrown')
             } catch (e: any) {
                 expect(e.status).toBe(400)
-                expect(e.message).toBe("Invalid Airport Code")
+                expect(e.message).toBe("Invalid ICAO identifier [INVALID]")
             }
         })
     })
