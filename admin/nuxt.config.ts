@@ -22,6 +22,7 @@ export default defineNuxtConfig({
     '@gak/shared': resolve(__dirname, '../shared/src/index.ts')
   },
   runtimeConfig: {
+    healthCheckAccessKey: process.env.HEALTH_CHECK_ACCESS_KEY,
     public: {
       GAK_API_URL: process.env.GAK_API_URL || 'https://api.kneeboard.ga/',
       SUPABASE_URL: process.env.SUPABASE_URL,

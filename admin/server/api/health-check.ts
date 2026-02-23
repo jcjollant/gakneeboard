@@ -11,8 +11,9 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    const config = useRuntimeConfig()
     const headers = {
-        'x-health-check-access-key': process.env.HEALTH_CHECK_ACCESS_KEY || ''
+        'x-health-check-access-key': config.healthCheckAccessKey || ''
     }
 
     try {
@@ -22,10 +23,16 @@ export default defineEventHandler(async (event) => {
         })
         return response
     } catch (e: any) {
-        throw createError({
-            statusCode: e.statusCode || 500,
-            statusMessage: e.message || 'Health check failed',
-            data: e.data
-        })
+        // Return a failing health check object instead of throwing
+        return {
+            status: 'fail',
+            checks: [
+                {
+                    name: 'API Connectivity',
+                    status: 'fail',
+                    msg: `Health check request failed with status ${e.status || e.statusCode || 500}: ${e.message || 'Unknown error'}`
+                }
+            ]
+        }
     }
 })
