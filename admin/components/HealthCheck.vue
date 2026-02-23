@@ -1,9 +1,6 @@
 <template>
     <div class="input-section">
         <h2>System Health Check</h2>
-        <div class="health-url-info">
-            Testing Server: <code>{{ healthCheckUrl }}</code>
-        </div>
         <div class="input-group">
             <button @click="fetchHealthCheck" :disabled="loadingHealth">{{ loadingHealth ? 'Running...' : 'Run Health Check' }}</button>
         </div>
@@ -30,17 +27,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { api } from '~/utils/api'
-import { UrlService } from '~/utils/UrlService'
 import { useToaster } from '~/utils/Toaster'
 import { useToast } from 'primevue/usetoast'
 
 const toaster = useToaster(useToast())
 const healthData = ref({})
 const loadingHealth = ref(false)
-
-const healthCheckUrl = computed(() => {
-    return UrlService.healthCheckUrl
-})
 
 const failedTests = computed(() => {
     const failures: { name: string, message: string }[] = []
@@ -186,19 +178,5 @@ function fetchHealthCheck() {
 .success-message h3 {
     color: #15803d;
     margin: 0;
-}
-
-.health-url-info {
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    background-color: #f1f5f9;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    color: #475569;
-}
-
-.health-url-info code {
-    font-weight: bold;
-    color: #1e293b;
 }
 </style>

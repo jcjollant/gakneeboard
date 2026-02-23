@@ -14,6 +14,9 @@
     
     <NuxtPage />
     
+    <div class="server-badge">
+      {{ serverUrl }}
+    </div>
     <div class="version-badge">
       v{{ version }}
     </div>
@@ -25,9 +28,11 @@ import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useSupabaseClient } from '~/utils/supabase'
 import { useRuntimeConfig } from '#app'
+import { UrlService } from '~/utils/UrlService'
 
 const config = useRuntimeConfig()
 const version = config.public.APP_VERSION
+const serverUrl = UrlService.root
 
 const router = useRouter()
 const route = useRoute()
@@ -116,6 +121,19 @@ const handleLogout = async () => {
   position: fixed;
   bottom: 10px;
   right: 10px;
+  font-size: 1rem;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 2px 6px;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.server-badge {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
   font-size: 1rem;
   color: #94a3b8;
   background: rgba(255, 255, 255, 0.8);

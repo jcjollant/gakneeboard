@@ -1,7 +1,7 @@
 export class UrlService {
     static get root(): string {
         const config = useRuntimeConfig()
-        return config.public.GAK_API_URL || "https://api.kneeboard.ga/"
+        return config.public.GAK_AP_URL || "https://api.kneeboard.ga/"
     }
 
     static get adminRoot(): string {
