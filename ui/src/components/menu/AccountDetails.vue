@@ -56,6 +56,11 @@
                 <div class="chartCount">{{ chartCount }}</div>
                 <Button icon="pi pi-trash" text severity="danger" @click="deleteCharts" v-if="chartCount > 0" title="Empty Charts Cache" />
             </div>
+            <div class="key">Notams Cached</div>
+            <div class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                <div class="notamCount">{{ notamCount }}</div>
+                <Button icon="pi pi-trash" text severity="danger" @click="deleteNotams" v-if="notamCount > 0" title="Empty Notams Cache" />
+            </div>
         </div>
 
         <div class="actions">
@@ -104,6 +109,7 @@ const emits = defineEmits(['close','signout'])
 const airportCount = ref(0)
 const templateCount = ref(0)
 const chartCount = ref(0)
+const notamCount = ref(0)
 const pagesCount = ref(0)
 const showSettings = ref(false)
 const showQrcode = ref(false)
@@ -122,10 +128,12 @@ onMounted(() => {
     airportCount.value = LocalStoreService.airportRecentsGet().length
     templateCount.value = LocalStoreService.templateCount()
     chartCount.value = LocalStoreService.chartsCount()
+    notamCount.value = LocalStoreService.notamsCount()
     unsubscribe.value = LocalStoreService.subscribe(() => {
         airportCount.value = LocalStoreService.airportRecentsGet().length
         templateCount.value = LocalStoreService.templateCount()
         chartCount.value = LocalStoreService.chartsCount()
+        notamCount.value = LocalStoreService.notamsCount()
     })
 })
 
@@ -182,6 +190,12 @@ function deleteCharts() {
     LocalStoreService.chartsRemoveAll()
     chartCount.value = 0
     toaster.success('Local Storage', 'Charts deleted')
+}
+
+function deleteNotams() {
+    LocalStoreService.notamsRemoveAll()
+    notamCount.value = 0
+    toaster.success('Local Storage', 'Notams deleted')
 }
 
 const ambassadorLink = computed(() => {
