@@ -2,10 +2,40 @@
   <Menu></Menu>
   <div class="store-container">
     <div class="store-header">
-      <h1>GA Kneeboard Store</h1>
+      <h1>Store</h1>
       <button @click="showCart = true" class="cart-button">
         <font-awesome-icon icon="shopping-cart" /> Cart
       </button>
+    </div>
+    <div class="products-section memberships-top">
+        <h2>Memberships</h2>
+        <div class="products-grid">
+                <div 
+                   v-for="plan in plans" 
+                   :key="plan.id" 
+                   class="product-card plan-card"
+                   :class="{ 'featured-plan': plan.isBestValue }"
+                 >
+                   <div v-if="plan.isBestValue" class="badge-free-shipping bg-orange-500">BEST VALUE</div>
+                <div class="product-info">
+                   <h3>{{ plan.displayName }}</h3>
+                   <ul class="plan-features">
+                       <li v-for="subtitle in plan.subtitles" :key="subtitle">{{ subtitle }}</li>
+                   </ul>
+                </div>
+                <div class="product-footer stacked mt-4">
+                   <div class="price-container">
+                       <span class="price">{{ plan.displayPrice }}</span>
+                       <span class="text-sm text-gray-500" v-if="plan.chargeFrequency === 'monthly'">/mo</span>
+                       <span class="text-sm text-gray-500" v-if="plan.chargeFrequency === 'yearly'">/year</span>
+                   </div>
+                   <button @click="onPlan(plan)" class="btn btn-primary">
+                       View Plan
+                   </button>
+               </div>
+            </div>
+        </div>
+        <div class="divider"></div>
     </div>
 
     <!-- Custom Configuration Mode -->
@@ -114,37 +144,6 @@
             <button @click="router.push('/')" class="btn btn-primary">
                 Go to Templates
             </button>
-        </div>
-    </div>
-
-    <div class="products-section">
-        <div class="divider"></div>
-        <h2>Available Memberships</h2>
-        <div class="products-grid">
-             <div 
-                v-for="plan in plans" 
-                :key="plan.id" 
-                class="product-card plan-card"
-                :class="{ 'featured-plan': plan.id === bestValuePlan }"
-              >
-                <div v-if="plan.id === bestValuePlan" class="badge-free-shipping bg-orange-500">BEST VALUE</div>
-                <div class="product-info">
-                   <h3>{{ plan.displayName }}</h3>
-                   <ul class="plan-features">
-                       <li v-for="subtitle in plan.subtitles" :key="subtitle">{{ subtitle }}</li>
-                   </ul>
-                </div>
-                <div class="product-footer stacked mt-4">
-                   <div class="price-container">
-                       <span class="price">{{ plan.displayPrice }}</span>
-                       <span class="text-sm text-gray-500" v-if="plan.chargeFrequency === 'monthly'">/mo</span>
-                       <span class="text-sm text-gray-500" v-if="plan.chargeFrequency === 'yearly'">/year</span>
-                   </div>
-                   <button @click="onPlan(plan)" class="btn btn-primary">
-                       View Plan
-                   </button>
-               </div>
-            </div>
         </div>
     </div>
 

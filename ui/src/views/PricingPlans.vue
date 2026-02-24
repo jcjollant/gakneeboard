@@ -16,8 +16,8 @@
     </div>
     
     <div class="pricing-header">
-      <h2>Simple, Transparent Pricing</h2>
-      <p>Choose the plan that's right for you<br>For perspective, a C172 burns $8.82 of fuel during taxi</p>
+      <h2>Membership Plans</h2>
+      <p>For perspective, 10gal of 100LL gets you the lifetime deal</p>
       <!-- <EitherOr v-model="monthly" either="Monthly" or="Anually" /> -->
     </div>
     
@@ -26,9 +26,9 @@
       <div 
         v-for="plan in plans" 
         :key="plan.displayName" 
-        :class="['plan-card', { 'popular': plan.id === bestValuePlan, 'unpopular' : plan.id !== bestValuePlan }]"
+        :class="['plan-card', { 'best-value': plan.isBestValue, 'normal-plan' : !plan.isBestValue }]"
       >
-        <div v-if="plan.id === bestValuePlan" class="popular-badge">Best Value</div>
+        <div v-if="plan.isBestValue" class="best-value-badge">Best Value</div>
         
         <div class="plan-header">
           <h3>{{ plan.displayName }}</h3>
@@ -272,15 +272,15 @@ function onAuthentication(newUser: any) {
     justify-content: space-between;
 }
 
-.plan-card.popular {
+.plan-card.best-value {
     border: 3px solid #f97316;
     transform: scale(1.05);
 }
-.plan-card.unpopular {
+.plan-card.normal-plan {
     padding-top: 1.70rem;
 }
 
-.popular-badge {
+.best-value-badge {
     position: absolute;
     top: -20px;
     left: 50%;
