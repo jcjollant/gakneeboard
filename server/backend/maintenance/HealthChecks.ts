@@ -98,26 +98,17 @@ export class HealthCheck {
     }
 
     static async adipDataCycle(): Promise<Check> {
-        const payload: string = '{ "locId": "RNT" }'
-        const config: any = {
-            headers: {
-                'Authorization': AdipService.basicAuth,
-                "Content-Type": "text/plain"
-            },
-        }
-
         const checkDataCycle: Check = new Check('Adip Data Cycle')
-        await AdipService.fetchAirportChartData(payload, config).then(chartData => {
-            try {
-                const envCycle = process.env.AERONAV_DATA_CYCLE
-                if (chartData.cycle != envCycle) {
-                    throw new Error("Cycle mismatch Env=" + envCycle + ", ADIP=" + chartData.cycle)
-                }
-                checkDataCycle.pass("Matching " + chartData.cycle)
-            } catch (e: any) {
-                checkDataCycle.fail(e.message)
+        try {
+            const { cycle } = await AdipService.fetchCurrentCycleInfo()
+            const envCycle = process.env.AERONAV_DATA_CYCLE
+            if (cycle != envCycle) {
+                throw new Error("Cycle mismatch Env=" + envCycle + ", ADIP=" + cycle)
             }
-        })
+            checkDataCycle.pass("Matching " + cycle)
+        } catch (e: any) {
+            checkDataCycle.fail(e.message)
+        }
 
         return checkDataCycle
     }
