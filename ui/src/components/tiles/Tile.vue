@@ -19,6 +19,8 @@
         @replace="onReplace" @update="onUpdate" @settings="emits('settings',tile)"/>
     <SunLight v-else-if="tile.name==TileType.sunlight" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" />
+    <EmergencyTile v-else-if="tile.name==TileType.emergency" :params="tile.data"
+        @replace="onReplace" @update="onUpdate"/>
     <VfrTile v-else-if="tile.name==TileType.vfr" :params="tile.data"
         @replace="onReplace" @update="onUpdate" />
     <div v-else class="tile">
@@ -54,6 +56,7 @@ import FAButton from '../shared/FAButton.vue'
 import NavlogTile from '../navlog/NavlogTile.vue';
 import NotesTile from '../notes/NotesTile.vue';
 import VfrTile from '../vfr/VfrTile.vue';
+import EmergencyTile from './EmergencyTile.vue';
 
 const emits = defineEmits(['update','settings', 'replacePage', 'capture'])
 const confirm = useConfirm()
@@ -73,8 +76,8 @@ const knownTiles = ref([
     {name:'Radios',tile:TileType.radios, class:'', icon:'headset',  tooltip:'Radio frequencies'},
     {name:'IFR',tile:TileType.clearance, class:'', icon:'plane-circle-check', tooltip:'Instrument Flying'},
     {name:'VFR',tile:TileType.vfr, class:'', icon:'sun',  tooltip:'Visual Flying Rules'},
+    {name:'Emerg.',tile:TileType.emergency, class:'', icon:'star-of-life', tooltip:'Emergency procedures'},
     {name:'Regs',tile:TileType.regulations, class:'', icon:'gavel', tooltip:'Aviation regulations and requirements'},
-    {name:'Sunlight',tile:TileType.sunlight, class:'', icon:'clock',  tooltip:'Sunrise, Sunset, Civil Twilight...'},
     // {name:'Navlog',tile:TileType.navlog, class:'', icon:'route',  tooltip:'Companion Tile to the Navlog Page'},
 ])
 const selectionTile = new TileData(TileType.selection)

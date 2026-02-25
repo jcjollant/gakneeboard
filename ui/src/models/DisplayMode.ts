@@ -86,3 +86,11 @@ export enum DisplayModeRegulations {
     MinSafeAltitudes = 'msa',
     VfrAltitudes = 'vfr-altitudes',
 }
+
+export enum DisplayModeEmergency {
+    Unknown = '?',
+    VfrLostComms = 'vfr-lost-comms',
+    IfrLostComms = 'ifr-lost-comms',
+    DistressCall = 'distress',
+    LostProcedure = 'lost',
+}
