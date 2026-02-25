@@ -16,10 +16,7 @@
             <p>Placeholder for Distress Call procedure</p>
         </div>
 
-        <div v-else-if="displayMode==DisplayModeEmergency.LostProcedure" class="placeholder">
-            <h3>Lost Procedure (5 C's)</h3>
-            <p>Placeholder for Lost Procedure</p>
-        </div>
+        <LostProcedure v-else-if="displayMode==DisplayModeEmergency.LostProcedure" />
 
         <TileModeDots 
             v-if="!displaySelection"
@@ -43,6 +40,7 @@ import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Nordo from '../radios/Nordo.vue';
 import RegLink from '../regulations/RegLink.vue';
 import TileModeDots from '../shared/TileModeDots.vue';
+import LostProcedure from '../shared/LostProcedure.vue';
 
 // Enum with display modes
 
