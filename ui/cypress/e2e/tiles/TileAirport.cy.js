@@ -1,4 +1,4 @@
-import { bellinghamTitle, boeingTitle, checkTestPageTileTitle, checkTileSpan, checkTileVisible, displaySelection, displaySelectionExpand, loadTestPage, PageTypeLabel, rentonTitle, viewport, waitForAirports, waitOneAirport, settingsOpen } from '../shared'
+import { bellinghamTitle, boeingTitle, checkTestPageTileTitle, checkTileSpan, checkTileVisible, displaySelection, displaySelectionExpand, loadTestPage, PageTypeLabel, rentonTitle, viewport, waitForAirports, waitOneAirport, settingsOpen, mockUser } from '../shared'
 
 const airportTilesData = [
   { name: 'airport', data: { code: "KRNT", rwy: "16-34", rwyOrientation: "vertical" } },
@@ -22,14 +22,24 @@ function checkCorner(tile, corner, label, value) {
 
 describe('Tiles', () => {
   it('Shows default fields in Sketch mode single runway', () => {
+    const userMock = {
+      sha256: "mock_sha256",
+      name: "Test Pilot",
+      accountType: "ld",
+      eulaCurrent: true,
+      templates: []
+    }
+    mockUser(userMock)
+
     cy.intercept('GET', '**/notams/**', [
       { id: '1', text: 'NOTAM 1' },
       { id: '2', text: 'NOTAM 2' }
-    ])
+    ]).as('getNotams')
     loadAirportTestPage()
     // maintenanceMode()
 
     waitForAirports()
+    cy.wait('@getNotams')
     cy.get('.notam-badge').should('contain', '2')
 
     // Renton and Boeing fields
