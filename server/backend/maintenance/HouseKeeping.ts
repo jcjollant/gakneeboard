@@ -7,7 +7,7 @@ import { PrintService } from '../services/PrintService';
 import { PrintProductType, PrintOrderStatus } from '@gak/shared';
 import { TemplateHistoryDao } from "../dao/TemplateHistoryDao";
 import { AdipService } from "../services/AdipService";
-import { VercelService } from "../services/VercelService";
+import { Target, VercelService } from "../services/VercelService";
 
 
 export enum TaskStatus {
@@ -212,11 +212,11 @@ export class HouseKeeping {
             const adipInfo = await AdipService.fetchCurrentCycleInfo()
 
             if (adipInfo.cycle !== currentCycle || adipInfo.effectiveDate !== currentEffectiveDate) {
-                console.log(`[HouseKeeping.autoUpdateAeronavCycle] New cycle detected: ${adipInfo.cycle} (${adipInfo.effectiveDate})`)
+                console.log(`[HouseKeeping.autoUpdateAeronavCycle] New cycle detected: ${adipInfo.cycle} vs ${currentCycle} and ${adipInfo.effectiveDate} vs ${currentEffectiveDate}`)
 
                 // Update Vercel environment variables
-                await VercelService.setEnvVar('AERONAV_DATA_CYCLE', adipInfo.cycle)
-                await VercelService.setEnvVar('EFFECTIVE_DATE', adipInfo.effectiveDate)
+                await VercelService.setEnvVar('AERONAV_DATA_CYCLE', adipInfo.cycle, [Target.PRODUCTION, Target.PREVIEW])
+                await VercelService.setEnvVar('EFFECTIVE_DATE', adipInfo.effectiveDate, [Target.PRODUCTION, Target.PREVIEW])
 
                 task.finish(`Updated to ${adipInfo.cycle} (${adipInfo.effectiveDate})`)
             } else {
