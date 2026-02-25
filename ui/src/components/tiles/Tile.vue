@@ -56,7 +56,7 @@ import FAButton from '../shared/FAButton.vue'
 import NavlogTile from '../navlog/NavlogTile.vue';
 import NotesTile from '../notes/NotesTile.vue';
 import VfrTile from '../vfr/VfrTile.vue';
-import EmergencyTile from './EmergencyTile.vue';
+import EmergencyTile from '../emergencies/EmergencyTile.vue';
 
 const emits = defineEmits(['update','settings', 'replacePage', 'capture'])
 const confirm = useConfirm()
