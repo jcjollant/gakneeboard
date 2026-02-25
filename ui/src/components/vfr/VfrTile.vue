@@ -12,6 +12,7 @@
             <ImageContent src="safe-altitudes.png" />
             <RegLink :regs="[Regulation.MinimumSafeAltitudes]" />
         </div>
+        <SunLight v-else-if="displayMode==DisplayModeVfr.Sunlight" :showHeader="false" :params="sunlightParams" @update="onSunlightUpdate" />
         <CloudClearance v-else />
         <TileModeDots 
             v-if="!displaySelection"
@@ -36,6 +37,7 @@ import ImageContent from '../shared/ImageContent.vue';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Nordo from '../radios/Nordo.vue';
 import CloudClearance from '../atis/CloudClearance.vue';
+import SunLight from '../sunlight/SunLight.vue';
 import RegLink from '../regulations/RegLink.vue';
 import TileModeDots from '../shared/TileModeDots.vue';
 
@@ -46,6 +48,7 @@ const airport = ref(noAirport)
 const emits = defineEmits(['replace','update'])
 const defaultMode = DisplayModeVfr.CloudClearance
 const displayMode=ref(DisplayModeVfr.Unknown)
+const sunlightParams=ref({})
 const props = defineProps({
     params: { type: Object, default: null},
 })
@@ -53,6 +56,7 @@ const displaySelection=ref(false)
 const displayModes = [
     new DisplayModeChoice( 'VFR Altitudes', DisplayModeVfr.Altitudes),
     new DisplayModeChoice( 'Cloud Clearance', DisplayModeVfr.CloudClearance),
+    new DisplayModeChoice( 'Sunlight', DisplayModeVfr.Sunlight),
     new DisplayModeChoice( 'Lost Comms', DisplayModeVfr.LostComms),
     new DisplayModeChoice( 'Minimum Safe Altitudes', DisplayModeVfr.Msa)
 ]
@@ -94,6 +98,9 @@ function loadProps(props:any) {
                 }
             })
          }
+         if( props.params.sunlight) {
+            sunlightParams.value = props.params.sunlight
+         }
     } else {
         // console.debug('[VfrTile] show display selection')
         displaySelection.value = true
@@ -102,8 +109,16 @@ function loadProps(props:any) {
 
 function saveConfig() {
     // build parameters
-    const params = {mode:displayMode.value, airport:airport.value.code}
+    const params:any = {mode:displayMode.value, airport:airport.value.code}
+    if(sunlightParams.value && Object.keys(sunlightParams.value).length > 0) {
+        params.sunlight = sunlightParams.value
+    }
     emits('update', new TileData( TileType.vfr, params))
+}
+
+function onSunlightUpdate(newTileData: TileData) {
+    sunlightParams.value = newTileData.data;
+    saveConfig();
 }
 
 function getTitle() {
@@ -113,6 +128,8 @@ function getTitle() {
         title =  'VFR Altitudes'
     } else if( displayMode.value==DisplayModeVfr.CloudClearance) {
         title = 'Clouds Clearance'
+    } else if( displayMode.value==DisplayModeVfr.Sunlight) {
+        title = 'Sunlight'
     } else if( displayMode.value==DisplayModeVfr.LostComms) {
         title = 'VFR Lost Comms'
     } else if( displayMode.value==DisplayModeVfr.Msa) {

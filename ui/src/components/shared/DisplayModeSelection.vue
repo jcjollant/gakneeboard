@@ -62,7 +62,7 @@ function onChoose(mode:string) {
     display: flex;
     gap: 5px;
     align-items: center;
-    width: auto;
+    width: 100%;
     flex: 1 0 auto;
 }
 .expandable {
