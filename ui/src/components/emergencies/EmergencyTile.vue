@@ -11,12 +11,11 @@
             <RegLink :regs="[Regulation.IFRTwoWayRadioFailure]" />
         </div>
 
-        <div v-else-if="displayMode==DisplayModeEmergency.DistressCall" class="placeholder">
-            <h3>Distress Call (Mayday)</h3>
-            <p>Placeholder for Distress Call procedure</p>
-        </div>
+        <DistressCall v-else-if="displayMode==DisplayModeEmergency.DistressCall" />
 
         <LostProcedure v-else-if="displayMode==DisplayModeEmergency.LostProcedure" />
+
+        <DecideModel v-else-if="displayMode==DisplayModeEmergency.Decide" />
 
         <TileModeDots 
             v-if="!displaySelection"
@@ -40,7 +39,9 @@ import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Nordo from '../radios/Nordo.vue';
 import RegLink from '../regulations/RegLink.vue';
 import TileModeDots from '../shared/TileModeDots.vue';
-import LostProcedure from '../shared/LostProcedure.vue';
+import LostProcedure from '../emergencies/LostProcedure.vue';
+import DistressCall from '../emergencies/DistressCall.vue';
+import DecideModel from '../emergencies/DecideModel.vue';
 
 // Enum with display modes
 
@@ -55,7 +56,8 @@ const displayModes = [
     new DisplayModeChoice( 'VFR Lost Comms', DisplayModeEmergency.VfrLostComms),
     new DisplayModeChoice( 'IFR Lost Comms', DisplayModeEmergency.IfrLostComms),
     new DisplayModeChoice( 'Distress Call', DisplayModeEmergency.DistressCall),
-    new DisplayModeChoice( 'Lost Procedure', DisplayModeEmergency.LostProcedure)
+    new DisplayModeChoice( 'Lost Procedure', DisplayModeEmergency.LostProcedure),
+    new DisplayModeChoice( 'Decide Model', DisplayModeEmergency.Decide)
 ]
 
 onMounted(() => {   
@@ -101,6 +103,8 @@ function getTitle() {
         title = 'Distress Call'
     } else if( displayMode.value==DisplayModeEmergency.LostProcedure) {
         title = 'Lost Procedure'
+    } else if( displayMode.value==DisplayModeEmergency.Decide) {
+        title = 'DECIDE Procedure'
     } else {
         title = 'Emergencies'
     }

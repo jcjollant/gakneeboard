@@ -93,4 +93,5 @@ export enum DisplayModeEmergency {
     IfrLostComms = 'ifr-lost-comms',
     DistressCall = 'distress',
     LostProcedure = 'lost',
+    Decide = 'decide',
 }
