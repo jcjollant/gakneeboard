@@ -100,9 +100,9 @@ const props = defineProps({
 const emit = defineEmits(["close","hdiw", "update:visible"]);
 
 const guides = [
-  {name:'',icon:'wordpress',subtitle:'Updates', url:UserUrl.blog},
+  {name:'',icon:'pen-nib',iconclass:'fas',subtitle:'Blog & Updates', url:UserUrl.blog},
   {name:'',icon:'youtube',subtitle:'Demos', url:UserUrl.youTubeChannel},
-  {name:'',icon:'pen-nib',iconclass:'fas',subtitle:'Press Release', url:UserUrl.press},
+  {name:'',icon:'newspaper',iconclass:'fas',subtitle:'Press Release', url:UserUrl.press},
 ]
 
 const topicAbout = {label:'About',value:'about'}
