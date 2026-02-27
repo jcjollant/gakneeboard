@@ -27,7 +27,6 @@ The GAKneeboard server relies on the following environment variables for configu
 | `VERCEL_TOKEN` | Vercel Access Token | **[Required]** Used by the Aeronav automation to update environment variables and trigger redeployments. |
 | `VERCEL_PROJECT_ID` | Vercel Project ID | **[Required]** The ID of the Vercel project for the server. |
 | `VERCEL_TEAM_ID` | Vercel Team ID | **[Required]** The ID of the Vercel team (or user) associated with the project. |
-| `GOOGLE_ANALYTICS_TAG` | Google Analytics Tag | **[Required]** The GA4 Measurement ID (e.g. G-XXXXXXX) to track website events. |
 
 ## Usage Details
 
