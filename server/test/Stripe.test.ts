@@ -155,7 +155,7 @@ describe('StripeClient', () => {
 
             expect(result).toBe('http://stripe.url');
             expect(mockCreateSession).toHaveBeenCalledWith(expect.objectContaining({
-                success_url: 'https://example.com/thankyou',
+                success_url: 'https://example.com/thankyou?session_id={CHECKOUT_SESSION_ID}',
                 cancel_url: 'https://example.com/some/path'
             }));
         });

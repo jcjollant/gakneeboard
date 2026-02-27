@@ -80,7 +80,7 @@ export class StripeClient {
                     throw new Error('Invalid checkout type: ' + type);
                 }
                 const origin = new URL(source).origin
-                const successUrl = `${origin}/thankyou`
+                const successUrl = `${origin}/thankyou?session_id={CHECKOUT_SESSION_ID}`
                 const cancelUrl = source
                 // const eventId = PaymentEventDao.create(userId, priceId)
 
@@ -176,7 +176,7 @@ export class StripeClient {
                 }));
 
                 const origin = new URL(source).origin
-                const successUrl = `${origin}/thankyou`
+                const successUrl = `${origin}/thankyou?session_id={CHECKOUT_SESSION_ID}`
                 const cancelUrl = source
 
                 const session = await this.stripe.checkout.sessions.create({
@@ -214,18 +214,19 @@ export class StripeClient {
         })
     }
 
-    async getLineItems(sessionId: string): Promise<Stripe.LineItem[]> {
+    async getSession(sessionId: string): Promise<Stripe.Checkout.Session> {
         return new Promise(async (resolve, reject) => {
             try {
                 if (!this.stripe) throw new Error('Stripe not initialized');
-                const session = await this.stripe.checkout.sessions.listLineItems(sessionId);
-                resolve(session.data);
+                const session = await this.stripe.checkout.sessions.retrieve(sessionId, {
+                    expand: ['line_items']
+                });
+                resolve(session);
             } catch (err) {
                 console.warn('[Stripe.getSession] error ' + err)
                 reject(err)
             }
         })
-
     }
 
     async manage(userHash: string, source: string): Promise<string> {

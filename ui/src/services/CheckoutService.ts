@@ -43,4 +43,15 @@ export class CheckoutService {
             throw '/'
         }
     }
+
+    static async getSession(sessionId: string): Promise<any> {
+        try {
+            const url = UrlService.root + 'stripe/checkout/session/' + sessionId
+            const response = await axios.get(url, { withCredentials: true })
+            return response.data
+        } catch (error) {
+            console.error('[CheckoutService.getSession] error', error)
+            throw error
+        }
+    }
 }

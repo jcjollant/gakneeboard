@@ -10,8 +10,8 @@ async function main() {
 
     try {
         console.log('Fetching session', sessionId)
-        const lineItems = await StripeClient.instanceProd.getLineItems(sessionId)
-        console.log(JSON.stringify(lineItems, null, 2))
+        const session = await StripeClient.instanceProd.getSession(sessionId)
+        console.log(JSON.stringify(session, null, 2))
     } catch (e) {
         console.error('Error fetching session', e)
     }

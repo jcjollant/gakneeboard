@@ -7,9 +7,53 @@
 </template>
 <script setup lang="ts">
 import FAButton from '../components/shared/FAButton.vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
+import { onMounted } from 'vue';
+import { CheckoutService } from '../services/CheckoutService';
 
 const router = useRouter();
+const route = useRoute();
+
+onMounted(async () => {
+    const sessionId = route.query.session_id as string;
+    if (sessionId) {
+        const storageKey = `ga4_tracked_${sessionId}`;
+        
+        // Prevent duplicate tracking
+        if (!localStorage.getItem(storageKey)) {
+            try {
+                const sessionData = await CheckoutService.getSession(sessionId);
+                
+                // Format items for GA4
+                const items = sessionData.line_items?.data.map((item: any) => {
+                    return {
+                        item_id: item.price?.product || item.id,
+                        item_name: item.description,
+                        price: item.amount_total / 100,
+                        quantity: item.quantity
+                    };
+                }) || [];
+
+                // Fire GA4 purchase event
+                if (typeof window !== 'undefined' && (window as any).gtag) {
+                    (window as any).gtag('event', 'purchase', {
+                        transaction_id: sessionData.id,
+                        value: sessionData.amount_total / 100,
+                        currency: sessionData.currency || 'USD',
+                        items: items
+                    });
+                }
+                
+                localStorage.setItem(storageKey, 'true');
+            } catch (e) {
+                console.error('Failed to fetch session for GA4 tracking', e);
+            }
+        }
+        
+        // Clean up URL
+        router.replace({ query: {} });
+    }
+});
 </script>
 
 

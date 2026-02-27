@@ -345,6 +345,31 @@ app.post('/stripe/webhook', async (req: Request, res: Response) => {
     })
 })
 
+/**
+ * Fetch checkout session details
+ */
+app.get('/stripe/checkout/session/:sessionId', async (req: Request, res: Response) => {
+    try {
+        const sessionId = req.params.sessionId;
+        if (!sessionId) {
+            res.status(400).send('Session ID is required');
+            return;
+        }
+
+        // Ensure user is authenticated
+        const userId = await UserTools.userIdFromRequest(req);
+        if (!userId) {
+            res.status(401).send('Please sign in to continue');
+            return;
+        }
+
+        const session = await StripeClient.instance.getSession(sessionId);
+        res.send(session);
+    } catch (e) {
+        catchError(res, e, 'GET /stripe/checkout/session/:sessionId');
+    }
+})
+
 app.get('/supplement/:filename', async (req: Request, res: Response) => {
     try {
         // const requester = await UserTools.userIdFromRequest(req)
