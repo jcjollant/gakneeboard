@@ -165,7 +165,7 @@ function selectApi(api: string) {
 }
 
 function handleSubmit() {
-    console.debug('[Admin.handleSubmit]', inputValue.value)
+    // console.debug('[Admin.handleSubmit]', inputValue.value)
     api.get(UrlService.adminRoot + 'user/profile/' + inputValue.value).then(res => {
         const userProfile = res.data
         userId.value = userProfile.id
