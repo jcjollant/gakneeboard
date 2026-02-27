@@ -79,9 +79,14 @@ showSplash()
 
 
 
-if (process.env.NODE_ENV === 'production') {
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-M7NJWLEVMG');
+window.dataLayer = window.dataLayer || [];
+window.gtag = function gtag() { window.dataLayer.push(arguments); };
+window.gtag('js', new Date());
+
+if (import.meta.env.PROD) {
+    window.gtag('config', 'G-M7NJWLEVMG');
+} else {
+    // In dev, you can still call config with debug mode or just let events queue in dataLayer
+    // The GA Debugger extension will also pick these up
+    window.gtag('config', 'G-M7NJWLEVMG', { 'debug_mode': true });
 }

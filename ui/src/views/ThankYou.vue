@@ -10,6 +10,7 @@ import FAButton from '../components/shared/FAButton.vue';
 import { useRouter, useRoute } from 'vue-router';
 import { onMounted } from 'vue';
 import { CheckoutService } from '../services/CheckoutService';
+import { currentUser } from '../assets/data';
 
 const router = useRouter();
 const route = useRoute();
@@ -22,7 +23,7 @@ onMounted(async () => {
         // Prevent duplicate tracking
         if (!localStorage.getItem(storageKey)) {
             try {
-                const sessionData = await CheckoutService.getSession(sessionId);
+                const sessionData = await CheckoutService.getSession(sessionId, currentUser);
                 
                 // Format items for GA4
                 const items = sessionData.line_items?.data.map((item: any) => {
@@ -34,7 +35,6 @@ onMounted(async () => {
                     };
                 }) || [];
 
-                // Fire GA4 purchase event
                 if (typeof window !== 'undefined' && (window as any).gtag) {
                     (window as any).gtag('event', 'purchase', {
                         transaction_id: sessionData.id,
