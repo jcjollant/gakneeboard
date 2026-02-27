@@ -3,7 +3,7 @@ import { Email, EmailType } from '../Email';
 import { UserView } from '../models/UserView';
 import { TicketService } from '../services/TicketService';
 import { Check, HealthCheck } from './HealthChecks';
-import { HouseKeeping } from './HouseKeeping';
+import { HouseKeeping, TaskStatus } from './HouseKeeping';
 import { MetricKey, Metrics } from './Metrics';
 
 export class Maintenance {
@@ -144,7 +144,12 @@ export class Maintenance {
     static async willie(sendEmail: boolean = true): Promise<string> {
         const tasks = await HouseKeeping.perform()
 
-        let message = tasks.map(t => `${t.name}: ${t.status} - ${t.message} (${t.duration}ms)`).join('\n')
+        const failed = tasks.filter(t => t.status === TaskStatus.FAILED).length
+        const passed = tasks.filter(t => t.status === TaskStatus.FINISHED).length
+        const skipped = tasks.filter(t => t.status === TaskStatus.SKIPPED).length
+        const statusLine = `Failed: ${failed}, Passed: ${passed}, Skipped: ${skipped}`
+
+        let message = statusLine + '\n\n' + tasks.map(t => `${t.name}: ${t.status} - ${t.message} (${t.duration}ms)`).join('\n')
 
         // call marge
 
