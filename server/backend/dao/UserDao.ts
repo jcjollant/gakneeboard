@@ -92,6 +92,9 @@ export class UserDao extends Dao<User> {
         user.setEula(row.eula)
         if (row.plan_id) user.setPlanId(row.plan_id)
         if (row.home_airport) user.setHomeAirport(row.home_airport)
+        if (row.print_credits_override !== null && row.print_credits_override !== undefined) {
+            user.setPrintRefillOverride(row.print_credits_override)
+        }
 
         return user
     }
@@ -160,13 +163,14 @@ export class UserDao extends Dao<User> {
                 } else if (overwrite) { // this user is known but we can override
                     // console.log( '[UserDao.save] known user ' + user.sha256)
                     user.id = result.rows[0].id
-                    await this.db.query(`UPDATE ${this.tableName} SET data = $1, version=$2, account_type=$3, plan_id=$4, home_airport=$5 WHERE id = $6`,
+                    await this.db.query(`UPDATE ${this.tableName} SET data = $1, version=$2, account_type=$3, plan_id=$4, home_airport=$5, print_credits_override=$6 WHERE id = $7`,
                         [
                             stringifiedData,
                             this.modelVersion,
                             user.accountType,
                             user.planId,
                             user.homeAirport,
+                            user.printRefillOverride ?? null,
                             user.id
                         ]
                     )
@@ -225,6 +229,23 @@ export class UserDao extends Dao<User> {
                 }
             } catch (err) {
                 console.log('[UserDao.updatePrintCredit] ' + user.id + ' to ' + user.printCredits + ' failed ' + err)
+                reject(err)
+            }
+        })
+    }
+
+    public updatePrintRefillOverride(user: User): Promise<void> {
+        return new Promise<void>(async (resolve, reject) => {
+            try {
+                const overrideValue = user.printRefillOverride === undefined ? null : user.printRefillOverride;
+                const result = await sql`UPDATE users SET print_credits_override=${overrideValue} WHERE id=${user.id}`
+                if (result.rowCount == 1) {
+                    resolve()
+                } else {
+                    reject('Matching users ' + result.rowCount)
+                }
+            } catch (err) {
+                console.log('[UserDao.updatePrintRefillOverride] ' + user.id + ' to ' + user.printRefillOverride + ' failed ' + err)
                 reject(err)
             }
         })

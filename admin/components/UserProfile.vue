@@ -23,6 +23,16 @@
                     {{ refilling ? '...' : 'Refill' }}
                 </button>
             </div>
+            <div class="prop-name">Refill Override</div>
+            <div class="prop-value">
+                <input type="number" v-model.number="tempRefillOverride" class="override-input" />
+                <button class="save-btn" @click="saveRefillOverride" :disabled="savingOverride || tempRefillOverride === userProfile.printRefillOverride">
+                    {{ savingOverride ? '...' : 'Save' }}
+                </button>
+                <button class="clear-btn" @click="clearRefillOverride" :disabled="savingOverride || userProfile.printRefillOverride === null">
+                    Clear
+                </button>
+            </div>
         </div>
 
         <h2>90 Days Usage</h2>
@@ -40,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { api } from '~/utils/api';
 import { UrlService } from '~/utils/UrlService';
 import { useToaster } from '~/utils/Toaster';
@@ -71,6 +81,34 @@ async function handleRefill() {
     } finally {
         refilling.value = false
     }
+}
+
+const tempRefillOverride = ref<number | null>(props.userProfile.printRefillOverride ?? null)
+const savingOverride = ref(false)
+
+// Watch for external prop changes
+watch(() => props.userProfile.printRefillOverride, (newVal) => {
+    tempRefillOverride.value = newVal ?? null
+})
+
+async function saveRefillOverride() {
+    if (savingOverride.value) return
+    savingOverride.value = true
+    try {
+        const payload = { printRefillOverride: tempRefillOverride.value }
+        await api.post(UrlService.adminRoot + `user/profile/${props.userProfile.id}/override`, payload)
+        toaster.success('Success', 'Refill override updated')
+        emit('refresh')
+    } catch (err: any) {
+        toaster.error('Failed', err.message)
+    } finally {
+        savingOverride.value = false
+    }
+}
+
+async function clearRefillOverride() {
+    tempRefillOverride.value = null
+    await saveRefillOverride()
 }
 
 class Usage {
@@ -161,5 +199,32 @@ function calculateAge(dateStr: string | number | Date): string {
     border: 1px solid #e9ecef;
     max-height: 300px;
     overflow-y: auto;
+}
+
+.override-input {
+    width: 80px;
+    padding: 0.25rem;
+    margin-right: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.save-btn, .clear-btn, .refill-btn {
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    margin-right: 0.25rem;
+}
+
+.save-btn:disabled, .clear-btn:disabled, .refill-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.clear-btn {
+    background-color: #dc3545;
 }
 </style>

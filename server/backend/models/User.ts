@@ -19,6 +19,7 @@ export class User {
     attribution?: AttributionData;
     planId: string | undefined;
     homeAirport: string | undefined;
+    printRefillOverride: number | undefined;
 
     constructor(id: number, sha256: string) {
         this.id = id;
@@ -35,6 +36,7 @@ export class User {
         this.eula = 0;
         this.planId = undefined;
         this.homeAirport = undefined;
+        this.printRefillOverride = undefined;
     }
 
 
@@ -97,5 +99,9 @@ export class User {
 
     public setHomeAirport(airport: string) {
         this.homeAirport = airport;
+    }
+
+    public setPrintRefillOverride(override: number | undefined) {
+        this.printRefillOverride = override;
     }
 }

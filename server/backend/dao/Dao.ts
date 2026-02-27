@@ -1,8 +1,8 @@
 import { sql, VercelPool } from "@vercel/postgres";
 
 export abstract class Dao<T> {
-    protected abstract tableName:string;
-    protected db:VercelPool;
+    protected abstract tableName: string;
+    protected db: VercelPool;
 
     constructor() {
         this.db = sql;
@@ -12,13 +12,13 @@ export abstract class Dao<T> {
         this.db.end();
     }
 
-    public count():Promise<number> {
+    public count(): Promise<number> {
         return new Promise<number>(async (resolve, reject) => {
             const query = `SELECT COUNT(*) FROM ${this.tableName}`;
             // console.log('[Dao.count]', query)
             try {
                 const res = await this.db.query(query)
-                resolve( Number(res.rows[0]?.count || 0))
+                resolve(Number(res.rows[0]?.count || 0))
             } catch (err) {
                 console.log('[Dao.count] error ' + err)
                 reject(err)
@@ -26,13 +26,14 @@ export abstract class Dao<T> {
         })
     }
 
-    public get(id:number):Promise<T> {
-        return new Promise<T>(async (resolve, reject) => {
+    public get(id: number): Promise<T | undefined> {
+        return new Promise<T | undefined>(async (resolve, reject) => {
             const query = `SELECT * FROM ${this.tableName} WHERE id = ${id}`;
             // console.log('[Dao.get]', query)
             try {
                 const res = await this.db.query(query)
-                resolve( this.parseRow(res.rows[0]) )
+                if (res.rowCount === 0) return resolve(undefined)
+                resolve(this.parseRow(res.rows[0]))
             } catch (err) {
                 console.log('[Dao.get] error ' + err)
                 reject(err)
@@ -41,17 +42,17 @@ export abstract class Dao<T> {
     }
 
     // Return a new instance of the child class
-    public abstract parseRow(row:any):T;
+    public abstract parseRow(row: any): T;
 
     /**
      * Performs the SELECT query with a specific WHERE clause
      * @param where 
      * @returns 
      */
-    protected async queryWhere(where:string):Promise<T|undefined> {
+    protected async queryWhere(where: string): Promise<T | undefined> {
         const query = `SELECT * FROM ${this.tableName} WHERE ${where}`
         const result = await this.db.query(query)
-        if( result.rowCount == 0) return undefined
+        if (result.rowCount == 0) return undefined
         return this.parseRow(result.rows[0])
     }
 

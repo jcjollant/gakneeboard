@@ -63,6 +63,26 @@ describe('Business', () => {
             const c1 = Business['calculatePrintCredits'](newUser);
             expect(c1).toBe(expectedRefill);
         });
+
+        it('should respect the printRefillOverride when set', () => {
+            const newUser = newTestUser(0, AccountType.simmer, PLAN_ID_SIM)
+            newUser.printCredits = 0; // no credits
+            newUser.printRefillOverride = 15;
+            const c1 = Business['calculatePrintCredits'](newUser);
+            expect(c1).toBe(15);
+
+            // Should still return max of current vs override
+            newUser.printCredits = 20;
+            const c2 = Business['calculatePrintCredits'](newUser);
+            expect(c2).toBe(20);
+
+            // Should be able to reduce the default amount
+            const anotherUser = newTestUser(0, AccountType.student, 'pp1')
+            anotherUser.printCredits = 0; // no credits
+            anotherUser.printRefillOverride = 2; // student default is 8
+            const c3 = Business['calculatePrintCredits'](anotherUser);
+            expect(c3).toBe(2);
+        });
     });
 
     describe('quotas', () => {
