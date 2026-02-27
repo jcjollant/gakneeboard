@@ -79,14 +79,18 @@ showSplash()
 
 
 
-window.dataLayer = window.dataLayer || [];
-window.gtag = function gtag() { window.dataLayer.push(arguments); };
-window.gtag('js', new Date());
+const gaTag = process.env.GOOGLE_ANALYTICS_TAG;
 
-if (import.meta.env.PROD) {
-    window.gtag('config', 'G-M7NJWLEVMG');
-} else {
-    // In dev, you can still call config with debug mode or just let events queue in dataLayer
-    // The GA Debugger extension will also pick these up
-    window.gtag('config', 'G-M7NJWLEVMG', { 'debug_mode': true });
+if (gaTag && gaTag !== '%GOOGLE_ANALYTICS_TAG%') {
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function gtag() { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+
+    if (import.meta.env.PROD) {
+        window.gtag('config', gaTag);
+    } else {
+        // In dev, you can still call config with debug mode or just let events queue in dataLayer
+        // The GA Debugger extension will also pick these up
+        window.gtag('config', gaTag, { 'debug_mode': true });
+    }
 }

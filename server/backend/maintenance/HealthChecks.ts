@@ -134,7 +134,8 @@ export class HealthCheck {
             'HEALTH_CHECK_ACCESS_KEY',
             'VERCEL_TOKEN',
             'VERCEL_PROJECT_ID',
-            'VERCEL_TEAM_ID']
+            'VERCEL_TEAM_ID',
+            'GOOGLE_ANALYTICS_TAG']
 
         const check: Check = new Check("Environment Variables")
         for (const envVar of envVars) {
