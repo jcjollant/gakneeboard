@@ -17,7 +17,12 @@
             <div class="prop-name">Last Session</div>
             <div class="prop-value">{{ formatLastSession }}</div>
             <div class="prop-name">Print Credit</div>
-            <div class="prop-value">{{ userProfile.printCredits }}</div>
+            <div class="prop-value">
+                {{ userProfile.printCredits }}
+                <button class="refill-btn" @click="handleRefill" :disabled="refilling">
+                    {{ refilling ? '...' : 'Refill' }}
+                </button>
+            </div>
         </div>
 
         <h2>90 Days Usage</h2>
@@ -35,7 +40,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import { api } from '~/utils/api';
+import { UrlService } from '~/utils/UrlService';
+import { useToaster } from '~/utils/Toaster';
+import { useToast } from 'primevue/usetoast';
 
 const props = defineProps({
     userProfile: {
@@ -43,6 +52,25 @@ const props = defineProps({
         required: true
     }
 })
+
+const emit = defineEmits(['refresh'])
+
+const refilling = ref(false)
+const toaster = useToaster(useToast())
+
+async function handleRefill() {
+    if (refilling.value) return
+    refilling.value = true
+    try {
+        await api.post(UrlService.adminRoot + `user/profile/${props.userProfile.id}/refill`, {})
+        toaster.success('Success', 'Refilled 100 prints')
+        emit('refresh')
+    } catch (err: any) {
+        toaster.error('Failed', err.message)
+    } finally {
+        refilling.value = false
+    }
+}
 
 class Usage {
     type: string

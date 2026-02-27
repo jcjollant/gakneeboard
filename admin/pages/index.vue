@@ -74,7 +74,7 @@
             </div>
         </div>
         <div v-if="selectedApi === 'profile' && userId > 0">
-            <UserProfile :user-profile="userProfileData" />
+            <UserProfile :user-profile="userProfileData" @refresh="handleSubmit" />
         </div>
         
         <div v-if="selectedApi === 'active' && Object.keys(activeUsersRaw).length > 0">
@@ -410,11 +410,33 @@ onMounted(() => {
     display: inline-block; /* router-link is inline by default */
 }
 
+
 .user-id-chip:hover {
     background: #3498db;
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+:deep(.refill-btn) {
+    margin-left: 1rem;
+    padding: 0.25rem 0.75rem;
+    background: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background 0.3s ease;
+}
+
+:deep(.refill-btn:hover) {
+    background: #2ecc71;
+}
+
+:deep(.refill-btn:disabled) {
+    background: #bdc3c7;
+    cursor: not-allowed;
 }
 
 </style>
