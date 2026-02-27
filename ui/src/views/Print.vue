@@ -121,7 +121,7 @@ watch(showOptions, (value) => {
 
 function onOptionsUpdate(options:PrintOptions) {
   if( options) {
-    console.debug('[Print.onOptionsUpdate] Options:', options)
+    // console.debug('[Print.onOptionsUpdate] Options:', options)
       printFlipMode.value = options.flipBackPage;
 
       pageSelection.value = options.pageSelection
