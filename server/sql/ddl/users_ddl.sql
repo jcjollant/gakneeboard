@@ -12,6 +12,7 @@ CREATE TABLE users(
     max_pages integer DEFAULT 4,
     eula integer DEFAULT 0,
     plan_id VARCHAR(20),
+    print_credits_override integer,
     PRIMARY KEY(id)
 );
 CREATE UNIQUE INDEX users_sha256_key ON users USING btree ("sha256");
