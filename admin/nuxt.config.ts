@@ -32,7 +32,6 @@ export default defineNuxtConfig({
     }
   },
   css: [
-    'primeicons/primeicons.css'
   ],
   modules: [
     '@primevue/nuxt-module'
@@ -40,7 +39,12 @@ export default defineNuxtConfig({
   primevue: {
     usePrimeVue: true,
     options: {
-      theme: 'none'
+      theme: {
+        preset: 'Aura',
+        options: {
+          darkModeSelector: '.my-app-dark'
+        }
+      }
     }
   }
 })

@@ -13,6 +13,7 @@
     </div>
     
     <NuxtPage />
+    <Toast />
     
     <div class="server-badge">
       {{ serverUrl }}
@@ -29,6 +30,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useSupabaseClient } from '~/utils/supabase'
 import { useRuntimeConfig } from '#app'
 import { UrlService } from '~/utils/UrlService'
+import Toast from 'primevue/toast'
 
 const config = useRuntimeConfig()
 const version = config.public.APP_VERSION

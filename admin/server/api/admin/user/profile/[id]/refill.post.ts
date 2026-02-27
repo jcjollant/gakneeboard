@@ -1,6 +1,8 @@
 import { defineEventHandler, getRouterParam, createError } from 'h3'
 import { UserDao } from '@server/backend/dao/UserDao'
 import { User } from '@server/backend/models/User'
+import { Business } from '@server/backend/business/Business'
+import { UsageDao } from '@server/backend/dao/UsageDao'
 
 export default defineEventHandler(async (event) => {
     const idParam = getRouterParam(event, 'id')
@@ -23,14 +25,35 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 404, statusMessage: 'User not found' })
     }
 
-    // Add 100 prints
-    try {
-        const updatedUser = await dao.addPrints(user, 100)
+    const previousCredits = user.printCredits
+    const newCredits = Business.calculatePrintCredits(user)
+
+    if (newCredits === -1) {
         return {
             success: true,
-            printCredits: updatedUser.printCredits
+            message: 'User has unlimited prints',
+            printCredits: -1
+        }
+    }
+
+    if (newCredits <= previousCredits) {
+        return {
+            success: true,
+            message: 'User already has full or extra credits',
+            printCredits: previousCredits
+        }
+    }
+
+    try {
+        user.printCredits = newCredits
+        await dao.updatePrintCredit(user)
+        await UsageDao.refill(user.id, previousCredits, newCredits)
+
+        return {
+            success: true,
+            printCredits: newCredits
         }
     } catch (err: any) {
-        throw createError({ statusCode: 500, statusMessage: 'Failed to add prints: ' + err.message })
+        throw createError({ statusCode: 500, statusMessage: 'Failed to refill prints: ' + err.message })
     }
 })

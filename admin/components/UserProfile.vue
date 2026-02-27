@@ -62,8 +62,9 @@ async function handleRefill() {
     if (refilling.value) return
     refilling.value = true
     try {
-        await api.post(UrlService.adminRoot + `user/profile/${props.userProfile.id}/refill`, {})
-        toaster.success('Success', 'Refilled 100 prints')
+        const res = await api.post(UrlService.adminRoot + `user/profile/${props.userProfile.id}/refill`, {})
+        const message = res.data.message || 'Account refilled'
+        toaster.success('Success', message)
         emit('refresh')
     } catch (err: any) {
         toaster.error('Failed', err.message)
