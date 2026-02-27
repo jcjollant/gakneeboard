@@ -183,10 +183,11 @@ describe('HealthChecks', () => {
             process.env.VERCEL_TOKEN = 'test';
             process.env.VERCEL_PROJECT_ID = 'test';
             process.env.VERCEL_TEAM_ID = 'test';
+            process.env.GOOGLE_ANALYTICS_TAG = 'test';
 
             const result = await HealthCheck.environmentVariables();
             expect(result.status).toBe(Check.SUCCESS);
-            expect(result.msg).toContain('Found 19 variables');
+            expect(result.msg).toContain('Found 20 variables');
         });
 
         test('Failure: Missing variable', async () => {
