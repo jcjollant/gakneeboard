@@ -5,9 +5,9 @@ import { fileURLToPath, URL } from 'url'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  envPrefix: ['GAK_', 'GOOGLE_ANALYTICS_TAG'],
+  envPrefix: ['GAK_'],
   define: {
-    'process.env.GOOGLE_ANALYTICS_TAG': JSON.stringify(process.env.GOOGLE_ANALYTICS_TAG)
+    'process.env.GAK_GOOGLE_ANALYTICS': JSON.stringify(process.env.GAK_GOOGLE_ANALYTICS)
   },
   resolve: {
     alias: {

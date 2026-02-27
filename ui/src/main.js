@@ -79,9 +79,9 @@ showSplash()
 
 
 
-const gaTag = process.env.GOOGLE_ANALYTICS_TAG;
+const gaTag = process.env.GAK_GOOGLE_ANALYTICS;
 
-if (gaTag && gaTag !== '%GOOGLE_ANALYTICS_TAG%') {
+if (gaTag && gaTag !== '%GAK_GOOGLE_ANALYTICS%') {
     window.dataLayer = window.dataLayer || [];
     window.gtag = function gtag() { window.dataLayer.push(arguments); };
     window.gtag('js', new Date());
