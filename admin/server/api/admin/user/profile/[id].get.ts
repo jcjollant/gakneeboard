@@ -49,6 +49,7 @@ export default defineEventHandler(async (event) => {
         planId: user.planId,
         usage: usage,
         lastSession: lastSession,
+        printCredits: user.printCredits,
         templateCount: user.maxTemplates, // This is max, not current count. For current count we'd need another DAO call if required.
         pageCount: user.maxPages       // Same here
     }

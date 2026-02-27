@@ -35,7 +35,8 @@ export const PLANS: PlanDescription[] = [
             metars: false,
             notams: false,
             restoreOldVersion: false
-        }
+        },
+        isBestValue: false
     },
     {
         id: PLAN_ID_STUDENT_PILOT,
@@ -59,7 +60,8 @@ export const PLANS: PlanDescription[] = [
             metars: true,
             notams: false,
             restoreOldVersion: false
-        }
+        },
+        isBestValue: false
     },
     {
         id: PLAN_ID_CHECKRIDE_READY,
@@ -83,13 +85,14 @@ export const PLANS: PlanDescription[] = [
             metars: true,
             notams: true,
             restoreOldVersion: true
-        }
+        },
+        isBestValue: false
     },
     {
         id: PLAN_ID_PRIVATE_PILOT,
         displayName: 'Private Pilot',
         active: true,
-        show: true,
+        show: false,
         showInFtux: false,
         displayPrice: '$49.99',
         subtitles: ['No Brainer', 'Unlimited Features and Prints'],
@@ -107,7 +110,8 @@ export const PLANS: PlanDescription[] = [
             notams: true,
             restoreOldVersion: true
         },
-        accountType: AccountType.private
+        accountType: AccountType.private,
+        isBestValue: true
     },
     {
         id: PLAN_ID_BETA_DEAL,
@@ -131,7 +135,8 @@ export const PLANS: PlanDescription[] = [
             notams: true,
             restoreOldVersion: true
         },
-        accountType: AccountType.beta
+        accountType: AccountType.beta,
+        isBestValue: false
     },
     {
         id: 'ld1',
@@ -155,14 +160,15 @@ export const PLANS: PlanDescription[] = [
             metars: true,
             notams: true,
             restoreOldVersion: true
-        }
+        },
+        isBestValue: false
     },
     {
         id: PLAN_ID_LIFETIME_DEAL,
         displayName: 'Lifetime Deal',
-        subtitles: ['Pay once, use forever', 'Grab it while it lasts!'],
+        subtitles: ['Pay once, use forever 😳', 'Grab it while it lasts!'],
         active: true,
-        show: false,
+        show: true,
         showInFtux: false,
         displayPrice: '$69',
         accountType: AccountType.lifetime,
@@ -179,6 +185,7 @@ export const PLANS: PlanDescription[] = [
             metars: true,
             notams: true,
             restoreOldVersion: true
-        }
+        },
+        isBestValue: true
     }
 ];

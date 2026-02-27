@@ -1,5 +1,12 @@
 import axios from 'axios';
 
+export enum Target {
+    PRODUCTION = 'production',
+    PREVIEW = 'preview',
+    DEVELOPMENT = 'development'
+}
+
+
 export class VercelService {
     private static readonly API_URL = 'https://api.vercel.com';
 
@@ -19,7 +26,7 @@ export class VercelService {
      * @param value Variable value
      * @returns 
      */
-    public static async setEnvVar(key: string, value: string): Promise<void> {
+    public static async setEnvVar(key: string, value: string, targets: Target[]): Promise<void> {
         console.log(`[VercelService.setEnvVar] Updating ${key}`);
 
         // 1. Find the env var ID
@@ -30,12 +37,15 @@ export class VercelService {
         const envVars = listResponse.data.envs;
         const existing = envVars.find((e: any) => e.key === key);
 
+        console.log(`[VercelService.setEnvVar] Found ${envVars.length} env vars`);
+        console.log(`[VercelService.setEnvVar] Found ${existing ? 'existing' : 'new'} env ${key}`);
+
         if (existing) {
             // 2. Update existing
             console.log(`[VercelService.setEnvVar] Existing env ${key} found with id ${existing.id}. Updating...`);
             await axios.patch(`${this.API_URL}/v9/projects/${this.PROJECT_ID}/env/${existing.id}?teamId=${this.TEAM_ID}`, {
                 value: value,
-                target: ['production', 'preview', 'development']
+                target: targets
             }, {
                 headers: this.headers
             });
@@ -46,7 +56,7 @@ export class VercelService {
                 key: key,
                 value: value,
                 type: 'plain',
-                target: ['production', 'preview', 'development']
+                target: targets
             }, {
                 headers: this.headers
             });

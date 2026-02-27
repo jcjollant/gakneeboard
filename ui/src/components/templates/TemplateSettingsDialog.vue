@@ -28,9 +28,13 @@
                 </template>
             </div>
         </div>
-        <TemplateSharing v-model="publish" :template="template" />
-        <div>
+        <div v-if="templateId > 0">
+           <InputGroup class="templateIdField">
+              <InputGroupAddon>ID</InputGroupAddon>
+              <InputText v-model="templateId" :disabled="true" />
+           </InputGroup>
         </div>
+        <TemplateSharing v-model="publish" :template="template" />
       </div>
       <div class="actionDialog gap-2">
         <Button label="Do Not Apply" @click="onButtonClose" link></Button>

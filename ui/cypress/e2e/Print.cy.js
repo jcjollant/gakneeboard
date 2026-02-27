@@ -12,7 +12,8 @@ describe('Print', () => {
         const user = {
             sha256: "mock_sha256",
             name: "Test Pilot",
-            accountType: 1,
+            accountType: "ld",
+            printCredits: 100,
             eulaCurrent: true,
             templates: [] // No saved templates needed for this test
         }

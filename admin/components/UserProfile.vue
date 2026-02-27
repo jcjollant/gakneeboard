@@ -16,6 +16,8 @@
             <div class="prop-value">{{ formatCreateTime }}</div>
             <div class="prop-name">Last Session</div>
             <div class="prop-value">{{ formatLastSession }}</div>
+            <div class="prop-name">Print Credit</div>
+            <div class="prop-value">{{ userProfile.printCredits }}</div>
         </div>
 
         <h2>90 Days Usage</h2>

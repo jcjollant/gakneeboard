@@ -255,10 +255,17 @@ function doSave() {
         if(ts.code == 202) {
           toaster.warning('Max Templates', 'You have reached your template maximum. Please consider upgrading promptly', 6000)
         }
+        // update ID if we just got one
+        if(!activeTemplate.value.id) {
+          activeTemplate.value.id = t.id
+        }
         // update version number
         activeTemplate.value.ver = t.ver
         // update code
         activeTemplate.value.code = t.code
+
+        // Update the generic local storage slot as well
+        saveTemplateToLocalStoreService()
 
         // Update local cache with new version
         LocalStoreService.saveTemplateById(activeTemplate.value.id, activeTemplate.value)
@@ -266,12 +273,11 @@ function doSave() {
         // mark the template as not modified anymore
         templateModified.value = false
 
-        // did we just get an id?
-        if(!activeTemplate.value.id) {
-          activeTemplate.value.id = t.id
+        // were we on a local template? redirect to the new permanent URL
+        if(route.params.id == 'local' || !route.params.id) {
           router.push('/template/' + t.id)
         }
-      }).catch( e => {
+    }).catch( e => {
         toaster.error( 'Could not save', e, 6000)
       })
   } catch( e) {
@@ -653,12 +659,14 @@ function onNewSettings(settings:TemplateSettings) {
     toaster.warning('Repeat Last Transmission','Nothing to save, settings unchanged')
     return;
   }
-  settingsTemplate.value.name = settings.name
-  settingsTemplate.value.desc = settings.desc
-  settingsTemplate.value.publish = settings.publish
-  activeTemplate.value = settingsTemplate.value
+  // settingsTemplate.value is a proxy to activeTemplate, but it might have been reset.
+  // We should just update the properties directly on activeTemplate to prevent losing data.
+  activeTemplate.value.name = settings.name
+  activeTemplate.value.desc = settings.desc
+  activeTemplate.value.publish = settings.publish
+
   // We consider the template as modified if it's a cloud template
-  templateModified.value = settingsTemplate.value.id > 0
+  templateModified.value = activeTemplate.value.id > 0
   saveTemplateToLocalStoreService()
   doSave()
 }

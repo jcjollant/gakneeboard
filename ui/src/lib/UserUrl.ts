@@ -11,16 +11,15 @@ export class UserUrl {
     static press: string = '/press.html'
 
     // Blog stuff
-    static blog: string = 'https://gakneeboard.wordpress.com/'
-    static airportTileGuide: string = 'https://gakneeboard.wordpress.com/airport-tile-guide/'
-    static atisTileGuide: string = 'https://gakneeboard.wordpress.com/2024/07/29/atis-tile-guide/'
-    static checklistGuide: string = 'https://gakneeboard.wordpress.com/2024/08/06/checklist-syntax-guide/'
-    static fuelBugTileGuide: string = 'https://gakneeboard.wordpress.com/2024/07/30/fuel-bug-tile-guide/'
-    static printGuide: string = 'https://gakneeboard.wordpress.com/print-guide/'
-    static radioTileGuide: string = 'https://gakneeboard.wordpress.com/radio-tile-guide/'
-    static sunlightTileGuide: string = 'https://gakneeboard.wordpress.com/2024/08/10/sunlight-tile-guide/'
-    static checklistDigestPage: string = 'https://gakneeboard.wordpress.com/checklists-digest/'
-    static ambassador: string = 'https://gakneeboard.wordpress.com/ambassador-program/'
+    static blog: string = 'https://blog.kneeboard.ga/'
+    static airportTileGuide: string = 'https://blog.kneeboard.ga/airport-tile-guide/'
+    static checklistGuide: string = 'https://blog.kneeboard.ga/2024/08/06/checklist-syntax-guide/'
+    static fuelBugTileGuide: string = 'https://blog.kneeboard.ga/2024/07/30/fuel-bug-tile-guide/'
+    static printGuide: string = 'https://blog.kneeboard.ga/print-guide/'
+    static radioTileGuide: string = 'https://blog.kneeboard.ga/radio-tile-guide/'
+    static sunlightTileGuide: string = 'https://blog.kneeboard.ga/2024/08/10/sunlight-tile-guide/'
+    static checklistDigestPage: string = 'https://blog.kneeboard.ga/checklists-digest/'
+    static ambassador: string = 'https://blog.kneeboard.ga/ambassador-program/'
 
     // Youtube
     static youTubeChannel: string = 'https://www.youtube.com/@GAKneeboard/videos'

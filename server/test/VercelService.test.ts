@@ -35,7 +35,7 @@ describe('VercelService', () => {
             // Mock update env var
             mockedAxios.patch.mockResolvedValueOnce({ data: {} });
 
-            await VercelService.setEnvVar(key, value);
+            await VercelService.setEnvVar(key, value, []);
 
             expect(mockedAxios.get).toHaveBeenCalled();
             expect(mockedAxios.patch).toHaveBeenCalledWith(
@@ -59,7 +59,7 @@ describe('VercelService', () => {
             // Mock create env var
             mockedAxios.post.mockResolvedValueOnce({ data: {} });
 
-            await VercelService.setEnvVar(key, value);
+            await VercelService.setEnvVar(key, value, []);
 
             expect(mockedAxios.get).toHaveBeenCalled();
             expect(mockedAxios.post).toHaveBeenCalledWith(

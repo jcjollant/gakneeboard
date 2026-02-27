@@ -50,6 +50,11 @@
                     <h3>Housekeeping</h3>
                     <p>Summon Willie for system maintenance</p>
                 </div>
+                <div class="api-card" :class="{ active: selectedApi === 'low-hanging-fruits' }" @click="selectApi('low-hanging-fruits')">
+                    <div class="api-icon">🍎</div>
+                    <h3>Low Hanging Fruits</h3>
+                    <p>Identify active simulator users</p>
+                </div>
             </div>
         </div>
         
@@ -107,6 +112,10 @@
         <div v-if="selectedApi === 'willie'">
             <Housekeeping />
         </div>
+        
+        <div v-if="selectedApi === 'low-hanging-fruits'">
+            <LowHangingFruits />
+        </div>
     </div>
 </template>
 
@@ -124,6 +133,7 @@ import StoreOrders from '~/components/StoreOrders.vue';
 import HealthCheck from '~/components/HealthCheck.vue';
 import TemplatePromoter from '~/components/TemplatePromoter.vue';
 import Housekeeping from '~/components/Housekeeping.vue';
+import LowHangingFruits from '~/components/LowHangingFruits.vue';
 
 const route = useRoute()
 const router = useRouter()

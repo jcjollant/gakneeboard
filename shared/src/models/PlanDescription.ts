@@ -19,5 +19,6 @@ export interface PlanDescription {
         metars: boolean;
         notams: boolean;
         restoreOldVersion: boolean;
-    }
+    };
+    isBestValue: boolean;
 }

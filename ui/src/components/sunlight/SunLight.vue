@@ -1,9 +1,9 @@
 <template>
     <div class="tile">
-        <Header :title="getTitle()" 
+        <Header v-if="showHeader" :title="getTitle()" 
             @replace="emits('replace')" @display="displayModeSelection=true" >
         </Header>
-        <DisplayModeSelection v-if="displayModeSelection" :modes="displayModesList" v-model="displayMode"
+        <DisplayModeSelection v-if="showHeader && displayModeSelection" :modes="displayModesList" v-model="displayMode"
             @keep="displayModeSelection=false" />
 
         <div v-else-if="editMode" class="content">
@@ -118,6 +118,7 @@ const emits = defineEmits(['replace','update'])
 // Props Section
 const props = defineProps({
     params:{type:Object, default: null},
+    showHeader:{type:Boolean, default: true},
 })
 
 onMounted(() => {

@@ -35,7 +35,7 @@ export class AdipService implements AirportDataSource {
      * @returns { cycle: string, effectiveDate: string }
      */
     public static async fetchCurrentCycleInfo(): Promise<{ cycle: string, effectiveDate: string }> {
-        const rentonCode = 'KRNT';
+        const rentonCode = 'RNT';
         const payload = `{ "locId": "${rentonCode}" }`;
         const config = {
             headers: {
@@ -45,12 +45,11 @@ export class AdipService implements AirportDataSource {
         };
 
         const chartData = await AdipService.fetchAirportChartData(payload, config);
-        const airportDetails = await AdipService.fetchAirportDetails(rentonCode, payload, config, false);
-
         if (!chartData || !chartData.cycle) {
             throw new Error('Failed to fetch cycle from ADIP');
         }
 
+        const airportDetails = await AdipService.fetchAirportDetails(rentonCode, payload, config, false);
         if (!airportDetails || !airportDetails.effectiveDate) {
             throw new Error('Failed to fetch effective date from ADIP');
         }

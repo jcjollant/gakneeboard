@@ -57,6 +57,7 @@ export enum DisplayModeVfr {
     Unknown = '?',
     Altitudes = 'alt',
     CloudClearance = 'clouds',
+    Sunlight = 'sunlight',
     LostComms = 'nordo',
     Msa = 'msa',
 }
@@ -84,4 +85,13 @@ export enum DisplayModeRegulations {
     Oxygen = 'oxygen',
     MinSafeAltitudes = 'msa',
     VfrAltitudes = 'vfr-altitudes',
+}
+
+export enum DisplayModeEmergency {
+    Unknown = '?',
+    VfrLostComms = 'vfr-lost-comms',
+    IfrLostComms = 'ifr-lost-comms',
+    DistressCall = 'distress',
+    LostProcedure = 'lost',
+    Decide = 'decide',
 }
