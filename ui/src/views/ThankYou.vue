@@ -11,6 +11,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { onMounted } from 'vue';
 import { CheckoutService } from '../services/CheckoutService';
 import { currentUser } from '../assets/data';
+import { AnalyticsService } from '../services/AnalyticsService';
 
 const router = useRouter();
 const route = useRoute();
@@ -35,14 +36,7 @@ onMounted(async () => {
                     };
                 }) || [];
 
-                if (typeof window !== 'undefined' && (window as any).gtag) {
-                    (window as any).gtag('event', 'purchase', {
-                        transaction_id: sessionData.id,
-                        value: sessionData.amount_total / 100,
-                        currency: sessionData.currency || 'USD',
-                        items: items
-                    });
-                }
+                AnalyticsService.purchase(sessionData, items);
                 
                 localStorage.setItem(storageKey, 'true');
             } catch (e) {

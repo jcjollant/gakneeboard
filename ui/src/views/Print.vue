@@ -48,6 +48,7 @@ import { StoreService } from '../services/StoreService';
 import { UsageService } from '../services/UsageService';
 import { useToaster } from '../assets/Toaster.js';
 import { useToast } from 'primevue/usetoast';
+import { AnalyticsService } from '../services/AnalyticsService';
 
 interface PrintSheet {
   front: TemplatePage,
@@ -159,6 +160,7 @@ async function onExportPdf(options: PrintOptions | undefined) {
   
   printFullpage.value = true
 
+  AnalyticsService.print(template.value, 'pdf')
   UsageService.declare(UsageType.CreateDoc, { templateId: route.params.id })
 
   await nextTick()
@@ -186,6 +188,7 @@ async function onLaminate(options: PrintOptions | undefined) {
   
   printing = true
   showOptions.value = false
+  AnalyticsService.print(template.value, 'laminate')
   onOptionsUpdate(options)
   
   await new Promise(resolve => setTimeout(resolve, 500));
@@ -223,6 +226,7 @@ async function onPrint(options:PrintOptions|undefined) {
   
   printing = true
   showOptions.value = false
+  AnalyticsService.print(template.value, 'print')
   postPrint(route.params.id, options)
 
   const element = document.getElementById('printTemplate')
