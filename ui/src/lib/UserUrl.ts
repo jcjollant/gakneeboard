@@ -13,11 +13,11 @@ export class UserUrl {
     // Blog stuff
     static blog: string = 'https://blog.kneeboard.ga/'
     static airportTileGuide: string = 'https://blog.kneeboard.ga/airport-tile-guide/'
-    static checklistGuide: string = 'https://blog.kneeboard.ga/2024/08/06/checklist-syntax-guide/'
-    static fuelBugTileGuide: string = 'https://blog.kneeboard.ga/2024/07/30/fuel-bug-tile-guide/'
+    static checklistGuide: string = 'https://blog.kneeboard.ga/blog/2024/08/06/checklist-syntax-guide/'
+    static fuelBugTileGuide: string = 'https://blog.kneeboard.ga/blog/2024/07/30/fuel-bug-tile-guide/'
     static printGuide: string = 'https://blog.kneeboard.ga/print-guide/'
     static radioTileGuide: string = 'https://blog.kneeboard.ga/radio-tile-guide/'
-    static sunlightTileGuide: string = 'https://blog.kneeboard.ga/2024/08/10/sunlight-tile-guide/'
+    static sunlightTileGuide: string = 'https://blog.kneeboard.ga/blog/2024/08/10/sunlight-tile-guide/'
     static checklistDigestPage: string = 'https://blog.kneeboard.ga/checklists-digest/'
     static ambassador: string = 'https://blog.kneeboard.ga/ambassador-program/'
 
