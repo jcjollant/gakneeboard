@@ -154,11 +154,6 @@ const isProdEnv = computed(() => {
     return UrlService.isProdDB
 })
 
-
-
-
-
-
 function selectApi(api: string) {
     selectedApi.value = api
     if (api === 'profile') {
@@ -168,10 +163,6 @@ function selectApi(api: string) {
         rawJsonData.value = {}
     }
 }
-
-
-
-
 
 function handleSubmit() {
     console.debug('[Admin.handleSubmit]', inputValue.value)
