@@ -109,7 +109,7 @@ export class AirportService {
 
         // Processing codes that are not in the DB yet
         for (const newCode of dbCodesLookup.notFound) {
-
+            // console.debug('[AirportService.getAirports] Processing new code', newCode)
             let newAirport: Airport | undefined = undefined;
 
             // 1. Always try ADIP first
@@ -118,6 +118,7 @@ export class AirportService {
 
             // 2. Check if ADIP result is an exact match for the requested code
             if (adipAirport && (adipAirport.icaoId === newCode || adipAirport.locId === newCode)) {
+                // console.log(`[AirportService.getAirports] Found ${newCode} in ADIP`)
                 newAirport = adipAirport;
             }
             // 3. If not found in ADIP or not an exact match, try Skyvector for 4-char codes
@@ -130,6 +131,7 @@ export class AirportService {
                 output.push(Promise.resolve(new CodeAndAirport(newCode, newAirport)))
                 // remember this as a valid airport
                 await AirportDao.create(newAirport)
+                // console.debug('[AirportService.getAirports] created airport', newCode, newAirport)
                 dbWork.push(AirportSketch.resolve(newAirport, newCode, true))
             } else {
                 output.push(Promise.resolve(CodeAndAirport.undefined(newCode)))
@@ -180,7 +182,7 @@ export class AirportService {
         }
 
         // housekeeping for db Work
-        // console.debug('[AirportService.getAirports] dbWork', dbWork.length)
+        // console.debug('[AirportSe÷rvice.getAirports] dbWork', dbWork.length)
         await Promise.all(dbWork)
 
         return Promise.all(output)

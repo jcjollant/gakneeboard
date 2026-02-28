@@ -31,7 +31,7 @@ function airportCurrent(airport: any) {
  * @returns airport data
  */
 export async function getAirport(codeParam: string, group = false) {
-    // console.log('[data.getAirport]', codeParam)
+    // console.debug('[data.getAirport]', codeParam)
     if (!codeParam) return null;
     const code = codeParam.toUpperCase()
 
