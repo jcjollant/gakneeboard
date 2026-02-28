@@ -27,6 +27,7 @@ describe('Tiles', () => {
       name: "Test Pilot",
       accountType: "ld",
       eulaCurrent: true,
+      canViewNotams: true,
       templates: []
     }
     mockUser(userMock)
