@@ -276,10 +276,10 @@ export class Airport {
     isValid(): boolean {
         const isValidCode = Airport.isValidCode(this.code)
         const isValidVersion = Airport.isValidVersion(this.version)
-        const isValidRunways = this.rwys.length > 0;
+        // const isValidRunways = this.rwys.length > 0;
         // console.debug('[Airport.isValid]', isValidCode, isValidVersion, isValidRunways)
 
-        return isValidCode && isValidVersion && isValidRunways;
+        return isValidCode && isValidVersion;
     }
 
     setEffectiveDate(date: string) {

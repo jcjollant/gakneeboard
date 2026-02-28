@@ -27,6 +27,13 @@ describe('Airport', () => {
         expect(invalid.isValid()).toBe(false)
     })
 
+    test('Valid without runways', () => {
+        const airport = new Airport('KSEA', 'Seattle-Tacoma', 432);
+        airport.version = Airport.currentVersion;
+        airport.rwys = [];
+        expect(airport.isValid()).toBe(true)
+    })
+
     test('Supplement and Notice', () => {
         const data = {
             ...kpae,
