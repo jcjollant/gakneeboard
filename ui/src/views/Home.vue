@@ -27,11 +27,12 @@
                     @selection="onTemplateSelection(template.id)" />
             </div>
         </div>
-        <div class="section templateSection" v-if="false">
-            <div class="header" title="These can be used across several kneeboards">My Checklist Library <span class="badge">NEW</span></div>
+        <div class="section demoSection">
+            <div class="header" @click="onDemoSelection(SheetName.default)" title="Templates you could use as a source for your own">Customize and Save</div>
             <div class="templateList">
-                <ChecklistSelector :isNew="true" @click="onNewChecklist"/>
-                <ChecklistSelector v-for="checklist in checklists" :key="checklist.id" :checklist="checklist" @click="onChecklistSelection(checklist)" @delete="onChecklistDelete(checklist)"/>
+                <TemplateSelector v-for="(ds,index) in demos" :template="ds.template" :demo="true" :src="ds.src" :class="'demo'+index"
+                    @selection="onDemoSelection(ds.name)" />
+                <!-- list all demos -->
             </div>
         </div>
         <div class="section demoSection">
@@ -39,14 +40,6 @@
             <div class="templateList">
                 <TemplateSelector v-for="(ds,index) in clickAndPrint" :template="ds.template" :demo="true" :src="ds.src" :class="'cnp'+index"
                     @selection="onDemoSelection(ds.name)" />
-            </div>
-        </div>
-        <div class="section demoSection">
-            <div class="header" @click="onDemoSelection(SheetName.default)" title="Templates you could use as a source for your own">Kneeboard Inspiration</div>
-            <div class="templateList">
-                <TemplateSelector v-for="(ds,index) in demos" :template="ds.template" :demo="true" :src="ds.src" :class="'demo'+index"
-                    @selection="onDemoSelection(ds.name)" />
-                <!-- list all demos -->
             </div>
         </div>
         <div class="section demoSection">
