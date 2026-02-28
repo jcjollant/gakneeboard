@@ -5,6 +5,7 @@ import { AirportSketch } from '../backend/AirportSketch';
 import { AirportCreationRequest } from '../backend/models/AirportCreationRequest';
 import { CodeAndAirport } from '../backend/models/CodeAndAirport';
 import { AdipService } from '../backend/services/AdipService';
+import { SkyvectorService } from '../backend/services/SkyvectorService';
 import { AirportDao } from '../backend/AirportDao';
 import { Airport, AirportSource } from '../backend/models/Airport';
 import { GApiError } from '../backend/GApiError';
@@ -27,20 +28,16 @@ describe('AirportService Tests', () => {
         // ICAO specific checks
         expect(AirportService.isValidIcaoId("KSEA")).toBeTruthy()
         expect(AirportService.isValidIcaoId("krnt")).toBeTruthy() // Case insensitive
-        // expect(AirportService.isValidIcaoId("1234")).toBeFalsy() // Now valid as alphanumeric
-        expect(AirportService.isValidIcaoId("ISEA")).toBeFalsy() // Starts with I
-        expect(AirportService.isValidIcaoId("QSEA")).toBeFalsy() // Starts with Q
-        expect(AirportService.isValidIcaoId("XSEA")).toBeFalsy() // Starts with X
+        expect(AirportService.isValidIcaoId("1234")).toBeTruthy() // Now valid as alphanumeric
+        expect(AirportService.isValidIcaoId("ISEA")).toBeTruthy() // Starts with I (now valid)
+        expect(AirportService.isValidIcaoId("QSEA")).toBeTruthy() // Starts with Q (now valid)
+        expect(AirportService.isValidIcaoId("XSEA")).toBeTruthy() // Starts with X (now valid)
         expect(AirportService.isValidIcaoId("SE A")).toBeFalsy() // Space
 
-        // Only keep invalid ones (symbols, spaces, starting with I/Q/X)
-        const invalidIcaoList = ["ASD;", "6 AM", "5:00", "122.", "ZZZZ"] // Z? Z is valid starting char?
-        // ZZZZ is valid ICAO generic code?
-        // Let's keep ZZZZ out of invalid list if it passes regex and not I/Q/X.
-        // I/Q/X are restricted. Z is not. So ZZZZ is valid.
-        const trulyInvalidIcaoList = ["ASD;", "6 AM", "5:00", "122.", "ISEA", "QSEA", "XSEA"]
+        // Only keep invalid ones (symbols, spaces)
+        const invalidIcaoList = ["ASD;", "6 AM", "5:00", "122.", "ZZZZZ"]
 
-        trulyInvalidIcaoList.forEach(icao => {
+        invalidIcaoList.forEach(icao => {
             expect(AirportService.isValidIcaoId(icao)).toBeFalsy()
         })
 
@@ -151,6 +148,36 @@ describe('AirportService Tests', () => {
     // test('Current Effective Date', () => {
     //     expect(AirportService.getAirportCurrentEffectiveDate()).toBe(currentAsOf)
     // })
+
+    describe('getDataSource', () => {
+        it('Returns AdipService for Adip source', () => {
+            const airport = new Airport('KSEA', undefined, 'Seattle-Tacoma', 432);
+            airport.source = AirportSource.Adip;
+            const ds = AirportService.getDataSource(airport);
+            expect(ds).toBeInstanceOf(AdipService);
+        })
+
+        it('Returns SkyvectorService for SkyVector source', () => {
+            const airport = new Airport('SUDU', undefined, 'Durazno', 305);
+            airport.source = AirportSource.SkyVector;
+            const ds = AirportService.getDataSource(airport);
+            expect(ds).toBeInstanceOf(SkyvectorService);
+        })
+
+        it('Returns undefined for User source', () => {
+            const airport = new Airport('CUST', undefined, 'Custom', 0);
+            airport.source = AirportSource.User;
+            const ds = AirportService.getDataSource(airport);
+            expect(ds).toBeUndefined();
+        })
+
+        it('Returns undefined for unknown source', () => {
+            const airport = new Airport('UNKN', undefined, 'Unknown', 0);
+            (airport as any).source = 'invalid';
+            const ds = AirportService.getDataSource(airport);
+            expect(ds).toBeUndefined();
+        })
+    })
 
     describe('getAirport', () => {
         it('Handles invalid code', async () => {

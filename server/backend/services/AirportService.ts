@@ -50,9 +50,9 @@ export class AirportService {
     }
 
     public static isValidIcaoId(code: string): boolean {
-        // code should be 4 letters and cannot start with I, Q or X
+        // code should be 4 letters/numbers
         const regex = /^[a-zA-Z0-9]{4}$/;
-        return code != null && regex.test(code) && !['I', 'Q', 'X'].includes(code.charAt(0).toUpperCase())
+        return code != null && regex.test(code)
     }
 
     /**
@@ -110,12 +110,20 @@ export class AirportService {
         // Processing codes that are not in the DB yet
         for (const newCode of dbCodesLookup.notFound) {
 
-            const dataSource = AirportService.getDataSource(newCode)
             let newAirport: Airport | undefined = undefined;
-            if (dataSource) {
-                newAirport = await dataSource.fetchAirport(newCode)
-            } else {
-                console.log('[AirportService.getAirports] No data source for', newCode)
+
+            // 1. Always try ADIP first
+            const adipService = new AdipService();
+            const adipAirport = await adipService.fetchAirport(newCode);
+
+            // 2. Check if ADIP result is an exact match for the requested code
+            if (adipAirport && (adipAirport.icaoId === newCode || adipAirport.locId === newCode)) {
+                newAirport = adipAirport;
+            }
+            // 3. If not found in ADIP or not an exact match, try Skyvector for 4-char codes
+            else if (newCode.length === 4) {
+                const skyvectorService = new SkyvectorService();
+                newAirport = await skyvectorService.fetchAirport(newCode);
             }
 
             if (newAirport) {
@@ -138,15 +146,15 @@ export class AirportService {
 
         // Processing codes that are already in the DB
         for (const found of dbCodesLookup.known) {
-            const dataSource = AirportService.getDataSource(found.code)
+            const dataSource = AirportService.getDataSource(found.airport)
             const modelIsStale = found.airport.version < Airport.currentVersion
             const dataIsStale = dataSource ? await dataSource.airportIsStale(found.airport) : false
             // the airport must be refreshed if the model stale or the data source says it is stale and it is not a custom airport
-            const needRefresh = dataSource && (modelIsStale || dataIsStale) && found.airport.source !== AirportSource.User
+            const needRefresh = dataSource && (modelIsStale || dataIsStale)
             if (needRefresh) {
-                console.debug(`[AirportService.getAirports] Refreshing ${found.code}: modelStale=${modelIsStale}, dataStale=${dataIsStale}, version=${found.airport.version}, effectiveDate=${found.airport.effectiveDate}`)
+                // console.debug(`[AirportService.getAirports] Refreshing ${found.code}: modelStale=${modelIsStale}, dataStale=${dataIsStale}, version=${found.airport.version}, effectiveDate=${found.airport.effectiveDate}`)
                 const refresher = await dataSource?.fetchAirport(found.code)
-                if (refresher) {
+                if (refresher && (refresher.icaoId === found.code || refresher.locId === found.code || refresher.source === AirportSource.SkyVector)) {
                     // preserve the sketch
                     refresher.sketch = found.airport.sketch
                     refresher.id = found.airport.id
@@ -203,14 +211,11 @@ export class AirportService {
         return output
     }
 
-    static getDataSource(code: string): AirportDataSource | undefined {
-        // we like codes that have 3 letters or 4 letters starting with K or P  
-        if (code.length == 3 || (code.length == 4 && (code.startsWith('K') || code.startsWith('P')))) {
-            return new AdipService()
-        }
-        // Fallback for other 4-letter codes (international)
-        if (code.length == 4) {
-            return new SkyvectorService()
+    static getDataSource(airport: Airport): AirportDataSource | undefined {
+        if (airport.source === AirportSource.Adip) {
+            return new AdipService();
+        } else if (airport.source === AirportSource.SkyVector) {
+            return new SkyvectorService();
         }
         return undefined
     }
