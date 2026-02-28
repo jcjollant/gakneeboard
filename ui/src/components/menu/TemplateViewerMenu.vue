@@ -1,5 +1,5 @@
 <template>
-  <div class="templateMenu">
+  <div id="vfr-menu" class="templateMenu">
     <MenuButton id="btnShow" icon="bars" title="Show/hide Menu" 
       :label="isCollapsed ? 'Show Menu' : 'Hide Menu'"
       :active="!isCollapsed"

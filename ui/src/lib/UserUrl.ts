@@ -20,6 +20,7 @@ export class UserUrl {
     static sunlightTileGuide: string = 'https://blog.kneeboard.ga/blog/2024/08/10/sunlight-tile-guide/'
     static checklistDigestPage: string = 'https://blog.kneeboard.ga/checklists-digest/'
     static ambassador: string = 'https://blog.kneeboard.ga/ambassador-program/'
+    static userGuides: string = 'https://blog.kneeboard.ga/guides/'
 
     // Youtube
     static youTubeChannel: string = 'https://www.youtube.com/@GAKneeboard/videos'
@@ -29,6 +30,7 @@ export class UserUrl {
     static ffExportVideo: string = 'https://youtu.be/BNRY8u1hNmo'
     static noteTilesVideo: string = 'https://youtu.be/nqgDI-CpFUU'
     static stripPageVideo: string = 'https://youtu.be/So5kDcN-vKc'
+    static customKneeboardIn40s: string = 'https://youtu.be/yJpIyj0z5lQ'
 
     // other external link
     static dtpp: string = 'https://aeronav.faa.gov/d-tpp/'

@@ -67,6 +67,7 @@
         <LoadingPage></LoadingPage>
         <LoadingPage></LoadingPage>
       </div>
+      <FTUXBanner v-if="showFtuxBanner" />
     </div>
 </template>
 
@@ -103,6 +104,7 @@ import TemplateSettingsDialog from '../components/templates/TemplateSettingsDial
 import Tile from '../components/tiles/Tile.vue'
 import VerticalActionBar from '../components/editor/VerticalActionBar.vue'
 import HorizontalActionBar from '../components/editor/HorizontalActionBar.vue'
+import FTUXBanner from '../components/onboarding/FTUXBanner.vue'
 
 const noTemplate = Template.noTemplate()
 const activeTemplate = ref(noTemplate)
@@ -126,6 +128,10 @@ const singlePage = ref(false)
 const templateModified = ref(false)
 const toast = useToast()
 const toaster = useToaster(toast)
+
+const showFtuxBanner = computed(() => {
+  return activeTemplate.value.name?.toLowerCase().includes('vfr')
+})
 
 watch([templateModified, () => activeTemplate.value?.id], ([newMod, newId]: [boolean, number|undefined]) => {
     if (newId !== undefined) {

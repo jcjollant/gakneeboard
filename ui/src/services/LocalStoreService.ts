@@ -25,6 +25,7 @@ export class LocalStoreService {
     static flightInfo = 'flightInfo'
     static attribution = 'channel-attribution'
     static tempHomeAirport = 'temp-home-airport'
+    static ftuxBanner = 'ftux-banner'
     static MAX_AIRPORTS = 30
     static MAX_APPROACHES = 5
     static LEAN_AIRPORTS = 24
@@ -351,6 +352,14 @@ export class LocalStoreService {
     static popupHide(id: number = 0) {
         localStorage.removeItem(LocalStoreService.howDoesItWork_deprecated)
         localStorage.setItem(LocalStoreService.popup, id.toString())
+    }
+
+    static hasDismissedFtuxBanner(): boolean {
+        return localStorage.getItem(LocalStoreService.ftuxBanner) === '1'
+    }
+
+    static dismissFtuxBanner() {
+        localStorage.setItem(LocalStoreService.ftuxBanner, '1')
     }
 
 
