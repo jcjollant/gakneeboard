@@ -17,7 +17,11 @@
         <div class="justify"><strong>Thanks</strong> to Ash, Jason, Mike, Nando, Steve, Stewart and Trenton for their repeated feedback</div>
       </div>
       <div v-else-if="activeTopic.value==topicGuide.value" class="mb-5">
-        <div class="mb-2 justify"><strong>You can help</strong> in many ways : 
+        <div class="helpButtons">
+          <Button label="Show Welcome Banner"  @click="showWelcomeBanner" class="p-button-outlined"  />
+          <Button label="Open User Guides" @click="showUserGuides" class="p-button-outlined" />
+        </div>
+        <div class="mb-2 justify">You can help too : 
           <ol>
             <li>Suggest features via "Give Feedback" or <a href="mailto:support@kneeboard.ga">email</a></li>
             <li>Show off your kneeboards to fellow pilots,</li>
@@ -89,6 +93,7 @@ import Dialog from 'primevue/dialog'
 import FAButton from "../shared/FAButton.vue";
 import OneChoice from "../shared/OneChoice.vue";
 import { postEula } from "../../assets/data";
+import { OnboardingService } from "../../services/OnboardingService";
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
@@ -127,6 +132,16 @@ function openUrl(url) {
 async function acceptEula() {
   // console.debug('[About.acceptEula] accepted')
   await postEula()
+}
+
+function showWelcomeBanner() {
+  OnboardingService.forceShowBanner()
+  emit('close')
+}
+
+function showUserGuides() {
+  openUrl(UserUrl.userGuides)
+  emit('close')
 }
 
 </script>
@@ -224,5 +239,14 @@ ol {
     padding: 1rem;
     border-radius: var(--border-radius);
     border-left: 4px solid var(--primary-color);
+}
+
+.helpButtons {
+  display: flex;
+  gap: 2rem;
+  margin-top: 0;
+  margin-bottom: 2rem;
+  justify-content: center;
+  align-items: center;
 }
 </style>
