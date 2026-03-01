@@ -29,6 +29,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { TemplateFormat } from '@gak/shared';
 import { TileData } from '../../models/TileData';
 import { TileType } from '../../models/TileType';
+import { Route } from '@gak/shared';
 
 import { UserUrl } from '../../lib/UserUrl';
 import { Checklist } from '../../models/Checklist';
@@ -47,7 +48,8 @@ const emits = defineEmits(['update', 'capture', 'replace'])
 const props = defineProps({
     data: { type: Object, default: null},
     format: { type: String, default: TemplateFormat.Kneeboard },
-    captureMode: { type: Boolean, default: false}
+    captureMode: { type: Boolean, default: false},
+    route: { type: Object as () => Route, default: undefined}
 })
 
 const isFullPage = computed(() => props.format === TemplateFormat.FullPage)
@@ -209,10 +211,10 @@ const settingsProps = computed((): any => {
         };
     }
     
-    // Default for Airport and others that expect tileData
     return {
         tileData: editingTileData.value,
-        isTile: true
+        isTile: true,
+        route: props.route
     };
 });
 

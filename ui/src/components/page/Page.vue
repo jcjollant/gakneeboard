@@ -9,7 +9,7 @@
         @replace="onReplace" @update="onUpdate" />
     <PaperNavlogPage v-else-if="type==PageType.paperNavlog" :data="pageData" :format="format"
         @replace="onReplace" @update="onUpdate" />
-    <TilePage v-else-if="type==PageType.tiles" :data="pageData" :format="format"
+    <TilePage v-else-if="type==PageType.tiles" :data="pageData" :format="format" :route="route"
         @update="onUpdate" :captureMode="captureMode" @capture="emits('capture', $event)"
         @replace="onReplace(PageType.selection)" />
     <NotesPage v-else-if="type==PageType.notes" 
@@ -57,6 +57,7 @@ import PersonalMinimumsPage from './PersonalMinimumsPage.vue'
 import SelectionPage from './SelectionPage.vue'
 import StripPage from '../strips/StripPage.vue'
 import TilePage from '../tiles/TilePage.vue'
+import { Route } from '@gak/shared'
 import { DemoData } from '../../assets/DemoData'
 
 const confirm = useConfirm()
@@ -68,6 +69,7 @@ const props = defineProps({
     data: { type: Object, default: null},
     format: { type: String, default: TemplateFormat.Kneeboard},
     captureMode: { type: Boolean, default: false},
+    route: { type: Object as () => Route, default: undefined}
 })
 
 function loadProps(props:any) {

@@ -5,6 +5,8 @@
       @close="showExport=false" @export="onExported" />
     <TemplateSettingsDialog v-model:visible="showSettings" :template="settingsTemplate"
       @close="showSettings=false" @save="onNewSettings" @recall="onRecallVersion" />
+    <RouteDialog v-model:visible="showRoute" :modelValue="activeTemplate.route"
+      @cancel="showRoute=false" @confirm="onRouteConfirm" />
     <!-- <Editor v-if="showEditor" v-model="activeTemplate" :offset="offset"
       @offset="onOffset" @update="onPageUpdate" /> -->
     <div class="pageGroup">
@@ -29,6 +31,7 @@
           @settings="onSettings"
           @delete="onDelete"
           @undo="onUndo"
+          @route="onRoute"
         />
       </div>
       <div v-if="showScroll && activeTemplate" class="scrollView">
@@ -39,7 +42,7 @@
       </div>
       <div v-else-if="activeTemplate" class="pageAll" :class="{'editor':showEditor}">
         <div v-for="(data,index) in activeTemplate.data" class="pageGrid" :class="{'fullpage-grid': activeTemplate.format === TemplateFormat.FullPage}">
-          <Page :data="data" :class="'page'+index"
+          <Page :data="data" :class="'page'+index" :route="activeTemplate.route"
             :format="activeTemplate.format" @update="onPageUpdate(Number(index), $event)" @delete="onPageDelete(Number(index))" 
             :captureMode="showCapture" @capture="handleCaptureEvent(Number(index), $event)"/>
           
@@ -101,6 +104,7 @@ import LoadingPage from '../components/page/LoadingPage.vue'
 import Page from '../components/page/Page.vue'
 import TemplateExport from '../components/templates/TemplateExport.vue'
 import TemplateSettingsDialog from '../components/templates/TemplateSettingsDialog.vue'
+import RouteDialog from '../components/templates/RouteDialog.vue'
 import Tile from '../components/tiles/Tile.vue'
 import VerticalActionBar from '../components/editor/VerticalActionBar.vue'
 import HorizontalActionBar from '../components/editor/HorizontalActionBar.vue'
@@ -123,6 +127,7 @@ const showCapture = ref(false)
 const showScroll = ref(false)
 const showExport = ref(false)
 const showSettings = ref(false)
+const showRoute = ref(false)
 const isInitializing = ref(false)
 const singlePage = ref(false)
 const templateModified = ref(false)
@@ -650,6 +655,17 @@ async function onSave(clone:boolean=false) {
 function onSettings() {
   settingsTemplate.value = activeTemplate.value
   showSettings.value = true;
+}
+
+function onRoute() {
+  showRoute.value = true
+}
+
+function onRouteConfirm(route: any) {
+  showRoute.value = false
+  activeTemplate.value.route = route
+  templateModified.value = true
+  saveTemplateToLocalStoreService()
 }
 
 function onNewSettings(settings:TemplateSettings) {
