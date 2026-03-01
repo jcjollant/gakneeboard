@@ -1,6 +1,6 @@
 import { Publication } from "./Publication";
 import { Template } from "./Template";
-import { KneeboardView, TemplateFormat } from "@gak/shared";
+import { KneeboardView, TemplateFormat, Route } from "@gak/shared";
 
 export class TemplateKneeboardView extends KneeboardView {
 
@@ -17,6 +17,7 @@ export class TemplateKneeboardView extends KneeboardView {
         thumbnail: string | undefined = undefined,
         thumbHash: string | undefined = undefined,
         system: boolean | undefined = undefined,
+        route: Route | undefined = undefined,
     ) {
         let data: any;
         // whatever is passed, we want data to be an object
@@ -29,11 +30,11 @@ export class TemplateKneeboardView extends KneeboardView {
         // Calculate pages it it's not provided
         const numPages = pages ? pages : (data.length ? data.length : 0);
 
-        super(id, name, data, publish ?? false, code, description, version, numPages, format, thumbnail, thumbHash, system);
+        super(id, name, data, publish ?? false, code, description, version, numPages, format, thumbnail, thumbHash, system, route);
     }
 
     static parse(sheet: any): TemplateKneeboardView {
-        return new TemplateKneeboardView(sheet.id, sheet.name, sheet.data, sheet.format, sheet.description, sheet.ver, sheet.publish, sheet.code);
+        return new TemplateKneeboardView(sheet.id, sheet.name, sheet.data, sheet.format, sheet.description, sheet.ver, sheet.publish, sheet.code, sheet.pages, sheet.thumbnail, sheet.thumbHash, sheet.system, sheet.route);
     }
 
     /**
@@ -47,6 +48,6 @@ export class TemplateKneeboardView extends KneeboardView {
         const code = pub ? pub.code : undefined;
         // if user_id is null/undefined, it is a system template
         const system = template.userId ? undefined : true;
-        return new TemplateKneeboardView(template.id, template.name, template.data, template.format, template.description, template.version, publish, code, template.pages, template.thumbnail, template.thumbhash, system);
+        return new TemplateKneeboardView(template.id, template.name, template.data, template.format, template.description, template.version, publish, code, template.pages, template.thumbnail, template.thumbhash, system, template.route);
     }
 }

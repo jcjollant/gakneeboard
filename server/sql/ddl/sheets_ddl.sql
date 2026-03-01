@@ -11,6 +11,7 @@ CREATE TABLE sheets(
     thumbnail varchar(255),
     thumbhash character(64),
     format varchar(16) DEFAULT 'kneeboard'::character varying,
+    route JSONB,
     PRIMARY KEY(id),
     CONSTRAINT pages_user_id_fkey FOREIGN key(user_id) REFERENCES users(id)
 );

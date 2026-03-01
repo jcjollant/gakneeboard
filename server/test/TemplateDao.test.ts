@@ -24,7 +24,8 @@ describe('TemplateDao', () => {
                     thumbhash: 'hash123',
                     active: true,
                     code: 'ABC',
-                    version: 42 // This is the value we want to verify
+                    version: 42, // This is the value we want to verify
+                    route: { dep: 'SEA', dst: 'SFO', alt: 'PDX' }
                 }
             ];
 
@@ -38,10 +39,9 @@ describe('TemplateDao', () => {
             expect(result).toHaveLength(1);
             expect(result[0]).toBeInstanceOf(TemplateKneeboardView);
             expect(result[0].id).toBe(1);
-            // Verify version is populated
-            // Currently implementation passes 0, so this expectation mirrors the bug/missing feature or the desired state
-            // Let's expect the correct version (42) and see it fail if it's currently 0
+            // Verify version and route are populated
             expect(result[0].ver).toBe(42);
+            expect(result[0].route).toEqual({ dep: 'SEA', dst: 'SFO', alt: 'PDX' });
         });
     });
 });

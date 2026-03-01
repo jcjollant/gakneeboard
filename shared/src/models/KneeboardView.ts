@@ -1,4 +1,5 @@
 import { TemplateFormat } from './TemplateFormat';
+import { Route } from './Route';
 
 export abstract class KneeboardView {
     id: number;
@@ -13,6 +14,7 @@ export abstract class KneeboardView {
     thumbUrl: string | undefined;
     thumbHash: string | undefined;
     system: boolean | undefined;
+    route: Route | undefined;
 
     constructor(
         id: number,
@@ -26,7 +28,8 @@ export abstract class KneeboardView {
         format: TemplateFormat,
         thumbUrl: string | undefined,
         thumbHash: string | undefined,
-        system: boolean | undefined
+        system: boolean | undefined,
+        route: Route | undefined = undefined
     ) {
         this.id = id;
         this.name = name;
@@ -40,5 +43,6 @@ export abstract class KneeboardView {
         this.thumbUrl = thumbUrl;
         this.thumbHash = thumbHash;
         this.system = system;
+        this.route = route;
     }
 }

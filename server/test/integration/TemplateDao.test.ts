@@ -35,10 +35,12 @@ describe('Custom Templates', () => {
         const templateDao = TemplateDao.getInstance()
 
         it('creates a new template', async () => {
-            const tv1 = new TemplateKneeboardView(0, "name1", jcTestTemplateData, TemplateFormat.Kneeboard, "description1", 1, true, undefined, 2)
+            const route = { dep: 'SEA', dst: 'SFO', alt: 'PDX' }
+            const tv1 = new TemplateKneeboardView(0, "name1", jcTestTemplateData, TemplateFormat.Kneeboard, "description1", 1, true, undefined, 2, undefined, undefined, false, route)
             const t1 = await templateDao.createOrUpdate(tv1, jcUserId)
             expect(t1.id).toBeGreaterThan(0)
             expect(t1.pages).toBe(2)
+            expect(t1.route).toEqual(route)
             // TemplateDao increments version on createOrUpdate. Input 1 -> Returned 2. (DB is 1)
             expect(t1.ver).toBe(2)
 
@@ -65,10 +67,17 @@ describe('Custom Templates', () => {
             expect(t2.desc).toBe("description2")
             expect(t2.pages).toBe(3)
 
+            // Modify route
+            const newRoute = { dep: 'JFK', dst: 'LAX' }
+            t2.route = newRoute
+            const t3 = await templateDao.createOrUpdate(t2, jcUserId)
+            expect(t3.route).toEqual(newRoute)
+
             // Verify persistence
             const saved = await templateDao.readById(t1.id, jcUserId)
             expect(saved?.name).toBe("name2")
-            expect(saved?.version).toBe(3)
+            expect(saved?.version).toBe(4) // version incremented again
+            expect(saved?.route).toEqual(newRoute)
 
             // Cleanup
             await TemplateDao.deleteStatic(t1.id, jcUserId)
@@ -234,6 +243,7 @@ describe('Custom Templates', () => {
                 user_id: 1,
                 thumbnail: 'someUrl',
                 thumbhash: 'someHash',
+                route: { dep: 'SEA', dst: 'SFO' }
             }
             const template = templateDao.parseRow(row)
             expect(template.id).toBe(row.id)
@@ -246,6 +256,7 @@ describe('Custom Templates', () => {
             expect(template.userId).toBe(row.user_id)
             expect(template.thumbnail).toBe(row.thumbnail)
             expect(template.thumbhash).toBe(row.thumbhash)
+            expect(template.route).toEqual(row.route)
         })
     })
     afterAll(async () => {

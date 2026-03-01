@@ -1,4 +1,4 @@
-import { TemplateFormat } from "@gak/shared"
+import { TemplateFormat, Route } from "@gak/shared"
 
 export class PageType {
     static selection = 'selection'
@@ -33,6 +33,7 @@ export class Template {
     thumbnail: string | undefined
     thumbhash: string | undefined
     creationDate: Date | undefined
+    route: Route | undefined
 
     constructor(id: number,
         userId: number | undefined,
@@ -44,7 +45,8 @@ export class Template {
         page: number,
         thumbnail: string | undefined = undefined,
         thumbhash: string | undefined = undefined,
-        creationDate: Date | undefined = undefined) {
+        creationDate: Date | undefined = undefined,
+        route: Route | undefined = undefined) {
         this.id = id;
         this.userId = userId;
         this.data = data;
@@ -56,6 +58,7 @@ export class Template {
         this.thumbnail = thumbnail
         this.thumbhash = thumbhash
         this.creationDate = creationDate;
+        this.route = route;
     }
 }
 

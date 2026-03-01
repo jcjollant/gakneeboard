@@ -1,15 +1,15 @@
-import { KneeboardView, TemplateFormat } from "@gak/shared";
+import { KneeboardView, TemplateFormat, Route } from "@gak/shared";
 import { PageType } from "../assets/PageType";
 
 export class Template extends KneeboardView {
-    constructor(name: string, description: string, publish: boolean = false, data: TemplatePage[] = [], format: TemplateFormat = TemplateFormat.Kneeboard, version: number = 0, system: boolean = false) {
-        super(0, name, data, publish, '', description, version, data.length, format, undefined, undefined, system)
+    constructor(name: string, description: string, publish: boolean = false, data: TemplatePage[] = [], format: TemplateFormat = TemplateFormat.Kneeboard, version: number = 0, system: boolean = false, route?: Route) {
+        super(0, name, data, publish, '', description, version, data.length, format, undefined, undefined, system, route)
 
         // console.log('[Template.constructor] Created template with format:', this.format);
     }
 
     static copy(src: Template): Template {
-        return new Template(src.name, src.desc || '', src.publish, src.data, src.format as TemplateFormat, src.ver, src.system)
+        return new Template(src.name, src.desc || '', src.publish, src.data, src.format as TemplateFormat, src.ver, src.system, src.route ? { ...src.route } : undefined)
     }
 
     static describe(template: any): string {
@@ -47,7 +47,7 @@ export class Template extends KneeboardView {
         // Ensure format is explicitly set and preserved
         const format = data.format || TemplateFormat.Kneeboard
         // console.log('[Template.parse] Using format:', format);
-        const template = new Template(data.name, data.desc, data.publish, data.data, format, data.ver, data.system)
+        const template = new Template(data.name, data.desc, data.publish, data.data, format, data.ver, data.system, data.route)
         template.id = data.id
         template.code = data.code
         template.ver = data?.ver ?? template.ver

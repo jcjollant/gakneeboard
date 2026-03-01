@@ -45,16 +45,14 @@ export class TemplateDao extends Dao<Template> {
             }
 
             // console.log( "[SheetDao.createOrUpdate] updating", pageId);
-            const result = isSystemTemplate
-                ? await sql`UPDATE sheets SET data=${JSON.stringify(templateView.data)},name=${templateView.name},description=${templateView.desc},pages=${templateView.pages},version=${templateView.ver} WHERE id=${templateView.id}`
-                : await sql`UPDATE sheets SET data=${JSON.stringify(templateView.data)},name=${templateView.name},description=${templateView.desc},pages=${templateView.pages},version=${templateView.ver} WHERE id=${templateView.id} AND user_id=${userId}`
+            const result = await sql`UPDATE sheets SET data=${JSON.stringify(templateView.data)}, name=${templateView.name}, description=${templateView.desc}, pages=${templateView.pages}, version=${templateView.ver}, route=${templateView.route ? JSON.stringify(templateView.route) : null} WHERE id=${templateView.id} AND (${isSystemTemplate} OR user_id=${userId})`;
 
             // we should update something
             if (result.rowCount == 0) {
                 throw new Error("Invalid template or user id")
             }
         } else { // new template creation
-            const result = await sql`INSERT INTO sheets (name, data, format, description, pages, version, user_id) VALUES (${templateView.name}, ${JSON.stringify(templateView.data)}, ${templateView.format}, ${templateView.desc}, ${templateView.pages}, 1, ${userId}) RETURNING id;`
+            const result = await sql`INSERT INTO sheets (name, data, format, description, pages, version, user_id, route) VALUES (${templateView.name}, ${JSON.stringify(templateView.data)}, ${templateView.format}, ${templateView.desc}, ${templateView.pages}, 1, ${userId}, ${templateView.route ? JSON.stringify(templateView.route) : null}) RETURNING id;`
 
             templateView.id = result.rows[0]['id']
         }
@@ -137,19 +135,19 @@ export class TemplateDao extends Dao<Template> {
         if (isAdmin) {
             // admin users see their own stuff and system templates, so we also request user_id
             const result = await sql`
-                SELECT s.id,s.user_id,s.name,s.description,s.pages,s.format,s.thumbnail,s.thumbhash,s.version,p.active,p.code as code FROM sheets AS s LEFT JOIN publications AS p ON s.id = p.sheetid WHERE user_id=${userId} OR s.user_id IS NULL
+                SELECT s.id,s.user_id,s.name,s.description,s.pages,s.format,s.thumbnail,s.thumbhash,s.version,s.route,p.active,p.code as code FROM sheets AS s LEFT JOIN publications AS p ON s.id = p.sheetid WHERE user_id=${userId} OR s.user_id IS NULL
             `
             return result.rows.length ? result.rows.map((row) => {
                 // System templates have no user_id
                 const system: boolean | undefined = row['user_id'] === null || undefined
-                return new TemplateKneeboardView(row['id'], row['name'], [], row['format'], row['description'], row['version'], row['active'], row['code'], row['pages'], row['thumbnail'], row['thumbhash'], system)
+                return new TemplateKneeboardView(row['id'], row['name'], [], row['format'], row['description'], row['version'], row['active'], row['code'], row['pages'], row['thumbnail'], row['thumbhash'], system, row['route'])
             }) : []
         } else {
             // Non admin users only see their own templates
             const result = await sql`
-                SELECT s.id,s.name,s.description,s.pages,s.format,s.thumbnail,s.thumbhash,s.version,p.active,p.code as code FROM sheets AS s LEFT JOIN publications AS p ON s.id = p.sheetid WHERE user_id=${userId}
+                SELECT s.id,s.name,s.description,s.pages,s.format,s.thumbnail,s.thumbhash,s.version,s.route,p.active,p.code as code FROM sheets AS s LEFT JOIN publications AS p ON s.id = p.sheetid WHERE user_id=${userId}
             `
-            return result.rows.length ? result.rows.map((row) => new TemplateKneeboardView(row['id'], row['name'], [], row['format'], row['description'], row['version'], row['active'], row['code'], row['pages'], row['thumbnail'], row['thumbhash'])) : []
+            return result.rows.length ? result.rows.map((row) => new TemplateKneeboardView(row['id'], row['name'], [], row['format'], row['description'], row['version'], row['active'], row['code'], row['pages'], row['thumbnail'], row['thumbhash'], undefined, row['route'])) : []
         }
     }
 
@@ -184,7 +182,7 @@ export class TemplateDao extends Dao<Template> {
      * @returns 
      */
     public parseRow(row: any): Template {
-        return new Template(row['id'], row['user_id'], row['data'], row['format'], row['name'], row['description'], row['version'], row['pages'], row['thumbnail'], row['thumbhash'], row['creation_date'])
+        return new Template(row['id'], row['user_id'], row['data'], row['format'], row['name'], row['description'], row['version'], row['pages'], row['thumbnail'], row['thumbhash'], row['creation_date'], row['route'])
     }
 
     /**
