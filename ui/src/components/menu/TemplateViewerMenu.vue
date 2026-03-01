@@ -13,6 +13,9 @@
       <MenuButton v-if="showSave" id="btnSave" icon="save" title="Save Kneeboard to the Cloud" label="Save" :disabled="!isTemplateValid"
         @click="$emit('save', false)"/>
 
+      <MenuButton id="btnRoute" icon="route" title="Edit Flight Route" label="Route"
+        @click="$emit('route')"/>
+
       <MenuButton v-if="isModified && hasId" id="btnUndo" icon="rotate-left" title="Discard unsaved changes" label="Undo"
         @click="$emit('undo')"/>
       
@@ -74,6 +77,7 @@ defineEmits<{
   (e: 'settings'): void
   (e: 'delete'): void
   (e: 'undo'): void
+  (e: 'route'): void
 }>()
 
 const isFullMode = ref(false)
