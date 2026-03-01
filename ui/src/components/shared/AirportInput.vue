@@ -8,15 +8,9 @@
             <span class="airportName" :class="{valid: valid, page:page}">{{ name }}</span>
             <span v-if="!expanded" class="recentAirport"  @click="name=''" title="Show Recent Airports">...</span>
         </div>
-        <div v-else-if="!expanded" class="recentAirportList">
-            <button type="button" v-for="a in airports" class="recentAirport" @click="onRecentAirport(a)">
-                <i v-if="a === homeAirportCode" class="pi pi-home" style="margin-right: 4px; font-size: 0.7rem;"></i>{{ a }}
-            </button>
-        </div>
-        <div v-if="expanded" class="recentAirportList expanded">
-            <span>Recent:</span>
-            <button type="button" v-for="a in airports" class="recentAirport" @click="onRecentAirport(a)">
-                <i v-if="a === homeAirportCode" class="pi pi-home" style="margin-right: 4px; font-size: 0.7rem;"></i>{{ a }}
+        <div class="frequentAirportList" :class="{expanded: expanded}">
+            <button type="button" v-for="ra in recemtAirports" class="recentAirport" @click="onRecentAirport(ra.code)">
+                <font-awesome-icon v-if="ra.type != 'recent'" :icon="ra.type === 'home' ? 'house' : 'route'" style="margin-right: 4px; font-size: 0.7rem;"/>{{ ra.code }}
             </button>
         </div>
     </div>
@@ -25,9 +19,11 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { Airport } from '../../models/Airport.ts'
+import { Route } from '@gak/shared'
 import { getAirport } from '../../services/AirportDataService'
 import { LocalStoreService } from '../../services/LocalStoreService'
 import { sessionAirports, currentUser } from '../../assets/data'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../../assets/Toaster'
 
@@ -43,10 +39,9 @@ const props = defineProps({
     page: {type: Boolean, default: false},
     expanded: {type: Boolean, default: false},
     large: {type: Boolean, default: false},
+    route: {type: Object as () => Route, default: undefined}
 })
-const noAirport:string[] = []
-const invalidAirport:Airport = new Airport()
-const airports = ref(noAirport)
+const recemtAirports = ref<RecentAirport[]>([])
 const code = ref()
 const model = defineModel<Airport|undefined>()
 const name = ref('')
@@ -54,7 +49,15 @@ const valid = ref(false)
 let timeoutId:ReturnType<typeof setTimeout>|undefined = undefined
 const toaster = useToaster( useToast())
 let unsubscribe: (() => void) | undefined = undefined
-const homeAirportCode = ref<string|undefined>(undefined)
+
+class RecentAirport {
+    code: string
+    type: 'home' | 'recent' | 'route'
+    constructor(code: string, type: 'home' | 'recent' | 'route') {
+        this.code = code
+        this.type = type
+    }
+}
 
 async function loadProps(props:any) {
     // console.log('[AirportInput.loadProps]', props)
@@ -80,9 +83,9 @@ onMounted(() => {
     // console.log('Airport mounted with ' + JSON.stringify(props.params))
     // get this airport data from parameters
     loadProps(props)
-    sessionAirports.addListener(refreshAirportList)
-    refreshAirportList()
-    unsubscribe = LocalStoreService.subscribe(refreshAirportList)
+    sessionAirports.addListener(refreshRecentAirportList)
+    refreshRecentAirportList()
+    unsubscribe = LocalStoreService.subscribe(refreshRecentAirportList)
 })
 
 onUnmounted(() => {
@@ -162,17 +165,31 @@ function onRecentAirport(airportCode:string) {
     }
 }
 
-function refreshAirportList() {
-    let recent = LocalStoreService.airportRecentsGet(5).sort();
-    homeAirportCode.value = currentUser.homeAirport
-    
-    if (homeAirportCode.value) {
-        // Remove home airport from the list if it is there
-        recent = recent.filter(a => a !== homeAirportCode.value)
-        // Add it to the top
-        recent.unshift(homeAirportCode.value)
+function refreshRecentAirportList() {
+    const recentAirports: RecentAirport[] = []
+
+    // Home Airport Always fist when exists
+    if(currentUser.homeAirport) {
+        recentAirports.push(new RecentAirport(currentUser.homeAirport, 'home'))
     }
-    airports.value = recent
+
+    const addIfUnique = (code:string|undefined, type: 'recent' | 'route') => {
+        if(!code) return
+        if(recentAirports.find(a => a.code === code)) return
+        recentAirports.push(new RecentAirport(code, type))
+    }
+
+    // Route Airports, preventing duplicates
+    if(props.route) {
+        addIfUnique(props.route.dep, 'route')
+        addIfUnique(props.route.dst, 'route')
+        addIfUnique(props.route.alt, 'route')
+    }
+
+    let recent = LocalStoreService.airportRecentsGet(10).sort();
+    recent.forEach(a => addIfUnique(a, 'recent'))
+    // return the first 10 elements
+    recemtAirports.value = recentAirports.slice(0, 10)
 }
 
 </script>
@@ -211,7 +228,7 @@ function refreshAirportList() {
 .recentAirport:hover {
     background-color: var(--bg-hover);
 }
-.recentAirportList {
+.frequentAirportList {
     display: flex;
     font-size: 0.7rem;
     line-height: 22px;
@@ -221,7 +238,7 @@ function refreshAirportList() {
     align-items: center;
     flex-wrap: wrap;
 }
-.recentAirportList.expanded {
+.frequentAirportList.expanded {
     padding-top: 5px;
 }
 .valid {
