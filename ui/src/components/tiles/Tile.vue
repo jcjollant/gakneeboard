@@ -1,6 +1,6 @@
 <template>
     <div class="tile-wrapper">
-    <AirportTile v-if="tile.name==TileType.airport" :params="tile.data" :span2="tile.span2"
+    <AirportTile v-if="tile.name==TileType.airport" :params="tile.data" :span2="tile.span2" :route="route"
         @replace="onReplace" @update="onUpdate" @settings="emits('settings',tile)"/>
     <AtisTile v-else-if="tile.name==TileType.atis" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate"/>
@@ -38,9 +38,10 @@
 
 <script setup lang="ts">
 import {onMounted, ref, watch} from 'vue';
-import { useConfirm } from "primevue/useconfirm";
+import { Route } from '@gak/shared';
 import { TileType } from '../../models/TileType'
 import { TileData } from '../../models/TileData';
+import { useConfirm } from "primevue/useconfirm";
 
 import Header from '../shared/Header.vue';
 import AirportTile from '../airport/AirportTile.vue';
@@ -64,7 +65,8 @@ const confirm = useConfirm()
 const props = defineProps({
     tile: { type: Object, default: null},
     captureMode: { type: Boolean, default: false},
-    index: { type: Number, default: -1}
+    index: { type: Number, default: -1},
+    route: { type: Object as () => Route, default: undefined}
 })
 
 var state:TileData
