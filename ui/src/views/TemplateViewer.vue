@@ -23,6 +23,7 @@
           :showScroll="templateContainsTiles"
           :isModified="templateModified"
           :hasId="activeTemplate.id > 0"
+          :activeRoute="isRouteDefined"
           @print="onPrint"
           @save="onSave"
           @scroll="onScroll"
@@ -143,6 +144,10 @@ watch([templateModified, () => activeTemplate.value?.id], ([newMod, newId]: [boo
         localStorage.setItem('template-modified-id', String(newId))
         localStorage.setItem('template-modified', newMod ? '1' : '0')
     }
+})
+const isRouteDefined = computed(() => {
+  const r = activeTemplate.value.route
+  return !!(r?.dep || r?.dst || r?.alt)
 })
 
 onMounted(() =>{

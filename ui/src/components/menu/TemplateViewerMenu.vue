@@ -14,7 +14,7 @@
         @click="$emit('save', false)"/>
 
       <MenuButton id="btnRoute" icon="route" title="Edit Flight Route" label="Route"
-        @click="$emit('route')"/>
+        :class="{'route-active': activeRoute}" @click="$emit('route')"/>
 
       <MenuButton v-if="isModified && hasId" id="btnUndo" icon="rotate-left" title="Discard unsaved changes" label="Undo"
         @click="$emit('undo')"/>
@@ -65,6 +65,7 @@ const props = defineProps<{
   hasVersion?: boolean
   isModified?: boolean
   hasId?: boolean
+  activeRoute?: boolean
 }>()
 
 defineEmits<{
@@ -104,5 +105,9 @@ watch(() => props.isCollapsed, (newVal) => {
 
 #btnDelete {
   margin-top: 40px;
+}
+
+.route-active {
+  background-color: var(--route-background);
 }
 </style>
