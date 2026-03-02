@@ -5,10 +5,10 @@ export const PLAN_ID_SIM: string = 'sim'
 export const PLAN_ID_STUDENT_PILOT: string = 'pp1'
 export const PLAN_ID_PRIVATE_PILOT: string = 'pp3'
 export const PLAN_ID_CHECKRIDE_READY: string = 'cr1'
-export const bestValuePlan: string = PLAN_ID_PRIVATE_PILOT;
 export const PLAN_ID_BETA_DEAL: string = 'bd1'
 export const PLAN_ID_LIFETIME_DEAL: string = 'ld2'
 
+export const bestValuePlan: string = PLAN_ID_LIFETIME_DEAL;
 export const PRINT_CREDIT_SIMMER = 4;
 
 export const PLANS: PlanDescription[] = [
