@@ -25,12 +25,14 @@ export class UserUrl {
     // Youtube
     static youTubeChannel: string = 'https://www.youtube.com/@GAKneeboard/videos'
     static navlogVideo: string = 'https://www.youtube.com/playlist?list=PLS4A2hmRgOclcjE4THa034Lgq0THbewUX'
+    static routeVideo: string = 'https://www.youtube.com/playlist?list=PLS4A2hmRgOclcjE4THa034Lgq0THbewUX'
     static airportTileVideo: string = 'https://youtu.be/bfcyHbju9rs'
     static editorVideo: string = 'https://youtu.be/v9C5Eyr_A3E'
     static ffExportVideo: string = 'https://youtu.be/BNRY8u1hNmo'
     static noteTilesVideo: string = 'https://youtu.be/nqgDI-CpFUU'
     static stripPageVideo: string = 'https://youtu.be/So5kDcN-vKc'
     static customKneeboardIn40s: string = 'https://youtu.be/yJpIyj0z5lQ'
+    static routeFeature: string = 'https://youtu.be/invalid'
 
     // other external link
     static dtpp: string = 'https://aeronav.faa.gov/d-tpp/'

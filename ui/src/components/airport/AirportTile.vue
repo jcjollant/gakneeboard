@@ -133,6 +133,8 @@ const toaster = useToaster(toast)
 const isSignedIn = ref(currentUser.loggedIn)
 const modesList = AirportTileConfig.modesList
 const displayMode = ref(DisplayModeAirport.RunwaySketch)
+// The original params.code (may be a route token like '#dep'); preserved so saveConfig doesn't overwrite it with the resolved ICAO code
+const codeParam = ref('')
 
 watch(displayMode, (val) => {
     if (config.value && config.value.mode !== val) {
@@ -175,11 +177,20 @@ function loadProps(newProps:any) {
 
     // resolve configuration
     let propsConfig = new AirportTileConfig()
+    // Preserve the original params.code (may be a route token like '#dep') so saveConfig can restore it
+    codeParam.value = params.code
     const codeFromRoute = RouteService.getAirportCode(newProps.route, params.code)
+    // console.log('[AirportTile.loadProps] codeFromRoute', newProps.route)
     if(codeFromRoute) {
         propsConfig.code = codeFromRoute
         editMode.value = false
+    } else if (params.code.startsWith('#')) {
+        toaster.error('Route needed', 'We need a route to resolve the airport')
+        // This is a route token that couldn't be resolved
+        editMode.value = true
+        return
     } else if( params.code) {
+        // Only use params.code directly if it's a real ICAO code, not an unresolved route token
         propsConfig.code = params.code
         editMode.value = false
     } else if (currentUser.homeAirport) {
@@ -426,7 +437,12 @@ function saveConfig() {
         return;
     }
 
+    // Restore the original params.code (which may be a route token like '#dep') so the parent
+    // doesn't lose the route linkage when it receives this update and re-sets params.
+    const savedCode = config.value.code
+    if (codeParam.value) config.value.code = codeParam.value
     emits( 'update', new TileData( TileType.airport, config.value, expanded.value));
+    config.value.code = savedCode  // restore resolved code for local display
 }
 </script>
 <style scoped>
