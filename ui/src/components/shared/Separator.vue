@@ -1,5 +1,5 @@
 <template>
-    <div class="separator" :class="{ 'level-1': level === 1 }">{{ name }}</div>
+    <div class="separator" :class="{ 'level-1': level === 1, 'left-aligned': leftAligned }">{{ name }}</div>
 </template>
 
 <script setup>
@@ -8,6 +8,10 @@ defineProps({
     level: {
         type: Number,
         default: 0
+    },
+    leftAligned: {
+        type: Boolean,
+        default: false
     }
 })
 </script>
@@ -32,6 +36,15 @@ defineProps({
     padding-top: 5px;
     margin: 0;
 
+}
+
+.separator.left-aligned {
+    gap: 12px;
+}
+
+.separator.left-aligned:before {
+    flex: none;
+    width: 10px;
 }
 
 .separator.level-1 {
