@@ -184,12 +184,13 @@ function loadProps(newProps:any) {
     if(codeFromRoute) {
         propsConfig.code = codeFromRoute
         editMode.value = false
-    } else if (params.code.startsWith('#')) {
-        toaster.error('Route needed', 'We need a route to resolve the airport')
-        // This is a route token that couldn't be resolved
-        editMode.value = true
-        return
     } else if( params.code) {
+        if (params.code.startsWith('#')) {
+            toaster.error('Route needed', 'We need a route to resolve the airport')
+            // This is a route token that couldn't be resolved
+            editMode.value = true
+            return
+        }
         // Only use params.code directly if it's a real ICAO code, not an unresolved route token
         propsConfig.code = params.code
         editMode.value = false
