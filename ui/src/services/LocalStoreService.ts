@@ -2,6 +2,7 @@ import { Airport } from '../models/Airport'
 import { User } from "../models/User"
 import { Template } from "../models/Template"
 import { Notam } from '../models/Notam'
+import { Route } from '@gak/shared'
 
 const MAX_NOTAMS_AGE = 6 * 60 * 60 * 1000 // 6 hours
 const MAX_METAR_AGE = 15 * 60 * 1000 // 15 minutes
@@ -23,6 +24,7 @@ export class LocalStoreService {
     static templatePrefix = 'template-'
     static thumbnailPrefix = 'tthumb-'
     static attribution = 'channel-attribution'
+    static lastRoute = 'last-route'
     static tempHomeAirport = 'temp-home-airport'
     static ftuxBanner = 'ftux-banner'
     static MAX_AIRPORTS = 30
@@ -476,6 +478,17 @@ export class LocalStoreService {
             }
         }
         LocalStoreService.notify()
+    }
+
+
+    static saveRoute(route: Route) {
+        localStorage.setItem(LocalStoreService.lastRoute, JSON.stringify(route))
+    }
+
+    static getRoute(): Route | undefined {
+        const route = localStorage.getItem(LocalStoreService.lastRoute)
+        if (route) return JSON.parse(route)
+        return undefined
     }
 
 }

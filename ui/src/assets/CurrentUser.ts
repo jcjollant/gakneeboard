@@ -193,10 +193,11 @@ export class CurrentUser {
       if (data.homeAirport) {
         this.homeAirport = data.homeAirport
       } else {
-        const tempHome = localStorage.getItem(LocalStoreService.tempHomeAirport)
-        if (tempHome) {
-          this.homeAirport = tempHome
-          data.homeAirport = tempHome
+        // makeshift home airport from last route
+        const lastRoute = LocalStoreService.getRoute()
+        if (lastRoute) {
+          this.homeAirport = lastRoute.dep
+          data.homeAirport = lastRoute.dep
         }
       }
 
