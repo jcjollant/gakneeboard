@@ -22,7 +22,6 @@ export class LocalStoreService {
     static templateOlder = 'page1'
     static templatePrefix = 'template-'
     static thumbnailPrefix = 'tthumb-'
-    static flightInfo = 'flightInfo'
     static attribution = 'channel-attribution'
     static tempHomeAirport = 'temp-home-airport'
     static ftuxBanner = 'ftux-banner'
