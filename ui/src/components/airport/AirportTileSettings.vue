@@ -1,7 +1,7 @@
 <template>
     <div class="airport-settings">
         <!-- Airport Section -->
-        <SeparatorChoice name="Airport" choiceA="Fixed" choiceB="Route" v-model="useCode" />
+        <Separator name="Airport Code" :leftAligned="true" />
         <div class="airport-selection">
             <AirportInput :use-route="!useCode"
                 :code="airportCode" :auto="true" :expanded="true" :large="true" :route="route"
@@ -62,6 +62,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 import AirportInput from '../shared/AirportInput.vue';
 
 import SeparatorChoice from '../../components/shared/SeparatorChoice.vue';
+import Separator from '../../components/shared/Separator.vue';
 
 import { Airport } from '../../models/Airport';
 import { Route, RouteCode } from '@gak/shared';
