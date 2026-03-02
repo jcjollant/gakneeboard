@@ -6,6 +6,17 @@
             "destination": "/api"
         }
     ],
+    "headers": [
+        {
+            "source": "/(.*)",
+            "headers": [
+                {
+                    "key": "Access-Control-Allow-Origin",
+                    "value": "https://*.kneeboard.ga"
+                }
+            ]
+        }
+    ],
     "functions": {
         "api/index.ts": {
             "maxDuration": 10
