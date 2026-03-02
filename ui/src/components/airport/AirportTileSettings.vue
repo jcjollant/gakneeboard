@@ -3,7 +3,7 @@
         <!-- Airport Section -->
         <Separator name="Airport Code" :leftAligned="true" />
         <div class="airport-selection">
-            <AirportInput :use-route="!useCode"
+            <AirportInput v-model:routeCode="selectedRouteCode"
                 :code="airportCode" :auto="true" :expanded="true" :large="true" :route="route"
                 @valid="onUserSelectAirport"
                 @invalid="onInvalidAirport" />
@@ -92,7 +92,7 @@ const currentMode = ref(DisplayModeAirport.RunwaySketch);
 const expanded = ref(false);
 const airportCode = ref('');
 const airport = ref<Airport>(new Airport());
-const useCode = ref(true);
+const selectedRouteCode = ref<RouteCode | undefined>(undefined);
 const validAirport = ref(false);
 
 const loading = ref(false);
@@ -128,7 +128,7 @@ watch(() => props.tileData, (newTileData) => {
     loadFromTileData(newTileData);
 }, { deep: true });
 
-watch([currentMode, airportCode, selectedRwyNames, verticalOrientation, showHeadings, patternChoice, showPattern, showMetar, showNotams], () => {
+watch([currentMode, airportCode, selectedRwyNames, verticalOrientation, showHeadings, patternChoice, showPattern, showMetar, showNotams, selectedRouteCode], () => {
     if (!isInternalUpdate.value) {
         emitUpdate();
     }
@@ -152,10 +152,10 @@ function loadFromTileData(tile: TileData) {
     const codeFromRoute = RouteService.getAirportCode(props.route, config.routeCode)
     if(codeFromRoute) {
         airportCode.value = codeFromRoute
-        useCode.value = false
+        selectedRouteCode.value = config.routeCode
     } else {
         airportCode.value = config.code;
-        useCode.value = true
+        selectedRouteCode.value = undefined
     }
     // if config.rwys is iterable, convert to array
     const rwyIterable = config.rwys && Symbol.iterator in Object(config.rwys);
@@ -272,7 +272,7 @@ function emitUpdate() {
         currentMode.value,
         showMetar.value,
         showNotams.value,
-        useCode.value ? undefined : RouteService.getRouteCode(props.route, airportCode.value)
+        selectedRouteCode.value
     );
 
     tileData.value.data = newConfig;
