@@ -2,6 +2,7 @@ import { Route, RouteCode } from "@gak/shared";
 
 export class RouteService {
     static getAirportCode(route: Route | undefined, code: RouteCode | undefined): string | undefined {
+        // console.debug('[RouteService.getAirportCode] route', route, 'code', code)
         if (!route || !code) return undefined
         // Segment must be one of 'dep', 'dst' or 'alt'
         if (code == 'dep') return route.dep
