@@ -164,7 +164,7 @@ async function waitForAirportData(code: string) {
  * @returns 
  */
 async function requestAllAirports(codes: string[]) {
-    console.log('[AirportDataService.requestAllAirports] perform group request for ', codes)
+    // console.debug('[AirportDataService.requestAllAirports] perform group request for ', codes)
     const url = UrlService.root + 'airports/' + codes.join('-');
     await currentUser.getUrl(url)
         .then(response => {
