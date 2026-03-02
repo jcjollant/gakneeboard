@@ -1,9 +1,9 @@
 <template>
     <div class="airport-settings">
         <!-- Airport Section -->
-        <SeparatorChoice name="Airport" choiceA="Code" choiceB="Route" v-model="useCode" />
+        <SeparatorChoice name="Airport" choiceA="Fixed" choiceB="Route" v-model="useCode" />
         <div class="airport-selection">
-            <AirportInput v-model:segment="selectedRouteSegment" :use-route="!useCode"
+            <AirportInput :use-route="!useCode"
                 :code="airportCode" :auto="true" :expanded="true" :large="true" :route="route"
                 @valid="onUserSelectAirport"
                 @invalid="onInvalidAirport" />
@@ -64,7 +64,7 @@ import AirportInput from '../shared/AirportInput.vue';
 import SeparatorChoice from '../../components/shared/SeparatorChoice.vue';
 
 import { Airport } from '../../models/Airport';
-import { Route } from '@gak/shared';
+import { Route, RouteCode } from '@gak/shared';
 import { AirportTileConfig } from './AirportTileConfig';
 import { Runway as AirportRunway } from '../../models/Airport';
 import { Formatter } from '../../lib/Formatter';
@@ -100,7 +100,6 @@ const isInternalUpdate = ref(false);
 // Runway/Pattern State
 const rwyList = ref<AirportRunway[]>([]);
 const selectedRwyNames = ref<string[]>([]);
-const selectedRouteSegment = ref<'dep' | 'dst' | 'alt' | undefined>(undefined);
 const verticalOrientation = ref(true);
 const showHeadings = ref(true);
 const patternChoice = ref(TrafficPatternDisplay.Downwind); // Default
@@ -135,6 +134,7 @@ watch([currentMode, airportCode, selectedRwyNames, verticalOrientation, showHead
 });
 
 function loadFromTileData(tile: TileData) {
+    // console.debug('[AirportTileSettings.loadFromTileData]', tile)
     if (!tile) return;
     const config = tile.data as AirportTileConfig;
     if (!config) return;
@@ -148,14 +148,12 @@ function loadFromTileData(tile: TileData) {
     }
     expanded.value = tile.span2;
 
-    const codeFromRoute = RouteService.getAirportCode(props.route, config.code)
+    const codeFromRoute = RouteService.getAirportCode(props.route, config.routeCode)
     if(codeFromRoute) {
         airportCode.value = codeFromRoute
-        selectedRouteSegment.value = RouteService.getSegment(props.route, codeFromRoute)
         useCode.value = false
     } else {
         airportCode.value = config.code;
-        selectedRouteSegment.value = undefined
         useCode.value = true
     }
     // if config.rwys is iterable, convert to array
@@ -264,7 +262,7 @@ function emitUpdate() {
     const originalCorners = (props.tileData.data as AirportTileConfig)?.corners;
 
     const newConfig = new AirportTileConfig(
-        useCode.value ? airportCode.value : '#' + selectedRouteSegment.value,
+        airportCode.value,
         selectedRwyNames.value,
         showPattern.value ? patternChoice.value : TrafficPatternDisplay.None,
         originalCorners, 
@@ -272,17 +270,15 @@ function emitUpdate() {
         showHeadings.value,
         currentMode.value,
         showMetar.value,
-        showNotams.value
+        showNotams.value,
+        useCode.value ? undefined : RouteService.getRouteCode(props.route, airportCode.value)
     );
-
-    // console.debug('AirportTileSettings.emitUpdate]', showPattern.value)
-    // console.debug('AirportTileSettings.emitUpdate]', patternChoice.value)
-    // console.debug('AirportTileSettings.emitUpdate]', newConfig)
 
     tileData.value.data = newConfig;
     tileData.value.span2 = expanded.value;
 
     if (tileSettingsUpdate) {
+        console.debug('[AirportTileSettings.emitUpdate] Emitting update', tileData.value)
         tileSettingsUpdate(tileData.value);
     }
 }
