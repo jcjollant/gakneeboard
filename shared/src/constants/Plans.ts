@@ -111,7 +111,7 @@ export const PLANS: PlanDescription[] = [
             restoreOldVersion: true
         },
         accountType: AccountType.private,
-        isBestValue: true
+        isBestValue: false
     },
     {
         id: PLAN_ID_BETA_DEAL,
