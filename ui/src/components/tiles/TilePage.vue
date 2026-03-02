@@ -5,6 +5,7 @@
           :tile="tile" 
           :captureMode="captureMode"
           :index="index"
+          :route="props.route"
           @update="onUpdate(index,$event)" 
           @settings="onSettingsOpen(index, $event)"
           @replacePage="emits('replace')"/>
