@@ -32,7 +32,10 @@ function airportCurrent(airport: any) {
  */
 export async function getAirport(codeParam: string, group = false) {
     // console.debug('[data.getAirport]', codeParam)
-    if (!codeParam) return null;
+    if (!codeParam || typeof codeParam !== 'string' || codeParam.trim().length === 0) {
+        console.warn('[data.getAirport] invalid code', codeParam)
+        return null;
+    }
     const code = codeParam.toUpperCase()
 
     // console.log( '[data.getAirport]', code);
