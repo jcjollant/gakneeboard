@@ -1,4 +1,4 @@
-import { Route } from "@gak/shared";
+import { Route, RouteCode } from "@gak/shared";
 
 export class RouteService {
     static getAirportCode(route: Route | undefined, segment: string): string | undefined {
@@ -10,7 +10,7 @@ export class RouteService {
         return undefined
     }
 
-    static getSegment(route: Route | undefined, codeFromRoute: string): "dep" | "dst" | "alt" | undefined {
+    static getRouteCode(route: Route | undefined, codeFromRoute: string): RouteCode | undefined {
         if (!route) return undefined
         if (route.dep == codeFromRoute) return "dep"
         if (route.dst == codeFromRoute) return "dst"
