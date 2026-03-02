@@ -133,8 +133,6 @@ const toaster = useToaster(toast)
 const isSignedIn = ref(currentUser.loggedIn)
 const modesList = AirportTileConfig.modesList
 const displayMode = ref(DisplayModeAirport.RunwaySketch)
-// The original params.code (may be a route token like '#dep'); preserved so saveConfig doesn't overwrite it with the resolved ICAO code
-const codeParam = ref('')
 
 watch(displayMode, (val) => {
     if (config.value && config.value.mode !== val) {
@@ -168,7 +166,7 @@ const props = defineProps({
 
 // load props can happen on initial load or when settings are changed
 function loadProps(newProps:any) {
-    // console.debug('[AirportTile.loadProps]', newProps)
+    console.debug('[AirportTile.loadProps]', newProps)
     const params = newProps.params;
     if( !params) {
         console.warn( 'Airport cannot load params ' + JSON.stringify(params))
@@ -177,31 +175,22 @@ function loadProps(newProps:any) {
 
     // resolve configuration
     let propsConfig = new AirportTileConfig()
-    // Preserve the original params.code (may be a route token like '#dep') so saveConfig can restore it
-    codeParam.value = params.code
-    const codeFromRoute = RouteService.getAirportCode(newProps.route, params.code)
-    // console.log('[AirportTile.loadProps] codeFromRoute', newProps.route)
+    const codeFromRoute = RouteService.getAirportCode(newProps.route, newProps.params.routeCode)
+    // console.log('[AirportTile.loadProps] codeFromRoute', codeFromRoute)
     if(codeFromRoute) {
         propsConfig.code = codeFromRoute
-        editMode.value = false
+        // reset the runway to avoid unknowns
+        params.rwys = []
     } else if( params.code) {
-        if (params.code.startsWith('#')) {
-            toaster.error('Route needed', 'We need a route to resolve the airport')
-            // This is a route token that couldn't be resolved
-            editMode.value = true
-            return
-        }
-        // Only use params.code directly if it's a real ICAO code, not an unresolved route token
         propsConfig.code = params.code
-        editMode.value = false
     } else if (currentUser.homeAirport) {
         propsConfig.code = currentUser.homeAirport
-        editMode.value = false
     } else { // Force edit mode if we don't have an airport yet
         title.value = defaultTitle
         editMode.value = true
         return
     }
+    editMode.value = false
     
     // runway
     if( params.rwy) { // old format
@@ -438,12 +427,7 @@ function saveConfig() {
         return;
     }
 
-    // Restore the original params.code (which may be a route token like '#dep') so the parent
-    // doesn't lose the route linkage when it receives this update and re-sets params.
-    const savedCode = config.value.code
-    if (codeParam.value) config.value.code = codeParam.value
-    emits( 'update', new TileData( TileType.airport, config.value, expanded.value));
-    config.value.code = savedCode  // restore resolved code for local display
+    emits('update', new TileData(TileType.airport, config.value, expanded.value));
 }
 </script>
 <style scoped>
