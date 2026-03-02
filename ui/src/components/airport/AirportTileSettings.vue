@@ -1,75 +1,56 @@
 <template>
     <div class="airport-settings">
         <!-- Airport Section -->
-        <Separator name="Airport" />
+        <SeparatorChoice name="Airport" choiceA="Code" choiceB="Route" v-model="useCode" />
         <div class="airport-selection">
-            <AirportInput :code="airportCode" :auto="true" :expanded="true" :large="true"
+            <AirportInput v-if="useCode" :code="airportCode" :auto="true" :expanded="true" :large="true" :route="route"
                 @valid="onUserSelectAirport"
                 @invalid="onInvalidAirport" />
+            <RouteInput v-else :route="route" v-model="selectedRouteSegment" />
         </div>
 
-        <!-- Display Mode Section -->
-        <Separator name="Display" class="separator" />
-        <DisplayModeSelector :choices="modesList" v-model="selectedModeChoice" :show-previews="true" />
-        <div class="display-onechoice">
-            <EitherOr either="Normal" or="Wide" v-model="isNormal" />
-        </div>
 
         <ProgressSpinner v-if="loading" class="spinner"></ProgressSpinner>
         
         <!-- Runway & Pattern Section -->
-        <div v-else-if="currentMode !== DisplayModeAirport.Diagram && currentMode !== DisplayModeAirport.Charts" class="rwyChoices">
-            <Separator name="Runway(s)" />
+        <div class="rwyChoices">
+            <SeparatorChoice name="Runway(s)" choiceA="Vertical" choiceB="Magnetic" v-model="verticalOrientation" />
             <div v-if="validAirport">
                 <div class="rwySelector" title="Select 1 or 2 runways">
                     <Button v-for="rwy in rwyList" :key="rwy.name" class="sign"
-                        :severity="selectedRwyNames.includes(rwy.name) ? 'primary' : 'secondary'"
-                        @click="selectRunway(rwy.name)">
-                        <div class="rwy-btn-content">
-                            <span class="rwy-name">{{ rwy.name }}</span>
-                            <span class="rwy-len">{{ Formatter.feet(rwy.length) + getRunwayPositionLabel(rwy.name) }}</span>
-                        </div>
-                    </Button>
-                <div class="rwyOrientation">
-                    <EitherOr v-if="validAirport" v-model="verticalOrientation" either="Vertical" or="Magnetic"
-                        class="eoOrientation" />
-                </div>
+                    :severity="selectedRwyNames.includes(rwy.name) ? 'primary' : 'secondary'"
+                    @click="selectRunway(rwy.name)">
+                    <div class="rwy-btn-content">
+                        <span class="rwy-name">{{ rwy.name }}</span>
+                        <span class="rwy-len">{{ Formatter.feet(rwy.length) + getRunwayPositionLabel(rwy.name) }}</span>
+                    </div>
+                </Button>
                 </div>
             </div>
             <div v-else class="centered">
                 <span>Select Airport to view runways</span>
             </div>
-            
-            
-            <div class="pattern-selector">
-                <span class="pattern-label">Traffic Pattern:</span>
-                <Button v-for="option in patternOptions" :key="option.value" 
-                    :severity="patternChoice === option.value ? 'primary' : 'secondary'"
-                    @click="patternChoice = option.value"
-                    class="pattern-btn">
-                    {{ option.label }}
-                </Button>
-            </div>
         </div>
 
+        <!-- Traffic Pattern Section -->
+        <SeparatorChoice name="Traffic Pattern" choiceA="Show" choiceB="Hide" v-model="showPattern" />
+        <div v-if="showPattern" class="pattern-selector">
+            <Button v-for="option in patternOptions" :key="option.value" 
+                :severity="patternChoice === option.value ? 'primary' : 'secondary'"
+                @click="patternChoice = option.value"
+                class="pattern-btn">
+                {{ option.label }}
+            </Button>
+        </div>
+
+
         <!-- Conditions Section -->
-        <template v-if="currentMode !== DisplayModeAirport.Charts">
-            <Separator name="Conditions" />
-            <div class="conditions-selector">
-                <div class="checkbox-field">
-                    <Checkbox v-model="showMetar" :binary="true" inputId="chkMetar" :disabled="!currentUser.canViewMetars" />
-                    <label for="chkMetar" :class="{ 'disabled-label': !currentUser.canViewMetars }">
-                        Show METAR <span v-if="!currentUser.canViewMetars" class="requirement">(Student Pilot+)</span>
-                    </label>
-                </div>
-                <div class="checkbox-field">
-                    <Checkbox v-model="showNotams" :binary="true" inputId="chkNotams" :disabled="!currentUser.canViewNotams" />
-                    <label for="chkNotams" :class="{ 'disabled-label': !currentUser.canViewNotams }">
-                        Show NOTAMs <span v-if="!currentUser.canViewNotams" class="requirement">(Checkride Ready+)</span>
-                    </label>
-                </div>
-            </div>
-        </template>
+        <SeparatorChoice name="NOTAMs" choiceA="Show" choiceB="Hide" v-model="showNotams" />
+        <SeparatorChoice name="METAR" choiceA="Show" choiceB="Hide" v-model="showMetar" />
+
+        <!-- Display Section with Choice -->
+        <SeparatorChoice name="Display" choiceA="Normal" choiceB="Wide" v-model="isNormal" />
+        <!-- <DisplayModeSelector :choices="modesList" v-model="selectedModeChoice" :show-previews="true" /> -->
 
     </div>
 </template>
@@ -78,28 +59,28 @@
 import { ref, onMounted, watch, computed, inject } from 'vue';
 import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
-import Checkbox from 'primevue/checkbox';
-import DisplayModeSelector from '../shared/DisplayModeSelector.vue';
 import AirportInput from '../shared/AirportInput.vue';
-import EitherOr from '../shared/EitherOr.vue';
-import { currentUser } from '../../assets/data';
+import RouteInput from './RouteInput.vue';
 
-import Separator from '../../components/shared/Separator.vue';
+import SeparatorChoice from '../../components/shared/SeparatorChoice.vue';
 
 import { Airport } from '../../models/Airport';
+import { Route } from '@gak/shared';
 import { AirportTileConfig } from './AirportTileConfig';
 import { Runway as AirportRunway } from '../../models/Airport';
 import { Formatter } from '../../lib/Formatter';
 
 import { TrafficPatternDisplay, TrafficPatternDisplayLabels } from '../../models/TrafficPatternDisplay';
 import { RunwayOrientation } from './RunwayOrientation';
-import { DisplayModeAirport, DisplayModeChoice } from '../../models/DisplayMode';
+import { DisplayModeAirport } from '../../models/DisplayMode';
 import { getAirport } from '../../services/AirportDataService';
 import { TileData } from '../../models/TileData';
+import { RouteService } from '../../services/RouteService';
 
 
 const props = defineProps({
     tileData: { type: TileData, required: true },
+    route: { type: Object as () => Route, default: undefined}
 });
 
 const emits = defineEmits(['update']);
@@ -111,6 +92,7 @@ const currentMode = ref(DisplayModeAirport.RunwaySketch);
 const expanded = ref(false);
 const airportCode = ref('');
 const airport = ref<Airport>(new Airport());
+const useCode = ref(true);
 const validAirport = ref(false);
 
 const loading = ref(false);
@@ -119,21 +101,13 @@ const isInternalUpdate = ref(false);
 // Runway/Pattern State
 const rwyList = ref<AirportRunway[]>([]);
 const selectedRwyNames = ref<string[]>([]);
+const selectedRouteSegment = ref<'dep' | 'dst' | 'alt' | undefined>(undefined);
 const verticalOrientation = ref(true);
 const showHeadings = ref(true);
-const patternChoice = ref<TrafficPatternDisplay>(TrafficPatternDisplay.Downwind); // Default
+const patternChoice = ref(TrafficPatternDisplay.Downwind); // Default
 const showMetar = ref(true);
 const showNotams = ref(true);
-
-// Lists
-const modesList = ref(AirportTileConfig.modesList);
-
-const selectedModeChoice = computed({
-    get: () => modesList.value.find(c => c.value === currentMode.value),
-    set: (val) => { 
-        if(val) currentMode.value = val.value as DisplayModeAirport 
-    }
-})
+const showPattern = ref(true);
 
 const isNormal = computed({
     get: () => !expanded.value,
@@ -141,7 +115,7 @@ const isNormal = computed({
 })
 
 
-const patternOptions = Object.values(TrafficPatternDisplay).map(value => ({
+const patternOptions = [TrafficPatternDisplay.Downwind, TrafficPatternDisplay.Entry45, TrafficPatternDisplay.Midfield].map(value => ({
     label: TrafficPatternDisplayLabels[value],
     value: value
 }));
@@ -155,8 +129,7 @@ watch(() => props.tileData, (newTileData) => {
     loadFromTileData(newTileData);
 }, { deep: true });
 
-// Watch for changes to emit update candidates
-watch([currentMode, airportCode, selectedRwyNames, verticalOrientation, showHeadings, patternChoice, showMetar, showNotams], () => {
+watch([currentMode, airportCode, selectedRwyNames, verticalOrientation, showHeadings, patternChoice, showPattern, showMetar, showNotams], () => {
     if (!isInternalUpdate.value) {
         emitUpdate();
     }
@@ -167,6 +140,8 @@ function loadFromTileData(tile: TileData) {
     const config = tile.data as AirportTileConfig;
     if (!config) return;
 
+    isInternalUpdate.value = true;
+
     // load config.mode or default to RunwaySketch
     const newMode = config.mode || DisplayModeAirport.RunwaySketch;
     if (currentMode.value !== newMode) {
@@ -174,7 +149,16 @@ function loadFromTileData(tile: TileData) {
     }
     expanded.value = tile.span2;
 
-    airportCode.value = config.code;
+    const codeFromRoute = RouteService.getAirportCode(props.route, config.code)
+    if(codeFromRoute) {
+        airportCode.value = codeFromRoute
+        selectedRouteSegment.value = RouteService.getSegment(props.route, codeFromRoute)
+        useCode.value = false
+    } else {
+        airportCode.value = config.code;
+        selectedRouteSegment.value = undefined
+        useCode.value = true
+    }
     // if config.rwys is iterable, convert to array
     const rwyIterable = config.rwys && Symbol.iterator in Object(config.rwys);
     const newRwys = rwyIterable ? [...config.rwys] : [];
@@ -189,11 +173,18 @@ function loadFromTileData(tile: TileData) {
     verticalOrientation.value = config.rwyOrientation === RunwayOrientation.Vertical;
     showHeadings.value = config.headings;
     
-    const validValues: string[] = Object.values(TrafficPatternDisplay);
-    if (config.pattern && validValues.includes(config.pattern)) {
-        patternChoice.value = config.pattern as TrafficPatternDisplay;
-    } else {
-        patternChoice.value = TrafficPatternDisplay.Downwind;
+    patternChoice.value = TrafficPatternDisplay.Downwind;
+    showPattern.value = true;
+    if (config.pattern) {
+        const tpd = config.pattern as TrafficPatternDisplay;
+        if(tpd == TrafficPatternDisplay.None) {
+            showPattern.value = false;
+        } else {
+            showPattern.value = true;
+            if( tpd == TrafficPatternDisplay.Downwind || tpd == TrafficPatternDisplay.Entry45 || tpd == TrafficPatternDisplay.Midfield) {
+                patternChoice.value = tpd;
+            }
+        }
     }
 
     showMetar.value = config.showMetar ?? true;
@@ -209,6 +200,7 @@ function loadFromTileData(tile: TileData) {
             loading.value = false;
         });
     }
+    isInternalUpdate.value = false;
 }
 
 
@@ -230,6 +222,27 @@ function onUserSelectAirport(newAirport: Airport) {
     isInternalUpdate.value = false;
     emitUpdate();
 }
+
+watch(selectedRouteSegment, (newSegment) => {
+    if (!props.route) return;
+    let code = undefined;
+    if (newSegment === 'dep') {
+        code = props.route.dep;
+    } else if (newSegment === 'dst') {
+        code = props.route.dst;
+    } else if (newSegment === 'alt') {
+        code = props.route.alt;
+    }
+    if (!code) return;
+    loading.value = true;
+    getAirport(code, true).then((a: Airport) => {
+        onUserSelectAirport(a);
+    }).catch(() => {
+    }).finally(() => {
+        loading.value = false;
+    });
+});
+
 
 function loadAirportData(newAirport: Airport) {
     airport.value = newAirport;
@@ -271,9 +284,9 @@ function emitUpdate() {
     const originalCorners = (props.tileData.data as AirportTileConfig)?.corners;
 
     const newConfig = new AirportTileConfig(
-        airportCode.value,
+        useCode.value ? airportCode.value : '#' + selectedRouteSegment.value,
         selectedRwyNames.value,
-        patternChoice.value,
+        showPattern.value ? patternChoice.value : TrafficPatternDisplay.None,
         originalCorners, 
         orientation,
         showHeadings.value,
@@ -281,6 +294,10 @@ function emitUpdate() {
         showMetar.value,
         showNotams.value
     );
+
+    // console.debug('AirportTileSettings.emitUpdate]', showPattern.value)
+    // console.debug('AirportTileSettings.emitUpdate]', patternChoice.value)
+    // console.debug('AirportTileSettings.emitUpdate]', newConfig)
 
     tileData.value.data = newConfig;
     tileData.value.span2 = expanded.value;
@@ -306,23 +323,6 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
     display: flex;
     flex-direction: column;
     gap: 10px;
-}
-
-.recent-airports {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.recent-label {
-    font-size: 0.8rem;
-    color: #666;
-}
-
-.recent-list {
-    display: flex;
-    gap: 5px;
 }
 
 .rwyChoices {
@@ -358,10 +358,6 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
     font-weight: normal;
 }
 
-.rwyOrientation {
-    display: flex;
-}
-
 .centered {
     text-align: center;
 }
@@ -383,40 +379,5 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
 .pattern-btn {
     padding: 4px 12px;
     font-size: 0.9rem;
-}
-
-.display-onechoice {
-    display: flex;
-    justify-content: center;
-}
-
-.conditions-selector {
-    display: flex;
-    gap: 20px;
-    padding: 0 10px;
-}
-
-.checkbox-field {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.checkbox-field label {
-    font-size: 0.9rem;
-    cursor: pointer;
-    user-select: none;
-}
-
-.disabled-label {
-    color: #999;
-    cursor: not-allowed !important;
-}
-
-.requirement {
-    font-size: 0.75rem;
-    font-style: italic;
-    color: #f97316;
-    margin-left: 4px;
 }
 </style>

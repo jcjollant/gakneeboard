@@ -58,7 +58,7 @@
 
 <script setup lang="ts">
 import {ref, onMounted, watch, computed, onUnmounted} from 'vue';
-import { Metar } from '@gak/shared';
+import { Metar, Route } from '@gak/shared';
 
 import { getAirport, getNotams, getMetar } from '../../services/AirportDataService'
 import { AirportService } from '../../services/AirportService';
@@ -69,6 +69,7 @@ import { Airport, Runway } from '../../models/Airport.ts';
 import { AirportTileConfig } from './AirportTileConfig.ts';
 import { DisplayModeAirport } from '../../models/DisplayMode';
 import { Notam } from '../../models/Notam.ts';
+import { RouteService } from '../../services/RouteService.ts';
 import { RunwayOrientation } from './RunwayOrientation.ts';
 import { RunwayViewSettings } from './RunwayViewSettings.ts';
 import { TileData } from '../../models/TileData.ts';
@@ -84,7 +85,6 @@ import NotamListDialog from './NotamListDialog.vue'
 import NotamBadge from './NotamBadge.vue'
 import MetarBadge from './MetarBadge.vue'
 import MetarDialog from './MetarDialog.vue'
-import Button from 'primevue/button';
 import TileModeDots from '../shared/TileModeDots.vue';
 import ChartLinks from './ChartLinks.vue';
 
@@ -161,6 +161,7 @@ const getContext = (code: string) => {
 const props = defineProps({
     params: { type: Object, default: null}, // expects {'code':'ICAO','rwy':'XX-YY'}
     span2: {type: Boolean, default: false},
+    route: { type: Object as () => Route, default: undefined}
 })
 
 // load props can happen on initial load or when settings are changed
@@ -172,10 +173,13 @@ function loadProps(newProps:any) {
         return
     }
 
-    // console.debug('Airport loadProps ' + JSON.stringify(newProps))
+    // resolve configuration
     let propsConfig = new AirportTileConfig()
-
-    if( params.code) {
+    const codeFromRoute = RouteService.getAirportCode(newProps.route, params.code)
+    if(codeFromRoute) {
+        propsConfig.code = codeFromRoute
+        editMode.value = false
+    } else if( params.code) {
         propsConfig.code = params.code
         editMode.value = false
     } else if (currentUser.homeAirport) {
@@ -257,9 +261,12 @@ function loadProps(newProps:any) {
     })
 
     // load notams
-    getNotams(propsConfig.code).then(notams => {
-        notamsList.value = notams
-    })
+    // console.debug('[AirportTile.loadProps] Loading notams for ' + propsConfig.code)
+    if(propsConfig.showNotams) {
+        getNotams(propsConfig.code).then(notams => {
+            notamsList.value = notams
+        })
+    }
 }
 
 onMounted(() => {
