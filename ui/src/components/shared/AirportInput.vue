@@ -9,7 +9,7 @@
             <span v-if="!expanded" class="recentAirport"  @click="name=''" title="Show Recent Airports">...</span>
         </div>
         <div class="frequentAirportList" :class="{expanded: expanded}">
-            <button type="button" v-for="ra in recemtAirports" class="recentAirport" @click="onRecentAirport(ra.code)">
+            <button type="button" v-for="ra in recemtAirports" class="recentAirport" :class="{active: ra.activeRoute}" @click="onRecentAirport(ra.code)">
                 <font-awesome-icon v-if="ra.type != 'recent'" :icon="ra.type === 'home' ? 'house' : 'route'" style="margin-right: 4px; font-size: 0.7rem;"/>{{ ra.code }}
             </button>
         </div>
@@ -54,9 +54,11 @@ let unsubscribe: (() => void) | undefined = undefined
 class RecentAirport {
     code: string
     type: 'home' | 'recent' | 'route'
-    constructor(code: string, type: 'home' | 'recent' | 'route') {
+    activeRoute: boolean
+    constructor(code: string, type: 'home' | 'recent' | 'route', activeRoute: boolean = false) {
         this.code = code
         this.type = type
+        this.activeRoute = activeRoute
     }
 }
 
@@ -93,13 +95,15 @@ onUnmounted(() => {
     if (unsubscribe) unsubscribe()
 })
 
-watch( props, async() => {
+watch(props, async () => {
     // console.log("Airport props changed " + JSON.stringify(props));
     loadProps(props)
+    refreshRecentAirportList()
 })
 
 watch(model, () => {
     loadProps(props)
+    refreshRecentAirportList()
 })
 
 function fetchAirport() {
@@ -166,29 +170,20 @@ function onRecentAirport(airportCode:string) {
     }
 }
 
-function selectSegment(type: 'dep' | 'dst' | 'alt') {
-    const airportCode = props.route?.[type];
-    if (airportCode) {
-        segment.value = type;
-        code.value = airportCode;
-        fetchAirport();
-    }
-}
-
 function refreshRecentAirportList() {
     const recentAirports: RecentAirport[] = []
 
-    const addIfUnique = (code:string|undefined, type: 'recent' | 'route' | 'home') => {
+    const addIfUnique = (code:string|undefined, type: 'recent' | 'route' | 'home', activeRoute: boolean = false) => {
         if(!code) return
         if(recentAirports.find(a => a.code === code)) return
-        recentAirports.push(new RecentAirport(code, type))
+        recentAirports.push(new RecentAirport(code, type, activeRoute))
     }
 
     // Route Airports, preventing duplicates
     if(props.route) {
-        addIfUnique(props.route.dep, 'route')
-        addIfUnique(props.route.dst, 'route')
-        addIfUnique(props.route.alt, 'route')
+        addIfUnique(props.route.dep, 'route', props.useRoute && model.value?.code === props.route.dep)
+        addIfUnique(props.route.dst, 'route', props.useRoute && model.value?.code === props.route.dst)
+        addIfUnique(props.route.alt, 'route', props.useRoute && model.value?.code === props.route.alt)
     }
 
     if(currentUser.homeAirport) {
@@ -211,9 +206,6 @@ function refreshRecentAirportList() {
     line-height: 1.5rem;
     text-align: left;
     gap:5px;
-}
-.airportCode.route-mode {
-    grid-template-columns: 1fr;
 }
 .airportCode.page {
     grid-template-columns: 150px auto;
@@ -239,6 +231,9 @@ function refreshRecentAirportList() {
 }
 .recentAirport:hover {
     background-color: var(--bg-hover);
+}
+.recentAirport.active {
+    background-color: var(--route-background);
 }
 .frequentAirportList {
     display: flex;
@@ -282,10 +277,6 @@ function refreshRecentAirportList() {
     justify-content: space-between;
     height: 22px;
 }
-.nameGroup.route-name-group {
-    justify-content: center;
-    margin-top: 2px;
-}
 
 /* Expanded Mode Styles */
 .airportCode.large-mode {
@@ -313,52 +304,5 @@ function refreshRecentAirportList() {
 .airportCode.large-mode :deep(.p-inputgroup-addon) {
     width: auto;
     min-width: 3rem; 
-}
-
-/* Route Selection Styles */
-.route-selection {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    width: 100%;
-}
-
-.route-btn {
-    flex: 1;
-    padding: 4px 8px;
-    display: flex;
-    justify-content: center;
-    border: none;
-}
-
-.route-btn.p-button-primary {
-    background-color: var(--route-background);
-}
-
-.route-btn.p-button-secondary {
-    background-color: var(--bg-secondary);
-    opacity: 0.6;
-}
-
-.btn-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-}
-
-.btn-label {
-    font-size: 0.9rem;
-    font-weight: bold;
-}
-
-.btn-code {
-    font-size: 0.75rem;
-    font-weight: normal;
-    opacity: 0.8;
-}
-
-:deep(.p-button-label) {
-    width: 100%;
 }
 </style>
