@@ -1,6 +1,7 @@
 import { DisplayModeAirport, DisplayModeChoice } from "../../models/DisplayMode";
 import { RunwayOrientation } from "./RunwayOrientation";
 import { TrafficPatternDisplay } from "../../models/TrafficPatternDisplay";
+import { RouteCode } from "@gak/shared";
 
 export class AirportTileConfig {
   static modesList = [
@@ -18,6 +19,7 @@ export class AirportTileConfig {
   mode: DisplayModeAirport;
   showMetar: boolean;
   showNotams: boolean;
+  routeCode?: RouteCode;
 
   constructor(
     code: string = "",
@@ -29,7 +31,8 @@ export class AirportTileConfig {
     headings: boolean = true,
     mode: DisplayModeAirport = DisplayModeAirport.RunwaySketch,
     showMetar: boolean = true,
-    showNotams: boolean = true
+    showNotams: boolean = true,
+    routeCode: RouteCode | undefined = undefined
   ) {
     this.code = code;
     this.rwys = rwys;
@@ -40,5 +43,6 @@ export class AirportTileConfig {
     this.mode = mode;
     this.showMetar = showMetar;
     this.showNotams = showNotams;
+    this.routeCode = routeCode;
   }
 }
