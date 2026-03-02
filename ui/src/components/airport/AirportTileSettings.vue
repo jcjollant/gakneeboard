@@ -3,10 +3,10 @@
         <!-- Airport Section -->
         <SeparatorChoice name="Airport" choiceA="Code" choiceB="Route" v-model="useCode" />
         <div class="airport-selection">
-            <AirportInput v-if="useCode" :code="airportCode" :auto="true" :expanded="true" :large="true" :route="route"
+            <AirportInput v-model:segment="selectedRouteSegment" :use-route="!useCode"
+                :code="airportCode" :auto="true" :expanded="true" :large="true" :route="route"
                 @valid="onUserSelectAirport"
                 @invalid="onInvalidAirport" />
-            <RouteInput v-else :route="route" v-model="selectedRouteSegment" />
         </div>
 
 
@@ -60,7 +60,6 @@ import { ref, onMounted, watch, computed, inject } from 'vue';
 import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
 import AirportInput from '../shared/AirportInput.vue';
-import RouteInput from './RouteInput.vue';
 
 import SeparatorChoice from '../../components/shared/SeparatorChoice.vue';
 
@@ -190,10 +189,10 @@ function loadFromTileData(tile: TileData) {
     showMetar.value = config.showMetar ?? true;
     showNotams.value = config.showNotams ?? true;
 
-    if (config.code) {
+    if (airportCode.value) {
         // Fetch airport data to populate lists
         loading.value = true;
-        getAirport(config.code, true).then((a: Airport) => {
+        getAirport(airportCode.value, true).then((a: Airport) => {
             loadAirportData(a);
             loading.value = false;
         }).catch(() => {
@@ -223,25 +222,6 @@ function onUserSelectAirport(newAirport: Airport) {
     emitUpdate();
 }
 
-watch(selectedRouteSegment, (newSegment) => {
-    if (!props.route) return;
-    let code = undefined;
-    if (newSegment === 'dep') {
-        code = props.route.dep;
-    } else if (newSegment === 'dst') {
-        code = props.route.dst;
-    } else if (newSegment === 'alt') {
-        code = props.route.alt;
-    }
-    if (!code) return;
-    loading.value = true;
-    getAirport(code, true).then((a: Airport) => {
-        onUserSelectAirport(a);
-    }).catch(() => {
-    }).finally(() => {
-        loading.value = false;
-    });
-});
 
 
 function loadAirportData(newAirport: Airport) {
