@@ -37,8 +37,7 @@ app.use(cors({
         'https://preview.kneeboard.ga',
         'https://admin-preview.kneeboard.ga',
         'https://gak-server.vercel.app'
-    ],
-    credentials: true
+    ]
 }))
 app.use('/stripe/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json()) // for parsing application/json
