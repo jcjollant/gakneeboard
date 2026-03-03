@@ -64,9 +64,9 @@ function loadDemo() {
   router.replace('/template/local')
 }
 
-function setAirportTile(templateData: any, code:string, airport: Airport, pageNumber: number, tileNumber: number) {
+function setAirportTile(templateData: any, routeCode:string, airport: Airport, pageNumber: number, tileNumber: number) {
   if (templateData.data[pageNumber]?.data?.[tileNumber]) {
-    templateData.data[pageNumber].data[tileNumber].data = {code: code, rwy: airport.rwys[0].name}
+    templateData.data[pageNumber].data[tileNumber].data = {code: airport.code, routeCode: routeCode, rwy: airport.rwys[0].name}
   }
 }
 
@@ -120,7 +120,7 @@ async function onRouteConfirm(newRoute: FlightRoute) {
   
   // Build a list of airports to display frequencies
   const frequencies: Frequency[] = []
-  const airportList = [airports.departure, airports.destination, airports.alternate].filter(a => a !== null && a.isValid()) as Airport[]
+  const airportList = [airports.departure, airports.destination, airports.alternate].filter(a => a !== null) as Airport[]
   
   airportList.forEach(airport => {
     // console.debug('[Demo.onFlightConfirm]', airport)
@@ -138,17 +138,17 @@ async function onRouteConfirm(newRoute: FlightRoute) {
     if( demoName == SheetName.vfrFlight) {
       if (airports.departure) {
         // Force departure airport in top left tile (Page 0 tile 0)
-        setAirportTile(templateData, '#dep', airports.departure, 0, 0)
+        setAirportTile(templateData, 'dep', airports.departure, 0, 0)
         // Force sunlight to departure airport (Page 1 tile 3)
         setTileData(templateData, 1, 3, {from: airports.departure.code, to: airports.departure.code, mode: DisplayModeSunlight.Flight})
       }
       if (airports.destination) {
         // Force destination airport (Page 0 tile 4)
-        setAirportTile(templateData, '#dst', airports.destination, 0, 4)
+        setAirportTile(templateData, 'dst', airports.destination, 0, 4)
       }
       if (airports.alternate) {
         // Force alternate airport (Page 1 tile 1)
-        setAirportTile(templateData, '#alt', airports.alternate, 1, 1)
+        setAirportTile(templateData, 'alt', airports.alternate, 1, 1)
       }
       
       // Set frequencies (Page 0 tile 2)
@@ -166,7 +166,7 @@ async function onRouteConfirm(newRoute: FlightRoute) {
 
       // replace alternate airport
       if(airports.alternate) {
-        setAirportTile(templateData, '#alt', airports.alternate, 1, 2)
+        setAirportTile(templateData, 'alt', airports.alternate, 1, 2)
       }
       // refresh frequencies
       setRadioTile(templateData, frequencies, 0, 1)
