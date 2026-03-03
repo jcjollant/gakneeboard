@@ -11,7 +11,7 @@
             <AirportInput :code="route.alt || ''" label="Alter." :showRecent="true" :large="true" @valid="(a) => route.alt = a.code" @invalid="route.alt = undefined" />
             <div class="dialog-actions">
                 <font-awesome-icon :icon="['fas', 'video']" class="video-link"
-                    @click="UserUrl.open(UserUrl.routeVideo)" title="Watch a video on this feature"></font-awesome-icon>
+                    @click="UserUrl.open(UserUrl.routeFeature)" title="Watch a video on this feature"></font-awesome-icon>
                 <Button label="Cancel" @click="$emit('cancel')" link />
                 <Button label="Confirm" @click="onConfirm" />
             </div>
