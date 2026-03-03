@@ -166,7 +166,7 @@ const props = defineProps({
 
 // load props can happen on initial load or when settings are changed
 function loadProps(newProps:any) {
-    // console.debug('[AirportTile.loadProps]', newProps)
+    console.debug('[AirportTile.loadProps]', newProps)
     const params = newProps.params;
     if( !params) {
         console.warn( 'Airport cannot load params ' + JSON.stringify(params))
@@ -175,12 +175,20 @@ function loadProps(newProps:any) {
 
     // resolve configuration
     let propsConfig = new AirportTileConfig()
+    propsConfig.routeCode = newProps.params.routeCode;
     const codeFromRoute = RouteService.getAirportCode(newProps.route, newProps.params.routeCode)
     // console.log('[AirportTile.loadProps] codeFromRoute', codeFromRoute)
+    
+    let needsUpdate = false;
     if(codeFromRoute) {
-        propsConfig.code = codeFromRoute
-        // reset the runway to avoid unknowns
-        params.rwys = []
+        if (params.code && params.code !== codeFromRoute) {
+            params.rwys = [];
+            needsUpdate = true;
+        } else if (!params.code) {
+            needsUpdate = true;
+        }
+        propsConfig.code = codeFromRoute;
+        params.code = codeFromRoute;
     } else if( params.code) {
         propsConfig.code = params.code
     } else if (currentUser.homeAirport) {
@@ -238,6 +246,11 @@ function loadProps(newProps:any) {
 
     // Temporary title
     title.value = "Loading " + propsConfig.code + '...'
+
+    if (needsUpdate) {
+        config.value = propsConfig
+        saveConfig();
+    }
 
     // load data for this airport
     getAirport( propsConfig.code, true).then(a => {
