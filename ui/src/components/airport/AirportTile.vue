@@ -166,7 +166,7 @@ const props = defineProps({
 
 // load props can happen on initial load or when settings are changed
 function loadProps(newProps:any) {
-    console.debug('[AirportTile.loadProps]', newProps)
+    // console.debug('[AirportTile.loadProps]', newProps)
     const params = newProps.params;
     if( !params) {
         console.warn( 'Airport cannot load params ' + JSON.stringify(params))
