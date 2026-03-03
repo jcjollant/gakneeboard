@@ -32,7 +32,7 @@ export class UserUrl {
     static noteTilesVideo: string = 'https://youtu.be/nqgDI-CpFUU'
     static stripPageVideo: string = 'https://youtu.be/So5kDcN-vKc'
     static customKneeboardIn40s: string = 'https://youtu.be/yJpIyj0z5lQ'
-    static routeFeature: string = 'https://youtu.be/invalid'
+    static routeFeature: string = 'https://youtu.be/RTNNAzt7WVw'
 
     // other external link
     static dtpp: string = 'https://aeronav.faa.gov/d-tpp/'
