@@ -4,7 +4,7 @@
         <Separator name="Airport Code" :leftAligned="true" />
         <div class="airport-selection">
             <AirportInput v-model:routeCode="selectedRouteCode"
-                :code="airportCode" :auto="true" :expanded="true" :large="true" :route="route"
+                :code="airportCode" :auto="true" :showRecent="true" :large="true" :route="route"
                 @valid="onUserSelectAirport"
                 @invalid="onInvalidAirport" />
         </div>
@@ -279,7 +279,7 @@ function emitUpdate() {
     tileData.value.span2 = expanded.value;
 
     if (tileSettingsUpdate) {
-        console.debug('[AirportTileSettings.emitUpdate] Emitting update', tileData.value)
+        // console.debug('[AirportTileSettings.emitUpdate] Emitting update', tileData.value)
         tileSettingsUpdate(tileData.value);
     }
 }

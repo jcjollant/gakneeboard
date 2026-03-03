@@ -6,9 +6,9 @@
         :breakpoints="{ '960px': '75vw', '640px': '100%' }">
         <p class="routeMessage">{{ message || defaultMessage }}</p>
         <div class="route-dialog">
-            <AirportInput :code="route.dep || ''" label="Dep." :expanded="true" :large="true" @valid="(a) => route.dep = a.code" @invalid="route.dep = undefined" />
-            <AirportInput :code="route.dst || ''" label="Dest." :expanded="true" :large="true" @valid="(a) => route.dst = a.code" @invalid="route.dst = undefined" />
-            <AirportInput :code="route.alt || ''" label="Alter." :expanded="true" :large="true" @valid="(a) => route.alt = a.code" @invalid="route.alt = undefined" />
+            <AirportInput :code="route.dep || ''" label="Dep." :showRecent="true" :large="true" @valid="(a) => route.dep = a.code" @invalid="route.dep = undefined" />
+            <AirportInput :code="route.dst || ''" label="Dest." :showRecent="true" :large="true" @valid="(a) => route.dst = a.code" @invalid="route.dst = undefined" />
+            <AirportInput :code="route.alt || ''" label="Alter." :showRecent="true" :large="true" @valid="(a) => route.alt = a.code" @invalid="route.alt = undefined" />
             <div class="dialog-actions">
                 <font-awesome-icon :icon="['fas', 'video']" class="video-link"
                     @click="UserUrl.open(UserUrl.routeVideo)" title="Watch a video on this feature"></font-awesome-icon>

@@ -6,7 +6,7 @@
         </div>
         <div class="field" v-if="showAirportInput">
             <Separator name="Airport" />
-            <AirportInput v-model="airport" :expanded="true" large @valid="emitUpdate"/>
+            <AirportInput v-model="airport" :showRecent="true" large @valid="emitUpdate"/>
         </div>
     </div>
 </template>

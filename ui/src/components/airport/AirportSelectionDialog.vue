@@ -1,6 +1,6 @@
 <template>
     <Dialog header="Select Airport" :style="{ width: '35rem' }">
-        <AirportInput code="" :auto="true" :expanded="true"
+        <AirportInput code="" :auto="true" :showRecent="true" :large="true"
             @valid="onValid" @invalid="onInvalid" />
     </Dialog>
 </template>

@@ -1,7 +1,7 @@
 <template>
     <Dialog modal header="Frequency Lookup" style="width:45rem" class="lookupDialog">
         <FieldSet legend="Route">
-            <AirportInput :auto="true" @valid="onAirport" class="mb-2" :expanded="true"/>
+            <AirportInput :auto="true" @valid="onAirport" class="mb-2" :showRecent="true"/>
             <div class="listAirports">
                 <FAButton v-for="airport in airports" title="Click to remove Airport" :label="airport.code"
                     icon="times" class="selectedAirport"

@@ -88,7 +88,7 @@
     </Dialog>
 
     <Dialog v-model:visible="showAirportSelection" modal header="Select Home Airport" :style="{ width: '35rem' }">
-        <AirportInput code="" :auto="true" :expanded="true"
+        <AirportInput code="" :auto="true" :showRecent="true"
             @valid="onAirportSelected" />
     </Dialog>
 </template>

@@ -11,7 +11,7 @@
                 </div> -->
                 <div class="known">
                     <div class="section pickNewAirport">Pick New Airport</div>
-                    <AirportInput v-model="airport" :page="true" :large="true" :expanded="true"/>
+                    <AirportInput v-model="airport" :page="true" :large="true" :showRecent="true"/>
                     <div v-if="airport.isValid()" class="chartsList">
                         <FAButton v-if="airport.diagram" label="Airport Diagram" icon="road-circle-check" class="showDiagram"
                             @click="onSelection(airport)"/>
