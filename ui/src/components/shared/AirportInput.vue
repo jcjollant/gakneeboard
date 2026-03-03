@@ -293,9 +293,6 @@ function refreshRecentAirportList() {
     align-items: center;
     flex-wrap: wrap;
 }
-.frequentAirportList.expanded {
-    padding-top: 5px;
-}
 .valid {
     font-weight: bold;
 }
