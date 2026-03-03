@@ -1,15 +1,19 @@
 <template>
-    <div class="airportCode" :class="{page:page, 'expanded-mode': expanded, 'large-mode': large, 'route-mode': useRoute}">
-        <InputGroup>
-            <InputGroupAddon :class="{page:page}">{{label}}</InputGroupAddon>
-            <InputText v-model="code" @input="onCodeUpdate"/>
-        </InputGroup>
-        <div v-if="name" class="nameGroup" :class="{'route-name-group': useRoute}">
-            <span class="airportName" :class="{valid: valid, page:page}">{{ name }}</span>
-            <span v-if="!expanded" class="recentAirport"  @click="name=''" title="Show Recent Airports">...</span>
+    <div class="airportCode" :class="{page:page, 'expanded-mode': showRecent, 'large-mode': large, 'route-mode': useRoute}">
+        <div class="input-and-name">
+            <div class="airport-input-group" @click="codeInput?.focus()">
+                <div class="label-group" :class="{page:page, 'route-active': !!routeCodeModel}">
+                    <font-awesome-icon v-if="routeCodeModel" class="route-icon" icon="route" title="Route selection active" />
+                    {{label}}
+                </div>
+            <input ref="codeInput" class="code-input" :class="{large:large}" v-model="code" @input="onCodeUpdate" />
         </div>
-        <div class="frequentAirportList" :class="{expanded: expanded}">
-            <button type="button" v-for="ra in recemtAirports" class="recentAirport" :class="{active: ra.activeRoute}" @click="onRecentAirport(ra.code)">
+        <div class="nameGroup" :class="{'route-name-group': useRoute}">
+            <span class="airportName" :class="{valid: valid, page:page}">{{ name }}</span>
+        </div>
+    </div>
+    <div v-if="showRecent" class="frequentAirportList" :class="{expanded: showRecent}">
+            <button type="button" v-for="ra in recentAirports" class="recentAirport" :class="{active: ra.activeRoute}" @click="onRecentAirport(ra)">
                 <font-awesome-icon v-if="ra.type != 'recent'" :icon="ra.type === 'home' ? 'house' : 'route'" style="margin-right: 4px; font-size: 0.7rem;"/>{{ ra.code }}
             </button>
         </div>
@@ -19,7 +23,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { Airport } from '../../models/Airport.ts'
-import { Route } from '@gak/shared'
+import { Route, RouteCode } from '@gak/shared'
 import { getAirport } from '../../services/AirportDataService'
 import { LocalStoreService } from '../../services/LocalStoreService'
 import { sessionAirports, currentUser } from '../../assets/data'
@@ -27,24 +31,22 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../../assets/Toaster'
 
-import InputText from 'primevue/inputtext'
-import InputGroup from 'primevue/inputgroup'
-import InputGroupAddon from 'primevue/inputgroupaddon';
-
 const emits = defineEmits(['valid', 'invalid'])
 
 const props = defineProps({
     code: { type: String, default: ''},
     label: { type: String, default: 'Code'},
     page: {type: Boolean, default: false},
-    expanded: {type: Boolean, default: false},
+    showRecent: {type: Boolean, default: false},
     large: {type: Boolean, default: false},
     route: {type: Object as () => Route, default: undefined},
     useRoute: {type: Boolean, default: false}
 })
-const recemtAirports = ref<RecentAirport[]>([])
+const recentAirports = ref<RecentAirport[]>([])
 const code = ref()
+const codeInput = ref<HTMLInputElement|null>(null)
 const model = defineModel<Airport|undefined>()
+const routeCodeModel = defineModel<RouteCode|undefined>('routeCode')
 const name = ref('')
 const valid = ref(false)
 let timeoutId:ReturnType<typeof setTimeout>|undefined = undefined
@@ -55,10 +57,12 @@ class RecentAirport {
     code: string
     type: 'home' | 'recent' | 'route'
     activeRoute: boolean
-    constructor(code: string, type: 'home' | 'recent' | 'route', activeRoute: boolean = false) {
+    routeCode?: RouteCode
+    constructor(code: string, type: 'home' | 'recent' | 'route', activeRoute: boolean = false, routeCode?: RouteCode) {
         this.code = code
         this.type = type
         this.activeRoute = activeRoute
+        this.routeCode = routeCode
     }
 }
 
@@ -139,6 +143,7 @@ function onCodeUpdate() {
     // console.log('[AirportEdit.onCodeUpdate]',Date.now())
     name.value = '...'
     valid.value = false
+    routeCodeModel.value = undefined
     
     if (timeoutId) {
         clearTimeout(timeoutId)
@@ -153,7 +158,18 @@ function onCodeUpdate() {
     }
 }
 
-function onRecentAirport(airportCode:string) {
+function onRecentAirport(ra: RecentAirport) {
+    if (ra.type === 'route' && ra.routeCode) {
+        if (routeCodeModel.value === ra.routeCode) {
+            routeCodeModel.value = undefined
+        } else {
+            routeCodeModel.value = ra.routeCode
+        }
+    } else {
+        routeCodeModel.value = undefined
+    }
+
+    const airportCode = ra.code
     try {
         const airport:Airport = LocalStoreService.airportGet(airportCode)
         // console.log('[AirportInput.onRecentAirport]', airportCode, airport)
@@ -171,19 +187,23 @@ function onRecentAirport(airportCode:string) {
 }
 
 function refreshRecentAirportList() {
-    const recentAirports: RecentAirport[] = []
+    const freshRecentAirports: RecentAirport[] = []
 
-    const addIfUnique = (code:string|undefined, type: 'recent' | 'route' | 'home', activeRoute: boolean = false) => {
+    const addIfUnique = (code:string|undefined, type: 'recent' | 'route' | 'home', activeRoute: boolean = false, rc?: RouteCode) => {
         if(!code) return
-        if(recentAirports.find(a => a.code === code)) return
-        recentAirports.push(new RecentAirport(code, type, activeRoute))
+        if(freshRecentAirports.find(a => a.code === code)) return
+        freshRecentAirports.push(new RecentAirport(code, type, activeRoute, rc))
     }
 
     // Route Airports, preventing duplicates
     if(props.route) {
-        addIfUnique(props.route.dep, 'route', props.useRoute && model.value?.code === props.route.dep)
-        addIfUnique(props.route.dst, 'route', props.useRoute && model.value?.code === props.route.dst)
-        addIfUnique(props.route.alt, 'route', props.useRoute && model.value?.code === props.route.alt)
+        // activeRoute depends on routeCodeModel if defined, otherwise legacy fallback to props.useRoute
+        const isDepActive = routeCodeModel.value !== undefined ? routeCodeModel.value === 'dep' : (props.useRoute && model.value?.code === props.route.dep)
+        const isDstActive = routeCodeModel.value !== undefined ? routeCodeModel.value === 'dst' : (props.useRoute && model.value?.code === props.route.dst)
+        const isAltActive = routeCodeModel.value !== undefined ? routeCodeModel.value === 'alt' : (props.useRoute && model.value?.code === props.route.alt)
+        addIfUnique(props.route.dep, 'route', !!isDepActive, 'dep')
+        addIfUnique(props.route.dst, 'route', !!isDstActive, 'dst')
+        addIfUnique(props.route.alt, 'route', !!isAltActive, 'alt')
     }
 
     if(currentUser.homeAirport) {
@@ -191,25 +211,53 @@ function refreshRecentAirportList() {
     }
 
     let recent = LocalStoreService.airportRecentsGet(10).sort();
+    // recent.forEach(a => addIfUnique(a, 'recent')) ... wait, let's just make sure we do it right
     recent.forEach(a => addIfUnique(a, 'recent'))
     // return the first 10 elements
-    recemtAirports.value = recentAirports.slice(0, 10)
+    recentAirports.value = freshRecentAirports.slice(0, 10)
 }
 
 </script>
 
 <style scoped>
 .airportCode {
-    display: grid;
-    grid-template-columns: 100px auto;
+    display: flex;
+    flex-flow: column;
     font-size: 0.8rem;
     line-height: 1.5rem;
     text-align: left;
     gap:5px;
 }
-.airportCode.page {
-    grid-template-columns: 150px auto;
+.airportCode.large-mode .nameGroup {
+    height: 2.5rem;
+    align-items: center;
 }
+
+.airportCode.large-mode .airportName {
+    font-size: 1.2rem;
+    line-height: 1.2;
+    height: auto;
+}
+
+.airportCode.large-mode .airport-input-group {
+    height: 2.5rem;
+}
+
+.airportCode.large-mode .label-group {
+    font-size: 1.2rem;
+    padding-left: 15px;
+    padding-right: 15px;
+    width: auto;
+    min-width: 3rem; 
+}
+
+.airportCode.large-mode .code-input {
+    font-size: 1.2rem;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+
 .airportName {
     overflow: hidden;
     line-height: 22px;
@@ -250,59 +298,77 @@ function refreshRecentAirportList() {
 }
 .valid {
     font-weight: bold;
-    /* color:darkgreen */
 }
 
-.expanded {
-    grid-column: 1 / span 2;
-    height: fit-content;
-}
-
-:deep(.p-component), :deep(.p-inputgroup-addon) {
-    font-size: 0.8rem;
+.airport-input-group {
+    display: flex;
+    align-items: stretch;
+    width:fit-content;
+    border: 1px solid var(--surface-border, #d1d5db);
+    border-radius: 6px;
+    overflow: hidden;
     height: 1.5rem;
-    
+    box-sizing: border-box;
 }
-:deep(.p-inputgroup-addon) {
-    width: 3rem;
+
+.label-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ccc;
+    color: black;
+    padding: 0 10px;
+    width: auto;
+    min-width: 2.5rem;
+    font-size: 0.8rem;
+    box-sizing: border-box;
+    border-right: 1px solid var(--surface-border, #d1d5db);
 }
-:deep(.p-inputgroup-addon).page {
-    width: 6rem;
+
+.label-group.route-active {
+    color:white;
+    background-color: var(--route-background);
 }
-:deep(.p-inputtext) {
-    padding: 5px;
+
+.route-active .label-group {
+    border-color: var(--route-background);
 }
+
+.label-group.page {
+    width: 5.5rem;
+}
+
+.route-icon {
+    margin-right: 5px;
+    font-size: 0.9em;
+}
+
+.code-input {
+    border: none;
+    outline: none;
+    width: 60px;
+    padding: 0 5px;
+    font-size: 0.8rem;
+    background: var(--surface-card, #ffffff);
+    color: var(--text-color, #333);
+    font-family: inherit;
+    box-sizing: border-box;
+    text-transform: uppercase;
+}
+
+.code-input.large {
+    padding: 0 10px;
+    width: 90px;
+}
+
 .nameGroup {
     display: flex;
     justify-content: space-between;
     height: 22px;
 }
 
-/* Expanded Mode Styles */
-.airportCode.large-mode {
-    grid-template-columns: 11rem auto;
-}
-
-.airportCode.large-mode .nameGroup {
-    height: 2.5rem;
-    align-items: center;
-}
-
-.airportCode.large-mode .airportName {
-    font-size: 1.2rem;
-    line-height: 1.2;
-    height: auto;
-}
-
-.airportCode.large-mode :deep(.p-component),
-.airportCode.large-mode :deep(.p-inputgroup-addon) {
-    font-size: 1.2rem;
-    height: 2.5rem;
-    padding-left: 15px;
-    padding-right: 15px;
-}
-.airportCode.large-mode :deep(.p-inputgroup-addon) {
-    width: auto;
-    min-width: 3rem; 
+.input-and-name {
+    display: flex;
+    gap: 5px;
 }
 </style>
