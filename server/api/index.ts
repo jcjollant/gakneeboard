@@ -35,35 +35,13 @@ app.use(cors({
         'https://www.kneeboard.ga',
         'https://admin.kneeboard.ga',
         'https://preview.kneeboard.ga',
-        'https://admin-preview.kneeboard.ga',
+        'https://preview.admin.kneeboard.ga',
         'https://gak-server.vercel.app'
     ],
     credentials: true
 }))
 app.use('/stripe/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json()) // for parsing application/json
-
-// console.log("Dev Mode")
-// app.use((req:Request, res:Response, next) => {
-//     const showHeaders = false;
-//     let before = Date.now();
-//     let thisRequest = before % 100;
-//     if( showHeaders ) {
-//         console.log(`${thisRequest}: ${req.method}, ${req.originalUrl}, `, req.headers);
-//     } else {
-//         console.log(`${thisRequest}: ${req.method}, ${req.originalUrl}, `);
-//     }
-//     // watchs for end of theresponse
-//     res.on('close', () => {
-//         let after = Date.now();
-//         if( showHeaders) {
-//             console.log(`${thisRequest}: status=${res.statusCode}, outbound headers: `, res.getHeaders());
-//         } else {
-//             console.log(`${thisRequest}: status=${res.statusCode}, time=${after-before}`);
-//         }
-//     });
-//     next();
-// });
 
 app.get('/', async (req: Request, res: Response) => {
     const output = await GApi.getSession(req)
