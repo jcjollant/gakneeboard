@@ -45,6 +45,8 @@ import { Regulation } from '../../models/Regulation.ts';
 import { Notam } from '../../models/Notam.ts';
 import { TileData } from '../../models/TileData.ts';
 import { TileType } from '../../models/TileType.ts';
+import { Route, RouteCode } from '@gak/shared';
+import { RouteService } from '../../services/RouteService.ts';
 
 import ApproachContent from './ApproachContent.vue';
 import CraftBoxedContent from './CraftBoxedContent.vue';
@@ -69,6 +71,7 @@ const showNotamsDialog = ref(false)
 
 const props = defineProps({
     params: { type: Object, default: null},
+    route: { type: Object as () => Route, default: undefined}
 })
 
 onMounted(() => {   
@@ -85,7 +88,7 @@ watch( displayMode, (newValue, oldValue) => {
 })
 
 function saveConfig() {
-    const params = {mode:displayMode.value, airport:airport.value.code}
+    const params = new IfrTileConfig(displayMode.value, airport.value.code, props.params?.routeCode)
     emits('update', new TileData( TileType.clearance, params))
 }
 
@@ -105,15 +108,19 @@ function loadProps(props:any) {
          } else {
             displayMode.value = defaultMode
          }
-         if( props.params.airport) {
-            getAirport(props.params.airport).then( output => {
-                if( output) {
-                    airport.value = Airport.copy(output)
-                    getNotams(output.code).then(notams => {
-                        notamsList.value = notams
-                    })
-                }
-            })
+         if( props.params.airport || props.params.routeCode) {
+            const codeFromRoute = RouteService.getAirportCode(props.route, props.params.routeCode)
+            const airportCode = codeFromRoute || props.params.airport
+            if (airportCode) {
+                getAirport(airportCode).then( output => {
+                    if( output) {
+                        airport.value = Airport.copy(output)
+                        getNotams(output.code).then(notams => {
+                            notamsList.value = notams
+                        })
+                    }
+                })
+            }
          }
     } else {
         displayMode.value = defaultMode

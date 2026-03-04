@@ -1,11 +1,11 @@
 <template>
     <div class="settings">
         <div class="field">
-            <Separator name="Display" />
+            <Separator name="Display" :leftAligned="true" />
             <DisplayModeSelector :choices="modesList" v-model="selectedModeChoice" :showPreviews="true" />
         </div>
-        <Separator name="Airport" />
-        <AirportInput v-model="airport" :showRecent="true" large :route="route" @valid="emitUpdate"/>
+        <Separator name="Airport" :leftAligned="true" />
+        <AirportInput v-model="airport" v-model:routeCode="selectedRouteCode" :showRecent="true" large :route="route" @valid="emitUpdate"/>
     </div>
 </template>
 
@@ -14,7 +14,7 @@ import { onMounted, ref, watch, inject, computed } from 'vue'
 import { Airport } from '../../models/Airport.ts';
 import { TileData } from '../../models/TileData.ts';
 import { DisplayModeIfr } from '../../models/DisplayMode.ts';
-import { Route } from '@gak/shared';
+import { Route, RouteCode } from '@gak/shared';
 import { getAirport } from '../../services/AirportDataService';
 import { IfrTileConfig } from './IfrTileConfig.ts';
 import { RouteService } from '../../services/RouteService.ts';
@@ -33,6 +33,7 @@ const props = defineProps({
 
 const airport = ref(new Airport())
 const displayMode = ref(DisplayModeIfr.BoxV)
+const selectedRouteCode = ref<RouteCode | undefined>(undefined);
 
 const modesList = ref(IfrTileConfig.modesList)
 
@@ -51,7 +52,7 @@ watch(() => props.tileData, (newData) => {
     loadFromData(newData as TileData)
 }, { deep: true })
 
-watch(displayMode, () => {
+watch([displayMode, selectedRouteCode], () => {
     emitUpdate()
 })
 
@@ -73,24 +74,25 @@ function loadFromData(data: TileData) {
         displayMode.value = DisplayModeIfr.BoxV
     }
 
-    // Airport
-    if (params.airport) {
-        // If it's a string code or object? 
-        // IfrTile.vue assumes params.airport is a string code usually passed to getAirport
-        getAirport(params.airport).then(output => {
+    const codeFromRoute = RouteService.getAirportCode(props.route, params.routeCode)
+    const airportCode = codeFromRoute || params.airport
+    
+    if (airportCode) {
+        getAirport(airportCode).then(output => {
             if (output) {
                 airport.value = Airport.copy(output)
+                selectedRouteCode.value = params.routeCode
             }
         })
     } else {
         airport.value = new Airport()
+        selectedRouteCode.value = undefined
     }
 }
 
 function emitUpdate() {
     // Reconstruct the tile data params
-    const routeCode = RouteService.getRouteCode(props.route, airport.value.code)
-    const newConfig = new IfrTileConfig(displayMode.value, airport.value.code, routeCode)
+    const newConfig = new IfrTileConfig(displayMode.value, airport.value.code, selectedRouteCode.value)
     
     // Ensure we treat the prop as TileData
     const newTileData = TileData.copy(props.tileData as TileData)

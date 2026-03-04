@@ -6,7 +6,7 @@
         @replace="onReplace" @update="onUpdate"/>
     <ChecklistTile v-else-if="tile.name==TileType.checklist" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" @settings="emits('settings',tile)"/>
-    <IfrTile v-else-if="tile.name==TileType.clearance" :params="tile.data"
+    <IfrTile v-else-if="tile.name==TileType.clearance" :params="tile.data" :route="route"
         @replace="onReplace" @update="onUpdate" @settings="emits('settings',tile)"/>
     <Dummy v-else-if="tile.name==TileType.dummy" :params="tile.data"  />
     <RegulationsTile v-else-if="tile.name==TileType.regulations" :params="tile.data"
