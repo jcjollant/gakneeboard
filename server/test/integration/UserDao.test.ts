@@ -186,11 +186,13 @@ describe('UserDao', () => {
 
         // Switch this user to Beta and check wether values are saved
         existingUser.accountType = AccountType.beta
+        existingUser.planId = 'bd1'
         existingUser.maxTemplates = 10
         existingUser.maxPages = 50
         await userDao.updateType(existingUser)
         const readUser2 = await userDao.get(jcUserId)
         expect(readUser2.maxTemplates).toBe(10)
         expect(readUser2.maxPages).toBe(50)
+        expect(readUser2.planId).toBe('bd1')
     })
 });
