@@ -24,7 +24,6 @@ import DisplayModeSelector from '../shared/DisplayModeSelector.vue';
 import Separator from '../shared/Separator.vue';
 
 
-const emits = defineEmits(['update'])
 const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void) | undefined;
 
 const props = defineProps({
@@ -97,7 +96,6 @@ function emitUpdate() {
     const newTileData = TileData.copy(props.tileData as TileData)
     newTileData.data = newConfig
     
-    // emits('update', newTileData)
     if (tileSettingsUpdate) {
         tileSettingsUpdate(newTileData);
     }

@@ -9,4 +9,14 @@ export class IfrTileConfig {
         new DisplayModeChoice(IfrTileDisplayModeLabels.alternate, DisplayModeIfr.Alternate, false, 'IFR Alternate Requirements', '/tiles/ifr-alternate.png'),
         new DisplayModeChoice(IfrTileDisplayModeLabels.lostComms, DisplayModeIfr.LostComms, false, 'IFR Lost Comms Pointers', '/tiles/ifr-lostcomms.png'),
     ]
+
+    mode: DisplayModeIfr
+    airport: string
+    routeCode?: string
+
+    constructor(mode: DisplayModeIfr, airportCode: string, routeCode?: string) {
+        this.mode = mode
+        this.airport = airportCode
+        this.routeCode = routeCode
+    }
 }
