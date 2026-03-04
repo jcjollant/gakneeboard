@@ -83,8 +83,6 @@ const props = defineProps({
     route: { type: Object as () => Route, default: undefined}
 });
 
-const emits = defineEmits(['update']);
-
 const tileData = ref<TileData>(props.tileData);
 
 // State
