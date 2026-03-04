@@ -1,5 +1,5 @@
 <template>
-    <div class="airportCode" :class="{page:page, 'expanded-mode': showRecent, 'large-mode': large, 'route-mode': useRoute}">
+    <div class="airportCode" :class="{page:page, 'expanded-mode': showRecent, 'large-mode': large, 'route-mode': isRouteMode}">
         <div class="input-and-name">
             <div class="airport-input-group" @click="codeInput?.focus()">
                 <div class="label-group" :class="{page:page, 'route-active': !!routeCodeModel}">
@@ -8,7 +8,7 @@
                 </div>
             <input ref="codeInput" class="code-input" :class="{large:large}" v-model="code" @input="onCodeUpdate" />
         </div>
-        <div class="nameGroup" :class="{'route-name-group': useRoute}">
+        <div class="nameGroup" :class="{'route-name-group': isRouteMode}">
             <span class="airportName" :class="{valid: valid, page:page}">{{ name }}</span>
         </div>
     </div>
@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import { Airport } from '../../models/Airport.ts'
 import { Route, RouteCode } from '@gak/shared'
 import { getAirport } from '../../services/AirportDataService'
@@ -39,8 +39,7 @@ const props = defineProps({
     page: {type: Boolean, default: false},
     showRecent: {type: Boolean, default: false},
     large: {type: Boolean, default: false},
-    route: {type: Object as () => Route, default: undefined},
-    useRoute: {type: Boolean, default: false}
+    route: {type: Object as () => Route, default: undefined}
 })
 const recentAirports = ref<RecentAirport[]>([])
 const code = ref()
@@ -52,6 +51,8 @@ const valid = ref(false)
 let timeoutId:ReturnType<typeof setTimeout>|undefined = undefined
 const toaster = useToaster( useToast())
 let unsubscribe: (() => void) | undefined = undefined
+
+const isRouteMode = computed(() => !!props.route)
 
 class RecentAirport {
     code: string
@@ -197,10 +198,10 @@ function refreshRecentAirportList() {
 
     // Route Airports, preventing duplicates
     if(props.route) {
-        // activeRoute depends on routeCodeModel if defined, otherwise legacy fallback to props.useRoute
-        const isDepActive = routeCodeModel.value !== undefined ? routeCodeModel.value === 'dep' : (props.useRoute && model.value?.code === props.route.dep)
-        const isDstActive = routeCodeModel.value !== undefined ? routeCodeModel.value === 'dst' : (props.useRoute && model.value?.code === props.route.dst)
-        const isAltActive = routeCodeModel.value !== undefined ? routeCodeModel.value === 'alt' : (props.useRoute && model.value?.code === props.route.alt)
+        // activeRoute depends on routeCodeModel if defined, otherwise legacy fallback to props.route presence
+        const isDepActive = routeCodeModel.value !== undefined ? routeCodeModel.value === 'dep' : (isRouteMode.value && model.value?.code === props.route.dep)
+        const isDstActive = routeCodeModel.value !== undefined ? routeCodeModel.value === 'dst' : (isRouteMode.value && model.value?.code === props.route.dst)
+        const isAltActive = routeCodeModel.value !== undefined ? routeCodeModel.value === 'alt' : (isRouteMode.value && model.value?.code === props.route.alt)
         addIfUnique(props.route.dep, 'route', !!isDepActive, 'dep')
         addIfUnique(props.route.dst, 'route', !!isDstActive, 'dst')
         addIfUnique(props.route.alt, 'route', !!isAltActive, 'alt')
