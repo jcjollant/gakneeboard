@@ -6,7 +6,7 @@
         </div>
         <div class="field" v-if="showAirportInput">
             <Separator name="Airport" />
-            <AirportInput v-model="airport" :showRecent="true" large :route="route" :useRoute="true" @valid="emitUpdate"/>
+            <AirportInput v-model="airport" :showRecent="true" large :route="route" @valid="emitUpdate"/>
         </div>
     </div>
 </template>
@@ -27,6 +27,7 @@ import AirportInput from '../shared/AirportInput.vue';
 import DisplayModeSelector from '../shared/DisplayModeSelector.vue';
 import Separator from '../shared/Separator.vue';
 import { IfrTileConfig } from './IfrTileConfig.ts';
+import { RouteService } from '../../services/RouteService.ts';
 
 
 const emits = defineEmits(['update'])
@@ -99,16 +100,14 @@ function loadFromData(data: TileData) {
 
 function emitUpdate() {
     // Reconstruct the tile data params
-    const params = {
-        mode: displayMode.value, 
-        airport: airport.value.code
-    }
+    const routeCode = RouteService.getRouteCode(props.route, airport.value.code)
+    const newConfig = new IfrTileConfig(displayMode.value, airport.value.code, routeCode)
     
     // Ensure we treat the prop as TileData
     const newTileData = TileData.copy(props.tileData as TileData)
-    newTileData.data = params
+    newTileData.data = newConfig
     
-    emits('update', newTileData)
+    // emits('update', newTileData)
     if (tileSettingsUpdate) {
         tileSettingsUpdate(newTileData);
     }
