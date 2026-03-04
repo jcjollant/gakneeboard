@@ -2,8 +2,10 @@ import dotenv from 'dotenv'
 import { TemplateKneeboardView } from '../backend/models/TemplateKneeboardView'
 import { TemplateDao } from '../backend/TemplateDao'
 import { PageType } from '../backend/TemplateTools'
+import path from 'path';
 
-dotenv.config()
+dotenv.config({ path: path.resolve(__dirname, '../../server/.env') });
+process.env.POSTGRES_URL = process.env.POSTGRES_PROD_URL;
 
 
 TemplateDao.getAllTemplateData().then(templates => {
