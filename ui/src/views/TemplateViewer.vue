@@ -76,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { computeSHA256 } from '../assets/Sha.ts'
+
 import { currentUser } from '../assets/data.js'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { DemoData } from '../assets/DemoData.ts'
@@ -96,9 +96,8 @@ import { useConfirm } from 'primevue/useconfirm'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../assets/Toaster.ts'
-
-// Components
 import html2canvas from 'html2canvas-pro'
+// Components
 import Menu from '../components/menu/Menu.vue'
 import TemplateViewerMenu from '../components/menu/TemplateViewerMenu.vue'
 import LoadingPage from '../components/page/LoadingPage.vue'
@@ -338,7 +337,6 @@ function loadTemplate(template:Template,saveToLocalStorage:boolean=false, isModi
       if(saveToLocalStorage) {
         saveTemplateToLocalStoreService()
       }
-      updateThumbnail(template)
       resolve()
     })
   }, 1000)
@@ -633,9 +631,6 @@ async function onSave(clone:boolean=false) {
     return
   }
 
-  // Update thumbnail in the background after some time
-  setTimeout( () => updateThumbnail(activeTemplate.value), 1000)
-
   // to duplicate this template, we reset the id to 0 while keeping the data
   if(clone) { 
     const newTemplate = Template.copy(activeTemplate.value)
@@ -780,43 +775,6 @@ function updateOffsets() {
   // console.log('[TemplateViewer.updateOffset] offsetLast', maxOffset)
 
   menuCollapsed.value = window.innerWidth <= cssPageWidth + cssPageGap
-}
-
-function updateThumbnail(template:Template) {
-  // console.log('[TemplateViewer.updateThumbnail] template', template.id, template.thumb)
-  // console.log('[TemplateViewer.updateThumbnail]', activeTemplate.value?.id)
-  if(template.id <= 0 || activeTemplate.value.isInvalid() || !currentUser.loggedIn) {
-    // console.log('[TemplateViewer.updateThumbnail] not ready to save')
-    return;
-  }
-  const index = template.id
-  const element:HTMLElement|null = document.querySelector(".page0")
-  if(element == null) return;
-
-  // Capture page 0 into an image
-  html2canvas(element, { logging: false}).then( async (canvas) => {
-    // scale image to fit the thumbnail
-    const scaledCanvas = document.createElement('canvas')
-    const scaleFactor = 200 / canvas.width;
-    scaledCanvas.width = canvas.width * scaleFactor
-    scaledCanvas.height = canvas.height * scaleFactor
-    const scaledCtx = scaledCanvas.getContext('2d')
-    if(scaledCtx == null) return
-    scaledCtx.scale(scaleFactor, scaleFactor)
-    scaledCtx.drawImage(canvas, 0, 0)
-    scaledCanvas.toBlob( async (blob) => {
-      // push thumbnail image to backend
-      if(blob == null) return
-      const sha256 = await computeSHA256(blob)
-      if(sha256 != template.thumbHash) {
-        // console.log('[TemplateViewer.updateThumbnail] sha256', sha256, template.thumbHash)
-        activeTemplate.value.thumbUrl = await TemplateService.updateThumbnail(index, blob, sha256)
-      } else {
-        // console.log('[TemplateViewer.updateThumbnail] skipping unchanged thumbnail')
-      }
-    }, 'image.png')
-  }).catch((e) => console.log('[TemplateViewer.updateThumbnail] failed', e))
-
 }
 
 function onAddPage() {
