@@ -276,7 +276,7 @@ export function viewport() {
 
 export function mockUser(user) {
     // Intercept the backend session call to prevent logout if localStorage is cleared by getBackend()
-    cy.intercept('GET', '**/', (req) => {
+    cy.intercept('GET', /\/\?version=.*/, (req) => {
         req.reply({
             statusCode: 200,
             body: {

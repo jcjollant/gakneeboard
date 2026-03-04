@@ -76,7 +76,7 @@ describe('Tiles', () => {
     }).as('getOneAirport');
 
     cy.wait(200)
-    cy.get('.p-inputtext').clear().type('KBLI')
+    cy.get('.code-input').clear().type('KBLI')
     // wait for the reply
     cy.wait('@getOneAirport').then(interception => {
       expect(interception.response.statusCode == 200 || interception.response.statusCode == 304).to.be.true
