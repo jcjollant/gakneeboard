@@ -6,7 +6,7 @@
         </div>
         <div class="field" v-if="showAirportInput">
             <Separator name="Airport" />
-            <AirportInput v-model="airport" :showRecent="true" large @valid="emitUpdate"/>
+            <AirportInput v-model="airport" :showRecent="true" large :route="route" :useRoute="true" @valid="emitUpdate"/>
         </div>
     </div>
 </template>
@@ -19,6 +19,7 @@ import {
     DisplayModeChoice, 
     DisplayModeIfr 
 } from '../../models/DisplayMode.ts';
+import { Route } from '@gak/shared';
 import { IfrTileDisplayModeLabels } from './IfrTileDisplayModeLabel.ts';
 import { getAirport } from '../../services/AirportDataService';
 
@@ -32,7 +33,8 @@ const emits = defineEmits(['update'])
 const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void) | undefined;
 
 const props = defineProps({
-    tileData: { type: Object, default: null } // We expect TileData
+    tileData: { type: Object, default: null }, // We expect TileData
+    route: { type: Object as () => Route, default: undefined }
 })
 
 const airport = ref(new Airport())
