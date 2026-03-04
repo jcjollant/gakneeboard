@@ -1,22 +1,19 @@
 <template>
     <div class="radio-settings">
         <!-- Display Mode Section -->
-        <Separator name="Display" class="separator" />
+        <SeparatorChoice name="Display" choiceA="Normal" choiceB="Wide" v-model="isNormal" />
         <DisplayModeSelector :choices="modesList" v-model="selectedModeChoice" :thinpad="true" :showPreviews="true" />
-        <div class="orientation-selector">
-             <EitherOr either="Normal" or="Wide" v-model="isNormal" />
-        </div>
 
         <div v-if="currentMode === DisplayModeRadios.FreqList">
-            <Separator name="Frequency List" />
+            <Separator name="Frequency List" :leftAligned="true" />
             <div class="list-editor">
-                 <Textarea class='list' rows="9" cols="24" v-model="textData"
+                 <Textarea class='list' rows="15" cols="24" v-model="textData"
                             placeholder="Format: Value,Name,Type&#10;Ex: 123.45, KABC Twr, Tower"></Textarea>
                  <Button icon="pi pi-search" title="Frequency Lookup" link
                             @click="showLookup = true" class="lookupBtn"></Button>
             </div>
             
-            <Separator name="Color Scheme" />
+            <Separator name="Color Scheme" :leftAligned="true" style="margin-top: 5px;" />
              <div class="colorSchemeSelector">
                 <div class="schemeOption" :class="{selected: colorScheme === 'light'}" @click="colorScheme = 'light'">
                     <FrequencyBox :freq="freqLight" size="small" colorScheme="light" />
@@ -46,8 +43,8 @@ import { RadioTileConfig } from './RadioTileConfig';
 
 
 import Separator from '../../components/shared/Separator.vue';
+import SeparatorChoice from '../../components/shared/SeparatorChoice.vue';
 import DisplayModeSelector from '../shared/DisplayModeSelector.vue';
-import EitherOr from '../shared/EitherOr.vue';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import FrequencyBox from '../shared/FrequencyBox.vue';
@@ -183,10 +180,7 @@ function emitUpdate() {
     display: flex;
     flex-direction: column;
     gap: 15px;
-}
-.orientation-selector {
-    display: flex;
-    justify-content: center;
+    padding: 0 4px;
 }
 .list-editor {
     position: relative;
@@ -199,7 +193,8 @@ function emitUpdate() {
     padding: 5px;
     font-family: 'Courier New', Courier, monospace;
     font-weight: 600;
-    width:100%;
+    width: 100%;
+    box-sizing: border-box;
 }
 .lookupBtn {
     position: absolute;
@@ -208,9 +203,7 @@ function emitUpdate() {
 }
 .colorSchemeSelector {
     display: flex;
-    gap: 1px;
     justify-content: center;
-    padding: 2px 0;
 }
 .schemeOption {
     cursor: pointer;
