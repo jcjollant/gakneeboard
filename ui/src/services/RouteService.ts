@@ -11,11 +11,11 @@ export class RouteService {
         return undefined
     }
 
-    static getRouteCode(route: Route | undefined, codeFromRoute: string): RouteCode | undefined {
+    static getRouteCode(route: Route | undefined, airportCode: string): RouteCode | undefined {
         if (!route) return undefined
-        if (route.dep == codeFromRoute) return "dep"
-        if (route.dst == codeFromRoute) return "dst"
-        if (route.alt == codeFromRoute) return "alt"
+        if (route.dep == airportCode) return "dep"
+        if (route.dst == airportCode) return "dst"
+        if (route.alt == airportCode) return "alt"
         return undefined
     }
 }
