@@ -175,6 +175,7 @@ describe('UserDao', () => {
     it('updateType', async () => {
         const existingUser: User = new User(jcUserId, jcHash)
         existingUser.accountType = AccountType.simmer
+        existingUser.planId = 'sim'
         existingUser.maxTemplates = 1
         existingUser.maxPages = 2
         await userDao.updateType(existingUser)
