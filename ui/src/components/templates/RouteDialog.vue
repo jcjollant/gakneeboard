@@ -9,12 +9,7 @@
             <AirportInput :code="route.dep || ''" label="Dep." :showRecent="true" :large="true" @valid="(a) => route.dep = a.code" @invalid="route.dep = undefined" />
             <AirportInput :code="route.dst || ''" label="Dest." :showRecent="true" :large="true" @valid="(a) => route.dst = a.code" @invalid="route.dst = undefined" />
             <AirportInput :code="route.alt || ''" label="Alter." :showRecent="true" :large="true" @valid="(a) => route.alt = a.code" @invalid="route.alt = undefined" />
-            <div class="dialog-actions">
-                <font-awesome-icon :icon="['fas', 'video']" class="video-link"
-                    @click="UserUrl.open(UserUrl.routeFeature)" title="Watch a video on this feature"></font-awesome-icon>
-                <Button label="Cancel" @click="$emit('cancel')" link />
-                <Button label="Confirm" @click="onConfirm" />
-            </div>
+            <DialogActions :videoLink="UserUrl.routeFeature" applyLabel="Confirm" @cancel="$emit('cancel')" @apply="onConfirm" />
         </div>
     </Dialog>
 </template>
@@ -22,8 +17,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import Dialog from 'primevue/dialog'
-import Button from 'primevue/button'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import DialogActions from '../shared/DialogActions.vue'
 import AirportInput from '../shared/AirportInput.vue'
 import { Route } from '@gak/shared'
 import { UserUrl } from '../../lib/UserUrl'
@@ -53,24 +47,7 @@ function onConfirm() {
     flex-direction: column;
     gap: 15px;
 }
-.dialog-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 3rem;
-    align-items: center;
-}
-.video-link {
-    margin-right: auto;
-    cursor: pointer;
-    font-size: 1.2rem;
-    padding: 5px;
-    color: var(--bg);
-    transition: color 0.2s;
-}
-.video-link:hover {
-    color: var(--bg-hover);
-}
+
 .routeMessage {
     margin-bottom: 3rem;
 }

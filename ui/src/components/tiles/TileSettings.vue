@@ -23,7 +23,7 @@
         </div>
 
         <template #footer>
-            <ActionBar :video="video" :help="help" :canApply="canApply" :showCancel="true" class="actionBar"
+            <DialogActions :videoLink="video" :helpLink="help" :canApply="canApply"
                 @apply="emits('apply', editingTileData)" @cancel="closeDialog" />
         </template>
     </Dialog>
@@ -32,7 +32,7 @@
 <script setup lang="ts">
 import { computed, ref, provide } from 'vue';
 import { TileData } from '../../models/TileData';
-import ActionBar from '../shared/ActionBar.vue';
+import DialogActions from '../shared/DialogActions.vue';
 import Dialog from 'primevue/dialog';
 import { TileType } from '../../models/TileType';
 
@@ -126,10 +126,6 @@ const title = computed(() => {
 }
 .mini-cell.active {
     background-color: var(--primary-color, #3b82f6); /* Ensure active pops */
-}
-.actionBar {
-    position: relative;
-    bottom: auto;
 }
 </style>
 

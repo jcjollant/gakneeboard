@@ -4,10 +4,8 @@
             <Separator name="Display" />
             <DisplayModeSelector :choices="modesList" v-model="selectedModeChoice" :showPreviews="true" />
         </div>
-        <div class="field" v-if="showAirportInput">
-            <Separator name="Airport" />
-            <AirportInput v-model="airport" :showRecent="true" large :route="route" @valid="emitUpdate"/>
-        </div>
+        <Separator name="Airport" />
+        <AirportInput v-model="airport" :showRecent="true" large :route="route" @valid="emitUpdate"/>
     </div>
 </template>
 
@@ -15,19 +13,15 @@
 import { onMounted, ref, watch, inject, computed } from 'vue'
 import { Airport } from '../../models/Airport.ts';
 import { TileData } from '../../models/TileData.ts';
-import { 
-    DisplayModeChoice, 
-    DisplayModeIfr 
-} from '../../models/DisplayMode.ts';
+import { DisplayModeIfr } from '../../models/DisplayMode.ts';
 import { Route } from '@gak/shared';
-import { IfrTileDisplayModeLabels } from './IfrTileDisplayModeLabel.ts';
 import { getAirport } from '../../services/AirportDataService';
+import { IfrTileConfig } from './IfrTileConfig.ts';
+import { RouteService } from '../../services/RouteService.ts';
 
 import AirportInput from '../shared/AirportInput.vue';
 import DisplayModeSelector from '../shared/DisplayModeSelector.vue';
 import Separator from '../shared/Separator.vue';
-import { IfrTileConfig } from './IfrTileConfig.ts';
-import { RouteService } from '../../services/RouteService.ts';
 
 
 const emits = defineEmits(['update'])
@@ -48,10 +42,6 @@ const selectedModeChoice = computed({
     set: (val) => { 
         if(val) displayMode.value = val.value as DisplayModeIfr 
     }
-})
-
-const showAirportInput = computed(() => {
-    return displayMode.value === DisplayModeIfr.Departure || displayMode.value === DisplayModeIfr.Approach
 })
 
 onMounted(() => {
