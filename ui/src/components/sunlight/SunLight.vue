@@ -155,7 +155,7 @@ function loadProps(newProps) {
     dateFrom.value = now
     nightFlight.value = state.night
     // console.debug('[SunLight.loadProps] from', JSON.stringify(dateFrom.value), "to", JSON.stringify(dateTo.value))
-    displayMode.value = state.mode ? state.mode : displayModeDefault
+    displayMode.value = state.mode && state.mode != displayModeDefault ? state.mode : (state.from ? DisplayModeSunlight.Flight : displayModeDefault)
     state.mode = displayMode.value
     displayModeSelection.value = displayMode.value == DisplayModeSunlight.Unknown
 

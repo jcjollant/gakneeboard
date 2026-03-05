@@ -25,8 +25,9 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
+import { Route } from '@gak/shared';
 import { Airport } from '../../models/Airport.ts';
-import { DisplayModeChoice, DisplayModeVfr } from '../../models/DisplayMode.ts';
+import { DisplayModeChoice, DisplayModeVfr, DisplayModeSunlight } from '../../models/DisplayMode.ts';
 import { getAirport } from '../../services/AirportDataService';
 import { Regulation } from '../../models/Regulation.ts';
 import { TileData } from '../../models/TileData.ts';
@@ -51,6 +52,7 @@ const displayMode=ref(DisplayModeVfr.Unknown)
 const sunlightParams=ref({})
 const props = defineProps({
     params: { type: Object, default: null},
+    route: { type: Object as () => Route, default: undefined}
 })
 const displaySelection=ref(false)
 const displayModes = [
@@ -72,6 +74,12 @@ watch( props, async() => {
 watch( displayMode, (newValue, oldValue) => {
     if( newValue == oldValue || oldValue == DisplayModeVfr.Unknown) return;
     displaySelection.value = false;
+    
+    // Auto-initialize sunlight params from route if empty
+    if (newValue == DisplayModeVfr.Sunlight && props.route && (!sunlightParams.value || Object.keys(sunlightParams.value).length === 0)) {
+        sunlightParams.value = { from: props.route.dep, to: props.route.dst, mode: DisplayModeSunlight.Flight };
+    }
+    
     saveConfig()
 })
 
@@ -91,15 +99,26 @@ function loadProps(props:any) {
          } else {
             displaySelection.value = true
          }
-         if( props.params.airport) {
-            getAirport(props.params.airport).then( output => {
+         
+         const useRoute = props.params.useRoute !== false && !props.params.airport
+         const airportCode = useRoute ? props.route?.dep : props.params.airport
+
+         if( airportCode ) {
+            getAirport(airportCode).then( output => {
                 if( output) {
                     airport.value = Airport.copy(output)
                 }
             })
          }
+         
          if( props.params.sunlight) {
             sunlightParams.value = props.params.sunlight
+         } else if (displayMode.value == DisplayModeVfr.Sunlight) {
+            if (useRoute && props.route) {
+                sunlightParams.value = { from: props.route.dep, to: props.route.dst, mode: DisplayModeSunlight.Flight }
+            } else if (props.params.airport) {
+                sunlightParams.value = { from: props.params.airport, to: props.params.airport, mode: DisplayModeSunlight.Flight }
+            }
          }
     } else {
         // console.debug('[VfrTile] show display selection')
@@ -109,7 +128,8 @@ function loadProps(props:any) {
 
 function saveConfig() {
     // build parameters
-    const params:any = {mode:displayMode.value, airport:airport.value.code}
+    const useRoute = props.params?.useRoute !== false && !airport.value.code
+    const params:any = {mode:displayMode.value, airport:airport.value.code, useRoute: useRoute}
     if(sunlightParams.value && Object.keys(sunlightParams.value).length > 0) {
         params.sunlight = sunlightParams.value
     }
