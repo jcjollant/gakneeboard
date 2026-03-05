@@ -2,6 +2,8 @@ import { Route, RouteCode } from "@gak/shared";
 import { Frequency, FrequencyType } from "./../models/Frequency";
 import { getAirport } from "./AirportDataService";
 import { AirportService } from "./AirportService";
+import { Formatter } from "../lib/Formatter";
+import { AirportFrequency } from "../models/Airport";
 export class RouteService {
     static getAirportCode(route: Route | undefined, code: RouteCode | undefined): string | undefined {
         // console.debug('[RouteService.getAirportCode] route', route, 'code', code)
@@ -33,19 +35,13 @@ export class RouteService {
             try {
                 const airport = await getAirport(code, true);
                 if (airport) {
-                    const towerFreqMhz = AirportService.getFreqTower(airport);
-                    const ctafFreqMhz = AirportService.getFreqCtaf(airport);
-                    const weatherFreq = AirportService.getFreqWeather(airport);
-
-                    if (weatherFreq) {
-                        generatedFrequencies.push(new Frequency(weatherFreq.value, airport.code + ' ' + weatherFreq.name, FrequencyType.weather));
-                    }
-
-                    if (towerFreqMhz) {
-                        generatedFrequencies.push(new Frequency(towerFreqMhz.toFixed(3), airport.code + ' TWR', FrequencyType.tower));
-                    } else if (ctafFreqMhz) {
-                        generatedFrequencies.push(new Frequency(ctafFreqMhz.toFixed(3), airport.code + ' CTAF', FrequencyType.ctaf));
-                    }
+                    airport.freq?.forEach((freq: AirportFrequency) => {
+                        const freqType = Frequency.typeFromString(freq.name);
+                        if (freqType === FrequencyType.weather || freqType === FrequencyType.tower ||
+                            freqType === FrequencyType.ctaf || freqType === FrequencyType.ground) {
+                            generatedFrequencies.push(new Frequency(Formatter.frequency(freq), `${airport.code} ${freq.name}`, freqType));
+                        }
+                    });
                 }
             } catch (error) {
                 console.error('[RouteService] Error loading airport for route frequency', code, error);

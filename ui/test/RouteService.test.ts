@@ -6,7 +6,7 @@ import { FrequencyType } from '../src/models/Frequency';
 import { Airport } from '../src/models/Airport';
 
 jest.mock('../src/services/AirportDataService');
-const mockGetAirport = getAirport as jest.Mock;
+const mockGetAirport = jest.mocked(getAirport);
 
 describe('RouteService', () => {
     describe('getAirportCode', () => {
@@ -81,17 +81,18 @@ describe('RouteService', () => {
             alt: 'KPAE'
         };
 
-        const createMockAirport = (code: string, weather: number, tower?: number, ctaf?: number) => {
+        const createMockAirport = (code: string, weather: number, tower?: number, ctaf?: number, ground?: number) => {
             const airport = new Airport(code, code + ' Airport');
             if (weather) airport.addFrequency('ATIS', weather);
             if (tower) airport.addFrequency('TWR', tower);
             if (ctaf) airport.addFrequency('CTAF', ctaf);
+            if (ground) airport.addFrequency('GND', ground);
             return airport;
         };
 
-        const mockAirportBFI = createMockAirport('KBFI', 127.75, 118.3);
-        const mockAirportSEA = createMockAirport('KSEA', 118.0, 119.9);
-        const mockAirportPAE = createMockAirport('KPAE', 128.65, undefined, 120.2);
+        const mockAirportBFI = createMockAirport('KBFI', 127.75, 118.3, undefined, 121.7);
+        const mockAirportSEA = createMockAirport('KSEA', 118.0, 119.9, undefined, 121.9);
+        const mockAirportPAE = createMockAirport('KPAE', 128.65, undefined, 120.2, 121.8);
 
         beforeEach(() => {
             jest.clearAllMocks();
@@ -112,15 +113,17 @@ describe('RouteService', () => {
 
             const result = await RouteService.fetchRouteFrequencies(route);
 
-            expect(result.length).toBe(6); // 2 frequencies per airport
+            expect(result.length).toBe(9); // 3 frequencies per airport (Weather, TWR/CTAF, GND)
 
             // Checking BFI
             expect(result.some(f => f.name === 'KBFI ATIS' && f.value === '127.750' && f.type === FrequencyType.weather)).toBe(true);
             expect(result.some(f => f.name === 'KBFI TWR' && f.value === '118.300' && f.type === FrequencyType.tower)).toBe(true);
+            expect(result.some(f => f.name === 'KBFI GND' && f.value === '121.700' && f.type === FrequencyType.ground)).toBe(true);
 
             // Checking PAE (CTAF)
             expect(result.some(f => f.name === 'KPAE ATIS' && f.value === '128.650' && f.type === FrequencyType.weather)).toBe(true);
             expect(result.some(f => f.name === 'KPAE CTAF' && f.value === '120.200' && f.type === FrequencyType.ctaf)).toBe(true);
+            expect(result.some(f => f.name === 'KPAE GND' && f.value === '121.800' && f.type === FrequencyType.ground)).toBe(true);
         });
 
         test('should handle duplicate airport codes', async () => {
@@ -129,7 +132,7 @@ describe('RouteService', () => {
 
             const result = await RouteService.fetchRouteFrequencies(duplicateRoute);
 
-            expect(result.length).toBe(2); // Only one set of frequencies for KBFI
+            expect(result.length).toBe(3); // Only one set of frequencies for KBFI
             expect(mockGetAirport).toHaveBeenCalledTimes(1);
         });
 
@@ -147,7 +150,7 @@ describe('RouteService', () => {
 
             const result = await RouteService.fetchRouteFrequencies(route);
 
-            expect(result.length).toBe(2); // Only BFI frequencies
+            expect(result.length).toBe(3); // Only BFI frequencies
             expect(result[0].name).toContain('KBFI');
         });
     });
