@@ -276,8 +276,7 @@ export class TemplateService {
                     access: "public",
                     contentType: "image/png",
                     token: process.env.BLOB_READ_WRITE_TOKEN,
-                    addRandomSuffix: false,
-                    allowOverwrite: true,
+                    addRandomSuffix: true,
                 })
 
                 // Save url with associated template
