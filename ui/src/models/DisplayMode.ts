@@ -77,7 +77,9 @@ export enum DisplayModeRadios {
     LostComms = 'nordo',
     LostCommsIFR = 'lost-comms-ifr',
     ServiceVolumes = 'sv',
+    RouteFrequencies = 'route-freq',
 }
+
 
 export enum DisplayModeRegulations {
     Unknown = '?',
