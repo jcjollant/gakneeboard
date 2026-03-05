@@ -11,19 +11,19 @@
     <div v-if="template" id="printTemplate" :class="{'single':printFullpage,'fullpage':template.format === TemplateFormat.FullPage}">
       <div v-if="printFullpage" v-for="(page,index) in template.data" class="printOnePage printPageBreak">
         <div class="onePager" v-if="pageSelection[Number(index)]">
-          <Page :data="page" :format="template.format"
+          <Page :data="page" :format="template.format" :route="template.route"
             :style="getPageStyle(false)" />
         </div>
       </div>
       <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages">
-        <Page :data="page.front" :format="template.format" :style="getPageStyle(false)" />
+        <Page :data="page.front" :format="template.format" :route="template?.route" :style="getPageStyle(false)" />
         <MarginNotes v-if="printVibShow" class="sidebar" 
             :ver="template.ver" :show="printVibShow" :items="printVibItems" :name="template.name"
             :style="getSideBarStyle(false)"/>
         <MarginNotes v-if="printVibShow" class="sidebar back" 
             :ver="template.ver" :show="printVibShow" :items="printVibItems" :name="template.name"
             :style="getSideBarStyle(true)"/>
-        <Page v-if="page.back" :data="page.back" :format="template.format" :style="getPageStyle(printFlipMode)" />
+        <Page v-if="page.back" :data="page.back" :format="template.format" :route="template?.route" :style="getPageStyle(printFlipMode)" />
       </div>
     </div>
     <div v-else>No Template</div>
@@ -169,7 +169,7 @@ async function onExportPdf(options: PrintOptions | undefined) {
 
   await nextTick()
     printing = true
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 1000));
     updateThumbnail();
     
 
@@ -197,7 +197,7 @@ async function onLaminate(options: PrintOptions | undefined) {
   AnalyticsService.print(template.value, 'laminate')
   onOptionsUpdate(options)
   
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise(resolve => setTimeout(resolve, 1000));
   updateThumbnail();
 
   const elements = printFullpage.value ? document.querySelectorAll('.printOnePage') : document.querySelectorAll('.printTwoPages')
@@ -237,7 +237,7 @@ async function onPrint(options:PrintOptions|undefined) {
   postPrint(route.params.id, options)
 
   await nextTick()
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise(resolve => setTimeout(resolve, 1000));
   updateThumbnail();
 
   const element = document.getElementById('printTemplate')

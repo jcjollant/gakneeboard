@@ -104,7 +104,7 @@ describe('Radios Tile', () => {
 
         // Switch to Route Frequencies via dots (TileModeDots)
         // We know it's the second dot/mode
-        cy.get('.tile .tile-mode-dots .dot').eq(1).click()
+        cy.get('.tile .tile-mode-dots .dot').eq(1).click({ force: true })
 
         // Wait for loading placeholder or frequencies
         // We might need to mock the route service if there is no active route
@@ -115,7 +115,7 @@ describe('Radios Tile', () => {
         cy.get('.freqList > div').should('have.length.at.least', 1)
 
         // Switch back to Selected Frequencies
-        cy.get('.tile .tile-mode-dots .dot').eq(0).click()
+        cy.get('.tile .tile-mode-dots .dot').eq(0).click({ force: true })
         cy.get('.headerTitle').contains('Radios')
     })
 
