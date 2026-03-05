@@ -28,6 +28,8 @@ import AirportInput from '../shared/AirportInput.vue';
 import ApproachPlate from './Diagram.vue';
 import Header from '../shared/Header.vue';
 import FAButton from '../shared/FAButton.vue';
+import { Route } from '@gak/shared';
+import { RouteService } from '../../services/RouteService';
 
 const emits = defineEmits(['replace','update'])
 const editMode = ref(true)
@@ -41,13 +43,17 @@ const title = ref('Instrument Approach')
 // Props Management
 const props = defineProps({
     data: { type: Object, default: null },
+    route: { type: Object as () => Route, default: undefined}
 })
 
 function loadProps(newProps:any) {
     // console.log('[ApporachPage.loadProps]', JSON.stringify(newProps))
-    if (newProps.data && newProps.data.airport) {
+    const routeCodeAirport = RouteService.getAirportCode(newProps.route, newProps.data?.routeCode)
+    const airportCode = routeCodeAirport || newProps.data?.airport
+
+    if (airportCode) {
         const pdfIndex = newProps.data.pdf ?? 0
-        getAirport(newProps.data.airport, true).then( a => {
+        getAirport(airportCode, true).then( a => {
             // console.log('[ApproachPage.loadProps] got airport', a)
             airport.value = Airport.copy(a);
             selectedIndex.value = pdfIndex
