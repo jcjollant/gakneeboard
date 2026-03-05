@@ -15,13 +15,13 @@
     <NavlogTile v-else-if="tile.name==TileType.navlog" @replace="onReplace" />
     <NotesTile v-else-if="tile.name==TileType.notes" :params="tile.data" :span2="tile.span2"
         @replace="onReplace" @update="onUpdate" @settings="emits('settings',tile)" />
-    <RadioTile v-else-if="tile.name==TileType.radios" :params="tile.data" :span2="tile.span2"
+    <RadioTile v-else-if="tile.name==TileType.radios" :params="tile.data" :span2="tile.span2" :route="route"
         @replace="onReplace" @update="onUpdate" @settings="emits('settings',tile)"/>
     <SunLight v-else-if="tile.name==TileType.sunlight" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" />
     <EmergencyTile v-else-if="tile.name==TileType.emergency" :params="tile.data"
         @replace="onReplace" @update="onUpdate"/>
-    <VfrTile v-else-if="tile.name==TileType.vfr" :params="tile.data"
+    <VfrTile v-else-if="tile.name==TileType.vfr" :params="tile.data" :route="route"
         @replace="onReplace" @update="onUpdate" />
     <div v-else class="tile">
         <Header :title="title" :replace="restorable" :clickable="restorable" :leftButton="''"
