@@ -108,19 +108,19 @@ export class DemoData {
     // Skyhawk
     static page0DemoVFR = new TemplatePage(PageType.tiles, 'C172 Reference',
         [
-            { name: TileType.airport, data: { code: "0S9", rwy: "09-27", rwyOrientation: "magnetic", corners: ["weather", "twr", "field", "tpa"] } },
+            { name: TileType.airport, data: { routeCode: 'dep', corners: ["weather", "twr", "field", "tpa"] } },
             { name: TileType.atis, data: { mode: DisplayModeAtis.CompactATIS } },
             { name: TileType.radios, data: { mode: DisplayModeRadios.RouteFrequencies } },
             { name: TileType.checklist, data: { name: "Quick Ref", "items": [{ s: "Climb" }, { c: "Power - Mixture - Flaps - Engine" }, { s: "Cruise" }, { c: "Power - Mixture - Trim - Lights" }, { s: "Descent" }, { c: "Wx - Alt - Nav - Land. Lights" }, { c: "Cab Pwr - Mixt - Apch Brief." }, { s: "Before Landing" }, { c: "Fuel Sel. - Mixt - Land. Lights" }, { c: "Seat Blt - AP - Cab Pwr" }], "theme": "blue" } },
-            { name: TileType.airport, data: { code: "KRNT", rwy: "16-34", rwyOrientation: "vertical", corners: ["weather", "twr", "field", "tpa"] } },
+            { name: TileType.airport, data: { routeCode: 'dst', corners: ["weather", "twr", "field", "tpa"] } },
             { name: TileType.notes, data: {} }
         ]
     )
     static page1DemoVFR = new TemplatePage(PageType.tiles, 'Back Page', [
         { name: TileType.checklist, data: { name: "Limits", items: [{ c: "Vne", r: "163" }, { c: "Va @ 2,550/2,200", r: "105/98" }, { c: "Vno", r: "129" }, { c: "Vfe 10/20", r: "110/85" }, { c: "Vg", r: "68" }, { c: "Vs0/1", r: "40/48" }, { c: "Max XWind", r: "15kts" }, { c: "Landing", r: " 1,300ft" }, { c: "TOW", r: "2,550" }, { s: "", t: "blank" }], "theme": "purple" } },
-        { name: TileType.airport, data: { code: "KBFI", rwy: "14L-32R", rwyOrientation: "vertical", corners: ["weather", "twr", "field", "tpa"] } },
+        { name: TileType.airport, data: { routeCode: 'alt', corners: ["weather", "twr", "field", "tpa"] } },
         { name: TileType.radios, data: { mode: DisplayModeRadios.LostComms, list: [] } },
-        { name: TileType.sunlight, data: { from: "0S9", to: "0S9", mode: DisplayModeSunlight.Flight } },
+        { name: TileType.vfr, data: { mode: DisplayModeVfr.Sunlight } },
         { name: TileType.atis, data: { mode: DisplayModeAtis.Categories } },
         { name: TileType.atis, data: { mode: DisplayModeAtis.CloudClearance } }
     ]
@@ -205,7 +205,7 @@ export class DemoData {
 
     static page0IFRFlight = new TemplatePage(PageType.tiles, 'Tile 1',
         [
-            { name: "clearance", data: { "mode": "dep", "airport": "KPAE" }, "span2": false, "hide": false },
+            { name: "clearance", data: { "mode": "dep", "routeCode": "dep" }, "span2": false, "hide": false },
             { name: "radios", data: { "mode": "", "list": [{ "value": "135.625", name: "KAWO AWOS-3PT", "type": "w" }, { "value": "122.725", name: "KAWO CTAF", "type": "ct" }, { "value": "111.500", name: "KAWO LOC I-AWO 34", "type": "n" }, { "value": "120.200", name: "KPAE TWR", "type": "tw" }], "sv": "t" }, "span2": false, "hide": false },
             { name: "atis", data: { "mode": "" }, "span2": true, "hide": false },
             { name: "atis", data: { "mode": "" }, "span2": false, "hide": true },
@@ -218,14 +218,14 @@ export class DemoData {
         [
             { name: "checklist", data: { name: "IFR Reporting", "items": this.ifrReportingList0, "theme": "yellow" }, "span2": false, "hide": false },
             { name: "checklist", data: { name: "IFR Reporting Cont'd", "items": this.ifrReportingList1, "theme": "yellow" }, "span2": false, "hide": false },
-            { name: "airport", data: { code: "KAWO", "rwy": "11-29", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
+            { name: "airport", data: { routeCode: "alt", "rwy": "11-29", "pattern": 0, "corners": ["weather", "twr", "field", "tpa", "#FCD/P", "#FGND", "?Custom?Custom", "#FUNICOM"], "rwyOrientation": "vertical", "headings": true, "mode": "one" }, "span2": false, "hide": false },
             { name: "clearance", data: { "mode": "alt" } },
             { name: "notes", data: { "mode": "word", "word": "WARNMM" }, "span2": true, "hide": false },
             { name: "notes", data: { "mode": "word", "word": "LaWBB", "comp": false }, "span2": false, "hide": true }
         ]
     )
 
-    static page2IFRFlight = new TemplatePage(PageType.approach, "Approach 1", { "airport": "S43", "pdf": 0 })
+    static page2IFRFlight = new TemplatePage(PageType.approach, "Approach 1", { "routeCode": "dst", "pdf": 0 })
     // static page3IFRFlight = new TemplatePage(PageType.approach, "Approach 2", {"airport":"KAWO","pdf":1})
 
 
