@@ -14,7 +14,7 @@
         @replace="onReplace(PageType.selection)" />
     <NotesPage v-else-if="type==PageType.notes" 
         @replace="onReplace(PageType.selection)" />
-    <ApproachPage v-else-if="type==PageType.approach" :data="pageData"
+    <ApproachPage v-else-if="type==PageType.approach" :data="pageData" :route="route"
         @replace="onReplace" @update="onUpdate" />
     <DiagramPage v-else-if="type==PageType.diagram" :data="pageData"
         @replace="onReplace" @update="onUpdate"  />
