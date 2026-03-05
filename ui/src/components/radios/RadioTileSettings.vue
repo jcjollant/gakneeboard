@@ -4,12 +4,14 @@
         <SeparatorChoice name="Display" choiceA="Normal" choiceB="Wide" v-model="isNormal" />
         <DisplayModeSelector :choices="modesList" v-model="selectedModeChoice" :thinpad="true" :showPreviews="true" />
 
-        <div v-if="currentMode === DisplayModeRadios.FreqList">
-            <Separator name="Frequency List" :leftAligned="true" />
+        <div>
+            <Separator :name="currentMode === DisplayModeRadios.RouteFrequencies ? 'Route Frequencies' : 'Frequency List'" :leftAligned="true" />
             <div class="list-editor">
-                 <Textarea class='list' rows="15" cols="24" v-model="textData"
+                <Textarea class='list' rows="15" cols="24" v-model="textData"
+                            :disabled="currentMode !== DisplayModeRadios.FreqList"
                             placeholder="Format: Value,Name,Type&#10;Ex: 123.45, KABC Twr, Tower"></Textarea>
-                 <Button icon="pi pi-search" title="Frequency Lookup" link
+                <Button icon="pi pi-search" title="Frequency Lookup" link
+                            :disabled="currentMode !== DisplayModeRadios.FreqList"
                             @click="showLookup = true" class="lookupBtn"></Button>
             </div>
             
@@ -40,6 +42,8 @@ import { TileData } from '../../models/TileData';
 import { DisplayModeRadios } from '../../models/DisplayMode';
 import { Frequency, FrequencyType } from '../../models/Frequency';
 import { RadioTileConfig } from './RadioTileConfig';
+import { RouteService } from '../../services/RouteService';
+import { Route } from '@gak/shared';
 
 
 import Separator from '../../components/shared/Separator.vue';
@@ -52,6 +56,7 @@ import LookupDialog from './LookupDialog.vue';
 
 const props = defineProps({
     tileData: { type: TileData, required: true },
+    route: { type: Object as () => Route, default: undefined },
 });
 
 const emits = defineEmits(['update']);
@@ -102,6 +107,12 @@ watch([currentMode, textData, colorScheme], () => {
     emitUpdate();
 });
 
+watch(currentMode, (newMode) => {
+    if (newMode === DisplayModeRadios.RouteFrequencies) {
+        populateRouteFrequenciesText();
+    }
+});
+
 function loadFromTileData(tile: TileData) {
     if (!tile) return;
     const data = tile.data;
@@ -135,6 +146,22 @@ function loadFromTileData(tile: TileData) {
         // Color Scheme
         if('colorScheme' in data) colorScheme.value = data.colorScheme
     }
+    
+    // If it's RouteFrequencies but the list is empty (which happens since it's dynamically generated),
+    // let's fetch it for preview in textData or just keep the textarea hidden.
+    // The user hid textData for RouteFrequencies in the template, so we don't need to populate textData for RouteFrequencies,
+    // wait, the user modified RadioTileSettings.vue to show list-editor for EVERY mode!
+    // "<div> <Separator name="Frequency List" ... <Textarea class='list' "
+    // Ah, if they want to see the RouteFrequencies IN the text area to preview them:
+    if (currentMode.value === DisplayModeRadios.RouteFrequencies) {
+        populateRouteFrequenciesText();
+    }
+}
+
+async function populateRouteFrequenciesText() {
+    const route = props.route;
+    const freqs = await RouteService.fetchRouteFrequencies(route);
+    textData.value = freqs.map( (f:Frequency) => f.value + ',' + f.name + ',' + Frequency.typeToString(f.type)).join('\n');
 }
 
 function loadListFromText() {
