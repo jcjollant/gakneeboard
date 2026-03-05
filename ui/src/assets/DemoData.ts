@@ -110,18 +110,7 @@ export class DemoData {
         [
             { name: TileType.airport, data: { code: "0S9", rwy: "09-27", rwyOrientation: "magnetic", corners: ["weather", "twr", "field", "tpa"] } },
             { name: TileType.atis, data: { mode: DisplayModeAtis.CompactATIS } },
-            {
-                name: TileType.radios, data: [
-                    { mhz: 127.750, name: 'KBFI ATIS', type: FrequencyType.weather },
-                    { mhz: 118.300, name: 'KBFI TWR', type: FrequencyType.tower },
-                    { mhz: 119.025, name: '0S9 AWOS-3P', type: FrequencyType.weather },
-                    { mhz: 123.000, name: '0S9 CTAF', type: FrequencyType.ctaf },
-                    { mhz: 128.650, name: 'KPAE ATIS', type: FrequencyType.weather },
-                    { mhz: 120.200, name: 'KPAE TWR', type: FrequencyType.tower },
-                    { mhz: 122.900, name: 'LK WA CTAF', type: FrequencyType.ctaf },
-                    { mhz: 118.200, name: 'CHINOOK A MOA' }
-                ]
-            },
+            { name: TileType.radios, data: { mode: DisplayModeRadios.RouteFrequencies } },
             { name: TileType.checklist, data: { name: "Quick Ref", "items": [{ s: "Climb" }, { c: "Power - Mixture - Flaps - Engine" }, { s: "Cruise" }, { c: "Power - Mixture - Trim - Lights" }, { s: "Descent" }, { c: "Wx - Alt - Nav - Land. Lights" }, { c: "Cab Pwr - Mixt - Apch Brief." }, { s: "Before Landing" }, { c: "Fuel Sel. - Mixt - Land. Lights" }, { c: "Seat Blt - AP - Cab Pwr" }], "theme": "blue" } },
             { name: TileType.airport, data: { code: "KRNT", rwy: "16-34", rwyOrientation: "vertical", corners: ["weather", "twr", "field", "tpa"] } },
             { name: TileType.notes, data: {} }
@@ -372,7 +361,9 @@ export class DemoData {
     // }
 
     static skyhawk(): Template {
-        return new Template('VFR Flight', 'VFR Reference Template', false, [DemoData.page0DemoVFR, DemoData.page1DemoVFR])
+        const template = new Template('VFR Flight', 'VFR Reference Template', false, [DemoData.page0DemoVFR, DemoData.page1DemoVFR])
+        template.route = { dep: "KBFI", dst: "0S9", alt: "KPAE" };
+        return template;
     }
 
     static tiles(): Template {
