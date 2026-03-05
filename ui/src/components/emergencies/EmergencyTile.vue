@@ -4,12 +4,7 @@
             @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" @keep="displaySelection=false" />
         
-        <Nordo v-else-if="displayMode==DisplayModeEmergency.VfrLostComms" />
-        
-        <div v-else-if="displayMode==DisplayModeEmergency.IfrLostComms" >
-            <ImageContent src="lostcomms-ifr.png" /> 
-            <RegLink :regs="[Regulation.IFRTwoWayRadioFailure]" />
-        </div>
+        <RiskMitigation v-else-if="displayMode==DisplayModeEmergency.RiskMitigation" />
 
         <DistressCall v-else-if="displayMode==DisplayModeEmergency.DistressCall" />
 
@@ -29,35 +24,31 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { DisplayModeChoice, DisplayModeEmergency } from '../../models/DisplayMode.ts';
-import { Regulation } from '../../models/Regulation.ts';
 import { TileData } from '../../models/TileData.ts';
 import { TileType } from '../../models/TileType.ts';
 
 import Header from '../shared/Header.vue';
-import ImageContent from '../shared/ImageContent.vue';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
-import Nordo from '../radios/Nordo.vue';
-import RegLink from '../regulations/RegLink.vue';
 import TileModeDots from '../shared/TileModeDots.vue';
 import LostProcedure from '../emergencies/LostProcedure.vue';
 import DistressCall from '../emergencies/DistressCall.vue';
 import DecideModel from '../emergencies/DecideModel.vue';
+import RiskMitigation from '../emergencies/RiskMitigation.vue';
 
 // Enum with display modes
 
 const emits = defineEmits(['replace','update'])
-const defaultMode = DisplayModeEmergency.VfrLostComms
+const defaultMode = DisplayModeEmergency.LostProcedure
 const displayMode=ref(DisplayModeEmergency.Unknown)
 const props = defineProps({
     params: { type: Object, default: null},
 })
 const displaySelection=ref(false)
 const displayModes = [
-    new DisplayModeChoice( 'VFR Lost Comms', DisplayModeEmergency.VfrLostComms),
-    new DisplayModeChoice( 'IFR Lost Comms', DisplayModeEmergency.IfrLostComms),
-    new DisplayModeChoice( 'Distress Call', DisplayModeEmergency.DistressCall),
+    new DisplayModeChoice( 'Risk Mitigation', DisplayModeEmergency.RiskMitigation),
     new DisplayModeChoice( 'Lost Procedure', DisplayModeEmergency.LostProcedure),
-    new DisplayModeChoice( 'Decide Model', DisplayModeEmergency.Decide)
+    new DisplayModeChoice( 'Distress Call', DisplayModeEmergency.DistressCall),
+    new DisplayModeChoice( 'Risk Assessment', DisplayModeEmergency.Decide)
 ]
 
 onMounted(() => {   
@@ -95,16 +86,14 @@ function saveConfig() {
 function getTitle() {
     if( displaySelection.value) return "Emergency Tile Mode"
     let title:string;
-    if( displayMode.value==DisplayModeEmergency.VfrLostComms) {
-        title =  'VFR Lost Comms'
-    } else if( displayMode.value==DisplayModeEmergency.IfrLostComms) {
-        title = 'IFR Lost Comms'
+    if( displayMode.value==DisplayModeEmergency.RiskMitigation) {
+        title =  'Risk Mitigation'
     } else if( displayMode.value==DisplayModeEmergency.DistressCall) {
         title = 'Distress Call'
     } else if( displayMode.value==DisplayModeEmergency.LostProcedure) {
         title = 'Lost Procedure'
     } else if( displayMode.value==DisplayModeEmergency.Decide) {
-        title = 'DECIDE Procedure'
+        title = 'Risk Assessment'
     } else {
         title = 'Emergencies'
     }

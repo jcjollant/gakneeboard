@@ -89,9 +89,8 @@ export enum DisplayModeRegulations {
 
 export enum DisplayModeEmergency {
     Unknown = '?',
-    VfrLostComms = 'vfr-lost-comms',
-    IfrLostComms = 'ifr-lost-comms',
     DistressCall = 'distress',
     LostProcedure = 'lost',
     Decide = 'decide',
+    RiskMitigation = 'risk-mitigation',
 }
