@@ -7,9 +7,10 @@
             <VorServiceVolumes v-if="displayMode==DisplayModeRadios.ServiceVolumes" />
             <Nordo v-else-if="displayMode==DisplayModeRadios.LostComms" />
             <ImageContent v-else-if="displayMode==DisplayModeRadios.LostCommsIFR" src="lostcomms-ifr.png" /> 
-            <div v-else-if="displayMode==DisplayModeRadios.FreqList" class="main">
+            <div v-else-if="displayMode==DisplayModeRadios.FreqList || displayMode==DisplayModeRadios.RouteFrequencies" class="main">
                  <div>
-                    <PlaceHolder v-if="frequencies.length==0" title="No Radios" />
+                    <PlaceHolder v-if="frequencies.length==0 && !isLoadingRoute" title="No Radios" />
+                    <PlaceHolder v-else-if="isLoadingRoute" title="Loading Route..." />
                     <div v-else class="freqList" :class="[boxColumns()]" >
                         <FrequencyBox v-for="(freq,index) in frequencies" :freq="freq" :size="boxSize()" :class="['freq'+index]" :colorScheme="colorScheme" />
                     </div>
@@ -33,7 +34,7 @@ import { useToast } from 'primevue/usetoast';
 import { onMounted, ref, watch } from 'vue';
 import { useToaster } from '../../assets/Toaster';
 import { DisplayModeRadios } from '../../models/DisplayMode';
-import { Frequency } from '../../models/Frequency';
+import { Frequency, FrequencyType } from '../../models/Frequency';
 import { RadioTileConfig } from './RadioTileConfig';
 import { TileData } from '../../models/TileData';
 import { TileType } from '../../models/TileType';
@@ -46,6 +47,8 @@ import Nordo from './Nordo.vue';
 import PlaceHolder from '../shared/PlaceHolder.vue';
 import TileModeDots from '../shared/TileModeDots.vue';
 import VorServiceVolumes from './VorServiceVolumes.vue';
+import { Route } from '@gak/shared';
+import { RouteService } from '../../services/RouteService';
 
 const displayMode = ref(DisplayModeRadios.FreqList) // active display mode
 const displaySelection = ref(false) // Keeping this as prop for Header for now, but logic might change
@@ -57,10 +60,12 @@ const frequencies = ref(noFreq)
 const colorScheme = ref('light')
 const lookupTime = ref(0)
 const maxFreqCount = 15
+const isLoadingRoute = ref(false)
 
 const props = defineProps({
     params: { type: Object, default: null}, // expecting a list of radio {'target':'COM1', 'freq':'-.-', 'name':'-'}
     span2 : { type: Boolean, default: false },
+    route : { type: Object as () => Route, default: undefined},
 })
 const showLookup = ref(false)
 const toaster = useToaster(useToast())
@@ -106,7 +111,11 @@ function getTitle() {
         case DisplayModeRadios.LostComms: return 'Lost Comms VFR';
         case DisplayModeRadios.LostCommsIFR: return 'Lost Comms IFR';
         case DisplayModeRadios.ServiceVolumes: return 'Service Volumes';
-        default: return 'Radios';
+        case DisplayModeRadios.RouteFrequencies: return 'Route Radios';
+        
+        case DisplayModeRadios.FreqList:
+        default: 
+            return 'Radios';
     }
 }
 
@@ -148,6 +157,21 @@ function loadData(data:any) {
 function loadProps(props:any) {
     loadData(props.params)
     expanded.value = props.span2 || false;
+
+    if (displayMode.value === DisplayModeRadios.RouteFrequencies) {
+        loadRouteFrequencies(props.route);
+    }
+}
+
+async function loadRouteFrequencies(route: Route | undefined) {
+    if (!route) {
+        frequencies.value = [];
+        return;
+    }
+
+    isLoadingRoute.value = true;
+    frequencies.value = await RouteService.fetchRouteFrequencies(route);
+    isLoadingRoute.value = false;
 }
 
 function addFrequency(freq:Frequency) {
