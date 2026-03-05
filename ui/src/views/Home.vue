@@ -218,8 +218,8 @@ function onTemplateSelection(index:number) {
 
 function userUpdate() {
     // console.log('[Home.userUpdate]')
-    templates.value = currentUser.templates
-    checklists.value = currentUser.checklists
+    templates.value = [...currentUser.templates]
+    checklists.value = [...currentUser.checklists]
     // console.log('[Home.userUpdate] template length', templates.value.length)
 }
 </script>

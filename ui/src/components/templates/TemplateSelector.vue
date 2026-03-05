@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed } from 'vue'
 import { Template } from '../../models/Template';
 
 const emits = defineEmits(['selection'])
@@ -27,25 +27,30 @@ const props = defineProps({
   icon: { type: String, default: 'fa-camera'},
   clipped: { type: Boolean, default: false}
 })
-const noTemplate = Template.noTemplate()
-const template = ref<Template>(noTemplate)
-const thumbnails = ref<string[]>([])
 
-onMounted(() => {
-    if( props.template) {
-        template.value = Template.parse(props.template)
-        if (Array.isArray(props.src)) {
-            thumbnails.value = props.src as string[]
-        } else {
-            thumbnails.value = props.src ? [props.src] : (template.value.thumbUrl ? [template.value.thumbUrl] : [])
-        }
+const parsedTemplate = computed(() => Template.parse(props.template))
+
+const thumbnails = computed(() => {
+    let rawThumbs: string[] = []
+    if (Array.isArray(props.src)) {
+        rawThumbs = props.src as string[]
     } else {
-        template.value = noTemplate
+        const t = parsedTemplate.value
+        rawThumbs = props.src ? [props.src] : (t.thumbUrl ? [t.thumbUrl] : [])
     }
+    
+    // Add cache buster for non-local thumbnails using the thumbHash
+    return rawThumbs.map(t => {
+        if (t.startsWith('/thumbnails/') || t.startsWith('data:')) return t;
+        const hash = parsedTemplate.value.thumbHash;
+        if (!hash) return t;
+        const separator = t.includes('?') ? '&' : '?';
+        return `${t}${separator}h=${hash}`;
+    })
 })
 
 function onSelection() {
-    emits('selection', template.value)
+    emits('selection', parsedTemplate.value)
 }
 
 </script>

@@ -40,6 +40,10 @@ import { exportToPDF, createPDF } from '../assets/pdf'
 import { PageType } from '../assets/PageType.js';
 import { TemplateFormat, AccountType, UsageType } from '@gak/shared';
 import { PrintOptions } from '../components/print/PrintOptions.js';
+import { TemplateService } from '../services/TemplateService';
+import html2canvas from 'html2canvas-pro';
+import { computeSHA256 } from '../assets/Sha';
+
 import Page from '../components/page/Page.vue';
 import PrintOptionsDialog from '../components/print/PrintOptionsDialog.vue';
 import MarginNotes from '../components/print/MarginNotes.vue';
@@ -166,7 +170,9 @@ async function onExportPdf(options: PrintOptions | undefined) {
   await nextTick()
     printing = true
     await new Promise(resolve => setTimeout(resolve, 500));
+    updateThumbnail();
     
+
 
     try {
       const elements = document.querySelectorAll('.onePager')
@@ -192,6 +198,7 @@ async function onLaminate(options: PrintOptions | undefined) {
   onOptionsUpdate(options)
   
   await new Promise(resolve => setTimeout(resolve, 500));
+  updateThumbnail();
 
   const elements = printFullpage.value ? document.querySelectorAll('.printOnePage') : document.querySelectorAll('.printTwoPages')
   const paperNavlog = template.value && template.value.data.length > 0 && template.value.data[0].type === PageType.paperNavlog
@@ -229,6 +236,10 @@ async function onPrint(options:PrintOptions|undefined) {
   AnalyticsService.print(template.value, 'print')
   postPrint(route.params.id, options)
 
+  await nextTick()
+  await new Promise(resolve => setTimeout(resolve, 500));
+  updateThumbnail();
+
   const element = document.getElementById('printTemplate')
   const elements = printFullpage.value ? document.querySelectorAll('.printOnePage') : document.querySelectorAll('.printTwoPages')
   const paperNavlog = template.value && template.value.data.length > 0 && template.value.data[0].type === PageType.paperNavlog
@@ -236,6 +247,37 @@ async function onPrint(options:PrintOptions|undefined) {
   if(element) await exportToPDF(elements, landscape)
   router.back()
 }
+
+async function updateThumbnail() {
+  if(!template.value || template.value.id <= 0 || !currentUser.loggedIn) return;
+  const index = template.value.id
+  // The first printed page (page 0)
+  const element = document.querySelector(".page-wrapper") as HTMLElement
+  if(!element) return;
+
+  try {
+    const canvas = await html2canvas(element, { logging: false, scale: 2 })
+    const scaledCanvas = document.createElement('canvas')
+    const scaleFactor = 200 / canvas.width;
+    scaledCanvas.width = canvas.width * scaleFactor
+    scaledCanvas.height = canvas.height * scaleFactor
+    const scaledCtx = scaledCanvas.getContext('2d')
+    if(!scaledCtx) return
+    scaledCtx.scale(scaleFactor, scaleFactor)
+    scaledCtx.drawImage(canvas, 0, 0)
+    scaledCanvas.toBlob( async (blob) => {
+      if(!blob) return
+      const sha256 = await computeSHA256(blob)
+      if(sha256 != template.value!.thumbHash) {
+        const url = await TemplateService.updateThumbnail(index, blob, sha256)
+        currentUser.updateThumbnail(index, url, sha256)
+      }
+    }, 'image.png')
+  } catch(e) {
+    console.log('[Print.updateThumbnail] failed', e)
+  }
+}
+
 
 function refreshPrintSheets() {
   if(!template.value) {

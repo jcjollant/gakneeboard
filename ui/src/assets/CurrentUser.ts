@@ -251,11 +251,26 @@ export class CurrentUser {
     this.sortTemplates()
     this.notify()
   }
+
+  // A new thumbnail has been saved. Reflect the new data
   updateThumbnail(id: number, url: string, hash: string) {
     const template = this.templates.find(t => t.id == id)
     if (template) {
+      // update the templates list
       template.thumbUrl = url
       template.thumbHash = hash
+
+      // also update local storage to persist the change
+      const data = JSON.parse(localStorage.getItem(LocalStoreService.user) || '{}')
+      if (data.templates) {
+        const tIndex = data.templates.findIndex((t: any) => t.id == id)
+        if (tIndex != -1) {
+          data.templates[tIndex].thumbUrl = url
+          data.templates[tIndex].thumbHash = hash
+          localStorage.setItem(LocalStoreService.user, JSON.stringify(data))
+        }
+      }
+
       this.notify()
     }
   }
