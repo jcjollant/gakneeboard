@@ -27,7 +27,7 @@ export class RouteService {
         if (!route) return [];
 
         const codes = [route.dep, route.dst, route.alt].filter(Boolean) as string[];
-        const uniqueCodes = [...new Set(codes)];
+        const uniqueCodes = Array.from(new Set(codes));
 
         let generatedFrequencies: Frequency[] = [];
 

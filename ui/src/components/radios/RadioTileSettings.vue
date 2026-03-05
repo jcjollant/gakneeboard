@@ -65,6 +65,7 @@ const tileData = ref<TileData>(props.tileData);
 const currentMode = ref(DisplayModeRadios.FreqList);
 const expanded = ref(false);
 const textData = ref('');
+const manualFrequencies = ref<Frequency[]>([]);
 const colorScheme = ref('light');
 const showLookup = ref(false);
 const lookupTime = ref(0);
@@ -110,6 +111,8 @@ watch([currentMode, textData, colorScheme], () => {
 watch(currentMode, (newMode) => {
     if (newMode === DisplayModeRadios.RouteFrequencies) {
         populateRouteFrequenciesText();
+    } else if (newMode === DisplayModeRadios.FreqList) {
+        syncTextDataFromManual();
     }
 });
 
@@ -141,7 +144,10 @@ function loadFromTileData(tile: TileData) {
                 list.push( Frequency.copy(freq))
             }
         })
-        textData.value = list.map( (f:Frequency) => f.value + ',' + f.name + ',' + Frequency.typeToString(f.type)).join('\n')
+        manualFrequencies.value = list;
+        if (currentMode.value === DisplayModeRadios.FreqList) {
+            syncTextDataFromManual();
+        }
         
         // Color Scheme
         if('colorScheme' in data) colorScheme.value = data.colorScheme
@@ -156,6 +162,10 @@ function loadFromTileData(tile: TileData) {
     if (currentMode.value === DisplayModeRadios.RouteFrequencies) {
         populateRouteFrequenciesText();
     }
+}
+
+function syncTextDataFromManual() {
+    textData.value = manualFrequencies.value.map( (f:Frequency) => f.value + ',' + f.name + ',' + Frequency.typeToString(f.type)).join('\n');
 }
 
 async function populateRouteFrequenciesText() {
@@ -188,8 +198,10 @@ function addFrequency(freq:Frequency) {
 }
 
 function emitUpdate() {
-     const list = loadListFromText();
-     const data = {'mode':currentMode.value,'list':list, 'colorScheme':colorScheme.value}
+     if (currentMode.value === DisplayModeRadios.FreqList) {
+         manualFrequencies.value = loadListFromText();
+     }
+     const data = {'mode':currentMode.value,'list':manualFrequencies.value, 'colorScheme':colorScheme.value}
      
      isInternalUpdate.value = true;
      tileData.value.data = data;

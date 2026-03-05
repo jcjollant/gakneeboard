@@ -1,8 +1,7 @@
 import { checkImageContentTestTile, loadTestTileWithData, loadTilePage, lostCommsTitle, TileTypeLabel } from '../shared'
 
-const labelFrequencies = 'Frequencies'
-const labelLostCommsVFR = 'Lost Comms VFR'
-const labelLostCommsIFR = 'Lost Comms IFR'
+const labelFrequencies = 'Selected Frequencies'
+const labelRouteFrequencies = 'Route Frequencies'
 const labelServiceVolumes = 'Service Volumes'
 
 describe('Radios Tile', () => {
@@ -28,8 +27,7 @@ describe('Radios Tile', () => {
         // Check display modes in settings
         // They are buttons in OneChoice, verify labels exist
         cy.get('.radio-settings').contains(labelFrequencies)
-        cy.get('.radio-settings').contains(labelLostCommsVFR)
-        cy.get('.radio-settings').contains(labelLostCommsIFR)
+        cy.get('.radio-settings').contains(labelRouteFrequencies)
         cy.get('.radio-settings').contains(labelServiceVolumes)
 
         // Select Service Volumes
@@ -97,7 +95,31 @@ describe('Radios Tile', () => {
         checkImageContentTestTile('/tiles/service-volumes.png')
     })
 
-    it('Shows Lost Comms IFR', () => {
+    it('Shows dynamic Route Frequencies', () => {
+        // Load a tile with some manual frequencies
+        loadTestTileWithData(fifteenFreqTileData)
+
+        // Ensure we see manual frequencies (default mode)
+        cy.get('.freqList').should('exist')
+
+        // Switch to Route Frequencies via dots (TileModeDots)
+        // We know it's the second dot/mode
+        cy.get('.tile .tile-mode-dots .dot').eq(1).click()
+
+        // Wait for loading placeholder or frequencies
+        // We might need to mock the route service if there is no active route
+        // But the demo page usually has a route.
+        cy.get('.headerTitle').contains('Route Radios')
+
+        // Verify we see some frequencies from the route
+        cy.get('.freqList > div').should('have.length.at.least', 1)
+
+        // Switch back to Selected Frequencies
+        cy.get('.tile .tile-mode-dots .dot').eq(0).click()
+        cy.get('.headerTitle').contains('Radios')
+    })
+
+    it('Shows Lost Comms IFR (via direct data load)', () => {
         loadTestTileWithData(lostCommsIFRTileData)
         checkImageContentTestTile('/tiles/lostcomms-ifr.png')
     })

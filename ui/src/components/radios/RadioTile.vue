@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
 import { useToast } from 'primevue/usetoast';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, computed } from 'vue';
 import { useToaster } from '../../assets/Toaster';
 import { DisplayModeRadios } from '../../models/DisplayMode';
 import { Frequency, FrequencyType } from '../../models/Frequency';
@@ -54,8 +54,14 @@ const displayMode = ref(DisplayModeRadios.FreqList) // active display mode
 const displaySelection = ref(false) // Keeping this as prop for Header for now, but logic might change
 const emits = defineEmits(['replace','update', 'settings'])
 const expanded = ref(false)
-const noFreq:Frequency[] = []
-const frequencies = ref(noFreq)
+const configFrequencies = ref<Frequency[]>([])
+const routeFrequencies = ref<Frequency[]>([])
+const frequencies = computed(() => {
+    if (displayMode.value === DisplayModeRadios.RouteFrequencies) {
+        return routeFrequencies.value;
+    }
+    return configFrequencies.value;
+})
 
 const colorScheme = ref('light')
 const lookupTime = ref(0)
@@ -138,12 +144,12 @@ function loadData(data:any) {
             }
         })
         // console.log('[RadioTile.loadData] list', list)
-        frequencies.value = list
+        configFrequencies.value = list
 
         // restore color scheme
         if('colorScheme' in data) colorScheme.value = data.colorScheme
     } else {
-        frequencies.value = []
+        configFrequencies.value = []
     }
     // Restore display mode
     if(data && 'mode' in data) {
@@ -163,32 +169,39 @@ function loadProps(props:any) {
     }
 }
 
+watch(displayMode, (newMode) => {
+    if (newMode === DisplayModeRadios.RouteFrequencies) {
+        loadRouteFrequencies(props.route);
+    }
+    saveConfig();
+})
+
 async function loadRouteFrequencies(route: Route | undefined) {
     if (!route) {
-        frequencies.value = [];
+        routeFrequencies.value = [];
         return;
     }
 
     isLoadingRoute.value = true;
-    frequencies.value = await RouteService.fetchRouteFrequencies(route);
+    routeFrequencies.value = await RouteService.fetchRouteFrequencies(route);
     isLoadingRoute.value = false;
 }
 
 function addFrequency(freq:Frequency) {
     // do we have room for more frequencies
-    if( frequencies.value.length >= maxFreqCount * ( expanded.value ? 2 : 1)) {
+    if( configFrequencies.value.length >= maxFreqCount * ( expanded.value ? 2 : 1)) {
         toaster.error('Radio Flow', 'Radio boxes are full')
         return;
     }
-    frequencies.value.push(Frequency.copy(freq))
-    toaster.success( 'Radio Flow', freq.name + ' added (' + (frequencies.value.length) + '/' + maxFreqCount + ')')
+    configFrequencies.value.push(Frequency.copy(freq))
+    toaster.success( 'Radio Flow', freq.name + ' added (' + (configFrequencies.value.length) + '/' + maxFreqCount + ')')
 
     saveConfig()
 }
 
 function saveConfig() {
     // console.debug('[RadioTile.saveConfig]')
-    const data = {'mode':displayMode.value,'list':frequencies.value, 'colorScheme':colorScheme.value}
+    const data = {'mode':displayMode.value,'list':configFrequencies.value, 'colorScheme':colorScheme.value}
     emits('update', new TileData( TileType.radios, data, expanded.value));
 }
 
