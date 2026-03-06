@@ -62,6 +62,12 @@ onMounted(() => {
     test.value = UrlService.isTest()
 })
 
+const openSignIn = () => {
+    showSignIn.value = true
+}
+
+defineExpose({ openSignIn })
+
 function onAuthentication(newUser:any) {
     showSignIn.value = false
     if(newUser) {

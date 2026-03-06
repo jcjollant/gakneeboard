@@ -1,7 +1,7 @@
 <template>
-  <div class="main">
-    <Menu :name="getTemplateName()"></Menu>
-    <TemplateExport v-model:visible="showExport" :template="activeTemplate"
+    <div class="main">
+      <Menu ref="menuRef" :name="getTemplateName()"></Menu>
+      <TemplateExport v-model:visible="showExport" :template="activeTemplate"
       @close="showExport=false" @export="onExported" />
     <TemplateSettingsDialog v-model:visible="showSettings" :template="settingsTemplate"
       @close="showSettings=false" @save="onNewSettings" @recall="onRecallVersion" />
@@ -118,6 +118,7 @@ let cssPageWidth = -1
 const emits = defineEmits(['about','template'])
 const confirm = useConfirm()
 const menuCollapsed = ref(false)
+const menuRef = ref<InstanceType<typeof Menu> | null>(null)
 const offset = ref(0)
 const offsetLast = ref(0)
 const route = useRoute()
@@ -400,7 +401,11 @@ function onDelete() {
 
 function onEditor() {
   if( !currentUser.loggedIn) {
-    toaster.warning('Squawk and Ident','Please sign in to use the editor')
+    if (menuRef.value) {
+      menuRef.value.openSignIn()
+    } else {
+      toaster.warning('Squawk and Ident','Please sign in to use the editor')
+    }
     return
   }
 
@@ -607,7 +612,11 @@ function onPageUpdate(index:number, pageData:TemplatePage) {
 
 function onPrint() {
   if( !currentUser.loggedIn) {
-    toaster.warning('Squawk and Ident','Please sign in before printing')
+    if (menuRef.value) {
+      menuRef.value.openSignIn()
+    } else {
+      toaster.warning('Squawk and Ident','Please sign in before printing')
+    }
     return
   }
 
@@ -627,7 +636,11 @@ async function onSave(clone:boolean=false) {
   if( activeTemplate.value.isInvalid()) return;
 
   if( !currentUser.loggedIn) {
-    toaster.warning('Squawk and Ident','Please sign in to save templates')
+    if (menuRef.value) {
+      menuRef.value.openSignIn()
+    } else {
+      toaster.warning('Squawk and Ident','Please sign in to save templates')
+    }
     return
   }
 
