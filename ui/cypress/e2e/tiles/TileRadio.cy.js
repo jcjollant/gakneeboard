@@ -99,6 +99,22 @@ describe('Radios Tile', () => {
         // Load a tile with some manual frequencies
         loadTestTileWithData(fifteenFreqTileData)
 
+        // Mock airport data for KBFI to ensure route frequencies are found
+        cy.intercept('GET', '**/airport*', {
+            statusCode: 200,
+            body: [
+                {
+                    code: 'KBFI',
+                    name: 'Boeing Field',
+                    freq: [
+                        { name: 'ATIS', value: '127.75' },
+                        { name: 'TWR', value: '118.3' },
+                        { name: 'GND', value: '121.9' }
+                    ]
+                }
+            ]
+        }).as('getAirports')
+
         // Ensure we see manual frequencies (default mode)
         cy.get('.freqList').should('exist')
 

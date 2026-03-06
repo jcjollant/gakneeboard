@@ -1,7 +1,7 @@
 <template>
   <div class="tile-test-container">
     <div class="tile-wrapper">
-      <Tile :tile="testTile" @update="onTileUpdate" />
+      <Tile :tile="testTile" :route="mockRoute" @update="onTileUpdate" />
     </div>
     <div class="controls">
       <button @click="clearTile" class="clear-btn">Clear</button>
@@ -14,11 +14,13 @@
 import { ref, onMounted } from 'vue'
 import { TileData } from '../models/TileData'
 import { TileType } from '../models/TileType'
+import { Route } from '@gak/shared'
 import Tile from '../components/tiles/Tile.vue'
 import { useToaster } from '../assets/Toaster'
 import { useToast } from 'primevue/usetoast'
 
 const testTile = ref<TileData>(new TileData(TileType.selection))
+const mockRoute = ref<Route>({ dep: 'KBFI', dst: 'KSEA', alt: 'KPAE' })
 const toaster = useToaster(useToast())
 
 onMounted(() => {
