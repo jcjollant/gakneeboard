@@ -89,6 +89,7 @@ import { PageType } from '../assets/PageType.ts'
 import { RouterNames } from '../router/index.js'
 import { Template, TemplatePage } from '../models/Template'
 import { TemplateService } from '../services/TemplateService'
+import { AnalyticsService } from '../services/AnalyticsService'
 import { TemplateSettings } from '../components/templates/TemplateSettings.ts'
 import { TileData } from '../models/TileData'
 import { readPageFromClipboard, readTileFromClipboard } from '../assets/sheetData'
@@ -612,6 +613,7 @@ function onPageUpdate(index:number, pageData:TemplatePage) {
 
 function onPrint() {
   if( !currentUser.loggedIn) {
+    AnalyticsService.print(activeTemplate.value)
     if (menuRef.value) {
       menuRef.value.openSignIn()
     } else {
@@ -636,6 +638,7 @@ async function onSave(clone:boolean=false) {
   if( activeTemplate.value.isInvalid()) return;
 
   if( !currentUser.loggedIn) {
+    AnalyticsService.saveIntent(activeTemplate.value)
     if (menuRef.value) {
       menuRef.value.openSignIn()
     } else {

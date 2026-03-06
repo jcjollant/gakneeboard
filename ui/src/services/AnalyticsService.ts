@@ -14,9 +14,17 @@ export class AnalyticsService {
         });
     }
 
-    static print(template: any, method: 'print' | 'pdf' | 'laminate') {
+    static print(template: any, method?: 'print' | 'pdf' | 'laminate') {
         this.event('print_intent', {
-            method: method,
+            method: method || 'unknown',
+            template_id: template.id,
+            template_name: template.name,
+            template_format: template.format
+        });
+    }
+
+    static saveIntent(template: any) {
+        this.event('save_intent', {
             template_id: template.id,
             template_name: template.name,
             template_format: template.format
