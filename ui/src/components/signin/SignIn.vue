@@ -13,9 +13,8 @@
       </div> -->
 
 
-      <div class="mb-5">
-        <div class="block mb-2">Help us help more pilots: Where did you hear about us?</div>
-        <OneChoice :choices="channels" v-model="selectedChannel" :full="true" @change="onChannelChange" />
+      <div class="mb-4 text-center text-secondary">
+        Signing in allows you to save, print, and/or share your kneeboards.
       </div>
 
       <div v-if="errorMessage" class="error-message mb-3">
@@ -26,7 +25,7 @@
         <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="4" />
       </div>
       <div class="auth-divider" v-if="!authenticating">
-        <span>Use a social account</span>
+        <span>Use Existing Account</span>
       </div>
       <div class="actions" v-if="!authenticating">
         <!-- <Button label="Do not sign in" @click="emits('close')" link></Button> -->
@@ -43,6 +42,12 @@
       <!-- Email/Password Authentication -->
       <div v-if="!authenticating">
         <EmailPasswordAuth @success="onEmailPasswordSuccess" @error="onLoginError" />
+      </div>
+
+      <!-- Survey -->
+      <div class="mt-5 pt-4 border-top-1 surface-border">
+        <div class="block mb-2 text-600 text-sm">Help us help more pilots: Where did you hear about us?</div>
+        <OneChoice :choices="channels" v-model="selectedChannel" :full="true" @change="onChannelChange" />
       </div>
     </Dialog>
 </template>
