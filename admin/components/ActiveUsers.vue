@@ -7,7 +7,7 @@
         </div>
         
         <div v-if="Object.keys(activeUsersRaw).length > 0">
-            <h3>Active Users List</h3>
+            <h3>Active Users List ({{ Object.keys(activeUsersRaw).length }})</h3>
             <div class="user-id-list">
                 <router-link v-for="id in activeUsersRaw" 
                     :key="id" 
