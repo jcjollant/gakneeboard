@@ -25,7 +25,7 @@
                     <h1 class="hero-title">Better Kneeboards For Safer Pilots</h1>
                     <p class="hero-subtitle">Improve your situational awareness and confidence with a custom kneeboard template that gives you exactly what you want when you need it.</p>
                     <button class="cta-primary" @click="loadDemo()">Create Your First Template</button>
-                    <p class="trust-indicator">Join 190+ pilots using GA Kneeboard</p>
+                    <p class="trust-indicator">Join 210+ pilots using GA Kneeboard</p>
                 </div>
                 <div class="hero-visual">
                     <div class="visual-single">
@@ -33,6 +33,30 @@
                             <h4>Not Your Granddad's Kneeboard</h4>
                             <img src="/assets/solution.jpg" alt="Organized kneeboard" class="visual-image" />
                         </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing -->
+        <section id="pricing" class="pricing">
+            <div class="container">
+                <!-- <div class="urgency-banner">
+                    <span>Q4 Launch Special - Lock in founder pricing before rates increase!</span>
+                </div> -->
+                <h2>Our Plans</h2>
+                <div class="pricing-grid">
+                    <div v-for="(plan, index) in ftuxPlans" :key="plan.id" class="pricing-card" :class="{ popular: plan.isBestValue }">
+                        <div v-if="plan.isBestValue" class="badge">Most Popular</div>
+                        <h3>{{ plan.displayName }}</h3>
+                        <div class="price">{{ plan.displayPrice }}<span v-if="plan.chargeFrequency === 'monthly'">/month</span><span v-else-if="plan.chargeFrequency === 'yearly'">/year</span></div>
+                        <p>{{ plan.subtitles?.[0] || ' ' }}</p>
+                        <ul>
+                            <li>{{ plan.quotas.prints === -1 ? 'Unlimited' : plan.quotas.prints }} prints per month</li>
+                            <li>{{ plan.quotas.templates === -1 ? 'Unlimited' : plan.quotas.templates }} templates</li>
+                            <li>{{ plan.quotas.pages === -1 ? 'Unlimited' : plan.quotas.pages }} pages</li>
+                        </ul>
+                        <button :class="plan.isBestValue ? 'btn-primary' : 'btn-secondary'" @click="loadDemo()">Start Free</button>
                     </div>
                 </div>
             </div>
@@ -114,29 +138,6 @@
             </div>
         </section>
 
-        <!-- Pricing -->
-        <section id="pricing" class="pricing">
-            <div class="container">
-                <!-- <div class="urgency-banner">
-                    <span>Q4 Launch Special - Lock in founder pricing before rates increase!</span>
-                </div> -->
-                <h2>Our Plans</h2>
-                <div class="pricing-grid">
-                    <div v-for="(plan, index) in ftuxPlans" :key="plan.id" class="pricing-card" :class="{ popular: index === 1 }">
-                        <div v-if="index === 1" class="badge">Most Popular</div>
-                        <h3>{{ plan.displayName }}</h3>
-                        <div class="price">{{ plan.displayPrice }}<span v-if="plan.chargeFrequency === 'monthly'">/month</span><span v-else-if="plan.chargeFrequency === 'yearly'">/year</span></div>
-                        <p>{{ plan.subtitles?.[0] || ' ' }}</p>
-                        <ul>
-                            <li>{{ plan.quotas.prints === -1 ? 'Unlimited' : plan.quotas.prints }} prints per month</li>
-                            <li>{{ plan.quotas.templates === -1 ? 'Unlimited' : plan.quotas.templates }} templates</li>
-                            <li>{{ plan.quotas.pages === -1 ? 'Unlimited' : plan.quotas.pages }} pages</li>
-                        </ul>
-                        <button :class="index === 1 ? 'btn-primary' : 'btn-secondary'" @click="loadDemo()">Start Free</button>
-                    </div>
-                </div>
-            </div>
-        </section>
 
         <!-- Banner -->
         <section class="banner-section">
@@ -417,7 +418,7 @@ h2 {
 
 /* Card Styles - Shared between demo and template cards */
 .demo-section, .ready-to-print {
-    background: white;
+    background: #e2e8f0;
 }
 
 .demo-grid, .template-grid {
@@ -462,7 +463,7 @@ h2 {
 
 /* Testimonials */
 .testimonials {
-    background: #e2e8f0;
+    background: white;
 }
 
 .testimonial-grid {
@@ -481,7 +482,7 @@ h2 {
 
 /* Problem/Solution */
 .problem-solution {
-    background: #e2e8f0;
+    background: white;
 }
 
 .solution-grid {
