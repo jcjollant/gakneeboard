@@ -95,10 +95,10 @@ function dismiss() {
   z-index: 1000;
   width: calc(100% - 4rem);
   max-width: 900px;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(226, 232, 240, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(203, 213, 225, 0.6);
   border-radius: 16px;
   padding: 1.25rem 2rem;
   box-shadow: 
@@ -203,8 +203,8 @@ function dismiss() {
   padding: 0.75rem 1rem;
   border-radius: 10px;
   transition: all 0.2s;
-  background: rgba(30, 58, 138, 0.05);
-  border: none;
+  background: rgba(30, 58, 138, 0.12);
+  border: 1px solid rgba(30, 58, 138, 0.2);
   cursor: pointer;
 }
 
