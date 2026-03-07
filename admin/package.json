@@ -1,6 +1,6 @@
 {
   "name": "admin",
-  "version": "6.10.8",
+  "version": "6.10.9",
   "type": "module",
   "private": true,
   "scripts": {
