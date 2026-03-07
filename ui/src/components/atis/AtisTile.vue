@@ -117,7 +117,6 @@
             <div class="ifrRight ifr">&nbsp;<span class="vis">1sm</span></div>
             <div class="lifr">LIFR</div>
         </div>
-        <CloudClearance v-else-if="displayMode==DisplayModeAtis.CloudClearance" />
         <NoSettings v-else />
 
         <TileModeDots 
@@ -155,7 +154,6 @@ const modesList = ref([
     new DisplayModeChoice(AtisTileDisplayModeLabels.fullATIS, DisplayModeAtis.FullATIS, true),
     new DisplayModeChoice(AtisTileDisplayModeLabels.compactATIS, DisplayModeAtis.CompactATIS),
     new DisplayModeChoice(AtisTileDisplayModeLabels.categories, DisplayModeAtis.Categories, true),
-    new DisplayModeChoice(AtisTileDisplayModeLabels.cloudClearance, DisplayModeAtis.CloudClearance, true),
 ])
 const props = defineProps({
     params: { type: Object, default: null}, // expects {'mode':'compact'}
@@ -210,7 +208,6 @@ function getTitle() {
     if( displaySelection.value) return "Weather Tile Mode"
     switch(displayMode.value) {
         case DisplayModeAtis.Categories: return 'Flight Categories';
-        case DisplayModeAtis.CloudClearance: return 'Cloud Clearance';
         case DisplayModeAtis.FullATIS: 
             if( !expanded.value) return 'Weather @';
 //        case DisplayModeAtis.CompactATIS:
