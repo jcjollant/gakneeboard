@@ -30,4 +30,24 @@ export class AnalyticsService {
             template_format: template.format
         });
     }
+
+    static viewSignIn() {
+        this.event('view_sign_in');
+    }
+
+    static signUp(method: string, sourceSelection?: string) {
+        const payload: Record<string, any> = { method };
+        if (sourceSelection) {
+            payload.source = sourceSelection;
+        }
+        this.event('sign_up', payload);
+    }
+
+    static login(method: string) {
+        this.event('login', { method });
+    }
+
+    static authError(method: string, error: string) {
+        this.event('auth_error', { method, error });
+    }
 }

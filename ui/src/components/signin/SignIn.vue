@@ -29,9 +29,9 @@
       </div>
       <div class="actions" v-if="!authenticating">
         <!-- <Button label="Do not sign in" @click="emits('close')" link></Button> -->
-        <AppleSignInButton @success="onAppleSuccess" @error="onLoginError" />
-        <GoogleSignInButton @success="onGoogleSuccess" @error="onLoginError" />
-        <!-- <FacebookSignInButton @onSuccess="onFacebookSuccess" @onFailure="onLoginError" /> -->
+        <AppleSignInButton @success="onAppleSuccess" @error="() => onLoginError('apple')" />
+        <GoogleSignInButton @success="onGoogleSuccess" @error="() => onLoginError('google')" />
+        <!-- <FacebookSignInButton @onSuccess="onFacebookSuccess" @onFailure="() => onLoginError('facebook')" /> -->
       </div>
 
       <!-- Divider -->
@@ -41,7 +41,7 @@
 
       <!-- Email/Password Authentication -->
       <div v-if="!authenticating">
-        <EmailPasswordAuth @success="onEmailPasswordSuccess" @error="onLoginError" />
+        <EmailPasswordAuth @success="onEmailPasswordSuccess" @error="() => onLoginError('email')" />
       </div>
 
       <!-- Survey -->
@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { authenticationRequest } from '../../assets/data'
 
 // Components
@@ -67,8 +67,13 @@ import OneChoice from '../shared/OneChoice.vue';
 import ProgressSpinner from 'primevue/progressspinner';
 import { OneChoiceValue } from '../../models/OneChoiceValue';
 import { AttributionService } from '../../services/AttributionService';
+import { AnalyticsService } from '../../services/AnalyticsService';
 
 const emits = defineEmits(["close",'authentication']);
+
+onMounted(() => {
+  AnalyticsService.viewSignIn()
+})
 
 const channels = [
   new OneChoiceValue('?', ''),
@@ -98,6 +103,12 @@ function authenticate(source:string, token:string, user:any=undefined) {
       // console.log( "[SignIn.authenticate] user ", JSON.stringify(user))
       emits('authentication', user)
       authenticating.value = false;
+
+      if (user.isNew) {
+        AnalyticsService.signUp(source, selectedChannel.value?.value)
+      } else {
+        AnalyticsService.login(source)
+      }
     })
     .catch( e => {
       console.log('[SignIn.authenticate] error', e)
@@ -111,11 +122,13 @@ function authenticate(source:string, token:string, user:any=undefined) {
         errorMessage.value = "An error occurred during sign in. Please try again."
       }
       authenticating.value = false;
+      AnalyticsService.authError(source, errorMessage.value)
     })
 }
 
-function onLoginError() {
-  console.log("Login failed")
+function onLoginError(provider?: string) {
+  console.log("Login failed", provider)
+  AnalyticsService.authError(provider || 'unknown', 'Provider login failed or canceled by user')
 }
 
 function onAppleSuccess( data:any) {
