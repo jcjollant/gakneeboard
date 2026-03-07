@@ -2,7 +2,7 @@
 CREATE TABLE template_history(
     id SERIAL PRIMARY KEY,
     template_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
+    user_id INTEGER,
     data TEXT,
     name VARCHAR(255),
     version INTEGER,

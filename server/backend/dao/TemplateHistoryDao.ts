@@ -10,7 +10,7 @@ export enum TemplateOperation {
 export class TemplateHistory {
     id: number
     templateId: number
-    userId: number
+    userId: number | null
     data: any
     name: string
     version: number
@@ -24,7 +24,7 @@ export class TemplateHistory {
     constructor(
         id: number,
         templateId: number,
-        userId: number,
+        userId: number | null,
         data: any,
         name: string,
         version: number,
@@ -112,7 +112,7 @@ export class TemplateHistoryDao extends Dao<TemplateHistory> {
      * @param userId The user ID to get history for
      * @returns Array of TemplateHistory objects
      */
-    public async getHistoryForUser(userId: number): Promise<TemplateHistory[]> {
+    public async getHistoryForUser(userId: number | null): Promise<TemplateHistory[]> {
         const result = await sql`
             SELECT * FROM ${this.tableName} 
             WHERE user_id = ${userId}
