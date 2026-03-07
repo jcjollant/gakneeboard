@@ -52,7 +52,7 @@
         </div>
         <NotamListDialog :visible="showNotamsDialog" :notams="notamsList" :airportCode="config.code" :airportName="title" @close="showNotamsDialog = false" />
         <MetarDialog :visible="showMetarDialog" :metar="metar" :airportCode="config.code" :airportName="title" :elevation="airportData?.elev" @close="showMetarDialog = false" />
-        <TileModeDots v-model="displayMode" :modes="modesList" />
+        <TileModeDots v-model="displayMode" v-model:expanded="expanded" :expandable="true" :modes="modesList" />
     </div>    
 </template>
 
@@ -137,6 +137,12 @@ const displayMode = ref(DisplayModeAirport.RunwaySketch)
 watch(displayMode, (val) => {
     if (config.value && config.value.mode !== val) {
         config.value.mode = val
+        saveConfig()
+    }
+})
+
+watch(expanded, (val, oldVal) => {
+    if (val !== oldVal) {
         saveConfig()
     }
 })

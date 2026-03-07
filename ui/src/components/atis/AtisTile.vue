@@ -123,6 +123,8 @@
         <TileModeDots 
             v-if="!displaySelection"
             v-model="displayMode" 
+            v-model:expanded="expanded"
+            :expandable="true"
             :modes="modesList" 
         />
     </div>
@@ -197,6 +199,12 @@ watch(displayMode, (newValue, oldValue) => {
     saveConfig()
 })
 
+watch(expanded, (val, oldVal) => {
+    if (val !== oldVal) {
+        saveConfig()
+    }
+})
+
 
 function getTitle() {
     if( displaySelection.value) return "Weather Tile Mode"
@@ -212,7 +220,7 @@ function getTitle() {
 
 function onExpand(newValue:boolean) {
     expanded.value = newValue
-    saveConfig()
+    // saveConfig() will be called by watch
 }
 
 function saveConfig() {

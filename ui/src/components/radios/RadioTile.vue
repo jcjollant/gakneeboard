@@ -24,6 +24,8 @@
         <TileModeDots 
             v-if="!displaySelection"
             v-model="displayMode" 
+            v-model:expanded="expanded"
+            :expandable="true"
             :modes="modesList" 
         />
     </div>
@@ -174,6 +176,12 @@ watch(displayMode, (newMode) => {
         loadRouteFrequencies(props.route);
     }
     saveConfig();
+})
+
+watch(expanded, (val, oldVal) => {
+    if (val !== oldVal) {
+        saveConfig();
+    }
 })
 
 async function loadRouteFrequencies(route: Route | undefined) {

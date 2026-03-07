@@ -20,6 +20,8 @@
         <TileModeDots 
             v-if="!displaySelection"
             v-model="displayMode" 
+            v-model:expanded="expanded"
+            :expandable="true"
             :modes="displayModes" 
         />
     </div>
@@ -95,6 +97,12 @@ watch(displayMode, (newValue, oldValue) => {
     }
 })
 
+watch(expanded, (val, oldVal) => {
+    if (val !== oldVal) {
+        saveConfig()
+    }
+})
+
 function saveConfig() {
     // save non default data
     const data: any = {}
@@ -107,7 +115,7 @@ function saveConfig() {
 
 function onExpand(newValue:boolean) {
     expanded.value = newValue
-    saveConfig()
+    // saveConfig() will be called by watch
 }
 
 </script>

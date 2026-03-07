@@ -8,6 +8,16 @@
             :title="mode.description || mode.label"
             @click.stop="selectMode(mode.value)"
         ></div>
+        <template v-if="expandable">
+            <div class="divider"></div>
+            <font-awesome-icon 
+                icon="arrows-left-right"
+                class="toggle-expanded"
+                :class="{ 'active': expanded }"
+                :title="expanded ? 'Collapse' : 'Expand'"
+                @click.stop="toggleExpanded"
+            />
+        </template>
     </div>
 </template>
 
@@ -17,15 +27,23 @@ import { DisplayModeChoice } from '../../models/DisplayMode';
 interface Props {
     modes: DisplayModeChoice[];
     modelValue: any;
+    expanded?: boolean;
+    expandable?: boolean;
 }
 
-const props = defineProps<Props>();
-const emit = defineEmits(['update:modelValue']);
+const props = withDefaults(defineProps<Props>(), {
+    expandable: false
+});
+const emit = defineEmits(['update:modelValue', 'update:expanded']);
 
 function selectMode(value: any) {
     if (props.modelValue !== value) {
         emit('update:modelValue', value);
     }
+}
+
+function toggleExpanded() {
+    emit('update:expanded', !props.expanded);
 }
 </script>
 
@@ -67,5 +85,33 @@ function selectMode(value: any) {
 .dot.active {
     background-color: var(--bg);
     transform: scale(1.1);
+}
+
+.divider {
+    width: 1px;
+    height: 12px;
+    background-color: var(--bg-secondary);
+    opacity: 0.5;
+    margin: 0 4px;
+}
+
+.toggle-expanded {
+    font-size: 12px;
+    color: var(--bg-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-expanded.active {
+    color: var(--bg);
+    transform: scale(1.1);
+}
+
+.toggle-expanded:hover {
+    color: var(--bg);
+    transform: scale(1.2);
 }
 </style>
