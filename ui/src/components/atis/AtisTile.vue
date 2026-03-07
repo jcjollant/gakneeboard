@@ -4,7 +4,7 @@
             @replace="emits('replace')" @display="displaySelection=!displaySelection"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList" :expandable="true" :expanded="expanded"
             @expand="onExpand" @keep="displaySelection=false" />
-        <div v-else-if="expanded && (displayMode==DisplayModeAtis.FullATIS || displayMode==DisplayModeAtis.CompactATIS)" class="tileContentEx">
+        <div v-else-if="expanded && displayMode==DisplayModeAtis.FullATIS" class="tileContentEx">
             <div class="flex atisHeader">
                 <div class="infoEx">Info</div>
                 <div class="windEx">Wind</div>
@@ -105,8 +105,8 @@
                 </div>
             </div>
         </div>
-        <div v-else-if="displayMode==DisplayModeAtis.CompactATIS" class="tileContent">
-            <AtisCompact v-for="n in 4" :key="n" :borderBottom="n < 4" />
+        <div v-else-if="displayMode==DisplayModeAtis.CompactATIS" class="tileContent" :class="{ compactWide: expanded }">
+            <AtisCompact v-for="n in compactCount" :key="'comp-' + n" :borderBottom="(n % 4 !== 0)" :borderLeft="n >= 5" />
         </div>
         <div v-else-if="displayMode==DisplayModeAtis.Categories" class="tileContent categories">
             <div class="vfrLeft vfr">VFR<span class="alt">3,000ft</span></div>
@@ -129,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref,onMounted, watch } from 'vue'
+import { ref,onMounted, watch, computed } from 'vue'
 import { DisplayModeAtis, DisplayModeChoice } from '../../models/DisplayMode';
 import { TileType } from '../../models/TileType';
 import { TileData } from '../../models/TileData';
@@ -170,10 +170,12 @@ function loadProps(props:any) {
         displayMode.value = newMode
     } else {
         displayMode.value = defaultMode
-    }
+}
     expanded.value = props.span2
     // console.log('[Atis.loadProps]', expanded.value)
 }
+
+const compactCount = computed(() => expanded.value ? 8 : 4)
 
 onMounted(() => {   
     // console.log('ATIS mounted with ' + JSON.stringify(props.params))
@@ -227,6 +229,11 @@ function saveConfig() {
     grid-template-rows: repeat( 4, 1fr);
     width: 100%;
     height: var(--tile-content-height);
+}
+.tileContent.compactWide {
+    grid-template-rows: repeat( 4, 1fr);
+    grid-template-columns: 1fr 1fr;
+    grid-auto-flow: column;
 }
 .tileContentEx {
     display: grid;

@@ -1,5 +1,5 @@
 <template>
-    <div class="compact">
+    <div class="compact" :class="{ 'solid-left-border': borderLeft }">
         <div class="info br" :class="{ bb: borderBottom }">
             <div class="tileBoxLabel">Info</div>
         </div>
@@ -19,7 +19,8 @@
 
 <script setup lang="ts">
 defineProps({
-    borderBottom: { type: Boolean, default: false }
+    borderBottom: { type: Boolean, default: false },
+    borderLeft: { type: Boolean, default: false }
 })
 </script>
 
@@ -27,6 +28,9 @@ defineProps({
 .compact {
     display: grid;
     grid-template-columns: 15% 40% 25% 20%;
+}
+.solid-left-border {
+    border-left: 1px solid #444;
 }
 .wtrmrk {
     position: absolute;
