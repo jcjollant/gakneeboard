@@ -3,7 +3,7 @@
         <div class="charts-list">
             <!-- AIRPORT SECTION -->
             <div v-if="airport?.diagram || airport?.notice || airport?.supp" class="chart-category">
-                <div class="category-header">AIRPORT</div>
+                <div class="category-header">AIRPORT DOCS</div>
                 <div class="chart-row-horizontal">
                     <div v-if="airport?.diagram" class="chart-link" @click="openChart(airport.diagram)">
                         <i class="pi pi-map"></i>
