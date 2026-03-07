@@ -20,6 +20,7 @@ export class User {
     planId: string | undefined;
     homeAirport: string | undefined;
     printRefillOverride: number | undefined;
+    isNew?: boolean;
 
     constructor(id: number, sha256: string) {
         this.id = id;

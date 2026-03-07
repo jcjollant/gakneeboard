@@ -44,9 +44,13 @@ export class UserTools {
         // Read user from DB
         const userDao = userDaoParam ?? new UserDao()
         const dbUser: User | undefined = await userDao.getFromHash(user.sha256)
-        if (dbUser) return dbUser;
+        if (dbUser) {
+            dbUser.isNew = false;
+            return dbUser;
+        }
 
         // new user => creation
+        user.isNew = true;
         Business.primeUser(user)
 
         if (body.attribution) {

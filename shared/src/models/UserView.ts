@@ -10,4 +10,5 @@ export interface UserView {
     printCredits: number;
     eulaCurrent: boolean;
     homeAirport?: string;
+    isNew?: boolean;
 }

@@ -26,6 +26,7 @@ export class CurrentUser {
   canViewMetars: boolean;
   canExportPdf: boolean;
   canUseAdvancedPrinting: boolean;
+  isNew: boolean;
 
   static noUser() { return new CurrentUser() }
 
@@ -46,6 +47,7 @@ export class CurrentUser {
     this.canViewMetars = false;
     this.canExportPdf = false;
     this.canUseAdvancedPrinting = false;
+    this.isNew = false;
 
     this.listeners = [];
   }
@@ -104,6 +106,7 @@ export class CurrentUser {
     this.canViewMetars = false;
     this.canExportPdf = false;
     this.canUseAdvancedPrinting = false;
+    this.isNew = false;
 
     // Clear user data from localStorage
     localStorage.removeItem(LocalStoreService.user);
@@ -176,11 +179,11 @@ export class CurrentUser {
   }
 
   update(data: UserView) {
-    // console.log('[CurrentUser.update] updating', data)
     if (data) {
       this.sha256 = data.sha256;
       this.name = data.name;
       this.accountType = data.accountType;
+      this.isNew = !!(data as any).isNew;
 
       this.templates = data.templates ? data.templates.map(Template.parse) : [];
       this.checklists = (data as any).checklists ? (data as any).checklists.map((c: any) => new LibraryChecklist(c.id, c.fullName, c.shortName, c.entries)) : [];

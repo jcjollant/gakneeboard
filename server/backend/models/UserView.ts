@@ -15,6 +15,7 @@ export class UserView implements IUserView {
     printCredits: number;
     eulaCurrent: boolean;
     homeAirport?: string;
+    isNew?: boolean;
 
     constructor(user: User, templates: TemplateKneeboardView[]) {
         this.sha256 = user.sha256;
@@ -26,6 +27,7 @@ export class UserView implements IUserView {
         this.printCredits = user.printCredits;
         this.eulaCurrent = user.eula >= Business.latestEula;
         this.homeAirport = user.homeAirport;
+        this.isNew = user.isNew;
     }
 
     static fromHash(hash: string): Promise<UserView | undefined> {
