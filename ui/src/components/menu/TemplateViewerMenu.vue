@@ -108,7 +108,7 @@ watch(() => props.isCollapsed, (newVal) => {
   margin-top: 40px;
 }
 
-.route-active {
+.route-active, .route-active:hover {
   background-color: var(--route-background);
 }
 </style>
