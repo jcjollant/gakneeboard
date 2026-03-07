@@ -163,9 +163,16 @@ function draw() {
     }
 }
 
-function loadProps(props) {
+function loadProps(props: any) {
     headings.value = props.heading
     draw()
 }
 </script>
-
+<style scoped>
+.modeCompass {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+</style>
