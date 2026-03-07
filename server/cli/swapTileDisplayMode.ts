@@ -26,10 +26,10 @@ if (useProd) {
 }
 
 // Variables for swapping
-let sourceType = 'radios';
-let sourceMode = 'nordo';
+let sourceType = 'sunlight';
+let sourceMode = null;
 let targetType = 'vfr';
-let targetMode = 'nordo';
+let targetMode = 'sunlight';
 
 async function main() {
     if (useProd) {
@@ -69,8 +69,12 @@ async function main() {
         for (let page of newData) {
             if (page.type === 'tiles' && page.data && Array.isArray(page.data)) {
                 for (let tile of page.data) {
-                    if (tile.name === sourceType && tile.data?.mode === sourceMode) {
+                    const currentMode = tile.data?.mode;
+                    const matchesMode = (currentMode === sourceMode) || (!currentMode && !sourceMode);
+
+                    if (tile.name === sourceType && matchesMode) {
                         tile.name = targetType;
+                        if (!tile.data) tile.data = {};
                         tile.data.mode = targetMode;
                         needsUpdate = true;
                     }
