@@ -1,6 +1,6 @@
 <template>
     <div class="main">
-      <Menu ref="menuRef" :name="getTemplateName()"></Menu>
+      <Menu ref="menuRef" :name="getTemplateName()" :isModified="templateModified"></Menu>
       <TemplateExport v-model:visible="showExport" :template="activeTemplate"
       @close="showExport=false" @export="onExported" />
     <TemplateSettingsDialog v-model:visible="showSettings" :template="settingsTemplate"
@@ -252,7 +252,6 @@ function getTemplateName() {
   } else {
     name = activeTemplate.value.name
   } 
-  if( templateModified.value) name += '*'
   return name;
 }
 

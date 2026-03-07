@@ -7,6 +7,7 @@
                 <Logo :hasTemplate="!!name" @click="router.push('/')" />
                 <font-awesome-icon v-if="name" class="icon" icon="fa-chevron-right" />
                 <div v-if="name" title="Active Template Name" class="templateName">{{name}}</div>
+                <div v-if="isModified" class="unsaved-badge">unsaved</div>
                 <div v-if="test" class="test">Test Backend</div>
             </div>
             <div v-if="showSession" class="right">
@@ -44,12 +45,12 @@ import { currentUser } from '../../assets/data';
 import AccountDetails from './AccountDetails.vue';
 import Logo from './Logo.vue';
 import SignIn from '../signin/SignIn.vue';
-import { AccountType } from '@gak/shared';
 
 const emits = defineEmits(['about'])
 const props = defineProps({
     name: { type: String, default: null },
-    showSession: { type: Boolean, default: true }
+    showSession: { type: Boolean, default: true },
+    isModified: { type: Boolean, default: false }
 })
 const confirm = useConfirm()
 const router = useRouter()
@@ -141,6 +142,16 @@ function onSignOut() {
     padding: 2px 5px;
     color: white;
     background-color: red;
+}
+.unsaved-badge {
+    background-color: rgba(255, 240, 138, 0.5);
+    color: #854d0e;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    text-transform: lowercase;
+    border: 1px solid #facc15;
 }
 .right {
     display: flex;
