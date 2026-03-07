@@ -130,18 +130,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref,onMounted, watch, computed } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue';
 import { DisplayModeAtis, DisplayModeChoice } from '../../models/DisplayMode';
-import { TileType } from '../../models/TileType';
 import { TileData } from '../../models/TileData';
+import { TileType } from '../../models/TileType';
 import { AtisTileDisplayModeLabels } from './AtisTileDisplayModeLabel';
 
-import CloudClearance from './CloudClearance.vue';
-import AtisCompact from './AtisCompact.vue';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
-import TileModeDots from '../shared/TileModeDots.vue';
 import Header from '../shared/Header.vue';
-import NoSettings from '../shared/NoSettings.vue'
+import NoSettings from '../shared/NoSettings.vue';
+import TileModeDots from '../shared/TileModeDots.vue';
+import AtisCompact from './AtisCompact.vue';
 
 // Enum with display modes
 
