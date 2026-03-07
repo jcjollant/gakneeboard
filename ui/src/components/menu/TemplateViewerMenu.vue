@@ -11,6 +11,7 @@
         @click="$emit('print')"/>
       
       <MenuButton v-if="showSave" id="btnSave" icon="save" title="Save Kneeboard to the Cloud" label="Save" :disabled="!isTemplateValid"
+        :primary="isModified"
         @click="$emit('save', false)"/>
 
       <MenuButton id="btnRoute" icon="route" title="Edit Flight Route" label="Route"
