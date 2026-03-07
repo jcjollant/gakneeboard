@@ -243,6 +243,12 @@ export class CurrentUser {
     if (index == -1) {
       this.templates.push(templateNoData)
     } else {
+      // Keep old thumbnail if a new one is not available
+      if (!templateNoData.thumbUrl && this.templates[index].thumbUrl) {
+        templateNoData.thumbUrl = this.templates[index].thumbUrl
+        templateNoData.thumbHash = this.templates[index].thumbHash
+      }
+
       // update existing entry
       this.templates[index] = templateNoData;
     }
