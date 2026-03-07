@@ -1,21 +1,18 @@
 <template>
     <div class="notes-settings">
         <!-- Display Mode Section -->
-        <Separator name="Display" class="separator" />
+        <SeparatorChoice name="Display" choiceA="Normal" choiceB="Wide" v-model="isNormal" />
         <DisplayModeSelector :choices="modesList" v-model="selectedModeChoice" :show-previews="true" />
-        <div class="display-onechoice">
-            <EitherOr either="Normal" or="Wide" v-model="isNormal" />
-        </div>
 
-        <!-- Acronym Mode Configuration -->
-        <div v-if="currentMode === DisplayModeNotes.Word" class="settings-section">
-            <Separator name="Custom Acronym" />
+        <!-- Watermark Configuration -->
+        <div class="settings-section">
+            <Separator name="Watermark" :leftAligned="true" />
             <div class="input-container">
                 <span class="p-float-label">
                     <InputText id="acronym-input" v-model="customWord" class="w-full" />
                     <label for="acronym-input">Acronym</label>
                 </span>
-                <small class="help-text">Enter the word or acronym to display on the left side.</small>
+                <small class="help-text">Enter the word or acronym to display on the tile.</small>
             </div>
         </div>
 
@@ -33,6 +30,7 @@
 import { ref, onMounted, watch, computed, inject } from 'vue';
 import InputText from 'primevue/inputtext';
 import DisplayModeSelector from '../shared/DisplayModeSelector.vue';
+import SeparatorChoice from '../shared/SeparatorChoice.vue';
 import EitherOr from '../shared/EitherOr.vue';
 import Separator from '../shared/Separator.vue';
 
@@ -162,11 +160,5 @@ function emitUpdate() {
 
 .w-full {
     width: 100%;
-}
-
-.display-onechoice {
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
 }
 </style>

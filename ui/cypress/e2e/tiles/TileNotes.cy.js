@@ -67,7 +67,7 @@ describe('Notes Tile', () => {
 
     // Enable wide mode
     cy.get('.tile2 .fa-gear').click({ force: true })
-    cy.get('.choiceOr').click()
+    cy.get('.separator-choice').contains('Display').parent().find('.casing').click()
     cy.get('[aria-label="Apply"]').click()
     cy.get('.tile2').should('have.class', 'span-2')
     // tile 3 should be hidden
@@ -99,7 +99,7 @@ describe('Notes Tile', () => {
 
     // Expand tile 5
     cy.get('.tile5 .fa-gear').click({ force: true })
-    cy.get('.choiceOr').click()
+    cy.get('.separator-choice').contains('Display').parent().find('.casing').click()
     cy.get('[aria-label="Apply"]').click()
 
     // Check expanded state
