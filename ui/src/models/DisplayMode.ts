@@ -32,7 +32,7 @@ export enum DisplayModeNotes {
     Grid = 'grid',
     Compass = 'compass',
     Craft_deprecated = 'craft',
-    Word = 'word',
+    Word_deprecated = 'word',
 }
 
 export enum DisplayModeIfr {

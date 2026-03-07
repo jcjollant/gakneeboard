@@ -6,14 +6,16 @@
             @replace="emits('replace')" @settings="emits('settings')" @display="displaySelection = !displaySelection"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" :expandable="true" :expanded="expanded"
             @expand="onExpand" @keep="displaySelection=false" />
-        <div v-else-if="displayMode==DisplayModeNotes.Blank" class="tileContent">
-            <div class="blank">&nbsp;</div>
-        </div>
+        <template v-else-if="displayMode==DisplayModeNotes.Blank">
+            <WordContent v-if="word?.length" :word="word" />
+            <div v-else class="tileContent">
+                <div class="blank">&nbsp;</div>
+            </div>
+        </template>
         <div v-else-if="displayMode==DisplayModeNotes.Grid" class="modeGrid tileContent" :class="{ expanded: expanded }">
             <div v-for="i in gridCells" :key="i">&nbsp;</div>
         </div>
         <CompassContent v-else-if="displayMode==DisplayModeNotes.Compass" :heading="compassHeading" />
-        <WordContent v-else-if="displayMode==DisplayModeNotes.Word"  :word="word" />
         
         <TileModeDots 
             v-if="!displaySelection"
@@ -42,7 +44,7 @@ const compassHeading = ref(true)
 const displayMode = ref(DisplayModeNotes.Unknown)
 const emits = defineEmits(['replace','update','settings'])
 const displaySelection = ref(false)
-const word = ref('CRAFT')
+const word = ref('')
 const displayModes = NotesTileConfig.modesList
 
 // Props management
@@ -58,12 +60,12 @@ function loadProps(props:any) {
 
     // restore display mode
     let newMode = props?.params?.mode ?? DisplayModeNotes.Blank
-    // For compatibility Craft => Word
-    if(newMode == DisplayModeNotes.Craft_deprecated) newMode = DisplayModeNotes.Word
+    // For compatibility Craft/Word/blank => Blank
+    if(newMode == DisplayModeNotes.Craft_deprecated || newMode == (DisplayModeNotes as any).Word_deprecated || newMode == 'word' || newMode == 'blank') newMode = DisplayModeNotes.Blank
     displayMode.value = newMode
     
     // Restore custom word
-    word.value = props?.params?.word ?? 'CRAFT'
+    word.value = props?.params?.word ?? ''
     compassHeading.value = props?.params?.comp ?? true
     expanded.value = props?.span2 ?? false
 }

@@ -44,7 +44,7 @@ const props = defineProps({
 
 // State
 const currentMode = ref(DisplayModeNotes.Blank);
-const customWord = ref('CRAFT');
+const customWord = ref('');
 const compassHeading = ref(true);
 const expanded = ref(false);
 const isInternalUpdate = ref(false);
@@ -93,14 +93,14 @@ function loadFromTileData(tile: TileData) {
     
     // Restore display mode
     let newMode = config?.mode ?? DisplayModeNotes.Blank;
-    // For compatibility Craft => Word
-    if(newMode === 'craft') newMode = DisplayModeNotes.Word; // Hardcoded check for deprecated value just in case
+    // For compatibility Craft/Word/blank => Blank
+    if(newMode === 'craft' || newMode === 'word' || newMode === 'blank') newMode = DisplayModeNotes.Blank; 
     
     currentMode.value = newMode;
     expanded.value = tile.span2;
     
     // Restore custom word
-    customWord.value = config?.word ?? 'CRAFT';
+    customWord.value = config?.word ?? '';
     
     // Restore compass setting
     // 'comp' might be missing in old data, default to true
