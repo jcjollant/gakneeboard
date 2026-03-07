@@ -15,8 +15,8 @@ function testWord(word) {
 const notesTilesData = [
   { name: 'notes', data: {} },
   { name: 'notes', data: { mode: "blank" } },
-  { name: 'notes', data: { mode: 'word' } },
-  { name: 'notes', data: { mode: 'word', word: 'RAFT' } },
+  { name: 'notes', data: { mode: 'blank', word: 'CRAFT' } },
+  { name: 'notes', data: { mode: 'blank', word: 'RAFT' } },
   { name: 'notes', data: { mode: 'compass', comp: 'heading' } },
   { name: 'notes', data: { mode: 'grid' } },
 ]
@@ -39,8 +39,8 @@ describe('Notes Tile', () => {
 
     // Tile 0 has stealth class
     cy.get('.tile0 > .tile > .headerTitle').should('have.class', 'stealth')
-    // Tile 1 does not have stealth class
-    cy.get('.tile1 > .tile > .headerTitle').should('not.have.class', 'stealth')
+    // Tile 1 also has stealth class (it's blank)
+    cy.get('.tile1 > .tile > .headerTitle').should('have.class', 'stealth')
 
     // Tile 2 CRAFT
     cy.get('.tile2 > .tile > .tileContent > .letter0').contains('C')
