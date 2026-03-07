@@ -106,23 +106,7 @@
             </div>
         </div>
         <div v-else-if="displayMode==DisplayModeAtis.CompactATIS" class="tileContent">
-            <div v-for="n in 4" class="compact">
-                <div class="info br" :class="{bb: n < 4 }">
-                    <div class="tileBoxLabel">Info</div>
-                </div>
-                <div class="wind br" :class="{bb: n < 4 }">
-                    <div class="tileBoxLabel">Wind</div>
-                    <span class="at">@</span>
-                    <div class="wtrmrk gust">G</div>
-                </div>
-                <div class="altimeter br" :class="{bb: n < 4 }">
-                    <div class="tileBoxLabel">Alt</div>
-                </div>
-                <div class="runway" :class="{bb: n < 4 }">
-                    <div class="tileBoxLabel">Rwy</div>
-                </div>
-                
-            </div>
+            <AtisCompact v-for="n in 4" :key="n" :borderBottom="n < 4" />
         </div>
         <div v-else-if="displayMode==DisplayModeAtis.Categories" class="tileContent categories">
             <div class="vfrLeft vfr">VFR<span class="alt">3,000ft</span></div>
@@ -152,6 +136,7 @@ import { TileData } from '../../models/TileData';
 import { AtisTileDisplayModeLabels } from './AtisTileDisplayModeLabel';
 
 import CloudClearance from './CloudClearance.vue';
+import AtisCompact from './AtisCompact.vue';
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import TileModeDots from '../shared/TileModeDots.vue';
 import Header from '../shared/Header.vue';
@@ -328,10 +313,6 @@ function saveConfig() {
     display: grid;
     grid-template-columns: 20% 30% 25% 25%;
 }
-.compact {
-    display: grid;
-    grid-template-columns: 15% 40% 25% 20%;
-}
 .info {
     grid-column: 1;
     position: relative;
@@ -341,9 +322,6 @@ function saveConfig() {
 }
 .full .wind {
     grid-column: 2 / span 2;
-}
-.compact .wind {
-    grid-column: 2;
 }
 .runway {
     grid-column: 4;
@@ -374,9 +352,6 @@ function saveConfig() {
 .full .altimeter {
     grid-row: 4;
     grid-column: 1 / span 2;
-}
-.compact .altimeter {
-    grid-column:3;
 }
 .wind .at {
     position: absolute;
