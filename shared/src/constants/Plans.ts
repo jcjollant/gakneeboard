@@ -111,7 +111,8 @@ export const PLANS: PlanDescription[] = [
             restoreOldVersion: true
         },
         accountType: AccountType.private,
-        isBestValue: false
+        isBestValue: false,
+        badge: 'Free Runway Keychain'
     },
     {
         id: PLAN_ID_BETA_DEAL,

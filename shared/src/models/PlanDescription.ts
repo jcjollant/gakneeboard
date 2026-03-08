@@ -21,4 +21,5 @@ export interface PlanDescription {
         restoreOldVersion: boolean;
     };
     isBestValue: boolean;
+    badge?: string;
 }

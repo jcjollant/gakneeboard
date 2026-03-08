@@ -32,6 +32,11 @@
         
         <div class="plan-header">
           <h3>{{ plan.displayName }}</h3>
+          <div class="badge-slot">
+            <div v-if="plan.badge" class="promo-badge">
+              🎁 {{ plan.badge }}
+            </div>
+          </div>
           <div class="price">
             <span class="amount">{{ plan.displayPrice}}</span>
             <span class="period" v-if="plan.chargeFrequency === 'monthly'">/month</span>
@@ -294,13 +299,34 @@ function onAuthentication(newUser: any) {
 }
 
 .plan-header {
-  padding: 1.5rem;
+  padding: 0.75rem 1.5rem 1.5rem 1.5rem;
   text-align: center;
 }
 
 .plan-header h3 {
   font-size: 1.5rem;
   font-weight: 700;
+}
+
+.promo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: #FEF3C7;
+  color: #92400E;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid #FDE68A;
+}
+
+.badge-slot {
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
 }
 
 .price {
