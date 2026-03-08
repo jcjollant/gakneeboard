@@ -62,17 +62,6 @@ describe('Notes Tile', () => {
     cy.get('.tile5 .modeGrid')
   })
 
-  it('Grows in wide mode', () => {
-    loadNotesTestPage()
-
-    // Enable wide mode
-    cy.get('.tile2 .fa-gear').click({ force: true })
-    cy.get('.separator-choice').contains('Display').parent().find('.casing').click()
-    cy.get('[aria-label="Apply"]').click()
-    cy.get('.tile2').should('have.class', 'span-2')
-    // tile 3 should be hidden
-    cy.get('.tile3').should('have.css', 'display', 'none')
-  })
 
   it('Can customize word', () => {
     loadNotesTestPage()
@@ -90,22 +79,5 @@ describe('Notes Tile', () => {
     cy.get('.tile2 > .tile > .tileContent > .letter5').contains('M')
   })
 
-  it('Expands grid in wide mode', () => {
-    loadNotesTestPage()
-
-    // Grid tile is tile 5
-    // Check initial state
-    cy.get('.tile5 .modeGrid').children().should('have.length', 12)
-
-    // Expand tile 5
-    cy.get('.tile5 .fa-gear').click({ force: true })
-    cy.get('.separator-choice').contains('Display').parent().find('.casing').click()
-    cy.get('[aria-label="Apply"]').click()
-
-    // Check expanded state
-    cy.get('.tile5').should('have.class', 'span-2')
-    cy.get('.tile5 .modeGrid').should('have.class', 'expanded')
-    cy.get('.tile5 .modeGrid').children().should('have.length', 24)
-  })
 
 })

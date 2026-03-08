@@ -1,8 +1,5 @@
 <template>
     <div class="radio-settings">
-        <!-- Display Mode Section -->
-        <SeparatorChoice name="Display" choiceA="Normal" choiceB="Wide" v-model="isNormal" />
-        <DisplayModeSelector :choices="modesList" v-model="selectedModeChoice" :thinpad="true" :showPreviews="true" />
 
         <div>
             <Separator :name="currentMode === DisplayModeRadios.RouteFrequencies ? 'Route Frequencies' : 'Frequency List'" :leftAligned="true" />
@@ -47,8 +44,6 @@ import { Route } from '@gak/shared';
 
 
 import Separator from '../../components/shared/Separator.vue';
-import SeparatorChoice from '../../components/shared/SeparatorChoice.vue';
-import DisplayModeSelector from '../shared/DisplayModeSelector.vue';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import FrequencyBox from '../shared/FrequencyBox.vue';
@@ -76,19 +71,6 @@ const freqLight = new Frequency('Light', '123.45', FrequencyType.ctaf)
 const freqShade = new Frequency('Shade', '123.45', FrequencyType.ctaf)
 const freqDark = new Frequency('Dark', '123.45', FrequencyType.ctaf)
 
-const modesList = ref(RadioTileConfig.modesList)
-
-const selectedModeChoice = computed({
-    get: () => modesList.value.find(c => c.value === currentMode.value),
-    set: (val) => { 
-        if(val) currentMode.value = val.value as DisplayModeRadios 
-    }
-})
-
-const isNormal = computed({
-    get: () => !expanded.value,
-    set: (val) => { expanded.value = !val; emitUpdate(); }
-})
 
 const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void) | undefined;
 

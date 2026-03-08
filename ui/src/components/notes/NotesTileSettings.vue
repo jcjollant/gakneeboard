@@ -1,8 +1,5 @@
 <template>
     <div class="notes-settings">
-        <!-- Display Mode Section -->
-        <SeparatorChoice name="Display" choiceA="Normal" choiceB="Wide" v-model="isNormal" />
-        <DisplayModeSelector :choices="modesList" v-model="selectedModeChoice" :show-previews="true" />
 
         <!-- Watermark Configuration -->
         <div class="settings-section">
@@ -29,8 +26,6 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, computed, inject } from 'vue';
 import InputText from 'primevue/inputtext';
-import DisplayModeSelector from '../shared/DisplayModeSelector.vue';
-import SeparatorChoice from '../shared/SeparatorChoice.vue';
 import EitherOr from '../shared/EitherOr.vue';
 import Separator from '../shared/Separator.vue';
 
@@ -52,20 +47,6 @@ const isInternalUpdate = ref(false);
 const tileData = ref<TileData>(props.tileData);
 const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void) | undefined;
 
-// Lists
-const modesList = ref( NotesTileConfig.modesList)
-
-const selectedModeChoice = computed({
-    get: () => modesList.value.find(c => c.value === currentMode.value),
-    set: (val) => { 
-        if(val) currentMode.value = val.value as DisplayModeNotes 
-    }
-});
-
-const isNormal = computed({
-    get: () => !expanded.value,
-    set: (val) => { expanded.value = !val; emitUpdate(); }
-})
 
 // Initialization
 onMounted(() => {

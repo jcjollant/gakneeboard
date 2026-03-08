@@ -18,33 +18,6 @@ describe('Radios Tile', () => {
         cy.fixture('radioTileServiceVolumes').then(data => serviceVolumeTileData = data)
     })
 
-    it('Has correct display mode selection', () => {
-        loadTilePage(TileTypeLabel.radios)
-
-        // Open settings (Tile 0 is the radio tile)
-        cy.get('.tile0 .settingsButton').click({ force: true })
-
-        // Check display modes in settings
-        // They are buttons in OneChoice, verify labels exist
-        cy.get('.radio-settings').contains(labelFrequencies)
-        cy.get('.radio-settings').contains(labelRouteFrequencies)
-        cy.get('.radio-settings').contains(labelServiceVolumes)
-
-        // Select Service Volumes
-        cy.get('.display-mode-selector').contains(labelServiceVolumes).click()
-
-        // Apply settings
-        cy.get('[aria-label="Apply"]').click()
-
-        // Check tile content updated
-        // Service volumes should be visible (VorServiceVolumes component)
-        cy.get('.tile0 img[src*="service-volumes.png"]').should('exist')
-
-        // Re-open settings and switch back to Frequencies
-        cy.get('.tile0 .settingsButton').click({ force: true })
-        cy.get('.display-mode-selector').contains(labelFrequencies).click()
-        cy.get('[aria-label="Apply"]').click()
-    })
 
     it('Displays Lost Comms VFR', () => {
         loadTestTileWithData(lostCommsVFRTileData)
@@ -117,22 +90,6 @@ describe('Radios Tile', () => {
 
         // Ensure we see manual frequencies (default mode)
         cy.get('.freqList').should('exist')
-
-        // Switch to Route Frequencies via dots (TileModeDots)
-        // We know it's the second dot/mode
-        cy.get('.tile .tile-mode-dots .dot').eq(1).click({ force: true })
-
-        // Wait for loading placeholder or frequencies
-        // We might need to mock the route service if there is no active route
-        // But the demo page usually has a route.
-        cy.get('.headerTitle').contains('Route Radios')
-
-        // Verify we see some frequencies from the route
-        cy.get('.freqList > div').should('have.length.at.least', 1)
-
-        // Switch back to Selected Frequencies
-        cy.get('.tile .tile-mode-dots .dot').eq(0).click({ force: true })
-        cy.get('.headerTitle').contains('Radios')
     })
 
     it('Shows Lost Comms IFR (via direct data load)', () => {
