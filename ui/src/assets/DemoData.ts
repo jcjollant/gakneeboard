@@ -122,7 +122,7 @@ export class DemoData {
         { name: TileType.radios, data: { mode: DisplayModeRadios.LostComms, list: [] } },
         { name: TileType.vfr, data: { mode: DisplayModeVfr.Sunlight } },
         { name: TileType.atis, data: { mode: DisplayModeAtis.Categories } },
-        { name: TileType.atis, data: { mode: DisplayModeAtis.CloudClearance } }
+        { name: TileType.vfr, data: { mode: DisplayModeVfr.CloudClearance } }
     ]
     )
 
