@@ -51,7 +51,8 @@ export class Business {
     static latestEula: number = 20250821;
 
     public static calculatePrintCredits(user: User): number {
-        if (user.printRefillOverride !== null && user.printRefillOverride !== undefined) {
+        if (user.printRefillOverride !== undefined) {
+            if (user.printRefillOverride === -1) return -1;
             return Math.max(user.printCredits, user.printRefillOverride)
         }
 

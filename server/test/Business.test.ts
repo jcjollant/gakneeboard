@@ -90,6 +90,13 @@ describe('Business', () => {
             anotherUser.printRefillOverride = 2; // student default is 8
             const c3 = Business['calculatePrintCredits'](anotherUser);
             expect(c3).toBe(2);
+
+            // Should return -1 when printRefillOverride is -1
+            const unlimitedUser = newTestUser(0, AccountType.simmer, PLAN_ID_SIM)
+            unlimitedUser.printCredits = 10;
+            unlimitedUser.printRefillOverride = -1;
+            const c4 = Business['calculatePrintCredits'](unlimitedUser);
+            expect(c4).toBe(-1);
         });
     });
 
