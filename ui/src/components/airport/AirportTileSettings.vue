@@ -48,15 +48,13 @@
         <SeparatorChoice name="NOTAMs" choiceA="Show" choiceB="Hide" v-model="showNotams" />
         <SeparatorChoice name="METAR" choiceA="Show" choiceB="Hide" v-model="showMetar" />
 
-        <!-- Display Section with Choice -->
-        <SeparatorChoice name="Display" choiceA="Normal" choiceB="Wide" v-model="isNormal" />
-        <!-- <DisplayModeSelector :choices="modesList" v-model="selectedModeChoice" :show-previews="true" /> -->
+
 
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed, inject } from 'vue';
+import { ref, onMounted, watch, inject } from 'vue';
 import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
 import AirportInput from '../shared/AirportInput.vue';
@@ -106,10 +104,7 @@ const showMetar = ref(true);
 const showNotams = ref(true);
 const showPattern = ref(true);
 
-const isNormal = computed({
-    get: () => !expanded.value,
-    set: (val) => { expanded.value = !val; emitUpdate(); }
-})
+
 
 
 const patternOptions = [TrafficPatternDisplay.Downwind, TrafficPatternDisplay.Entry45, TrafficPatternDisplay.Midfield].map(value => ({
