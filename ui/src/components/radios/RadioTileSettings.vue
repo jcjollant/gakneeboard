@@ -3,8 +3,8 @@
 
         <div>
             <!-- Frequency Lookup -->
-            <Separator name="Frequency Lookup" :leftAligned="true" />
-            <div class="lookup-section">
+            <SeparatorChoice name="Frequency Lookup" choiceA="Airport" choiceB="Route" v-model="isAirportLookup" />
+            <div class="lookup-section" v-if="isAirportLookup">
                 <AirportInput label="Airport" :large="true" :page="true" :showRecent="true" :route="route" @valid="onAirportValid" />
             </div>
             
@@ -18,30 +18,29 @@
                         </div>
                     </div>
                 </div>
-                <div v-else class="lookup-placeholder">Select an airport to view frequencies.</div>
+                <div v-else class="lookup-placeholder">
+                    {{ isAirportLookup ? 'Select an airport to view frequencies.' : 'No route frequencies found.' }}
+                </div>
             </div>
 
             <!-- Frequency List -->
-            <SeparatorChoice :name="currentMode === DisplayModeRadios.RouteFrequencies ? 'Route Frequencies' : 'Frequency List'" 
+            <SeparatorChoice name="Selected Frequencies" 
                              choiceA="Cards" choiceB="Text" v-model="isCardsMode" />
             <div class="list-editor">
                 <div v-if="isCardsMode" class="freq-cards edit-cards">
-                    <div v-for="(freq, index) in (currentMode === DisplayModeRadios.FreqList ? manualFrequencies : routeFrequencies)" :key="'disp-' + index" 
+                    <div v-for="(freq, index) in manualFrequencies" :key="'disp-' + index" 
                          class="freq-card-wrapper" 
-                         :class="{disabled: currentMode !== DisplayModeRadios.FreqList}"
-                         :title="currentMode === DisplayModeRadios.FreqList ? 'Click to remove' : ''" 
-                         @click="currentMode === DisplayModeRadios.FreqList ? removeFrequency(index) : null">
+                         title="Click to remove" 
+                         @click="removeFrequency(index)">
                         <FrequencyBox :freq="freq" size="small" :colorScheme="colorScheme" />
-                        <div v-if="currentMode === DisplayModeRadios.FreqList" class="remove-indicator">
+                        <div class="remove-indicator">
                             <font-awesome-icon icon="minus" />
                         </div>
                     </div>
-                    <div v-if="currentMode === DisplayModeRadios.FreqList && manualFrequencies.length === 0" class="empty-list">No frequencies.</div>
-                    <div v-if="currentMode === DisplayModeRadios.RouteFrequencies && routeFrequencies.length === 0" class="empty-list">No route frequencies.</div>
+                    <div v-if="manualFrequencies.length === 0" class="empty-list">No frequencies.</div>
                 </div>
 
                 <Textarea v-else class='list' rows="8" cols="24" v-model="textData"
-                            :disabled="currentMode !== DisplayModeRadios.FreqList"
                             placeholder="Format: Value,Name,Type&#10;Ex: 123.45, KABC Twr, Tower"></Textarea>
             </div>
             
@@ -102,6 +101,12 @@ const isCardsMode = computed({
     set: (val: boolean) => listMode.value = val ? 'cards' : 'text'
 });
 
+const lookupMode = ref<'airport'|'route'>('airport');
+const isAirportLookup = computed({
+    get: () => lookupMode.value === 'airport',
+    set: (val: boolean) => lookupMode.value = val ? 'airport' : 'route'
+});
+
 const toaster = useToaster(useToast());
 const isInternalUpdate = ref(false);
 
@@ -128,11 +133,11 @@ watch([currentMode, textData, colorScheme, listMode], () => {
     emitUpdate();
 });
 
-watch(currentMode, (newMode) => {
-    if (newMode === DisplayModeRadios.RouteFrequencies) {
-        populateRouteFrequenciesText();
-    } else if (newMode === DisplayModeRadios.FreqList) {
-        syncTextDataFromManual();
+watch(lookupMode, (newMode) => {
+    if (newMode === 'route') {
+        fetchRouteLookupFrequencies();
+    } else {
+        lookupFrequencies.value = [];
     }
 });
 
@@ -172,9 +177,7 @@ function loadFromTileData(tile: TileData) {
             }
         })
         manualFrequencies.value = list;
-        if (currentMode.value === DisplayModeRadios.FreqList) {
-            syncTextDataFromManual();
-        }
+        syncTextDataFromManual();
         
         // Color Scheme
         if('colorScheme' in data) colorScheme.value = data.colorScheme
@@ -194,6 +197,11 @@ async function populateRouteFrequenciesText() {
     const freqs = await RouteService.fetchRouteFrequencies(route);
     routeFrequencies.value = freqs;
     textData.value = freqs.map( (f:Frequency) => f.value + ',' + f.name + ',' + Frequency.typeToString(f.type)).join('\n');
+}
+
+async function fetchRouteLookupFrequencies() {
+    const freqs = await RouteService.fetchRouteFrequencies(props.route);
+    lookupFrequencies.value = freqs;
 }
 
 function loadListFromText() {
@@ -219,28 +227,20 @@ function onAirportValid(airport: Airport) {
 }
 
 function addFrequency(freq:Frequency) {
-    if (currentMode.value !== DisplayModeRadios.FreqList) {
-        toaster.error('Operation not allowed', 'Switch mode to Frequency List to add custom frequencies');
-        return;
-    }
     manualFrequencies.value.push(freq);
     syncTextDataFromManual();
     emitUpdate();
 }
 
 function removeFrequency(index: number) {
-    if (currentMode.value !== DisplayModeRadios.FreqList) return;
-    const removed = manualFrequencies.value.splice(index, 1);
+    manualFrequencies.value.splice(index, 1);
     syncTextDataFromManual();
     emitUpdate();
 }
 
 function emitUpdate() {
-     if (currentMode.value === DisplayModeRadios.FreqList && listMode.value === 'text') {
+     if (listMode.value === 'text') {
          manualFrequencies.value = loadListFromText();
-     } else if (currentMode.value === DisplayModeRadios.FreqList && listMode.value === 'cards') {
-         // Because listMode might have just switched to cards from text, we must parse the text one last time maybe?
-         // Actually, watcher catches it. If they are in cards mode, we trust manualFrequencies.
      }
      
      const data = {'mode':currentMode.value, 'list':manualFrequencies.value, 'colorScheme':colorScheme.value, 'listMode':listMode.value};
@@ -364,7 +364,7 @@ function emitUpdate() {
     color: gray;
     font-size: 0.9em;
     font-style: italic;
-    margin-top: 10px;
+    margin-top: 5px;
 }
 
 .list-editor {
