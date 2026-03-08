@@ -127,6 +127,14 @@ const title = computed(() => {
 .mini-cell.active {
     background-color: var(--primary-color, #3b82f6); /* Ensure active pops */
 }
+
+:deep(.p-dialog-content) {
+    padding-bottom: 0.5rem !important;
+}
+
+:deep(.p-dialog-footer) {
+    padding-top: 0 !important;
+}
 </style>
 
 
