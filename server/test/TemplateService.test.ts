@@ -238,7 +238,7 @@ describe('TemplateService Tests', () => {
                 expect(ts.code).toBe(200)
             })
 
-            expect(UsageDao.create).toBeCalledTimes(2)
+            expect(UsageDao.create).toBeCalledTimes(4)
         })
 
         it('Enforces Sim user page restrictions', async () => {
