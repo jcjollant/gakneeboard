@@ -39,7 +39,7 @@ function openUrl(url: string) {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-top: 2rem;
+    margin-top: 0.5rem;
 }
 
 .left-actions {
