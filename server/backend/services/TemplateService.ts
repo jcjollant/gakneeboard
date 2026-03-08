@@ -15,6 +15,7 @@ import { sql } from "@vercel/postgres"
 import { UserTools } from "../UserTools"
 import { PlanService } from "./PlanService";
 import { TicketService } from "./TicketService";
+import { UsageService } from "./UsageService";
 
 
 export class TemplateStatus {
@@ -101,7 +102,7 @@ export class TemplateService {
         // We record usage parallel to the history retrieval
         const [history] = await Promise.all([
             historyDao.getTemplateVersion(templateId, version),
-            UsageDao.create(UsageType.Restore, requesterId, JSON.stringify({ templateId: templateId, version: version }))
+            UsageService.restore(requesterId, templateId, version)
         ])
 
         if (history) {
@@ -180,10 +181,12 @@ export class TemplateService {
                 const maxTemplates = Math.max(Business.maxTemplates(user), user.maxTemplates)
                 // We don't allow anything if you are above max 
                 if (templateCountForUser > maxTemplates) {
+                    await UsageService.limit(UsageType.Save, user.id)
                     return reject(new GApiError(402, "Maximum templates exceeded"))
                 }
                 // We don't allow creation if you are at max
                 if (templateView.id == 0 && templateCountForUser == maxTemplates) {
+                    await UsageService.limit(UsageType.Save, user.id)
                     return reject(new GApiError(402, "Maximum templates reached"))
                 }
             }
@@ -193,11 +196,13 @@ export class TemplateService {
                 const [totalPageCount, previousPageCount] = await templateDao.pageCount(user.id, templateView.id)
                 if (templateView.pages >= previousPageCount) { // page augmentation
                     if (totalPageCount - previousPageCount + templateView.pages > user.maxPages) {
+                        await UsageService.limit(UsageType.Save, user.id)
                         return reject(new GApiError(402, "Maximum pages reached"))
                     }
 
                     // Flight Simmers cannot save templates above 2 pages.
                     if (user.accountType == AccountType.simmer && templateView.pages > 2) {
+                        await UsageService.limit(UsageType.Save, user.id)
                         return reject(new GApiError(402, "Maximum 2 pages per template reached"))
                     }
                 }
@@ -206,7 +211,7 @@ export class TemplateService {
             const isAdmin = UserTools.isAdmin(user.id)
             await Promise.all([
                 templateDao.createOrUpdate(templateView, user.id, isAdmin),
-                UsageDao.create(UsageType.Save, user.id, templateView.id ? JSON.stringify({ id: templateView.id }) : undefined)
+                UsageService.save(user.id, templateView.id)
             ])
 
             // Should we check publication?

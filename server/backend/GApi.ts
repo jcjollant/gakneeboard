@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { AirportService } from './services/AirportService'
+import { UsageService } from './services/UsageService'
 // import { Adip } from '../backend/adip/Adip' // Removed
 import { version } from '../package.json'
 import { Business } from './business/Business'
@@ -31,9 +32,8 @@ export class GApi {
             const userDao = new UserDao()
 
             // record a new usage for this acceptance and update the user acceptance date
-            const data = { version: version }
             await Promise.all([
-                UsageDao.create(UsageType.Eula, userId, JSON.stringify(data)),
+                UsageService.eula(version, userId),
                 userDao.updateEulaAcceptance(userId, version)
             ])
             return true;
@@ -82,7 +82,7 @@ export class GApi {
             // retrieve this template for this user
             Exporter.export(templateView, format),
             // Save usage
-            UsageDao.create(UsageType.Export, userId, JSON.stringify(exportData))
+            await UsageService.export(format, userId)
         ])
         return exporter
     }
@@ -114,8 +114,7 @@ export class GApi {
 
                 // Extract UI version from query or headers
                 let uiVersion = req?.query?.version || req?.headers?.version || undefined;
-                let usageData = uiVersion ? JSON.stringify({ version: uiVersion }) : undefined;
-                UsageDao.create(UsageType.Session, user.id, usageData)
+                await UsageService.session(user.id, uiVersion)
             }
         }
         // console.log('[GApi.getSession]', JSON.stringify(output))    
@@ -176,10 +175,14 @@ export class GApi {
                 const user = await userDao.getFromHash(userSha)
                 if (user) {
                     userId = user.id
-                    Business.printConsume(user, userDao)
+                    const canPrint = await Business.printConsume(user, userDao)
+                    if (!canPrint) {
+                        await UsageService.limit(UsageType.Print, userId)
+                        return false;
+                    }
                 }
             }
-            await UsageDao.create(UsageType.Print, userId, payload)
+            await UsageService.print(userId, payload)
             return true;
         } catch (e) {
             return false;
