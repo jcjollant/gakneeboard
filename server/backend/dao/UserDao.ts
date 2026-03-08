@@ -289,4 +289,20 @@ export class UserDao extends Dao<User> {
             return false
         }
     }
+
+    /**
+     * Finds users with a print refill override of -1 (unlimited) who joined more than a certain number of days ago.
+     * @param days Number of days after which the override expires
+     * @returns List of users with expired print overrides
+     */
+    public async getUsersWithExpiredPrintOverrides(days: number): Promise<User[]> {
+        const query = `SELECT * FROM ${this.tableName} WHERE print_credits_override = -1 AND create_time < NOW() - INTERVAL '${days} days'`;
+        try {
+            const res = await this.db.query(query);
+            return res.rows.map(row => this.parseRow(row));
+        } catch (err) {
+            console.error('[UserDao.getUsersWithExpiredPrintOverrides] error ' + err);
+            return [];
+        }
+    }
 }

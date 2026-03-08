@@ -63,11 +63,12 @@ export class HouseKeeping {
 
         // Refill task
         const tasksResults = await Promise.all([
-            HouseKeeping.performRefills(),
             HouseKeeping.performSketchUpdate(),
-            HouseKeeping.cleanAbandonedOrders(),
             HouseKeeping.cleanTemplateHistory(),
-            HouseKeeping.autoUpdateAeronavCycle()
+            HouseKeeping.performRefills(),
+            HouseKeeping.cleanAbandonedOrders(),
+            HouseKeeping.autoUpdateAeronavCycle(),
+            // HouseKeeping.performPrintOverrideCleanup()
         ])
 
         tasks.push(...tasksResults)
@@ -224,6 +225,22 @@ export class HouseKeeping {
             }
         } catch (e: any) {
             console.error('[HouseKeeping.autoUpdateAeronavCycle] Failed', e.message)
+            task.fail(e.message)
+        }
+        return task
+    }
+
+    public static async performPrintOverrideCleanup(): Promise<Task> {
+        const task = new Task('Print Override Cleanup')
+        task.start()
+        try {
+            const count = await Business.cleanupExpiredPrintOverrides(new UserDao())
+            if (count > 0) {
+                task.finish(`Cleaned up ${count} expired print overrides`)
+            } else {
+                task.skip('No expired print overrides found')
+            }
+        } catch (e: any) {
             task.fail(e.message)
         }
         return task

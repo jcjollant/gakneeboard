@@ -1,5 +1,5 @@
 
-import { describe, expect, jest, it } from '@jest/globals'
+import { describe, expect, jest, it, beforeEach } from '@jest/globals'
 import { AccountType, PLAN_ID_SIM, PLANS, PRINT_CREDIT_SIMMER } from '@gak/shared';
 import { Business } from '../backend/business/Business';
 import { getMockBrandNewSubscription, getMockSubscriptionDao, getMockUserDao, newTestUser } from './common';
@@ -16,6 +16,10 @@ jest.mock('../backend/dao/SubscriptionDao');
 jest.mock('../backend/Email');
 jest.mock('../backend/services/TicketService');
 
+// Ensure UserDao and other mocks are treated as having our new methods
+import { UserDao as MockUserDao } from '../backend/dao/UserDao';
+const mockedUserDao = MockUserDao as jest.MockedClass<typeof MockUserDao>;
+
 require('dotenv').config();
 
 const expectedPrintCreditSimmer = 4
@@ -31,6 +35,10 @@ describe('Business', () => {
     const testUserDao = getMockUserDao(testUser);
     const testSubsciption = getMockBrandNewSubscription()
     const testSubsciptionDao = getMockSubscriptionDao(testSubsciption)
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
 
     describe('calculatePrintCredits', () => {
         it('should return correct credits for simmer account', () => {
@@ -188,6 +196,20 @@ describe('Business', () => {
             const newUser = newTestUser(0, AccountType.beta, 'bd1');
             const mockUserDao = getMockUserDao(newUser);
             newUser.printCredits = initialPrintCredit;
+
+            const success = await Business.printConsume(newUser, mockUserDao);
+
+            expect(success).toBe(true);
+            expect(newUser.printCredits).toBe(initialPrintCredit);
+            expect(mockUserDao.updatePrintCredit).not.toHaveBeenCalled();
+        });
+
+        it('should NOT decrease credits when printRefillOverride is -1', async () => {
+            const initialPrintCredit = 5;
+            const newUser = newTestUser(0, AccountType.simmer, PLAN_ID_SIM);
+            newUser.printCredits = initialPrintCredit;
+            newUser.printRefillOverride = -1; // Unlimited override
+            const mockUserDao = getMockUserDao(newUser);
 
             const success = await Business.printConsume(newUser, mockUserDao);
 
@@ -501,12 +523,11 @@ describe('Business', () => {
             const customerDetails = productPurchaseSession.customer_details;
             const shippingDetails = productPurchaseSession.shipping_details;
 
-            const mockGetFromCustomerId = jest.fn<any>().mockResolvedValue(newTestUser());
-            (UserDao as unknown as jest.Mock).mockImplementation(() => {
-                return {
-                    getFromCustomerId: mockGetFromCustomerId,
-                };
-            });
+            const user = newTestUser();
+            const mockUserDao = getMockUserDao(user);
+            (mockUserDao as any).getFromCustomerId.mockResolvedValue(user);
+
+            (UserDao as unknown as jest.Mock).mockImplementation(() => mockUserDao);
 
             // Ensure mocks return expected values
             mockEmail.mockResolvedValue(true);
@@ -515,11 +536,42 @@ describe('Business', () => {
             // call the method
             await Business.createProductPurchase(customerId, productId, customerDetails, shippingDetails);
 
-            expect(mockGetFromCustomerId).toHaveBeenCalledWith(customerId);
+            expect(mockUserDao.getFromCustomerId).toHaveBeenCalledWith(customerId);
             expect(TicketService.create).toHaveBeenCalledWith(3, expect.stringContaining('Product Purchase ' + productId));
             expect(Email.send).toHaveBeenCalledWith(expect.stringContaining('Product Purchase: ' + productId), expect.anything());
         })
     })
+
+    describe('cleanupExpiredPrintOverrides', () => {
+        it('should remove -1 override for users > 30 days old', async () => {
+            const user = newTestUser(1, AccountType.simmer, PLAN_ID_SIM);
+            user.printCredits = 0;
+            user.printRefillOverride = -1;
+
+            const mockUserDao = getMockUserDao(user);
+            (mockUserDao as any).getUsersWithExpiredPrintOverrides.mockResolvedValue([user]);
+
+            const count = await Business.cleanupExpiredPrintOverrides(mockUserDao);
+
+            expect(count).toBe(1);
+            expect(user.printRefillOverride).toBeUndefined();
+            expect(mockUserDao.updatePrintRefillOverride).toHaveBeenCalledWith(user);
+            // student credit = 8, simmer = 4. Simmer is PLAN_ID_SIM
+            expect(user.printCredits).toBe(4);
+            expect(mockUserDao.updatePrintCredit).toHaveBeenCalledWith(user);
+            expect(UsageDao.refill).toHaveBeenCalled();
+        });
+
+        it('should result in 0 cleanups if no users are expired', async () => {
+            const mockUserDao = getMockUserDao(newTestUser());
+            (mockUserDao as any).getUsersWithExpiredPrintOverrides.mockResolvedValue([]);
+
+            const count = await Business.cleanupExpiredPrintOverrides(mockUserDao);
+
+            expect(count).toBe(0);
+            expect(mockUserDao.updatePrintRefillOverride).not.toHaveBeenCalled();
+        });
+    });
 });
 
 

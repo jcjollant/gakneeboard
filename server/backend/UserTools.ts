@@ -52,6 +52,8 @@ export class UserTools {
         // new user => creation
         user.isNew = true;
         Business.primeUser(user)
+        // we are currently giving all new users unlimited prints
+        user.setPrintRefillOverride(-1)
 
         if (body.attribution) {
             user.setAttribution(body.attribution)

@@ -111,11 +111,10 @@ export class Business {
      * @returns true if user can print, false if not
      */
     static async printConsume(user: User, userDao: UserDao): Promise<boolean> {
-        const accountType = user.accountType
         const quotas = this.getQuotas(user)
 
         // Unlimited users do not consume prints
-        if (quotas.prints == -1) return true;
+        if (quotas.prints == -1 || user.printRefillOverride == -1) return true;
 
         // user with quotas are metered
         if (user.printCredits <= 0) return false; // Broke bro
@@ -230,5 +229,35 @@ export class Business {
         await Email.send(message, EmailType.Purchase)
 
         return user;
+    }
+
+    /**
+     * Removes unlimited print overrides for users who joined more than 30 days ago.
+     * @param userDao UserDao to access user data
+     * @returns Number of users cleaned up
+     */
+    static async cleanupExpiredPrintOverrides(userDao: UserDao): Promise<number> {
+        const expiredUsers = await userDao.getUsersWithExpiredPrintOverrides(30);
+        let count = 0;
+
+        for (const user of expiredUsers) {
+            try {
+                const previousCredits = user.printCredits;
+                // Remove the override
+                user.printRefillOverride = undefined;
+                await userDao.updatePrintRefillOverride(user);
+
+                // Recalculate and update print credits to normal plan quota
+                user.printCredits = Business.calculatePrintCredits(user);
+                if (previousCredits !== user.printCredits) {
+                    await userDao.updatePrintCredit(user);
+                    await UsageDao.refill(user.id, previousCredits, user.printCredits);
+                }
+                count++;
+            } catch (e) {
+                console.error(`[Business.cleanupExpiredPrintOverrides] Failed for user ${user.id}: ${e}`);
+            }
+        }
+        return count;
     }
 }

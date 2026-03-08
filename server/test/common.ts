@@ -14,6 +14,8 @@ import { PageType, Template } from '../backend/models/Template'
 export function getMockUserDao(user: User): UserDao {
     const mockUserDao = new UserDao() as jest.Mocked<UserDao>;
     jest.spyOn(mockUserDao, 'updatePrintCredit').mockResolvedValue()
+    jest.spyOn(mockUserDao, 'updatePrintRefillOverride').mockResolvedValue()
+    jest.spyOn(mockUserDao, 'getUsersWithExpiredPrintOverrides').mockResolvedValue([])
     jest.spyOn(mockUserDao, 'getFromCustomerId').mockResolvedValue(user);
     jest.spyOn(mockUserDao, 'addPrints').mockResolvedValue(user);
     jest.spyOn(mockUserDao, 'updateType').mockResolvedValue();

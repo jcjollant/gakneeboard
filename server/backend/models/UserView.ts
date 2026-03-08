@@ -24,7 +24,7 @@ export class UserView implements IUserView {
         this.maxTemp = user.maxTemplates;
         this.templates = templates;
         this.accountType = user.accountType;
-        this.printCredits = user.printCredits;
+        this.printCredits = Business.calculatePrintCredits(user);
         this.eulaCurrent = user.eula >= Business.latestEula;
         this.homeAirport = user.homeAirport;
         this.isNew = user.isNew;
