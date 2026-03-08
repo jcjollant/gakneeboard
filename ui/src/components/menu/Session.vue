@@ -52,7 +52,12 @@ function onAuthentication(newUser:any) {
   showSignIn.value = false
   if( newUser) {
     // console.log('[Session.onAuthentication] ', newUser)
-    toaster.success('Clear', 'Welcome ' + newUser.name)
+    const welcome = 'Welcome ' + newUser.name
+    if(newUser.printCredits === -1) {
+      toaster.success( welcome,  'Enjoy your unlimited prints!')
+    } else {
+      toaster.success( 'Clear', welcome)
+    }
     // reload Home Page
     window.location.reload()
   } else {
