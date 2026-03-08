@@ -234,7 +234,15 @@ async function onPrint(options:PrintOptions|undefined) {
   printing = true
   showOptions.value = false
   AnalyticsService.print(template.value, 'print')
-  postPrint(route.params.id, options)
+  const printResult = await postPrint(route.params.id, options)
+  
+  // If postPrint failed, it returns null
+  if (!printResult) {
+    printing = false
+    toaster.error('Print Failed', 'You may be out of print credits.')
+    redirectToPlansPage()
+    return
+  }
 
   await nextTick()
   await new Promise(resolve => setTimeout(resolve, 1000));
