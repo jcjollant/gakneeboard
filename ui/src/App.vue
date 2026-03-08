@@ -73,6 +73,10 @@ onBeforeMount( () => {
       if(currentUser.loggedIn && !currentUser.eulaCurrent) {
         showEula.value = true
       }
+      // show a toast if unlimited prints
+      if(currentUser.printCredits === -1) {
+        toaster.success( 'CAVU',  'Enjoy your unlimited prints!')
+      }
     })
 })
 
@@ -143,18 +147,6 @@ function feedbackSubmitted() {
     showFeedback.value = false
   }, 100)
 }
-
-// function onCloseHowDoesItWork() {
-//   showHowDoesItWork.value =  false
-//   LocalStoreService.popupHide(1)
-// }
-
-// function onClosePopup(remember) {
-//   showPopup.value = false
-//   if(remember) {
-//     LocalStoreService.popupHide(2)
-//   }
-// }
 
 </script>
 

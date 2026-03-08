@@ -16,15 +16,17 @@
             </div>
             <div class="key">Kneeboards</div>
             <div class="value">
-                <div class="templatesCount" :class="{'maxedOut':user.templates.length > user.maxTemplateCount }">{{user.templates.length}} / {{ user.maxTemplateCount }}</div>
+                <div v-if="user.maxTemplateCount == -1" class="unlimited">Unlimited</div>
+                <div v-else class="templatesCount" :class="{'maxedOut':user.templates.length > user.maxTemplateCount }">{{user.templates.length}} / {{ user.maxTemplateCount }}</div>
             </div>
             <div class="key">Pages</div>
             <div class="value">
-              <div class="pagesCount" :class="{'maxedOut':user.pageCount > user.maxPageCount }">{{ user.pageCount }} / {{ user.maxPageCount }}</div>
+              <div v-if="user.maxPageCount == -1" class="unlimited">Unlimited</div>
+              <div v-else class="pagesCount" :class="{'maxedOut':user.pageCount > user.maxPageCount }">{{ user.pageCount }} / {{ user.maxPageCount }}</div>
             </div>
             <div class="key">Print Credit</div>
-            <div v-if="user.accountType == AccountType.beta" class="value">
-              <div class="unlimited" >Unlimited</div>
+            <div v-if="user.printCredits == -1" class="value">
+              <div class="unlimited">Unlimited</div>
             </div>
             <div v-else class="value">
                 <div class="printCredits" :class="{'maxedOut':user.printCredits == 0 }">{{ user.printCredits }}</div>
@@ -276,8 +278,8 @@ async function onAirportSelected(airport: Airport) {
     text-align: center;
 }
 .unlimited {
-    color: black;
-    background-color: orange;
+    color: white;
+    background-color: #4caf50;
     border-radius: 3px;
     justify-content: center;
     align-items: center;

@@ -53,11 +53,7 @@ function onAuthentication(newUser:any) {
   if( newUser) {
     // console.log('[Session.onAuthentication] ', newUser)
     const welcome = 'Welcome ' + newUser.name
-    if(newUser.printCredits === -1) {
-      toaster.success( welcome,  'Enjoy your unlimited prints!')
-    } else {
-      toaster.success( 'Clear', welcome)
-    }
+    toaster.success( 'Clear', welcome)
     // reload Home Page
     window.location.reload()
   } else {
