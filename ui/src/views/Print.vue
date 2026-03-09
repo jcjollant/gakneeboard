@@ -234,6 +234,7 @@ async function onPrint(options:PrintOptions|undefined) {
   printing = true
   showOptions.value = false
   AnalyticsService.print(template.value, 'print')
+  toaster.info('Generating PDF', 'Preparing your perfect kneeboard...', 10000)
   const printResult = await postPrint(route.params.id, options)
   
   // If postPrint failed, it returns null

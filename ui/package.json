@@ -1,6 +1,6 @@
 {
   "name": "gak-ui",
-  "version": "6.11.6",
+  "version": "6.11.7",
   "type": "module",
   "scripts": {
     "start": "npm run dev",
