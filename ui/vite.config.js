@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [vue()],
   envPrefix: ['GAK_'],
   define: {
-    'process.env.GAK_GOOGLE_ANALYTICS': JSON.stringify(process.env.GAK_GOOGLE_ANALYTICS)
+    'process.env.GAK_GOOGLE_TAG_MANAGER': JSON.stringify(process.env.GAK_GOOGLE_TAG_MANAGER)
   },
   resolve: {
     alias: {

@@ -79,18 +79,3 @@ showSplash()
 
 
 
-const gaTag = process.env.GAK_GOOGLE_ANALYTICS;
-
-if (gaTag && gaTag !== '%GAK_GOOGLE_ANALYTICS%') {
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function gtag() { window.dataLayer.push(arguments); };
-    window.gtag('js', new Date());
-
-    if (import.meta.env.PROD) {
-        window.gtag('config', gaTag);
-    } else {
-        // In dev, you can still call config with debug mode or just let events queue in dataLayer
-        // The GA Debugger extension will also pick these up
-        window.gtag('config', gaTag, { 'debug_mode': true });
-    }
-}

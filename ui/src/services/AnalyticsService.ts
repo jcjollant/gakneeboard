@@ -1,7 +1,11 @@
 export class AnalyticsService {
     static event(name: string, params?: Record<string, any>) {
-        if (typeof window !== 'undefined' && (window as any).gtag) {
-            (window as any).gtag('event', name, params);
+        if (typeof window !== 'undefined') {
+            const dataLayer = (window as any).dataLayer = (window as any).dataLayer || [];
+            dataLayer.push({
+                event: name,
+                ...params
+            });
         }
     }
 
