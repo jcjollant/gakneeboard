@@ -220,7 +220,7 @@ export class UserDao extends Dao<User> {
     public updatePrintCredit(user: User): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
-                if (user.printCredits < 0) throw new Error('Negative print credit')
+                if (user.printCredits < -1) throw new Error('Negative print credit')
                 const result = await sql`UPDATE users SET print_credit=${user.printCredits} WHERE id=${user.id}`
                 if (result.rowCount == 1) {
                     resolve()
