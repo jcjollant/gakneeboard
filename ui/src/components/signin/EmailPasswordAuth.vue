@@ -2,12 +2,12 @@
   <div class="email-auth-container">
     <!-- Sign Up Form -->
     <div v-if="mode === 'signup'" class="auth-form">
-      <h3>Create Account</h3>
-      
       <div class="form-group">
         <label for="signup-name">Name</label>
         <input
           id="signup-name"
+          name="name"
+          autocomplete="name"
           v-model="signupName"
           type="text"
           placeholder="Your name"
@@ -20,6 +20,8 @@
         <label for="signup-email">Email</label>
         <input
           id="signup-email"
+          name="email"
+          autocomplete="email"
           v-model="signupEmail"
           type="email"
           placeholder="your@email.com"
@@ -32,6 +34,8 @@
         <label for="signup-password">Password</label>
         <input
           id="signup-password"
+          name="password"
+          autocomplete="new-password"
           v-model="signupPassword"
           type="password"
           placeholder="Min 8 characters"
@@ -44,6 +48,8 @@
         <label for="signup-password-confirm">Confirm Password</label>
         <input
           id="signup-password-confirm"
+          name="password-confirm"
+          autocomplete="new-password"
           v-model="signupPasswordConfirm"
           type="password"
           placeholder="Re-enter password"
@@ -76,12 +82,12 @@
 
     <!-- Sign In Form -->
     <div v-else-if="mode === 'signin'" class="auth-form">
-      <h3>Sign In</h3>
-      
       <div class="form-group">
         <label for="signin-email">Email</label>
         <input
           id="signin-email"
+          name="email"
+          autocomplete="email"
           v-model="signinEmail"
           type="email"
           placeholder="your@email.com"
@@ -94,6 +100,8 @@
         <label for="signin-password">Password</label>
         <input
           id="signin-password"
+          name="password"
+          autocomplete="current-password"
           v-model="signinPassword"
           type="password"
           placeholder="Your password"
@@ -123,12 +131,12 @@
 
     <!-- Password Reset Form -->
     <div v-else-if="mode === 'reset'" class="auth-form">
-      <h3>Reset Password</h3>
-      
       <div class="form-group">
         <label for="reset-email">Email</label>
         <input
           id="reset-email"
+          name="email"
+          autocomplete="email"
           v-model="resetEmail"
           type="email"
           placeholder="your@email.com"
@@ -399,6 +407,8 @@ async function handlePasswordReset() {
   padding: 0.75rem;
   font-size: 1rem;
   font-weight: 600;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .error-message {
@@ -423,6 +433,7 @@ async function handlePasswordReset() {
   text-align: center;
   font-size: 0.9rem;
   color: var(--text-color-secondary);
+  margin-bottom: 0.5rem;
 }
 
 .auth-switch a {
@@ -441,6 +452,7 @@ async function handlePasswordReset() {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.9rem;
+  margin-bottom: 0.5rem;
 }
 
 .auth-links a {

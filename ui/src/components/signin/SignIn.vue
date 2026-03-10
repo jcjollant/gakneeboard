@@ -1,5 +1,5 @@
 <template>
-    <Dialog modal header="Sign In">
+    <Dialog modal header="Welcome">
       <!-- <div class="mb-5">
         <span>Signing In will enable the following features:</span>
         <span>
@@ -13,8 +13,8 @@
       </div> -->
 
 
-      <div class="mb-4 text-center text-secondary">
-        Signing in allows you to save, print, and/or share your kneeboards.
+      <div class="mb-5 text-center text-secondary">
+        Signing in allows you to save, print, and share your kneeboards.
       </div>
 
       <div v-if="errorMessage" class="error-message mb-3">
@@ -24,19 +24,16 @@
         <div class="mb-2">Waiting for release, stand by...</div>
         <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="4" />
       </div>
-      <div class="auth-divider" v-if="!authenticating">
-        <span>Use Existing Account</span>
-      </div>
       <div class="actions" v-if="!authenticating">
         <!-- <Button label="Do not sign in" @click="emits('close')" link></Button> -->
-        <AppleSignInButton @success="onAppleSuccess" @error="() => onLoginError('apple')" />
         <GoogleSignInButton @success="onGoogleSuccess" @error="() => onLoginError('google')" />
+        <AppleSignInButton @success="onAppleSuccess" @error="() => onLoginError('apple')" />
         <!-- <FacebookSignInButton @onSuccess="onFacebookSuccess" @onFailure="() => onLoginError('facebook')" /> -->
       </div>
 
       <!-- Divider -->
       <div class="auth-divider" v-if="!authenticating">
-        <span>or</span>
+        <span>or continue with email</span>
       </div>
 
       <!-- Email/Password Authentication -->
@@ -44,11 +41,6 @@
         <EmailPasswordAuth @success="onEmailPasswordSuccess" @error="() => onLoginError('email')" />
       </div>
 
-      <!-- Survey -->
-      <div class="mt-5 pt-4 border-top-1 surface-border">
-        <div class="block mb-2 text-600 text-sm">Help us help more pilots: Where did you hear about us?</div>
-        <OneChoice :choices="channels" v-model="selectedChannel" :full="true" @change="onChannelChange" />
-      </div>
     </Dialog>
 </template>
 
@@ -63,10 +55,7 @@ import Dialog from 'primevue/dialog';
 import EmailPasswordAuth from './EmailPasswordAuth.vue'
 // import FacebookSignInButton from './FacebookSignInButton.vue'
 import GoogleSignInButton from './GoogleSignInButton.vue';
-import OneChoice from '../shared/OneChoice.vue';
 import ProgressSpinner from 'primevue/progressspinner';
-import { OneChoiceValue } from '../../models/OneChoiceValue';
-import { AttributionService } from '../../services/AttributionService';
 import { AnalyticsService } from '../../services/AnalyticsService';
 
 const emits = defineEmits(["close",'authentication']);
@@ -75,22 +64,6 @@ onMounted(() => {
   AnalyticsService.viewSignIn()
 })
 
-const channels = [
-  new OneChoiceValue('?', ''),
-  new OneChoiceValue('Blog', 'Blog'),
-  new OneChoiceValue('Brochure', 'Brochure'),
-  new OneChoiceValue('Facebook', 'Facebook'),
-  new OneChoiceValue('Instagram', 'Instagram'),
-  new OneChoiceValue('Press', 'Press'),
-  new OneChoiceValue('YouTube', 'YouTube')
-]
-const selectedChannel = ref<OneChoiceValue | undefined>(channels[0])
-
-function onChannelChange() {
-  if (selectedChannel.value && selectedChannel.value.value != '') {
-    AttributionService.saveAttribution('source:' + selectedChannel.value.value)
-  }
-}
 const authenticating = ref(false)
 const errorMessage = ref('')
 
@@ -105,7 +78,7 @@ function authenticate(source:string, token:string, user:any=undefined) {
       authenticating.value = false;
 
       if (user.isNew) {
-        AnalyticsService.signUp(source, selectedChannel.value?.value)
+        AnalyticsService.signUp(source, undefined)
       } else {
         AnalyticsService.login(source)
       }
@@ -156,7 +129,7 @@ function onEmailPasswordSuccess( data:any) {
 <style scoped>
 .actions {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 1rem;
