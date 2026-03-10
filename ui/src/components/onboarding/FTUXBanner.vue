@@ -54,8 +54,6 @@ import { OnboardingService } from '../../services/OnboardingService'
 import { LocalStoreService } from '../../services/LocalStoreService'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-import { UserUrl } from '../../lib/UserUrl'
-
 const isVisible = ref(false)
 const showVideo = ref(false)
 
@@ -63,7 +61,13 @@ onMounted(() => {
   // Show banner with a slight delay for effect
   setTimeout(() => {
     if (!LocalStoreService.hasDismissedFtuxBanner()) {
-      isVisible.value = true
+      const tourSeen = localStorage.getItem('vfr-tour-seen')
+      if (!tourSeen) {
+        localStorage.setItem('vfr-tour-seen', '1')
+        startTour()
+      } else {
+        isVisible.value = true
+      }
     }
   }, 1000)
 })

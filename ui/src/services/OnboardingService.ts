@@ -36,17 +36,17 @@ export class OnboardingService {
                     {
                         element: '.page0',
                         popover: {
-                            title: 'Welcome to your custom kneeboard!',
-                            description: 'This page is pre-filled with the frequencies and airport information you picked earlier. We can customize this further',
+                            title: 'Welcome to your kneeboard!',
+                            description: 'We\'ve pre-filled this kneeboard for a VFR flight but you will probably want to customize it.',
                             side: "bottom",
                             align: 'start'
                         }
                     },
                     {
-                        element: '.page0 .tile0 .replaceButton',
+                        element: '.page0 .tile0',
                         popover: {
-                            title: 'Replace Tile',
-                            description: 'Click the replace button to replace the tile with another tile.',
+                            title: 'The Airport Tile',
+                            description: 'Anything you need to know about the airport. Each corner is configurable',
                             side: "bottom",
                             align: 'start'
                         }
@@ -61,10 +61,19 @@ export class OnboardingService {
                         }
                     },
                     {
-                        element: '#btnPrint',
+                        element: '.page0 .tile0 .replaceButton',
                         popover: {
-                            title: 'Ready to fly?',
-                            description: 'Click Print to generate your physical kneeboard or export to PDF.',
+                            title: 'Replace Tile',
+                            description: 'Click the replace button to replace the tile with another tile.',
+                            side: "bottom",
+                            align: 'start'
+                        }
+                    },
+                    {
+                        element: '#btnRoute',
+                        popover: {
+                            title: 'Change your route',
+                            description: 'Updating the route can update multiple tiles on one go.',
                             side: "right",
                             align: 'start'
                         }
@@ -78,9 +87,18 @@ export class OnboardingService {
                             align: 'start'
                         }
                     },
+                    // {
+                    //     element: '#btnPrint',
+                    //     popover: {
+                    //         title: 'Ready to fly?',
+                    //         description: 'Click Print to generate your physical kneeboard or export to PDF.',
+                    //         side: "right",
+                    //         align: 'start'
+                    //     }
+                    // },
                     {
                         popover: {
-                            title: 'You\'re All Set!',
+                            title: 'You\'re Solo Now!',
                             description: 'Fly safe and enjoy your custom kneeboard!',
                         }
                     }
