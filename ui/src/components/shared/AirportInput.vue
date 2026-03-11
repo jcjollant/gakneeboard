@@ -142,6 +142,9 @@ function fetchAirport() {
 function onCodeUpdate() {
     // console.log(airportCode.value)
     // console.log('[AirportEdit.onCodeUpdate]',Date.now())
+    if (code.value) {
+        code.value = code.value.toUpperCase()
+    }
     name.value = '...'
     valid.value = false
     routeCodeModel.value = undefined
