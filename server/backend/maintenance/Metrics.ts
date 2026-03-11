@@ -46,6 +46,7 @@ export enum MetricKey {
     export7 = 'exports-7d',
     export28 = 'exports-28d',
     feedbacks = 'feedbacks',
+    metar28 = 'metar-28d',
     notams28 = 'notams-28d',
     onboard28 = 'onboard-28d',
     pageApproach = 'approachPageCount',
@@ -104,6 +105,7 @@ export class Metrics {
             [ApiName.Adip]: MetricKey.adip28,
             [ApiName.Skyvector]: MetricKey.skyvector28,
             [ApiName.Nms]: MetricKey.notams28,
+            [ApiName.Metar]: MetricKey.metar28,
         }
         // unknown api calls are mapped to unknown
         return Object.entries(counts).map(([type, count]) => new Metric(mapping[type] || MetricKey.unknown28, count))
