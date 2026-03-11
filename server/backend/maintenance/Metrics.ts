@@ -200,7 +200,8 @@ export class Metrics {
         }
 
         // compute the average monthly revenue
-        allMetrics.push(new Metric(MetricKey.revenueARPA, monthlyRevenue / activeCustomers.value))
+        const arpa = monthlyRevenue / activeCustomers.value;
+        allMetrics.push(new Metric(MetricKey.revenueARPA, Math.round(arpa * 100) / 100))
 
         return allMetrics
     }
