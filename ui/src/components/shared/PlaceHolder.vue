@@ -4,7 +4,7 @@ import { onMounted, ref } from 'vue'
 const props = defineProps({
     title: { type: String, default: '?'},
     subtitle: { type: String, default: 'Click upper left to configure'},
-    subtitle2: { type: String, default: '' },
+    subtitles: { type: Array, default: () => [] },
 })
 
 const title = ref('')
@@ -24,8 +24,10 @@ onMounted(() => {
     <div class="placeHolder">
         <div>
             <div>{{ title }}</div>
-            <div class="small">{{subtitle}}</div>
-            <div v-if="subtitle2" class="small">{{subtitle2}}</div>
+            <template v-if="subtitles && subtitles.length > 0">
+                <div v-for="(sub, index) in subtitles" :key="index" class="small">{{ sub }}</div>
+            </template>
+            <div v-else class="small">{{ subtitle }}</div>
         </div>
     </div>
 
