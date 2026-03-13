@@ -1,9 +1,6 @@
 <template>
     <div class="settings">
-        <div class="field">
-            <Separator name="Display" :leftAligned="true" />
-            <DisplayModeSelector :choices="modesList" v-model="selectedModeChoice" :showPreviews="true" />
-        </div>
+
         <Separator name="Airport" :leftAligned="true" />
         <AirportInput v-model="airport" v-model:routeCode="selectedRouteCode" :showRecent="true" large :route="route" @valid="emitUpdate"/>
     </div>
@@ -20,7 +17,7 @@ import { IfrTileConfig } from './IfrTileConfig.ts';
 import { RouteService } from '../../services/RouteService.ts';
 
 import AirportInput from '../shared/AirportInput.vue';
-import DisplayModeSelector from '../shared/DisplayModeSelector.vue';
+
 import Separator from '../shared/Separator.vue';
 
 
@@ -35,14 +32,7 @@ const airport = ref(new Airport())
 const displayMode = ref(DisplayModeIfr.BoxV)
 const selectedRouteCode = ref<RouteCode | undefined>(undefined);
 
-const modesList = ref(IfrTileConfig.modesList)
 
-const selectedModeChoice = computed({
-    get: () => modesList.value.find(c => c.value === displayMode.value),
-    set: (val) => { 
-        if(val) displayMode.value = val.value as DisplayModeIfr 
-    }
-})
 
 onMounted(() => {
     loadFromData(props.tileData as TileData)
