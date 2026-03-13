@@ -20,25 +20,45 @@
                 </div>
             </div>
 
-            <!-- DEPARTURES SECTION -->
-            <div v-if="airport?.dep?.length" class="chart-category">
-                <div class="category-header">DEPARTURES</div>
-                <div v-for="chart in airport.dep" :key="chart.pdf" class="chart-row" @click="openChart(chart.pdf)">
-                    <i class="pi pi-file-pdf"></i>
-                    <span class="chart-name">{{ chart.name }}</span>
+            <!-- DEPARTURES & APPROACHES TABS -->
+            <div v-if="airport?.dep?.length || airport?.iap?.length">
+                <div class="chart-tabs">
+                    <div class="chart-tab" :class="{ active: activeTab === 'dep' }" @click="activeTab = 'dep'">
+                        DEP <span class="count" v-if="airport?.dep?.length">({{ airport.dep.length }})</span>
+                    </div>
+                    <div class="chart-tab" :class="{ active: activeTab === 'iap' }" @click="activeTab = 'iap'">
+                        APP <span class="count" v-if="airport?.iap?.length">({{ airport.iap.length }})</span>
+                    </div>
+                </div>
+
+                <!-- DEPARTURES SECTION -->
+                <div v-if="activeTab === 'dep'" class="chart-category">
+                    <div v-if="airport?.dep?.length">
+                        <div v-for="chart in airport.dep" :key="chart.pdf" class="chart-row" @click="openChart(chart.pdf)">
+                            <i class="pi pi-file-pdf"></i>
+                            <span class="chart-name">{{ chart.name }}</span>
+                        </div>
+                    </div>
+                    <div v-else class="no-charts-tab">
+                        No departures available
+                    </div>
+                </div>
+
+                <!-- APPROACHES SECTION -->
+                <div v-if="activeTab === 'iap'" class="chart-category">
+                    <div v-if="airport?.iap?.length">
+                        <div v-for="chart in airport.iap" :key="chart.pdf" class="chart-row" @click="openChart(chart.pdf)">
+                            <i class="pi pi-file-pdf"></i>
+                            <span class="chart-name">{{ chart.name }}</span>
+                        </div>
+                    </div>
+                    <div v-else class="no-charts-tab">
+                        No approaches available
+                    </div>
                 </div>
             </div>
 
-            <!-- APPROACHES SECTION -->
-            <div v-if="airport?.iap?.length" class="chart-category">
-                <div class="category-header">APPROACHES</div>
-                <div v-for="chart in airport.iap" :key="chart.pdf" class="chart-row" @click="openChart(chart.pdf)">
-                    <i class="pi pi-file-pdf"></i>
-                    <span class="chart-name">{{ chart.name }}</span>
-                </div>
-            </div>
-
-            <div v-if="!airport?.diagram && !airport?.notice && !airport?.iap?.length && !airport?.dep?.length" class="no-charts">
+            <div v-if="!airport?.diagram && !airport?.notice && !airport?.iap?.length && !airport?.dep?.length && !airport?.supp" class="no-charts">
                 No charts available
             </div>
         </div>
@@ -46,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue';
+import { PropType, ref } from 'vue';
 import { Airport } from '../../models/Airport';
 import { DiagramService, ChartType } from '../../services/DiagramService';
 
@@ -56,6 +76,8 @@ defineProps({
         required: false
     }
 });
+
+const activeTab = ref('dep');
 
 function openChart(pdf: string, type: ChartType = ChartType.Diagram) {
     if (pdf) {
@@ -145,5 +167,50 @@ function openChart(pdf: string, type: ChartType = ChartType.Diagram) {
     padding: 40px 10px;
     font-style: italic;
     font-size: 0.9rem;
+}
+
+.chart-tabs {
+    display: flex;
+    background-color: var(--bg-color-tertiary, #eee);
+    border-bottom: 2px solid var(--border-color, #ddd);
+}
+
+.chart-tab {
+    flex: 1;
+    text-align: center;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--text-color-secondary, #666);
+    padding: 8px 10px;
+    cursor: pointer;
+    letter-spacing: 0.05rem;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+}
+
+.chart-tab:hover {
+    background-color: var(--bg-color-hover, #e0e0e0);
+}
+
+.chart-tab.active {
+    color: var(--primary-color, #007bff);
+    border-bottom: 2px solid var(--primary-color, #007bff);
+}
+
+.count {
+    opacity: 0.7;
+    font-weight: 500;
+    margin-left: 2px;
+}
+
+.no-charts-tab {
+    text-align: center;
+    color: #999;
+    padding: 20px 10px;
+    font-style: italic;
+    font-size: 0.85rem;
+    background-color: var(--bg-color, #fff);
+    border-bottom: 1px solid var(--border-color, #ddd);
 }
 </style>

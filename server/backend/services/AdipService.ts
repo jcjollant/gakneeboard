@@ -110,9 +110,10 @@ export class AdipService implements AirportDataSource {
             AdipService.fetchAirportChartSupplement(payload, config)
         ])
 
-        // enrich airport with approaches if both are defined
+        // enrich airport with approaches and departures if both are defined
         if (airport && acd) {
             airport.iap = acd.iap;
+            airport.dep = acd.dep;
             airport.diagram = acd.diagram
         }
         if (airport && acsd) {
