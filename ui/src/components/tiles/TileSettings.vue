@@ -81,6 +81,8 @@ const title = computed(() => {
     let name = '';
     if(props.tile.name === TileType.clearance) {
         name = 'IFR';
+    } else if(props.tile.name === TileType.vfr) {
+        name = 'VFR';
     } else {
         // Capitalize first letter
         name = props.tile.name.charAt(0).toUpperCase() + props.tile.name.slice(1);
