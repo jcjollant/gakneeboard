@@ -4,6 +4,7 @@ import { onMounted, ref } from 'vue'
 const props = defineProps({
     title: { type: String, default: '?'},
     subtitle: { type: String, default: 'Click upper left to configure'},
+    subtitle2: { type: String, default: '' },
 })
 
 const title = ref('')
@@ -24,6 +25,7 @@ onMounted(() => {
         <div>
             <div>{{ title }}</div>
             <div class="small">{{subtitle}}</div>
+            <div v-if="subtitle2" class="small">{{subtitle2}}</div>
         </div>
     </div>
 
