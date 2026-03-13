@@ -1,5 +1,6 @@
 <template>
   <div class="print">
+    <PrintingAnimation :visible="printing" />
     <PrintOptionsDialog v-model:visible="showOptions" :pageSelection="pageSelection"
         :format="template?.format"
         @options="onOptionsUpdate"
@@ -46,6 +47,7 @@ import { computeSHA256 } from '../assets/Sha';
 
 import Page from '../components/page/Page.vue';
 import PrintOptionsDialog from '../components/print/PrintOptionsDialog.vue';
+import PrintingAnimation from '../components/print/PrintingAnimation.vue';
 import MarginNotes from '../components/print/MarginNotes.vue';
 import { VerticalInfoBarContent } from '../models/VerticalInfoBarOption.js';
 import { StoreService } from '../services/StoreService';
@@ -78,7 +80,7 @@ const route = useRoute()
 const router = useRouter()
 const showOptions = ref(true)
 const toaster = useToaster(useToast())
-let printing = false
+const printing = ref(false)
 
 function getPageStyle(flipped: boolean) {
   if (printClipMargin.value === 0 && !flipped) return {};
@@ -117,7 +119,7 @@ onMounted(() => {
 });
 
 watch(showOptions, (value) => {
-    if(!value && !printing) {
+    if(!value && !printing.value) {
         showOptions.value = false
         router.back()
     }
@@ -157,7 +159,7 @@ async function onExportPdf(options: PrintOptions | undefined) {
   }
   
   if (!canUserPrint()) {
-      printing = false
+      printing.value = false
       redirectToPlansPage()
       return
   }
@@ -168,7 +170,7 @@ async function onExportPdf(options: PrintOptions | undefined) {
   UsageService.declare(UsageType.CreateDoc, { templateId: route.params.id })
 
   await nextTick()
-    printing = true
+    printing.value = true
     await new Promise(resolve => setTimeout(resolve, 1000));
     updateThumbnail();
     
@@ -184,7 +186,7 @@ async function onExportPdf(options: PrintOptions | undefined) {
     } catch (error) {
         console.error('Error printing:', error);
     } finally {
-        printing = false
+        printing.value = false
         printFullpage.value = false
     }
 }
@@ -192,7 +194,7 @@ async function onExportPdf(options: PrintOptions | undefined) {
 async function onLaminate(options: PrintOptions | undefined) {
   if (!options) return;
   
-  printing = true
+  printing.value = true
   showOptions.value = false
   AnalyticsService.print(template.value, 'laminate')
   onOptionsUpdate(options)
@@ -215,7 +217,7 @@ async function onLaminate(options: PrintOptions | undefined) {
   } catch(e) {
       console.error(e);
       toaster.error('That didn\'t work', 'Failed to process print for lamination: ');
-      printing = false;
+      printing.value = false;
       showOptions.value = true;
   }
 }
@@ -226,20 +228,19 @@ async function onLaminate(options: PrintOptions | undefined) {
  */
 async function onPrint(options:PrintOptions|undefined) {
   if (!canUserPrint()) {
-    printing = false
+    printing.value = false
     redirectToPlansPage()
     return
   }
   
-  printing = true
+  printing.value = true
   showOptions.value = false
   AnalyticsService.print(template.value, 'print')
-  toaster.info('Generating PDF', 'Preparing your perfect kneeboard...', 10000)
   const printResult = await postPrint(route.params.id, options)
   
   // If postPrint failed, it returns null
   if (!printResult) {
-    printing = false
+    printing.value = false
     toaster.error('Print Failed', 'You may be out of print credits.')
     redirectToPlansPage()
     return
