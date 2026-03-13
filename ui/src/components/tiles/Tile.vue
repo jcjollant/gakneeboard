@@ -22,7 +22,7 @@
     <EmergencyTile v-else-if="tile.name==TileType.emergency" :params="tile.data"
         @replace="onReplace" @update="onUpdate"/>
     <VfrTile v-else-if="tile.name==TileType.vfr" :params="tile.data" :route="route"
-        @replace="onReplace" @update="onUpdate" />
+        @replace="onReplace" @update="onUpdate" @settings="emits('settings',tile)" />
     <div v-else class="tile">
         <Header :title="title" :replace="restorable" :clickable="restorable" :leftButton="''"
             @replace="tile=previousTile"></Header>

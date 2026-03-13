@@ -1,7 +1,7 @@
 <template>
     <div class="tile">
-        <Header :title="getTitle()" :showReplace="displaySelection"
-            @replace="emits('replace')" @display="displaySelection = !displaySelection"></Header>
+        <Header :title="getTitle()" :showReplace="displaySelection" leftButton="settings"
+            @replace="emits('replace')" @display="displaySelection = !displaySelection" @settings="emits('settings')"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" @keep="displaySelection=false" />
         <div v-else-if="displayMode==DisplayModeVfr.Altitudes" >
             <ImageContent src="vfr-altitudes.png" /> 
@@ -26,6 +26,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { Route } from '@gak/shared';
+import { currentUser } from '../../assets/data';
 import { Airport } from '../../models/Airport.ts';
 import { DisplayModeChoice, DisplayModeVfr, DisplayModeSunlight } from '../../models/DisplayMode.ts';
 import { getAirport } from '../../services/AirportDataService';
@@ -46,7 +47,7 @@ import TileModeDots from '../shared/TileModeDots.vue';
 
 const noAirport = new Airport()
 const airport = ref(noAirport)
-const emits = defineEmits(['replace','update'])
+const emits = defineEmits(['replace','update', 'settings'])
 const defaultMode = DisplayModeVfr.CloudClearance
 const displayMode=ref(DisplayModeVfr.Unknown)
 const sunlightParams=ref({})
@@ -114,10 +115,12 @@ function loadProps(props:any) {
          if( props.params.sunlight) {
             sunlightParams.value = props.params.sunlight
          } else if (displayMode.value == DisplayModeVfr.Sunlight) {
-            if (useRoute && props.route) {
-                sunlightParams.value = { from: props.route.dep, to: props.route.dst, mode: DisplayModeSunlight.Flight }
-            } else if (props.params.airport) {
-                sunlightParams.value = { from: props.params.airport, to: props.params.airport, mode: DisplayModeSunlight.Flight }
+            // Check for home airport if nothing else
+            const fromCode = (useRoute && props.route) ? props.route.dep : (props.params.airport || currentUser.homeAirport)
+            const toCode = (useRoute && props.route) ? props.route.dst : (props.params.to || fromCode)
+            
+            if (fromCode) {
+                sunlightParams.value = { from: fromCode, to: toCode, mode: DisplayModeSunlight.Flight }
             }
          }
     } else {

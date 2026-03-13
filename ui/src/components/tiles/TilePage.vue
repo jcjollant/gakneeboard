@@ -41,6 +41,7 @@ import ChecklistSettings from '../checklist/ChecklistSettings.vue';
 import IFRTileSettings from '../clearance/IFRTileSettings.vue';
 import NotesTileSettings from '../notes/NotesTileSettings.vue';
 import RadioTileSettings from '../radios/RadioTileSettings.vue';
+import VfrTileSettings from '../vfr/VfrTileSettings.vue';
 import Tile from './Tile.vue';
 import TileSettings from './TileSettings.vue';
 
@@ -75,6 +76,8 @@ const settingsComponent = computed(() => {
       return IFRTileSettings;
     case TileType.notes:
       return NotesTileSettings;
+    case TileType.vfr:
+      return VfrTileSettings;
     // add other cases here
     default:
       return null;

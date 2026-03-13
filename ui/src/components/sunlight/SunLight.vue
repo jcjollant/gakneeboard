@@ -6,23 +6,8 @@
         <DisplayModeSelection v-if="showHeader && displayModeSelection" :modes="displayModesList" v-model="displayMode"
             @keep="displayModeSelection=false" />
 
-        <div v-else-if="editMode" class="content">
-            <div class="settings">
-                <AirportInput :code="airportFromCode" label="From" :auto="true"
-                    @valid="onAirportFrom" />
-                <AirportInput :code="airportToCode" label="To" :auto="true"
-                    @valid="onAirportTo"   />
-                <InputGroup>
-                    <InputGroupAddon class="airportCodeLabel">Date</InputGroupAddon>
-                    <Calendar v-model="dateFrom" showIcon />
-                </InputGroup>
-                <div class="nightFlight">
-                    <Checkbox v-model="nightFlight" inputId="nightFlight" binary/>
-                    <label for="nightFlight" class="ml-2">Overnight Flight</label>
-                </div> 
-            </div>
-            <ActionBar @cancel="onClick" @apply="onApply" :help="UserUrl.sunlightTileGuide" />
-        </div>
+        <DisplayModeSelection v-if="showHeader && displayModeSelection" :modes="displayModesList" v-model="displayMode"
+            @keep="displayModeSelection=false" />
         <div v-else-if="displayMode == DisplayModeSunlight.Reference">
             <ImageContent src="nights.png"/>
             <RegLink :regs="regs" />
@@ -56,7 +41,7 @@
                 <div v-if="nightFlight" class="date">Night Flight</div>
                 <div v-else class="date" :title="dateFrom ? dateFrom.toDateString() : '?'">{{ dateFrom ? dateFrom.toLocaleString('en-US', dateFormatBottom) : '?' }}</div>
             </div>
-            <PlaceHolder v-else title="No Airport" subtitle="Click here to Configure" />
+            <PlaceHolder v-else title="No Airport" />
         </div>
     </div>    
 </template>
@@ -152,14 +137,14 @@ function loadProps(newProps) {
     // default to today if we don't have a date
     // default to day flight if we don't have a settings
     const now = new Date()
-    dateFrom.value = now
+    dateFrom.value = state.date ? new Date(state.date) : now
     nightFlight.value = state.night
     // console.debug('[SunLight.loadProps] from', JSON.stringify(dateFrom.value), "to", JSON.stringify(dateTo.value))
     displayMode.value = state.mode && state.mode != displayModeDefault ? state.mode : (state.from ? DisplayModeSunlight.Flight : displayModeDefault)
     state.mode = displayMode.value
     displayModeSelection.value = displayMode.value == DisplayModeSunlight.Unknown
 
-    if( displayMode.value == DisplayModeSunlight.Flight && airportFromCode.value) {
+    if( airportFromCode.value) {
         getData(false)
     }
 }
@@ -251,35 +236,11 @@ function getTitle() {
     }
 }
 
-function onAirportFrom( airport) {
-    // console.debug('[SunLight.onAirportFrom]', JSON.stringify(airport))
-    if(airport.code && airport.code != airportFromCode.value) {
-        airportFromCode.value = airport.code
-    }
-}
-
-function onAirportTo( airport) {
-    airportToCode.value = airport.code
-}
-
-function onApply() {
-    // you need at least a valid from airport and a valid date
-    if( airportFromCode.value && dateFrom.value) {
-        // copy airportFrom onto airportTo if not provided
-        if( airportToCode.value == '' || !airportToCode.value) airportToCode.value = airportFromCode.value
-        // console.debug('[SunLight.onApply]', airportFromCode.value, airportToCode.value, date.value)
-        // fetch data for these airports
-        getData()
-        onClick()
-    } else {
-        console.log('From Airport is invalid or date is not set')
-    }
-}
 
 // Toggle between edit mode and current mode
 function onClick() {
-    editMode.value = !editMode.value
-    if(editMode.value) circleKey.value = Date.now()
+    // editMode.value = !editMode.value
+    // if(editMode.value) circleKey.value = Date.now()
 }    
 
 function saveConfig() {
@@ -288,6 +249,9 @@ function saveConfig() {
 </script>
 
 <style scoped>
+.tile {
+    border: none;
+}
 .sunlight {
     cursor: pointer;
 }
