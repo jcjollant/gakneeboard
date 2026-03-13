@@ -48,7 +48,7 @@
                     <MetarBadge v-if="showMetar && metar" :metar="metar" @click.stop="onMetarBadgeClick" />
                 </div>
             </div>
-            <PlaceHolder v-else title="No Airport" />
+            <PlaceHolder v-else title="No Airport" :subtitles="['Click upper left to configure', 'Or', 'Add a Home Airport to your profile']"/>
         </div>
         <NotamListDialog :visible="showNotamsDialog" :notams="notamsList" :airportCode="config.code" :airportName="title" @close="showNotamsDialog = false" />
         <MetarDialog :visible="showMetarDialog" :metar="metar" :airportCode="config.code" :airportName="title" :elevation="airportData?.elev" @close="showMetarDialog = false" />
