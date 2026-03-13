@@ -7,27 +7,22 @@
             <div class="input-container">
                 <span class="p-float-label">
                     <InputText id="acronym-input" v-model="customWord" class="w-full" />
-                    <label for="acronym-input">Acronym</label>
+                    <!-- <label for="acronym-input">Acronym</label> -->
                 </span>
                 <small class="help-text">Enter the word or acronym to display on the tile.</small>
             </div>
         </div>
 
         <!-- Compass Mode Configuration -->
-        <div v-if="currentMode === DisplayModeNotes.Compass" class="settings-section">
-            <Separator name="Compass Options" />
-            <div class="compass-options">
-                <EitherOr v-model="compassHeading" either="Heading" or="Hold" />
-            </div>
-        </div>
+        <SeparatorChoice name="Compass Layout" v-model="compassHeading" choiceA="Heading" choiceB="Hold" />
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed, inject } from 'vue';
+import { ref, onMounted, watch, inject } from 'vue';
 import InputText from 'primevue/inputtext';
-import EitherOr from '../shared/EitherOr.vue';
 import Separator from '../shared/Separator.vue';
+import SeparatorChoice from '../shared/SeparatorChoice.vue';
 
 import { DisplayModeNotes, DisplayModeChoice } from '../../models/DisplayMode';
 import { TileData } from '../../models/TileData';
