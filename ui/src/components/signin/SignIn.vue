@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { authenticationRequest } from '../../assets/data'
 
 // Components
@@ -58,11 +58,17 @@ import GoogleSignInButton from './GoogleSignInButton.vue';
 import ProgressSpinner from 'primevue/progressspinner';
 import { AnalyticsService } from '../../services/AnalyticsService';
 
+const props = defineProps({
+  visible: { type: Boolean, default: false }
+})
+
 const emits = defineEmits(["close",'authentication']);
 
-onMounted(() => {
-  AnalyticsService.viewSignIn()
-})
+watch(() => props.visible, (isVisible) => {
+  if (isVisible) {
+    AnalyticsService.viewSignIn()
+  }
+}, { immediate: true })
 
 const authenticating = ref(false)
 const errorMessage = ref('')
