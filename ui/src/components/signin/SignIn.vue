@@ -1,5 +1,5 @@
 <template>
-    <Dialog modal header="Welcome">
+    <Dialog v-bind="$attrs" :visible="visible" modal header="Welcome">
       <!-- <div class="mb-5">
         <span>Signing In will enable the following features:</span>
         <span>
