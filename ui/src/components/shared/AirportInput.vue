@@ -145,7 +145,7 @@ function onCodeUpdate() {
     if (code.value) {
         code.value = code.value.toUpperCase()
     }
-    name.value = '...'
+    name.value = `...`
     valid.value = false
     routeCodeModel.value = undefined
     
@@ -157,6 +157,7 @@ function onCodeUpdate() {
     // only load the new code after a short delay to avoid sending useless query
     if( code.value && code.value.length > 2) {
         timeoutId = setTimeout( () => {
+            name.value = `fetching ${code.value} ...`
             fetchAirport()
         }, 500)
     }
