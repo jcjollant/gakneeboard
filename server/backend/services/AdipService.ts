@@ -317,9 +317,7 @@ export class AdipService implements AirportDataSource {
         if (adip.arp) {
             airport.setLocation(adip.arp)
         }
-        if (adip.trafficPatternAltitude) {
-            airport.setTrafficPatternAltitude(elevation + adip.trafficPatternAltitude)
-        }
+        // Ignore adip.trafficPatternAltitude because it often contains incorrect or non-standard values (e.g. for KFFZ)
 
         // read frequencies
         let weatherFound: boolean = false

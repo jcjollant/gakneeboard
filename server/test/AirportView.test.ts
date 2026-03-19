@@ -137,7 +137,7 @@ describe('Airport View', () => {
     test('1W1 view', () => {
         const view = new AirportView(AdipService.parseAirport(k1w1Data));
         expect(view).toBeDefined()
-        expect(view.tpa).toBe(1229)
+        expect(view.tpa).toBeUndefined()
     })
 
     test('Supplement and Notice view', () => {
