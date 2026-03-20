@@ -8,6 +8,7 @@ import { PrintProductType, PrintOrderStatus } from '@gak/shared';
 import { TemplateHistoryDao } from "../dao/TemplateHistoryDao";
 import { AdipService } from "../services/AdipService";
 import { Target, VercelService } from "../services/VercelService";
+import { TicketService } from "../services/TicketService";
 
 
 export enum TaskStatus {
@@ -81,6 +82,7 @@ export class HouseKeeping {
                 await VercelService.triggerRedeploy()
             } catch (e: any) {
                 console.error('[HouseKeeping.perform] Failed to trigger redeploy', e.message)
+                await TicketService.create(2, `[HouseKeeping.perform] Failed to trigger redeploy: ${e.message}`)
                 // We don't fail the whole perform, but we log the error
             }
         }

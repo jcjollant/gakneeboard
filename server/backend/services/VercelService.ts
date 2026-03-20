@@ -73,7 +73,7 @@ export class VercelService {
             name: 'gak-server',
             gitSource: {
                 type: 'github',
-                repoId: 247065963, // I should verify this or use another way if possible
+                repoId: 1135755888, // ID for jcjollant/gakneeboard
                 ref: 'main'
             }
         }, {
