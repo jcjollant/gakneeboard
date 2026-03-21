@@ -13,18 +13,16 @@
       <div v-if="printFullpage" v-for="(page,index) in template.data" class="printOnePage printPageBreak">
         <div class="onePager" v-if="pageSelection[Number(index)]">
           <Page :data="page" :format="template.format" :route="template.route"
-            :style="getPageStyle(false)" />
+            :style="getStylePage(false)" />
         </div>
       </div>
-      <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages">
-        <Page :data="page.front" :format="template.format" :route="template?.route" :style="getPageStyle(false)" />
+      <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages" :style="getStyleTwoPages(false)">
+        <Page :data="page.front" :format="template.format" :route="template?.route" :style="getStylePage(false)" />
         <MarginNotes v-if="printVibShow" class="sidebar" 
-            :ver="template.ver" :show="printVibShow" :items="printVibItems" :name="template.name"
-            :style="getSideBarStyle(false)"/>
+            :ver="template.ver" :show="printVibShow" :items="printVibItems" :name="template.name" />
         <MarginNotes v-if="printVibShow" class="sidebar back" 
-            :ver="template.ver" :show="printVibShow" :items="printVibItems" :name="template.name"
-            :style="getSideBarStyle(true)"/>
-        <Page v-if="page.back" :data="page.back" :format="template.format" :route="template?.route" :style="getPageStyle(printFlipMode)" />
+            :ver="template.ver" :show="printVibShow" :items="printVibItems" :name="template.name" />
+        <Page v-if="page.back" :data="page.back" :format="template.format" :route="template?.route" :style="getStylePage(printFlipMode)" />
       </div>
     </div>
     <div v-else>No Template</div>
@@ -82,18 +80,30 @@ const showOptions = ref(true)
 const toaster = useToaster(useToast())
 const printing = ref(false)
 
-function getPageStyle(flipped: boolean) {
+function getStylePage(flipped: boolean) {
   if (printClipMargin.value === 0 && !flipped) return {};
   
   const baseHeight = printFullpage.value ? 1050 : 800; // Matches CSS variables
   
-  const scale = (baseHeight - printClipMargin.value) / baseHeight;
+  const scale = (baseHeight - printClipMargin.value - 1) / baseHeight;
   const transformString = flipped ? `scale(${-scale}, ${-scale})` : `scale(${scale})`;
+
+  const marginTop = flipped ? 0 : printClipMargin.value / 2
+  const marginBottom = flipped ? printClipMargin.value / 2 : 0
+
   return {
     transform: transformString,
-    marginTop: `${printClipMargin.value / 2}px`,
-    marginBottom: '0px' 
+    marginTop: `${marginTop}px`,
+    marginBottom: `${marginBottom}px` 
   };
+}
+
+function getStyleTwoPages(flipped: boolean) {
+  if (printClipMargin.value === 0 && !flipped) return {};
+
+  return {
+      // marginTop: `${printClipMargin.value}px`,
+  }
 }
 
 onMounted(() => {
@@ -345,23 +355,6 @@ function redirectToPlansPage() {
   router.push('/plans?reason=out-of-credits');
 }
 
-function getSideBarStyle(isBack: boolean) {
-  if (printClipMargin.value === 0) return {};
-  const baseHeight = 800;
-  const newWidth = baseHeight - printClipMargin.value;
-  
-  if (!isBack) {
-    return {
-      top: `${printClipMargin.value}px`,
-      width: `${newWidth}px`
-    };
-  } else {
-    return {
-      bottom: 'calc(-1.5rem)', 
-      width: `${newWidth}px`,
-    };
-  }
-}
 </script>
 
 <style scoped>
