@@ -24,6 +24,20 @@ jest.mock('../backend/FeedbackDao', () => {
     };
 });
 
+// Mock UserDao
+jest.mock('../backend/dao/UserDao', () => {
+    return {
+        UserDao: {
+            getUserFromHash: jest.fn().mockImplementation((sha) => {
+                if (sha === 'user-sha') {
+                    return Promise.resolve({ id: 123, email: 'user@example.com' });
+                }
+                return Promise.resolve(undefined);
+            }),
+        }
+    };
+});
+
 describe('GApi Feedback', () => {
     beforeEach(() => {
         jest.clearAllMocks();
@@ -40,6 +54,6 @@ describe('GApi Feedback', () => {
         await GApi.feedbackSave(payload);
 
         expect(Email.send).toHaveBeenCalledTimes(1);
-        expect(Email.send).toHaveBeenCalledWith('Great app!', EmailType.UserFeedback);
+        expect(Email.send).toHaveBeenCalledWith('Great app!\n\nUser ID: 123\nEmail: user@example.com', EmailType.UserFeedback);
     });
 });

@@ -89,7 +89,14 @@ export class GApi {
 
     public static async feedbackSave(payload: any): Promise<void> {
         return FeedbackDao.save(payload.version, payload.feedback, payload.user, payload.contact).then(async () => {
-            await Email.send(payload.feedback, EmailType.UserFeedback)
+            let message = payload.feedback;
+            if (payload.user) {
+                const user = await UserDao.getUserFromHash(payload.user);
+                if (user) {
+                    message += `\n\nUser ID: ${user.id}\nEmail: ${user.email || 'N/A'}`;
+                }
+            }
+            await Email.send(message, EmailType.UserFeedback);
         })
     }
 
