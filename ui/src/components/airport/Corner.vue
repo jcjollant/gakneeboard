@@ -109,19 +109,18 @@ function showField( field:string) {
         // #A -> ATC
         if(field[1] == 'F' && airport.freq) { // Frequency
             // RadioFrequencies use the '#F' prefix. For Example #FUNICOM#122.950
-            const freqName = field.substring(2)
+            let freqName = field.substring(2)
             // console.log('[Corner.showField]', freqName)
             const separator = freqName.indexOf('#')
             if(separator > 0) {
-                // Value is already formatted. For Example #FTWR#120.600
-                value.value = freqName.substring(separator + 1)
-                const labelValue = freqName.substring(0, separator)
-                label.value = labelValue
-            } else { // its only the frequency name
-                const freqValue = getFrequency( airport.freq, freqName)                
-                value.value = Formatter.frequency(freqValue)
-                label.value = freqName
+                // Ignore the hardcoded frequency value and just use the name
+                freqName = freqName.substring(0, separator)
             }
+            
+            const freqValue = getFrequency( airport.freq, freqName)                
+            value.value = Formatter.frequency(freqValue)
+            label.value = freqName
+            
             // Determine frequency type based on name
             currentFrequencyType.value = Frequency.typeFromString(label.value)            
         } else if( field[1] == 'N' && airport.navaids) { // Navaids
