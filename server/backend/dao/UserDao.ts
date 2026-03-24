@@ -73,6 +73,7 @@ export class UserDao extends Dao<User> {
             if (data?.source) user.setSource(data.source)
             if (data?.email) user.setEmail(data.email)
             if (data?.name) user.setName(data.name)
+            if (data?.original_name) user.setOriginalName(data.original_name)
             if (data?.attribution) user.setAttribution(data.attribution)
         } catch (err) {
             TicketService.create(3, '[UserDao.parseRow] error parsing data ' + err)
@@ -130,11 +131,14 @@ export class UserDao extends Dao<User> {
                 // Do we know this user?
                 const result = await this.db.query(`SELECT id from ${this.tableName} WHERE sha256 = '${user.sha256}'`);
                 // console.log( '[UserDao.save] match count ' + result.rowCount)
-                const userData = {
+                const userData: any = {
                     "name": user.name,
                     "source": user.source,
                     "email": user.email,
                     "attribution": user.attribution,
+                }
+                if (user.originalName) {
+                    userData["original_name"] = user.originalName;
                 }
                 const stringifiedData = JSON.stringify(userData)
                 if (result.rowCount == 0) {

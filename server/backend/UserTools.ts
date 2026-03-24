@@ -62,6 +62,13 @@ export class UserTools {
         // Default name if empty
         if (!user.name) {
             user.setName(this.defaultUserName)
+        } else {
+            const trimmedName = user.name.trim();
+            const nameParts = trimmedName.split(/\s+/);
+            if (nameParts.length > 1) {
+                user.setOriginalName(trimmedName);
+                user.setName(nameParts[0]);
+            }
         }
 
         // Save the new user

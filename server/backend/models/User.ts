@@ -1,6 +1,5 @@
 import { createHash } from 'crypto'
 import { AccountType, PLAN_ID_SIM } from '@gak/shared';
-import { Business } from '../business/Business';
 import { AttributionData } from './AttributionData';
 
 export class User {
@@ -21,6 +20,7 @@ export class User {
     homeAirport: string | undefined;
     printRefillOverride: number | undefined;
     isNew?: boolean;
+    originalName?: string;
 
     constructor(id: number, sha256: string) {
         this.id = id;
@@ -67,6 +67,10 @@ export class User {
 
     public setName(newName: string) {
         this.name = newName;
+    }
+
+    public setOriginalName(newName: string) {
+        this.originalName = newName;
     }
 
     public setAccountType(newType: AccountType) {

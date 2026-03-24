@@ -103,6 +103,19 @@ describe('UserTool', () => {
         const newUser = await UserTools.authenticate(body, mockUserDao)
         expect(newUser.name).toBe('user')
     })
+    it('new user creation extracts first name as name and keeps full as original_name', async () => {
+        const testUser = brandNewUser()
+        testUser.name = 'John Doe Smith'
+        const body = { source: testUser.source, token: testUser.sha256, testUser: testUser }
+
+        const mockUserDao = new UserDao() as jest.Mocked<UserDao>;
+        jest.spyOn(mockUserDao, 'getFromHash').mockResolvedValue(undefined)
+        jest.spyOn(mockUserDao, 'save').mockImplementation(u => new Promise(res => res(u)))
+
+        const newUser = await UserTools.authenticate(body, mockUserDao)
+        expect(newUser.name).toBe('John')
+        expect(newUser.originalName).toBe('John Doe Smith')
+    })
     test('Authenticate and UserView', async () => {
         const body = { 'source': UserTools.google, 'token': jcToken }
 
