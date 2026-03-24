@@ -179,17 +179,25 @@ export class SkyvectorService implements AirportDataSource {
         airport.addRunways(runways)
 
         // 4. Frequencies
-        // <table id="aptcomms">
+        // <table id="aptcomms"> and <table id="cfscomm"> (for Canada)
         const freqs: Frequency[] = []
         const atcs: Atc[] = [] // if we want to separate them? Adip does.
 
-        $('#aptcomms tr').each((i, row) => {
+        $('#aptcomms tr, #cfscomm tr').each((i, row) => {
             const th = $(row).find('th')
             const td = $(row).find('td')
             if (th.length && td.length) {
                 const rawName = th.text().trim().replace(/:$/, '') // "DURAZNO TOWER Tower"
                 const textFreq = td.text().trim()
-                const mhz = parseFloat(textFreq)
+                
+                let mhz = parseFloat(textFreq)
+                if (isNaN(mhz)) {
+                    // Try to extract frequency if it's embedded in text (e.g. "UNICOM ... 122.8 ...")
+                    const match = textFreq.match(/\b(1[1-3]\d\.\d{1,3})\b/)
+                    if (match) {
+                        mhz = parseFloat(match[1])
+                    }
+                }
 
                 if (!isNaN(mhz)) {
                     // Try to clean name
