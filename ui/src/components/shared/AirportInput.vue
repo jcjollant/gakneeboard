@@ -39,7 +39,8 @@ const props = defineProps({
     page: {type: Boolean, default: false},
     showRecent: {type: Boolean, default: false},
     large: {type: Boolean, default: false},
-    route: {type: Object as () => Route, default: undefined}
+    route: {type: Object as () => Route, default: undefined},
+    defaultToLastKnown: { type: Boolean, default: false }
 })
 const recentAirports = ref<RecentAirport[]>([])
 const code = ref()
@@ -77,12 +78,19 @@ async function loadProps(props:any) {
              valid.value = true
         }
     } else {
-        code.value = props.code
+        let initialCode = props.code
+        if (!initialCode && props.defaultToLastKnown) {
+            const lastKnown = LocalStoreService.getLastKnownAirportCode()
+            if (lastKnown) {
+                initialCode = lastKnown
+            }
+        }
+        code.value = initialCode
         try {
             fetchAirport()
         } catch (e) {
             // Airport not in local store, will be fetched by AirportInput
-            console.log(`[AirportInput.loadProps] Airport ${props.code} not found`, e)
+            console.log(`[AirportInput.loadProps] Airport ${initialCode} not found`, e)
         }
     }
 }
@@ -126,6 +134,7 @@ function fetchAirport() {
                 code.value = airport.code
                 valid.value = true
                 model.value = airport
+                LocalStoreService.setLastKnownAirportCode(airport.code)
                 emits('valid', airport)
             } else { // airport is unknown
                 toaster.warning( 'Invalid Airport', code.value + ' may not be valid');
@@ -182,6 +191,7 @@ function onRecentAirport(ra: RecentAirport) {
         name.value = airport.name
         valid.value = true
         model.value = airport
+        LocalStoreService.setLastKnownAirportCode(airport.code)
         emits('valid', airport)
     } catch(e) { 
         console.warn('[AirportInput] onRecentAirport failed',e)

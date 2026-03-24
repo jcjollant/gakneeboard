@@ -4,7 +4,7 @@
         <Separator name="Airport Code" :leftAligned="true" />
         <div class="airport-selection">
             <AirportInput v-model:routeCode="selectedRouteCode"
-                :code="airportCode" :auto="true" :showRecent="true" :large="true" :route="route"
+                :code="airportCode" :auto="true" :showRecent="true" :large="true" :route="route" :defaultToLastKnown="true"
                 @valid="onUserSelectAirport"
                 @invalid="onInvalidAirport" />
         </div>

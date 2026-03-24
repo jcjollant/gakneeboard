@@ -5,7 +5,7 @@
             <!-- Frequency Lookup -->
             <SeparatorChoice name="Frequency Lookup" choiceA="Airport" choiceB="Route" v-model="isAirportLookup" />
             <div class="lookup-section" v-if="isAirportLookup">
-                <AirportInput label="Airport" :large="true" :page="true" :showRecent="true" :route="route" @valid="onAirportValid" />
+                <AirportInput label="Airport" :large="true" :page="true" :showRecent="true" :route="route" :defaultToLastKnown="true" @valid="onAirportValid" />
             </div>
             
             <div class="lookup-results">

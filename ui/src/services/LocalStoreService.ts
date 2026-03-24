@@ -27,6 +27,7 @@ export class LocalStoreService {
     static lastRoute = 'last-route'
     static tempHomeAirport = 'temp-home-airport'
     static ftuxBanner = 'ftux-banner'
+    static lastKnownAirportCode = 'last-known-airport-code'
     static MAX_AIRPORTS = 30
     static MAX_APPROACHES = 5
     static LEAN_AIRPORTS = 24
@@ -491,4 +492,11 @@ export class LocalStoreService {
         return undefined
     }
 
+    static setLastKnownAirportCode(code: string) {
+        localStorage.setItem(LocalStoreService.lastKnownAirportCode, code)
+    }
+
+    static getLastKnownAirportCode(): string | null {
+        return localStorage.getItem(LocalStoreService.lastKnownAirportCode)
+    }
 }
