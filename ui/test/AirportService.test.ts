@@ -46,4 +46,21 @@ describe('AirportService', () => {
         expect(freq).toBeDefined();
         expect(freq.value).toBe('121.900');
     });
+
+    test('should return all frequencies including ATC and Navaids', () => {
+        const allFreqs = AirportService.getAllFrequencies(airport);
+        // KBFI has 8 airport freqs, 8 ATC freqs, and 4 navaids = 20 total
+        expect(allFreqs.length).toBe(20);
+
+        // Verify some specific frequencies from different categories
+        
+        // Airport freq
+        expect(allFreqs).toContainEqual(expect.objectContaining({ name: 'UNICOM', value: '122.950' }));
+        
+        // ATC freq
+        expect(allFreqs).toContainEqual(expect.objectContaining({ name: 'SEATTLE-TACOMA APPROACH CONTROL', value: '119.200' }));
+        
+        // Navaid freq
+        expect(allFreqs).toContainEqual(expect.objectContaining({ name: 'SEA', value: '116.800', type: 'n' }));
+    });
 });

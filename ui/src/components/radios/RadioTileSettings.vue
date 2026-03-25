@@ -2,27 +2,6 @@
     <div class="radio-settings">
 
         <div>
-            <!-- Frequency Lookup -->
-            <SeparatorChoice name="Frequency Lookup" choiceA="Airport" choiceB="Route" v-model="isAirportLookup" />
-            <div class="lookup-section" v-if="isAirportLookup">
-                <AirportInput label="Airport" :large="true" :page="true" :showRecent="true" :route="route" :defaultToLastKnown="true" @valid="onAirportValid" />
-            </div>
-            
-            <div class="lookup-results">
-                <div class="freq-cards" v-if="lookupFrequencies.length">
-                    <div v-for="freq in lookupFrequencies" :key="freq.name + freq.value" 
-                         @click="addFrequency(freq)" class="freq-card-wrapper lookup-card" title="Click to add">
-                        <FrequencyBox :freq="freq" size="small" :colorScheme="colorScheme" />
-                        <div class="add-indicator">
-                            <font-awesome-icon icon="plus" />
-                        </div>
-                    </div>
-                </div>
-                <div v-else class="lookup-placeholder">
-                    {{ isAirportLookup ? 'Select an airport to view frequencies.' : 'No route frequencies found.' }}
-                </div>
-            </div>
-
             <!-- Frequency List -->
             <SeparatorChoice name="Selected Frequencies" 
                              choiceA="Cards" choiceB="Text" v-model="isCardsMode" />
@@ -37,13 +16,39 @@
                             <font-awesome-icon icon="minus" />
                         </div>
                     </div>
-                    <div v-if="manualFrequencies.length === 0" class="empty-list">No frequencies.</div>
+                    <div v-if="manualFrequencies.length === 0" class="empty-list">No selection. Choose from the list below.</div>
                 </div>
 
                 <Textarea v-else class='list' rows="8" cols="24" v-model="textData"
                             placeholder="Format: Value,Name,Type&#10;Ex: 123.45, KABC Twr, Tower"></Textarea>
             </div>
             
+
+            <!-- Frequency Lookup -->
+            <SeparatorChoice name="Frequency Lookup" choiceA="Airport" choiceB="Route" v-model="isAirportLookup" />
+            <div class="lookup-section" v-if="isAirportLookup">
+                <AirportInput label="Airport" :large="true" :page="true" :showRecent="true" :route="route" :defaultToLastKnown="true" @valid="onAirportValid" />
+            </div>
+
+            <div class="lookup-results">
+                <div class="freq-cards" v-if="filteredLookupFrequencies.length">
+                    <div v-for="freq in filteredLookupFrequencies" :key="freq.name + freq.value" 
+                         @click="addFrequency(freq)" class="freq-card-wrapper lookup-card" title="Click to add">
+                        <FrequencyBox :freq="freq" size="small" :colorScheme="colorScheme" />
+                        <div class="add-indicator">
+                            <font-awesome-icon icon="plus" />
+                        </div>
+                    </div>
+                </div>
+                <div v-else class="lookup-placeholder">
+                    {{ isAirportLookup ? 'Select an airport to view frequencies.' : 'No route frequencies found.' }}
+                </div>
+            </div>
+            <div v-if="isAirportLookup" class="separator">
+                <div class="label">Show</div>
+                <AnyOf v-model="localFreqChoices" />
+            </div>
+
             <Separator name="Color Scheme" :leftAligned="true" style="margin-top: 15px;" />
              <div class="colorSchemeSelector">
                 <div class="schemeOption" :class="{selected: colorScheme === 'light'}" @click="colorScheme = 'light'">
@@ -71,8 +76,9 @@ import { Frequency, FrequencyType } from '../../models/Frequency';
 import { RouteService } from '../../services/RouteService';
 import { Route } from '@gak/shared';
 import { Airport } from '../../models/Airport';
-import { Formatter } from '../../lib/Formatter';
+import { AirportService } from '../../services/AirportService';
 
+import AnyOf from '../../components/shared/AnyOf.vue';
 import Separator from '../../components/shared/Separator.vue';
 import SeparatorChoice from '../../components/shared/SeparatorChoice.vue';
 import Textarea from 'primevue/textarea';
@@ -95,6 +101,22 @@ const lookupFrequencies = ref<Frequency[]>([]);
 const colorScheme = ref('light');
 const routeFrequencies = ref<Frequency[]>([]);
 const listMode = ref<'cards'|'text'>('cards');
+const showAirport = ref(true);
+const showTracon = ref(false);
+const showNavaids = ref(false);
+
+const localFreqChoices = computed({
+    get: () => [
+        { label: 'Airport', active: showAirport.value },
+        { label: 'TRACon', active: showTracon.value },
+        { label: 'Navaids', active: showNavaids.value }
+    ],
+    set: (val) => {
+        showAirport.value = val[0].active;
+        showTracon.value = val[1].active;
+        showNavaids.value = val[2].active;
+    }
+});
 
 const isCardsMode = computed({
     get: () => listMode.value === 'cards',
@@ -109,6 +131,17 @@ const isAirportLookup = computed({
 
 const toaster = useToaster(useToast());
 const isInternalUpdate = ref(false);
+
+const filteredLookupFrequencies = computed(() => {
+    return lookupFrequencies.value.filter(f => {
+        // Hide if already selected
+        if (manualFrequencies.value.some(m => m.value === f.value && m.name === f.name)) return false;
+
+        if (f.type === FrequencyType.navaid) return showNavaids.value;
+        if (f.type === FrequencyType.tracon) return showTracon.value;
+        return showAirport.value; // Show others (CTAF, Weather, etc.) by default
+    });
+});
 
 const freqLight = new Frequency('Light', '123.45', FrequencyType.ctaf)
 const freqShade = new Frequency('Shade', '123.45', FrequencyType.ctaf)
@@ -218,11 +251,8 @@ function loadListFromText() {
 
 function onAirportValid(airport: Airport) {
     lookupFrequencies.value = [];
-    if (airport && airport.freq) {
-        airport.freq.forEach(f => {
-            const freqType = Frequency.typeFromString(f.name);
-            lookupFrequencies.value.push(new Frequency(Formatter.frequency(f.mhz), `${f.name}`, freqType));
-        });
+    if (airport) {
+        lookupFrequencies.value = AirportService.getAllFrequencies(airport);
     }
 }
 
@@ -269,6 +299,34 @@ function emitUpdate() {
     margin-bottom: 5px;
     display: flex;
     justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+.lookup-toggles {
+    display: flex;
+    gap: 5px;
+}
+.toggle-btn {
+    background: #e0e0e0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #666;
+}
+.toggle-btn.active {
+    background: var(--primary-color, #007bff);
+    color: white;
+    border-color: var(--primary-color, #007bff);
+    font-weight: bold;
+}
+.toggle-btn:hover {
+    background: #d0d0d0;
+}
+.toggle-btn.active:hover {
+    filter: brightness(1.1);
 }
 .lookup-results {
     margin-bottom: 5px;
@@ -361,10 +419,18 @@ function emitUpdate() {
     opacity: 0.6;
 }
 .empty-list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
     color: gray;
     font-size: 0.9em;
     font-style: italic;
-    margin-top: 5px;
+    border: 1px dashed #ccc;
+    border-radius: 6px;
+    min-height: 44px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .list-editor {
@@ -412,5 +478,20 @@ function emitUpdate() {
 }
 .schemeOption.selected {
     border-color: #007bff;
+}
+.separator {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    margin: 15px 0 10px 0;
+}
+.separator :deep(.separator), .separator .label {
+    padding-top: 0;
+    color: var(--bg-secondary);
+    font-weight: bold;
+    white-space: nowrap;
+    font-size: 0.9rem;
 }
 </style>

@@ -15,5 +15,9 @@ describe('Frequency', () => {
         for( const ground of expectedGround) {
             expect(Frequency.typeFromString(ground)).toBe(FrequencyType.ground)
         }
+        const expectedTracon = ['tracon', 'TRACON', 'SEATTLE-TACOMA APPROACH CONTROL', 'PORTLAND DEPARTURE', 'SOCAL APP', 'DEP/P']
+        for( const tracon of expectedTracon) {
+            expect(Frequency.typeFromString(tracon)).toBe(FrequencyType.tracon)
+        }
     })
 })

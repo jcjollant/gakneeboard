@@ -53,4 +53,28 @@ export class AirportService {
         const af = this.getAnyFrequency(airport, ['ATIS', 'ASOS', 'AWOS', 'Weather'])
         return af ? new Frequency(Formatter.frequency(af.mhz), af.name, FrequencyType.weather) : undefined
     }
+
+    static getAllFrequencies(airport: Airport): Frequency[] {
+        const frequencies: Frequency[] = [];
+        if (airport.freq) {
+            airport.freq.forEach(f => {
+                const freqType = Frequency.typeFromString(f.name);
+                frequencies.push(new Frequency(Formatter.frequency(f.mhz), f.name, freqType));
+            });
+        }
+        if (airport.atc) {
+            airport.atc.forEach(f => {
+                const freqType = Frequency.typeFromString(f.name);
+                frequencies.push(new Frequency(Formatter.frequency(f.mhz), f.name, freqType));
+            });
+        }
+        if (airport.navaids) {
+            airport.navaids.forEach(f => {
+                frequencies.push(new Frequency(Formatter.frequency(f.freq), f.id, FrequencyType.navaid));
+            });
+        }
+        return frequencies;
+    }
+
+
 }

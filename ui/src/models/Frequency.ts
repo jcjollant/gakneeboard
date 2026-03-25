@@ -85,6 +85,8 @@ export class Frequency {
                     return FrequencyType.weather;
                 } else if(lowerCaseFreq.startsWith('loc')) {
                     return FrequencyType.navaid;
+                } else if(lowerCaseFreq.includes('app') || lowerCaseFreq.includes('dep')) {
+                    return FrequencyType.tracon;
                 }
                 return FrequencyType.unknown;
         }
