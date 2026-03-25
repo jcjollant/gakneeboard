@@ -10,14 +10,16 @@ This document provides a summary of the command-line interface (CLI) scripts ava
 *   **`updateCycle.ts`**: Checks for updates to the FAA Aeronav data cycle, and automatically configures relevant Vercel environment variables if a new cycle is available.
 *   **`setVercelEnv.ts`**: Sets or updates project-level Vercel environment variables for specified deployment targets (`production`, `preview`, `development`).
 *   **`updateVersion.ts`**: Automates updating the application version values consistently across required project files.
+*   **`testRedeploy.ts`**: Triggers a manual redeploy of the application on Vercel.
+*   **`swapTileDisplayMode.ts`**: Performs a mass migration of tile types or display modes across all existing templates in the database.
 
 ## Data Fetching and Updating
 
 *   **`fetchAdipCycle.ts`**: Connects to the FAA's ADIP service to retrieve and display the current active aeronautical data cycle and effective dates.
-*   **`manualFetchAirport.ts`**: Triggers a manual fetch of detailed data for a specific airport code, fetching information like runways, frequencies, and charts.
+*   **`manualFetchAirport.ts`**: Triggers a manual fetch of detailed data for a specific airport code (runways, frequencies, charts) and outputs the full JSON data.
 *   **`manualFetchMetar.ts`**: Manually requests METAR weather data for a specified airport code. Allows specifying various output formats like raw, decoded, JSON, or XML.
 *   **`manualFetchNotams.ts`**: Manually fetches active NOTAMs (Notices to Air Missions) for a given airport, allowing filters for format and classification.
-*   **`manualSketchUpdate.ts`**: Targets airports currently missing sketch diagrams and forces an update to retrieve them from ADIP based on the active data cycle.
+*   **`manualSketchUpdate.ts`**: Targets airports missing sketches and forces an update from ADIP. Supports bulk update, manual fetch dry-runs (`<ICAO>`), and manual PDF uploads (`<ICAO> <path>`).
 *   **`refresh.sh`**: A shell script wrapper that launches the manual sketch update process. It is intended to be triggered periodically via system `cron` jobs.
 
 ## Database Utilities
@@ -39,3 +41,5 @@ This document provides a summary of the command-line interface (CLI) scripts ava
 
 *   **`countChecklistItems.ts`**: Queries the database to aggregate and output usage statistics regarding how users are applying checklist items.
 *   **`countTileType.ts`**: Analyzes kneeboard templates to determine the distribution and usage frequency of different UI tile types.
+*   **`searchDisplayMode.ts`**: Scans all user templates to find occurrences of a specific tile type and display mode.
+*   **`topAirports.ts`**: Analyzes and outputs the most popular airports used across all user-created templates.
