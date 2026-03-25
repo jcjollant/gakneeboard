@@ -15,6 +15,13 @@ const cycle = process.env.AERONAV_DATA_CYCLE
 
 // declare and execute
 async function doIt() {
+    console.log('--- Airport Sketch Update CLI ---');
+    console.log('Usage:');
+    console.log('  npm run sketch                  - Bulk update missing sketches (limit 1000)');
+    console.log('  npm run sketch <ICAO>           - Manual fetch (dry-run) for one airport');
+    console.log('  npm run sketch <ICAO> <path>    - Manual upload from local PDF file');
+    console.log('---------------------------------');
+
     const { AirportSketch } = await import("../backend/AirportSketch.js");
     const { AirportDao } = await import("../backend/AirportDao.js");
     const args = process.argv.slice(2);
