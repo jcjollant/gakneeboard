@@ -385,14 +385,18 @@ export class Metrics {
 
         let map = {}
 
-        console.log('tempates', templates.length)
         for (let template of templates) {
-            for (let page of template.data) {
-                if (page.type == PageType.tiles) {
+            let pages = template.data;
+            if (typeof pages === 'string') {
+                try { pages = JSON.parse(pages); } catch (e) { continue; }
+            }
+            if (!Array.isArray(pages)) continue;
+            for (let page of pages) {
+                if (page.type == PageType.tiles && Array.isArray(page.data)) {
                     for (let tile of page.data) {
                         if (tile.name == 'airport') {
-                            console.log('airport tile', tile.data.code)
-                            if (!tile.data.code) continue
+                            // console.log('airport tile', tile.data.code)
+                            if (!tile.data?.code) continue
                             const code = tile.data.code.toUpperCase()
                             const count = map[code] ?? 0
                             map[code] = count + 1
@@ -402,8 +406,10 @@ export class Metrics {
             }
         }
 
-        for (let key in map) {
-            console.log(key, map[key])
-        }
+        Object.entries(map)
+            .sort(([, a], [, b]) => (b as number) - (a as number))
+            .forEach(([key, count]) => {
+                console.log(`${key}: ${count}`);
+            });
     }
 }
