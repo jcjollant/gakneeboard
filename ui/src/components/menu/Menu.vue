@@ -25,6 +25,7 @@
                     </div>
                     <div v-else class="session-item store-btn" @click="router.push('/store')">
                          <font-awesome-icon icon="store" class="mr-2" /> Store
+                         <div class="nudge-badge">New</div>
                     </div>
                     <div class="user-name" @click="showAccountDetails=true" title="Account Details">
                         <span class="pilot-icon">👨‍✈️</span>
@@ -179,6 +180,7 @@ function onSignOut() {
     transition: background 0.3s;
     text-decoration: none;
     display: inline-block;
+    position: relative;
 }
 
 .session-item:hover {
@@ -236,5 +238,20 @@ function onSignOut() {
     display: flex;
     gap: 1rem;
     align-items: center;
+}
+
+.nudge-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #f97316;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 9999px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    text-transform: uppercase;
+    line-height: 1;
 }
 </style>

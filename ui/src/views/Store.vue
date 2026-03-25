@@ -83,11 +83,13 @@
 
     <!-- Standard Items -->
     <div class="products-section">
-        <h2>Quick Reference Cards</h2>
+        <div class="section-header-flex">
+            <h2>Quick Reference Cards</h2>
+            <span class="header-badge">FREE SHIPPING</span>
+        </div>
         <p class="section-subtitle">What you need. When you need it. Kneeboard sized laminated reference cards.</p>
         <div class="products-grid">
             <div class="product-card">
-                <div class="badge-free-shipping">FREE SHIPPING</div>
                 <Kneeboard3D 
                     frontSrc="/thumbnails/reference-0.png" 
                     backSrc="/thumbnails/reference-1.png" 
@@ -110,7 +112,6 @@
             </div>
             
             <div class="product-card">
-                <div class="badge-free-shipping">FREE SHIPPING</div>
                 <Kneeboard3D 
                     frontSrc="/thumbnails/seattle-ga-0.png" 
                     backSrc="/thumbnails/seattle-ga-1.png" 
@@ -127,6 +128,29 @@
                 <div class="product-footer">
                     <span class="price">$9.99</span>
                     <button @click="addStandardToCart('Seattle Airports', 'KB_LOOSE')" class="btn btn-success">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="badge-free-shipping bg-orange-500">NEW</div>
+                <Kneeboard3D 
+                    frontSrc="/thumbnails/socal-ga-0.png" 
+                    backSrc="/thumbnails/socal-ga-1.png" 
+                />
+                <div class="product-info">
+                    <h3>SoCal GA Airports</h3>
+                    <div class="description-block">
+                        <p class="desc-text"><span class="desc-label">Front:</span>French Valley (F70), Catalina (KAVX), Camarillo (KVMA), Chino (KCNO), Santa Ynez (KIZA), Oceano County (L52)</p>
+                    </div>
+                    <div class="description-block">
+                        <p class="desc-text"><span class="desc-label">Back:</span>Long Beach (KLGB), Gillepsie (KSEE), Santa Monica (KSMO), Zamperini (KTOA), Van Nuys (KNVY), Big Bear (L35)</p>
+                    </div>
+                </div>
+                <div class="product-footer">
+                    <span class="price">$9.99</span>
+                    <button @click="addStandardToCart('SoCal Airports', 'KB_LOOSE')" class="btn btn-success">
                         Add to Cart
                     </button>
                 </div>
@@ -411,7 +435,24 @@ const onPlan = async (plan: PlanDescription) => {
 .products-section h2 {
     font-size: 2rem;
     font-weight: bold;
+    margin: 0;
+}
+
+.section-header-flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
     margin-bottom: 0.5rem;
+}
+
+.header-badge {
+    background-color: #10b981;
+    color: white;
+    font-size: 0.875rem;
+    font-weight: bold;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
 }
 
 .section-subtitle {
@@ -419,6 +460,7 @@ const onPlan = async (plan: PlanDescription) => {
     margin-top: 0;
     margin-bottom: 2rem;
     font-size: 1.1rem;
+    text-align: center;
 }
 
 .products-grid {
