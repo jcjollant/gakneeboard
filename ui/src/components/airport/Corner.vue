@@ -71,6 +71,8 @@ function loadProps(newProps:any) {
         unknownValues()
         return
     } 
+
+    runway = newProps.runway
     
     // display values
     if( newProps.data == undefined || newProps.airport == null) {
@@ -80,8 +82,6 @@ function loadProps(newProps:any) {
         airport = newProps.airport
         showField(newProps.data)
     }
-
-    runway = newProps.runway
 
     // console.log( '[Corner.loadProps] big', newProps.big)
     if(newProps.big) {
@@ -108,16 +108,34 @@ function showField( field:string) {
         // #R -> Radial
         // #A -> ATC
         if(field[1] == 'F' && airport.freq) { // Frequency
-            // RadioFrequencies use the '#F' prefix. For Example #FUNICOM#122.950
-            let freqName = field.substring(2)
-            // console.log('[Corner.showField]', freqName)
-            const separator = freqName.indexOf('#')
-            if(separator > 0) {
-                // Ignore the hardcoded frequency value and just use the name
-                freqName = freqName.substring(0, separator)
+            let freqID = field.substring(2)
+            const tokens = freqID.split('#')
+            let targetValue = 0
+            let freqName = ''
+            if (tokens.length > 1) {
+                const popped = tokens.pop()
+                if (popped !== undefined) {
+                    targetValue = parseFloat(popped)
+                }
+                freqName = tokens.join('#')
+            } else {
+                freqName = tokens[0]
+            }
+
+            // Try exact match first (name + value)
+            let freqValue = 0
+            if (targetValue > 0) {
+                const exactMatch = airport.freq.find(f => f.name === freqName && Math.abs(f.mhz - targetValue) < 0.001)
+                if (exactMatch) {
+                    freqValue = exactMatch.mhz
+                }
             }
             
-            const freqValue = getFrequency( airport.freq, freqName)                
+            if (freqValue === 0) {
+                // Fallback to name-only match (important for airport transitions)
+                freqValue = getFrequency( airport.freq, freqName)                
+            }
+            
             value.value = Formatter.frequency(freqValue)
             label.value = freqName
             

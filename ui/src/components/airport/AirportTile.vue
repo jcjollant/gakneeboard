@@ -123,6 +123,7 @@ const defaultCornerFields = ['weather','twr','field','#FGND','#FCD/P','tpa','?Cu
 const defaultPatternMode = TrafficPatternDisplay.Downwind
 const defaultHeadings = true
 const defaultTitle = 'Airport'
+const lastLoadedCode = ref('')
 const config = ref<AirportTileConfig>(new AirportTileConfig())
 const mainRunway = ref<Runway>(Runway.noRunway())
 const corners = ref(defaultCornerFields)
@@ -206,6 +207,9 @@ function loadProps(newProps:any) {
     }
     editMode.value = false
     
+    const airportChanged = lastLoadedCode.value !== '' && propsConfig.code !== lastLoadedCode.value
+    lastLoadedCode.value = propsConfig.code
+
     // runway
     if( params.rwy) { // old format
         propsConfig.rwys = [params.rwy]
@@ -227,7 +231,11 @@ function loadProps(newProps:any) {
     } 
     cornerFields.forEach( (field:any, index:number) => {
         // console.debug('[AirportTile.loadProps]', index)
-        corners.value[index] = field
+        if (airportChanged && typeof field === 'string' && field.startsWith('#F')) {
+            corners.value[index] = defaultCornerFields[index]
+        } else {
+            corners.value[index] = field
+        }
     })
     propsConfig.corners = corners.value
     // console.debug('AirportTile loaded corners ' + JSON.stringify(corners))
@@ -381,6 +389,7 @@ function showAirport( airport:Airport) {
     // console.debug( "[AirportTile.showAirport] Showing airport ", JSON.stringify(airport))
     notamsList.value = []
     metar.value = null;
+    mainRunway.value = Runway.noRunway()
 
     if( !airport) {
         // if airport data is missing, we switch to edit mode
@@ -405,8 +414,9 @@ function showAirport( airport:Airport) {
     // console.debug('[AirportTile.showAirport] config', config.value)
     const conf = config.value
     if(conf && conf.rwys && conf.rwys.length > 0) {
-        runwayViews.value = conf.rwys.map((rwyName, index) => {
-            const rwyData = airport.rwys.find((rwy) => rwy.name == rwyName)
+        runwayViews.value = conf.rwys.map((rwyName) => {
+            return airport.rwys.find((rwy) => rwy.name == rwyName)
+        }).filter(rwyData => !!rwyData).map((rwyData) => {
             // console.debug( '[AirportTile.showAirport] runway ', index, rwyData, conf)
             return new RunwayViewSettings(rwyData, conf.pattern, conf.rwyOrientation, undefined, conf.headings)
         })
