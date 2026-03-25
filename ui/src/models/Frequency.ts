@@ -14,9 +14,9 @@ export enum FrequencyType {
 }
 
 export class FrequencyLabelled {
-    freq:Frequency;
-    label:string;
-    constructor(freq:Frequency, label:string) {
+    freq: Frequency;
+    label: string;
+    constructor(freq: Frequency, label: string) {
         this.freq = freq;
         this.label = label;
     }
@@ -25,79 +25,79 @@ export class FrequencyLabelled {
 
 
 export class Frequency {
-    value:string;
-    name:string;
-    type:FrequencyType;
+    value: string;
+    name: string;
+    type: FrequencyType;
 
-    constructor(value:string, name:string='', type:FrequencyType=FrequencyType.unknown) {
+    constructor(value: string, name: string = '', type: FrequencyType = FrequencyType.unknown) {
         // console.log('[Frequency.constructor]', value, name, type)
         this.value = value;
         this.name = name;
         this.type = type;
     }
 
-    static copy(freq:any):Frequency {
+    static copy(freq: any): Frequency {
         let value = 'value' in freq ? freq.value : freq.mhz
-        if( typeof value === 'number' ) value = Formatter.frequency(freq.mhz)
+        if (typeof value === 'number') value = Formatter.frequency(freq.mhz)
         return new Frequency(value, freq.name, freq.type)
     }
 
-    static typeFromString(s:string):FrequencyType {
+    static typeFromString(s: string): FrequencyType {
         // console.log('[Frequency.typeFromString] ->' + s + '<-' )
-        if(!s) return FrequencyType.unknown
+        if (!s) return FrequencyType.unknown
         const lowerCaseFreq = s.toLowerCase()
 
-        switch(lowerCaseFreq) {
+        switch (lowerCaseFreq) {
             case 'clearance':
             case 'cd/p':
-            case FrequencyType.clearance: 
+            case FrequencyType.clearance:
                 return FrequencyType.clearance;
-            case 'ctaf': 
-            case FrequencyType.ctaf: 
+            case 'ctaf':
+            case FrequencyType.ctaf:
                 return FrequencyType.ctaf;
-            case FrequencyType.custom: 
+            case FrequencyType.custom:
                 return FrequencyType.custom;
             case 'navaid':
-            case FrequencyType.navaid: 
+            case FrequencyType.navaid:
                 return FrequencyType.navaid;
             case 'atis': case 'd-atis':
-            case 'asos': case 'awos': 
+            case 'asos': case 'awos':
             case 'weather':
-            case FrequencyType.weather: 
+            case FrequencyType.weather:
                 return FrequencyType.weather;
             case 'tracon':
-            case FrequencyType.tracon: 
+            case FrequencyType.tracon:
                 return FrequencyType.tracon;
             case 'tower':
             case 'twr':
-            case FrequencyType.tower: 
+            case FrequencyType.tower:
                 return FrequencyType.tower;
             case 'ground':
             case 'gnd':
             case 'unicom':
-            case FrequencyType.ground: 
+            case FrequencyType.ground:
                 return FrequencyType.ground;
             case 'phone':
             case FrequencyType.phone:
                 return FrequencyType.phone;
-            default: 
-                if(lowerCaseFreq.startsWith('awos') || lowerCaseFreq.startsWith('asos')) {
+            default:
+                if (/^(awos|asos)/.test(lowerCaseFreq)) {
                     return FrequencyType.weather;
-                } else if(lowerCaseFreq.startsWith('loc')) {
+                } else if (lowerCaseFreq.startsWith('loc')) {
                     return FrequencyType.navaid;
-                } else if(lowerCaseFreq.includes('app') || lowerCaseFreq.includes('dep')) {
+                } else if (/(app|dep|tracon)/.test(lowerCaseFreq)) {
                     return FrequencyType.tracon;
                 }
                 return FrequencyType.unknown;
         }
     }
-    
-    static typeToString(type:FrequencyType) {
-        switch(type) {
+
+    static typeToString(type: FrequencyType) {
+        switch (type) {
             case FrequencyType.clearance: return 'Clearance';
             case FrequencyType.ctaf: return 'CTAF';
             case FrequencyType.tower: return 'Tower';
-            case FrequencyType.tracon: return 'TRACON';
+            case FrequencyType.tracon: return 'TRACon';
             case FrequencyType.ground: return 'Ground';
             case FrequencyType.navaid: return 'Navaid';
             case FrequencyType.weather: return 'Weather';
@@ -107,12 +107,12 @@ export class Frequency {
         }
     }
 
-    static noFreq(name='',type=FrequencyType.unknown) {
+    static noFreq(name = '', type = FrequencyType.unknown) {
         return new Frequency('', name, type)
     }
 
-    static fromType(value:number|undefined, type:FrequencyType):Frequency {
-        let name:string = Frequency.typeToString(type);
+    static fromType(value: number | undefined, type: FrequencyType): Frequency {
+        let name: string = Frequency.typeToString(type);
         return value ? new Frequency(Formatter.frequency(value), name, type) : Frequency.noFreq(name, type)
     }
 }

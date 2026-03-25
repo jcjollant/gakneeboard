@@ -2,22 +2,45 @@ import {describe, expect, test} from '@jest/globals';
 import { Frequency, FrequencyType } from '../src/models/Frequency';
 
 describe('Frequency', () => {
-    test( 'typeFromString', () => {
-        const expectedWeather = ['AWOS', 'AWOS-1', 'AWOS-2', 'AWOS-3', 'AWOS-4', 'AWOS-3P', 'AWOS-3PT', 'AWOS-3T', 'atis', 'ATIS', 'asos', 'ASOS-3', 'D-ATIS']
-        for( const weather of expectedWeather) {
-            expect(Frequency.typeFromString(weather)).toBe(FrequencyType.weather)
-        }
-        const expectedTower = ['tower', 'TOWER', 'twr', 'TWR']
-        for( const tower of expectedTower) {
-            expect(Frequency.typeFromString(tower)).toBe(FrequencyType.tower)
-        }
-        const expectedGround = ['GND', 'unicom', 'Ground']
-        for( const ground of expectedGround) {
-            expect(Frequency.typeFromString(ground)).toBe(FrequencyType.ground)
-        }
-        const expectedTracon = ['tracon', 'TRACON', 'SEATTLE-TACOMA APPROACH CONTROL', 'PORTLAND DEPARTURE', 'SOCAL APP', 'DEP/P']
-        for( const tracon of expectedTracon) {
-            expect(Frequency.typeFromString(tracon)).toBe(FrequencyType.tracon)
-        }
-    })
-})
+    describe('typeFromString', () => {
+        const cases: [string, FrequencyType][] = [
+            // Weather
+            ['AWOS', FrequencyType.weather],
+            ['AWOS-1', FrequencyType.weather],
+            ['AWOS-2', FrequencyType.weather],
+            ['AWOS-3', FrequencyType.weather],
+            ['AWOS-4', FrequencyType.weather],
+            ['AWOS-3P', FrequencyType.weather],
+            ['AWOS-3PT', FrequencyType.weather],
+            ['AWOS-3T', FrequencyType.weather],
+            ['atis', FrequencyType.weather],
+            ['ATIS', FrequencyType.weather],
+            ['asos', FrequencyType.weather],
+            ['ASOS-3', FrequencyType.weather],
+            ['D-ATIS', FrequencyType.weather],
+            // Tower
+            ['tower', FrequencyType.tower],
+            ['TOWER', FrequencyType.tower],
+            ['twr', FrequencyType.tower],
+            ['TWR', FrequencyType.tower],
+            // Ground
+            ['GND', FrequencyType.ground],
+            ['unicom', FrequencyType.ground],
+            ['Ground', FrequencyType.ground],
+            // TRACON
+            ['tracon', FrequencyType.tracon],
+            ['TRACON', FrequencyType.tracon],
+            ['SEATTLE-TACOMA APPROACH CONTROL', FrequencyType.tracon],
+            ['PORTLAND DEPARTURE', FrequencyType.tracon],
+            ['SOCAL APP', FrequencyType.tracon],
+            ['DEP/P', FrequencyType.tracon],
+            ['Seattle TRACON', FrequencyType.tracon],
+            // Unknown
+            ['something else', FrequencyType.unknown],
+        ];
+
+        test.each(cases)('identifies "%s" as %s', (input, expected) => {
+            expect(Frequency.typeFromString(input)).toBe(expected);
+        });
+    });
+});
