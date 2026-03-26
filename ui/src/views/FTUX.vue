@@ -25,7 +25,7 @@
                     <h1 class="hero-title">Better Kneeboards For Safer Pilots</h1>
                     <p class="hero-subtitle">Improve your situational awareness and confidence with a custom kneeboard template that gives you exactly what you want when you need it.</p>
                     <button class="cta-primary" @click="loadDemo()">Create Your First Template</button>
-                    <p class="trust-indicator">Join 210+ pilots using GA Kneeboard</p>
+                    <p class="trust-indicator">Join 250+ pilots using GA Kneeboard</p>
                 </div>
                 <div class="hero-visual">
                     <div class="visual-single">
