@@ -14,6 +14,7 @@ export class UserProfile {
     create_time: Date | undefined;
     planId: string | undefined;
     lastSession: Date | undefined;
+    stripeCustomerId: string | undefined;
 
     constructor(user: User, usage: UsageCount[], templateCount: number, pageCount: number, lastSession: Date | undefined = undefined) {
         this.id = user.id
@@ -25,6 +26,7 @@ export class UserProfile {
         this.pageCount = pageCount
         this.create_time = user.createDate;
         this.planId = user.planId;
+        this.stripeCustomerId = user.customerId;
 
         this.usage = usage
         this.lastSession = lastSession

@@ -28,7 +28,8 @@ export default defineNuxtConfig({
       SUPABASE_URL: process.env.SUPABASE_URL,
       SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
       POSTGRES_URL: process.env.POSTGRES_URL,
-      APP_VERSION: pkg.version
+      APP_VERSION: pkg.version,
+      STRIPE_ACCOUNT_ID: process.env.STRIPE_ACCOUNT_ID
     }
   },
   css: [

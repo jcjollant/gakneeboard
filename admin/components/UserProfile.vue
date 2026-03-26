@@ -4,6 +4,10 @@
         <div class="props">
             <div class="prop-name">Id</div>
             <div class="prop-value">{{ userProfile.id }}</div>
+            <div v-if="userProfile.stripeCustomerId" class="prop-name">Stripe Customer</div>
+            <div v-if="userProfile.stripeCustomerId" class="prop-value">
+                <a :href="stripeDashboardUrl" target="_blank">{{ userProfile.stripeCustomerId }}</a>
+            </div>
             <div class="prop-name">Name</div>
             <div class="prop-value">{{ userProfile.name }}</div>
             <div class="prop-name">Email</div>
@@ -64,6 +68,12 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['refresh'])
+
+const config = useRuntimeConfig()
+const stripeDashboardUrl = computed(() => {
+    if (!props.userProfile.stripeCustomerId) return '#'
+    return `https://dashboard.stripe.com/${config.public.STRIPE_ACCOUNT_ID}/customers/${props.userProfile.stripeCustomerId}`
+})
 
 const refilling = ref(false)
 const toaster = useToaster(useToast())
