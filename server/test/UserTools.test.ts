@@ -120,4 +120,64 @@ describe('UserTools', () => {
         // Assertions for NO attribution data in email
         expect(emailMessage).not.toContain('Attribution:');
     });
+
+    it('should format all-caps single name', async () => {
+        const body = {
+            source: 'test',
+            token: 'test-token',
+            testUser: new User(0, 'test-sha'),
+        };
+        const testUser = new User(0, 'test-sha');
+        testUser.setSource('test');
+        testUser.setEmail('test@example.com');
+        testUser.setName('MICHAEL');
+        body.testUser = testUser;
+
+        mockUserDao.getFromHash.mockResolvedValue(undefined);
+        mockUserDao.save.mockImplementation((u: any) => Promise.resolve({ ...u, id: 126 }));
+
+        const savedUser = await UserTools.authenticate(body, mockUserDao);
+        expect(savedUser.name).toBe('Michael');
+        expect(savedUser.originalName).toBeUndefined();
+    });
+
+    it('should capitalize multi-part name and store original', async () => {
+        const body = {
+            source: 'test',
+            token: 'test-token',
+            testUser: new User(0, 'test-sha'),
+        };
+        const testUser = new User(0, 'test-sha');
+        testUser.setSource('test');
+        testUser.setEmail('test@example.com');
+        testUser.setName('michael chang');
+        body.testUser = testUser;
+
+        mockUserDao.getFromHash.mockResolvedValue(undefined);
+        mockUserDao.save.mockImplementation((u: any) => Promise.resolve({ ...u, id: 127 }));
+
+        const savedUser = await UserTools.authenticate(body, mockUserDao);
+        expect(savedUser.name).toBe('Michael');
+        expect(savedUser.originalName).toBe('michael chang');
+    });
+
+    it('should format lowercase single name', async () => {
+        const body = {
+            source: 'test',
+            token: 'test-token',
+            testUser: new User(0, 'test-sha'),
+        };
+        const testUser = new User(0, 'test-sha');
+        testUser.setSource('test');
+        testUser.setEmail('test@example.com');
+        testUser.setName('michael');
+        body.testUser = testUser;
+
+        mockUserDao.getFromHash.mockResolvedValue(undefined);
+        mockUserDao.save.mockImplementation((u: any) => Promise.resolve({ ...u, id: 128 }));
+
+        const savedUser = await UserTools.authenticate(body, mockUserDao);
+        expect(savedUser.name).toBe('Michael');
+        expect(savedUser.originalName).toBeUndefined();
+    });
 });

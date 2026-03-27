@@ -65,10 +65,16 @@ export class UserTools {
         } else {
             const trimmedName = user.name.trim();
             const nameParts = trimmedName.split(/\s+/);
+            
+            let firstName = nameParts[0];
+            if (firstName.length > 0) {
+                firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+            }
+
             if (nameParts.length > 1) {
                 user.setOriginalName(trimmedName);
-                user.setName(nameParts[0]);
             }
+            user.setName(firstName);
         }
 
         // Save the new user
