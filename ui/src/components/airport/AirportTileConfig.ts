@@ -19,6 +19,7 @@ export class AirportTileConfig {
   mode: DisplayModeAirport;
   showMetar: boolean;
   showNotams: boolean;
+  isSingleSelect: boolean;
   routeCode?: RouteCode;
 
   constructor(
@@ -32,6 +33,7 @@ export class AirportTileConfig {
     mode: DisplayModeAirport = DisplayModeAirport.RunwaySketch,
     showMetar: boolean = true,
     showNotams: boolean = true,
+    isSingleSelect: boolean = true,
     routeCode: RouteCode | undefined = undefined
   ) {
     this.code = code;
@@ -43,6 +45,7 @@ export class AirportTileConfig {
     this.mode = mode;
     this.showMetar = showMetar;
     this.showNotams = showNotams;
+    this.isSingleSelect = isSingleSelect;
     this.routeCode = routeCode;
   }
 }

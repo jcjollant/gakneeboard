@@ -14,7 +14,7 @@
         
         <!-- Runway & Pattern Section -->
         <div class="rwyChoices">
-            <SeparatorChoice name="Runway(s)" choiceA="Vertical" choiceB="Magnetic" v-model="verticalOrientation" />
+            <Separator name="Runway(s)" :leftAligned="true" />
             <div v-if="validAirport">
                 <div class="rwySelector" title="Select 1 or 2 runways">
                     <Button v-for="rwy in rwyList" :key="rwy.name" class="sign"
@@ -25,6 +25,14 @@
                         <span class="rwy-len">{{ Formatter.feet(rwy.length) + getRunwayPositionLabel(rwy.name) }}</span>
                     </div>
                 </Button>
+                </div>
+                <div class="multi-toggle-container">
+                    <span class="selection-label">Orientation</span>
+                    <EitherOr v-model="verticalOrientation" either="Vertical" or="Magnetic" :embedded="true" :small="true" />
+                </div>
+                <div v-if="rwyList.length > 1" class="multi-toggle-container">
+                    <span class="selection-label">Show</span>
+                    <EitherOr v-model="isSingleSelect" either="One Runway" or="Two Runways" :embedded="true" :small="true" />
                 </div>
             </div>
             <div v-else class="centered">
@@ -61,6 +69,7 @@ import AirportInput from '../shared/AirportInput.vue';
 
 import SeparatorChoice from '../../components/shared/SeparatorChoice.vue';
 import Separator from '../../components/shared/Separator.vue';
+import EitherOr from '../../components/shared/EitherOr.vue';
 
 import { Airport } from '../../models/Airport';
 import { Route, RouteCode } from '@gak/shared';
@@ -95,6 +104,7 @@ const loading = ref(false);
 const isInternalUpdate = ref(false);
 
 // Runway/Pattern State
+const isSingleSelect = ref(true);
 const rwyList = ref<AirportRunway[]>([]);
 const selectedRwyNames = ref<string[]>([]);
 const verticalOrientation = ref(true);
@@ -121,7 +131,13 @@ watch(() => props.tileData, (newTileData) => {
     loadFromTileData(newTileData);
 }, { deep: true });
 
-watch([currentMode, airportCode, selectedRwyNames, verticalOrientation, showHeadings, patternChoice, showPattern, showMetar, showNotams, selectedRouteCode], () => {
+watch(isSingleSelect, (newVal) => {
+    if (!isInternalUpdate.value && newVal && selectedRwyNames.value.length > 1) {
+        selectedRwyNames.value = [selectedRwyNames.value[0]];
+    }
+});
+
+watch([currentMode, airportCode, selectedRwyNames, verticalOrientation, showHeadings, patternChoice, showPattern, showMetar, showNotams, selectedRouteCode, isSingleSelect], () => {
     if (!isInternalUpdate.value) {
         emitUpdate();
     }
@@ -153,6 +169,16 @@ function loadFromTileData(tile: TileData) {
     // if config.rwys is iterable, convert to array
     const rwyIterable = config.rwys && Symbol.iterator in Object(config.rwys);
     const newRwys = rwyIterable ? [...config.rwys] : [];
+
+    if (config.isSingleSelect !== undefined) {
+        isSingleSelect.value = config.isSingleSelect;
+    } else {
+        if (newRwys.length > 1) {
+            isSingleSelect.value = false;
+        } else {
+            isSingleSelect.value = true;
+        }
+    }
 
     // Check for equality to avoid infinite recursion
     const isSame = selectedRwyNames.value.length === newRwys.length && 
@@ -205,9 +231,11 @@ function onUserSelectAirport(newAirport: Airport) {
     if (newAirport.rwys.length > 0) {
         if (!isSameAirport || selectedRwyNames.value.length === 0) {
             selectedRwyNames.value = [newAirport.rwys[0].name];
+            isSingleSelect.value = true;
         }
     } else {
         selectedRwyNames.value = [];
+        isSingleSelect.value = true;
     }
     
     isInternalUpdate.value = false;
@@ -230,12 +258,20 @@ function onInvalidAirport(code: string) {
 }
 
 function selectRunway(name: string) {
-    if (selectedRwyNames.value.includes(name)) {
-        selectedRwyNames.value = selectedRwyNames.value.filter(n => n !== name);
+    if (!isSingleSelect.value) {
+        if (selectedRwyNames.value.includes(name)) {
+            selectedRwyNames.value = selectedRwyNames.value.filter(n => n !== name);
+        } else {
+            selectedRwyNames.value.push(name);
+            if (selectedRwyNames.value.length > 2) {
+                selectedRwyNames.value.shift();
+            }
+        }
     } else {
-        selectedRwyNames.value.push(name);
-        if (selectedRwyNames.value.length > 2) {
-            selectedRwyNames.value.shift();
+        if (selectedRwyNames.value.includes(name)) {
+            selectedRwyNames.value = selectedRwyNames.value.filter(n => n !== name);
+        } else {
+            selectedRwyNames.value = [name];
         }
     }
 }
@@ -265,6 +301,7 @@ function emitUpdate() {
         currentMode.value,
         showMetar.value,
         showNotams.value,
+        isSingleSelect.value,
         selectedRouteCode.value
     );
 
@@ -299,6 +336,20 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.multi-toggle-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.selection-label {
+    font-size: 0.8rem;
+    color: var(--bg-secondary);
+    font-weight: bold;
 }
 
 .rwySelector {
