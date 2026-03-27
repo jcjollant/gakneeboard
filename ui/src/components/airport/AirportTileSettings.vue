@@ -26,13 +26,17 @@
                     </div>
                 </Button>
                 </div>
-                <div class="multi-toggle-container">
+                <div class="settings-grid">
                     <span class="selection-label">Orientation</span>
                     <EitherOr v-model="verticalOrientation" either="Vertical" or="Magnetic" :embedded="true" :small="true" />
-                </div>
-                <div v-if="rwyList.length > 1" class="multi-toggle-container">
-                    <span class="selection-label">Show</span>
-                    <EitherOr v-model="isSingleSelect" either="One Runway" or="Two Runways" :embedded="true" :small="true" />
+
+                    <template v-if="rwyList.length > 1">
+                        <span class="selection-label">Show</span>
+                        <EitherOr v-model="isSingleSelect" either="One Runway" or="Two Runways" :embedded="true" :small="true" />
+                    </template>
+
+                    <span class="selection-label">Traffic Pattern</span>
+                    <ChoiceList v-model="patternChoice" :choices="patternOptions" :small="true" />
                 </div>
             </div>
             <div v-else class="centered">
@@ -40,21 +44,15 @@
             </div>
         </div>
 
-        <!-- Traffic Pattern Section -->
-        <SeparatorChoice name="Traffic Pattern" choiceA="Show" choiceB="Hide" v-model="showPattern" />
-        <div v-if="showPattern" class="pattern-selector">
-            <Button v-for="option in patternOptions" :key="option.value" 
-                :severity="patternChoice === option.value ? 'primary' : 'secondary'"
-                @click="patternChoice = option.value"
-                class="pattern-btn">
-                {{ option.label }}
-            </Button>
-        </div>
-
-
         <!-- Conditions Section -->
-        <SeparatorChoice name="NOTAMs" choiceA="Show" choiceB="Hide" v-model="showNotams" />
-        <SeparatorChoice name="METAR" choiceA="Show" choiceB="Hide" v-model="showMetar" />
+        <Separator name="Conditions" :leftAligned="true" />
+        <div class="settings-grid">
+            <span class="selection-label">NOTAMs</span>
+            <EitherOr v-model="showNotams" either="Show" or="Hide" :embedded="true" :small="true" />
+
+            <span class="selection-label">METAR</span>
+            <EitherOr v-model="showMetar" either="Show" or="Hide" :embedded="true" :small="true" />
+        </div>
 
 
 
@@ -67,9 +65,9 @@ import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
 import AirportInput from '../shared/AirportInput.vue';
 
-import SeparatorChoice from '../../components/shared/SeparatorChoice.vue';
 import Separator from '../../components/shared/Separator.vue';
 import EitherOr from '../../components/shared/EitherOr.vue';
+import ChoiceList from '../shared/ChoiceList.vue';
 
 import { Airport } from '../../models/Airport';
 import { Route, RouteCode } from '@gak/shared';
@@ -112,13 +110,12 @@ const showHeadings = ref(true);
 const patternChoice = ref(TrafficPatternDisplay.Downwind); // Default
 const showMetar = ref(true);
 const showNotams = ref(true);
-const showPattern = ref(true);
 
 
 
 
-const patternOptions = [TrafficPatternDisplay.Downwind, TrafficPatternDisplay.Entry45, TrafficPatternDisplay.Midfield].map(value => ({
-    label: TrafficPatternDisplayLabels[value],
+const patternOptions = [TrafficPatternDisplay.None, TrafficPatternDisplay.Downwind, TrafficPatternDisplay.Entry45, TrafficPatternDisplay.Midfield].map(value => ({
+    label: value === TrafficPatternDisplay.None ? 'Hide' : TrafficPatternDisplayLabels[value],
     value: value
 }));
 
@@ -137,7 +134,7 @@ watch(isSingleSelect, (newVal) => {
     }
 });
 
-watch([currentMode, airportCode, selectedRwyNames, verticalOrientation, showHeadings, patternChoice, showPattern, showMetar, showNotams, selectedRouteCode, isSingleSelect], () => {
+watch([currentMode, airportCode, selectedRwyNames, verticalOrientation, showHeadings, patternChoice, showMetar, showNotams, selectedRouteCode, isSingleSelect], () => {
     if (!isInternalUpdate.value) {
         emitUpdate();
     }
@@ -191,16 +188,10 @@ function loadFromTileData(tile: TileData) {
     showHeadings.value = config.headings;
     
     patternChoice.value = TrafficPatternDisplay.Downwind;
-    showPattern.value = true;
     if (config.pattern) {
         const tpd = config.pattern as TrafficPatternDisplay;
-        if(tpd == TrafficPatternDisplay.None) {
-            showPattern.value = false;
-        } else {
-            showPattern.value = true;
-            if( tpd == TrafficPatternDisplay.Downwind || tpd == TrafficPatternDisplay.Entry45 || tpd == TrafficPatternDisplay.Midfield) {
-                patternChoice.value = tpd;
-            }
+        if( tpd == TrafficPatternDisplay.None || tpd == TrafficPatternDisplay.Downwind || tpd == TrafficPatternDisplay.Entry45 || tpd == TrafficPatternDisplay.Midfield) {
+            patternChoice.value = tpd;
         }
     }
 
@@ -294,7 +285,7 @@ function emitUpdate() {
     const newConfig = new AirportTileConfig(
         airportCode.value,
         selectedRwyNames.value,
-        showPattern.value ? patternChoice.value : TrafficPatternDisplay.None,
+        patternChoice.value,
         originalCorners, 
         orientation,
         showHeadings.value,
@@ -338,13 +329,15 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
     gap: 10px;
 }
 
-.multi-toggle-container {
-    display: flex;
-    justify-content: flex-end;
+.settings-grid {
+    display: grid;
+    grid-template-columns: 110px auto;
+    gap: 8px 15px;
     align-items: center;
-    gap: 10px;
     margin-bottom: 8px;
 }
+
+
 
 .selection-label {
     font-size: 0.8rem;
@@ -356,6 +349,8 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
+    justify-content: center;
+    margin-bottom: 10px;
 }
 
 .sign {
@@ -383,22 +378,4 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
     text-align: center;
 }
 
-.pattern-selector {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    align-items: center;
-    margin-top: 5px;
-}
-
-.pattern-label {
-    font-size: 0.9rem;
-    font-weight: 500;
-    margin-right: 5px;
-}
-
-.pattern-btn {
-    padding: 4px 12px;
-    font-size: 0.9rem;
-}
 </style>

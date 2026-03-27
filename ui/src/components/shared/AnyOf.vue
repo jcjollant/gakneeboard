@@ -37,8 +37,8 @@ function toggle(choice: AnyOfChoice) {
 <style scoped>
 .anyof {
     width: fit-content;
-    height: 1.3rem;
-    padding: 1px;
+    height: 1.7rem;
+    padding: 2px;
     overflow: hidden;
     background-color: #e5e7eb;
     border: 1px solid #d1d5db;
@@ -67,7 +67,7 @@ function toggle(choice: AnyOfChoice) {
     right: 0;
     bottom: 0;
     background-color: white;
-    border-radius: 3px;
+    border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
     z-index: -1;
     opacity: 0;
@@ -81,14 +81,17 @@ function toggle(choice: AnyOfChoice) {
 }
 
 .text {
-    padding: 0 10px;
-    min-width: 40px;
+    padding: 0 16px;
+    min-width: 60px;
     white-space: nowrap;
     font-weight: 500;
     color: #6b7280;
     font-size: 0.8rem;
+    line-height: 1.25rem;
     cursor: pointer;
     transition: all 0.2s ease;
+    user-select: none;
+    font-family: inherit;
 }
 
 .text.selected {

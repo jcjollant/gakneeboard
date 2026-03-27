@@ -154,8 +154,8 @@ function toggle() {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 12px; /* Add horizontal padding to drive width */
-    min-width: 50px; /* Ensure a minimum clickable area */
+    padding: 0 16px; /* Add horizontal padding to drive width */
+    min-width: 60px; /* Ensure a minimum clickable area */
     white-space: nowrap; /* Prevent wrapping */
     font-weight: 500;
     color: #6b7280;
@@ -163,8 +163,8 @@ function toggle() {
 }
 
 .casing.embedded.small .text {
-    padding: 0 8px;
-    min-width: 40px;
+    padding: 0 16px;
+    min-width: 60px;
 }
 
 .casing.embedded .text.selected {
