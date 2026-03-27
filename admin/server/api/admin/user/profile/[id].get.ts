@@ -52,7 +52,8 @@ export default defineEventHandler(async (event) => {
         printCredits: user.printCredits,
         printRefillOverride: user.printRefillOverride,
         templateCount: user.maxTemplates, // This is max, not current count. For current count we'd need another DAO call if required.
-        pageCount: user.maxPages       // Same here
+        pageCount: user.maxPages,       // Same here
+        stripeCustomerId: user.customerId
     }
 
     return response
