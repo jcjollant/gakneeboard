@@ -742,10 +742,24 @@ async function catchError(res: Response, e: any, context: string, ticket?: Ticke
         return
     }
 
+    let ticketMessage = message + ' ' + context
+    
+    // Decorate with underlying API error details if this is an AxiosError
+    if (e && typeof e === 'object' && e.isAxiosError) {
+        const method = e.config?.method?.toUpperCase() || 'UNKNOWN'
+        const url = e.config?.url || 'UNKNOWN URL'
+        const respStatus = e.response?.status || 'No Response'
+        ticketMessage += `\nUnderlying API failure: ${method} ${url} (Status: ${respStatus})`
+    }
+
+    if (e instanceof Error && e.stack) {
+        ticketMessage += '\n\nStack:\n' + e.stack
+    }
+
     if (ticket) {
         await TicketService.createFromTicket(ticket)
     } else {
-        await TicketService.create(3, message + ' ' + context)
+        await TicketService.create(3, ticketMessage)
     }
 }
 
