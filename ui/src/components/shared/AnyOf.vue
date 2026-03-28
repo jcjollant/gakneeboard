@@ -5,7 +5,14 @@
              class="choice-item" 
              @click="toggle(choice)">
             <div class="active-bg" :class="{'active': choice.active}"></div>
-            <span class="text" :class="{'selected': choice.active}">{{ choice.label }}</span>
+            <div class="any-of-content" :class="{'selected': choice.active}">
+                <div class="check-container">
+                    <svg v-show="choice.active" class="check-icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <span class="text">{{ choice.label }}</span>
+            </div>
         </div>
     </div>
 </template>
@@ -50,7 +57,6 @@ function toggle(choice: AnyOfChoice) {
 }
 
 .choice-item {
-    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -58,6 +64,28 @@ function toggle(choice: AnyOfChoice) {
     cursor: pointer;
     z-index: 1;
     height: 100%;
+}
+
+.any-of-content {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    min-width: 40px;
+    gap: 4px;
+}
+
+.check-container {
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.check-icon {
+    width: 14px;
+    height: 14px;
+    color: #10b981;
 }
 
 .active-bg {
@@ -81,8 +109,6 @@ function toggle(choice: AnyOfChoice) {
 }
 
 .text {
-    padding: 0 16px;
-    min-width: 60px;
     white-space: nowrap;
     font-weight: 500;
     color: #6b7280;
@@ -94,7 +120,7 @@ function toggle(choice: AnyOfChoice) {
     font-family: inherit;
 }
 
-.text.selected {
+.any-of-content.selected .text {
     color: #111827;
     font-weight: 600;
 }
