@@ -252,7 +252,16 @@ function loadListFromText() {
 function onAirportValid(airport: Airport) {
     lookupFrequencies.value = [];
     if (airport) {
-        lookupFrequencies.value = AirportService.getAllFrequencies(airport);
+        const freqs = AirportService.getAllFrequencies(airport);
+        const prefix = `${airport.code} `;
+        freqs.forEach(f => {
+            if (f.type !== FrequencyType.navaid && f.type !== FrequencyType.tracon) {
+                if (!f.name.startsWith(prefix)) {
+                    f.name = prefix + f.name;
+                }
+            }
+        });
+        lookupFrequencies.value = freqs;
     }
 }
 
