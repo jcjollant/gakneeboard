@@ -135,12 +135,11 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { currentUser } from '../assets/data';
 import { StoreService } from '../services/StoreService';
-import { CheckoutService } from '../services/CheckoutService';
-import { PrintFormat, PRINT_PRICING, PRINT_OVERAGE_CENTS, PLANS, bestValuePlan, AccountType, PlanDescription, FeatureFlags, PRODUCTS } from '@gak/shared';
-import CartDialog from '../components/store/CartDialog.vue';
-import Menu from '../components/menu/Menu.vue';
+import { PrintFormat, PRINT_PRICING, PRINT_OVERAGE_CENTS, PLANS, PlanDescription, FeatureFlags, PRODUCTS } from '@gak/shared';
 import { useToast } from 'primevue/usetoast';
 import { useToaster } from '../assets/Toaster';
+import CartDialog from '../components/store/CartDialog.vue';
+import Menu from '../components/menu/Menu.vue';
 import Kneeboard3D from '../components/store/Kneeboard3D.vue';
 
 const route = useRoute();
