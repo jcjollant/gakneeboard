@@ -1,23 +1,18 @@
 <template>
     <div class="compact" :class="{ 'solid-left-border': borderLeft }">
-        <div class="info br" :class="{ bb: borderBottom }">
-            <div class="tileBoxLabel">Info</div>
-        </div>
-        <div class="wind br" :class="{ bb: borderBottom }">
-            <div class="tileBoxLabel">Wind</div>
-            <span class="at">@</span>
-            <div class="wtrmrk gust">G</div>
-        </div>
-        <div class="altimeter br" :class="{ bb: borderBottom }">
-            <div class="tileBoxLabel">Alt</div>
-        </div>
-        <div class="runway" :class="{ bb: borderBottom }">
-            <div class="tileBoxLabel">Rwy</div>
-        </div>
+        <TitleBox title="Info" class="br" :class="{ bb: borderBottom }" />
+        <WindBox class="br"  :class="{ bb: borderBottom }"/>
+        <AltimeterBox class="br" :class="{ bb: borderBottom }" />
+        <TitleBox title="Rwy" class="br" :class="{ bb: borderBottom }" />
     </div>
 </template>
 
 <script setup lang="ts">
+import WindBox from './WindBox.vue';
+import AltimeterBox from './AltimeterBox.vue';
+import TitleBox from '../shared/TitleBox.vue';
+
+
 defineProps({
     borderBottom: { type: Boolean, default: false },
     borderLeft: { type: Boolean, default: false }
@@ -53,7 +48,7 @@ defineProps({
     color: darkgrey;
 }
 
-.info, .wind, .altimeter, .runway {
+.info, .wind, .runway {
     position: relative;
 }
 </style>

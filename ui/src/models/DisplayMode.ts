@@ -59,7 +59,8 @@ export enum DisplayModeVfr {
     CloudClearance = 'clouds',
     Sunlight = 'sunlight',
     LostComms = 'nordo',
-    Msa = 'msa',
+    Msa_deprecated = 'msa',
+    Departure = 'dep',
 }
 
 

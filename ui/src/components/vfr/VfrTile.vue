@@ -8,11 +8,12 @@
             <RegLink :regs="[Regulation.VfrAltitudes]" />
         </div>
         <Nordo v-else-if="displayMode==DisplayModeVfr.LostComms" />
-        <div v-else-if="displayMode==DisplayModeVfr.Msa">
+        <div v-else-if="displayMode==DisplayModeVfr.Msa_deprecated">
             <ImageContent src="safe-altitudes.png" />
             <RegLink :regs="[Regulation.MinimumSafeAltitudes]" />
         </div>
         <SunLight v-else-if="displayMode==DisplayModeVfr.Sunlight" :showHeader="false" :params="sunlightParams" @update="onSunlightUpdate" />
+        <VfrDeparture v-else-if="displayMode==DisplayModeVfr.Departure" :airport="airport"/>
         <CloudClearance v-else />
         <TileModeDots 
             v-if="!displaySelection"
@@ -42,6 +43,7 @@ import CloudClearance from '../atis/CloudClearance.vue';
 import SunLight from '../sunlight/SunLight.vue';
 import RegLink from '../regulations/RegLink.vue';
 import TileModeDots from '../shared/TileModeDots.vue';
+import VfrDeparture from './VfrDeparture.vue';
 
 // Enum with display modes
 
@@ -57,11 +59,11 @@ const props = defineProps({
 })
 const displaySelection=ref(false)
 const displayModes = [
+    new DisplayModeChoice( 'VFR Departure', DisplayModeVfr.Departure),
     new DisplayModeChoice( 'VFR Altitudes', DisplayModeVfr.Altitudes),
     new DisplayModeChoice( 'Cloud Clearance', DisplayModeVfr.CloudClearance),
     new DisplayModeChoice( 'Sunlight', DisplayModeVfr.Sunlight),
-    new DisplayModeChoice( 'Lost Comms', DisplayModeVfr.LostComms),
-    new DisplayModeChoice( 'Minimum Safe Altitudes', DisplayModeVfr.Msa)
+    new DisplayModeChoice( 'Lost Comms', DisplayModeVfr.LostComms)
 ]
 
 onMounted(() => {   
@@ -101,8 +103,8 @@ function loadProps(props:any) {
             displaySelection.value = true
          }
          
-         const useRoute = props.params.useRoute !== false && !props.params.airport
-         const airportCode = useRoute ? props.route?.dep : props.params.airport
+         const useRoute = props.params.useRoute !== false && !props.params.airport && !props.params.from
+         let airportCode = useRoute ? props.route?.dep : (props.params.mode === DisplayModeVfr.Departure ? (props.params.from || props.params.airport) : (props.params.airport || props.params.from))
 
          if( airportCode ) {
             getAirport(airportCode).then( output => {
@@ -155,8 +157,10 @@ function getTitle() {
         title = 'Sunlight'
     } else if( displayMode.value==DisplayModeVfr.LostComms) {
         title = 'VFR Lost Comms'
-    } else if( displayMode.value==DisplayModeVfr.Msa) {
+    } else if( displayMode.value==DisplayModeVfr.Msa_deprecated) {
         title = 'Minimum Safe Altitudes'
+    } else if (displayMode.value==DisplayModeVfr.Departure) {
+        title = 'Departure ' + (airport.value.code ? airport.value.code + ' ' : '') + ' VFR'
     } else {
         title = 'VFR Tile'
     }
@@ -171,3 +175,4 @@ function getTitle() {
     padding: 10px;
 }
 </style>
+>

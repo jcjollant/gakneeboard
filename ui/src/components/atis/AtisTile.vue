@@ -5,105 +5,34 @@
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList" :expandable="true" :expanded="expanded"
             @expand="onExpand" @keep="displaySelection=false" />
         <div v-else-if="expanded && displayMode==DisplayModeAtis.FullATIS" class="tileContentEx">
-            <div class="flex atisHeader">
-                <div class="infoEx">Info</div>
-                <div class="windEx">Wind</div>
-                <div class="visEx">Visiblity</div>
-                <div class="skyEx">Sky</div>
-                <div class="tempEx">T°/DP</div>
-                <div class="altEx">Altimeter</div>
-                <div class="rwyEx">Rwy</div>
+            <div class="expanded atisHeader">
+                <div>Info</div>
+                <div>Wind</div>
+                <div>Visiblity</div>
+                <div>Sky</div>
+                <div>T°/DP</div>
+                <div>Altimeter</div>
+                <div>Rwy</div>
             </div>
             <div v-for="n in 5" class="expanded bt">
-                <div class="infoEx br">
-                </div>
-                <div class="windEx br">
-                    <div class="at atEx">@</div>
-                    <div class="wtrmrk"><div>Vrb</div></div>
-                    <div class="wtrmrk clear">Calm</div>
-                    <div class="wtrmrk gust">G</div>
-                </div>
-                <div class="visEx br">
-                    <div class="wtrmrk">
-                        <div>Ra</div>
-                        <div>Fg</div>
-                        <div>Br</div>
-                    </div>
-                    <div class="wtrmrk clear">10+</div>
-                </div>
-                <div class="skyEx br">
-                    <div class="wtrmrk">
-                        <div>Fw</div>
-                        <div>Sc</div>
-                        <div>Bk</div>
-                        <div>Ov</div>
-                    </div>
-                    <div class="wtrmrk clear">CLR</div>
-                </div>
-                <div class="tempEx br">
-                    <div class="tempText">/</div>
-                </div>
-                <div class="altEx br">
-                    <div class="wtrmrk">
-                        <div>28</div>
-                        <div>29</div>
-                        <div>30</div>
-                    </div>
-                </div>
+                <div class="br"></div>
+                <WindBox class="br" :showTitle="false" />
+                <VisibilityBox class="br" :showTitle="false" />
+                <SkyBox class="skyEx br" :showTitle="false" />
+                <TemperatureBox class="tempEx br" :showTitle="false" />
+                <AltimeterBox class="altEx br" :showTitle="false" />
                 <div class="rwyEx">
                 </div>
             </div>
         </div>
         <div v-else-if="displayMode==DisplayModeAtis.FullATIS" class="tileContent full">
-            <div class="info br">
-                <div class="tileBoxLabel">Info</div>
-            </div>
-            <div class="wind br">
-                <div class="tileBoxLabel">Wind</div>
-                <div class="at">@</div>
-                <div class="wtrmrk">
-                    <div>Vrb</div>
-                </div>
-                <div class="wtrmrk clear">Calm</div>
-                <div class="wtrmrk gust">G</div>
-            </div>
-            <!-- <div class="wind br">
-                <div class="tileBoxLabel">Wind</div>
-            </div> -->
-            <div class="runway">
-                <div class="tileBoxLabel">Rwy</div>
-            </div>
-            <div class="visibility bt bb">
-                <div class="tileBoxLabel">Vis</div>
-                <div class="wtrmrk">
-                    <div>Ra</div>
-                    <div>Fg</div>
-                    <div>Br</div>
-                </div>
-                <div class="wtrmrk clear">10+</div>
-                <!-- <div class="tileBoxLabel">Vis</div> -->
-            </div>
-            <div class="sky bt bl">
-                <div class="tileBoxLabel">Sky</div>
-                <div class="wtrmrk">
-                    <div>Fw</div>
-                    <div>Sc</div>
-                    <div>Bk</div>
-                    <div>Ov</div>
-                </div>
-                <div class="wtrmrk clear">CLR</div>
-            </div>
-            <div class="temperature bb">/
-                <div class="tileBoxLabel">T°/DP</div>
-            </div>
-            <div class="altimeter">
-                <div class="tileBoxLabel">Alt</div>
-                <div class="wtrmrk">
-                    <div>28</div>
-                    <div>29</div>
-                    <div>30</div>
-                </div>
-            </div>
+            <TitleBox title="Info" class="br" />
+            <WindBox class="br" />
+            <TitleBox title="Rwy" class="br" />
+            <VisibilityBox class="bt bb" />
+            <SkyBox class="bt bl" />
+            <TemperatureBox class="bb" />
+            <AltimeterBox />
         </div>
         <div v-else-if="displayMode==DisplayModeAtis.CompactATIS" class="tileContent" :class="{ compactWide: expanded }">
             <AtisCompact v-for="n in compactCount" :key="'comp-' + n" :borderBottom="(n % 4 !== 0)" :borderLeft="n >= 5" />
@@ -141,6 +70,12 @@ import Header from '../shared/Header.vue';
 import NoSettings from '../shared/NoSettings.vue';
 import TileModeDots from '../shared/TileModeDots.vue';
 import AtisCompact from './AtisCompact.vue';
+import WindBox from './WindBox.vue';
+import AltimeterBox from './AltimeterBox.vue';
+import VisibilityBox from './VisibilityBox.vue';
+import SkyBox from './SkyBox.vue';
+import TemperatureBox from './TemperatureBox.vue';
+import TitleBox from '../shared/TitleBox.vue';
 
 // Enum with display modes
 
@@ -245,9 +180,11 @@ function saveConfig() {
     height: var(--tile-content-height);
 }
 .expanded {
-    display: flex;
+    display: grid;
     position: relative;
+    grid-template-columns: 1.5fr 4.5fr 2.5fr 4fr 3fr 4fr 2fr;
 }
+
 .categories {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -313,119 +250,34 @@ function saveConfig() {
     font-size: 0.8rem;
     font-weight: normal;
 }
-.list {
-    display: grid;
-    padding: 10px;
-    gap:10px;
-    grid-template-rows: repeat(4, 3rem);
-}
 
 .full {
     display: grid;
     grid-template-columns: 20% 30% 25% 25%;
 }
-.info {
-    grid-column: 1;
-    position: relative;
-}
-.wind {
-    position: relative;
-}
+
 .full .wind {
     grid-column: 2 / span 2;
 }
-.runway {
-    grid-column: 4;
-    position: relative;
-}
-.sky {
+.full .sky {
     grid-column: 3 / span 2;
     grid-row: 2 / span 3;
-    position: relative;
 }
-.visibility {
+.full .visibility {
     grid-row: 2;
     grid-column: 1 / span 2;
-    position: relative;
 }
-.temperature {
+.full .temperature {
     grid-row: 3;
     grid-column: 1 / span 2;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: x-large;
-}
-.altimeter {
-    position: relative;
 }
 .full .altimeter {
     grid-row: 4;
     grid-column: 1 / span 2;
 }
-.wind .at {
-    position: absolute;
-    left: 50px;
-    top: 20px;
-    font-size: 0.8rem;
-    color: darkgrey;
-}
 
-.infoEx, .windEx, .visEx, .skyEx, .tempEx, .altEx, .rwyEx {
-    position: relative;
-}
-.infoEx {
-    flex: 1.5 1 0px;
-}
-.windEx {
-    flex: 4.5 1 0px;
-}
-.visEx {
-    flex: 2.5 1 0px;
-}
-.skyEx {
-    flex: 4 1 0px;
-}
 .tempEx {
     flex: 3 1 0px;
-}
-.tempText {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: x-large;
-}
-.altEx {
-    flex: 4 1 0px;
-}
-.rwyEx {
-    flex: 2 1 0px;
-}
-.wtrmrk {
-    position: absolute;
-    display: flex;
-    bottom: 0;
-    justify-content: space-between;
-    width: 100%;
-    padding: 2px 4px;
-}
-.clear {
-    top: 0;
-    flex-flow: row-reverse;
-}
-.gust {
-    right: 0;
-    width: 49px;
-    opacity: 0.2;
-}
-.windEx .at {
-    display: flex;
-    font-size: 15px;
-    font-weight: bolder;
-    padding-left: 55px;
-    padding-top: 10px;
-    opacity: 0.3;
 }
 .atisHeader {
     font-size: 10px;
