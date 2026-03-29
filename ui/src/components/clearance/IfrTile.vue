@@ -82,50 +82,68 @@ watch( props, async() => {
     loadProps(props)
 })
 
-watch( displayMode, (newValue, oldValue) => {
-    if( newValue == oldValue || oldValue == DisplayModeIfr.Unknown) return;
-    saveConfig()
+watch(displayMode, (newValue, oldValue) => {
+    if (newValue == oldValue || oldValue == DisplayModeIfr.Unknown) return;
+
+    // Auto-load home airport if switching to Departure and none currently selected
+    if (newValue === DisplayModeIfr.Departure && (!airport.value || airport.value.code === '') && currentUser.homeAirport) {
+        getAirport(currentUser.homeAirport).then(output => {
+            if (output) {
+                airport.value = Airport.copy(output)
+                getNotams(output.code).then(notams => {
+                    notamsList.value = notams
+                })
+                saveConfig()
+            }
+        })
+    } else {
+        saveConfig()
+    }
 })
 
 function saveConfig() {
     const params = new IfrTileConfig(displayMode.value, airport.value.code, props.params?.routeCode)
-    emits('update', new TileData( TileType.clearance, params))
+    emits('update', new TileData(TileType.clearance, params))
 }
 
-function loadProps(props:any) {
+function loadProps(props: any) {
     // console.debug('[Clearance.loadProps]', JSON.stringify(props))
     // displayMode.value = defaultMode
-    if( props.params) {
-         if( props.params.mode) {
+    if (props.params) {
+        if (props.params.mode) {
             // for compatibility with old versions
-            if(props.params.mode == DisplayModeIfr.BoxH_deprecated 
-                || props.params.mode==DisplayModeIfr.Craft_deprecated 
-                || props.params.mode=="") {
+            if (props.params.mode == DisplayModeIfr.BoxH_deprecated
+                || props.params.mode == DisplayModeIfr.Craft_deprecated
+                || props.params.mode == "") {
                 displayMode.value = defaultMode;
             } else {
                 displayMode.value = props.params.mode
             }
-         } else {
+        } else {
             displayMode.value = defaultMode
-         }
-         if( props.params.airport || props.params.routeCode) {
-            const codeFromRoute = RouteService.getAirportCode(props.route, props.params.routeCode)
-            const airportCode = codeFromRoute || props.params.airport
-            if (airportCode) {
-                getAirport(airportCode).then( output => {
-                    if( output) {
-                        airport.value = Airport.copy(output)
-                        getNotams(output.code).then(notams => {
-                            notamsList.value = notams
-                        })
-                    }
-                })
-            }
-         }
+        }
+
+        const codeFromRoute = RouteService.getAirportCode(props.route, props.params.routeCode)
+        let airportCode = codeFromRoute || props.params.airport
+
+        // Default to home airport for Departure mode if no other airport is specified
+        if (!airportCode && displayMode.value === DisplayModeIfr.Departure && currentUser.homeAirport) {
+            airportCode = currentUser.homeAirport
+        }
+
+        if (airportCode) {
+            getAirport(airportCode).then(output => {
+                if (output) {
+                    airport.value = Airport.copy(output)
+                    getNotams(output.code).then(notams => {
+                        notamsList.value = notams
+                    })
+                }
+            })
+        }
     } else {
         displayMode.value = defaultMode
     }
-
 }
 
 function getTitle() {

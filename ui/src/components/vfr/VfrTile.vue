@@ -74,45 +74,60 @@ watch( props, async() => {
     loadProps(props)
 })
 
-watch( displayMode, (newValue, oldValue) => {
-    if( newValue == oldValue || oldValue == DisplayModeVfr.Unknown) return;
+watch(displayMode, (newValue, oldValue) => {
+    if (newValue == oldValue || oldValue == DisplayModeVfr.Unknown) return;
     displaySelection.value = false;
-    
+
     // Auto-initialize sunlight params from route if empty
     if (newValue == DisplayModeVfr.Sunlight && props.route && (!sunlightParams.value || Object.keys(sunlightParams.value).length === 0)) {
         sunlightParams.value = { from: props.route.dep, to: props.route.dst, mode: DisplayModeSunlight.Flight };
     }
-    
-    saveConfig()
+
+    // Auto-load home airport if switching to Departure and none currently selected
+    if (newValue === DisplayModeVfr.Departure && (!airport.value || airport.value.code === '') && currentUser.homeAirport) {
+        getAirport(currentUser.homeAirport).then(output => {
+            if (output) {
+                airport.value = Airport.copy(output)
+                saveConfig()
+            }
+        })
+    } else {
+        saveConfig()
+    }
 })
 
-function loadProps(props:any) {
+function loadProps(props: any) {
     // console.debug('[VfrTile.loadProps]', props)
     displayMode.value = defaultMode
-    if( props.params) {
+    if (props.params) {
         // console.debug('[VfrTile.loadProps] params', props.params)
-         if( props.params.mode) {
+        if (props.params.mode) {
             // for compatibility with old versions
-            if(props.params.mode=="") {
+            if (props.params.mode == "") {
 
                 props.params.mode = defaultMode;
             } else {
                 displayMode.value = props.params.mode
             }
-         } else {
+        } else {
             displaySelection.value = true
-         }
-         
-         const useRoute = props.params.useRoute !== false && !props.params.airport && !props.params.from
-         let airportCode = useRoute ? props.route?.dep : (props.params.mode === DisplayModeVfr.Departure ? (props.params.from || props.params.airport) : (props.params.airport || props.params.from))
+        }
 
-         if( airportCode ) {
-            getAirport(airportCode).then( output => {
-                if( output) {
+        const useRoute = props.params.useRoute !== false && !props.params.airport && !props.params.from
+        let airportCode = useRoute ? props.route?.dep : (props.params.mode === DisplayModeVfr.Departure ? (props.params.from || props.params.airport) : (props.params.airport || props.params.from))
+
+        // Default to home airport for Departure mode if no other airport is specified
+        if (!airportCode && displayMode.value === DisplayModeVfr.Departure && currentUser.homeAirport) {
+            airportCode = currentUser.homeAirport
+        }
+
+        if (airportCode) {
+            getAirport(airportCode).then(output => {
+                if (output) {
                     airport.value = Airport.copy(output)
                 }
             })
-         }
+        }
          
          if( props.params.sunlight) {
             sunlightParams.value = props.params.sunlight
