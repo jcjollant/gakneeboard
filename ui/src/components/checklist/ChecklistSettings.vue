@@ -27,7 +27,7 @@
         </div>
         <div v-if="isTile" class="displayMode">
             <div>Display</div>
-            <OneChoice v-model="displayModeChoice" :choices="[choiceDisplayFullObj, choiceDisplayCompact]"/>
+            <EitherOr v-model="isFullDisplay" either="Full" or="Compact" embedded />
         </div>
         <div v-if="!isTile" class="footer-settings">
             <div class="font">
@@ -58,6 +58,7 @@ import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
 import OneChoice from '../shared/OneChoice.vue'
+import EitherOr from '../shared/EitherOr.vue'
 
 // Helper Classes for Choices (Copied from ChecklistPage)
 class ChoiceColumnCount {
@@ -96,6 +97,13 @@ const columnsChoice = ref<ChoiceColumnCount>(choiceSingle)
 // Use params.isTile directly or via a computed if reactivity is needed (though params prop should be reactive)
 const isTile = computed(() => props.params.isTile)
 const columnsCount = computed(() => isTile.value ? 1 : columnsChoice.value.value)
+
+const isFullDisplay = computed({
+    get: () => displayModeChoice.value.value === DisplayModeChecklist.Full,
+    set: (val: boolean) => {
+        displayModeChoice.value = val ? choiceDisplayFullObj : choiceDisplayCompact
+    }
+})
 
 function onEditorUpdate(index: number, val: Checklist) {
      checklistData.value[index] = val;
