@@ -8,10 +8,10 @@
             <div class="flex atisHeader">
                 <div class="infoEx">Info</div>
                 <div class="windEx">Wind</div>
-                <div class="visEx">Vis</div>
+                <div class="visEx">Visiblity</div>
                 <div class="skyEx">Sky</div>
                 <div class="tempEx">T°/DP</div>
-                <div class="altEx">Alt</div>
+                <div class="altEx">Altimeter</div>
                 <div class="rwyEx">Rwy</div>
             </div>
             <div v-for="n in 5" class="expanded bt">
