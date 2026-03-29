@@ -64,6 +64,31 @@ export const PLANS: PlanDescription[] = [
         isBestValue: false
     },
     {
+        id: 'pp2',
+        displayName: 'Student Pilot',
+        subtitles: ['No Commitment', 'Best for Occasional Use'],
+        active: false,
+        show: false,
+        showInFtux: false,
+        displayPrice: '$4.99',
+        accountType: AccountType.student,
+        chargeFrequency: 'monthly',
+        priceEnvironmentVariable: 'STRIPE_PRICE_SP2',
+        quotas: {
+            prints: 8,
+            pages: 8,
+            templates: 2
+        },
+        features: {
+            advancedPrinting: true,
+            export: false,
+            metars: true,
+            notams: false,
+            restoreOldVersion: false
+        },
+        isBestValue: false
+    },
+    {
         id: PLAN_ID_CHECKRIDE_READY,
         displayName: 'Checkride Ready',
         subtitles: ['Perfect for Final Prep', 'More pages when you need them'],
@@ -167,7 +192,7 @@ export const PLANS: PlanDescription[] = [
     {
         id: PLAN_ID_LIFETIME_DEAL,
         displayName: 'Lifetime Deal',
-        subtitles: ['Pay once, use forever 😳', 'Grab it while it lasts!'],
+        subtitles: ['Pay once, use forever 😳', 'Ends March 31st!'],
         active: true,
         show: true,
         showInFtux: true,

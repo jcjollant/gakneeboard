@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { UserDao } from '../dao/UserDao';
 import { SubscriptionDao } from '../dao/SubscriptionDao';
-import { AccountType, PlanDescription, PRODUCTS } from '../../../shared';
+import { AccountType, PlanDescription, PRODUCTS, PLAN_ID_PRIVATE_PILOT } from '../../../shared';
 import Stripe from 'stripe';
 import { Business } from './Business';
 import { AttributionData } from '../models/AttributionData';
@@ -69,6 +69,9 @@ export class StripeClient {
                     const price = this.priceFromProduct(itemId)
                     priceId = price.id
                     mode = price.subscription ? 'subscription' : 'payment'
+                    if (itemId === PLAN_ID_PRIVATE_PILOT) {
+                        shipping_address_collection = { allowed_countries: ['US', 'CA'] };
+                    }
                 } else if (type === 'product') {
                     const product = PRODUCTS.find(p => p.id === itemId);
                     if (!product) throw new Error('Product not found: ' + itemId);
