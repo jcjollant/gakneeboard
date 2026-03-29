@@ -11,6 +11,12 @@
             <WindBox class="br bb" />
             <VisibilityBox class="br bb" />
         </div>
+        <div class="departure-line-2">
+            <!-- Line 2: T/DP, Altimeter, Rwy -->
+            <TemperatureBox class="bb br" />
+            <AltimeterBox class="br bb" />
+            <TitleBox title="Rwy" class="bb" />
+        </div>
 
         <div class="departure-line">
              <TitleBox title="Notes" />
@@ -29,6 +35,8 @@ import VisibilityBox from '../atis/VisibilityBox.vue';
 import WindBox from '../atis/WindBox.vue';
 import FrequencyBox from '../shared/FrequencyBox.vue';
 import TitleBox from '../shared/TitleBox.vue';
+import TemperatureBox from '../atis/TemperatureBox.vue';
+import AltimeterBox from '../atis/AltimeterBox.vue';
 
 const props = defineProps({
     airport: { type: Object as PropType<Airport>, required: true },
@@ -72,8 +80,14 @@ const freqTower = computed(() => {
     flex: 1;
 }
 
+.departure-line-2 {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr;
+    flex: 1;
+}
+
 .departure-line {
-    flex: 2;
+    flex: 1;
 }
 
 </style>
