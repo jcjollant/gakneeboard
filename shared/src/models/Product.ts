@@ -6,4 +6,6 @@ export interface Product {
     priceIdEnvVar: string; // Env var name for Stripe Price ID
     images: string[];
     freeCoupons: string[];
+    isNew?: boolean;
+    showInStore?: boolean;
 }

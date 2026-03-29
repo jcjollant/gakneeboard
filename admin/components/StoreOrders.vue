@@ -36,7 +36,7 @@
                         </li>
                     </ul>
                 </div>
-                <div class="actions">
+                <div class="actions" v-if="order.status !== PrintOrderStatus.SHIPPED">
                     <button @click="markShipped(order.id)" class="ship-btn">Mark as Shipped</button>
                 </div>
             </div>
@@ -50,6 +50,7 @@ import { api } from '~/utils/api';
 import { UrlService } from '~/utils/UrlService';
 import { useToaster } from '~/utils/Toaster';
 import { useToast } from 'primevue/usetoast';
+import { PrintOrderStatus } from '@gak/shared';
 
 const orders = ref<any[]>([]);
 const loading = ref(false);

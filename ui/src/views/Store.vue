@@ -89,68 +89,23 @@
         </div>
         <p class="section-subtitle">What you need. When you need it. Kneeboard sized laminated reference cards.</p>
         <div class="products-grid">
-            <div class="product-card">
+            <div v-for="product in products" :key="product.id" class="product-card">
+                <div v-if="product.isNew" class="badge-free-shipping bg-orange-500">NEW</div>
                 <Kneeboard3D 
-                    frontSrc="/thumbnails/reference-0.png" 
-                    backSrc="/thumbnails/reference-1.png" 
+                    :frontSrc="product.images[0]" 
+                    :backSrc="product.images[1] || product.images[0]" 
                 />
                 <div class="product-info">
-                    <h3>VFR / IFR</h3>
-                    <div class="description-block">
-                        <p class="desc-text"><span class="desc-label">VFR Side:</span> Cloud Clearance, Flight Categories, VFR Altitudes, Definition of Night, Lost Comms, Quick Reference</p>
-                    </div>
-                    <div class="description-block">
-                        <p class="desc-text"><span class="desc-label">IFR Side:</span> IFR Alternate, IFR Lost Comms, IFR Reporting, Service Volumes and Supplemental Oxygen</p>
+                    <h3>{{ product.displayName }}</h3>
+                    <div v-for="(line, index) in product.description.split('. ')" :key="index" class="description-block">
+                        <p class="desc-text" v-if="line">
+                            <span class="desc-label">{{ line.split(':')[0] }}:</span>{{ line.split(':')[1] || '' }}
+                        </p>
                     </div>
                 </div>
                 <div class="product-footer">
-                    <span class="price">$9.99</span>
-                    <button @click="addStandardToCart('Reference Card', 'KB_LOOSE')" class="btn btn-success">
-                        Add to Cart
-                    </button>
-                </div>
-            </div>
-            
-            <div class="product-card">
-                <Kneeboard3D 
-                    frontSrc="/thumbnails/seattle-ga-0.png" 
-                    backSrc="/thumbnails/seattle-ga-1.png" 
-                />
-                <div class="product-info">
-                    <h3>Seattle GA Airports</h3>
-                    <div class="description-block">
-                        <p class="desc-text"><span class="desc-label">Front:</span>Arlington (KAWO), Auburn (S50), Boeing Field (KBFI), Bremerton (KPWT), Harvey (S43), Normal Grier (S36).</p>
-                    </div>
-                    <div class="description-block">
-                        <p class="desc-text"><span class="desc-label">Back:</span>Olympia (KOLM), Paine (KPAE), Pierce (KPLU), Renton (KRNT), Skagit (KBVS), Tacoma (KTIW)</p>
-                    </div>
-                </div>
-                <div class="product-footer">
-                    <span class="price">$9.99</span>
-                    <button @click="addStandardToCart('Seattle Airports', 'KB_LOOSE')" class="btn btn-success">
-                        Add to Cart
-                    </button>
-                </div>
-            </div>
-
-            <div class="product-card">
-                <div class="badge-free-shipping bg-orange-500">NEW</div>
-                <Kneeboard3D 
-                    frontSrc="/thumbnails/socal-ga-0.png" 
-                    backSrc="/thumbnails/socal-ga-1.png" 
-                />
-                <div class="product-info">
-                    <h3>SoCal GA Airports</h3>
-                    <div class="description-block">
-                        <p class="desc-text"><span class="desc-label">Front:</span>French Valley (F70), Catalina (KAVX), Camarillo (KVMA), Chino (KCNO), Santa Ynez (KIZA), Oceano County (L52)</p>
-                    </div>
-                    <div class="description-block">
-                        <p class="desc-text"><span class="desc-label">Back:</span>Long Beach (KLGB), Gillepsie (KSEE), Santa Monica (KSMO), Zamperini (KTOA), Van Nuys (KNVY), Big Bear (L35)</p>
-                    </div>
-                </div>
-                <div class="product-footer">
-                    <span class="price">$9.99</span>
-                    <button @click="addStandardToCart('SoCal Airports', 'KB_LOOSE')" class="btn btn-success">
+                    <span class="price">${{ product.price }}</span>
+                    <button @click="addStandardToCart(product.displayName, 'KB_LOOSE')" class="btn btn-success">
                         Add to Cart
                     </button>
                 </div>
@@ -181,7 +136,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { currentUser } from '../assets/data';
 import { StoreService } from '../services/StoreService';
 import { CheckoutService } from '../services/CheckoutService';
-import { PrintFormat, PRINT_PRICING, PRINT_OVERAGE_CENTS, PLANS, bestValuePlan, AccountType, PlanDescription, FeatureFlags } from '@gak/shared';
+import { PrintFormat, PRINT_PRICING, PRINT_OVERAGE_CENTS, PLANS, bestValuePlan, AccountType, PlanDescription, FeatureFlags, PRODUCTS } from '@gak/shared';
 import CartDialog from '../components/store/CartDialog.vue';
 import Menu from '../components/menu/Menu.vue';
 import { useToast } from 'primevue/usetoast';
@@ -250,6 +205,7 @@ const addStandardToCart = async (name: string, format: string) => {
 }
 
 const plans = PLANS.filter(p => p.show);
+const products = PRODUCTS.filter(p => p.showInStore !== false);
 
 const showPlans = true;
 
