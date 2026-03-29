@@ -24,10 +24,14 @@ export interface AnyOfChoice {
     active: boolean;
 }
 
+const props = defineProps({
+    allowsNoSelection: { type: Boolean, default: false }
+});
+
 const choices = defineModel<AnyOfChoice[]>({ required: true })
 
 function setChoiceActive(choice: AnyOfChoice, active: boolean) {
-    if (choice.active && !active) {
+    if (choice.active && !active && !props.allowsNoSelection) {
         const activeCount = choices.value.filter(c => c.active).length
         if (activeCount <= 1) return
     }

@@ -16,10 +16,11 @@
         <div class="rwyChoices">
             <Separator name="Runway(s)" :leftAligned="true" />
             <div v-if="validAirport">
-                <div class="rwySelector" title="Select 1 or 2 runways">
+                <div class="rwySelector" title="Select Runway">
                     <Button v-for="rwy in rwyList" :key="rwy.name" class="sign"
                     :severity="selectedRwyNames.includes(rwy.name) ? 'primary' : 'secondary'"
-                    @click="selectRunway(rwy.name)">
+                    @click="selectRunway(rwy.name)"
+                    title="Select Runway">
                     <div class="rwy-btn-content">
                         <span class="rwy-name">{{ rwy.name }}</span>
                         <span class="rwy-len">{{ Formatter.feet(rwy.length) + getRunwayPositionLabel(rwy.name) }}</span>
@@ -47,11 +48,8 @@
         <!-- Conditions Section -->
         <Separator name="Conditions" :leftAligned="true" />
         <div class="settings-grid">
-            <span class="selection-label">NOTAMs</span>
-            <EitherOr v-model="showNotams" either="Show" or="Hide" :embedded="true" :small="true" />
-
-            <span class="selection-label">METAR</span>
-            <EitherOr v-model="showMetar" either="Show" or="Hide" :embedded="true" :small="true" />
+            <span class="selection-label">Show</span>
+            <AnyOf v-model="conditionChoices" :allowsNoSelection="true" />
         </div>
 
 
@@ -68,6 +66,7 @@ import AirportInput from '../shared/AirportInput.vue';
 import Separator from '../../components/shared/Separator.vue';
 import EitherOr from '../../components/shared/EitherOr.vue';
 import ChoiceList from '../shared/ChoiceList.vue';
+import AnyOf, { type AnyOfChoice } from '../shared/AnyOf.vue';
 
 import { Airport } from '../../models/Airport';
 import { Route, RouteCode } from '@gak/shared';
@@ -111,6 +110,11 @@ const patternChoice = ref(TrafficPatternDisplay.Downwind); // Default
 const showMetar = ref(true);
 const showNotams = ref(true);
 
+const conditionChoices = ref<AnyOfChoice[]>([
+    { label: 'NOTAMs', active: true },
+    { label: 'METAR', active: true }
+]);
+
 
 
 
@@ -133,6 +137,16 @@ watch(isSingleSelect, (newVal) => {
         selectedRwyNames.value = [selectedRwyNames.value[0]];
     }
 });
+
+watch(conditionChoices, (newChoices) => {
+    const notams = newChoices.find(c => c.label === 'NOTAMs')?.active ?? true;
+    const metar = newChoices.find(c => c.label === 'METAR')?.active ?? true;
+    
+    if (showNotams.value !== notams || showMetar.value !== metar) {
+        showNotams.value = notams;
+        showMetar.value = metar;
+    }
+}, { deep: true });
 
 watch([currentMode, airportCode, selectedRwyNames, verticalOrientation, showHeadings, patternChoice, showMetar, showNotams, selectedRouteCode, isSingleSelect], () => {
     if (!isInternalUpdate.value) {
@@ -198,11 +212,19 @@ function loadFromTileData(tile: TileData) {
     showMetar.value = config.showMetar ?? true;
     showNotams.value = config.showNotams ?? true;
 
+    conditionChoices.value = [
+        { label: 'NOTAMs', active: showNotams.value },
+        { label: 'METAR', active: showMetar.value }
+    ];
+
     if (airportCode.value) {
         // Fetch airport data to populate lists
         loading.value = true;
         getAirport(airportCode.value, true).then((a: Airport) => {
             loadAirportData(a);
+            if (selectedRwyNames.value.length === 0 && a.rwys.length > 0) {
+                selectedRwyNames.value = [a.rwys[0].name];
+            }
             loading.value = false;
         }).catch(() => {
             loading.value = false;
@@ -251,7 +273,9 @@ function onInvalidAirport(code: string) {
 function selectRunway(name: string) {
     if (!isSingleSelect.value) {
         if (selectedRwyNames.value.includes(name)) {
-            selectedRwyNames.value = selectedRwyNames.value.filter(n => n !== name);
+            if (selectedRwyNames.value.length > 1) {
+                selectedRwyNames.value = selectedRwyNames.value.filter(n => n !== name);
+            }
         } else {
             selectedRwyNames.value.push(name);
             if (selectedRwyNames.value.length > 2) {
@@ -260,7 +284,8 @@ function selectRunway(name: string) {
         }
     } else {
         if (selectedRwyNames.value.includes(name)) {
-            selectedRwyNames.value = selectedRwyNames.value.filter(n => n !== name);
+            // Already selected, do nothing to prevent empty selection
+            return;
         } else {
             selectedRwyNames.value = [name];
         }
