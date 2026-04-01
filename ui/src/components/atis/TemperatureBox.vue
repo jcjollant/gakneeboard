@@ -1,7 +1,9 @@
 <template>
     <div class="temperature">
         <div v-if="showTitle" class="tileBoxLabel">T°/DP</div>
-        <span class="slash">/</span>
+        <svg class="slash" preserveAspectRatio="none" viewBox="0 0 100 100">
+            <line x1="0" y1="100" x2="100" y2="0" stroke="#ccc" stroke-width="2" vector-effect="non-scaling-stroke" />
+        </svg>
     </div>
 </template>
 
@@ -21,6 +23,11 @@ defineProps({
 }
 
 .slash {
-    color: #999;
+    position: absolute;
+    top: 10%;
+    left: 40%;
+    width: 20%;
+    height: 80%;
+    pointer-events: none;
 }
 </style>
