@@ -39,8 +39,8 @@ describe('StripeClient', () => {
     describe('priceFromProduct', () => {
         const stripe = StripeClient.instance;
 
-        it('should return correct price for PP1 (Student Pilot)', () => {
-            const price = stripe.priceFromProduct('pp1');
+        it('should return correct price for SP1 (Student Pilot)', () => {
+            const price = stripe.priceFromProduct('sp1');
             expect(price.id).toBe(process.env.STRIPE_PRICE_SP1);
             expect(price.subscription).toBe(true);
         });
@@ -79,7 +79,7 @@ describe('StripeClient', () => {
     describe('accountTypeFromPrice', () => {
         const stripe = StripeClient.instance;
 
-        it('should return AccountType.student for PP1 price', () => {
+        it('should return AccountType.student for SP1 price', () => {
             // TS detects mapping from env var
             expect(stripe.accountTypeFromPrice(process.env.STRIPE_PRICE_SP1!)).toBe(AccountType.student);
         });
@@ -104,8 +104,8 @@ describe('StripeClient', () => {
     describe('planIdFromPrice', () => {
         const stripe = StripeClient.instance;
 
-        it('should return "pp1" for PP1 price', () => {
-            expect(stripe.planIdFromPrice(process.env.STRIPE_PRICE_SP1!)).toBe('pp1');
+        it('should return "sp1" for SP1 price', () => {
+            expect(stripe.planIdFromPrice(process.env.STRIPE_PRICE_SP1!)).toBe('sp1');
         });
 
         it('should return "pp3" for PP3 price', () => {
@@ -151,7 +151,7 @@ describe('StripeClient', () => {
             };
 
             const source = 'https://example.com/some/path';
-            const result = await stripe.checkout('userHash', 'pp1', 'plan', source);
+            const result = await stripe.checkout('userHash', 'sp1', 'plan', source);
 
             expect(result).toBe('http://stripe.url');
             expect(mockCreateSession).toHaveBeenCalledWith(expect.objectContaining({

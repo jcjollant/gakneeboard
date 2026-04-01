@@ -35,9 +35,10 @@ WHERE
     account_type = 'sim'
 UPDATE users
 SET
-    plan_id = 'pp1'
+    plan_id = 'sp1'
 WHERE
-    account_type = 'sp'
+    plan_id = 'pp1'
+    
 UPDATE users
 SET
     plan_id = 'pp2'

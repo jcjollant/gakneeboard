@@ -14,7 +14,7 @@ process.env.POSTGRES_URL = process.env.POSTGRES_TEST_URL
 describe('Refill Reproduction', () => {
     let userDao: UserDao;
     const uniqueId = Math.floor(Math.random() * 100000);
-    const studentUser = newTestUser(0, AccountType.student, 'pp1');
+    const studentUser = newTestUser(0, AccountType.student, 'sp1');
     const simmerUser = newTestUser(0, AccountType.simmer, PLAN_ID_SIM);
 
     // Customize shas to avoid collisions if run multiple times or parallel

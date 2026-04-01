@@ -58,7 +58,7 @@ describe('Business', () => {
         });
 
         it('should return correct credits for student account', () => {
-            const newUser = newTestUser(0, AccountType.student, 'pp1')
+            const newUser = newTestUser(0, AccountType.student, 'sp1')
             newUser.printCredits = 0; // no credits
             const c1 = Business['calculatePrintCredits'](newUser);
             expect(c1).toBe(expectedPrintCreditStudent);
@@ -85,7 +85,7 @@ describe('Business', () => {
             expect(c2).toBe(20);
 
             // Should be able to reduce the default amount
-            const anotherUser = newTestUser(0, AccountType.student, 'pp1')
+            const anotherUser = newTestUser(0, AccountType.student, 'sp1')
             anotherUser.printCredits = 0; // no credits
             anotherUser.printRefillOverride = 2; // student default is 8
             const c3 = Business['calculatePrintCredits'](anotherUser);
@@ -114,7 +114,7 @@ describe('Business', () => {
 
         it('should return student account quotas', () => {
             user.accountType = AccountType.student
-            user.planId = 'pp1'
+            user.planId = 'sp1'
             const quotas = Business.getQuotas(user);
             expect(quotas.pages).toBe(8);
             expect(quotas.prints).toBe(8);
@@ -151,7 +151,7 @@ describe('Business', () => {
 
     describe('printConsume', () => {
 
-        const meteredAccounts = [{ type: AccountType.simmer, planId: PLAN_ID_SIM }, { type: AccountType.student, planId: 'pp1' }]
+        const meteredAccounts = [{ type: AccountType.simmer, planId: PLAN_ID_SIM }, { type: AccountType.student, planId: 'sp1' }]
 
         it('should decrease print credits for all metered account types', async () => {
             for (const account of meteredAccounts) {
@@ -350,16 +350,16 @@ describe('Business', () => {
             const user = newTestUser(0, AccountType.simmer, PLAN_ID_SIM)
             const mockUserDao = getMockUserDao(user)
 
-            await Business.updateAccountType(user, AccountType.student, 'pp1', mockUserDao)
+            await Business.updateAccountType(user, AccountType.student, 'sp1', mockUserDao)
             expect(user.printCredits).toEqual(expectedPrintCreditStudent)
 
             // use a few prints
             user.printCredits -= 2
-            await Business.updateAccountType(user, AccountType.student, 'pp1', mockUserDao)
+            await Business.updateAccountType(user, AccountType.student, 'sp1', mockUserDao)
             expect(user.printCredits).toEqual(expectedPrintCreditStudent)
 
             // one month without usage
-            await Business.updateAccountType(user, AccountType.student, 'pp1', mockUserDao)
+            await Business.updateAccountType(user, AccountType.student, 'sp1', mockUserDao)
             expect(user.printCredits).toEqual(expectedPrintCreditStudent)
 
             // then downgrades to sim
@@ -459,7 +459,7 @@ describe('Business', () => {
             expect(user.maxPages).toEqual(2)
             expect(user.printCredits).toEqual(PRINT_CREDIT_SIMMER)
 
-            await Business.upgradeUser(user.customerId, AccountType.student, 'pp1', mockUserDao)
+            await Business.upgradeUser(user.customerId, AccountType.student, 'sp1', mockUserDao)
 
             expect(user.maxTemplates).toEqual(2)
             expect(user.maxPages).toEqual(8)

@@ -40,7 +40,7 @@ describe('Stripe Checkout API', () => {
 
         const payload = {
             user: 'userHash123',
-            product: 'pp1',
+            product: 'sp1',
             source: 'http://localhost:3000/plans',
             attribution: {
                 source: 'google',
@@ -74,7 +74,7 @@ describe('Stripe Checkout API', () => {
 
         const payload = {
             user: 'userHash123',
-            product: 'pp1',
+            product: 'sp1',
             source: 'http://localhost:3000/plans',
             // No attribution
         };
@@ -100,7 +100,7 @@ describe('Stripe Checkout API', () => {
 
         const payload = {
             user: 'unknownUser',
-            product: 'pp1',
+            product: 'sp1',
             source: 'http://localhost:3000/plans',
         };
 
