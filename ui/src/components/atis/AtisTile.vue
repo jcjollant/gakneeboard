@@ -1,5 +1,5 @@
 <template>
-    <div class="tile" ref="thisTile">
+    <div class="tile" :class="{ 'hide-watermarks': !showWatermarks }" ref="thisTile">
         <Header :title="getTitle()" :left="(!displaySelection && displayMode==DisplayModeAtis.FullATIS && !expanded)" :leftButton="'settings'"
             @replace="emits('replace')" @settings="emits('settings')"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList" :expandable="true" :expanded="expanded"
@@ -82,6 +82,7 @@ import TitleBox from '../shared/TitleBox.vue';
 const emits = defineEmits(['replace','update','settings'])
 const defaultMode = DisplayModeAtis.FullATIS
 const lines = ref(5)
+const showWatermarks = ref(true)
 const displayMode = ref(DisplayModeAtis.Unknown)
 const displaySelection = ref(false)
 const expanded = ref(false)
@@ -107,6 +108,7 @@ function loadProps(props:any) {
         displayMode.value = defaultMode
     }
     lines.value = props.params.lines ?? 5
+    showWatermarks.value = props.params.showWatermarks !== false
     expanded.value = props.span2
     // console.log('[Atis.loadProps]', expanded.value)
 }
@@ -137,6 +139,10 @@ watch(lines, (newValue, oldValue) => {
     if(newValue !== oldValue) saveConfig()
 })
 
+watch(showWatermarks, (newValue, oldValue) => {
+    if(newValue !== oldValue) saveConfig()
+})
+
 watch(expanded, (val, oldVal) => {
     if (val !== oldVal) {
         saveConfig()
@@ -162,7 +168,7 @@ function onExpand(newValue:boolean) {
 
 function saveConfig() {
     // console.debug('[AtisTile.saveConfig]')
-    const data = {mode:displayMode.value, lines:lines.value}
+    const data = {mode:displayMode.value, lines:lines.value, showWatermarks:showWatermarks.value}
     emits('update', new TileData(TileType.atis, data, expanded.value))    
 
 }
@@ -175,6 +181,11 @@ function saveConfig() {
     width: 100%;
     height: var(--tile-content-height);
 }
+
+.hide-watermarks :deep(.wtrmrk) {
+    display: none !important;
+}
+
 .tileContent.compactWide {
     grid-template-rows: repeat( v-bind(lines), 1fr);
     grid-template-columns: 1fr 1fr;

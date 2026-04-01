@@ -8,6 +8,12 @@
                 <small class="help-text" style="text-align: center; margin-top: 5px;">Select how many lines to display in weather tiles.</small>
             </div>
         </div>
+
+        <!-- Watermarks Configuration -->
+        <div class="settings-section">
+            <SeparatorChoice name="Watermarks" choiceA="Show" choiceB="Hide" v-model="showWatermarks" />
+            <small class="help-text" style="text-align: center;">Display faded placeholder text internally.</small>
+        </div>
     </div>
 </template>
 
@@ -16,6 +22,7 @@ import { ref, onMounted, watch, inject } from 'vue';
 import { TileData } from '../../models/TileData';
 import OneChoice from '../shared/OneChoice.vue';
 import Separator from '../shared/Separator.vue';
+import SeparatorChoice from '../shared/SeparatorChoice.vue';
 
 const props = defineProps({
     tileData: { type: TileData, required: true },
@@ -35,6 +42,7 @@ const linesChoices = ref([
 ]);
 
 const selectedLines = ref(linesChoices.value[3]); // default 5
+const showWatermarks = ref(true);
 
 // Initialization
 onMounted(() => {
@@ -46,7 +54,7 @@ watch(() => props.tileData, (newTileData) => {
 }, { deep: true });
 
 // Watch for changes via UI
-watch([selectedLines], () => {
+watch([selectedLines, showWatermarks], () => {
     if (!isInternalUpdate.value) {
         emitUpdate();
     }
@@ -67,13 +75,16 @@ function loadFromTileData(tile: TileData) {
         selectedLines.value = found;
     }
     
+    showWatermarks.value = config?.showWatermarks !== false; // defaults to true
+    
     isInternalUpdate.value = false;
 }
 
 function emitUpdate() {
     const newConfig = {
         ...tileData.value.data as any,
-        lines: selectedLines.value.value
+        lines: selectedLines.value.value,
+        showWatermarks: showWatermarks.value
     };
 
     tileData.value.data = newConfig;
