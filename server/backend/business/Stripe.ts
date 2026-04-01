@@ -115,18 +115,23 @@ export class StripeClient {
                     cancel_url: cancelUrl,
                     metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
                     automatic_tax: {
-                        enabled: type === 'product' // Only calculate tax for one-time products, not subscriptions
+                        enabled: true // Let Stripe Tax decide based on dashboard settings
                     }
                 };
 
                 if (shipping_address_collection) {
                     sessionParams.shipping_address_collection = shipping_address_collection;
+                    sessionParams.customer_update = {
+                        shipping: 'auto'
+                    };
+                } else {
+                    sessionParams.customer_update = {
+                        address: 'auto'
+                    };
                 }
 
                 if (couponId) {
                     sessionParams.discounts = [{ coupon: couponId }];
-                } else {
-                    sessionParams.allow_promotion_codes = true; // Allow if no specific coupon applied
                 }
 
                 const session = await this.stripe.checkout.sessions.create(sessionParams)

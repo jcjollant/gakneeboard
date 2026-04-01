@@ -89,9 +89,9 @@
       </div>
 
     </div>
-    <div class="pricing-footer">
+    <!-- <div class="pricing-footer">
       <p>Not ready for a subscription? All accounts start with the <strong>Flight Simmer</strong> plan, which includes 4 print credits, 1 template, and 2 pages.</p>
-    </div>
+    </div> -->
     <SignIn v-model:visible="showSignIn" @close="showSignIn=false" @authentication="onAuthentication" />
   </div>
 </template>

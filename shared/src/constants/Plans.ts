@@ -2,7 +2,7 @@ import { AccountType } from "../models/AccountType";
 import { PlanDescription } from "../models/PlanDescription";
 
 export const PLAN_ID_SIM: string = 'sim'
-export const PLAN_ID_STUDENT_PILOT: string = 'pp1'
+export const PLAN_ID_STUDENT_PILOT: string = 'sp2'
 export const PLAN_ID_PRIVATE_PILOT: string = 'pp3'
 export const PLAN_ID_CHECKRIDE_READY: string = 'cr1'
 export const PLAN_ID_BETA_DEAL: string = 'bd1'
@@ -18,7 +18,7 @@ export const PLANS: PlanDescription[] = [
         displayName: 'Flight Simmer',
         subtitles: ['Just Testing', 'Get A Feel For The System'],
         active: true,
-        show: false,
+        show: true,
         showInFtux: true,
         displayPrice: 'Free',
         accountType: AccountType.simmer,
@@ -39,12 +39,12 @@ export const PLANS: PlanDescription[] = [
         isBestValue: false
     },
     {
-        id: PLAN_ID_STUDENT_PILOT,
+        id: 'sp1',
         displayName: 'Student Pilot',
         subtitles: ['No Commitment', 'Best for Occasional Use'],
-        active: true,
-        show: true,
-        showInFtux: true,
+        active: false,
+        show: false,
+        showInFtux: false,
         displayPrice: '$2.99',
         accountType: AccountType.student,
         chargeFrequency: 'monthly',
@@ -64,12 +64,12 @@ export const PLANS: PlanDescription[] = [
         isBestValue: false
     },
     {
-        id: 'pp2',
+        id: PLAN_ID_STUDENT_PILOT,
         displayName: 'Student Pilot',
         subtitles: ['No Commitment', 'Best for Occasional Use'],
-        active: false,
-        show: false,
-        showInFtux: false,
+        active: true,
+        show: true,
+        showInFtux: true,
         displayPrice: '$4.99',
         accountType: AccountType.student,
         chargeFrequency: 'monthly',
@@ -136,7 +136,7 @@ export const PLANS: PlanDescription[] = [
             restoreOldVersion: true
         },
         accountType: AccountType.private,
-        isBestValue: false,
+        isBestValue: true,
         badge: 'Free Runway Keychain'
     },
     {
@@ -193,9 +193,9 @@ export const PLANS: PlanDescription[] = [
         id: PLAN_ID_LIFETIME_DEAL,
         displayName: 'Lifetime Deal',
         subtitles: ['Pay once, use forever 😳', 'Ends March 31st!'],
-        active: true,
-        show: true,
-        showInFtux: true,
+        active: false,
+        show: false,
+        showInFtux: false,
         displayPrice: '$69',
         accountType: AccountType.lifetime,
         chargeFrequency: 'onetime',
@@ -212,6 +212,6 @@ export const PLANS: PlanDescription[] = [
             notams: true,
             restoreOldVersion: true
         },
-        isBestValue: true
+        isBestValue: false
     }
 ];
