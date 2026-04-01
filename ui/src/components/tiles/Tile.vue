@@ -3,7 +3,7 @@
     <AirportTile v-if="tile.name==TileType.airport" :params="tile.data" :span2="tile.span2" :route="route"
         @replace="onReplace" @update="onUpdate" @settings="emits('settings',tile)"/>
     <AtisTile v-else-if="tile.name==TileType.atis" :params="tile.data" :span2="tile.span2"
-        @replace="onReplace" @update="onUpdate"/>
+        @replace="onReplace" @update="onUpdate" @settings="emits('settings',tile)"/>
     <ChecklistTile v-else-if="tile.name==TileType.checklist" :params="tile.data" 
         @replace="onReplace" @update="onUpdate" @settings="emits('settings',tile)"/>
     <IfrTile v-else-if="tile.name==TileType.clearance" :params="tile.data" :route="route"

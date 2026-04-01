@@ -42,6 +42,7 @@ import IFRTileSettings from '../clearance/IFRTileSettings.vue';
 import NotesTileSettings from '../notes/NotesTileSettings.vue';
 import RadioTileSettings from '../radios/RadioTileSettings.vue';
 import VfrTileSettings from '../vfr/VfrTileSettings.vue';
+import AtisTileSettings from '../atis/AtisTileSettings.vue';
 import Tile from './Tile.vue';
 import TileSettings from './TileSettings.vue';
 
@@ -74,6 +75,8 @@ const settingsComponent = computed(() => {
       return ChecklistSettings;
     case TileType.clearance:
       return IFRTileSettings;
+    case TileType.atis:
+      return AtisTileSettings;
     case TileType.notes:
       return NotesTileSettings;
     case TileType.vfr:

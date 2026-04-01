@@ -1,7 +1,7 @@
 <template>
     <div class="tile" ref="thisTile">
-        <Header :title="getTitle()" :left="(!displaySelection && displayMode==DisplayModeAtis.FullATIS && !expanded)"
-            @replace="emits('replace')" @display="displaySelection=!displaySelection"></Header>
+        <Header :title="getTitle()" :left="(!displaySelection && displayMode==DisplayModeAtis.FullATIS && !expanded)" :leftButton="'settings'"
+            @replace="emits('replace')" @settings="emits('settings')"></Header>
         <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="modesList" :expandable="true" :expanded="expanded"
             @expand="onExpand" @keep="displaySelection=false" />
         <div v-else-if="expanded && displayMode==DisplayModeAtis.FullATIS" class="tileContentEx">
@@ -14,7 +14,7 @@
                 <div>Altimeter</div>
                 <div>Rwy</div>
             </div>
-            <div v-for="n in 5" class="expanded bt">
+            <div v-for="n in lines" class="expanded bt">
                 <div class="br"></div>
                 <WindBox class="br" :showTitle="false" />
                 <VisibilityBox class="br" :showTitle="false" />
@@ -28,14 +28,14 @@
         <div v-else-if="displayMode==DisplayModeAtis.FullATIS" class="tileContent full">
             <TitleBox title="Info" class="br" />
             <WindBox class="br" />
-            <TitleBox title="Rwy" class="br" />
+            <TitleBox title="Rwy" />
             <VisibilityBox class="bt bb" />
             <SkyBox class="bt bl" />
             <TemperatureBox class="bb" />
             <AltimeterBox />
         </div>
         <div v-else-if="displayMode==DisplayModeAtis.CompactATIS" class="tileContent" :class="{ compactWide: expanded }">
-            <AtisCompact v-for="n in compactCount" :key="'comp-' + n" :borderBottom="(n % 4 !== 0)" :borderLeft="n >= 5" />
+            <AtisCompact v-for="n in compactCount" :key="'comp-' + n" :borderBottom="(n % lines !== 0)" :borderLeft="expanded && n > lines" />
         </div>
         <div v-else-if="displayMode==DisplayModeAtis.Categories" class="tileContent categories">
             <div class="vfrLeft vfr">VFR<span class="alt">3,000ft</span></div>
@@ -79,8 +79,9 @@ import TitleBox from '../shared/TitleBox.vue';
 
 // Enum with display modes
 
-const emits = defineEmits(['replace','update'])
+const emits = defineEmits(['replace','update','settings'])
 const defaultMode = DisplayModeAtis.FullATIS
+const lines = ref(5)
 const displayMode = ref(DisplayModeAtis.Unknown)
 const displaySelection = ref(false)
 const expanded = ref(false)
@@ -104,12 +105,13 @@ function loadProps(props:any) {
         displayMode.value = newMode
     } else {
         displayMode.value = defaultMode
-}
+    }
+    lines.value = props.params.lines ?? 5
     expanded.value = props.span2
     // console.log('[Atis.loadProps]', expanded.value)
 }
 
-const compactCount = computed(() => expanded.value ? 8 : 4)
+const compactCount = computed(() => expanded.value ? lines.value * 2 : lines.value)
 
 onMounted(() => {   
     // console.log('ATIS mounted with ' + JSON.stringify(props.params))
@@ -129,6 +131,10 @@ watch(displayMode, (newValue, oldValue) => {
 
     if(newValue == oldValue || oldValue == DisplayModeAtis.Unknown) return;
     saveConfig()
+})
+
+watch(lines, (newValue, oldValue) => {
+    if(newValue !== oldValue) saveConfig()
 })
 
 watch(expanded, (val, oldVal) => {
@@ -156,7 +162,7 @@ function onExpand(newValue:boolean) {
 
 function saveConfig() {
     // console.debug('[AtisTile.saveConfig]')
-    const data = {mode:displayMode.value}
+    const data = {mode:displayMode.value, lines:lines.value}
     emits('update', new TileData(TileType.atis, data, expanded.value))    
 
 }
@@ -165,18 +171,18 @@ function saveConfig() {
 <style scoped>
 .tileContent {
     display: grid;
-    grid-template-rows: repeat( 4, 1fr);
+    grid-template-rows: repeat( v-bind(lines), 1fr);
     width: 100%;
     height: var(--tile-content-height);
 }
 .tileContent.compactWide {
-    grid-template-rows: repeat( 4, 1fr);
+    grid-template-rows: repeat( v-bind(lines), 1fr);
     grid-template-columns: 1fr 1fr;
     grid-auto-flow: column;
 }
 .tileContentEx {
     display: grid;
-    grid-template-rows: 0.5fr 2fr 2fr 2fr 2fr 2fr;
+    grid-template-rows: 0.5fr repeat( v-bind(lines), 2fr);
     height: var(--tile-content-height);
 }
 .expanded {
