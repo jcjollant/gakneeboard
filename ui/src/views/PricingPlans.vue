@@ -17,7 +17,7 @@
     
     <div class="pricing-header">
       <h2>Membership Plans</h2>
-      <p>For perspective, 10gal of 100LL gets you the lifetime deal</p>
+      <p>For perspective, 7gal of 100LL gets you one year of unlimited usage</p>
       <!-- <EitherOr v-model="monthly" either="Monthly" or="Anually" /> -->
     </div>
     
