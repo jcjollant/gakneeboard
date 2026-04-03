@@ -1,3 +1,4 @@
+<template>
     <div class="admin-container">
         <div class="api-selector">
             <h1>
