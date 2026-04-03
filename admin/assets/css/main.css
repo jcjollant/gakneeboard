@@ -1,0 +1,107 @@
+/* Global styles for Admin Dashboard */
+
+:root {
+  --primary-color: #3498db;
+  --bg-color: #f8f9fa;
+  --text-color: #1e293b;
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --header-font-family: 'Outfit', sans-serif;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--header-font-family);
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Premium Toast Styling */
+.p-toast {
+  max-width: 400px;
+  z-index: 10001 !important;
+}
+
+.p-toast .p-toast-message {
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  margin-bottom: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.p-toast .p-toast-message:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.15);
+}
+
+.p-toast .p-toast-message-content {
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.p-toast-message-icon {
+  font-size: 1.75rem !important;
+}
+
+.p-toast-message-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.p-toast .p-toast-summary {
+  font-family: var(--header-font-family);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+}
+
+.p-toast .p-toast-detail {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+/* Vibrant Severity Variations with left borders */
+.p-toast-message-success {
+  background: rgba(240, 253, 244, 0.92) !important;
+  color: #14532d !important;
+  border-left: 6px solid #22c55e !important;
+}
+
+.p-toast-message-error {
+  background: rgba(254, 242, 242, 0.92) !important;
+  color: #7f1d1d !important;
+  border-left: 6px solid #ef4444 !important;
+}
+
+.p-toast-message-info {
+  background: rgba(239, 246, 255, 0.92) !important;
+  color: #1e3a8a !important;
+  border-left: 6px solid #3b82f6 !important;
+}
+
+.p-toast-message-warn {
+  background: rgba(255, 251, 235, 0.92) !important;
+  color: #78350f !important;
+  border-left: 6px solid #f59e0b !important;
+}
+
+/* Ensure PrimeVue icons are properly colored */
+.p-toast-message-success .p-toast-message-icon { color: #22c55e; }
+.p-toast-message-error .p-toast-message-icon { color: #ef4444; }
+.p-toast-message-info .p-toast-message-icon { color: #3b82f6; }
+.p-toast-message-warn .p-toast-message-icon { color: #f59e0b; }

@@ -4,6 +4,22 @@
         <div class="input-group">
             <button @click="fetchTickets" :disabled="loadingTickets">{{ loadingTickets ? 'Loading...' : 'Fetch Open Tickets' }}</button>
             <button @click="closeSelected" :disabled="selectedTickets.length === 0" class="close-selected-btn">Close Selected ({{ selectedTickets.length }})</button>
+            <button @click="showCreateForm = !showCreateForm" class="toggle-create-btn">{{ showCreateForm ? 'Cancel' : 'Create New Ticket' }}</button>
+        </div>
+
+        <div v-if="showCreateForm" class="create-ticket-form">
+            <h3>Create New Ticket</h3>
+            <div class="form-group">
+                <label>Severity</label>
+                <select v-model="newTicketSeverity">
+                    <option v-for="s in [1,2,3,4,5]" :key="s" :value="s">Severity {{ s }}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Message</label>
+                <textarea v-model="newTicketMessage" placeholder="Ticket message..."></textarea>
+            </div>
+            <button @click="createTicket" :disabled="!newTicketMessage || creatingTicket" class="submit-btn">{{ creatingTicket ? 'Creating...' : 'Create Ticket' }}</button>
         </div>
         
         <div v-if="tickets.length > 0" class="tickets-list">
@@ -49,6 +65,11 @@ const tickets = ref<any[]>([])
 const loadingTickets = ref(false)
 const ticketsLoaded = ref(false)
 const selectedTickets = ref<number[]>([])
+
+const showCreateForm = ref(false)
+const newTicketSeverity = ref(3)
+const newTicketMessage = ref('')
+const creatingTicket = ref(false)
 
 import { computed } from 'vue'
 
@@ -127,6 +148,26 @@ async function closeSelected() {
     
     fetchTickets()
 }
+
+function createTicket() {
+    if (!newTicketMessage.value || creatingTicket.value) return
+    creatingTicket.value = true
+    
+    api.post(UrlService.adminRoot + 'tickets', {
+        severity: newTicketSeverity.value,
+        message: newTicketMessage.value
+    }).then(() => {
+        toaster.success('Ticket Created', 'A new ticket has been created manually')
+        newTicketMessage.value = ''
+        newTicketSeverity.value = 3
+        showCreateForm.value = false
+        creatingTicket.value = false
+        fetchTickets()
+    }).catch((err: any) => {
+        toaster.error('Failed to create ticket', err.message)
+        creatingTicket.value = false
+    })
+}
 </script>
 
 <style scoped>
@@ -178,6 +219,73 @@ async function closeSelected() {
 .close-selected-btn:disabled {
     background-color: #bdc3c7 !important;
     opacity: 0.7;
+}
+
+.toggle-create-btn {
+    background-color: #27ae60 !important;
+}
+.toggle-create-btn:hover {
+    background-color: #2ecc71 !important;
+}
+
+.create-ticket-form {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    border: 1px solid #e1e8ed;
+    border-radius: 8px;
+    background-color: #f8fbff;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.create-ticket-form h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.form-group select, .form-group textarea {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.submit-btn {
+    background-color: #27ae60;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+    background-color: #2ecc71;
+}
+
+.submit-btn:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
 }
 
 .success-message {

@@ -509,6 +509,25 @@ app.get('/tickets', async (req: Request, res: Response) => {
     }
 })
 
+app.post('/tickets', async (req: Request, res: Response) => {
+    try {
+        await Authorization.validateAdmin(req)
+        const { severity, message } = req.body
+        if (!severity || !message) {
+            res.status(400).send('Severity and message are required')
+            return
+        }
+        const success = await TicketService.create(Number(severity), message)
+        if (success) {
+            res.status(201).send({ status: 'created' })
+        } else {
+            res.status(500).send('Failed to create ticket')
+        }
+    } catch (e) {
+        catchError(res, e, 'POST /tickets')
+    }
+})
+
 app.post('/tickets/:id/close', async (req: Request, res: Response) => {
     try {
         await Authorization.validateAdmin(req)

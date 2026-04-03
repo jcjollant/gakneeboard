@@ -1,4 +1,3 @@
-<template>
     <div class="admin-container">
         <div class="api-selector">
             <h1>
@@ -230,16 +229,19 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    font-family: 'Inter', sans-serif;
 }
 
 .api-selector h1 {
     text-align: center;
-    color: #2c3e50;
+    color: #0f172a;
     margin-bottom: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 1rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
 }
 
 .env-tag {
@@ -311,9 +313,10 @@ onMounted(() => {
 }
 
 .api-card p {
-    color: #7f8c8d;
+    color: #64748b;
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 1rem;
+    font-weight: 400;
 }
 
 .input-section {
