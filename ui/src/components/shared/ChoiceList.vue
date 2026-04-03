@@ -1,5 +1,5 @@
 <template>
-    <div class="choicelist" :class="{'small': small}">
+    <div class="choicelist" :class="{'small': small, 'disabled': disabled}">
         <div class="casing embedded" :class="{'small': small}">
             <div class="ball transform transition-transform duration-300" :style="ballStyle"></div>
             <div class="labels-container">
@@ -17,30 +17,53 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-const model = defineModel<any>()
 const props = defineProps({
+    modelValue: { type: [Object, String, Number, Boolean], default: undefined },
     choices: { type: Array, required: true }, // Array of strings or {label, value}
-    small: { type: Boolean, default: true }
+    small: { type: Boolean, default: true },
+    disabled: { type: Boolean, default: false },
+    emitObject: { type: Boolean, default: false }
 })
 
+const emits = defineEmits(['update:modelValue', 'change'])
+
 function getChoiceLabel(choice: any) {
-    return typeof choice === 'object' && choice !== null && 'label' in choice ? choice.label : choice
+    if (typeof choice === 'object' && choice !== null) {
+        return choice.label || choice.value || choice;
+    }
+    return choice;
 }
 
 function getChoiceValue(choice: any) {
-    return typeof choice === 'object' && choice !== null && 'value' in choice ? choice.value : choice
+    return (typeof choice === 'object' && choice !== null && 'value' in choice) ? choice.value : choice;
 }
 
 function isSelected(choice: any) {
-    return model.value === getChoiceValue(choice)
+    const current = props.modelValue;
+    const item = choice;
+
+    if (props.emitObject) {
+        // Deep compare for object selections (OneChoiceValue)
+        if (current && item && typeof current === 'object' && typeof item === 'object') {
+            return getChoiceValue(current) === getChoiceValue(item) && getChoiceLabel(current) === getChoiceLabel(item);
+        }
+        return current === item;
+    }
+
+    // Standard value comparison
+    const targetValue = getChoiceValue(item);
+    return current === targetValue;
 }
 
 function selectChoice(choice: any) {
-    model.value = getChoiceValue(choice)
+    if (props.disabled) return
+    const value = props.emitObject ? choice : getChoiceValue(choice)
+    emits('update:modelValue', value)
+    emits('change')
 }
 
 const selectedIndex = computed(() => {
-    return props.choices.findIndex((c: any) => getChoiceValue(c) === model.value)
+    return props.choices.findIndex((c: any) => isSelected(c))
 })
 
 const ballStyle = computed(() => {
@@ -64,6 +87,15 @@ const ballStyle = computed(() => {
 
 .choicelist.small {
     font-size: 0.8rem;
+}
+
+.choicelist.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.choicelist.disabled .text {
+    cursor: not-allowed;
 }
 
 .casing.embedded {

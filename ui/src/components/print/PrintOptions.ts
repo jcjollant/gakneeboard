@@ -8,13 +8,15 @@ export class PrintOptions {
     vibItems: VerticalInfoBarContent[];
     clipMargin: number;
     backToBack: boolean;
+    showCenterGuide: boolean;
 
-    constructor(flipBackPage: boolean, pageSelection: boolean[], vibShow: boolean, vibItems: VerticalInfoBarContent[], clipMargin: number = 0, backToBack: boolean = false) {
+    constructor(flipBackPage: boolean, pageSelection: boolean[], vibShow: boolean, vibItems: VerticalInfoBarContent[], clipMargin: number = 0, backToBack: boolean = false, showCenterGuide: boolean = false) {
         this.flipBackPage = flipBackPage;
         this.pageSelection = pageSelection;
         this.vibShow = vibShow;
         this.vibItems = vibItems;
         this.clipMargin = clipMargin;
-        this.backToBack = backToBack
+        this.backToBack = backToBack;
+        this.showCenterGuide = showCenterGuide;
     }
 }

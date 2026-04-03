@@ -1,9 +1,9 @@
 <template>
     <div class="oneChoice" :class="{'full':full, 'disabled': disabled}">
-        <button type="button" v-if="model" v-for="(c,index) in choices" :aria-label="c.label" 
+        <button type="button" v-if="modelValue" v-for="(c,index) in choices" :aria-label="c.label" 
             @click="onChoice(c)" 
             class="choice" 
-            :class="[{'choiceActive':(model.label==c.label),'choiceInactive':(model.label!=c.label),'thinPad':thinpad}, `choice${index}`]"
+            :class="[{'choiceActive':isChoiceActive(c),'choiceInactive':!isChoiceActive(c),'thinPad':thinpad}, `choice${index}`]"
             :title="c.title || c.description || undefined"
             :disabled="disabled">
             <slot :choice="c">
@@ -18,19 +18,23 @@
 <script setup lang="ts">
 
 const props = defineProps({
+  modelValue: { type: Object, default: undefined },
   choices: { type: Array<any>, default: []},
   thinpad: { type: Boolean, default: false },
   full: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false },
 })
 
+const emits = defineEmits(["update:modelValue", "change"]);
 
-const emits = defineEmits(["change"]);
-const model = defineModel<any>()
+function isChoiceActive(c: any) {
+    if (!props.modelValue) return false;
+    return props.modelValue.label === c.label;
+}
 
 function onChoice(choice:any) {
-    // console.log('[OneChoice.onChouce]', choice)
-    model.value = choice
+    if (props.disabled) return
+    emits('update:modelValue', choice)
     emits('change')
 }
 </script>

@@ -23,17 +23,19 @@
         </template>
         <template v-else>
           <div class="pageOptionLabel">Back Page Orientation</div>
-          <OneChoice v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" />
+          <ChoiceList v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" :emitObject="true" />
           <div class="pageOptionLabel">Page Sequence</div>
-          <OneChoice v-model="backToBackSelected" :choices="backToBackOptions" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" />
+          <ChoiceList v-model="backToBackSelected" :choices="backToBackOptions" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" :emitObject="true" />
           <div class="pageOptionLabel">Clip Margin</div>
-          <OneChoice v-model="clipMarginSelected" :choices="clipMarginOptions" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" />
+          <ChoiceList v-model="clipMarginSelected" :choices="clipMarginOptions" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" :emitObject="true" />
+          <div class="pageOptionLabel">Center Guide</div>
+          <ChoiceList v-model="centerGuideMode" :choices="centerGuideOptions" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" :emitObject="true" />
         </template>
       </div>
       </FieldSet>
       <FieldSet legend="Margin Notes" v-if="!isFullPageFormat">
         <div class="vibContainer">
-          <OneChoice v-model="vibShowMode" :choices="[vibShowChoice, vibHideChoice]" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" />
+          <ChoiceList v-model="vibShowMode" :choices="[vibShowChoice, vibHideChoice]" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" :emitObject="true" />
           <div class="vibItems">
              <div v-for="item in vibContentOptions" :key="item.value" class="field-checkbox">
                  <Checkbox v-model="vibSelectedItems" :inputId="item.value" :value="item.value" @change="onNewOptions" :disabled="!vibShowMode.value || !currentUser.canUseAdvancedPrinting" />
@@ -78,7 +80,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { UserUrl } from '../../lib/UserUrl';
 import { OneChoiceValue } from '../../models/OneChoiceValue';
-import OneChoice from '../shared/OneChoice.vue';
+import ChoiceList from '../shared/ChoiceList.vue';
 
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
@@ -91,6 +93,8 @@ import Checkbox from 'primevue/checkbox'
 import { VerticalInfoBarContent } from '../../models/VerticalInfoBarOption';
 import { PrintOptions } from './PrintOptions';
 import { useRouter } from 'vue-router';
+import { useToaster } from '../../assets/Toaster';
+import { useToast } from 'primevue/usetoast';
 
 const emits = defineEmits(["print", "export-pdf", "options", 'close', 'laminate']);
 
@@ -101,6 +105,7 @@ const flipBackPage = ref(normalOrientation)
 const pageSelection = ref<boolean[]>([true, true, true])
 const simmer = ref(true)
 const upgrade = ref(false)
+const toaster = useToaster(useToast())
 // Computed property to check if the format is fullpage
 const isFullPageFormat = computed(() => props.format === 'fullpage')
 const router = useRouter()
@@ -108,6 +113,11 @@ const router = useRouter()
 const vibShowChoice = new OneChoiceValue('Show', true, 'Show vertical info bar')
 const vibHideChoice = new OneChoiceValue('Hide', false, 'Hide vertical info bar')
 const vibShowMode = ref(vibShowChoice)
+
+const centerGuideShowChoice = new OneChoiceValue('Show', true)
+const centerGuideHideChoice = new OneChoiceValue('Hide', false)
+const centerGuideMode = ref(centerGuideHideChoice)
+const centerGuideOptions = [centerGuideHideChoice, centerGuideShowChoice]
 
 const backToBack = ref(false)
 
@@ -164,6 +174,12 @@ watch( props, async() => {
   loadProps( props)
 })
 
+watch(backToBackSelected, (newVal) => {
+    if (newVal?.value === true) {
+        toaster.info('Back to Back Printing', 'Print on both sides and flip along the SHORT edge');
+    }
+})
+
 //---------------------
 
 function getOptions():PrintOptions|undefined {
@@ -173,7 +189,8 @@ function getOptions():PrintOptions|undefined {
     vibShowMode.value.value,
     vibSelectedItems.value,
     clipMarginSelected.value.value,
-    backToBackSelected.value.value
+    backToBackSelected.value.value,
+    centerGuideMode.value.value
   )
 }
 
@@ -191,7 +208,7 @@ function onNewOptions() {
       // Check if VIB options are modified from default (Show + All)
       const isVibDefault = options.vibShow && options.vibItems.length >= 3; // Basic check, refining might be needed
       
-      upgrade.value = options.flipBackPage || !isVibDefault || (unselected === false) || (options.clipMargin > 0)
+      upgrade.value = options.flipBackPage || !isVibDefault || (unselected === false) || (options.clipMargin > 0) || options.showCenterGuide
     }
     emits('options', options)
   } 
@@ -285,6 +302,9 @@ li {
   display: flex;
   align-items: center;
   gap: 1.5rem;
+}
+.mt-3 {
+  margin-top: 1rem;
 }
 .vibItems {
   display: flex;

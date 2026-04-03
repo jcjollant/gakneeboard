@@ -23,6 +23,7 @@
         <MarginNotes v-if="printVibShow" class="sidebar back" 
             :ver="template.ver" :show="printVibShow" :items="printVibItems" :name="template.name" />
         <Page v-if="page.back" :data="page.back" :format="template.format" :route="template?.route" :style="getStylePage(printFlipMode)" />
+        <CenterGuide v-if="printShowCenterGuide" />
       </div>
     </div>
     <div v-else>No Template</div>
@@ -47,6 +48,7 @@ import Page from '../components/page/Page.vue';
 import PrintOptionsDialog from '../components/print/PrintOptionsDialog.vue';
 import PrintingAnimation from '../components/print/PrintingAnimation.vue';
 import MarginNotes from '../components/print/MarginNotes.vue';
+import CenterGuide from '../components/print/CenterGuide.vue';
 import { VerticalInfoBarContent } from '../models/VerticalInfoBarOption.js';
 import { StoreService } from '../services/StoreService';
 import { UsageService } from '../services/UsageService';
@@ -65,6 +67,7 @@ const printFlipMode = ref(false)
 const printFullpage = ref(false)
 const printVibShow = ref(true)
 const printBackToBack = ref(false)
+const printShowCenterGuide = ref(false)
 const printVibItems = ref<VerticalInfoBarContent[]>([
   VerticalInfoBarContent.Version,
   VerticalInfoBarContent.Tail,
@@ -145,6 +148,7 @@ function onOptionsUpdate(options:PrintOptions) {
       printVibItems.value = options.vibItems
       printClipMargin.value = options.clipMargin
       printBackToBack.value = options.backToBack
+      printShowCenterGuide.value = options.showCenterGuide
       
       if (template.value && template.value.format === TemplateFormat.FullPage) {
         printFullpage.value = true
