@@ -3,11 +3,9 @@ import { UsagePayload } from "@gak/shared";
 import cors from "cors";
 import multer from "multer"
 import { AirportService } from "../backend/services/AirportService";
-import { Admin } from "../backend/Admin"
 import { GApi } from '../backend/GApi'
 import { StripeClient } from '../backend/business/Stripe'
 import { UserTools } from '../backend/UserTools'
-import { Maintenance } from '../backend/maintenance/Maintenance'
 import { NavlogTools } from "../backend/NavlogTools";
 import { TicketService } from "../backend/services/TicketService";
 import { Charts } from "../backend/Charts";
@@ -20,10 +18,10 @@ import { UsageDao } from "../backend/dao/UsageDao";
 import { Authorization } from "../backend/services/Authorization";
 import { NotamService } from "../backend/services/NotamService";
 import { WeatherService } from "../backend/services/WeatherService";
-import { HealthCheck } from "../backend/maintenance/HealthChecks";
 import { Ticket } from "../backend/models/Ticket";
 import { PrintService } from "../backend/services/PrintService";
-import { PrintOrderDao } from "../backend/dao/PrintOrderDao";
+import adminRouter from "./admin";
+import { catchError } from "./utils";
 const port: number = 3000
 const app = express();
 
@@ -42,28 +40,13 @@ app.use(cors({
 }))
 app.use('/stripe/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json()) // for parsing application/json
+app.use('/', adminRouter)
 
 app.get('/', async (req: Request, res: Response) => {
     const output = await GApi.getSession(req)
     res.send(output)
 });
 
-/**
- * Create a new airport (Admin only)
- */
-app.post('/airport', async (req: Request, res: Response) => {
-    try {
-        const userId = await Authorization.validateAdmin(req)
-
-        // payload is in body.request
-        const payload = req.body.request
-        // const payload: AirportCreationRequest = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
-        const airport = await AirportService.createAirport(payload)
-        res.status(201).send(airport)
-    } catch (e) {
-        catchError(res, e, 'POST /airport')
-    }
-})
 
 app.get('/airport/:id', async (req, res) => {
     const userId = await UserTools.userIdFromRequest(req)
@@ -188,19 +171,6 @@ app.post('/fp2nl', upload.single('file'), async (req, res) => {
     }
 });
 
-app.get('/maintenance/:code', async (req: Request, res: Response) => {
-    const maintenance = new Maintenance(req.params.code)
-    if (maintenance.isValidCode() === false) {
-        // console.log('[index] Invalid maintenance code')
-        res.status(404).send()
-        return
-    }
-    maintenance.perform().then((result) => {
-        res.send(result)
-    }).catch(e => {
-        catchError(res, e, 'GET /maintenance/:code')
-    })
-})
 
 /**
  * Get Metar for an airport
@@ -499,95 +469,6 @@ app.get('/sunlight/:from/:to/:dateFrom/:dateTo?', async (req: Request, res: Resp
     }
 })
 
-app.get('/tickets', async (req: Request, res: Response) => {
-    try {
-        await Authorization.validateAdmin(req)
-        const tickets = await TicketService.getAllOpen()
-        res.send(tickets)
-    } catch (e) {
-        catchError(res, e, 'GET /tickets')
-    }
-})
-
-app.post('/tickets', async (req: Request, res: Response) => {
-    try {
-        await Authorization.validateAdmin(req)
-        const { severity, message } = req.body
-        if (!severity || !message) {
-            res.status(400).send('Severity and message are required')
-            return
-        }
-        const success = await TicketService.create(Number(severity), message)
-        if (success) {
-            res.status(201).send({ status: 'created' })
-        } else {
-            res.status(500).send('Failed to create ticket')
-        }
-    } catch (e) {
-        catchError(res, e, 'POST /tickets')
-    }
-})
-
-app.post('/tickets/:id/close', async (req: Request, res: Response) => {
-    try {
-        await Authorization.validateAdmin(req)
-        const id = Number(req.params.id)
-        if (isNaN(id)) {
-            res.status(400).send('Invalid ticket ID')
-            return
-        }
-        await TicketService.close(id)
-        res.send({ status: 'closed', id })
-    } catch (e) {
-        catchError(res, e, 'POST /tickets/:id/close')
-    }
-})
-
-app.get('/admin/healthCheck', async (req: Request, res: Response) => {
-    try {
-        await Authorization.validateHealthCheck(req)
-        const result = await HealthCheck.perform()
-        res.send(result)
-    } catch (e) {
-        catchError(res, e, 'GET /admin/healthCheck')
-    }
-})
-
-app.get('/user/profile/:userId', async (req: Request, res: Response) => {
-    try {
-        await Authorization.validateAdmin(req)
-
-        const userProfile = await Admin.getUserProfile(Number(req.params.userId))
-        res.send(userProfile)
-    } catch (e) {
-        catchError(res, e, 'GET /user/profile')
-    }
-})
-
-app.get('/usage/active', async (req: Request, res: Response) => {
-    try {
-        const requester = await Authorization.validateAdmin(req)
-
-        const numberOfDays = req.query.days ? Number(req.query.days) : 1
-        const usageDao = new UsageDao()
-        const activeUserIds = await usageDao.getActiveUsersLastDays(numberOfDays)
-        res.send(activeUserIds)
-    } catch (e) {
-        catchError(res, e, 'GET /usage/active')
-    }
-})
-
-app.get('/usage/chi', async (req: Request, res: Response) => {
-    try {
-        const requester = await Authorization.validateAdmin(req)
-
-        const usageDao = new UsageDao()
-        const chiList = await usageDao.getCustomerHapinessIndex()
-        res.send(chiList)
-    } catch (e) {
-        catchError(res, e, 'GET /usage/chi')
-    }
-})
 
 app.post('/usage', async (req: Request, res: Response) => {
     try {
@@ -715,71 +596,11 @@ app.post('/store/checkout', async (req: Request, res: Response) => {
     }
 })
 
-app.get('/admin/orders', async (req: Request, res: Response) => {
-    try {
-        await Authorization.validateAdmin(req)
-        const orders = await PrintOrderDao.listOpenOrders();
-        res.send(orders);
-    } catch (e) {
-        catchError(res, e, 'GET /admin/orders')
-    }
-})
-
-app.post('/admin/orders/:id/ship', async (req: Request, res: Response) => {
-    try {
-        await Authorization.validateAdmin(req)
-        await PrintOrderDao.updateStatus(req.params.id as string, 'SHIPPED' as any);
-        res.send({ status: 'SHIPPED' });
-    } catch (e) {
-        catchError(res, e, 'POST /admin/orders/:id/ship')
-    }
-})
 
 
 if (process.env.__VERCEL_DEV_RUNNING != "1" && process.env.VERCEL != "1" && process.env.NODE_ENV != 'test') {
     app.listen(port, () => console.log("[index] Server ready on port " + port));
 }
 
-/**
- * Prints an error in the console and send an error response
- * @param {*} res 
- * @param {*} e 
- * @param {*} context
- */
-async function catchError(res: Response, e: any, context: string, ticket?: Ticket): Promise<void> {
-    // console.log( "[index] " + msg + " error " + JSON.stringify(e))
-    let status = 500
-    let message = e
-    if (e instanceof GApiError) {
-        status = e.status
-        message = e.message
-    }
-    res.status(status).send(message)
-
-    if (status === 401) {
-        // Don't create tickets for unauthorized requests (bots, sessions expired, etc.)
-        return
-    }
-
-    let ticketMessage = message + ' ' + context
-    
-    // Decorate with underlying API error details if this is an AxiosError
-    if (e && typeof e === 'object' && e.isAxiosError) {
-        const method = e.config?.method?.toUpperCase() || 'UNKNOWN'
-        const url = e.config?.url || 'UNKNOWN URL'
-        const respStatus = e.response?.status || 'No Response'
-        ticketMessage += `\nUnderlying API failure: ${method} ${url} (Status: ${respStatus})`
-    }
-
-    if (e instanceof Error && e.stack) {
-        ticketMessage += '\n\nStack:\n' + e.stack
-    }
-
-    if (ticket) {
-        await TicketService.createFromTicket(ticket)
-    } else {
-        await TicketService.create(3, ticketMessage)
-    }
-}
 
 export default app;
