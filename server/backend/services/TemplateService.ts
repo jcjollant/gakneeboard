@@ -94,6 +94,7 @@ export class TemplateService {
         // Is this feature allowed for this user?
         const plan = PlanService.getPlan(user.planId)
         if (plan?.features.restoreOldVersion === false) {
+            await UsageService.limit(UsageType.Restore, requesterId)
             throw new GApiError(403, "Your plan does not allow you to restore old versions")
         }
 
