@@ -37,10 +37,7 @@
         <div class="vibContainer">
           <ChoiceList v-model="vibShowMode" :choices="[vibShowChoice, vibHideChoice]" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" :emitObject="true" />
           <div class="vibItems">
-             <div v-for="item in vibContentOptions" :key="item.value" class="field-checkbox">
-                 <Checkbox v-model="vibSelectedItems" :inputId="item.value" :value="item.value" @change="onNewOptions" :disabled="!vibShowMode.value || !currentUser.canUseAdvancedPrinting" />
-                 <label :for="item.value" :class="{ 'disabled-label': !vibShowMode.value || !currentUser.canUseAdvancedPrinting }">{{ item.label }}</label>
-             </div>
+             <AnyOf v-model="vibChoices" @change="onNewOptions" :disabled="!vibShowMode.value || !currentUser.canUseAdvancedPrinting" />
           </div>
         </div>
       </FieldSet>
@@ -88,9 +85,11 @@ import FieldSet from 'primevue/fieldset'
 import PageSelection from './PageSelection.vue';
 import { currentUser } from '../../assets/data';
 import { AccountType, FeatureFlags } from '@gak/shared';
+import { LocalStoreService } from '../../services/LocalStoreService';
 
 import Checkbox from 'primevue/checkbox'
 import { VerticalInfoBarContent } from '../../models/VerticalInfoBarOption';
+import AnyOf, { AnyOfChoice } from '../shared/AnyOf.vue';
 import { PrintOptions } from './PrintOptions';
 import { useRouter } from 'vue-router';
 import { useToaster } from '../../assets/Toaster';
@@ -121,19 +120,12 @@ const centerGuideOptions = [centerGuideHideChoice, centerGuideShowChoice]
 
 const backToBack = ref(false)
 
-const vibSelectedItems = ref<VerticalInfoBarContent[]>([
-  VerticalInfoBarContent.Version, 
-  VerticalInfoBarContent.Tail, 
-  VerticalInfoBarContent.Date,
-  VerticalInfoBarContent.PageName
+const vibChoices = ref<(AnyOfChoice & { value: VerticalInfoBarContent })[]>([
+  { label: 'Version', active: true, value: VerticalInfoBarContent.Version },
+  { label: 'Name', active: true, value: VerticalInfoBarContent.PageName },
+  { label: 'Tail #', active: true, value: VerticalInfoBarContent.Tail },
+  { label: 'Date', active: true, value: VerticalInfoBarContent.Date },
 ])
-
-const vibContentOptions = [
-  { label: 'Version', value: VerticalInfoBarContent.Version },
-  { label: 'Name', value: VerticalInfoBarContent.PageName },
-  { label: 'Tail #', value: VerticalInfoBarContent.Tail },
-  { label: 'Date', value: VerticalInfoBarContent.Date },
-]
 
 const backToBackOptions = [
   new OneChoiceValue('Side by Side', false),
@@ -160,6 +152,29 @@ function loadProps( props:any) {
   // console.log('[PrintOptions] loadProps', props)
   pageSelection.value = props.pageSelection
   simmer.value = currentUser.accountType == AccountType.simmer
+
+  // Restore saved options
+  const saved = LocalStoreService.getPrintOptions()
+  if (saved) {
+    if (saved.flipBackPage !== undefined) flipBackPage.value = saved.flipBackPage ? flippedOrientation : normalOrientation
+    if (saved.vibShow !== undefined) vibShowMode.value = saved.vibShow ? vibShowChoice : vibHideChoice
+    if (saved.vibItems !== undefined) {
+      vibChoices.value.forEach(c => {
+        c.active = saved.vibItems.includes(c.value)
+      })
+    }
+    if (saved.clipMargin !== undefined) {
+       const found = clipMarginOptions.value.find(o => o.value === saved.clipMargin)
+       if (found) clipMarginSelected.value = found
+    }
+    if (saved.backToBack !== undefined) {
+        const found = backToBackOptions.find(o => o.value === saved.backToBack)
+        if (found) backToBackSelected.value = found
+    }
+    if (saved.showCenterGuide !== undefined) {
+        centerGuideMode.value = saved.showCenterGuide ? centerGuideShowChoice : centerGuideHideChoice
+    }
+  }
 }
 
 onMounted( () => {
@@ -187,7 +202,7 @@ function getOptions():PrintOptions|undefined {
     flipBackPage.value?.value,
     pageSelection.value,
     vibShowMode.value.value,
-    vibSelectedItems.value,
+    vibChoices.value.filter(c => c.active).map(c => c.value),
     clipMarginSelected.value.value,
     backToBackSelected.value.value,
     centerGuideMode.value.value
@@ -202,6 +217,7 @@ function onNewOptions() {
   const options = getOptions()
   // console.debug('[PrintOptions.onNewOptions]', options)
   if(options) {
+    LocalStoreService.savePrintOptions(options)
     if( simmer.value) { // free acounts cannot change options
       const unselected = options.pageSelection.find( (p:boolean) => !p)
       // user need to upgrade if they changed any default settings

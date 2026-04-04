@@ -1,6 +1,6 @@
 <template>
-    <div class="anyof">
-        <div v-for="(choice, index) in choices" 
+    <div class="anyof" :class="{'disabled': disabled}">
+        <div v-for="(choice, index) in modelValue" 
              :key="index" 
              class="choice-item" 
              @click="toggle(choice)">
@@ -25,18 +25,22 @@ export interface AnyOfChoice {
 }
 
 const props = defineProps({
-    allowsNoSelection: { type: Boolean, default: false }
+    modelValue: { type: Array as () => AnyOfChoice[], required: true },
+    allowsNoSelection: { type: Boolean, default: false },
+    disabled: { type: Boolean, default: false }
 });
 
-const choices = defineModel<AnyOfChoice[]>({ required: true })
+const emits = defineEmits(['update:modelValue', 'change'])
 
 function setChoiceActive(choice: AnyOfChoice, active: boolean) {
+    if (props.disabled) return
     if (choice.active && !active && !props.allowsNoSelection) {
-        const activeCount = choices.value.filter(c => c.active).length
+        const activeCount = props.modelValue.filter(c => c.active).length
         if (activeCount <= 1) return
     }
     choice.active = active
-    choices.value = [...choices.value]
+    emits('update:modelValue', [...props.modelValue])
+    emits('change')
 }
 
 function toggle(choice: AnyOfChoice) {
@@ -58,6 +62,15 @@ function toggle(choice: AnyOfChoice) {
     border-radius: 6px;
     position: relative;
     gap: 4px;
+}
+
+.anyof.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.anyof.disabled .choice-item {
+    cursor: not-allowed;
 }
 
 .choice-item {
