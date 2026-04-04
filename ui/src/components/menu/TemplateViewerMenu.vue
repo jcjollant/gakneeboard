@@ -8,6 +8,7 @@
     <template v-if="!isCollapsed">
       <!-- Always visible in Expanded modes -->
       <MenuButton id="btnPrint" icon="print" title="Print Kneeboard" label="Print" primary
+        :disabled="isLoading"
         @click="$emit('print')"/>
       
       <MenuButton v-if="showSave" id="btnSave" icon="save" title="Save Kneeboard to the Cloud" label="Save" :disabled="!isTemplateValid"
@@ -67,6 +68,7 @@ const props = defineProps<{
   isModified?: boolean
   hasId?: boolean
   activeRoute?: boolean
+  isLoading?: boolean
 }>()
 
 defineEmits<{

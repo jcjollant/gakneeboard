@@ -24,6 +24,7 @@
           :isModified="templateModified"
           :hasId="activeTemplate.id > 0"
           :activeRoute="isRouteDefined"
+          :isLoading="isTemplateLoading"
           @print="onPrint"
           @save="onSave"
           @scroll="onScroll"
@@ -131,6 +132,7 @@ const showExport = ref(false)
 const showSettings = ref(false)
 const showRoute = ref(false)
 const isInitializing = ref(false)
+const isTemplateLoading = ref(false)
 const singlePage = ref(false)
 const templateModified = ref(false)
 const toast = useToast()
@@ -186,6 +188,7 @@ onMounted(() =>{
           emits('template', localTemplate)
       } else {
         // console.debug('[TemplateViewer.onMounted] loading from backend', templateId)
+        isTemplateLoading.value = true
         TemplateService.get(templateId).then( template => {
           if(template.id) {
             loadTemplate(template, true)
@@ -206,6 +209,8 @@ onMounted(() =>{
             } else {
               toaster.error( 'Load Template','Could not reach server')
             }
+        }).finally(() => {
+          isTemplateLoading.value = false
         })
       }
     } else { 

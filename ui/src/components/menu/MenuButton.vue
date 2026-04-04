@@ -78,5 +78,6 @@ const props = defineProps({
     color: white;
     background-color: #888;
     cursor: default;
+    pointer-events: none;
 }
 </style>
