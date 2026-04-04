@@ -8,5 +8,7 @@ export enum VerticalInfoBarContent {
   Version = 'version',
   PageName = 'name',
   Tail = 'tail',
-  Date = 'date'
+  Date = 'date',
+  Guide = 'guide',
+  Brand = 'brand'
 }

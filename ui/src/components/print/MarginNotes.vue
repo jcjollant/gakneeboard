@@ -37,12 +37,13 @@ function loadProps(props:any) {
     
     // Always show brand? The prompt didn't say. 'Kneeboard.ga' was "Brand" in old code.
     // Old code showed brand unless option == hide.
-    showBrand.value = props.show 
+    showBrand.value = props.show && items.includes(VerticalInfoBarContent.Brand)
 
     if (!props.show) {
         showVersionOrName.value = false
         showTail.value = false
         showDate.value = false
+        showBrand.value = false
         return
     }
 

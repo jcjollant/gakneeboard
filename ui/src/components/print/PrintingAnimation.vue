@@ -1,8 +1,8 @@
 <template>
   <div v-if="visible" class="print-animation-overlay">
     <div class="content">
-      <h2>Generating PDF</h2>
-      <p>Preparing your perfect kneeboard...</p>
+      <h2>{{ title || 'Generating PDF' }}</h2>
+      <p>{{ subtitle || 'Preparing your perfect kneeboard...' }}</p>
       <div class="pattern-container">
         <div class="pattern-path"></div>
         <div class="runway"></div>
@@ -16,7 +16,9 @@
 
 <script setup lang="ts">
 defineProps<{
-  visible: boolean
+  visible: boolean,
+  title?: string,
+  subtitle?: string
 }>()
 </script>
 

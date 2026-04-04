@@ -3,6 +3,7 @@
         <div v-for="(choice, index) in modelValue" 
              :key="index" 
              class="choice-item" 
+             :title="choice.title"
              @click="toggle(choice)">
             <div class="active-bg" :class="{'active': choice.active}"></div>
             <div class="any-of-content" :class="{'selected': choice.active}">
@@ -18,21 +19,17 @@
 </template>
 
 <script setup lang="ts">
-
-export interface AnyOfChoice {
-    label: string;
-    active: boolean;
-}
+import { OneChoiceValue } from '../../models/OneChoiceValue';
 
 const props = defineProps({
-    modelValue: { type: Array as () => AnyOfChoice[], required: true },
+    modelValue: { type: Array as () => OneChoiceValue[], required: true },
     allowsNoSelection: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false }
 });
 
 const emits = defineEmits(['update:modelValue', 'change'])
 
-function setChoiceActive(choice: AnyOfChoice, active: boolean) {
+function setChoiceActive(choice: OneChoiceValue, active: boolean) {
     if (props.disabled) return
     if (choice.active && !active && !props.allowsNoSelection) {
         const activeCount = props.modelValue.filter(c => c.active).length
@@ -43,7 +40,7 @@ function setChoiceActive(choice: AnyOfChoice, active: boolean) {
     emits('change')
 }
 
-function toggle(choice: AnyOfChoice) {
+function toggle(choice: OneChoiceValue) {
     setChoiceActive(choice, !choice.active)
 }
 

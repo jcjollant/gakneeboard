@@ -11,33 +11,33 @@
         </div>
       </div>
 
-      <div class="pageOptions">
-        <div class="pageOptionLabel">Pages</div>
-        <PageSelection v-model="pageSelection" @change="onNewOptions" />
-      </div>
-      <FieldSet legend="Layout">
-      <div class="pageOptions">
-        <template v-if="isFullPageFormat">
-          <div class="pageOptionLabel">Format</div>
-          <div class="formatInfo">Full Page (one page per sheet)</div>
-        </template>
-        <template v-else>
+      <FieldSet legend="Pages">
+        <div class="pageOptions">
+          <div class="pageOptionLabel">Pages to Print</div>
+          <PageSelection v-model="pageSelection" @change="onNewOptions" />
           <div class="pageOptionLabel">Back Page Orientation</div>
           <ChoiceList v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" :emitObject="true" />
           <div class="pageOptionLabel">Page Sequence</div>
           <ChoiceList v-model="backToBackSelected" :choices="backToBackOptions" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" :emitObject="true" />
-          <div class="pageOptionLabel">Clip Margin</div>
-          <ChoiceList v-model="clipMarginSelected" :choices="clipMarginOptions" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" :emitObject="true" />
-          <div class="pageOptionLabel">Center Guide</div>
-          <ChoiceList v-model="centerGuideMode" :choices="centerGuideOptions" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" :emitObject="true" />
-        </template>
       </div>
       </FieldSet>
-      <FieldSet legend="Margin Notes" v-if="!isFullPageFormat">
+      <FieldSet legend="Margins" v-if="!isFullPageFormat">
         <div class="vibContainer">
-          <ChoiceList v-model="vibShowMode" :choices="[vibShowChoice, vibHideChoice]" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" :emitObject="true" />
-          <div class="vibItems">
-             <AnyOf v-model="vibChoices" @change="onNewOptions" :disabled="!vibShowMode.value || !currentUser.canUseAdvancedPrinting" />
+          <div class="pageOptions">
+            <div class="pageOptionLabel">Clip Padding</div>
+            <ChoiceList v-model="clipMarginSelected" :choices="clipMarginOptions" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" :emitObject="true" />
+            
+            <div class="pageOptionLabel">Text</div>
+            <div class="vibActions">
+              <AnyOf v-model="vibText" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" :allowsNoSelection="true" />
+              <font-awesome-icon icon="plus" class="vibBtn" @click="vibText.forEach((c: OneChoiceValue)=>c.active=true); onNewOptions()" title="Select all text" />
+              <font-awesome-icon icon="minus" class="vibBtn" @click="vibText.forEach((c: OneChoiceValue)=>c.active=false); onNewOptions()" title="Select no text" />
+            </div>
+
+            <div class="pageOptionLabel">Decoration</div>
+            <div class="vibActions">
+              <AnyOf v-model="vibDecorations" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" :allowsNoSelection="true" />
+            </div>
           </div>
         </div>
       </FieldSet>
@@ -74,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { UserUrl } from '../../lib/UserUrl';
 import { OneChoiceValue } from '../../models/OneChoiceValue';
 import ChoiceList from '../shared/ChoiceList.vue';
@@ -89,7 +89,7 @@ import { LocalStoreService } from '../../services/LocalStoreService';
 
 import Checkbox from 'primevue/checkbox'
 import { VerticalInfoBarContent } from '../../models/VerticalInfoBarOption';
-import AnyOf, { AnyOfChoice } from '../shared/AnyOf.vue';
+import AnyOf from '../shared/AnyOf.vue';
 import { PrintOptions } from './PrintOptions';
 import { useRouter } from 'vue-router';
 import { useToaster } from '../../assets/Toaster';
@@ -109,22 +109,16 @@ const toaster = useToaster(useToast())
 const isFullPageFormat = computed(() => props.format === 'fullpage')
 const router = useRouter()
 
-const vibShowChoice = new OneChoiceValue('Show', true, 'Show vertical info bar')
-const vibHideChoice = new OneChoiceValue('Hide', false, 'Hide vertical info bar')
-const vibShowMode = ref(vibShowChoice)
+const vibText = ref<OneChoiceValue[]>([
+  new OneChoiceValue('Version', VerticalInfoBarContent.Version, 'Kneeboard Current Version Number'),
+  new OneChoiceValue('Name', VerticalInfoBarContent.PageName, 'Kneeboard Name'),
+  new OneChoiceValue('Tail #', VerticalInfoBarContent.Tail, 'Tail Number'),
+  new OneChoiceValue('Date', VerticalInfoBarContent.Date, 'Date'),
+])
 
-const centerGuideShowChoice = new OneChoiceValue('Show', true)
-const centerGuideHideChoice = new OneChoiceValue('Hide', false)
-const centerGuideMode = ref(centerGuideHideChoice)
-const centerGuideOptions = [centerGuideHideChoice, centerGuideShowChoice]
-
-const backToBack = ref(false)
-
-const vibChoices = ref<(AnyOfChoice & { value: VerticalInfoBarContent })[]>([
-  { label: 'Version', active: true, value: VerticalInfoBarContent.Version },
-  { label: 'Name', active: true, value: VerticalInfoBarContent.PageName },
-  { label: 'Tail #', active: true, value: VerticalInfoBarContent.Tail },
-  { label: 'Date', active: true, value: VerticalInfoBarContent.Date },
+const vibDecorations = ref<OneChoiceValue[]>([
+  new OneChoiceValue('Logo', VerticalInfoBarContent.Brand, 'Kneeboard.ga Logo'),
+  new OneChoiceValue('Guide', VerticalInfoBarContent.Guide, 'Fold/Cut guide'),
 ])
 
 const backToBackOptions = [
@@ -134,9 +128,9 @@ const backToBackOptions = [
 
 const backToBackSelected = ref(backToBackOptions[0])
 
-const clipMarginNone = new OneChoiceValue('None', 0)
-const clipMarginSmall = new OneChoiceValue('Small', 24) // ~0.25in
-const clipMarginLarge = new OneChoiceValue('Large', 48) // ~0.50in
+const clipMarginNone = new OneChoiceValue('None', 0, 'No margin added')
+const clipMarginSmall = new OneChoiceValue('Small', 24, 'Small margin on top') // ~0.25in
+const clipMarginLarge = new OneChoiceValue('Large', 48, 'Large margin on top') // ~0.50in
 const clipMarginSelected = ref(clipMarginNone)
 const clipMarginOptions = ref([clipMarginNone, clipMarginSmall, clipMarginLarge])
 
@@ -146,6 +140,7 @@ const props = defineProps({
   pageSelection: { type: Array<boolean>, required: true},
 
   format: { type: String, default: 'kneeboard' },
+  version: { type: Number, default: 0 },
 })
 
 function loadProps( props:any) {
@@ -153,13 +148,19 @@ function loadProps( props:any) {
   pageSelection.value = props.pageSelection
   simmer.value = currentUser.accountType == AccountType.simmer
 
+  // Update version label if available
+  const versionChoice = vibText.value.find((c: OneChoiceValue) => c.value === VerticalInfoBarContent.Version)
+  if (versionChoice) {
+      versionChoice.label = props.version > 0 ? `V${props.version}` : 'Version'
+  }
+
   // Restore saved options
   const saved = LocalStoreService.getPrintOptions()
   if (saved) {
     if (saved.flipBackPage !== undefined) flipBackPage.value = saved.flipBackPage ? flippedOrientation : normalOrientation
-    if (saved.vibShow !== undefined) vibShowMode.value = saved.vibShow ? vibShowChoice : vibHideChoice
     if (saved.vibItems !== undefined) {
-      vibChoices.value.forEach(c => {
+      const allChoices = [...vibText.value, ...vibDecorations.value]
+      allChoices.forEach((c: OneChoiceValue) => {
         c.active = saved.vibItems.includes(c.value)
       })
     }
@@ -172,9 +173,14 @@ function loadProps( props:any) {
         if (found) backToBackSelected.value = found
     }
     if (saved.showCenterGuide !== undefined) {
-        centerGuideMode.value = saved.showCenterGuide ? centerGuideShowChoice : centerGuideHideChoice
+      const guideChoice = vibDecorations.value.find((c: OneChoiceValue) => c.value === VerticalInfoBarContent.Guide)
+      if (guideChoice) guideChoice.active = saved.showCenterGuide
     }
   }
+  
+  nextTick(() => {
+    onNewOptions()
+  })
 }
 
 onMounted( () => {
@@ -198,19 +204,30 @@ watch(backToBackSelected, (newVal) => {
 //---------------------
 
 function getOptions():PrintOptions|undefined {
+  const allChoices = [...vibText.value, ...vibDecorations.value]
   return new PrintOptions(
     flipBackPage.value?.value,
     pageSelection.value,
-    vibShowMode.value.value,
-    vibChoices.value.filter(c => c.active).map(c => c.value),
+    true, // vibShow is now always true (controlled by AnyOf selections)
+    allChoices.filter((c: OneChoiceValue) => c.active && c.value !== VerticalInfoBarContent.Guide).map((c: OneChoiceValue) => c.value),
     clipMarginSelected.value.value,
     backToBackSelected.value.value,
-    centerGuideMode.value.value
+    vibDecorations.value.find((c: OneChoiceValue) => c.value === VerticalInfoBarContent.Guide)?.active
   )
 }
 
 function onHelp() {
   UserUrl.open( UserUrl.printGuide)
+}
+
+function onSelectAll() {
+  [...vibText.value, ...vibDecorations.value].forEach(c => c.active = true)
+  onNewOptions()
+}
+
+function onSelectNone() {
+  [...vibText.value, ...vibDecorations.value].forEach(c => c.active = false)
+  onNewOptions()
 }
 
 function onNewOptions() {
@@ -221,8 +238,8 @@ function onNewOptions() {
     if( simmer.value) { // free acounts cannot change options
       const unselected = options.pageSelection.find( (p:boolean) => !p)
       // user need to upgrade if they changed any default settings
-      // Check if VIB options are modified from default (Show + All)
-      const isVibDefault = options.vibShow && options.vibItems.length >= 3; // Basic check, refining might be needed
+      // Check if VIB options are modified from default (All 4 items active)
+      const isVibDefault = options.vibItems.length >= 3; // Basic check, refining might be needed
       
       upgrade.value = options.flipBackPage || !isVibDefault || (unselected === false) || (options.clipMargin > 0) || options.showCenterGuide
     }
@@ -267,13 +284,18 @@ function onUpgrade() {
 
 .pageOptions {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: 9rem auto;
   align-items: center;
   gap: 0.5rem 1rem;
   line-height: 1rem;
+  width: 100%;
 }
 .pageOptionLabel {
   text-align: right;
+  width: 9rem;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  color: #555;
 }
 
 .disabledOption {
@@ -316,8 +338,10 @@ li {
 }
 .vibContainer {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.2rem;
+  padding: 0.5rem 0;
 }
 .mt-3 {
   margin-top: 1rem;
@@ -327,6 +351,23 @@ li {
   flex-flow: wrap;
   gap: 1rem;
   padding-left: 0.5rem;
+}
+.vibActions {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+.vibBtn {
+  cursor: pointer;
+  color: #666;
+  font-size: 0.9rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.vibBtn:hover {
+  background: #f0f0f0;
+  color: #2196F3;
 }
 .field-checkbox {
   display: flex;

@@ -1,32 +1,36 @@
 <template>
   <div class="print">
     <PrintingAnimation :visible="printing" />
-    <PrintOptionsDialog v-model:visible="showOptions" :pageSelection="pageSelection"
+    <PrintOptionsDialog v-if="!isLoading" v-model:visible="showOptions" :pageSelection="pageSelection"
         :format="template?.format"
+        :version="template?.ver"
         @options="onOptionsUpdate"
         @print="onPrint"
         @export-pdf="onExportPdf"
         @laminate="onLaminate"
         @close="showOptions=false"
         />
-    <div v-if="template" id="printTemplate" :class="{'single':printFullpage,'fullpage':template.format === TemplateFormat.FullPage}">
-      <div v-if="printFullpage" v-for="(page,index) in template.data" class="printOnePage printPageBreak">
-        <div class="onePager" v-if="pageSelection[Number(index)]">
-          <Page :data="page" :format="template.format" :route="template.route"
-            :style="getStylePage(false)" />
+    <PrintingAnimation :visible="isLoading" title="Loading Template" subtitle="Preparing the print layout..." />
+    <div v-if="!isLoading">
+      <div v-if="template" id="printTemplate" :class="{'single':printFullpage,'fullpage':template.format === TemplateFormat.FullPage}">
+        <div v-if="printFullpage" v-for="(page,index) in template.data" class="printOnePage printPageBreak">
+          <div class="onePager" v-if="pageSelection[Number(index)]">
+            <Page :data="page" :format="template.format" :route="template.route"
+              :style="getStylePage(false)" />
+          </div>
+        </div>
+        <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages" :style="getStyleTwoPages(false)">
+          <Page :data="page.front" :format="template.format" :route="template?.route" :style="getStylePage(false)" />
+          <MarginNotes v-if="printVibShow" class="sidebar" 
+              :ver="template.ver" :show="printVibShow" :items="printVibItems" :name="template.name" />
+          <MarginNotes v-if="printVibShow" class="sidebar back" 
+              :ver="template.ver" :show="printVibShow" :items="printVibItems" :name="template.name" />
+          <Page v-if="page.back" :data="page.back" :format="template.format" :route="template?.route" :style="getStylePage(printFlipMode)" />
+          <CenterGuide v-if="printShowCenterGuide" />
         </div>
       </div>
-      <div v-else class="printTwoPages printPageBreak" v-for="(page) in pages" :style="getStyleTwoPages(false)">
-        <Page :data="page.front" :format="template.format" :route="template?.route" :style="getStylePage(false)" />
-        <MarginNotes v-if="printVibShow" class="sidebar" 
-            :ver="template.ver" :show="printVibShow" :items="printVibItems" :name="template.name" />
-        <MarginNotes v-if="printVibShow" class="sidebar back" 
-            :ver="template.ver" :show="printVibShow" :items="printVibItems" :name="template.name" />
-        <Page v-if="page.back" :data="page.back" :format="template.format" :route="template?.route" :style="getStylePage(printFlipMode)" />
-        <CenterGuide v-if="printShowCenterGuide" />
-      </div>
+      <div v-else>No Template</div>
     </div>
-    <div v-else>No Template</div>
   </div>
 </template>
 
@@ -109,13 +113,37 @@ function getStyleTwoPages(flipped: boolean) {
   }
 }
 
-onMounted(() => {
+const isLoading = ref(false)
+
+onMounted(async () => {
     if (!canUserPrint()) {
       redirectToPlansPage()
       return
     }
     
-    template.value = LocalStoreService.getTemplate()
+    const templateIdFromRoute = Number(route.params.id)
+    const storedTemplate = LocalStoreService.getTemplate()
+    
+    // Check if we need to load the template because of an ID mismatch or missing template
+    if (!storedTemplate || (templateIdFromRoute > 0 && storedTemplate.id !== templateIdFromRoute)) {
+      isLoading.value = true
+      try {
+        const fetchedTemplate = await TemplateService.get(templateIdFromRoute)
+        if (fetchedTemplate && fetchedTemplate.id === templateIdFromRoute) {
+          template.value = fetchedTemplate
+          LocalStoreService.saveTemplate(fetchedTemplate)
+        } else {
+          template.value = storedTemplate
+        }
+      } catch (e) {
+        console.error('[Print.onMounted] Failed to fetch template', e)
+        template.value = storedTemplate
+      } finally {
+        isLoading.value = false
+      }
+    } else {
+      template.value = storedTemplate
+    }
     
     if (!template.value.format) {
       template.value.format = TemplateFormat.Kneeboard; 

@@ -621,6 +621,9 @@ function onPrint() {
     return
   }
 
+  // Ensure current state is saved to local storage before navigating to Print view
+  saveTemplateToLocalStoreService()
+
   // go to print mode
   const printTemplateId = activeTemplate.value?.id || 0
   // Pass templateModified if the template is modified OR if it's a new template (id=0)

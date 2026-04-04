@@ -6,6 +6,7 @@
                 <span v-for="(choice, index) in choices" :key="index"
                       class="text" 
                       :class="{'selected': isSelected(choice), 'small': small}"
+                      :title="getChoiceTitle(choice)"
                       @click="selectChoice(choice)">
                     {{ getChoiceLabel(choice) }}
                 </span>
@@ -36,6 +37,10 @@ function getChoiceLabel(choice: any) {
 
 function getChoiceValue(choice: any) {
     return (typeof choice === 'object' && choice !== null && 'value' in choice) ? choice.value : choice;
+}
+
+function getChoiceTitle(choice: any) {
+    return (typeof choice === 'object' && choice !== null) ? choice.title : undefined;
 }
 
 function isSelected(choice: any) {

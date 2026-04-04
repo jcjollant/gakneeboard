@@ -66,7 +66,8 @@ import AirportInput from '../shared/AirportInput.vue';
 import Separator from '../../components/shared/Separator.vue';
 import EitherOr from '../../components/shared/EitherOr.vue';
 import ChoiceList from '../shared/ChoiceList.vue';
-import AnyOf, { type AnyOfChoice } from '../shared/AnyOf.vue';
+import AnyOf from '../shared/AnyOf.vue';
+import { OneChoiceValue } from '../../models/OneChoiceValue';
 
 import { Airport } from '../../models/Airport';
 import { Route, RouteCode } from '@gak/shared';
@@ -110,9 +111,9 @@ const patternChoice = ref(TrafficPatternDisplay.Downwind); // Default
 const showMetar = ref(true);
 const showNotams = ref(true);
 
-const conditionChoices = ref<AnyOfChoice[]>([
-    { label: 'NOTAMs', active: true },
-    { label: 'METAR', active: true }
+const conditionChoices = ref<OneChoiceValue[]>([
+    new OneChoiceValue('NOTAMs', 'notams', undefined, true),
+    new OneChoiceValue('METAR', 'metar', undefined, true)
 ]);
 
 
@@ -138,9 +139,9 @@ watch(isSingleSelect, (newVal) => {
     }
 });
 
-watch(conditionChoices, (newChoices) => {
-    const notams = newChoices.find(c => c.label === 'NOTAMs')?.active ?? true;
-    const metar = newChoices.find(c => c.label === 'METAR')?.active ?? true;
+watch(conditionChoices, (newChoices: OneChoiceValue[]) => {
+    const notams = newChoices.find((c: OneChoiceValue) => c.label === 'NOTAMs')?.active ?? true;
+    const metar = newChoices.find((c: OneChoiceValue) => c.label === 'METAR')?.active ?? true;
     
     if (showNotams.value !== notams || showMetar.value !== metar) {
         showNotams.value = notams;
@@ -213,8 +214,8 @@ function loadFromTileData(tile: TileData) {
     showNotams.value = config.showNotams ?? true;
 
     conditionChoices.value = [
-        { label: 'NOTAMs', active: showNotams.value },
-        { label: 'METAR', active: showMetar.value }
+        new OneChoiceValue('NOTAMs', 'notams', undefined, showNotams.value),
+        new OneChoiceValue('METAR', 'metar', undefined, showMetar.value)
     ];
 
     if (airportCode.value) {
