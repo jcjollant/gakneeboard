@@ -5,6 +5,7 @@ import { TicketService } from '../services/TicketService';
 import { Check, HealthCheck } from './HealthChecks';
 import { HouseKeeping, TaskStatus } from './HouseKeeping';
 import { MetricKey, Metrics } from './Metrics';
+import { HousekeepingDao } from '../dao/HousekeepingDao';
 
 export class Maintenance {
     code: string;
@@ -34,7 +35,7 @@ export class Maintenance {
             if (this.code == Maintenance.codeHealthCheck) { // This is Dr Hibbert
                 Maintenance.drHibbert().then(res).catch(handleCrash)
             } else if (this.code == Maintenance.codeHouseKeeping) { // This is Willie
-                Maintenance.willie().then(res).catch(handleCrash)
+                Maintenance.willie().then((res) => res.message).then(res).catch(handleCrash)
             } else if (this.code == Maintenance.codeLogin) {
                 const hash = "357c3920bbfc6eefef7e014ca49ef12c78bb875c0826efe90194c9978303a8d3"
                 UserView.fromHash(hash).then((umv: UserView | undefined) => {
@@ -141,24 +142,29 @@ export class Maintenance {
     /**
      * Willie performs housekeeping
      */
-    static async willie(sendEmail: boolean = true): Promise<string> {
+    static async willie(sendEmail: boolean = true, persistRecord: boolean = true): Promise<{ message: string, tasks: any[] }> {
         const tasks = await HouseKeeping.perform()
 
         const failed = tasks.filter(t => t.status === TaskStatus.FAILED).length
         const passed = tasks.filter(t => t.status === TaskStatus.FINISHED).length
         const skipped = tasks.filter(t => t.status === TaskStatus.SKIPPED).length
         const statusLine = `Failed: ${failed}, Passed: ${passed}, Skipped: ${skipped}`
+        const data = JSON.stringify(tasks)
+
+        // persist record
+        if (persistRecord) {
+            const dao = new HousekeepingDao()
+            await dao.insert(tasks, failed, passed, skipped)
+        }
 
         let message = statusLine + '\n\n' + tasks.map(t => `${t.name}: ${t.status} - ${t.message} (${t.duration}ms)`).join('\n')
-
-        // call marge
 
         if (tasks.length > 0 && sendEmail) {
             await Email.send(message, EmailType.Housekeeping)
         } else {
             console.log('[Maintenance.willie] not sending email \n' + message)
         }
-        return message
+        return { message, tasks }
     }
 
 }

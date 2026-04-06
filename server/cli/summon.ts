@@ -17,7 +17,7 @@ async function summon(name: string) {
         switch (name) {
             case 'willie':
                 console.log("Summoning Willie...");
-                output = await Maintenance.willie();
+                output = (await Maintenance.willie()).message;
                 break;
             case 'waylon':
                 console.log("Summoning Waylon...");

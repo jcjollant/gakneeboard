@@ -5,11 +5,34 @@
             Manual invocation of Willie's tasks. This will NOT send an email notification.
         </div>
         <div class="input-group">
-            <button @click="runWillie" :disabled="loadingWillie">{{ loadingWillie ? 'Summoning Willie...' : 'Run Housekeeping' }}</button>
+            <button @click="runWillie" :disabled="loadingWillie" class="run-btn">{{ loadingWillie ? 'Summoning Willie...' : 'Run Housekeeping' }}</button>
+            <button @click="fetchHistory" :disabled="loadingHistory" class="fetch-btn">{{ loadingHistory ? 'Fetching History...' : 'Fetch History' }}</button>
         </div>
         
+        <div v-if="housekeepingHistory.length > 0" class="history-section">
+            <h3>Recent History</h3>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Passed</th>
+                        <th>Failed</th>
+                        <th>Skipped</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="entry in housekeepingHistory.slice(0, 5)" :key="entry.id">
+                        <td>{{ formatDate(entry.create_time) }}</td>
+                        <td class="status-pass">{{ entry.passed }}</td>
+                        <td class="status-fail">{{ entry.failed }}</td>
+                        <td class="status-skip">{{ entry.skipped }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
         <div v-if="willieResults.length > 0">
-            <h3>Task Results</h3>
+            <h3>Last Run Results</h3>
             <div class="task-summary">
                 <div v-for="task in willieResults" :key="task.name" class="task-item" :class="task.status">
                     <span class="task-icon">{{ getStatusIcon(task.status) }}</span>
@@ -17,9 +40,11 @@
                     <span class="duration">({{ task.duration }}ms)</span>
                 </div>
             </div>
+        </div>
 
-            <h2>Raw JSON Output</h2>
-            <pre class="json-display">{{ JSON.stringify(willieResults, null, 2) }}</pre>
+        <div v-if="housekeepingHistory.length > 0">
+            <h2>Raw History Output</h2>
+            <pre class="json-display">{{ JSON.stringify(housekeepingHistory, null, 2) }}</pre>
         </div>
     </div>
 </template>
@@ -40,7 +65,20 @@ interface WillieTask {
 
 const toaster = useToaster(useToast())
 const willieResults = ref<WillieTask[]>([])
+const housekeepingHistory = ref<any[]>([])
 const loadingWillie = ref(false)
+const loadingHistory = ref(false)
+
+function fetchHistory() {
+    loadingHistory.value = true
+    api.get(UrlService.adminRoot + 'housekeeping').then(res => {
+        housekeepingHistory.value = res.data
+        loadingHistory.value = false
+    }).catch(err => {
+        toaster.error('Failed to fetch history', err.message)
+        loadingHistory.value = false
+    })
+}
 
 function runWillie() {
     if (loadingWillie.value) return
@@ -48,7 +86,9 @@ function runWillie() {
     willieResults.value = []
     
     api.get(UrlService.adminRoot + 'maintenance/willie').then(res => {
-        willieResults.value = res.data
+        // Willie returns a string currently, but we want JSON. 
+        // For now, let's just refresh history
+        fetchHistory()
         loadingWillie.value = false
         toaster.success('Willie Finished', 'Housekeeping completed successfully')
     }).catch(err => {
@@ -57,7 +97,20 @@ function runWillie() {
     })
 }
 
-function getStatusIcon(status: string) {
+import { onMounted } from 'vue'
+// History is now fetched on demand via button
+onMounted(() => {
+    // fetchHistory()
+})
+
+function formatDate(date: string) {
+    return new Date(date).toLocaleString()
+}
+
+function getStatusIcon(status: string | number) {
+    if (typeof status === 'number') {
+        return status > 0 ? '❌' : '✅'
+    }
     switch (status) {
         case 'finished': return '✅'
         case 'skipped': return '⏭️'
@@ -94,7 +147,7 @@ function getStatusIcon(status: string) {
     margin-bottom: 2rem;
 }
 
-.input-group button {
+.input-group button.run-btn {
     padding: 0.75rem 1.5rem;
     background: #e67e22;
     color: white;
@@ -105,8 +158,23 @@ function getStatusIcon(status: string) {
     transition: background 0.3s ease;
 }
 
-.input-group button:hover {
+.input-group button.run-btn:hover {
     background: #d35400;
+}
+
+.input-group button.fetch-btn {
+    padding: 0.75rem 1.5rem;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+}
+
+.input-group button.fetch-btn:hover {
+    background: #2980b9;
 }
 
 .input-group button:disabled {
@@ -156,4 +224,31 @@ function getStatusIcon(status: string) {
     max-height: 400px;
     overflow-y: auto;
 }
+
+.history-section {
+    margin-bottom: 2rem;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.history-table th, .history-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.history-table th {
+    background-color: #f8f9fa;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.status-pass { color: #2ecc71; font-weight: bold; }
+.status-fail { color: #e74c3c; font-weight: bold; }
+.status-skip { color: #f1c40f; font-weight: bold; }
+
 </style>

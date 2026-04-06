@@ -2,11 +2,12 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-import { HouseKeeping, Task, TaskStatus } from "../backend/maintenance/HouseKeeping";
+import { TaskStatus } from "../backend/maintenance/HouseKeeping";
+import { Maintenance } from "../backend/maintenance/Maintenance";
 
 const verbose = process.argv.includes('--verbose')
 
-HouseKeeping.perform().then(tasks => {
+Maintenance.willie(false, true).then(({ tasks }) => {
     const reset = "\x1b[0m"
 
     for (const task of tasks) {

@@ -8,6 +8,7 @@ import { Admin } from "../backend/Admin"
 import { UsageDao } from "../backend/dao/UsageDao";
 import { PrintOrderDao } from "../backend/dao/PrintOrderDao";
 import { catchError } from "./utils";
+import { HousekeepingDao } from "../backend/dao/HousekeepingDao";
 
 const router = express.Router();
 
@@ -147,6 +148,17 @@ router.post('/admin/orders/:id/ship', async (req: Request, res: Response) => {
         res.send({ status: 'SHIPPED' });
     } catch (e) {
         catchError(res, e, 'POST /admin/orders/:id/ship')
+    }
+})
+
+router.get('/admin/housekeeping', async (req: Request, res: Response) => {
+    try {
+        await Authorization.validateAdmin(req)
+        const dao = new HousekeepingDao()
+        const history = await dao.getAll()
+        res.send(history)
+    } catch (e) {
+        catchError(res, e, 'GET /housekeeping')
     }
 })
 
