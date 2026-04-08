@@ -70,6 +70,9 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.frequencyBox, .frequencyBox * {
+    box-sizing: border-box;
+}
 .frequencyBox {
     border-radius: 5px;
     display: flex;
@@ -91,6 +94,11 @@ onMounted(() => {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    overflow: hidden;
+}
+.freq > div {
+    white-space: nowrap;
+    overflow: hidden;
 }
 .freq.phone {
     justify-content: center;

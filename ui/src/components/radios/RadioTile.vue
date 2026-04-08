@@ -216,6 +216,9 @@ function saveConfig() {
 </script>
 
 <style scoped>
+.tile, .tile * {
+    box-sizing: border-box;
+}
 .expanded {
     width: var(--tile-width-expanded);
 }
@@ -232,14 +235,18 @@ function saveConfig() {
 .freqList.three {
     padding: 3px;
     gap: 3px;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     place-items: center;
 }
 .freqList.four {
-    grid-template-columns: repeat(4, 1fr);
+    padding: 2px;
+    gap: 2px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 .freqList.six {
-    grid-template-columns: repeat(6, 1fr);
+    padding: 2px;
+    gap: 2px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
 .knownFrequencies {
