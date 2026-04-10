@@ -31,3 +31,4 @@ docs/~$Tiles.pptx
 .env.*
 cypress/screenshots
 cypress/videos
+cypress/snapshots/**/__diff_output__

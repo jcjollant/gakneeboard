@@ -8,6 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "jest",
+    "test:snapshots": "cypress run --spec 'cypress/e2e/snapshots/**/*'",
+    "test:snapshots:update": "cypress run --spec 'cypress/e2e/snapshots/**/*' --env updateSnapshots=true",
     "prepare": "git config core.hooksPath server/.husky"
   },
   "dependencies": {
@@ -37,6 +39,7 @@
     "@babel/preset-env": "^7.24.6",
     "@babel/preset-typescript": "^7.24.6",
     "@jest/globals": "^29.7.0",
+    "@simonsmith/cypress-image-snapshot": "^10.0.3",
     "@types/jest": "^29.5.12",
     "@vitejs/plugin-vue": "^6.0.3",
     "babel-jest": "^29.7.0",

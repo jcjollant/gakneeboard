@@ -1,0 +1,29 @@
+{
+  "code": "KRNT",
+  "name": "Renton Muni",
+  "elev": 32,
+  "sketch": "",
+  "rwys": [
+    {
+      "name": "16-34",
+      "length": 5382,
+      "width": 200,
+      "lp": "16",
+      "rp": "34",
+      "heading": 160,
+      "he": { "id": "16", "elev": 32 },
+      "le": { "id": "34", "elev": 32 },
+      "ends": [ { "name": "16", "mag": 160 }, { "name": "34", "mag": 340 } ]
+    }
+  ],
+  "freq": [
+    { "name": "ATIS", "mhz": 126.950 },
+    { "name": "TWR", "mhz": 124.700 },
+    { "name": "GND", "mhz": 121.600 },
+    { "name": "CTAF", "mhz": 124.700 }
+  ],
+  "iap": [],
+  "dep": [],
+  "navaids": [],
+  "atc": []
+}

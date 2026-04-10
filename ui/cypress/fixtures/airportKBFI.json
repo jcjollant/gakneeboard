@@ -1,0 +1,40 @@
+{
+  "code": "KBFI",
+  "name": "Boeing Fld/king County Intl",
+  "elev": 22,
+  "sketch": "",
+  "rwys": [
+    {
+      "name": "14L-32R",
+      "length": 3709,
+      "width": 100,
+      "lp": "14L",
+      "rp": "32R",
+      "heading": 140,
+      "he": { "id": "14L", "elev": 22 },
+      "le": { "id": "32R", "elev": 22 },
+      "ends": [ { "name": "14L", "mag": 140 }, { "name": "32R", "mag": 320 } ]
+    },
+    {
+      "name": "14R-32L",
+      "length": 10001,
+      "width": 200,
+      "lp": "14R",
+      "rp": "32L",
+      "heading": 140,
+      "he": { "id": "14R", "elev": 22 },
+      "le": { "id": "32L", "elev": 22 },
+      "ends": [ { "name": "14R", "mag": 140 }, { "name": "32L", "mag": 320 } ]
+    }
+  ],
+  "freq": [
+    { "name": "ATIS", "mhz": 127.750 },
+    { "name": "TWR", "mhz": 118.300 },
+    { "name": "GND", "mhz": 121.900 },
+    { "name": "CD/P", "mhz": 128.000 }
+  ],
+  "iap": [],
+  "dep": [],
+  "navaids": [],
+  "atc": []
+}
