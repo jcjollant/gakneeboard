@@ -4,6 +4,11 @@ export class UrlService {
         return config.public.GAK_API_URL || "https://api.kneeboard.ga/"
     }
 
+    static get appRoot(): string {
+        const config = useRuntimeConfig()
+        return (config.public.GAK_APP_URL as string) || "https://kneeboard.ga"
+    }
+
     static get adminRoot(): string {
         return '/api/admin/'
     }

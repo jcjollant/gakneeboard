@@ -55,6 +55,11 @@
                     <h3>Low Hanging Fruits</h3>
                     <p>Identify active simulator users</p>
                 </div>
+                <div class="api-card" :class="{ active: selectedApi === 'top-templates' }" @click="selectApi('top-templates')">
+                    <div class="api-icon">📋</div>
+                    <h3>Top Templates</h3>
+                    <p>Browse the top 100 templates by date, version, or last save</p>
+                </div>
             </div>
         </div>
         
@@ -116,6 +121,10 @@
         <div v-if="selectedApi === 'low-hanging-fruits'">
             <LowHangingFruits />
         </div>
+
+        <div v-if="selectedApi === 'top-templates'">
+            <TopTemplates />
+        </div>
     </div>
 </template>
 
@@ -134,6 +143,7 @@ import HealthCheck from '~/components/HealthCheck.vue';
 import TemplatePromoter from '~/components/TemplatePromoter.vue';
 import Housekeeping from '~/components/Housekeeping.vue';
 import LowHangingFruits from '~/components/LowHangingFruits.vue';
+import TopTemplates from '~/components/TopTemplates.vue';
 
 const route = useRoute()
 const router = useRouter()

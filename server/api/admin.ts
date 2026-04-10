@@ -9,6 +9,8 @@ import { UsageDao } from "../backend/dao/UsageDao";
 import { PrintOrderDao } from "../backend/dao/PrintOrderDao";
 import { catchError } from "./utils";
 import { HousekeepingDao } from "../backend/dao/HousekeepingDao";
+import { TemplateDao } from "../backend/TemplateDao";
+
 
 const router = express.Router();
 
@@ -148,6 +150,54 @@ router.post('/admin/orders/:id/ship', async (req: Request, res: Response) => {
         res.send({ status: 'SHIPPED' });
     } catch (e) {
         catchError(res, e, 'POST /admin/orders/:id/ship')
+    }
+})
+
+router.get('/templates/top', async (req: Request, res: Response) => {
+    try {
+        await Authorization.validateAdmin(req)
+
+        const sortBy = req.query.sortBy as string || 'creation_date'
+        const validSorts = ['creation_date', 'version', 'last_save']
+        if (!validSorts.includes(sortBy)) {
+            res.status(400).send('Invalid sortBy value')
+            return
+        }
+
+        const dao = new TemplateDao()
+        let query: string
+        if (sortBy === 'last_save') {
+            // Join usage table on the template id stored in usage.data JSON field
+            query = `
+                SELECT s.id, s.name, s.user_id, s.version, s.pages, s.creation_date,
+                       MAX(u.create_time) AS last_save
+                FROM sheets AS s
+                LEFT JOIN usage AS u ON (u.data::jsonb->>'id')::int = s.id AND u.usage_type = 'save'
+                GROUP BY s.id, s.name, s.user_id, s.version, s.pages, s.creation_date
+                ORDER BY last_save DESC NULLS LAST
+                LIMIT 100
+            `
+        } else if (sortBy === 'version') {
+            query = `
+                SELECT id, name, user_id, version, pages, creation_date, NULL AS last_save
+                FROM sheets
+                ORDER BY version DESC
+                LIMIT 100
+            `
+        } else {
+            // creation_date (default)
+            query = `
+                SELECT id, name, user_id, version, pages, creation_date, NULL AS last_save
+                FROM sheets
+                ORDER BY creation_date DESC
+                LIMIT 100
+            `
+        }
+
+        const result = await dao['db'].query(query)
+        res.send(result.rows)
+    } catch (e) {
+        catchError(res, e, 'GET /templates/top')
     }
 })
 

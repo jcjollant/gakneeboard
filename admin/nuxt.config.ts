@@ -26,6 +26,7 @@ export default defineNuxtConfig({
     healthCheckAccessKey: process.env.HEALTH_CHECK_ACCESS_KEY,
     public: {
       GAK_API_URL: process.env.GAK_API_URL || 'https://api.kneeboard.ga/',
+      GAK_APP_URL: process.env.GAK_APP_URL || 'https://kneeboard.ga',
       SUPABASE_URL: process.env.SUPABASE_URL,
       SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
       POSTGRES_URL: process.env.POSTGRES_URL,
