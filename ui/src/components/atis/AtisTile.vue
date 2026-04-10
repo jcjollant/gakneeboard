@@ -271,6 +271,7 @@ function saveConfig() {
 .full {
     display: grid;
     grid-template-columns: 20% 30% 25% 25%;
+    grid-template-rows: repeat(4, 1fr); /* Fixed 4 rows, independent of the lines setting */
 }
 
 .full .wind {
