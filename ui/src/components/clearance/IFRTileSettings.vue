@@ -3,23 +3,28 @@
 
         <Separator name="Airport" :leftAligned="true" />
         <AirportInput v-model="airport" v-model:routeCode="selectedRouteCode" :showRecent="true" large :route="route" @valid="emitUpdate"/>
+
+        <!-- Display Configuration -->
+        <div class="settings-section display-section">
+            <Separator name="Display" :leftAligned="true" />
+            <ChoiceList v-model="displayMode" :choices="modeOptions" :small="true" />
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch, inject, computed } from 'vue'
-import { Airport } from '../../models/Airport.ts';
-import { TileData } from '../../models/TileData.ts';
-import { DisplayModeIfr } from '../../models/DisplayMode.ts';
 import { Route, RouteCode } from '@gak/shared';
+import { inject, onMounted, ref, watch } from 'vue';
+import { Airport } from '../../models/Airport.ts';
+import { DisplayModeIfr } from '../../models/DisplayMode.ts';
+import { TileData } from '../../models/TileData.ts';
 import { getAirport } from '../../services/AirportDataService';
-import { IfrTileConfig } from './IfrTileConfig.ts';
 import { RouteService } from '../../services/RouteService.ts';
+import { IfrTileConfig } from './IfrTileConfig.ts';
 
 import AirportInput from '../shared/AirportInput.vue';
-
+import ChoiceList from '../shared/ChoiceList.vue';
 import Separator from '../shared/Separator.vue';
-
 
 const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void) | undefined;
 
@@ -29,10 +34,13 @@ const props = defineProps({
 })
 
 const airport = ref(new Airport())
+const modeOptions = IfrTileConfig.modesList;
 const displayMode = ref(DisplayModeIfr.BoxV)
+const expanded = ref(false)
 const selectedRouteCode = ref<RouteCode | undefined>(undefined);
+const isInternalUpdate = ref(false);
 
-
+const tileData = ref<TileData>(props.tileData as TileData);
 
 onMounted(() => {
     loadFromData(props.tileData as TileData)
@@ -42,12 +50,16 @@ watch(() => props.tileData, (newData) => {
     loadFromData(newData as TileData)
 }, { deep: true })
 
-watch([displayMode, selectedRouteCode], () => {
-    emitUpdate()
+watch([displayMode, expanded, selectedRouteCode, () => airport.value.code], () => {
+    // console.debug('[IFRTileSettings.watch] displayMode', displayMode.value, isInternalUpdate.value)
+    if (!isInternalUpdate.value) {
+        emitUpdate()
+    }
 })
 
 function loadFromData(data: TileData) {
     if (!data) return
+    isInternalUpdate.value = true;
     const params = data.data || {}
     
     // Mode
@@ -58,11 +70,15 @@ function loadFromData(data: TileData) {
             || params.mode == "") {
             displayMode.value = DisplayModeIfr.BoxV;
         } else {
-            displayMode.value = params.mode
+            if (displayMode.value !== params.mode) {
+                displayMode.value = params.mode
+            }
         }
     } else {
         displayMode.value = DisplayModeIfr.BoxV
     }
+    
+    expanded.value = data.span2;
 
     const codeFromRoute = RouteService.getAirportCode(props.route, params.routeCode)
     const airportCode = codeFromRoute || params.airport
@@ -73,23 +89,35 @@ function loadFromData(data: TileData) {
                 airport.value = Airport.copy(output)
                 selectedRouteCode.value = params.routeCode
             }
+            isInternalUpdate.value = false;
+        }).catch(() => {
+            isInternalUpdate.value = false;
         })
     } else {
         airport.value = new Airport()
         selectedRouteCode.value = undefined
+        isInternalUpdate.value = false;
     }
 }
 
 function emitUpdate() {
-    // Reconstruct the tile data params
-    const newConfig = new IfrTileConfig(displayMode.value, airport.value.code, selectedRouteCode.value)
+    // console.debug('[IFRTileSettings.emitUpdate] isInternalUpdate', isInternalUpdate.value)
+    if (isInternalUpdate.value) return;
     
-    // Ensure we treat the prop as TileData
-    const newTileData = TileData.copy(props.tileData as TileData)
-    newTileData.data = newConfig
+    // Reconstruct the tile data params using a plain object
+    const newConfig = {
+        mode: displayMode.value,
+        airport: airport.value.code,
+        routeCode: selectedRouteCode.value
+    }
     
+    // Mutate the local tileData object (which is the object passed from TilePage)
+    tileData.value.data = newConfig
+    tileData.value.span2 = expanded.value
+    
+    // console.debug('[IFRTileSettings.emitUpdate] tileData.value', tileData.value, tileSettingsUpdate)
     if (tileSettingsUpdate) {
-        tileSettingsUpdate(newTileData);
+        tileSettingsUpdate(tileData.value);
     }
 }
 
@@ -114,5 +142,14 @@ label {
     font-size: 0.9em;
 }
 
+.settings-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.display-section :deep(.choicelist) {
+    justify-content: center;
+}
 
 </style>

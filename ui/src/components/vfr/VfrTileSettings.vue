@@ -32,21 +32,29 @@
         <div class="field calendar-field">
             <Calendar v-model="flightDate" showIcon class="w-full" />
         </div>
+
+        <!-- Display Configuration -->
+        <div class="settings-section display-section">
+            <Separator name="Display" :leftAligned="true" />
+            <ChoiceList v-model="currentMode" :choices="modeOptions" :small="true" />
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch, inject } from 'vue'
+import { ref, watch, computed, onMounted, inject } from 'vue'
 import { Airport } from '../../models/Airport.ts';
 import { TileData } from '../../models/TileData.ts';
 import { Route, RouteCode } from '@gak/shared';
 import { getAirport } from '../../services/AirportDataService';
 import { RouteService } from '../../services/RouteService.ts';
 import { VfrTileConfig } from './VfrTileConfig.ts';
+import { DisplayModeVfr, DisplayModeChoice } from '../../models/DisplayMode.ts';
 
 import AirportInput from '../shared/AirportInput.vue';
 import Separator from '../shared/Separator.vue';
 import SeparatorChoice from '../shared/SeparatorChoice.vue';
+import ChoiceList from '../shared/ChoiceList.vue';
 import Calendar from 'primevue/calendar';
 
 const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void) | undefined;
@@ -63,6 +71,18 @@ const flightDate = ref(new Date())
 const selectedFromRouteCode = ref<RouteCode | undefined>(undefined);
 const selectedToRouteCode = ref<RouteCode | undefined>(undefined);
 
+const currentMode = ref(DisplayModeVfr.CloudClearance)
+const expanded = ref(false)
+const tileData = ref<TileData>(props.tileData as TileData)
+const modeOptions = ref([
+    new DisplayModeChoice( 'Departure', DisplayModeVfr.Departure),
+    new DisplayModeChoice( 'Altitudes', DisplayModeVfr.Altitudes),
+    new DisplayModeChoice( 'Cloud Clear...', DisplayModeVfr.CloudClearance),
+    new DisplayModeChoice( 'Sunlight', DisplayModeVfr.Sunlight),
+    new DisplayModeChoice( 'Lost Comms', DisplayModeVfr.LostComms)
+]);
+
+
 let isInternalUpdate = false;
 
 onMounted(() => {
@@ -73,7 +93,7 @@ watch(() => props.tileData, (newData) => {
     loadFromData(newData as TileData)
 }, { deep: true })
 
-watch([isDayFlight, flightDate, selectedFromRouteCode, selectedToRouteCode], () => {
+watch([isDayFlight, flightDate, selectedFromRouteCode, selectedToRouteCode, currentMode, expanded], () => {
     if (!isInternalUpdate) {
         emitUpdate()
     }
@@ -82,7 +102,10 @@ watch([isDayFlight, flightDate, selectedFromRouteCode, selectedToRouteCode], () 
 function loadFromData(data: TileData) {
     if (!data) return
     isInternalUpdate = true;
-    const params = (data.data || {}) as VfrTileConfig;
+    const params = (data.data || {}) as any;
+    
+    currentMode.value = params.mode || DisplayModeVfr.CloudClearance;
+    expanded.value = data.span2;
     
     // Sunlight params mapping
     const sunlight = params.sunlight || {};
@@ -132,14 +155,16 @@ function emitUpdate() {
         to: airportTo.value.code,
         fromRouteCode: selectedFromRouteCode.value,
         toRouteCode: selectedToRouteCode.value,
-        sunlight: sunlight
+        sunlight: sunlight,
+        mode: currentMode.value
     };
     
-    const newTileData = TileData.copy(props.tileData as TileData)
-    newTileData.data = newConfig
+    // Mutate the local tileData object (which is the object passed from TilePage)
+    tileData.value.data = newConfig
+    tileData.value.span2 = expanded.value
     
     if (tileSettingsUpdate) {
-        tileSettingsUpdate(newTileData);
+        tileSettingsUpdate(tileData.value);
     }
 }
 
@@ -151,6 +176,16 @@ function emitUpdate() {
     flex-direction: column;
     gap: 15px;
     padding: 10px;
+}
+
+.settings-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.display-section :deep(.choicelist) {
+    justify-content: center;
 }
 
 .calendar-field {

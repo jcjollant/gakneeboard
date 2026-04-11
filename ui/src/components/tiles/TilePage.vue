@@ -148,10 +148,26 @@ function onUpdate(index:number, newTileData:TileData) {
   emits('update', tiles.value)
 }
 
-function onSettingsOpen(index: number, tileData: TileData) {
-  editingTileIndex.value = index;
-  originalTileData.value = TileData.copy(tileData); // Keep original for revert on cancel
-  editingTileData.value = TileData.copy(tileData); // Working copy
+function onSettingsApply(newConfig: any) {
+  // console.debug('[TilePage.onSettingsApply]', editingTileIndex.value, newConfig)
+  if(editingTileIndex.value >= 0 && newConfig) {
+      let finalTileData: TileData;
+      
+      // We might receive the actual TileData if onSettingsUpdate already converted it
+      // But if we receive the raw params, we convert.
+      if (newConfig instanceof ChecklistSettingsParams && editingTileData.value) {
+          finalTileData = paramsToTileData(editingTileData.value, newConfig);
+      } else {
+          // It's likely already TileData or a generic object compatible with it
+          finalTileData = newConfig;
+      }
+      
+      // Prevent redundant update since all tiles are now doing live preview
+      // onUpdate(editingTileIndex.value, finalTileData);
+  }
+  
+  originalTileData.value = null; // Clear so close logic knows it was an apply
+  onSettingsClose();
 }
 
 function onSettingsClose() {
@@ -164,6 +180,22 @@ function onSettingsClose() {
   editingTileIndex.value = -1;
   editingTileData.value = null;
   originalTileData.value = null;
+}
+
+function onSettingsOpen(index: number, tileData: TileData) {
+  editingTileIndex.value = index;
+  originalTileData.value = TileData.copy(tileData); // Keep original for revert on cancel
+  editingTileData.value = TileData.copy(tileData); // Working copy
+}
+
+function onSettingsUpdate(newConfig: any) {
+  console.debug('[TilePage.onSettingsUpdate]', editingTileData.value, newConfig)
+  // this comes from the child component inside the overlay
+  if (editingTileData.value && newConfig instanceof ChecklistSettingsParams) {
+      editingTileData.value = paramsToTileData(editingTileData.value, newConfig);
+  } else {
+      editingTileData.value = newConfig;
+  }
 }
 
 // Helper to convert ChecklistSettingsParams back to TileData
@@ -180,15 +212,6 @@ function paramsToTileData(currentTileData: TileData, newParams: ChecklistSetting
     const finalTileData = TileData.copy(currentTileData);
     finalTileData.data = config;
     return finalTileData;
-}
-
-function onSettingsUpdate(newConfig: any) {
-  // this comes from the child component inside the overlay
-  if (editingTileData.value && newConfig instanceof ChecklistSettingsParams) {
-      editingTileData.value = paramsToTileData(editingTileData.value, newConfig);
-  } else {
-      editingTileData.value = newConfig;
-  }
 }
 
 // Help URL Centralized Logic
@@ -240,28 +263,6 @@ const settingsProps = computed((): any => {
         route: props.route
     };
 });
-
-function onSettingsApply(newConfig: any) {
-  // console.debug('[TilePage.onSettingsApply]', editingTileIndex.value, newConfig)
-  if(editingTileIndex.value >= 0 && newConfig) {
-      let finalTileData: TileData;
-      
-      // We might receive the actual TileData if onSettingsUpdate already converted it
-      // But if we receive the raw params, we convert.
-      if (newConfig instanceof ChecklistSettingsParams && editingTileData.value) {
-          finalTileData = paramsToTileData(editingTileData.value, newConfig);
-      } else {
-          // It's likely already TileData or a generic object compatible with it
-          finalTileData = newConfig;
-      }
-      
-      // Prevent redundant update since all tiles are now doing live preview
-      // onUpdate(editingTileIndex.value, finalTileData);
-  }
-  
-  originalTileData.value = null; // Clear so close logic knows it was an apply
-  onSettingsClose();
-}
 
 function resolveMergedTiles() {
   // console.debug('[TilePage.resolveMergedTiles]', tiles.value)
