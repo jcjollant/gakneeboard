@@ -17,8 +17,10 @@ const notesTilesData = [
   { name: 'notes', data: { mode: "blank" } },
   { name: 'notes', data: { mode: 'blank', word: 'CRAFT' } },
   { name: 'notes', data: { mode: 'blank', word: 'RAFT' } },
-  { name: 'notes', data: { mode: 'compass', comp: 'heading' } },
+  { name: 'notes', data: { mode: 'compass' } },
+  { name: 'notes', data: { mode: 'hold' } },
   { name: 'notes', data: { mode: 'grid' } },
+  { name: 'notes', data: { mode: 'compass', comp: false } },
 ]
 
 function loadNotesTestPage() {
@@ -36,6 +38,9 @@ describe('Notes Tile', () => {
     checkTestPageTileTitle(2, notesTitle)
     checkTestPageTileTitle(3, notesTitle)
     checkTestPageTileTitle(4, notesTitle)
+    checkTestPageTileTitle(5, notesTitle)
+    checkTestPageTileTitle(6, notesTitle)
+    checkTestPageTileTitle(7, notesTitle)
 
     // Tile 0 has stealth class
     cy.get('.tile0 > .tile > .headerTitle').should('have.class', 'stealth')
@@ -58,8 +63,14 @@ describe('Notes Tile', () => {
     // Tile 4 compass
     cy.get('.tile4 .modeCompass')
 
-    // Tile 5 grid
-    cy.get('.tile5 .modeGrid')
+    // Tile 5 hold
+    cy.get('.tile5 .modeCompass') // Both use .modeCompass class
+
+    // Tile 6 grid
+    cy.get('.tile6 .modeGrid')
+
+    // Tile 7 migration (compass + comp=false => hold)
+    cy.get('.tile7 .modeCompass')
   })
 
 
