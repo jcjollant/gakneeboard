@@ -9,11 +9,13 @@ import { Template } from '../backend/models/Template';
 import { User } from '../backend/models/User';
 import { AccountType, PLAN_ID_SIM, TemplateFormat } from '@gak/shared';
 import { GApiError } from '../backend/GApiError';
+import { TicketService } from '../backend/services/TicketService';
 
 // Mock dependencies
 jest.mock('../backend/dao/UserDao');
 jest.mock('../backend/dao/UsageDao');
 jest.mock('../backend/dao/TemplateHistoryDao');
+jest.mock('../backend/services/TicketService');
 // We don't fully mock TemplateDao because it has static methods that might be complex to mock if the class is auto-mocked
 // But let's try auto-mocking first.
 jest.mock('../backend/TemplateDao');

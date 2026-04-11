@@ -473,7 +473,13 @@ app.get('/sunlight/:from/:to/:dateFrom/:dateTo?', async (req: Request, res: Resp
 app.post('/usage', async (req: Request, res: Response) => {
     try {
         const userId = await UserTools.userIdFromRequest(req)
-        const payload: UsagePayload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+        let payload: UsagePayload;
+        try {
+            payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+        } catch (e) {
+            throw new GApiError(400, 'Invalid JSON body');
+        }
+        if (!payload) throw new GApiError(400, 'Missing body');
         const success = await UsageDao.create(payload.type, userId, payload.data)
         res.sendStatus(success ? 200 : 500)
     } catch (e) {

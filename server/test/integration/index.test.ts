@@ -1,5 +1,22 @@
+// Mock the dependencies first to ensure hoisting works correctly across all imports
+jest.mock('../../backend/GApi');
+jest.mock('../../backend/services/AirportService');
+jest.mock('../../backend/maintenance/Maintenance');
+jest.mock('../../backend/services/TemplateService');
+jest.mock('../../backend/services/PublicationService');
+jest.mock('../../backend/UserTools');
+jest.mock('../../backend/services/TicketService');
+jest.mock('../../backend/services/Authorization');
+jest.mock('../../backend/dao/UsageDao');
+jest.mock('../../backend/maintenance/HealthChecks');
+jest.mock('@vercel/postgres', () => ({
+    sql: jest.fn()
+}));
+jest.mock('../../backend/models/TemplateKneeboardView');
+
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import request from 'supertest';
+import app from '../../api/index';
 import { GApi } from '../../backend/GApi';
 import { TemplateService } from '../../backend/services/TemplateService';
 import { PublicationService } from '../../backend/services/PublicationService';
@@ -12,30 +29,6 @@ import { version } from '../../package.json';
 import { currentAirportModelVersion, jcHash } from '../constants';
 import { HealthCheck } from '../../backend/maintenance/HealthChecks';
 import { UsageType, UsagePayload } from '@gak/shared';
-
-
-// Mock the dependencies
-jest.mock('../../backend/GApi');
-jest.mock('../../backend/services/AirportService');
-jest.mock('../../backend/maintenance/Maintenance');
-jest.mock('../../backend/services/TemplateService');
-jest.mock('../../backend/services/PublicationService');
-jest.mock('../../backend/UserTools', () => ({
-    UserTools: {
-        userIdFromRequest: jest.fn(),
-        isAdmin: jest.fn()
-    }
-}));
-jest.mock('../../backend/services/TicketService');
-jest.mock('../../backend/services/Authorization');
-jest.mock('../../backend/dao/UsageDao');
-jest.mock('../../backend/maintenance/HealthChecks');
-jest.mock('@vercel/postgres', () => ({
-    sql: jest.fn()
-}));
-jest.mock('../../backend/models/TemplateKneeboardView');
-
-import app from '../../api/index';
 
 describe('index API', () => {
     beforeEach(() => {
