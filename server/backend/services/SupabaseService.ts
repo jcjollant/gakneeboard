@@ -14,7 +14,7 @@ if (supabaseUrl && supabaseServiceKey) {
         }
     })
     // console.log('[SupabaseService] Supabase admin client initialized')
-} else {
+} else if (process.env.NODE_ENV !== 'test') {
     console.warn('[SupabaseService] Supabase credentials not configured. Email/password authentication will not be available.')
 }
 

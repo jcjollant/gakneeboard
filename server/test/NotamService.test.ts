@@ -96,6 +96,8 @@ describe('NotamService', () => {
         });
 
         it('should throw error if auth fails', async () => {
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
             mockFetch.mockResolvedValueOnce({
                 ok: false,
                 status: 401,
@@ -104,6 +106,8 @@ describe('NotamService', () => {
 
             await expect(NotamService.getNotams({ nmsResponseFormat: NmsResponseFormat.GEOJSON }))
                 .rejects.toThrow('Failed to get token: 401 Unauthorized');
+
+            consoleSpy.mockRestore();
         });
     });
 
