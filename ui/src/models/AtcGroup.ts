@@ -34,7 +34,7 @@ export class AtcGroup {
                 departure = 'Departure'
             }
             const type = (useString == 'CD/P') ? FrequencyType.clearance : FrequencyType.tracon
-            useString = useString.replaceAll('APCH/P', approach).replaceAll('DEP/P', departure).replaceAll('DE/P', departure).replaceAll('CD/P', 'Clearance')
+            useString = useString.replace(/APCH\/P/g, approach).replace(/DEP\/P/g, departure).replace(/DE\/P/g, departure).replace(/CD\/P/g, 'Clearance')
             const frequency = new Frequency(Formatter.frequency(atc.mhz),useString,type)
 
             if( group) {

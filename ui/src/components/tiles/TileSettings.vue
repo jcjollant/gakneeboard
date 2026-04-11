@@ -83,6 +83,8 @@ const title = computed(() => {
         name = 'IFR';
     } else if(props.tile.name === TileType.vfr) {
         name = 'VFR';
+    } else if(props.tile.name === TileType.atis) {
+        name = 'Weather';
     } else {
         // Capitalize first letter
         name = props.tile.name.charAt(0).toUpperCase() + props.tile.name.slice(1);
