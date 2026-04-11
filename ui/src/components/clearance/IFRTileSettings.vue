@@ -51,7 +51,6 @@ watch(() => props.tileData, (newData) => {
 }, { deep: true })
 
 watch([displayMode, expanded, selectedRouteCode, () => airport.value.code], () => {
-    // console.debug('[IFRTileSettings.watch] displayMode', displayMode.value, isInternalUpdate.value)
     if (!isInternalUpdate.value) {
         emitUpdate()
     }
@@ -101,7 +100,6 @@ function loadFromData(data: TileData) {
 }
 
 function emitUpdate() {
-    // console.debug('[IFRTileSettings.emitUpdate] isInternalUpdate', isInternalUpdate.value)
     if (isInternalUpdate.value) return;
     
     // Reconstruct the tile data params using a plain object
@@ -115,7 +113,6 @@ function emitUpdate() {
     tileData.value.data = newConfig
     tileData.value.span2 = expanded.value
     
-    // console.debug('[IFRTileSettings.emitUpdate] tileData.value', tileData.value, tileSettingsUpdate)
     if (tileSettingsUpdate) {
         tileSettingsUpdate(tileData.value);
     }

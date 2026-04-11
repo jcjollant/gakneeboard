@@ -189,8 +189,7 @@ function onSettingsOpen(index: number, tileData: TileData) {
 }
 
 function onSettingsUpdate(newConfig: any) {
-  console.debug('[TilePage.onSettingsUpdate]', editingTileData.value, newConfig)
-  // this comes from the child component inside the overlay
+    // this comes from the child component inside the overlay
   if (editingTileData.value && newConfig instanceof ChecklistSettingsParams) {
       editingTileData.value = paramsToTileData(editingTileData.value, newConfig);
   } else {

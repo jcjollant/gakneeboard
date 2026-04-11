@@ -82,12 +82,10 @@ const modesList = ref(RadioTileConfig.modesList)
 
 
 onMounted(() => {
-    // console.log('onMounted ' + JSON.stringify(props.params))
     loadProps(props);
 })
 
 watch( props, async() => {
-    // console.log('Radio watch ' + JSON.stringify(props.params))
     loadProps(props);
 })
 
@@ -128,7 +126,6 @@ function getTitle() {
 }
 
 function loadData(data:any) {
-    // console.log('[RadioTile.loadData]', data)
     if( data && (Array.isArray(data) || 'list' in data)) {
         let list:Frequency[] = []
         // old format, all data is the actual list
@@ -145,7 +142,6 @@ function loadData(data:any) {
                 list.push( Frequency.copy(freq))
             }
         })
-        // console.log('[RadioTile.loadData] list', list)
         configFrequencies.value = list
 
         // restore color scheme
@@ -208,7 +204,6 @@ function addFrequency(freq:Frequency) {
 }
 
 function saveConfig() {
-    // console.debug('[RadioTile.saveConfig]')
     const data = {'mode':displayMode.value,'list':configFrequencies.value, 'colorScheme':colorScheme.value}
     emits('update', new TileData( TileType.radios, data, expanded.value));
 }

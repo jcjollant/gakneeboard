@@ -60,7 +60,6 @@ watch(props, () => {
 })
 
 function applyAirport(a: Airport) {
-    // console.debug('[RadioStrip.onPick] airport', airpt)
     freqWeather.value = Formatter.frequency( AirportService.getFreqWeather(a))
     const fg = AirportService.getFreqGround(a)
     freqGround.value = fg ? Formatter.frequency(fg.value) : Formatter.noFrequency
@@ -70,7 +69,6 @@ function applyAirport(a: Airport) {
 }
 
 function loadAirport(code: string) {
-    // console.debug('[RadioStrip.loadAirport] code', code)
     getAirport(code).then(a => { 
         const airpt = Airport.copy(a)
         applyAirport(airpt)

@@ -67,9 +67,6 @@ onBeforeMount( () => {
       // Build version text
       versionFront.value = version
       LocalStoreService.cleanUp()
-      // console.log('[App.onBeforeMount]', currentUser)
-      // console.log('[App.onBeforeMount] pages ', currentUser.pageCount, currentUser.maxPageCount)
-      // console.log('[App.onBeforeMount] tempaltes ', currentUser.templates.length, currentUser.maxTemplateCount)
       if(currentUser.loggedIn && !currentUser.eulaCurrent) {
         showEula.value = true
       }
@@ -82,14 +79,11 @@ onBeforeMount( () => {
 
 onMounted( () => {
 
-    // console.debug( '[App.onMounted]', JSON.stringify(window.location.search), router.currentRoute.value)
-
     // test current route name
     if(window.location.pathname == '/') {
 
       // Check for password recovery hash (Supabase Auth)
       if (window.location.hash && window.location.hash.includes('type=recovery')) {
-          console.log('[App] Recovery hash detected, redirecting to reset password page')
           router.push({ name: RouterNames.ResetPassword, hash: window.location.hash })
           return
       }
@@ -103,13 +97,11 @@ onMounted( () => {
       const testCode = urlParams.get('test')
 
       if( templateCode) {
-          // console.log('[App.onMounted] publication code', code)
           toaster.info('Loading Kneeboard', 'Loading shared kneeboard...')
 
           // Get that publication data
           new Promise( (resolve, reject) => {
               TemplateService.getPublication(templateCode).then( (template: any) => {
-                  // console.log('[App.onMounted] publication found ', template)
                   // close previous toast
                   toast.removeAllGroups()
 
@@ -123,7 +115,6 @@ onMounted( () => {
               }).catch((e: any) => {
                   // Get publication failed
                   toaster.error('Hrmmm','Error fetching kneeboard ' + templateCode)
-                  console.log('[App.onMounted] publication fetch failed', e)
               }) 
           })
       } else if( demoCode){ // this is a demo

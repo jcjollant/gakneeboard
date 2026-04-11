@@ -99,7 +99,6 @@ const thisTile=ref<HTMLElement | null>(null)
 
 
 function loadProps(props:any) {
-    // console.debug('[AtisTile.loadProps]', props)
     const newMode = props.params.mode
     // load mode from params but defaults to full
     if( newMode && newMode != DisplayModeAtis.Unknown) {
@@ -110,25 +109,20 @@ function loadProps(props:any) {
     lines.value = props.params.lines ?? 5
     showWatermarks.value = props.params.showWatermarks !== false
     expanded.value = props.span2
-    // console.log('[Atis.loadProps]', expanded.value)
 }
 
 const compactCount = computed(() => expanded.value ? lines.value * 2 : lines.value)
 
 onMounted(() => {   
-    // console.log('ATIS mounted with ' + JSON.stringify(props.params))
     loadProps(props)
-    // console.log('onMounted mode ' + mode.value)
 })
 
 watch( props, async() => {
-    // console.log("Airport props changed " + JSON.stringify(props));
     loadProps(props)
 })
 // End of Props management
 
 watch(displayMode, (newValue, oldValue) => {
-    // console.debug('[AtisTile.watch] displayMode changed to ', newValue)
     displaySelection.value = false;
 
     if(newValue == oldValue || oldValue == DisplayModeAtis.Unknown) return;
@@ -167,7 +161,6 @@ function onExpand(newValue:boolean) {
 }
 
 function saveConfig() {
-    // console.debug('[AtisTile.saveConfig]')
     const data = {mode:displayMode.value, lines:lines.value, showWatermarks:showWatermarks.value}
     emits('update', new TileData(TileType.atis, data, expanded.value))    
 

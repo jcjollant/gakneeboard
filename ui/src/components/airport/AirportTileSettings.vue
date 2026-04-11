@@ -167,7 +167,6 @@ watch([currentMode, expanded, airportCode, selectedRwyNames, verticalOrientation
 });
 
 function loadFromTileData(tile: TileData) {
-    // console.debug('[AirportTileSettings.loadFromTileData]', tile)
     if (!tile) return;
     const config = tile.data as AirportTileConfig;
     if (!config) return;
@@ -337,7 +336,6 @@ function emitUpdate() {
     tileData.value.span2 = expanded.value;
 
     if (tileSettingsUpdate) {
-        // console.debug('[AirportTileSettings.emitUpdate] Emitting update', tileData.value)
         tileSettingsUpdate(tileData.value);
     }
 }

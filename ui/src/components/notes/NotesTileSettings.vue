@@ -65,8 +65,6 @@ watch(() => props.tileData, (newTileData) => {
 
 // Watch for changes via UI
 watch([currentMode, customWord, compassHeading, expanded], () => {
-    // console.debug('[NotesTileSettings.watch] currentMode', currentMode.value, isInternalUpdate.value)
-    
     if (!isInternalUpdate.value) {
         emitUpdate();
     }

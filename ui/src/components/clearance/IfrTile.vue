@@ -83,7 +83,6 @@ watch( props, async() => {
 })
 
 watch(displayMode, (newValue, oldValue) => {
-    console.debug('[IfrTile.watch] displayMode', newValue, oldValue)
     if (newValue == oldValue || oldValue == DisplayModeIfr.Unknown) return;
 
     // Auto-load home airport if switching to Departure and none currently selected
@@ -108,7 +107,6 @@ function saveConfig() {
 }
 
 function loadProps(props: any) {
-    console.debug('[IfrTile.loadProps]', JSON.stringify(props))
     // displayMode.value = defaultMode
     if (props.params) {
         if (props.params.mode) {

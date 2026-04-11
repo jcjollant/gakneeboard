@@ -69,7 +69,6 @@ class RecentAirport {
 }
 
 async function loadProps(props:any) {
-    // console.log('[AirportInput.loadProps]', props)
     if(model.value) {
         const airport = model.value as Airport;
         if(airport.isValid()) {
@@ -96,7 +95,6 @@ async function loadProps(props:any) {
 }
 
 onMounted(() => {
-    // console.log('Airport mounted with ' + JSON.stringify(props.params))
     // get this airport data from parameters
     loadProps(props)
     sessionAirports.addListener(refreshRecentAirportList)
@@ -109,7 +107,6 @@ onUnmounted(() => {
 })
 
 watch(props, async () => {
-    // console.log("Airport props changed " + JSON.stringify(props));
     loadProps(props)
     refreshRecentAirportList()
 })
@@ -120,16 +117,12 @@ watch(model, () => {
 })
 
 function fetchAirport() {
-    // console.log('[AirportInput.fetchAirport]', code.value, code.value.length)
     if(!code.value || code.value.length < 3) return
 
     getAirport( code.value)
         .then( a => {
-            // console.log('[AirportInput.fetchAirport] received', a)
             const airport = Airport.copy(a)
-            // console.log('[AirportInput.fetchAirport] copied', airport)
             if( airport.isValid()) {
-                // console.debug('[AirportInput.fetchAirport] valid', airport)
                 name.value = airport.name
                 code.value = airport.code
                 valid.value = true
@@ -149,8 +142,6 @@ function fetchAirport() {
 // gets invoked as airport code is typed into the input field
 // We are after runways
 function onCodeUpdate() {
-    // console.log(airportCode.value)
-    // console.log('[AirportEdit.onCodeUpdate]',Date.now())
     if (code.value) {
         code.value = code.value.toUpperCase()
     }
@@ -186,7 +177,6 @@ function onRecentAirport(ra: RecentAirport) {
     const airportCode = ra.code
     try {
         const airport:Airport = LocalStoreService.airportGet(airportCode)
-        // console.log('[AirportInput.onRecentAirport]', airportCode, airport)
         code.value = airport.code
         name.value = airport.name
         valid.value = true

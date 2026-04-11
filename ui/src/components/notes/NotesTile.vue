@@ -58,8 +58,6 @@ const expanded = ref(false)
 const gridCells = computed(() => expanded.value ? 24 : 12)
 
 function loadProps(props:any) {
-    // console.debug('[NotesTile.loadProps]', props)
-
     // restore display mode
     let newMode = props?.params?.mode ?? DisplayModeNotes.Blank
     // For compatibility Craft/Word/blank => Blank
@@ -79,18 +77,14 @@ function loadProps(props:any) {
 }
 
 onMounted(() => {   
-    // console.log('ATIS mounted with ' + JSON.stringify(props.params))
     loadProps(props)
-    // console.log('onMounted mode ' + mode.value)
 })
 
 watch( props, async() => {
-    // console.log("Airport props changed " + JSON.stringify(props));
     loadProps(props)
 })
 
 watch(displayMode, (newValue, oldValue) => {
-    // console.debug('[NotesTiles.changeMode]', oldValue, '=>', newValue, displayMode.value)
     if(newValue == oldValue) return;
 
     // Crap in => default out

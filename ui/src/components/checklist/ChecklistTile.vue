@@ -35,7 +35,6 @@ const props = defineProps({
 })
 
 function loadProps(newProps:any) {
-    // console.debug('[ChecklistTile.loadProps]', newProps)
     const checklistTile:ChecklistTile = ChecklistService.parseTile(newProps.params)
     title.value = checklistTile.name
     view.value = new ChecklistView( checklistTile.items, ChecklistFont.medium, checklistTile.theme)

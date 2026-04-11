@@ -64,18 +64,13 @@ function onUpdateVisible(val: boolean) {
 
 // Provide a method for children to communicate updates
 function handleChildUpdate(data: TileData) {
-    // console.debug('[TileSettings.handleChildUpdate] data', data)
-    // if( data.data.mode !== undefined) console.debug('[TileSettings.handleChildUpdate] mode', data.data.mode)
-        
     // Refresh the temporary editing tile data which may or may not be applied
     editingTileData.value = data;
 }
 provide('tileSettingsUpdate', handleChildUpdate);
 
 
-// onMounted(() => {
-//     console.debug('[TileSettings] props', props);
-// });
+
 
 const title = computed(() => {
     if (!props.tile) return 'Settings';
