@@ -99,9 +99,13 @@ onMounted(() => {
 .freq > div {
     white-space: nowrap;
     overflow: hidden;
+    margin-left: auto;
 }
 .freq.phone {
     justify-content: center;
+}
+.freq.phone > div {
+    margin-left: unset;
 }
 .freq.small {
     font-size: 16px;
