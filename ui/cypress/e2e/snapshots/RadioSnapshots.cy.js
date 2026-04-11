@@ -33,7 +33,7 @@ describe('Radio Tile — Layout Snapshots', () => {
     })
     cy.get('.tile .freqList').should('be.visible')
     cy.wait(300)
-    cy.matchImageSnapshot('radio-4freq-large')
+    cy.get('.tile').matchImageSnapshot('radio-4freq-large')
   })
 
   it('Frequency list — 8 frequencies (2-column medium)', () => {
@@ -59,13 +59,13 @@ describe('Radio Tile — Layout Snapshots', () => {
     })
     cy.get('.tile .freqList').should('be.visible')
     cy.wait(300)
-    cy.matchImageSnapshot('radio-8freq-medium')
+    cy.get('.tile').matchImageSnapshot('radio-8freq-medium')
   })
 
-  it('Frequency list — 8 frequencies span-2', () => {
+  it('Frequency list — 8 frequencies expanded', () => {
     const data = [{
       name: 'radios',
-      span2: true,
+      expanded: true,
       data: {
         mode: '',
         list: [
@@ -85,7 +85,7 @@ describe('Radio Tile — Layout Snapshots', () => {
     loadTestPage(PageTypeLabel.tiles, data)
     cy.get('.tile0 .freqList').should('be.visible')
     cy.wait(300)
-    cy.matchImageSnapshot('radio-8freq-span2')
+    cy.get('.tile0').matchImageSnapshot('radio-8freq-span2')
   })
 
   it('Frequency list — 15 frequencies (3-column small)', () => {
@@ -93,7 +93,7 @@ describe('Radio Tile — Layout Snapshots', () => {
       loadTestTileWithData(data)
       cy.get('.tile .freqList').should('be.visible')
       cy.wait(300)
-      cy.matchImageSnapshot('radio-15freq-small')
+      cy.get('.tile').matchImageSnapshot('radio-15freq-small')
     })
   })
 
@@ -107,7 +107,7 @@ describe('Radio Tile — Layout Snapshots', () => {
       loadTestPage(PageTypeLabel.tiles, data)
       cy.get('.tile0 .freqList').should('be.visible')
       cy.wait(300)
-      cy.matchImageSnapshot('radio-15freq-span2')
+      cy.get('.tile0').matchImageSnapshot('radio-15freq-span2')
     })
   })
 
@@ -116,7 +116,7 @@ describe('Radio Tile — Layout Snapshots', () => {
       loadTestTileWithData(data)
       cy.get('.tile .tileContent').should('be.visible')
       cy.wait(300)
-      cy.matchImageSnapshot('radio-vfr-lostcomms')
+      cy.get('.tile').matchImageSnapshot('radio-vfr-lostcomms')
     })
   })
 
@@ -125,7 +125,7 @@ describe('Radio Tile — Layout Snapshots', () => {
       loadTestTileWithData(data)
       cy.get('.tile .tileContent').should('be.visible')
       cy.wait(300)
-      cy.matchImageSnapshot('radio-ifr-lostcomms')
+      cy.get('.tile').matchImageSnapshot('radio-ifr-lostcomms')
     })
   })
 
@@ -134,7 +134,7 @@ describe('Radio Tile — Layout Snapshots', () => {
       loadTestTileWithData(data)
       cy.get('.tile .tileContent').should('be.visible')
       cy.wait(300)
-      cy.matchImageSnapshot('radio-service-volumes')
+      cy.get('.tile').matchImageSnapshot('radio-service-volumes')
     })
   })
 })
