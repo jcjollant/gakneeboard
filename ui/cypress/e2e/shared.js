@@ -31,6 +31,30 @@ export const pageNameCover = 'Cover'
 export const pageNameInstrumentApproach = 'Instrument Approach'
 export const pageNameNotes = 'Notes'
 
+/**
+ * Maps 'expanded' property from tests back to 'span2' for app compatibility
+ */
+function mapExpanded(data) {
+    if (!data) return data;
+    
+    // Handle array (page data)
+    if (Array.isArray(data)) {
+        return data.map(item => mapExpanded(item));
+    }
+
+    // Handle single tile object
+    if (typeof data === 'object') {
+        const newData = { ...data };
+        if ('expanded' in newData) {
+            newData.span2 = newData.expanded;
+            delete newData.expanded;
+        }
+        return newData;
+    }
+
+    return data;
+}
+
 export class PageTypeLabel {
     static navlog = 'NavLog'
     static tiles = 'Tiles'
@@ -105,7 +129,7 @@ export function loadTestTile(name) {
 }
 
 export function loadTestTileWithData(data) {
-    const stringData = JSON.stringify(data)
+    const stringData = JSON.stringify(mapExpanded(data))
     // console.debug(radioTileDataString)
     cy.setLocalStorage('test-tile', stringData)
     cy.visit('/?test=tile')
@@ -114,15 +138,18 @@ export function loadTestTileWithData(data) {
 export function loadTestPage(pageType, data = {}) {
     const type = pageType.toLowerCase()
 
+    // Map expanded to span2
+    const mappedData = mapExpanded(data)
+
     // fill the rest of tile data (5x) with selection tiles
-    for (let i = data.length; i < 6; i++) {
-        data.push({ name: 'selection', data: {} })
+    for (let i = mappedData.length; i < 6; i++) {
+        mappedData.push({ name: 'selection', data: {} })
     }
 
     const pageData = {
         type: type,
         name: 'Test Page',
-        data: data
+        data: mappedData
     }
 
     cy.setLocalStorage('test-page', JSON.stringify(pageData))

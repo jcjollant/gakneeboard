@@ -2,28 +2,190 @@
   "code": "KRNT",
   "name": "Renton Muni",
   "elev": 32,
-  "sketch": "",
+  "freq": [
+    {
+      "name": "CTAF",
+      "mhz": 124.7,
+      "notes": ""
+    },
+    {
+      "name": "UNICOM",
+      "mhz": 122.95,
+      "notes": ""
+    },
+    {
+      "name": "ATIS",
+      "mhz": 126.95,
+      "notes": ""
+    },
+    {
+      "name": "GND",
+      "mhz": 121.6,
+      "notes": ""
+    },
+    {
+      "name": "TWR",
+      "mhz": 124.7,
+      "notes": ""
+    }
+  ],
   "rwys": [
     {
       "name": "16-34",
       "length": 5382,
       "width": 200,
-      "lp": "16",
-      "rp": "34",
-      "heading": 160,
-      "he": { "id": "16", "elev": 32 },
-      "le": { "id": "34", "elev": 32 },
-      "ends": [ { "name": "16", "mag": 160 }, { "name": "34", "mag": 340 } ]
+      "ends": [
+        {
+          "name": "16",
+          "mag": 157,
+          "tp": "L"
+        },
+        {
+          "name": "34",
+          "mag": 337,
+          "tp": "R"
+        }
+      ],
+      "surface": {
+        "type": "ASPH-CONC",
+        "cond": "(G) Good"
+      }
     }
   ],
-  "freq": [
-    { "name": "ATIS", "mhz": 126.950 },
-    { "name": "TWR", "mhz": 124.700 },
-    { "name": "GND", "mhz": 121.600 },
-    { "name": "CTAF", "mhz": 124.700 }
+  "navaids": [
+    {
+      "id": "SEA",
+      "freq": 116.8,
+      "type": "VORTAC",
+      "dist": 5.2,
+      "to": 47.7
+    },
+    {
+      "id": "PAE",
+      "freq": 110.6,
+      "type": "VOR/DME",
+      "dist": 25.7,
+      "to": 174.4
+    },
+    {
+      "id": "OLM",
+      "freq": 113.4,
+      "type": "VORTAC",
+      "dist": 42,
+      "to": 41.5
+    },
+    {
+      "id": "CVV",
+      "freq": 117.2,
+      "type": "VOR/DME",
+      "dist": 49.6,
+      "to": 155.4
+    }
   ],
-  "iap": [],
-  "dep": [],
-  "navaids": [],
-  "atc": []
+  "atc": [
+    {
+      "mhz": 119.2,
+      "name": "SEATTLE-TACOMA APPROACH CONTROL",
+      "use": [
+        "APCH/P DE/P(017-079 SEA RWY 34)",
+        "APCH/P DEP/P(028-160 SEA RWY 16)",
+        "BELLEVUE DP",
+        "CLASS B(028-160 SEA RWY 16)",
+        "CLASS B(017-079 SEA, RWY 34)",
+        "RENTN DP"
+      ]
+    },
+    {
+      "mhz": 120.1,
+      "name": "SEATTLE-TACOMA APPROACH CONTROL",
+      "use": [
+        "APCH/P DEP/P(223-289 SEA, RWY 16)",
+        "APCH/P DEP/P(223-301 SEA, RWY 34)",
+        "CLASS B(223-301 SEA, RWY 34)",
+        "CLASS B(223-289 SEA, RWY 16)"
+      ]
+    },
+    {
+      "mhz": 120.4,
+      "name": "SEATTLE-TACOMA APPROACH CONTROL",
+      "use": [
+        "APCH/P DEP/P(301-340 SEA, RWY 34)"
+      ]
+    },
+    {
+      "mhz": 123.9,
+      "name": "SEATTLE-TACOMA APPROACH CONTROL",
+      "use": [
+        "APCH/P IC(RWY 16)",
+        "GLASR STAR"
+      ]
+    },
+    {
+      "mhz": 125.6,
+      "name": "SEATTLE-TACOMA APPROACH CONTROL",
+      "use": [
+        "OLYMPIA STAR"
+      ]
+    },
+    {
+      "mhz": 125.9,
+      "name": "SEATTLE-TACOMA APPROACH CONTROL",
+      "use": [
+        "APCH/P DEP/P(080-125 SEA, RWY 34)",
+        "APCH/P DEP/P(290-315 SEA, RWY 16)",
+        "APCH/P IC(RWY 34)",
+        "CLASS B(290-315 SEA RWY 16)",
+        "CLASS B(080-125 SEA, RWY 34)"
+      ]
+    },
+    {
+      "mhz": 126.5,
+      "name": "SEATTLE-TACOMA APPROACH CONTROL",
+      "use": [
+        "APCH/P DEP/P(161-222 SEA, RWY 16)",
+        "APCH/P DEP/P(126-222 SEA, RWY 34)",
+        "CLASS B(126-222 SEA, RWY 34)",
+        "CLASS B(161-222 SEA, RWY 16)"
+      ]
+    },
+    {
+      "mhz": 128.5,
+      "name": "SEATTLE-TACOMA APPROACH CONTROL",
+      "use": [
+        "APCH/P DEP/P(316-027 SEA, RWY 16)",
+        "APCH/P DEP/P(302-016 SEA, RWY 34)",
+        "CLASS B(316-027 SEA RWY 16)",
+        "CLASS B(302-016 SEA, RWY 34)"
+      ]
+    }
+  ],
+  "asof": 20260319,
+  "version": 12,
+  "iap": [
+    {
+      "name": "RNAV (GPS) RWY 34",
+      "pdf": "2603/05396R34.PDF"
+    },
+    {
+      "name": "RNAV (GPS) Y RWY 16",
+      "pdf": "2603/05396RY16.PDF"
+    },
+    {
+      "name": "RNAV (GPS) Z RWY 16",
+      "pdf": "2603/05396RZ16.PDF"
+    }
+  ],
+  "dep": [
+    {
+      "name": "BELLEVUE FOUR",
+      "pdf": "2603/05396BELLEVUE.PDF"
+    },
+    {
+      "name": "RENTN THREE",
+      "pdf": "2603/05396RENTN.PDF"
+    }
+  ],
+  "diag": "2603/05396AD.PDF",
+  "sketch": "https://ghbo54azo9h84agk.public.blob.vercel-storage.com/sketch/KRNT-5K6Y4lKxOpZiwuMuq0ah9fA5UC4aWX.png",
+  "supp": "19MAR2026/nw_262_19MAR2026.pdf"
 }
