@@ -9,20 +9,25 @@
                     <InputText id="acronym-input" v-model="customWord" class="w-full" />
                     <!-- <label for="acronym-input">Acronym</label> -->
                 </span>
-                <small class="help-text">Enter the word or acronym to display on the tile.</small>
+                <small class="help-text">Used in 'Blank' display mode.</small>
             </div>
         </div>
 
-        <!-- Compass Mode Configuration -->
-        <SeparatorChoice name="Compass Layout" v-model="compassHeading" choiceA="Heading" choiceB="Hold" />
+        <!-- Display Configuration -->
+        <div class="settings-section display-section">
+            <SeparatorChoice name="Display" choiceA="Normal" choiceB="Expanded" v-model="isNormalSize" />
+            <ChoiceList v-model="currentMode" :choices="modeOptions" :small="true" />
+        </div>
+
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, inject } from 'vue';
+import { ref, watch, computed, onMounted, inject } from 'vue';
 import InputText from 'primevue/inputtext';
 import Separator from '../shared/Separator.vue';
 import SeparatorChoice from '../shared/SeparatorChoice.vue';
+import ChoiceList from '../shared/ChoiceList.vue';
 
 import { DisplayModeNotes, DisplayModeChoice } from '../../models/DisplayMode';
 import { TileData } from '../../models/TileData';
@@ -33,11 +38,18 @@ const props = defineProps({
 });
 
 // State
+// State
+const modeOptions = NotesTileConfig.modesList;
 const currentMode = ref(DisplayModeNotes.Blank);
 const customWord = ref('');
 const compassHeading = ref(true);
 const expanded = ref(false);
 const isInternalUpdate = ref(false);
+
+const isNormalSize = computed({
+    get: () => !expanded.value,
+    set: (val: boolean) => expanded.value = !val
+});
 
 const tileData = ref<TileData>(props.tileData);
 const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void) | undefined;
@@ -72,14 +84,18 @@ function loadFromTileData(tile: TileData) {
     // For compatibility Craft/Word/blank => Blank
     if(newMode === 'craft' || newMode === 'word' || newMode === 'blank') newMode = DisplayModeNotes.Blank; 
     
+    // Migration: if mode is compass and comp is false, it's now Hold
+    if(newMode == DisplayModeNotes.Compass && config?.comp === false) {
+        newMode = DisplayModeNotes.Hold;
+    }
+
     currentMode.value = newMode;
     expanded.value = tile.span2;
     
     // Restore custom word
     customWord.value = config?.word ?? '';
     
-    // Restore compass setting
-    // 'comp' might be missing in old data, default to true
+    // Restore compass setting (legacy)
     compassHeading.value = config?.comp ?? true;
     
     isInternalUpdate.value = false;
@@ -89,7 +105,7 @@ function emitUpdate() {
     const newConfig = new NotesTileConfig(
         currentMode.value,
         customWord.value,
-        compassHeading.value
+        currentMode.value === DisplayModeNotes.Hold ? false : true // comp legacy field
     );
 
     tileData.value.data = newConfig;
@@ -136,5 +152,9 @@ function emitUpdate() {
 
 .w-full {
     width: 100%;
+}
+
+.display-section :deep(.choicelist) {
+    justify-content: center;
 }
 </style>

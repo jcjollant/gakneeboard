@@ -21,7 +21,7 @@ onMounted( () => {
 })
 
 watch( () => props.heading, (newHeading) => {
-    console.log('[CompassContent.watch] heading', newHeading)
+    // console.log('[CompassContent.watch] heading', newHeading)
     loadProps(props)
 })
 

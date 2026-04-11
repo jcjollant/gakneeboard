@@ -15,7 +15,7 @@
         <div v-else-if="displayMode==DisplayModeNotes.Grid" class="modeGrid tileContent" :class="{ expanded: expanded }">
             <div v-for="i in gridCells" :key="i">&nbsp;</div>
         </div>
-        <CompassContent v-else-if="displayMode==DisplayModeNotes.Compass" :heading="compassHeading" />
+        <CompassContent v-else-if="displayMode==DisplayModeNotes.Compass || displayMode==DisplayModeNotes.Hold" :heading="displayMode == DisplayModeNotes.Compass" />
         
         <TileModeDots 
             v-if="!displaySelection"
@@ -64,10 +64,16 @@ function loadProps(props:any) {
     let newMode = props?.params?.mode ?? DisplayModeNotes.Blank
     // For compatibility Craft/Word/blank => Blank
     if(newMode == DisplayModeNotes.Craft_deprecated || newMode == (DisplayModeNotes as any).Word_deprecated || newMode == 'word' || newMode == 'blank') newMode = DisplayModeNotes.Blank
+    
+    // Migration: if mode is compass and comp is false, it's now Hold
+    if(newMode == DisplayModeNotes.Compass && props?.params?.comp === false) {
+        newMode = DisplayModeNotes.Hold
+    }
     displayMode.value = newMode
     
     // Restore custom word
     word.value = props?.params?.word ?? ''
+    // We keep compassHeading for legacy if needed, but it's now derived from displayMode for rendering
     compassHeading.value = props?.params?.comp ?? true
     expanded.value = props?.span2 ?? false
 }
@@ -108,7 +114,9 @@ function saveConfig() {
     const data: any = {}
     if(displayMode.value != DisplayModeNotes.Blank) data['mode'] = displayMode.value
     if(word.value.length) data['word'] = word.value
-    if(compassHeading.value != true) data['comp'] = compassHeading.value
+    // Logic for 'comp' legacy field: true for Compass, false for Hold, undefined otherwise (it was only used for Compass)
+    if(displayMode.value === DisplayModeNotes.Compass) data['comp'] = true
+    else if(displayMode.value === DisplayModeNotes.Hold) data['comp'] = false
 
     emits('update', new TileData( TileType.notes, data, expanded.value))
 }

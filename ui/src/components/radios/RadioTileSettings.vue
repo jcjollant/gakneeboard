@@ -1,68 +1,59 @@
 <template>
     <div class="radio-settings">
 
-        <div>
-            <!-- Frequency List -->
-            <SeparatorChoice name="Selected Frequencies" 
-                             choiceA="Cards" choiceB="Text" v-model="isCardsMode" />
-            <div class="list-editor">
-                <div v-if="isCardsMode" class="freq-cards edit-cards">
-                    <div v-for="(freq, index) in manualFrequencies" :key="'disp-' + index" 
-                         class="freq-card-wrapper" 
-                         title="Click to remove" 
-                         @click="removeFrequency(index)">
-                        <FrequencyBox :freq="freq" size="small" :colorScheme="colorScheme" />
-                        <div class="remove-indicator">
-                            <font-awesome-icon icon="minus" />
-                        </div>
-                    </div>
-                    <div v-if="manualFrequencies.length === 0" class="empty-list">No selection. Choose from the list below.</div>
-                </div>
-
-                <Textarea v-else class='list' rows="8" cols="24" v-model="textData"
-                            placeholder="Format: Value,Name,Type&#10;Ex: 123.45, KABC Twr, Tower"></Textarea>
-            </div>
-            
-
-            <!-- Frequency Lookup -->
-            <SeparatorChoice name="Frequency Lookup" choiceA="Airport" choiceB="Route" v-model="isAirportLookup" />
-            <div class="lookup-section" v-if="isAirportLookup">
-                <AirportInput label="Airport" :large="true" :page="true" :showRecent="true" :route="route" :defaultToLastKnown="true" @valid="onAirportValid" />
-            </div>
-
-            <div class="lookup-results">
-                <div class="freq-cards" v-if="filteredLookupFrequencies.length">
-                    <div v-for="freq in filteredLookupFrequencies" :key="freq.name + freq.value" 
-                         @click="addFrequency(freq)" class="freq-card-wrapper lookup-card" title="Click to add">
-                        <FrequencyBox :freq="freq" size="small" :colorScheme="colorScheme" />
-                        <div class="add-indicator">
-                            <font-awesome-icon icon="plus" />
-                        </div>
+        <!-- Frequency List -->
+        <SeparatorChoice name="Selected Frequencies" 
+                         choiceA="Cards" choiceB="Text" v-model="isCardsMode" />
+        <div class="list-editor">
+            <div v-if="isCardsMode" class="freq-cards edit-cards">
+                <div v-for="(freq, index) in manualFrequencies" :key="'disp-' + index" 
+                     class="freq-card-wrapper" 
+                     title="Click to remove" 
+                     @click="removeFrequency(index)">
+                    <FrequencyBox :freq="freq" size="small" :colorScheme="colorScheme" />
+                    <div class="remove-indicator">
+                        <font-awesome-icon icon="minus" />
                     </div>
                 </div>
-                <div v-else class="lookup-placeholder">
-                    {{ isAirportLookup ? 'Select an airport to view frequencies.' : 'No route frequencies found.' }}
-                </div>
-            </div>
-            <div v-if="isAirportLookup" class="separator">
-                <div class="label">Show</div>
-                <AnyOf v-model="localFreqChoices" />
+                <div v-if="manualFrequencies.length === 0" class="empty-list">No selection. Choose from the list below.</div>
             </div>
 
-            <Separator name="Color Scheme" :leftAligned="true" style="margin-top: 15px;" />
-             <div class="colorSchemeSelector">
-                <div class="schemeOption" :class="{selected: colorScheme === 'light'}" @click="colorScheme = 'light'">
-                    <FrequencyBox :freq="freqLight" size="small" colorScheme="light" />
-                </div>
-                <div class="schemeOption" :class="{selected: colorScheme === 'shade'}" @click="colorScheme = 'shade'">
-                    <FrequencyBox :freq="freqShade" size="small" colorScheme="shade" />
-                </div>
-                <div class="schemeOption" :class="{selected: colorScheme === 'dark'}" @click="colorScheme = 'dark'">
-                    <FrequencyBox :freq="freqDark" size="small" colorScheme="dark" />
-                </div>
-            </div>
+            <Textarea v-else class='list' rows="8" cols="24" v-model="textData"
+                        placeholder="Format: Value,Name,Type&#10;Ex: 123.45, KABC Twr, Tower"></Textarea>
+        </div>
+        
+
+        <!-- Frequency Lookup -->
+        <SeparatorChoice name="Frequency Lookup" choiceA="Airport" choiceB="Route" v-model="isAirportLookup" />
+        <div class="lookup-section" v-if="isAirportLookup">
+            <AirportInput label="Airport" :large="true" :page="true" :showRecent="true" :route="route" :defaultToLastKnown="true" @valid="onAirportValid" />
         </div>
 
+        <div class="lookup-results">
+            <div class="freq-cards" v-if="filteredLookupFrequencies.length">
+                <div v-for="freq in filteredLookupFrequencies" :key="freq.name + freq.value" 
+                     @click="addFrequency(freq)" class="freq-card-wrapper lookup-card" title="Click to add">
+                    <FrequencyBox :freq="freq" size="small" :colorScheme="colorScheme" />
+                    <div class="add-indicator">
+                        <font-awesome-icon icon="plus" />
+                    </div>
+                </div>
+            </div>
+            <div v-else class="lookup-placeholder">
+                {{ isAirportLookup ? 'Select an airport to view frequencies.' : 'No route frequencies found.' }}
+            </div>
+        </div>
+        <div v-if="isAirportLookup" class="separator">
+            <div class="label">Show</div>
+            <AnyOf v-model="localFreqChoices" />
+        </div>
+
+        <SeparatorChoiceList name="Color Scheme" v-model="colorScheme" :choices="colorSchemeOptions" :small="true" />
+
+        <div class="settings-section display-section">
+            <SeparatorChoice name="Display" choiceA="Normal" choiceB="Expanded" v-model="isNormalSize" />
+            <ChoiceList v-model="currentMode" :choices="modeOptions" :small="true" />
+        </div>
     </div>
 </template>
 
@@ -81,9 +72,13 @@ import { AirportService } from '../../services/AirportService';
 import AnyOf from '../../components/shared/AnyOf.vue';
 import Separator from '../../components/shared/Separator.vue';
 import SeparatorChoice from '../../components/shared/SeparatorChoice.vue';
+import ChoiceList from '../shared/ChoiceList.vue';
 import Textarea from 'primevue/textarea';
 import FrequencyBox from '../shared/FrequencyBox.vue';
 import AirportInput from '../shared/AirportInput.vue';
+import { RadioTileConfig } from './RadioTileConfig';
+import { OneChoiceValue } from '../../models/OneChoiceValue';
+import SeparatorChoiceList from '../shared/SeparatorChoiceList.vue';
 
 const props = defineProps({
     tileData: { type: TileData, required: true },
@@ -93,6 +88,7 @@ const props = defineProps({
 const emits = defineEmits(['update']);
 
 const tileData = ref<TileData>(props.tileData);
+const modeOptions = RadioTileConfig.modesList;
 const currentMode = ref(DisplayModeRadios.FreqList);
 const expanded = ref(false);
 const textData = ref('');
@@ -101,17 +97,22 @@ const lookupFrequencies = ref<Frequency[]>([]);
 const colorScheme = ref('light');
 const routeFrequencies = ref<Frequency[]>([]);
 const listMode = ref<'cards'|'text'>('cards');
+
+const isNormalSize = computed({
+    get: () => !expanded.value,
+    set: (val: boolean) => expanded.value = !val
+});
 const showAirport = ref(true);
 const showTracon = ref(false);
 const showNavaids = ref(false);
 
 const localFreqChoices = computed({
     get: () => [
-        { label: 'Airport', active: showAirport.value },
-        { label: 'TRACon', active: showTracon.value },
-        { label: 'Navaids', active: showNavaids.value }
+        new OneChoiceValue('Airport', undefined, 'Airport Frequencies', showAirport.value),
+        new OneChoiceValue('TRACon', undefined, 'TRACon Frequencies', showTracon.value),
+        new OneChoiceValue('Navaids', undefined, 'Navaids', showNavaids.value)
     ],
-    set: (val) => {
+    set: (val: OneChoiceValue[]) => {
         showAirport.value = val[0].active;
         showTracon.value = val[1].active;
         showNavaids.value = val[2].active;
@@ -129,6 +130,12 @@ const isAirportLookup = computed({
     set: (val: boolean) => lookupMode.value = val ? 'airport' : 'route'
 });
 
+const colorSchemeOptions = [
+    { label: 'Light', value: 'light' },
+    { label: 'Shade', value: 'shade' },
+    { label: 'Dark', value: 'dark' }
+];
+
 const toaster = useToaster(useToast());
 const isInternalUpdate = ref(false);
 
@@ -142,10 +149,6 @@ const filteredLookupFrequencies = computed(() => {
         return showAirport.value; // Show others (CTAF, Weather, etc.) by default
     });
 });
-
-const freqLight = new Frequency('Light', '123.45', FrequencyType.ctaf)
-const freqShade = new Frequency('Shade', '123.45', FrequencyType.ctaf)
-const freqDark = new Frequency('Dark', '123.45', FrequencyType.ctaf)
 
 
 const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void) | undefined;
@@ -162,7 +165,7 @@ watch(() => props.tileData, (newTileData) => {
     loadFromTileData(newTileData);
 }, { deep: true });
 
-watch([currentMode, textData, colorScheme, listMode], () => {
+watch([currentMode, expanded, textData, colorScheme, listMode], () => {
     emitUpdate();
 });
 
@@ -463,31 +466,6 @@ function emitUpdate() {
     box-sizing: border-box;
 }
 
-.colorSchemeSelector {
-    display: flex;
-    justify-content: center;
-}
-.schemeOption {
-    cursor: pointer;
-    border: 2px solid transparent;
-    border-radius: 5px;
-    padding: 1px;
-    margin: 0 5px;
-}
-.modeSelector .schemeOption {
-    padding: 3px 10px;
-    background: #e0e0e0;
-    color: #333;
-    border: 1px solid #ccc;
-}
-.modeSelector .schemeOption.selected {
-    background: var(--primary-color, #007bff);
-    color: white;
-    border-color: var(--primary-color, #007bff);
-}
-.schemeOption.selected {
-    border-color: #007bff;
-}
 .separator {
     width: 100%;
     display: flex;
@@ -502,5 +480,9 @@ function emitUpdate() {
     font-weight: bold;
     white-space: nowrap;
     font-size: 0.9rem;
+}
+
+.display-section :deep(.choicelist), .settings-section :deep(.choicelist) {
+    justify-content: center;
 }
 </style>

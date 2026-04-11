@@ -62,6 +62,8 @@ const tiles=ref<TileData[]>([])
 // Settings State
 const editingTileIndex = ref(-1);
 const editingTileData = ref<TileData | null>(null);
+const originalTileData = ref<TileData | null>(null);
+
 
 // this is how we pick the correct content
 const settingsComponent = computed(() => {
@@ -128,6 +130,12 @@ watch( props, async() => {
     loadProps(props)
 })
 
+watch(() => editingTileData.value, (newVal) => {
+    if (newVal && editingTileIndex.value >= 0) {
+        onUpdate(editingTileIndex.value, newVal);
+    }
+}, { deep: true });
+
 // end of props management
 
 // Some tile config has changed
@@ -142,12 +150,20 @@ function onUpdate(index:number, newTileData:TileData) {
 
 function onSettingsOpen(index: number, tileData: TileData) {
   editingTileIndex.value = index;
+  originalTileData.value = TileData.copy(tileData); // Keep original for revert on cancel
   editingTileData.value = TileData.copy(tileData); // Working copy
 }
 
 function onSettingsClose() {
+  // If originalTileData is still present, the user cancelled (apply clears it)
+  if (editingTileIndex.value >= 0 && originalTileData.value) {
+      // Revert to initial values on cancel
+      onUpdate(editingTileIndex.value, originalTileData.value);
+  }
+
   editingTileIndex.value = -1;
   editingTileData.value = null;
+  originalTileData.value = null;
 }
 
 // Helper to convert ChecklistSettingsParams back to TileData
@@ -239,8 +255,11 @@ function onSettingsApply(newConfig: any) {
           finalTileData = newConfig;
       }
       
-    onUpdate(editingTileIndex.value, finalTileData);
+      // Prevent redundant update since all tiles are now doing live preview
+      // onUpdate(editingTileIndex.value, finalTileData);
   }
+  
+  originalTileData.value = null; // Clear so close logic knows it was an apply
   onSettingsClose();
 }
 

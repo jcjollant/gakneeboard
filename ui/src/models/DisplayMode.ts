@@ -31,6 +31,7 @@ export enum DisplayModeNotes {
     Blank = '',
     Grid = 'grid',
     Compass = 'compass',
+    Hold = 'hold',
     Craft_deprecated = 'craft',
     Word_deprecated = 'word',
 }

@@ -14,15 +14,23 @@
             <SeparatorChoice name="Watermarks" choiceA="Show" choiceB="Hide" v-model="showWatermarks" />
             <small class="help-text" style="text-align: center;">Display faded placeholder text internally.</small>
         </div>
+        <!-- Display Configuration -->
+        <div class="settings-section display-section">
+            <SeparatorChoice name="Display" choiceA="Normal" choiceB="Expanded" v-model="isNormalSize" />
+            <ChoiceList v-model="displayMode" :choices="modeOptions" :small="true" />
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, inject } from 'vue';
+import { ref, watch, onMounted, inject, computed } from 'vue';
 import { TileData } from '../../models/TileData';
 import OneChoice from '../shared/OneChoice.vue';
 import Separator from '../shared/Separator.vue';
 import SeparatorChoice from '../shared/SeparatorChoice.vue';
+import ChoiceList from '../shared/ChoiceList.vue';
+import { DisplayModeAtis, DisplayModeChoice } from '../../models/DisplayMode';
+import { AtisTileDisplayModeLabels } from './AtisTileDisplayModeLabel';
 
 const props = defineProps({
     tileData: { type: TileData, required: true },
@@ -43,6 +51,18 @@ const linesChoices = ref([
 
 const selectedLines = ref(linesChoices.value[3]); // default 5
 const showWatermarks = ref(true);
+const displayMode = ref(DisplayModeAtis.FullATIS);
+
+const modeOptions = ref([
+    new DisplayModeChoice(AtisTileDisplayModeLabels.fullATIS, DisplayModeAtis.FullATIS, true),
+    new DisplayModeChoice(AtisTileDisplayModeLabels.compactATIS, DisplayModeAtis.CompactATIS, true),
+    new DisplayModeChoice(AtisTileDisplayModeLabels.categories, DisplayModeAtis.Categories, false),
+]);
+
+const isNormalSize = computed({
+    get: () => !expanded.value,
+    set: (val: boolean) => expanded.value = !val
+});
 
 // Initialization
 onMounted(() => {
@@ -54,7 +74,7 @@ watch(() => props.tileData, (newTileData) => {
 }, { deep: true });
 
 // Watch for changes via UI
-watch([selectedLines, showWatermarks], () => {
+watch([selectedLines, showWatermarks, displayMode, expanded], () => {
     if (!isInternalUpdate.value) {
         emitUpdate();
     }
@@ -77,6 +97,9 @@ function loadFromTileData(tile: TileData) {
     
     showWatermarks.value = config?.showWatermarks !== false; // defaults to true
     
+    let newMode = config?.mode ?? DisplayModeAtis.FullATIS;
+    displayMode.value = newMode;
+    
     isInternalUpdate.value = false;
 }
 
@@ -84,7 +107,8 @@ function emitUpdate() {
     const newConfig = {
         ...tileData.value.data as any,
         lines: selectedLines.value.value,
-        showWatermarks: showWatermarks.value
+        showWatermarks: showWatermarks.value,
+        mode: displayMode.value
     };
 
     tileData.value.data = newConfig;
@@ -121,5 +145,9 @@ function emitUpdate() {
     color: var(--text-color-secondary);
     font-size: 0.85rem;
     margin-left: 2px;
+}
+
+.display-section :deep(.choicelist) {
+    justify-content: center;
 }
 </style>

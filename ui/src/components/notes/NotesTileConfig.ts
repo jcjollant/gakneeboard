@@ -8,6 +8,7 @@ export class NotesTileConfig {
     static modesList = [
         new DisplayModeChoice('Blank', DisplayModeNotes.Blank, true, "A blank Tile or Watermark", '/tiles/notes-blank.png'),
         new DisplayModeChoice('Compass', DisplayModeNotes.Compass, true, "A blank compass with numerical headings", '/tiles/notes-compass.png'),
+        new DisplayModeChoice('Hold', DisplayModeNotes.Hold, true, "A blank compass for Hold patterns", '/tiles/notes-hold.png'),
         new DisplayModeChoice('Grid', DisplayModeNotes.Grid, true, "A blank grid to organize things", '/tiles/notes-grid.png'),
     ]
 
