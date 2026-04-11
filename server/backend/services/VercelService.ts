@@ -27,7 +27,7 @@ export class VercelService {
      * @returns 
      */
     public static async setEnvVar(key: string, value: string, targets: Target[]): Promise<void> {
-        console.log(`[VercelService.setEnvVar] Updating ${key}`);
+        // console.debug(`[VercelService.setEnvVar] Updating ${key}`);
 
         // 1. Find the env var ID
         const listResponse = await axios.get(`${this.API_URL}/v9/projects/${this.PROJECT_ID}/env?teamId=${this.TEAM_ID}`, {
@@ -37,12 +37,12 @@ export class VercelService {
         const envVars = listResponse.data.envs;
         const existing = envVars.find((e: any) => e.key === key);
 
-        console.log(`[VercelService.setEnvVar] Found ${envVars.length} env vars`);
-        console.log(`[VercelService.setEnvVar] Found ${existing ? 'existing' : 'new'} env ${key}`);
+        // console.debug(`[VercelService.setEnvVar] Found ${envVars.length} env vars`);
+        // console.debug(`[VercelService.setEnvVar] Found ${existing ? 'existing' : 'new'} env ${key}`);
 
         if (existing) {
             // 2. Update existing
-            console.log(`[VercelService.setEnvVar] Existing env ${key} found with id ${existing.id}. Updating...`);
+            // console.debug(`[VercelService.setEnvVar] Existing env ${key} found with id ${existing.id}. Updating...`);
             await axios.patch(`${this.API_URL}/v9/projects/${this.PROJECT_ID}/env/${existing.id}?teamId=${this.TEAM_ID}`, {
                 value: value,
                 target: targets
@@ -51,7 +51,7 @@ export class VercelService {
             });
         } else {
             // 3. Create new
-            console.log(`[VercelService.setEnvVar] Creating new env ${key}`);
+            // console.debug(`[VercelService.setEnvVar] Creating new env ${key}`);
             await axios.post(`${this.API_URL}/v10/projects/${this.PROJECT_ID}/env?teamId=${this.TEAM_ID}`, {
                 key: key,
                 value: value,
@@ -67,7 +67,7 @@ export class VercelService {
      * Trigger a new deployment for the project (redeploys the latest commit on the main branch)
      */
     public static async triggerRedeploy(): Promise<void> {
-        console.log(`[VercelService.triggerRedeploy] Triggering new deployment`);
+        // console.debug(`[VercelService.triggerRedeploy] Triggering new deployment`);
 
         await axios.post(`${this.API_URL}/v13/deployments?teamId=${this.TEAM_ID}`, {
             name: 'gak-server',
