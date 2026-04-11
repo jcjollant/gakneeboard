@@ -143,6 +143,8 @@ describe('RouteService', () => {
         });
 
         test('should handle partial errors in airport fetching', async () => {
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
             mockGetAirport.mockImplementation((code: string) => {
                 if (code === 'KBFI') return Promise.resolve(mockAirportBFI);
                 return Promise.reject(new Error('Fetch failed'));
@@ -152,6 +154,8 @@ describe('RouteService', () => {
 
             expect(result.length).toBe(3); // Only BFI frequencies
             expect(result[0].name).toContain('KBFI');
+
+            consoleSpy.mockRestore();
         });
     });
 });

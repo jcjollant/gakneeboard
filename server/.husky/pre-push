@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Fix Cypress path issues when Git is run from VS Code
+unset ELECTRON_RUN_AS_NODE
+
 # Get repo root from script location (server/.husky/pre-push)
 SCRIPT_DIR=$(dirname "$0")
 REPO_ROOT=$(cd "$SCRIPT_DIR/../../" && pwd)

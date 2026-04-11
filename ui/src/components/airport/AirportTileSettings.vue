@@ -52,21 +52,25 @@
             <AnyOf v-model="conditionChoices" :allowsNoSelection="true" />
         </div>
 
-
-
+        <!-- Display Configuration -->
+        <div class="settings-section display-section">
+            <SeparatorChoice name="Display" choiceA="Normal" choiceB="Expanded" v-model="isNormalSize" />
+            <ChoiceList v-model="currentMode" :choices="modeOptions" :small="true" />
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, inject } from 'vue';
+import { ref, watch, computed, onMounted, inject } from 'vue';
 import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
 import AirportInput from '../shared/AirportInput.vue';
 
-import Separator from '../../components/shared/Separator.vue';
-import EitherOr from '../../components/shared/EitherOr.vue';
+import Separator from '../shared/Separator.vue';
 import ChoiceList from '../shared/ChoiceList.vue';
+import SeparatorChoice from '../shared/SeparatorChoice.vue';
 import AnyOf from '../shared/AnyOf.vue';
+import EitherOr from '../shared/EitherOr.vue';
 import { OneChoiceValue } from '../../models/OneChoiceValue';
 
 import { Airport } from '../../models/Airport';
@@ -91,9 +95,16 @@ const props = defineProps({
 const tileData = ref<TileData>(props.tileData);
 
 // State
+const modeOptions = AirportTileConfig.modesList;
 const currentMode = ref(DisplayModeAirport.RunwaySketch);
 const expanded = ref(false);
 const airportCode = ref('');
+
+const isNormalSize = computed({
+    get: () => !expanded.value,
+    set: (val: boolean) => expanded.value = !val
+});
+
 const airport = ref<Airport>(new Airport());
 const selectedRouteCode = ref<RouteCode | undefined>(undefined);
 const validAirport = ref(false);
@@ -149,7 +160,7 @@ watch(conditionChoices, (newChoices: OneChoiceValue[]) => {
     }
 }, { deep: true });
 
-watch([currentMode, airportCode, selectedRwyNames, verticalOrientation, showHeadings, patternChoice, showMetar, showNotams, selectedRouteCode, isSingleSelect], () => {
+watch([currentMode, expanded, airportCode, selectedRwyNames, verticalOrientation, showHeadings, patternChoice, showMetar, showNotams, selectedRouteCode, isSingleSelect], () => {
     if (!isInternalUpdate.value) {
         emitUpdate();
     }
@@ -347,6 +358,16 @@ const tileSettingsUpdate = inject('tileSettingsUpdate') as ((data: any) => void)
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.settings-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.display-section :deep(.choicelist) {
+    justify-content: center;
 }
 
 .rwyChoices {
