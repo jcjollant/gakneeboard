@@ -411,7 +411,7 @@ export class LocalStoreService {
      */
     static thumbnailCleanUp() {
         const user: User | undefined = LocalStoreService.getUser()
-        if (!user) return;
+        if (!user || !user.templates) return;
         // build a list of know user ids
         const idList = user.templates.map(t => String(t.id))
         // console.log('[LocalStoreService.thumbnailCleanUp] id list', idList)

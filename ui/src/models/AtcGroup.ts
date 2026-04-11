@@ -1,5 +1,6 @@
 import { Airport } from "./Airport";
 import { Frequency, FrequencyType } from "./Frequency";
+import { Formatter } from "../lib/Formatter";
 
 const noFrequency = '-.-'
 
@@ -34,7 +35,7 @@ export class AtcGroup {
             }
             const type = (useString == 'CD/P') ? FrequencyType.clearance : FrequencyType.tracon
             useString = useString.replaceAll('APCH/P', approach).replaceAll('DEP/P', departure).replaceAll('DE/P', departure).replaceAll('CD/P', 'Clearance')
-            const frequency = new Frequency(atc.mhz.toString(),useString,type)
+            const frequency = new Frequency(Formatter.frequency(atc.mhz),useString,type)
 
             if( group) {
                 group.addFrequency(frequency)

@@ -38,8 +38,9 @@ export class Frequency {
 
     static copy(freq: any): Frequency {
         let value = 'value' in freq ? freq.value : freq.mhz
-        if (typeof value === 'number') value = Formatter.frequency(freq.mhz)
-        return new Frequency(value, freq.name, freq.type)
+        // Always enforce 3-digit precision during copy to handle historical or numeric data
+        const formattedValue = Formatter.frequency(value)
+        return new Frequency(formattedValue, freq.name, freq.type)
     }
 
     static typeFromString(s: string): FrequencyType {
