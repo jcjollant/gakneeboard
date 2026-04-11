@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import request from 'supertest';
-import app from '../../api/index';
 import { GApi } from '../../backend/GApi';
 import { TemplateService } from '../../backend/services/TemplateService';
 import { PublicationService } from '../../backend/services/PublicationService';
@@ -14,20 +13,19 @@ import { currentAirportModelVersion, jcHash } from '../constants';
 import { HealthCheck } from '../../backend/maintenance/HealthChecks';
 import { UsageType, UsagePayload } from '@gak/shared';
 
+
 // Mock the dependencies
 jest.mock('../../backend/GApi');
 jest.mock('../../backend/services/AirportService');
 jest.mock('../../backend/maintenance/Maintenance');
 jest.mock('../../backend/services/TemplateService');
 jest.mock('../../backend/services/PublicationService');
-jest.mock('../../backend/UserTools', () => {
-    return {
-        UserTools: {
-            userIdFromRequest: jest.fn(),
-            isAdmin: jest.fn()
-        }
+jest.mock('../../backend/UserTools', () => ({
+    UserTools: {
+        userIdFromRequest: jest.fn(),
+        isAdmin: jest.fn()
     }
-});
+}));
 jest.mock('../../backend/services/TicketService');
 jest.mock('../../backend/services/Authorization');
 jest.mock('../../backend/dao/UsageDao');
@@ -35,9 +33,9 @@ jest.mock('../../backend/maintenance/HealthChecks');
 jest.mock('@vercel/postgres', () => ({
     sql: jest.fn()
 }));
-
-// Mock simple classes that might be used as types or simple logic
 jest.mock('../../backend/models/TemplateKneeboardView');
+
+import app from '../../api/index';
 
 describe('index API', () => {
     beforeEach(() => {
@@ -215,8 +213,8 @@ describe('index API', () => {
         // Mock TemplateService.getVersion
         (TemplateService.getVersion as unknown as jest.Mock<any>).mockResolvedValue({ id: templateId, version: version });
 
-        // Spy on UsageDao.create
-        const createSpy = jest.spyOn(UsageDao, 'create').mockResolvedValue(true);
+        // Mock UsageDao.create via its existing mock
+        jest.mocked(UsageDao.create).mockResolvedValue(true);
 
         // Test GET /template/:id/version/:version
         const getTemplateRes = await request(app).get(`/template/${templateId}/version/${version}?user=${userSha}`);
@@ -236,17 +234,11 @@ describe('index API', () => {
             data: JSON.stringify({ some: 'data' })
         };
 
-        const createSpy = jest.spyOn(UsageDao, 'create').mockResolvedValue(true);
+        jest.mocked(UsageDao.create).mockResolvedValue(true);
 
-        const res = await request(app)
-            .post('/usage')
-            .send(payload);
+        const res = await request(app).post('/usage').send(payload);
 
         expect(res.status).toBe(200);
         expect(UsageDao.create).toHaveBeenCalledWith(payload.type, userId, payload.data);
-
-        createSpy.mockRestore();
     });
 });
-
-
