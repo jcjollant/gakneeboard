@@ -1,24 +1,31 @@
 <template>
     <div class="tile">
-        <Header :title="displaySelection ? 'Notes Tile Mode' : 'Notes'"
-            :stealth="!displaySelection && displayMode==DisplayModeNotes.Blank" :showReplace="displaySelection"
+        <Header title="Notes"
+            :stealth="displayMode==DisplayModeNotes.Blank" 
             leftButton="settings"
-            @replace="emits('replace')" @settings="emits('settings')" @display="displaySelection = !displaySelection"></Header>
-        <DisplayModeSelection v-if="displaySelection" v-model="displayMode" :modes="displayModes" :expandable="true" :expanded="expanded"
-            @expand="onExpand" @keep="displaySelection=false" />
-        <template v-else-if="displayMode==DisplayModeNotes.Blank">
-            <WordContent v-if="word?.length" :word="word" />
-            <div v-else class="tileContent">
-                <div class="blank">&nbsp;</div>
+            @replace="emits('replace')" @settings="emits('settings')"></Header>
+        <div v-if="displayMode==DisplayModeNotes.Blank" class="tileContent">&nbsp;</div>
+        <div v-else-if="displayMode==DisplayModeNotes.Watermark" class="blank-grid">
+            <div class="cell-word">
+                <WordContent v-if="word?.length" :word="word" />
             </div>
-        </template>
+            <div class="cell-columns">
+                <div v-if="columns.length" class="box">
+                    <div v-for="c in columns" :key="c" class="column">{{ c }}</div>
+                </div>
+            </div>
+            <div v-if="pills.length" class="cell-pills">
+                <div class="box">
+                    <div v-for="p in pills" :key="p" class="pill">{{ p }}</div>
+                </div>
+            </div>
+        </div>
+        <CompassContent v-else-if="displayMode==DisplayModeNotes.Compass || displayMode==DisplayModeNotes.Hold" :heading="displayMode == DisplayModeNotes.Compass" />
         <div v-else-if="displayMode==DisplayModeNotes.Grid" class="modeGrid tileContent" :class="{ expanded: expanded }">
             <div v-for="i in gridCells" :key="i">&nbsp;</div>
         </div>
-        <CompassContent v-else-if="displayMode==DisplayModeNotes.Compass || displayMode==DisplayModeNotes.Hold" :heading="displayMode == DisplayModeNotes.Compass" />
         
         <TileModeDots 
-            v-if="!displaySelection"
             v-model="displayMode" 
             v-model:expanded="expanded"
             :expandable="true"
@@ -35,7 +42,6 @@ import { TileData } from '../../models/TileData';
 
 import WordContent from './WordContent.vue';
 import CompassContent from './CompassContent.vue';
-import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import TileModeDots from '../shared/TileModeDots.vue';
 import Header from '../shared/Header.vue';
 import { NotesTileConfig } from './NotesTileConfig';
@@ -45,8 +51,9 @@ import { NotesTileConfig } from './NotesTileConfig';
 const compassHeading = ref(true)
 const displayMode = ref(DisplayModeNotes.Unknown)
 const emits = defineEmits(['replace','update','settings'])
-const displaySelection = ref(false)
 const word = ref('')
+const pills = ref<string[]>([])
+const columns = ref<string[]>([])
 const displayModes = NotesTileConfig.modesList
 
 // Props management
@@ -71,6 +78,10 @@ function loadProps(props:any) {
     
     // Restore custom word
     word.value = props?.params?.word ?? ''
+    // Restore watermarks
+    pills.value = props?.params?.pills ?? []
+    // Restore columns
+    columns.value = props?.params?.cols ?? []
     // We keep compassHeading for legacy if needed, but it's now derived from displayMode for rendering
     compassHeading.value = props?.params?.comp ?? true
     expanded.value = props?.span2 ?? false
@@ -89,8 +100,6 @@ watch(displayMode, (newValue, oldValue) => {
 
     // Crap in => default out
     if(!newValue) newValue = DisplayModeNotes.Blank
-
-    displaySelection.value = false;
 
     if(oldValue != DisplayModeNotes.Unknown) {
         saveConfig()
@@ -111,6 +120,8 @@ function saveConfig() {
     // Logic for 'comp' legacy field: true for Compass, false for Hold, undefined otherwise (it was only used for Compass)
     if(displayMode.value === DisplayModeNotes.Compass) data['comp'] = true
     else if(displayMode.value === DisplayModeNotes.Hold) data['comp'] = false
+    if(pills.value.length) data['pills'] = pills.value
+    if(columns.value.length) data['cols'] = columns.value
 
     emits('update', new TileData( TileType.notes, data, expanded.value))
 }
@@ -123,6 +134,46 @@ function onExpand(newValue:boolean) {
 </script>
 
 <style scoped>
+.blank-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: 1fr auto;
+    height: var(--tile-content-height);
+    width: 100%;
+    gap: 5px;
+    padding: 5px;
+}
+
+.cell-word {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    height: 100%;
+}
+
+.cell-columns {
+    grid-column: 2;
+    grid-row: 1;
+    border-left: 1px solid var(--border-color);
+    width: 100%; /* Ensure it takes full width of cell */
+    height: 100%; /* Ensure it takes full height of cell */
+}
+
+.cell-columns.tileContent {
+    width: 100%;
+    height: 100%;
+}
+
+.cell-word :deep(.tileContent) {
+    width: auto; /* Fit word content width */
+    height: 100%;
+}
+
+.cell-pills {
+    grid-column: 2;
+    grid-row: 2;
+    border-left: 1px solid var(--border-color);
+    width: 100%;
+}
 
 .modeGrid {
     display: grid;
@@ -136,39 +187,25 @@ function onExpand(newValue:boolean) {
 .modeGrid div {
     border: 1px dashed lightgrey;
 }
-.list {
-    position: relative;
-    display: grid;
-    padding: 10px;
-    gap:10px;
-    grid-template-rows: repeat(3, 3rem);
-    height: var(--tile-content-height);
-}
-
-.videoButton {
-    position:absolute;
-    left: 0;
-    bottom: 0;
-    line-height: 1.5rem;
+.box {
     display: flex;
-    padding: 5px 10px;
-    gap: 10px;
-    cursor: pointer;
-    align-items: center;
-    color: var(--bg);
-    font-size: 0.9rem;
-}
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 600;
+    color : darkgrey;
+    height: 100%;
+}    
 
-.paddedEdit {
-    padding: 10px;
-}
+.box>* {
+    border: 1px dashed darkgrey;
+    border-radius: 4px;
+    padding: 2px;
+    min-width: 65px;
+}    
 
-.miniSection {
-    font-size: 0.7rem;
-    display: flex;
-    font-weight: bold;
-    padding-bottom: 10px;
-    justify-content: center;
+.pill {
+    /* Pill styling */
+    height: 45px;
 }
 
 </style>

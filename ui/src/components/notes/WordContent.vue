@@ -41,7 +41,6 @@ function loadProps(props: any) {
     font-size: 30px;
     opacity: 0.2;
     text-align: left;
-    padding: 6px 5px;
 }
 .modeWord.medium {
     font-size: 20px;

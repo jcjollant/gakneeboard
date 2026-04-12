@@ -3,13 +3,22 @@
 
         <!-- Watermark Configuration -->
         <div class="settings-section">
-            <Separator name="Watermark" :leftAligned="true" />
-            <div class="input-container">
-                <span class="p-float-label">
-                    <InputText id="acronym-input" v-model="customWord" class="w-full" />
-                    <!-- <label for="acronym-input">Acronym</label> -->
-                </span>
-                <small class="help-text">Used in 'Blank' display mode.</small>
+            <Separator name="Watermarks" :leftAligned="true" />
+            <div class="settings-grid">
+                <span class="selection-label">Banner</span>
+                <div class="input-container">
+                    <span class="p-float-label">
+                        <InputText id="acronym-input" v-model="customWord" class="w-full" />
+                    </span>
+                </div>
+                <span class="selection-label">Columns</span>
+                <div class="pill-options">
+                    <AnyOf v-model="columnSelection" :allowsNoSelection="true" />
+                </div>
+                <span class="selection-label">Pills</span>
+                <div class="pill-options">
+                    <AnyOf v-model="pillSelection" :allowsNoSelection="true" />
+                </div>
             </div>
         </div>
 
@@ -23,13 +32,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, onMounted, inject } from 'vue';
+import { ref, watch, computed, onMounted, inject, nextTick } from 'vue';
 import InputText from 'primevue/inputtext';
 import Separator from '../shared/Separator.vue';
 import SeparatorChoice from '../shared/SeparatorChoice.vue';
 import ChoiceList from '../shared/ChoiceList.vue';
+import AnyOf from '../shared/AnyOf.vue';
 
 import { DisplayModeNotes, DisplayModeChoice } from '../../models/DisplayMode';
+import { OneChoiceValue } from '../../models/OneChoiceValue';
 import { TileData } from '../../models/TileData';
 import { NotesTileConfig } from './NotesTileConfig';
 
@@ -44,6 +55,14 @@ const customWord = ref('');
 const compassHeading = ref(true);
 const expanded = ref(false);
 const isInternalUpdate = ref(false);
+
+const columnSelection = ref<OneChoiceValue[]>(
+    NotesTileConfig.columnOptions.map(opt => new OneChoiceValue(opt.label, opt.value, undefined, false))
+);
+
+const pillSelection = ref<OneChoiceValue[]>(
+    NotesTileConfig.pillsOptions.map(opt => new OneChoiceValue(opt.label, opt.value, undefined, false))
+);
 
 const isNormalSize = computed({
     get: () => !expanded.value,
@@ -70,7 +89,13 @@ watch([currentMode, customWord, compassHeading, expanded], () => {
     }
 });
 
-function loadFromTileData(tile: TileData) {
+watch([columnSelection, pillSelection], () => {
+    if (!isInternalUpdate.value) {
+        emitUpdate();
+    }
+}, { deep: true });
+
+async function loadFromTileData(tile: TileData) {
     if (!tile) return;
     
     // Handle both raw config object and typed config
@@ -97,18 +122,37 @@ function loadFromTileData(tile: TileData) {
     // Restore compass setting (legacy)
     compassHeading.value = config?.comp ?? true;
     
+    // Restore columns
+    const columns = config?.cols ?? [];
+    columnSelection.value.forEach(opt => {
+        opt.active = columns.includes(opt.value);
+    });
+
+    // Restore pills
+    const pills = config?.pills ?? [];
+    pillSelection.value.forEach(opt => {
+        opt.active = pills.includes(opt.value);
+    });
+    
+    // Wait for the watchers triggered by the sync to "flush" 
+    // before we allow them to emit updates again.
+    await nextTick();
     isInternalUpdate.value = false;
 }
+
 
 function emitUpdate() {
     const newConfig = new NotesTileConfig(
         currentMode.value,
         customWord.value,
-        currentMode.value === DisplayModeNotes.Hold ? false : true // comp legacy field
+        currentMode.value === DisplayModeNotes.Hold ? false : true, // comp legacy field
+        pillSelection.value.filter(opt => opt.active).map(opt => opt.value),
+        columnSelection.value.filter(opt => opt.active).map(opt => opt.value)
     );
 
     tileData.value.data = newConfig;
     tileData.value.span2 = expanded.value;
+
 
     if (tileSettingsUpdate) {
         tileSettingsUpdate(tileData.value);
@@ -155,5 +199,23 @@ function emitUpdate() {
 
 .display-section :deep(.choicelist) {
     justify-content: center;
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: 110px auto;
+    gap: 8px 15px;
+    align-items: center;
+}
+
+.selection-label {
+    font-size: 0.8rem;
+    color: var(--bg-secondary);
+    font-weight: bold;
+}
+
+.pill-options {
+    display: flex;
+    justify-content: flex-start;
 }
 </style>

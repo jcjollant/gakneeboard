@@ -29,6 +29,7 @@ export enum DisplayModeAirport {
 export enum DisplayModeNotes {
     Unknown = '?',
     Blank = '',
+    Watermark = 'watermark',
     Grid = 'grid',
     Compass = 'compass',
     Hold = 'hold',
