@@ -1,7 +1,7 @@
 /**
  * Visual snapshot tests for Notes tile layout variants.
  * 
- * Covers Blank (with word), Compass (headings), 
+ * Covers Blank (empty), Watermark (BANNER, pills), Compass (headings), 
  * Hold (new mode), and Grid layouts.
  * 
  * Run:   npm run test:snapshots
@@ -14,17 +14,44 @@ describe('Notes Tile — Layout Snapshots', () => {
     viewport()
   })
 
-  it('Blank Mode — with CRAFT watermark', () => {
+  it('Blank Mode — Empty', () => {
     loadTestTileWithData({
       name: 'notes',
       data: {
-        mode: '',
-        word: 'CRAFT'
+        mode: ''
       }
     })
     cy.get('.tile .tileContent').should('be.visible')
     cy.wait(300)
-    cy.get('.tile').matchImageSnapshot('notes-blank-craft')
+    cy.get('.tile').matchImageSnapshot('notes-blank-empty')
+  })
+
+  it('Watermark Mode — CRAFT Banner', () => {
+    loadTestTileWithData({
+      name: 'notes',
+      data: {
+        mode: 'watermark',
+        word: 'CRAFT'
+      }
+    })
+    cy.get('.tile .blank-grid').should('be.visible')
+    cy.wait(300)
+    cy.get('.tile').matchImageSnapshot('notes-watermark-craft')
+  })
+
+  it('Watermark Mode — Everything Enabled', () => {
+    loadTestTileWithData({
+      name: 'notes',
+      data: {
+        mode: 'watermark',
+        word: 'WARNMM',
+        pills: ['CTO', 'CTL', 'APCH'],
+        cols: ['ALT', 'HDG', 'FREQ']
+      }
+    })
+    cy.get('.tile .blank-grid').should('be.visible')
+    cy.wait(300)
+    cy.get('.tile').matchImageSnapshot('notes-watermark-all')
   })
 
   it('Compass Mode — Numerical Headings', () => {
