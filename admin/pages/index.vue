@@ -60,6 +60,11 @@
                     <h3>Top Templates</h3>
                     <p>Browse the top 100 templates by date, version, or last save</p>
                 </div>
+                <div class="api-card" :class="{ active: selectedApi === 'supabase-auth' }" @click="selectApi('supabase-auth')">
+                    <div class="api-icon">🔑</div>
+                    <h3>Supabase Auth</h3>
+                    <p>Generate confirmation and recovery links</p>
+                </div>
             </div>
         </div>
         
@@ -125,6 +130,9 @@
         <div v-if="selectedApi === 'top-templates'">
             <TopTemplates />
         </div>
+        <div v-if="selectedApi === 'supabase-auth'">
+            <SupabaseAuth />
+        </div>
     </div>
 </template>
 
@@ -144,6 +152,7 @@ import TemplatePromoter from '~/components/TemplatePromoter.vue';
 import Housekeeping from '~/components/Housekeeping.vue';
 import LowHangingFruits from '~/components/LowHangingFruits.vue';
 import TopTemplates from '~/components/TopTemplates.vue';
+import SupabaseAuth from '~/components/SupabaseAuth.vue';
 
 const route = useRoute()
 const router = useRouter()

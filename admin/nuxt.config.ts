@@ -24,6 +24,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     healthCheckAccessKey: process.env.HEALTH_CHECK_ACCESS_KEY,
+    supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
     public: {
       GAK_API_URL: process.env.GAK_API_URL || 'https://api.kneeboard.ga/',
       GAK_APP_URL: process.env.GAK_APP_URL || 'https://kneeboard.ga',
