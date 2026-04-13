@@ -29,7 +29,7 @@
         <div class="tileContent list">
             <FAButton v-for="tile in knownTiles" class="tileButton"
                 :icon="tile.icon" 
-                :label="tile.name" :class="tile.class" :title="tile.tooltip"
+                :label="tile.name" :class="[tile.class, { selected: tile.tile === previousTile.name }]" :title="tile.tooltip"
                 @click="onReplace(tile.tile)"/>
         </div>
     </div>
@@ -188,6 +188,10 @@ function onCapture(event: MouseEvent) {
 }
 .tileButton:hover {
     background-color: var(--tile-button-hover);
+}
+.tileButton.selected {
+    background-color: var(--primary-color, #3b82f6);
+    box-shadow: 0 0 0 2px white inset;
 }
 
 .tile-wrapper {
