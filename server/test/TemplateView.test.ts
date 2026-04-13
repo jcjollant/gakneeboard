@@ -67,7 +67,7 @@ describe('Sheet class', () => {
         // default values
 
         const publicationCode = "AB"
-        const t = new Template(id, jcUserId, jcTestTemplateData, format, name, description, version, pages, thumbnail, thumbhash)
+        const t = new Template(id, jcUserId, jcTestTemplateData, format, name, description, version, pages, thumbnail, thumbhash, undefined, new Date())
         const pub = new Publication(0, publicationCode, id, true)
         const tv = TemplateKneeboardView.parseTemplate(t, pub)
         expect(tv).toBeDefined()
@@ -82,6 +82,7 @@ describe('Sheet class', () => {
         expect(tv.thumbUrl).toBe(thumbnail)
         expect(tv.thumbHash).toBe(thumbhash)
         expect(tv.format).toBe(format)
+        expect((tv as any).lastUpdated).toBeUndefined()
     })
     it('can parse', () => {
         const sheetId = 12

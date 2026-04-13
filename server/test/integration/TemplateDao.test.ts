@@ -43,6 +43,10 @@ describe('Custom Templates', () => {
             expect(t1.route).toEqual(route)
             // TemplateDao increments version on createOrUpdate. Input 1 -> Returned 2. (DB is 1)
             expect(t1.ver).toBe(2)
+            
+            // Verify lastUpdated is populated
+            const saved = await templateDao.readById(t1.id, jcUserId)
+            expect(saved?.lastUpdated).toBeDefined()
 
             // Cleanup
             await TemplateDao.deleteStatic(t1.id, jcUserId)
@@ -59,6 +63,10 @@ describe('Custom Templates', () => {
             t1.pages = 3
 
             // Update. Ret: 3, DB: 3
+            const firstSave = await templateDao.readById(t1.id, jcUserId)
+            const firstTimestamp = firstSave?.lastUpdated?.getTime() || 0
+            
+            await new Promise(resolve => setTimeout(resolve, 100))
             const t2 = await templateDao.createOrUpdate(t1, jcUserId)
 
             expect(t2.id).toBe(t1.id)
@@ -66,6 +74,10 @@ describe('Custom Templates', () => {
             expect(t2.name).toBe("name2")
             expect(t2.desc).toBe("description2")
             expect(t2.pages).toBe(3)
+            
+            // Verify timestamp updated
+            const secondSave = await templateDao.readById(t2.id, jcUserId)
+            expect(secondSave?.lastUpdated?.getTime()).toBeGreaterThan(firstTimestamp)
 
             // Modify route
             const newRoute = { dep: 'JFK', dst: 'LAX' }
@@ -249,6 +261,7 @@ describe('Custom Templates', () => {
                 data: jcTestTemplateData,
                 description: 'description',
                 creation_date: new Date(),
+                last_updated: new Date(),
                 pages: 2,
                 version: 1,
                 user_id: 1,
@@ -262,12 +275,52 @@ describe('Custom Templates', () => {
             expect(template.data).toEqual(row.data)
             expect(template.description).toBe(row.description)
             expect(template.creationDate).toEqual(row.creation_date)
+            expect(template.lastUpdated).toEqual(row.last_updated)
             expect(template.pages).toBe(row.pages)
             expect(template.version).toBe(row.version)
             expect(template.userId).toBe(row.user_id)
             expect(template.thumbnail).toBe(row.thumbnail)
             expect(template.thumbhash).toBe(row.thumbhash)
             expect(template.route).toEqual(row.route)
+        })
+    })
+
+    describe('getTopTemplates', () => {
+        const templateDao = TemplateDao.getInstance()
+
+        it('returns results sorted by last_save (last_updated)', async () => {
+            const user = newTestUser()
+            await new UserDao().save(user)
+
+            // Create two templates with a slight delay
+            const tv1 = new TemplateKneeboardView(0, "older", jcTestTemplateData)
+            const t1 = await templateDao.createOrUpdate(tv1, user.id)
+            
+            // Wait 100ms
+            await new Promise(resolve => setTimeout(resolve, 100))
+            
+            const tv2 = new TemplateKneeboardView(0, "newer", jcTestTemplateData)
+            const t2 = await templateDao.createOrUpdate(tv2, user.id)
+
+            const results = await templateDao.getTopTemplates('last_save')
+            
+            const t1Res = results.find(r => r.id === t1.id)
+            const t2Res = results.find(r => r.id === t2.id)
+
+            expect(t1Res).toBeDefined()
+            expect(t2Res).toBeDefined()
+            
+            const r1Index = results.findIndex(r => r.id === t1.id)
+            const r2Index = results.findIndex(r => r.id === t2.id)
+
+            expect(r2Index).toBeLessThan(r1Index) // newer should be first
+            expect(results[r2Index].last_save).toBeDefined()
+
+            // Cleanup
+            await Promise.all([
+                TemplateDao.deleteStatic(t1.id, user.id),
+                TemplateDao.deleteStatic(t2.id, user.id)
+            ])
         })
     })
     afterAll(async () => {

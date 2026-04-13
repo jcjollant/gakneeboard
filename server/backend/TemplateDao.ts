@@ -45,14 +45,14 @@ export class TemplateDao extends Dao<Template> {
             }
 
             // console.log( "[SheetDao.createOrUpdate] updating", pageId);
-            const result = await sql`UPDATE sheets SET data=${JSON.stringify(templateView.data)}, name=${templateView.name}, description=${templateView.desc}, pages=${templateView.pages}, version=${templateView.ver}, route=${templateView.route ? JSON.stringify(templateView.route) : null} WHERE id=${templateView.id} AND (${isSystemTemplate} OR user_id=${userId})`;
+            const result = await sql`UPDATE sheets SET data=${JSON.stringify(templateView.data)}, name=${templateView.name}, description=${templateView.desc}, pages=${templateView.pages}, version=${templateView.ver}, route=${templateView.route ? JSON.stringify(templateView.route) : null}, last_updated=CURRENT_TIMESTAMP WHERE id=${templateView.id} AND (${isSystemTemplate} OR user_id=${userId})`;
 
             // we should update something
             if (result.rowCount == 0) {
                 throw new Error("Invalid template or user id")
             }
         } else { // new template creation
-            const result = await sql`INSERT INTO sheets (name, data, format, description, pages, version, user_id, route) VALUES (${templateView.name}, ${JSON.stringify(templateView.data)}, ${templateView.format}, ${templateView.desc}, ${templateView.pages}, 1, ${userId}, ${templateView.route ? JSON.stringify(templateView.route) : null}) RETURNING id;`
+            const result = await sql`INSERT INTO sheets (name, data, format, description, pages, version, user_id, route, last_updated) VALUES (${templateView.name}, ${JSON.stringify(templateView.data)}, ${templateView.format}, ${templateView.desc}, ${templateView.pages}, 1, ${userId}, ${templateView.route ? JSON.stringify(templateView.route) : null}, CURRENT_TIMESTAMP) RETURNING id;`
 
             templateView.id = result.rows[0]['id']
         }
@@ -182,7 +182,41 @@ export class TemplateDao extends Dao<Template> {
      * @returns 
      */
     public parseRow(row: any): Template {
-        return new Template(row['id'], row['user_id'], row['data'], row['format'], row['name'], row['description'], row['version'], row['pages'], row['thumbnail'], row['thumbhash'], row['creation_date'], row['route'])
+        return new Template(row['id'], row['user_id'], row['data'], row['format'], row['name'], row['description'], row['version'], row['pages'], row['thumbnail'], row['thumbhash'], row['creation_date'], row['last_updated'], row['route'])
+    }
+
+    /**
+     * Get the top templates based on a sorting criteria
+     * @param sortBy 'creation_date', 'version', or 'last_save'
+     * @returns A list of templates for the admin dashboard
+     */
+    public async getTopTemplates(sortBy: string): Promise<any[]> {
+        let query: string
+        if (sortBy === 'last_save') {
+            query = `
+                SELECT id, name, user_id, version, pages, creation_date, last_updated AS last_save
+                FROM ${this.tableName}
+                ORDER BY last_updated DESC NULLS LAST
+                LIMIT 100
+            `
+        } else if (sortBy === 'version') {
+            query = `
+                SELECT id, name, user_id, version, pages, creation_date, NULL AS last_save
+                FROM ${this.tableName}
+                ORDER BY version DESC
+                LIMIT 100
+            `
+        } else {
+            // creation_date (default)
+            query = `
+                SELECT id, name, user_id, version, pages, creation_date, NULL AS last_save
+                FROM ${this.tableName}
+                ORDER BY creation_date DESC
+                LIMIT 100
+            `
+        }
+        const result = await this.db.query(query)
+        return result.rows
     }
 
     /**

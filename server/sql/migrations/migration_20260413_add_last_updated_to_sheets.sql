@@ -1,0 +1,2 @@
+ALTER TABLE sheets ADD COLUMN last_updated TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+UPDATE sheets SET last_updated = creation_date;

@@ -17,7 +17,7 @@ describe('Template', () => {
             const thumbHash = "abcdef1234567890cdfea"
             const format = TemplateFormat.FullPage
 
-            const t = new Template(templateId, userId, data, format, name, description, version, pages, thumbnail, thumbHash)
+            const t = new Template(templateId, userId, data, format, name, description, version, pages, thumbnail, thumbHash, undefined, new Date())
 
             expect(t).toBeDefined()
             expect(t.id).toEqual(templateId)
@@ -27,6 +27,7 @@ describe('Template', () => {
             expect(t.version).toEqual(version)
             expect(t.description).toEqual(description)
             expect(t.creationDate).toBeUndefined()
+            expect(t.lastUpdated).toBeDefined()
             expect(t.pages).toEqual(pages)
             expect(t.thumbnail).toEqual(thumbnail)
             expect(t.thumbhash).toEqual(thumbHash)
@@ -35,6 +36,7 @@ describe('Template', () => {
             const t2 = new Template(templateId, userId, data, TemplateFormat.Kneeboard, name, description, version, pages)
             expect(t2.thumbnail).toBeUndefined()
             expect(t2.thumbhash).toBeUndefined()
+            expect(t2.lastUpdated).toBeUndefined()
             expect(t2.format).toEqual(TemplateFormat.Kneeboard)
         })
     })

@@ -33,6 +33,7 @@ export class Template {
     thumbnail: string | undefined
     thumbhash: string | undefined
     creationDate: Date | undefined
+    lastUpdated: Date | undefined
     route: Route | undefined
 
     constructor(id: number,
@@ -46,6 +47,7 @@ export class Template {
         thumbnail: string | undefined = undefined,
         thumbhash: string | undefined = undefined,
         creationDate: Date | undefined = undefined,
+        lastUpdated: Date | undefined = undefined,
         route: Route | undefined = undefined) {
         this.id = id;
         this.userId = userId;
@@ -58,6 +60,7 @@ export class Template {
         this.thumbnail = thumbnail
         this.thumbhash = thumbhash
         this.creationDate = creationDate;
+        this.lastUpdated = lastUpdated;
         this.route = route;
     }
 }
