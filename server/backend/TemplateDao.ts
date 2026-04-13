@@ -201,7 +201,7 @@ export class TemplateDao extends Dao<Template> {
             `
         } else if (sortBy === 'version') {
             query = `
-                SELECT id, name, user_id, version, pages, creation_date, NULL AS last_save
+                SELECT id, name, user_id, version, pages, creation_date, last_updated AS last_save
                 FROM ${this.tableName}
                 ORDER BY version DESC
                 LIMIT 100
@@ -209,7 +209,7 @@ export class TemplateDao extends Dao<Template> {
         } else {
             // creation_date (default)
             query = `
-                SELECT id, name, user_id, version, pages, creation_date, NULL AS last_save
+                SELECT id, name, user_id, version, pages, creation_date, last_updated AS last_save
                 FROM ${this.tableName}
                 ORDER BY creation_date DESC
                 LIMIT 100

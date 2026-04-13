@@ -30,7 +30,7 @@
             <th>Version</th>
             <th>Pages</th>
             <th>Created</th>
-            <th v-if="sortBy === 'last_save'">Last Save</th>
+            <th>Last Update</th>
           </tr>
         </thead>
         <tbody>
@@ -48,7 +48,7 @@
             <td>{{ t.version }}</td>
             <td>{{ t.pages }}</td>
             <td>{{ formatDate(t.creation_date) }}</td>
-            <td v-if="sortBy === 'last_save'">{{ t.last_save ? formatDate(t.last_save) : '—' }}</td>
+            <td>{{ t.last_save ? formatDate(t.last_save) : '—' }}</td>
           </tr>
         </tbody>
       </table>
@@ -86,7 +86,7 @@ const sortBy = ref<'creation_date' | 'version' | 'last_save'>('creation_date')
 const sortOptions: { value: 'creation_date' | 'version' | 'last_save'; label: string }[] = [
   { value: 'creation_date', label: '📅 Creation Date' },
   { value: 'version', label: '🔢 Version Number' },
-  { value: 'last_save', label: '💾 Last Save' },
+  { value: 'last_save', label: '💾 Last Update' },
 ]
 
 const MAIN_SITE = computed(() => UrlService.appRoot)
