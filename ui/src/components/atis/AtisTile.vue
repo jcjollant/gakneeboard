@@ -60,10 +60,11 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import { DisplayModeAtis, DisplayModeChoice } from '../../models/DisplayMode';
+import { DisplayModeAtis } from '../../models/DisplayMode';
 import { TileData } from '../../models/TileData';
 import { TileType } from '../../models/TileType';
 import { AtisTileDisplayModeLabels } from './AtisTileDisplayModeLabel';
+import { AtisTileConfig } from './AtisTileConfig';
 
 import DisplayModeSelection from '../shared/DisplayModeSelection.vue';
 import Header from '../shared/Header.vue';
@@ -86,11 +87,7 @@ const showWatermarks = ref(true)
 const displayMode = ref(DisplayModeAtis.Unknown)
 const displaySelection = ref(false)
 const expanded = ref(false)
-const modesList = ref([
-    new DisplayModeChoice(AtisTileDisplayModeLabels.fullATIS, DisplayModeAtis.FullATIS, true),
-    new DisplayModeChoice(AtisTileDisplayModeLabels.compactATIS, DisplayModeAtis.CompactATIS),
-    new DisplayModeChoice(AtisTileDisplayModeLabels.categories, DisplayModeAtis.Categories, true),
-])
+const modesList = AtisTileConfig.modesList;
 const props = defineProps({
     params: { type: Object, default: null}, // expects {'mode':'compact'}
     span2: {type: Boolean, default: false}

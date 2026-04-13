@@ -8,11 +8,11 @@ export class NotesTileConfig {
     cols: string[];
 
     static modesList = [
-        new DisplayModeChoice('Blank', DisplayModeNotes.Blank, true, "A completely blank Tile", '/tiles/notes-blank.png'),
-        new DisplayModeChoice('Watermark', DisplayModeNotes.Watermark, true, "Configurable Watermarks (Banner, Pills, Columns)", '/tiles/notes-watermark.png'),
-        new DisplayModeChoice('Compass', DisplayModeNotes.Compass, true, "A Compass with headings", '/tiles/notes-compass.png'),
-        new DisplayModeChoice('Hold', DisplayModeNotes.Hold, true, "A Hold patterns compass", '/tiles/notes-hold.png'),
-        new DisplayModeChoice('Grid', DisplayModeNotes.Grid, true, "A handy grid", '/tiles/notes-grid.png'),
+        new DisplayModeChoice('Blank', DisplayModeNotes.Blank, true, "A completely blank Tile", '/tiles/notes-blank.png', 'B'),
+        new DisplayModeChoice('Watermark', DisplayModeNotes.Watermark, true, "Configurable Watermarks (Banner, Pills, Columns)", '/tiles/notes-watermark.png', 'W'),
+        new DisplayModeChoice('Compass', DisplayModeNotes.Compass, true, "A Compass with headings", '/tiles/notes-compass.png', 'C'),
+        new DisplayModeChoice('Hold', DisplayModeNotes.Hold, true, "A Hold patterns compass", '/tiles/notes-hold.png', 'H'),
+        new DisplayModeChoice('Grid', DisplayModeNotes.Grid, true, "A handy grid", '/tiles/notes-grid.png', 'G'),
     ]
 
     static pillsOptions = [

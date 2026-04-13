@@ -7,7 +7,7 @@
             :class="{ active: modelValue === mode.value }"
             :title="mode.description || mode.label"
             @click.stop="selectMode(mode.value)"
-        ></div>
+        >{{ (mode.initial || mode.label || '').charAt(0).toUpperCase() }}</div>
         <template v-if="expandable">
             <div class="divider"></div>
             <font-awesome-icon 
@@ -59,22 +59,31 @@ function toggleExpanded() {
     z-index: 10;
     
     display: flex;
+    align-items: center;
     gap: 8px;
-    padding: 8px;
+    padding: 6px;
     background-color: rgba(230, 230, 230, 0.4);
     border: 1px solid rgba(200, 200, 200, 0.8);
-    border-radius: 16px;
+    border-radius: 20px;
     backdrop-filter: blur(2px);
 }
 
 .dot {
-    width: 12px;
-    height: 12px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     background-color: var(--bg-secondary);
     cursor: pointer;
     transition: all 0.2s ease;
     border: 1px solid transparent;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 800;
+    color: rgba(0, 0, 0, 0.4);
+    user-select: none;
 }
 
 .dot:hover {
@@ -84,12 +93,13 @@ function toggleExpanded() {
 
 .dot.active {
     background-color: var(--bg);
+    color: white;
     transform: scale(1.1);
 }
 
 .divider {
     width: 1px;
-    height: 12px;
+    height: 18px;
     background-color: var(--bg-secondary);
     opacity: 0.5;
     margin: 0 4px;

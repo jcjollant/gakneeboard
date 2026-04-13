@@ -49,7 +49,7 @@ import { Route, RouteCode } from '@gak/shared';
 import { getAirport } from '../../services/AirportDataService';
 import { RouteService } from '../../services/RouteService.ts';
 import { VfrTileConfig } from './VfrTileConfig.ts';
-import { DisplayModeVfr, DisplayModeChoice } from '../../models/DisplayMode.ts';
+import { DisplayModeVfr } from '../../models/DisplayMode.ts';
 
 import AirportInput from '../shared/AirportInput.vue';
 import Separator from '../shared/Separator.vue';
@@ -74,13 +74,7 @@ const selectedToRouteCode = ref<RouteCode | undefined>(undefined);
 const currentMode = ref(DisplayModeVfr.CloudClearance)
 const expanded = ref(false)
 const tileData = ref<TileData>(props.tileData as TileData)
-const modeOptions = ref([
-    new DisplayModeChoice( 'Departure', DisplayModeVfr.Departure),
-    new DisplayModeChoice( 'Altitudes', DisplayModeVfr.Altitudes),
-    new DisplayModeChoice( 'Cloud Clear...', DisplayModeVfr.CloudClearance),
-    new DisplayModeChoice( 'Sunlight', DisplayModeVfr.Sunlight),
-    new DisplayModeChoice( 'Lost Comms', DisplayModeVfr.LostComms)
-]);
+const modeOptions = VfrTileConfig.modesList;
 
 
 let isInternalUpdate = false;

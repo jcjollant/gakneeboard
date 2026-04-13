@@ -29,8 +29,9 @@ import OneChoice from '../shared/OneChoice.vue';
 import Separator from '../shared/Separator.vue';
 import SeparatorChoice from '../shared/SeparatorChoice.vue';
 import ChoiceList from '../shared/ChoiceList.vue';
-import { DisplayModeAtis, DisplayModeChoice } from '../../models/DisplayMode';
+import { DisplayModeAtis } from '../../models/DisplayMode';
 import { AtisTileDisplayModeLabels } from './AtisTileDisplayModeLabel';
+import { AtisTileConfig } from './AtisTileConfig';
 
 const props = defineProps({
     tileData: { type: TileData, required: true },
@@ -53,11 +54,7 @@ const selectedLines = ref(linesChoices.value[3]); // default 5
 const showWatermarks = ref(true);
 const displayMode = ref(DisplayModeAtis.FullATIS);
 
-const modeOptions = ref([
-    new DisplayModeChoice(AtisTileDisplayModeLabels.fullATIS, DisplayModeAtis.FullATIS, true),
-    new DisplayModeChoice(AtisTileDisplayModeLabels.compactATIS, DisplayModeAtis.CompactATIS, true),
-    new DisplayModeChoice(AtisTileDisplayModeLabels.categories, DisplayModeAtis.Categories, false),
-]);
+const modeOptions = AtisTileConfig.modesList;
 
 const isNormalSize = computed({
     get: () => !expanded.value,

@@ -4,12 +4,14 @@ export class DisplayModeChoice {
     expandable: boolean;
     description: string;
     image?: string;
-    constructor(label: string, value: string, expandable: boolean = false, description: string = '', image?: string) {
+    initial?: string;
+    constructor(label: string, value: string, expandable: boolean = false, description: string = '', image?: string, initial?: string) {
         this.label = label;
         this.value = value;
         this.expandable = expandable;
         this.description = description;
         this.image = image;
+        this.initial = initial;
     }
 }
 

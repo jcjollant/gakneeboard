@@ -29,7 +29,7 @@ import { onMounted, ref, watch } from 'vue'
 import { Route } from '@gak/shared';
 import { currentUser } from '../../assets/data';
 import { Airport } from '../../models/Airport.ts';
-import { DisplayModeChoice, DisplayModeVfr, DisplayModeSunlight } from '../../models/DisplayMode.ts';
+import { DisplayModeVfr, DisplayModeSunlight } from '../../models/DisplayMode.ts';
 import { getAirport } from '../../services/AirportDataService';
 import { Regulation } from '../../models/Regulation.ts';
 import { TileData } from '../../models/TileData.ts';
@@ -44,6 +44,7 @@ import SunLight from '../sunlight/SunLight.vue';
 import RegLink from '../regulations/RegLink.vue';
 import TileModeDots from '../shared/TileModeDots.vue';
 import VfrDeparture from './VfrDeparture.vue';
+import { VfrTileConfig } from './VfrTileConfig';
 
 // Enum with display modes
 
@@ -58,13 +59,7 @@ const props = defineProps({
     route: { type: Object as () => Route, default: undefined}
 })
 const displaySelection=ref(false)
-const displayModes = [
-    new DisplayModeChoice( 'VFR Departure', DisplayModeVfr.Departure),
-    new DisplayModeChoice( 'VFR Altitudes', DisplayModeVfr.Altitudes),
-    new DisplayModeChoice( 'Cloud Clearance', DisplayModeVfr.CloudClearance),
-    new DisplayModeChoice( 'Sunlight', DisplayModeVfr.Sunlight),
-    new DisplayModeChoice( 'Lost Comms', DisplayModeVfr.LostComms)
-]
+const displayModes = VfrTileConfig.modesList;
 
 onMounted(() => {   
     loadProps(props)

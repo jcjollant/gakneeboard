@@ -39,7 +39,7 @@ import SeparatorChoice from '../shared/SeparatorChoice.vue';
 import ChoiceList from '../shared/ChoiceList.vue';
 import AnyOf from '../shared/AnyOf.vue';
 
-import { DisplayModeNotes, DisplayModeChoice } from '../../models/DisplayMode';
+import { DisplayModeNotes } from '../../models/DisplayMode';
 import { OneChoiceValue } from '../../models/OneChoiceValue';
 import { TileData } from '../../models/TileData';
 import { NotesTileConfig } from './NotesTileConfig';
