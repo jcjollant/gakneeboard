@@ -23,10 +23,10 @@ describe('TemplateHistoryCleanup Integration', () => {
     });
 
     it('should keep only the 10 most recent entries per template', async () => {
-        // 1. Insert 15 history entries for the test template
-        // We use a loop and wait a tiny bit to ensure different created_at if the DB relies on it for ordering
+        // 1. Insert 15 history entries for the test template in parallel
+        const inserts = [];
         for (let i = 1; i <= 15; i++) {
-            await sql`
+            inserts.push(sql`
                 INSERT INTO template_history (
                     template_id, 
                     user_id, 
@@ -44,8 +44,9 @@ describe('TemplateHistoryCleanup Integration', () => {
                     ${TemplateOperation.UPDATE},
                     ${new Date(Date.now() - (20 - i) * 1000).toISOString()} -- Set dates in the past, i=15 is most recent
                 )
-            `;
+            `);
         }
+        await Promise.all(inserts);
 
         // Verify we have 15 entries
         const initialCount = await sql`SELECT COUNT(*) FROM template_history WHERE template_id = ${testTemplateId}`;

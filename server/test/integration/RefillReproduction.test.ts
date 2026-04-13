@@ -24,12 +24,13 @@ describe('Refill Reproduction', () => {
     beforeAll(async () => {
         userDao = new UserDao();
 
-        // Ensure users don't exist
+        // Ensure users don't exist and create them in parallel where possible
         await sql`DELETE FROM users WHERE sha256 IN (${studentUser.sha256}, ${simmerUser.sha256})`;
 
-        // Create users
-        await userDao.save(studentUser);
-        await userDao.save(simmerUser);
+        await Promise.all([
+            userDao.save(studentUser),
+            userDao.save(simmerUser)
+        ]);
     });
 
     afterAll(async () => {
@@ -41,12 +42,13 @@ describe('Refill Reproduction', () => {
     });
 
     it('should NOT refill student pilots but SHOULD refill simmer users', async () => {
-        // Setup initial low credits
         studentUser.printCredits = 2;
         simmerUser.printCredits = 2;
 
-        await userDao.updatePrintCredit(studentUser);
-        await userDao.updatePrintCredit(simmerUser);
+        await Promise.all([
+            userDao.updatePrintCredit(studentUser),
+            userDao.updatePrintCredit(simmerUser)
+        ]);
 
         // Force run the refill job (simulating 1st of month)
         const [refills, performed] = await Business.freePrintRefills(userDao, true);

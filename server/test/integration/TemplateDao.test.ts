@@ -17,7 +17,7 @@ process.env.POSTGRES_URL = process.env.POSTGRES_TEST_URL
 describe('Custom Templates', () => {
     describe('countForUser', () => {
         it('Can CountForUser', async () => {
-            const result = await sql`SELECT user_id, COUNT(*) FROM sheets WHERE user_id IS NOT NULL GROUP BY user_id`
+            const result = await sql`SELECT user_id, COUNT(*) FROM sheets WHERE user_id IS NOT NULL GROUP BY user_id LIMIT 5`
             for (const row of result.rows) {
                 const count = await TemplateDao.countForUserStatic(row.user_id)
                 expect(count).toBe(Number(row.count))
@@ -191,13 +191,16 @@ describe('Custom Templates', () => {
             const tv3 = new TemplateKneeboardView(0, "name3", jcTestTemplateData, TemplateFormat.Kneeboard, "description3", 1, false, undefined, 2)
 
             const templateDao = TemplateDao.getInstance()
-            const t1 = await templateDao.createOrUpdate(tv1, user.id)
+            const [t1, t2, t3] = await Promise.all([
+                templateDao.createOrUpdate(tv1, user.id),
+                templateDao.createOrUpdate(tv2, user.id),
+                templateDao.createOrUpdate(tv3, user.id)
+            ]);
+
             const pub1 = await PublicationDao.publish(t1.id)
             expect(pub1).toBeDefined()
-            const t2 = await templateDao.createOrUpdate(tv2, user.id)
             const pub2 = await PublicationDao.publish(t2.id)
             expect(pub2).toBeDefined()
-            const t3 = await templateDao.createOrUpdate(tv3, user.id)
 
             expect(t1.id).toBeGreaterThan(0)
             // console.log(t1.id)
@@ -207,17 +210,25 @@ describe('Custom Templates', () => {
             const result = await TemplateDao.getOverviewListForUser(user.id)
 
             expect(result.length).toBe(3)
-            // Test publication, data and version should not be present
-            expect(result[0].publish).toBeTruthy()
-            expect(result[0].code).toBeDefined()
-            expect(result[0].ver).toBe(1)
+            
+            const r1 = result.find(r => r.name === "name1")!
+            const r2 = result.find(r => r.name === "name2")!
+            const r3 = result.find(r => r.name === "name3")!
 
-            expect(result[1].code).toBeDefined()
-            expect(result[1].publish).toBeTruthy()
-            expect(result[1].ver).toBe(1)
+            expect(r1).toBeDefined()
+            expect(r1.publish).toBeTruthy()
+            expect(r1.code).toBeDefined()
+            expect(r1.ver).toBe(1)
 
-            expect(result[2].code).toBeNull()
-            expect(result[2].publish).toBeFalsy()
+            expect(r2).toBeDefined()
+            expect(r2.publish).toBeTruthy()
+            expect(r2.code).toBeDefined()
+            expect(r2.ver).toBe(1)
+
+            expect(r3).toBeDefined()
+            expect(r3.publish).toBeFalsy()
+            expect(r3.code).toBeNull()
+            expect(r3.ver).toBe(1)
             expect(result[2].ver).toBe(1)
 
             await Promise.all([

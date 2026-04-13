@@ -132,18 +132,17 @@ describe('UserDao', () => {
         // clean up (just in case)
         await sql`delete from users where account_type = ${testType1} OR account_type=${testType2}`
 
-        // create two groups of users
-        // fill an array with 4 'test1' and 6 'test2'
+        // create two groups of users in parallel
         const previous1 = 3;
         const previous2 = 5;
+        const inserts = [];
         for (let index = 0; index < 10; index++) {
             const user = newTestUser()
-            // console.log( 'user', user.sha256)
             const accountType = index < 4 ? testType1 : testType2
             const previous = index < 4 ? previous1 : previous2;
-            // console.log('['+accountType+']')
-            await db.query(`insert into users (sha256,account_type,version, print_credit) values ('${user.sha256}','${accountType}',0, ${previous})`)
+            inserts.push(db.query(`insert into users (sha256,account_type,version, print_credit) values ('${user.sha256}','${accountType}',0, ${previous})`));
         }
+        await Promise.all(inserts);
 
         const count1 = 10
         const refill1 = await userDao.refillAccountType(testType1, count1)
