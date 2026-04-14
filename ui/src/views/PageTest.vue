@@ -6,7 +6,9 @@
     <div class="controls">
       <button @click="clearPage" class="clear-btn">Clear</button>
       <button @click="copyToClipboard" class="copy-btn">Copy Page Data</button>
+      <button @click="testAnimation" class="test-btn">Test Animation</button>
     </div>
+    <PrintingAnimation :visible="showAnimation" />
   </div>
 </template>
 
@@ -14,10 +16,12 @@
 import { ref, onMounted } from 'vue'
 import { TemplatePage } from '../models/Template'
 import Page from '../components/page/Page.vue'
+import PrintingAnimation from '../components/print/PrintingAnimation.vue'
 import { useToaster } from '../assets/Toaster'
 import { useToast } from 'primevue/usetoast'
 
 const testPage = ref<TemplatePage>(new TemplatePage())
+const showAnimation = ref(false)
 const toaster = useToaster(useToast())
 
 onMounted(() => {
@@ -60,6 +64,10 @@ function clearPage() {
 function copyToClipboard() {
   navigator.clipboard.writeText(JSON.stringify(testPage.value, null, 2))
   toaster.success('Copied', 'Page data copied to clipboard')
+}
+
+function testAnimation() {
+  showAnimation.value = true
 }
 </script>
 
@@ -109,5 +117,14 @@ function copyToClipboard() {
 
 .copy-btn:hover {
   background-color: #F57C00;
+}
+
+.test-btn {
+  background-color: #2196F3;
+  color: white;
+}
+
+.test-btn:hover {
+  background-color: #1976D2;
 }
 </style>

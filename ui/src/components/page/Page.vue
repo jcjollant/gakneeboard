@@ -36,27 +36,31 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, defineAsyncComponent } from 'vue'
 
 import { PageType } from '../../assets/PageType'
 import { TemplateFormat } from '@gak/shared'
 import { useConfirm } from 'primevue/useconfirm'
 
-import ApproachPage from '../charts/ApproachPage.vue'
+// Static imports for most used/critical pages
 import BlankPage from './BlankPage.vue'
 import ChecklistPage from '../checklist/ChecklistPage.vue'
-import CoverPage from '../cover/CoverPage.vue'
-import DiagramPage from '../charts/DiagramPage.vue'
-import FlightDebriefPage from '../notes/FlightDebriefPage.vue'
-import FlightNotesPage from '../clearance/FlightNotesPage.vue'
 import LoadingPage from './LoadingPage.vue'
-import NavlogPage from '../navlog/NavlogPage.vue'
-import NotesPage from '../notes/NotesPage.vue'
-import PaperNavlogPage from '../navlog/PaperNavlogPage.vue'
-import PersonalMinimumsPage from './PersonalMinimumsPage.vue'
 import SelectionPage from './SelectionPage.vue'
-import StripPage from '../strips/StripPage.vue'
 import TilePage from '../tiles/TilePage.vue'
+
+// Dynamic imports for less frequent pages
+const ApproachPage = defineAsyncComponent(() => import('../charts/ApproachPage.vue'))
+const CoverPage = defineAsyncComponent(() => import('../cover/CoverPage.vue'))
+const DiagramPage = defineAsyncComponent(() => import('../charts/DiagramPage.vue'))
+const FlightDebriefPage = defineAsyncComponent(() => import('../notes/FlightDebriefPage.vue'))
+const FlightNotesPage = defineAsyncComponent(() => import('../clearance/FlightNotesPage.vue'))
+const NavlogPage = defineAsyncComponent(() => import('../navlog/NavlogPage.vue'))
+const NotesPage = defineAsyncComponent(() => import('../notes/NotesPage.vue'))
+const PaperNavlogPage = defineAsyncComponent(() => import('../navlog/PaperNavlogPage.vue'))
+const PersonalMinimumsPage = defineAsyncComponent(() => import('./PersonalMinimumsPage.vue'))
+const StripPage = defineAsyncComponent(() => import('../strips/StripPage.vue'))
+
 import { Route } from '@gak/shared'
 import { DemoData } from '../../assets/DemoData'
 

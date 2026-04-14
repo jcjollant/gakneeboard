@@ -78,13 +78,14 @@
 
 <script setup lang="ts">
 
+import { onMounted, onUnmounted, ref, computed, watch, nextTick, defineAsyncComponent } from 'vue'
+
 import { currentUser } from '../assets/data.js'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { DemoData } from '../assets/DemoData.ts'
 import { duplicate } from '../assets/data'
 import { EditorAction } from '../assets/EditorAction.ts'
 import { LocalStoreService } from '../services/LocalStoreService.ts'
-import { onMounted, onUnmounted, ref, computed, watch, nextTick } from 'vue'
 import { TemplateFormat } from '@gak/shared'
 import { PageType } from '../assets/PageType.ts'
 import { RouterNames } from '../router/index.js'
@@ -104,13 +105,15 @@ import Menu from '../components/menu/Menu.vue'
 import TemplateViewerMenu from '../components/menu/TemplateViewerMenu.vue'
 import LoadingPage from '../components/page/LoadingPage.vue'
 import Page from '../components/page/Page.vue'
-import TemplateExport from '../components/templates/TemplateExport.vue'
-import TemplateSettingsDialog from '../components/templates/TemplateSettingsDialog.vue'
-import RouteDialog from '../components/templates/RouteDialog.vue'
 import Tile from '../components/tiles/Tile.vue'
-import VerticalActionBar from '../components/editor/VerticalActionBar.vue'
-import HorizontalActionBar from '../components/editor/HorizontalActionBar.vue'
-import FTUXBanner from '../components/onboarding/FTUXBanner.vue'
+
+// Dynamic components for dialogs and secondary features
+const TemplateExport = defineAsyncComponent(() => import('../components/templates/TemplateExport.vue'))
+const TemplateSettingsDialog = defineAsyncComponent(() => import('../components/templates/TemplateSettingsDialog.vue'))
+const RouteDialog = defineAsyncComponent(() => import('../components/templates/RouteDialog.vue'))
+const VerticalActionBar = defineAsyncComponent(() => import('../components/editor/VerticalActionBar.vue'))
+const HorizontalActionBar = defineAsyncComponent(() => import('../components/editor/HorizontalActionBar.vue'))
+const FTUXBanner = defineAsyncComponent(() => import('../components/onboarding/FTUXBanner.vue'))
 
 const noTemplate = Template.noTemplate()
 const activeTemplate = ref(noTemplate)

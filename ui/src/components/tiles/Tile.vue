@@ -37,27 +37,30 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watch} from 'vue';
+import { onMounted, ref, watch, defineAsyncComponent } from 'vue';
 import { Route } from '@gak/shared';
 import { TileType } from '../../models/TileType'
 import { TileData } from '../../models/TileData';
 import { useConfirm } from "primevue/useconfirm";
 
+// Static imports for most used/critical tiles
 import Header from '../shared/Header.vue';
 import AirportTile from '../airport/AirportTile.vue';
 import AtisTile from '../atis/AtisTile.vue'
 import ChecklistTile from '../checklist/ChecklistTile.vue';
-import IfrTile from '../../components/clearance/IfrTile.vue';
-import Dummy from './Dummy.vue';
-import Hold from '../clearance/HoldTile.vue'
-import RadioTile from '../radios/RadioTile.vue';
-import SunLight from '../sunlight/SunLight.vue';
-import RegulationsTile from '../regulations/RegulationsTile.vue';
-import FAButton from '../shared/FAButton.vue'
-import NavlogTile from '../navlog/NavlogTile.vue';
 import NotesTile from '../notes/NotesTile.vue';
-import VfrTile from '../vfr/VfrTile.vue';
-import EmergencyTile from '../emergencies/EmergencyTile.vue';
+import Dummy from './Dummy.vue';
+import FAButton from '../shared/FAButton.vue'
+
+// Dynamic imports for less frequent tiles
+const IfrTile = defineAsyncComponent(() => import('../../components/clearance/IfrTile.vue'));
+const Hold = defineAsyncComponent(() => import('../clearance/HoldTile.vue'))
+const RadioTile = defineAsyncComponent(() => import('../radios/RadioTile.vue'));
+const SunLight = defineAsyncComponent(() => import('../sunlight/SunLight.vue'));
+const RegulationsTile = defineAsyncComponent(() => import('../regulations/RegulationsTile.vue'));
+const NavlogTile = defineAsyncComponent(() => import('../navlog/NavlogTile.vue'));
+const VfrTile = defineAsyncComponent(() => import('../vfr/VfrTile.vue'));
+const EmergencyTile = defineAsyncComponent(() => import('../emergencies/EmergencyTile.vue'));
 
 const emits = defineEmits(['update','settings', 'replacePage', 'capture'])
 const confirm = useConfirm()

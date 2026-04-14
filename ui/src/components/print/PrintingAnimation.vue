@@ -93,14 +93,14 @@ defineProps<{
 }
 
 @keyframes flyPattern {
-  0% { transform: translate(0px, var(--pattern-height)) rotate(0deg); }
-  35% { transform: translate(var(--pattern-width), var(--pattern-height)) rotate( 0deg); }
-  40% { transform: translate(var(--pattern-width), var(--pattern-height)) rotate(-90deg); }
-  45% { transform: translate(var(--pattern-width), 0px) rotate(-90deg); }
-  50% { transform: translate(var(--pattern-width), 0px) rotate(-180deg); }
-  85% { transform: translate(0px, 0px) rotate(-180deg); }
-  90% { transform: translate(0px, 0px) rotate(-270deg); }
-  95% { transform: translate(0px, var(--pattern-height)) rotate(-270deg); }
-  100% { transform: translate(0px, var(--pattern-height)) rotate(-360deg); }
+  0% { transform: translate(20px, var(--pattern-height)) rotate(0deg); }
+  35% { transform: translate(calc(var(--pattern-width) - 20px), var(--pattern-height)) rotate( 0deg); }
+  40% { transform: translate(var(--pattern-width), calc( var(--pattern-height) - 20px)) rotate(-90deg); }
+  45% { transform: translate(var(--pattern-width), 20px) rotate(-90deg); }
+  50% { transform: translate(calc(var(--pattern-width) - 20px), 0px) rotate(-180deg); }
+  85% { transform: translate(20px, 0px) rotate(-180deg); }
+  90% { transform: translate(0px, 20px) rotate(-270deg); }
+  95% { transform: translate(0px, calc(var(--pattern-height) - 20px)) rotate(-270deg); }
+  100% { transform: translate(20px, var(--pattern-height)) rotate(-360deg); }
 }
 </style>
