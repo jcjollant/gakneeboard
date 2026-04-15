@@ -6,6 +6,10 @@ export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:5173',
     excludeSpecPattern: 'cypress/e2e/skipped/**/*',
+    blockHosts: [
+      "*.googletagmanager.com",
+      "*.google-analytics.com"
+    ],
     setupNodeEvents(on, config) {
       addMatchImageSnapshotPlugin(on, config);
       cypressSplit(on, config);
