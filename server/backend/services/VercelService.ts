@@ -69,15 +69,25 @@ export class VercelService {
     public static async triggerRedeploy(): Promise<void> {
         // console.debug(`[VercelService.triggerRedeploy] Triggering new deployment`);
 
-        await axios.post(`${this.API_URL}/v13/deployments?teamId=${this.TEAM_ID}`, {
-            name: 'gak-server',
-            gitSource: {
-                type: 'github',
-                repoId: 1135755888, // ID for jcjollant/gakneeboard
-                ref: 'main'
+        try {
+            await axios.post(`${this.API_URL}/v13/deployments?teamId=${this.TEAM_ID}`, {
+                name: 'gak-server',
+                target: 'production',
+                gitSource: {
+                    type: 'github',
+                    repoId: 1135755888, // ID for jcjollant/gakneeboard
+                    ref: 'main'
+                }
+            }, {
+                headers: this.headers
+            });
+        } catch (e: any) {
+            let message = e.message;
+            if (e.response && e.response.data && e.response.data.error) {
+                message += ` - ${e.response.data.error.message}`;
             }
-        }, {
-            headers: this.headers
-        });
+            console.error('[VercelService.triggerRedeploy] Failed:', message);
+            throw new Error(message);
+        }
     }
 }
