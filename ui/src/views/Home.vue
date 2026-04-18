@@ -70,6 +70,13 @@
             @delete="onChecklistDelete" />
         <AircraftEditor v-model:visible="showAircraftEditor" :initialAircraft="currentAircraft" @saved="onAircraftSaved" @deleted="onAircraftDeleted" />
 
+        <ExistingAircraftActionDialog 
+            v-model:visible="showExistingAircraftAction" 
+            :aircraft="currentAircraft" 
+            @edit="onAircraftEdit" 
+            @create-fuel-worksheet="onAircraftFuelWorksheet" 
+            @delete="onAircraftActionDelete" 
+        />
         <NewAircraftSelectionDialog v-model:visible="showAircraftTypeChoice" :userAircrafts="aircrafts" @selected="onAircraftSelected" />
     </div>
 </template>
@@ -94,10 +101,12 @@ import { AircraftService } from '../services/AircraftService';
 import AircraftCard from '../components/aircraft/AircraftCard.vue';
 import AircraftEditor from '../components/aircraft/AircraftEditor.vue';
 import NewAircraftSelectionDialog from '../components/aircraft/NewAircraftSelectionDialog.vue';
+import ExistingAircraftActionDialog from '../components/aircraft/ExistingAircraftActionDialog.vue';
 import { TemplateFormat, Aircraft } from '@gak/shared';
 import { LibraryChecklist } from '../models/LibraryChecklist';
 import { Template, TemplatePage } from '../models/Template';
-
+import { PageType } from '../assets/PageType';
+import { LocalStoreService } from '../services/LocalStoreService';
 
 class DemoSelector {
     name: string
@@ -256,9 +265,24 @@ const showAircraftEditor = ref(false);
 const currentAircraft = ref<Aircraft | null>(null);
 
 const showAircraftTypeChoice = ref(false);
+const showExistingAircraftAction = ref(false);
 
 async function loadAircrafts() {
-    aircrafts.value = await AircraftService.list();
+    aircrafts.value = LocalStoreService.getAircrafts();
+    if (AircraftService.wasFetchedThisSession) {
+        return;
+    }
+    
+    try {
+        const fetched = await AircraftService.list();
+        if (fetched) {
+            aircrafts.value = fetched;
+            LocalStoreService.saveAircrafts(fetched);
+            AircraftService.wasFetchedThisSession = true;
+        }
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 function onNewAircraft() {
@@ -272,7 +296,36 @@ function onAircraftSelected(aircraft: Aircraft | null) {
 
 function onAircraftSelection(aircraft: Aircraft) {
     currentAircraft.value = aircraft;
+    showExistingAircraftAction.value = true;
+}
+
+function onAircraftEdit(aircraft: Aircraft) {
+    currentAircraft.value = aircraft;
     showAircraftEditor.value = true;
+}
+
+function onAircraftFuelWorksheet(aircraft: Aircraft) {
+    const templateData = getTemplateBlank();
+    templateData.name = aircraft.tailNumber + ' Fuel Worksheet';
+    templateData.desc = 'Fuel Worksheet for ' + aircraft.tailNumber;
+    templateData.format = TemplateFormat.Kneeboard;
+    templateData.data = [new TemplatePage(PageType.fuelWorksheet, 'Fuel Worksheet', {})];
+    
+    // Save template data to localstore and navigate to template editor
+    routeToLocalTemplate(router, templateData);
+}
+
+async function onAircraftActionDelete(aircraft: Aircraft) {
+    if (!aircraft.id) return
+    try {
+        const success = await AircraftService.delete(aircraft.id)
+        if (success) {
+            onAircraftDeleted(aircraft.id)
+        }
+    } catch (err) {
+        console.error(err)
+        toaster.error('Delete Failed', 'Could not delete the aircraft')
+    }
 }
 
 function onAircraftSaved(saved: Aircraft) {
@@ -284,11 +337,13 @@ function onAircraftSaved(saved: Aircraft) {
         aircrafts.value.push(saved);
         aircrafts.value.sort((a: Aircraft, b: Aircraft) => a.tailNumber.localeCompare(b.tailNumber));
     }
+    LocalStoreService.saveAircrafts(aircrafts.value);
 }
 
 function onAircraftDeleted(id: number) {
     toaster.success('Aircraft Deleted', 'The aircraft has been removed');
     aircrafts.value = aircrafts.value.filter((a: Aircraft) => a.id !== id);
+    LocalStoreService.saveAircrafts(aircrafts.value);
 }
 </script>
 

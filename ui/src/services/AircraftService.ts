@@ -4,6 +4,8 @@ import { UrlService } from './UrlService'
 import { Aircraft } from '@gak/shared'
 
 export class AircraftService {
+    static wasFetchedThisSession = false
+
     static async list(): Promise<Aircraft[]> {
         const url = UrlService.aircrafts()
         return currentUser.getUrl(url)

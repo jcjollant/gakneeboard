@@ -29,6 +29,7 @@ export class LocalStoreService {
     static ftuxBanner = 'ftux-banner'
     static lastKnownAirportCode = 'last-known-airport-code'
     static printOptions = 'print-options'
+    static aircrafts = 'aircrafts'
     static MAX_AIRPORTS = 30
     static MAX_APPROACHES = 5
     static LEAN_AIRPORTS = 24
@@ -509,5 +510,15 @@ export class LocalStoreService {
         const options = localStorage.getItem(LocalStoreService.printOptions)
         if (options) return JSON.parse(options)
         return undefined
+    }
+
+    static saveAircrafts(aircrafts: any[]) {
+        localStorage.setItem(LocalStoreService.aircrafts, JSON.stringify(aircrafts))
+    }
+
+    static getAircrafts(): any[] {
+        const data = localStorage.getItem(LocalStoreService.aircrafts)
+        if (data) return JSON.parse(data)
+        return []
     }
 }
