@@ -2,7 +2,9 @@
   <div class="aircraftCard" @click="$emit('selection', aircraft)">
     <div class="preview">
       <div class="icon">
-        <font-awesome-icon :icon="aircraft.data.icon || 'fa-plane'" />
+        <img v-if="aircraft.data.icon && aircraft.data.icon.endsWith('.png')" :src="aircraft.data.icon" class="aircraft-image" />
+        <img v-else-if="aircraft.data.icon && !aircraft.data.icon.startsWith('fa-')" :src="'/aircrafts/' + aircraft.data.icon" class="aircraft-image" />
+        <font-awesome-icon v-else :icon="aircraft.data.icon || 'fa-plane'" />
       </div>
     </div>
     <div class="name">{{ aircraft.tailNumber || (aircraft.data.make + ' ' + aircraft.data.model) }}</div>
@@ -45,6 +47,17 @@ defineEmits(['selection'])
 .icon {
   font-size: 2.5rem;
   color: #0c4a6e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+}
+.aircraft-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 .name {
   text-align: center;

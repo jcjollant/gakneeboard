@@ -15,17 +15,30 @@
             <InputText id="make" v-model="aircraft.data.make" maxLength="32" placeholder="e.g. Cessna" />
           </div>
         </div>
-        <div class="col-3">
+        <div class="col-6">
           <div class="field">
             <label for="model">Model</label>
-            <InputText id="model" v-model="aircraft.data.model" maxLength="32" placeholder="e.g. 172S" />
+            <div class="model-row">
+                <InputText id="model" v-model="aircraft.data.model" maxLength="32" placeholder="e.g. 172S" />
+                <div class="icon-trigger" @click="showIconList = !showIconList" :class="{ active: showIconList }" title="Change aircraft icon">
+                    <template v-if="selectedIcon.type === 'image'">
+                        <img :src="selectedIcon.path" :alt="selectedIcon.label" />
+                    </template>
+                    <template v-else>
+                        <font-awesome-icon :icon="selectedIcon.faIcon" />
+                    </template>
+                    <div class="edit-hint"><font-awesome-icon :icon="showIconList ? 'fa-chevron-up' : 'fa-pencil'" /></div>
+                </div>
+            </div>
           </div>
         </div>
-        <div class="col-3">
-          <div class="field">
-            <label for="icon">Icon (FA)</label>
-            <InputText id="icon" v-model="aircraft.data.icon" placeholder="e.g. fa-plane" />
-          </div>
+
+        <!-- Inline Icon Selector -->
+        <div v-if="showIconList" class="col-12">
+            <div class="field">
+                <label>Select Aircraft Icon</label>
+                <IconSelector v-model="aircraft.data.icon" />
+            </div>
         </div>
 
         <div class="col-12">
@@ -220,7 +233,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, reactive } from 'vue'
+import { ref, watch, reactive, computed } from 'vue'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
@@ -228,6 +241,8 @@ import InputNumber from 'primevue/inputnumber'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Separator from '../shared/Separator.vue'
+import IconSelector from './IconSelector.vue'
+import { AIRCRAFT_ICONS, AircraftIcon, getIcon } from '../../utils/aircraftIcons'
 import { AircraftService } from '../../services/AircraftService'
 import { Aircraft } from '@gak/shared'
 
@@ -239,6 +254,7 @@ const props = defineProps<{
 const emits = defineEmits(['update:visible', 'saved', 'deleted'])
 
 const saving = ref(false)
+const showIconList = ref(false)
 const aircraft = reactive<Partial<Aircraft> & { data: any }>({
   tailNumber: '',
   data: {
@@ -269,8 +285,11 @@ const aircraft = reactive<Partial<Aircraft> & { data: any }>({
   }
 })
 
+const selectedIcon = computed(() => getIcon(aircraft.data.icon))
+
 watch(() => props.visible, (newVal) => {
   if (newVal) {
+    showIconList.value = false
     if (props.initialAircraft) {
       Object.assign(aircraft, JSON.parse(JSON.stringify(props.initialAircraft)))
     } else {
@@ -397,6 +416,53 @@ async function onDelete() {
   .aircraft-editor .col-6 {
     grid-column: span 6;
   }
+}
+.model-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+.model-row .p-inputtext {
+    flex: 1;
+}
+.icon-trigger {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+  font-size: 1.25rem;
+  color: #0369a1;
+}
+.icon-trigger:hover, .icon-trigger.active {
+  border-color: #0ea5e9;
+  background: #f0f9ff;
+}
+.icon-trigger img {
+    max-width: 80%;
+    max-height: 80%;
+    object-fit: contain;
+}
+.edit-hint {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    background: #0ea5e9;
+    color: white;
+    font-size: 0.6rem;
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid white;
 }
 .field {
   margin-bottom: 1rem;
