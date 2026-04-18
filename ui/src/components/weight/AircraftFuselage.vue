@@ -1,23 +1,18 @@
 <template>
     <div class="fuselage bt">
         <div class="header">
-            <h3>Aircraft Loading</h3>
+            <h3>Aircraft Load</h3>
         </div>
         <div class="fuselage-interior">
             <div v-for="(station, index) in filteredStations" :key="index" class="station-row">
-                <div class="station-label">
-                    <span class="station-name">{{ station.name }}</span>
-                    <span class="station-arm">{{ station.posInch }}"</span>
-                </div>
-                
                 <!-- Cargo (Center) -->
                 <div v-if="!isSideBySide(station)" class="station-dropzones single"
                      @dragover.prevent 
                      @dragenter.prevent
-                     @drop="onDrop($event, station.originalIndex)">
+                     @drop="onDrop($event, station.originalIndex, 0)">
                      
                     <div v-if="getItemsForStation(station.originalIndex).length === 0" class="empty-slot placeholder">
-                        Drop items here
+                        {{ station.name }} ({{ station.posInch }}")
                     </div>
                     
                     <div v-for="item in getItemsForStation(station.originalIndex)" :key="item.id"
@@ -32,24 +27,23 @@
                     </div>
                 </div>
 
-                <!-- Seats (Side By Side) -->
                 <div v-else class="station-dropzones side-by-side">
                     <!-- Left Slot -->
                     <div class="dropzone-slot"
                          @dragover.prevent 
                          @dragenter.prevent
-                         @drop="onDrop($event, station.originalIndex)">
-                        <div v-if="getItemsForStation(station.originalIndex).length === 0" class="empty-slot">
-                            L Seat
+                         @drop="onDrop($event, station.originalIndex, 0)">
+                        <div v-if="!getItemInSlot(station.originalIndex, 0)" class="empty-slot">
+                            {{ station.name }} (L) {{ station.posInch }}"
                         </div>
-                        <div v-for="item in getItemsForStation(station.originalIndex).slice(0, 1)" :key="item.id"
+                        <div v-if="getItemInSlot(station.originalIndex, 0)" 
                              class="fuselage-item"
                              draggable="true"
-                             @dragstart="onDragStart($event, item)">
-                            <div class="icon"><font-awesome-icon :icon="item.isPerson ? 'fa-user' : 'fa-box'" /></div>
+                             @dragstart="onDragStart($event, getItemInSlot(station.originalIndex, 0)!)">
+                            <div class="icon"><font-awesome-icon :icon="getItemInSlot(station.originalIndex, 0)!.isPerson ? 'fa-user' : 'fa-box'" /></div>
                             <div class="details">
-                                <span class="name">{{ item.name }}</span>
-                                <span class="weight">{{ item.weightLbs }} lbs</span>
+                                <span class="name">{{ getItemInSlot(station.originalIndex, 0)!.name }}</span>
+                                <span class="weight">{{ getItemInSlot(station.originalIndex, 0)!.weightLbs }} lbs</span>
                             </div>
                         </div>
                     </div>
@@ -58,18 +52,18 @@
                     <div class="dropzone-slot"
                          @dragover.prevent 
                          @dragenter.prevent
-                         @drop="onDrop($event, station.originalIndex)">
-                        <div v-if="getItemsForStation(station.originalIndex).length <= 1" class="empty-slot">
-                            R Seat
+                         @drop="onDrop($event, station.originalIndex, 1)">
+                        <div v-if="!getItemInSlot(station.originalIndex, 1)" class="empty-slot">
+                            {{ station.name }} (R) {{ station.posInch }}"
                         </div>
-                        <div v-for="item in getItemsForStation(station.originalIndex).slice(1, 2)" :key="item.id"
+                        <div v-if="getItemInSlot(station.originalIndex, 1)" 
                              class="fuselage-item"
                              draggable="true"
-                             @dragstart="onDragStart($event, item)">
-                            <div class="icon"><font-awesome-icon :icon="item.isPerson ? 'fa-user' : 'fa-box'" /></div>
+                             @dragstart="onDragStart($event, getItemInSlot(station.originalIndex, 1)!)">
+                            <div class="icon"><font-awesome-icon :icon="getItemInSlot(station.originalIndex, 1)!.isPerson ? 'fa-user' : 'fa-box'" /></div>
                             <div class="details">
-                                <span class="name">{{ item.name }}</span>
-                                <span class="weight">{{ item.weightLbs }} lbs</span>
+                                <span class="name">{{ getItemInSlot(station.originalIndex, 1)!.name }}</span>
+                                <span class="weight">{{ getItemInSlot(station.originalIndex, 1)!.weightLbs }} lbs</span>
                             </div>
                         </div>
                     </div>
@@ -95,6 +89,7 @@ const emits = defineEmits(['update'])
 const filteredStations = computed(() => {
     return props.aircraft.data.stations.map((s, index) => ({ ...s, originalIndex: index }))
         .filter(s => (s.type as string) !== 'fuel')
+        .sort((a, b) => a.posInch - b.posInch)
 })
 
 function emitUpdate() {
@@ -114,6 +109,10 @@ function getItemsForStation(stationIndex: number) {
     return props.data.aircraftItems.filter(i => i.stationIndex === stationIndex)
 }
 
+function getItemInSlot(stationIndex: number, slotIndex: number) {
+    return props.data.aircraftItems.find(i => i.stationIndex === stationIndex && i.slotIndex === slotIndex)
+}
+
 function onDragStart(event: DragEvent, item: AssignedLoadItem) {
     if (event.dataTransfer) {
         event.dataTransfer.setData('application/json', JSON.stringify({ item, source: 'aircraft' }))
@@ -121,18 +120,18 @@ function onDragStart(event: DragEvent, item: AssignedLoadItem) {
     }
 }
 
-function onDrop(event: DragEvent, targetStationIndex: number) {
+function onDrop(event: DragEvent, targetStationIndex: number, slotIndex: number = 0) {
     const dataStr = event.dataTransfer?.getData('application/json')
     if (dataStr) {
         try {
             const { item, source } = JSON.parse(dataStr)
             
-            // Checking if slot is full for side-by-side seats
+            // Checking if specific slot is full for side-by-side seats
             const targetStation = props.aircraft.data.stations[targetStationIndex]
             if (isSideBySide(targetStation)) {
-                if (getItemsForStation(targetStationIndex).length >= 2) {
+                if (getItemInSlot(targetStationIndex, slotIndex)) {
                     // It's full, cannot drop!
-                    console.log('Cannot drop, seats are full.')
+                    console.log('Cannot drop, seat is full.')
                     return;
                 }
             }
@@ -142,15 +141,16 @@ function onDrop(event: DragEvent, targetStationIndex: number) {
                 const tIndex = props.data.tarmacItems.findIndex((i: LoadItem) => i.id === item.id)
                 if (tIndex !== -1) {
                     props.data.tarmacItems.splice(tIndex, 1)
-                    const assignedItem: AssignedLoadItem = { ...item, stationIndex: targetStationIndex }
+                    const assignedItem: AssignedLoadItem = { ...item, stationIndex: targetStationIndex, slotIndex }
                     props.data.aircraftItems.push(assignedItem)
                 }
             } else if (source === 'aircraft') {
                 // Move from one station to another inside aircraft
                 const aIndex = props.data.aircraftItems.findIndex((i: AssignedLoadItem) => i.id === item.id)
                 if (aIndex !== -1) {
-                    // Update index
+                    // Update index and slot
                     props.data.aircraftItems[aIndex].stationIndex = targetStationIndex
+                    props.data.aircraftItems[aIndex].slotIndex = slotIndex
                 }
             }
             
@@ -193,20 +193,8 @@ function onDrop(event: DragEvent, targetStationIndex: number) {
 .station-row {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-}
-
-.station-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: #495057;
-}
-
-.station-arm {
-    color: #6c757d;
-    font-weight: normal;
+    align-items: center;
+    gap: 0;
 }
 
 .station-dropzones {
@@ -216,6 +204,7 @@ function onDrop(event: DragEvent, targetStationIndex: number) {
 }
 
 .station-dropzones.single {
+    width: 65%;
     background-color: rgba(255, 255, 255, 0.5);
     border: 2px dashed #ced4da;
     border-radius: 6px;
@@ -223,6 +212,10 @@ function onDrop(event: DragEvent, targetStationIndex: number) {
     flex-direction: column;
     justify-content: center;
     align-items: stretch;
+}
+
+.station-dropzones.side-by-side {
+    width: 100%;
 }
 
 .dropzone-slot {
@@ -238,13 +231,14 @@ function onDrop(event: DragEvent, targetStationIndex: number) {
 
 .empty-slot {
     color: #adb5bd;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     width: 100%;
     text-align: center;
+    line-height: 1.2;
 }
 
 .empty-slot.placeholder {
-    padding: 1rem 0;
+    padding: 0.75rem 0;
 }
 
 .fuselage-item {

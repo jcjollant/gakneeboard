@@ -104,8 +104,8 @@ function onDrop(event: DragEvent) {
                 if (acIndex !== -1) {
                     props.data.aircraftItems.splice(acIndex, 1)
                     
-                    // Convert back to regular LoadItem by stripping stationIndex
-                    const { stationIndex, ...loadItem } = item
+                    // Convert back to regular LoadItem by stripping station assignment info
+                    const { stationIndex, slotIndex, ...loadItem } = item
                     props.data.tarmacItems.push(loadItem as LoadItem)
                     
                     emitUpdate()

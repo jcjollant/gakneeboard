@@ -168,7 +168,12 @@ const legalReserveFuelGal = computed(() => {
     return 0
 })
 
-const fuelAtTakeoffGal = computed(() => flightLegsFuelGal.value + legalReserveFuelGal.value + bufferFuelGal.value)
+const fuelAtTakeoffGal = computed(() => {
+    if (props.data && props.data.fuelGallons !== undefined) {
+        return Math.max(0, props.data.fuelGallons - (props.data.taxiFuelGallons || 0))
+    }
+    return flightLegsFuelGal.value + legalReserveFuelGal.value + bufferFuelGal.value
+})
 const fuelAtTakeoffWeight = computed(() => fuelAtTakeoffGal.value * 6)
 const fuelAtTakeoffMoment = computed(() => fuelAtTakeoffWeight.value * fuelArm.value)
 

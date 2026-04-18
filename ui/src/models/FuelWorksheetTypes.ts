@@ -7,6 +7,7 @@ export interface LoadItem {
 
 export interface AssignedLoadItem extends LoadItem {
     stationIndex: number;
+    slotIndex?: number;
 }
 
 export interface FlightLeg {
@@ -24,5 +25,6 @@ export interface FuelWorksheetData {
     ifrAlternateMinutes: number;
     personalBufferMinutes: number;
     taxiFuelGallons: number;
+    fuelGallons: number;
     legs: FlightLeg[];
 }

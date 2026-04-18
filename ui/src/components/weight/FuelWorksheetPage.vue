@@ -14,6 +14,8 @@
                 <AircraftFuselage :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
                 <Separator name="Tarmac" />
                 <TarmacComponent :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
+                <Separator name="Fuel" />
+                <FuelSection :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
             </div>
 
             <!-- Col 2: Flight -->
@@ -38,6 +40,7 @@
 import { ref, onMounted, watch } from 'vue'
 import Header from '../shared/Header.vue'
 import AircraftFuselage from './AircraftFuselage.vue'
+import FuelSection from './FuelSection.vue'
 import TarmacComponent from './TarmacComponent.vue'
 import FlightSection from './FlightSection.vue'
 import CgEnvelope from './CgEnvelope.vue'
@@ -67,6 +70,11 @@ function loadAircraft() {
         const aircrafts = LocalStoreService.getAircrafts()
         const found = aircrafts.find((a: Aircraft) => a.tailNumber === pageData.value.aircraftTailNumber)
         aircraft.value = found || null
+        
+        // Initialize fuel if missing
+        if (aircraft.value && (pageData.value.fuelGallons === undefined || pageData.value.fuelGallons === null)) {
+            pageData.value.fuelGallons = 0
+        }
     }
 }
 

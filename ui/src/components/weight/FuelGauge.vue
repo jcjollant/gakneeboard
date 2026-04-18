@@ -6,7 +6,7 @@
         <div class="gauge-content">
             <div class="gauge-info">
                 <div><strong>Max Usable:</strong> {{ maxUsable.toFixed(1) }} gal</div>
-                <div><strong>Legal Reserve:</strong> {{ legalReserveFuel.toFixed(1) }} gal</div>
+                <div><strong>Actual Load:</strong> <span :class="{ 'text-danger': data.fuelGallons > fuelLimitedByWeight }">{{ (data.fuelGallons || 0).toFixed(1) }}</span> gal</div>
                 <div><strong>Total Required:</strong> {{ totalRequired.toFixed(1) }} gal</div>
                 <div v-if="fuelLimitedByWeight < maxUsable" class="text-danger">
                     <strong>Weight Limited Max:</strong> {{ fuelLimitedByWeight.toFixed(1) }} gal 
@@ -21,6 +21,10 @@
                 </div>
                 <div v-if="mldwLimitGal < maxUsable" class="limit-marker mldw" :style="{ left: percent(mldwLimitGal) }">
                     <span>MLDW</span>
+                </div>
+                <!-- Manual Fuel Marker -->
+                <div v-if="data.fuelGallons !== undefined" class="limit-marker actual" :style="{ left: percent(data.fuelGallons) }">
+                    <span>ACTUAL</span>
                 </div>
 
                 <!-- Main Gauge Bar -->
@@ -206,6 +210,16 @@ function percent(amount: number) {
     font-weight: bold;
     color: #ef4444;
     white-space: nowrap;
+}
+
+.limit-marker.actual {
+    background-color: #0ea5e9;
+}
+
+.limit-marker.actual span {
+    color: #0ea5e9;
+    top: auto;
+    bottom: -15px;
 }
 
 .gauge-ticks {
