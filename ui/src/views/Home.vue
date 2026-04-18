@@ -4,7 +4,7 @@
 
         <Menu></Menu>
         <div class="section templateSection kneeboardSection">
-            <div class="header">My Custom Kneeboards</div>
+            <div class="header">Kneeboards</div>
             <div class="templateList">
                 <TemplateSelector :template="newTemplate" :temporary="true" :clipped="true" src="/thumbnails/new.png" class="templateNew"
                     @selection="onNewTemplate"/>
@@ -20,7 +20,7 @@
             </div>
         </div>
         <div class="section templateSection aircraftSection" v-if="currentUser.loggedIn">
-            <div class="header">My Aircrafts</div>
+            <div class="header">Aircrafts</div>
             <div class="templateList">
                 <div class="templateSelector aircraft" @click="onNewAircraft">
                     <div class="preview temporary">
