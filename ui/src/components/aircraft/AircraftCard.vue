@@ -32,7 +32,7 @@ defineEmits(['selection'])
   background-color: #e0f2fe;
   border-radius: 5px;
   border: 3px solid #0369a1;
-  height: calc(var(--page-height) / 5);
+  height: calc(var(--page-width) / 5);
   display: flex;
   flex-direction: column;
   justify-content: center;

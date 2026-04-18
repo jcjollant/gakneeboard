@@ -20,9 +20,9 @@
             </div>
         </div>
         <div class="section templateSection aircraftSection" v-if="currentUser.loggedIn">
-            <div class="header">My Aircraft</div>
+            <div class="header">My Aircrafts</div>
             <div class="templateList">
-                <div class="templateSelector" @click="onNewAircraft">
+                <div class="templateSelector aircraft" @click="onNewAircraft">
                     <div class="preview temporary">
                         <div class="default">
                             <font-awesome-icon icon="fa-plus" />
@@ -69,6 +69,8 @@
             @apply="onChecklistApply"
             @delete="onChecklistDelete" />
         <AircraftEditor v-model:visible="showAircraftEditor" :initialAircraft="currentAircraft" @saved="onAircraftSaved" @deleted="onAircraftDeleted" />
+
+        <NewAircraftSelectionDialog v-model:visible="showAircraftTypeChoice" :userAircrafts="aircrafts" @selected="onAircraftSelected" />
     </div>
 </template>
 
@@ -91,6 +93,7 @@ import PricingPlans from './PricingPlans.vue';
 import { AircraftService } from '../services/AircraftService';
 import AircraftCard from '../components/aircraft/AircraftCard.vue';
 import AircraftEditor from '../components/aircraft/AircraftEditor.vue';
+import NewAircraftSelectionDialog from '../components/aircraft/NewAircraftSelectionDialog.vue';
 import { TemplateFormat, Aircraft } from '@gak/shared';
 import { LibraryChecklist } from '../models/LibraryChecklist';
 import { Template, TemplatePage } from '../models/Template';
@@ -252,12 +255,18 @@ const aircrafts = ref<Aircraft[]>([]);
 const showAircraftEditor = ref(false);
 const currentAircraft = ref<Aircraft | null>(null);
 
+const showAircraftTypeChoice = ref(false);
+
 async function loadAircrafts() {
     aircrafts.value = await AircraftService.list();
 }
 
 function onNewAircraft() {
-    currentAircraft.value = null;
+    showAircraftTypeChoice.value = true;
+}
+
+function onAircraftSelected(aircraft: Aircraft | null) {
+    currentAircraft.value = aircraft;
     showAircraftEditor.value = true;
 }
 
@@ -363,4 +372,40 @@ function onAircraftDeleted(id: number) {
     margin: 0;
 }
 
+.aircraftSection .templateSelector.aircraft {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    cursor: pointer;
+    width: calc(var(--page-width) / 5);
+}
+
+.aircraftSection .preview.temporary {
+    background-color: white;
+    border: 3px dashed lightgrey;
+    border-radius: 5px;
+    height: calc(var(--page-width) / 5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s;
+}
+
+.aircraftSection .preview.temporary:hover {
+    transform: scale(1.05);
+}
+
+.aircraftSection .default {
+    font-size: 2.5rem;
+    color: lightgrey;
+}
+
+.aircraftSection .name {
+    text-align: center;
+    font-size: small;
+    padding: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 </style>

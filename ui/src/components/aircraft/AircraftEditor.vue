@@ -3,91 +3,131 @@
     <div class="aircraft-editor">
       <div class="grid p-fluid">
         <!-- Basic Info -->
-        <div class="col-12 md:col-4">
+        <div class="col-4">
           <div class="field">
             <label for="tailNumber">Tail Number</label>
             <InputText id="tailNumber" v-model="aircraft.tailNumber" maxLength="8" placeholder="e.g. N12345" />
           </div>
         </div>
-        <div class="col-12 md:col-4">
+        <div class="col-4">
           <div class="field">
             <label for="make">Make</label>
             <InputText id="make" v-model="aircraft.make" maxLength="32" placeholder="e.g. Cessna" />
           </div>
         </div>
-        <div class="col-12 md:col-4">
+        <div class="col-4">
           <div class="field">
             <label for="model">Model</label>
             <InputText id="model" v-model="aircraft.model" maxLength="32" placeholder="e.g. 172S" />
           </div>
         </div>
 
-        <Divider align="left" type="dashed">
-            <b>Performance Characteristics</b>
-        </Divider>
+        <div class="col-12">
+          <Separator name="Performance Characteristics" :leftAligned="true" />
+        </div>
 
-        <div class="col-12 md:col-4">
+        <div class="col-4">
           <div class="field">
             <label>Climb Fuel (gph)</label>
             <InputNumber v-model="aircraft.data.climbFuel" :minFractionDigits="1" />
           </div>
         </div>
-        <div class="col-12 md:col-4">
+        <div class="col-4">
           <div class="field">
             <label>Cruise Fuel (gph)</label>
             <InputNumber v-model="aircraft.data.cruiseFuel" :minFractionDigits="1" />
           </div>
         </div>
-        <div class="col-12 md:col-4">
+        <div class="col-4">
           <div class="field">
             <label>Descent Fuel (gph)</label>
             <InputNumber v-model="aircraft.data.descentFuel" :minFractionDigits="1" />
           </div>
         </div>
 
-        <div class="col-12 md:col-6">
+        <div class="col-6">
           <div class="field">
             <label>Climb TAS (kt)</label>
             <InputNumber v-model="aircraft.data.climbTas" />
           </div>
         </div>
-        <div class="col-12 md:col-6">
+        <div class="col-6">
           <div class="field">
             <label>Cruise TAS (kt)</label>
             <InputNumber v-model="aircraft.data.cruiseTas" />
           </div>
         </div>
+        <div class="col-12">
+          <Separator name="V-Speeds (kt)" :leftAligned="true" />
+        </div>
 
-        <Divider align="left" type="dashed">
-            <b>Weight and Balance</b>
-        </Divider>
+        <div class="col-2">
+          <div class="field">
+            <label>Vs0</label>
+            <InputNumber v-model="aircraft.data.speed.vs0" />
+          </div>
+        </div>
+        <div class="col-2">
+          <div class="field">
+            <label>Vs1</label>
+            <InputNumber v-model="aircraft.data.speed.vs1" />
+          </div>
+        </div>
+        <div class="col-2">
+          <div class="field">
+            <label>Vfe</label>
+            <InputNumber v-model="aircraft.data.speed.vfe" />
+          </div>
+        </div>
+        <div class="col-2">
+          <div class="field">
+            <label>Va</label>
+            <InputNumber v-model="aircraft.data.speed.va" />
+          </div>
+        </div>
+        <div class="col-2">
+          <div class="field">
+            <label>Vno</label>
+            <InputNumber v-model="aircraft.data.speed.vno" />
+          </div>
+        </div>
+        <div class="col-2">
+          <div class="field">
+            <label>Vne</label>
+            <InputNumber v-model="aircraft.data.speed.vne" />
+          </div>
+        </div>
 
-        <div class="col-12 md:col-6">
+        <div class="col-12">
+          <Separator name="Weight and Balance" :leftAligned="true" />
+        </div>
+
+        <div class="col-6">
             <div class="field">
                 <label>Basic Empty Weight (lbs)</label>
                 <InputNumber v-model="aircraft.data.basicEmptyWeight" />
             </div>
         </div>
-        <div class="col-12 md:col-6">
+        <div class="col-6">
             <div class="field">
                 <label>Basic Empty Arm (in)</label>
                 <InputNumber v-model="aircraft.data.basicEmptyCg" :minFractionDigits="2" />
             </div>
         </div>
 
-        <div class="col-12 md:col-4">
+        <div class="col-4">
             <div class="field">
                 <label>Max Ramp Weight (lbs)</label>
                 <InputNumber v-model="aircraft.data.maxRampWeight" />
             </div>
         </div>
-        <div class="col-12 md:col-4">
+        <div class="col-4">
             <div class="field">
                 <label>Max Takeoff Weight (lbs)</label>
                 <InputNumber v-model="aircraft.data.maxTakeoffWeight" />
             </div>
         </div>
-        <div class="col-12 md:col-4">
+        <div class="col-4">
             <div class="field">
                 <label>Max Landing Weight (lbs)</label>
                 <InputNumber v-model="aircraft.data.maxLandingWeight" />
@@ -118,7 +158,7 @@
         </div>
 
         <!-- CG Envelopes -->
-        <div class="col-12 md:col-6">
+        <div class="col-6">
             <h3>Forward CG Limits</h3>
             <DataTable :value="aircraft.data.fwdCgLimits" responsiveLayout="scroll">
                 <Column field="posInch" header="Arm (in)">
@@ -140,7 +180,7 @@
             <Button label="Add Limit" icon="pi pi-plus" class="p-button-text mt-2" @click="addLimit('fwd')" />
         </div>
 
-        <div class="col-12 md:col-6">
+        <div class="col-6">
             <h3>Aft CG Limits</h3>
             <DataTable :value="aircraft.data.aftCgLimits" responsiveLayout="scroll">
                 <Column field="posInch" header="Arm (in)">
@@ -181,7 +221,7 @@ import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import Divider from 'primevue/divider'
+import Separator from '../shared/Separator.vue'
 import { AircraftService } from '../../services/AircraftService'
 import { Aircraft } from '@gak/shared'
 
@@ -210,7 +250,15 @@ const aircraft = reactive<Partial<Aircraft> & { data: any }>({
     maxLandingWeight: 0,
     stations: [],
     fwdCgLimits: [],
-    aftCgLimits: []
+    aftCgLimits: [],
+    speed: {
+      vs0: 0,
+      vs1: 0,
+      vfe: 0,
+      va: 0,
+      vno: 0,
+      vne: 0
+    }
   }
 })
 
@@ -253,7 +301,15 @@ function resetAircraft() {
     aftCgLimits: [
         { posInch: 47, weightLbs: 1900 },
         { posInch: 47, weightLbs: 2550 }
-    ]
+    ],
+    speed: {
+        vs0: 40,
+        vs1: 48,
+        vfe: 103,
+        va: 105,
+        vno: 129,
+        vne: 163
+    }
   }
 }
 
@@ -307,6 +363,30 @@ async function onDelete() {
 </script>
 
 <style scoped>
+.aircraft-editor .grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1rem;
+}
+
+.aircraft-editor .col-2,
+.aircraft-editor .col-4,
+.aircraft-editor .col-6,
+.aircraft-editor .col-12 {
+  grid-column: span 12;
+}
+
+@media (min-width: 769px) {
+  .aircraft-editor .col-2 {
+    grid-column: span 2;
+  }
+  .aircraft-editor .col-4 {
+    grid-column: span 4;
+  }
+  .aircraft-editor .col-6 {
+    grid-column: span 6;
+  }
+}
 .field {
   margin-bottom: 1rem;
 }

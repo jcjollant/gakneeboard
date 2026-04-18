@@ -8,6 +8,15 @@ export interface CgLimit {
     weightLbs: number;
 }
 
+export interface Speeds {
+    vs0: number;
+    vs1: number;
+    vfe: number;
+    va: number;
+    vno: number;
+    vne: number;
+}
+
 export interface AircraftData {
     climbFuel: number;
     cruiseFuel: number;
@@ -22,6 +31,7 @@ export interface AircraftData {
     stations: Station[];
     fwdCgLimits: CgLimit[];
     aftCgLimits: CgLimit[];
+    speed: Speeds;
 }
 
 export interface Aircraft {
