@@ -17,9 +17,9 @@
           :activeScroll="showScroll"
           :hasVersion="activeTemplate.ver > 0"
           :showDelete="activeTemplate.id > 0"
-          :showEditor="activeTemplate.format === TemplateFormat.Kneeboard || !templateContainsPaperNavlog"
+          :showEditor="activeTemplate.format === TemplateFormat.Kneeboard && !templateContainsPaperNavlog"
           :showExport="templateContainsChecklist"
-          :showSave="activeTemplate.format === TemplateFormat.Kneeboard || !templateContainsPaperNavlog"
+          :showSave="true"
           :showScroll="templateContainsTiles"
           :isModified="templateModified"
           :hasId="activeTemplate.id > 0"
@@ -408,6 +408,8 @@ function onDelete() {
 }
 
 function onEditor() {
+  if (activeTemplate.value.format === TemplateFormat.FullPage) return;
+
   if( !currentUser.loggedIn) {
     if (menuRef.value) {
       menuRef.value.openSignIn()
