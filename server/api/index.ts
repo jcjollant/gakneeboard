@@ -20,6 +20,7 @@ import { NotamService } from "../backend/services/NotamService";
 import { WeatherService } from "../backend/services/WeatherService";
 import { Ticket } from "../backend/models/Ticket";
 import { PrintService } from "../backend/services/PrintService";
+import { AircraftDao } from "../backend/dao/AircraftDao";
 import adminRouter from "./admin";
 import { catchError } from "./utils";
 const port: number = 3000
@@ -599,6 +600,78 @@ app.post('/store/checkout', async (req: Request, res: Response) => {
         res.send({ url });
     } catch (e) {
         catchError(res, e, 'POST /store/checkout')
+    }
+})
+
+/**
+ * AIRCRAFT API
+ */
+
+app.get('/aircrafts', async (req: Request, res: Response) => {
+    try {
+        const userId = await UserTools.userIdFromRequest(req)
+        if (!userId) throw new GApiError(401, 'Unauthorized')
+        const aircrafts = await new AircraftDao().listForUser(userId)
+        res.send(aircrafts)
+    } catch (e) {
+        catchError(res, e, 'GET /aircrafts')
+    }
+})
+
+app.get('/aircraftTemplates', async (req: Request, res: Response) => {
+    try {
+        // Anyone can see templates
+        const templates = await new AircraftDao().listTemplates()
+        res.send(templates)
+    } catch (e) {
+        catchError(res, e, 'GET /aircraftTemplates')
+    }
+})
+
+app.get('/aircraft/:tailNumber', async (req: Request, res: Response) => {
+    try {
+        const userId = await UserTools.userIdFromRequest(req)
+        if (!userId) throw new GApiError(401, 'Unauthorized')
+        const aircraft = await new AircraftDao().getByTailNumber(userId, req.params.tailNumber)
+        if (aircraft) {
+            // Remove internal IDs before sending
+            const { id, userId: uid, ...publicData } = aircraft;
+            res.send(publicData)
+        } else {
+            res.status(404).send('Aircraft not found')
+        }
+    } catch (e) {
+        catchError(res, e, 'GET /aircraft/:tailNumber')
+    }
+})
+
+app.post('/aircraft', async (req: Request, res: Response) => {
+    try {
+        const userId = await UserTools.userIdFromRequest(req)
+        if (!userId) throw new GApiError(401, 'Unauthorized')
+        const payload = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body)
+        
+        // Ownership enforcement: non-admins can only save for themselves
+        const isAdmin = await UserTools.isAdmin(userId)
+        if (!isAdmin || !payload.userId) {
+            payload.userId = userId
+        }
+        
+        const aircraft = await new AircraftDao().save(payload)
+        res.send(aircraft)
+    } catch (e) {
+        catchError(res, e, 'POST /aircraft')
+    }
+})
+
+app.delete('/aircraft/:id', async (req: Request, res: Response) => {
+    try {
+        const userId = await UserTools.userIdFromRequest(req)
+        if (!userId) throw new GApiError(401, 'Unauthorized')
+        const success = await new AircraftDao().deleteAircraft(userId, Number(req.params.id))
+        res.sendStatus(success ? 200 : 404)
+    } catch (e) {
+        catchError(res, e, 'DELETE /aircraft/:id')
     }
 })
 

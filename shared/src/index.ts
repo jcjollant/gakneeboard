@@ -14,4 +14,5 @@ export * from './FeatureFlags';
 export * from './models/UsageType';
 export * from './models/UsagePayload';
 export * from './models/Route';
+export * from './models/Aircraft';
 export * from './services';

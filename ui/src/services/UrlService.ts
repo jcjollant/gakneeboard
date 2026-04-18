@@ -46,4 +46,19 @@ export class UrlService {
     static usage(): string {
         return UrlService.root + 'usage'
     }
+
+    static aircraft(id: number | string | undefined = undefined): string {
+        if (id) {
+            return UrlService.root + 'aircraft/' + id
+        }
+        return UrlService.root + 'aircraft'
+    }
+
+    static aircrafts(): string {
+        return UrlService.root + 'aircrafts'
+    }
+
+    static aircraftTemplates(): string {
+        return UrlService.root + 'aircraftTemplates'
+    }
 }

@@ -19,6 +19,20 @@
                 </div>
             </div>
         </div>
+        <div class="section templateSection aircraftSection" v-if="currentUser.loggedIn">
+            <div class="header">My Aircraft</div>
+            <div class="templateList">
+                <div class="templateSelector" @click="onNewAircraft">
+                    <div class="preview temporary">
+                        <div class="default">
+                            <font-awesome-icon icon="fa-plus" />
+                        </div>
+                    </div>
+                    <div class="name">New Aircraft</div>
+                </div>
+                <AircraftCard v-for="aircraft in aircrafts" :key="aircraft.id" :aircraft="aircraft" @selection="onAircraftSelection" />
+            </div>
+        </div>
         <div class="section templateSection kneeboardSection systemKneeboards" v-if="systemKneeboards.length > 0">
             <div class="header">System Kneeboards</div>
             <div class="templateList">
@@ -54,6 +68,7 @@
             @close="showChecklistDialog=false" 
             @apply="onChecklistApply"
             @delete="onChecklistDelete" />
+        <AircraftEditor v-model:visible="showAircraftEditor" :initialAircraft="currentAircraft" @saved="onAircraftSaved" @deleted="onAircraftDeleted" />
     </div>
 </template>
 
@@ -73,7 +88,10 @@ import TemplateSelector from '../components/templates/TemplateSelector.vue';
 import ChecklistSelector from '../components/checklist/ChecklistSelector.vue';
 import LibraryChecklistDialog from '../components/checklist/LibraryChecklistDialog.vue';
 import PricingPlans from './PricingPlans.vue';
-import { TemplateFormat } from '@gak/shared';
+import { AircraftService } from '../services/AircraftService';
+import AircraftCard from '../components/aircraft/AircraftCard.vue';
+import AircraftEditor from '../components/aircraft/AircraftEditor.vue';
+import { TemplateFormat, Aircraft } from '@gak/shared';
 import { LibraryChecklist } from '../models/LibraryChecklist';
 import { Template, TemplatePage } from '../models/Template';
 
@@ -131,6 +149,9 @@ const toaster = useToaster(toast)
 onMounted( () => {
     templates.value = currentUser.templates
     checklists.value = currentUser.checklists
+    if (currentUser.loggedIn) {
+        loadAircrafts()
+    }
     currentUser.addListener(userUpdate);
     document.title = 'GA Kneeboard | Aviation Kneeboard. Your way.';
 })
@@ -220,7 +241,43 @@ function userUpdate() {
     // console.log('[Home.userUpdate]')
     templates.value = [...currentUser.templates]
     checklists.value = [...currentUser.checklists]
+    if (currentUser.loggedIn && aircrafts.value.length === 0) {
+        loadAircrafts()
+    }
     // console.log('[Home.userUpdate] template length', templates.value.length)
+}
+
+// Aircraft Management
+const aircrafts = ref<Aircraft[]>([]);
+const showAircraftEditor = ref(false);
+const currentAircraft = ref<Aircraft | null>(null);
+
+async function loadAircrafts() {
+    aircrafts.value = await AircraftService.list();
+}
+
+function onNewAircraft() {
+    currentAircraft.value = null;
+    showAircraftEditor.value = true;
+}
+
+function onAircraftSelection(aircraft: Aircraft) {
+    currentAircraft.value = aircraft;
+    showAircraftEditor.value = true;
+}
+
+function onAircraftSaved(saved: Aircraft) {
+    const index = aircrafts.value.findIndex((a: Aircraft) => a.id === saved.id);
+    if (index > -1) {
+        aircrafts.value[index] = saved;
+    } else {
+        aircrafts.value.push(saved);
+        aircrafts.value.sort((a: Aircraft, b: Aircraft) => a.tailNumber.localeCompare(b.tailNumber));
+    }
+}
+
+function onAircraftDeleted(id: number) {
+    aircrafts.value = aircrafts.value.filter((a: Aircraft) => a.id !== id);
 }
 </script>
 
@@ -264,6 +321,15 @@ function userUpdate() {
 
 .kneeboardSection .header {
     border-bottom-color: #57422a;
+}
+
+.aircraftSection {
+    background-color: #e0f2fe;
+    border-color: #0369a1;
+}
+
+.aircraftSection .header {
+    border-bottom-color: #0369a1;
 }
 
 .systemKneeboards {
