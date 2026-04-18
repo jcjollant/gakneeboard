@@ -17,6 +17,7 @@
     
     <NuxtPage />
     <Toast />
+    <ConfirmDialog />
     
     <div class="server-badge">
       {{ serverUrl }}
@@ -34,6 +35,7 @@ import { useSupabaseClient } from '~/utils/supabase'
 import { useRuntimeConfig } from '#app'
 import { UrlService } from '~/utils/UrlService'
 import Toast from 'primevue/toast'
+import ConfirmDialog from 'primevue/confirmdialog'
 
 const config = useRuntimeConfig()
 const version = config.public.APP_VERSION
