@@ -104,7 +104,7 @@ function onClick() {
     flex-direction: column;
     align-items: center;
     cursor: pointer;
-    width: 100px; /* Adjust as needed */
+    width: calc(var(--page-width) / 5 + 6px);
 }
 
 .box {

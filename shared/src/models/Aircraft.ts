@@ -1,6 +1,9 @@
+export type StationType = 'twin' | 'central' | 'fuel';
+
 export interface Station {
     name: string;
     posInch: number;
+    type?: StationType;
 }
 
 export interface CgLimit {
@@ -35,7 +38,7 @@ export interface AircraftData {
     stations: Station[];
     fwdCgLimits: CgLimit[];
     aftCgLimits: CgLimit[];
-    speed: Speeds;
+    speeds: Speeds;
 }
 
 export interface Aircraft {

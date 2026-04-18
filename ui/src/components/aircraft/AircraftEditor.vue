@@ -45,32 +45,32 @@
           <Separator name="Performance Characteristics" :leftAligned="true" />
         </div>
 
-        <div class="col-4">
+        <div class="col-2">
           <div class="field">
             <label>Climb Fuel (gph)</label>
             <InputNumber v-model="aircraft.data.climbFuel" :minFractionDigits="1" />
           </div>
         </div>
-        <div class="col-4">
+        <div class="col-2">
           <div class="field">
             <label>Cruise Fuel (gph)</label>
             <InputNumber v-model="aircraft.data.cruiseFuel" :minFractionDigits="1" />
           </div>
         </div>
-        <div class="col-4">
+        <div class="col-2">
           <div class="field">
             <label>Descent Fuel (gph)</label>
             <InputNumber v-model="aircraft.data.descentFuel" :minFractionDigits="1" />
           </div>
         </div>
 
-        <div class="col-6">
+        <div class="col-3">
           <div class="field">
             <label>Climb TAS (kt)</label>
             <InputNumber v-model="aircraft.data.climbTas" />
           </div>
         </div>
-        <div class="col-6">
+        <div class="col-3">
           <div class="field">
             <label>Cruise TAS (kt)</label>
             <InputNumber v-model="aircraft.data.cruiseTas" />
@@ -83,37 +83,37 @@
         <div class="col-2">
           <div class="field">
             <label>Vs0</label>
-            <InputNumber v-model="aircraft.data.speed.vs0" />
+            <InputNumber v-model="aircraft.data.speeds.vs0" />
           </div>
         </div>
         <div class="col-2">
           <div class="field">
             <label>Vs1</label>
-            <InputNumber v-model="aircraft.data.speed.vs1" />
+            <InputNumber v-model="aircraft.data.speeds.vs1" />
           </div>
         </div>
         <div class="col-2">
           <div class="field">
             <label>Vfe</label>
-            <InputNumber v-model="aircraft.data.speed.vfe" />
+            <InputNumber v-model="aircraft.data.speeds.vfe" />
           </div>
         </div>
         <div class="col-2">
           <div class="field">
             <label>Va</label>
-            <InputNumber v-model="aircraft.data.speed.va" />
+            <InputNumber v-model="aircraft.data.speeds.va" />
           </div>
         </div>
         <div class="col-2">
           <div class="field">
             <label>Vno</label>
-            <InputNumber v-model="aircraft.data.speed.vno" />
+            <InputNumber v-model="aircraft.data.speeds.vno" />
           </div>
         </div>
         <div class="col-2">
           <div class="field">
             <label>Vne</label>
-            <InputNumber v-model="aircraft.data.speed.vne" />
+            <InputNumber v-model="aircraft.data.speeds.vne" />
           </div>
         </div>
 
@@ -159,72 +159,68 @@
             </div>
         </div>
 
-        <!-- Stations -->
         <div class="col-12">
-            <h3>Stations</h3>
-            <DataTable :value="aircraft.data.stations" responsiveLayout="scroll">
-                <Column field="name" header="Name">
-                    <template #body="{ index }">
-                        <InputText v-model="aircraft.data.stations[index].name" />
-                    </template>
-                </Column>
-                <Column field="posInch" header="Arm (in)">
-                    <template #body="{ index }">
-                        <InputNumber v-model="aircraft.data.stations[index].posInch" :minFractionDigits="2" />
-                    </template>
-                </Column>
-                <Column headerStyle="width: 4rem">
-                    <template #body="{ index }">
-                        <Button icon="pi pi-trash" class="p-button-danger p-button-text" @click="removeStation(index)" />
-                    </template>
-                </Column>
-            </DataTable>
-            <Button label="Add Station" icon="pi pi-plus" class="p-button-text mt-2" @click="addStation" />
+            <Separator name="CG Stations" :leftAligned="true" />
         </div>
 
-        <!-- CG Envelopes -->
+        <!-- Fuel -->
+        <div class="col-12">
+            <div v-if="fuelStation" class="field">
+                <label>Fuel Arm (in)</label>
+                <InputNumber v-model="fuelStation.posInch" :minFractionDigits="2" />
+            </div>
+            <div v-else>
+                <Button label="Add Fuel" icon="pi pi-plus" class="p-button-text mt-2" @click="addStation('fuel')" />
+            </div>
+        </div>
+        <!-- Seats -->
         <div class="col-6">
-            <h3>Forward CG Limits</h3>
-            <DataTable :value="aircraft.data.fwdCgLimits" responsiveLayout="scroll">
+            <DataTable :value="seatStations" responsiveLayout="scroll">
+                <Column field="name" header="Seat Stations">
+                    <template #body="{ data }">
+                        <InputText v-model="data.name" />
+                    </template>
+                </Column>
                 <Column field="posInch" header="Arm (in)">
-                    <template #body="{ index }">
-                        <InputNumber v-model="aircraft.data.fwdCgLimits[index].posInch" :minFractionDigits="2" />
+                    <template #body="{ data }">
+                        <InputNumber v-model="data.posInch" :minFractionDigits="2" />
                     </template>
                 </Column>
-                <Column field="weightLbs" header="Weight (lbs)">
-                    <template #body="{ index }">
-                        <InputNumber v-model="aircraft.data.fwdCgLimits[index].weightLbs" />
-                    </template>
-                </Column>
-                <Column headerStyle="width: 4rem">
-                    <template #body="{ index }">
-                        <Button icon="pi pi-trash" class="p-button-danger p-button-text" @click="removeLimit('fwd', index)" />
+                <Column headerStyle="width: 2rem">
+                    <template #body="{ data }">
+                        <Button icon="pi pi-trash" class="p-button-danger p-button-text" @click="removeStation(data)" />
                     </template>
                 </Column>
             </DataTable>
-            <Button label="Add Limit" icon="pi pi-plus" class="p-button-text mt-2" @click="addLimit('fwd')" />
+            <Button label="Add Seat" icon="pi pi-plus" class="p-button-text mt-2" @click="addStation('twin')" />
         </div>
 
+        <!-- Cargo -->
         <div class="col-6">
-            <h3>Aft CG Limits</h3>
-            <DataTable :value="aircraft.data.aftCgLimits" responsiveLayout="scroll">
+            <DataTable :value="cargoStations" responsiveLayout="scroll">
+                <Column field="name" header="Cargo Station">
+                    <template #body="{ data }">
+                        <InputText v-model="data.name" />
+                    </template>
+                </Column>
                 <Column field="posInch" header="Arm (in)">
-                    <template #body="{ index }">
-                        <InputNumber v-model="aircraft.data.aftCgLimits[index].posInch" :minFractionDigits="2" />
+                    <template #body="{ data }">
+                        <InputNumber v-model="data.posInch" :minFractionDigits="2" />
                     </template>
                 </Column>
-                <Column field="weightLbs" header="Weight (lbs)">
-                    <template #body="{ index }">
-                        <InputNumber v-model="aircraft.data.aftCgLimits[index].weightLbs" />
-                    </template>
-                </Column>
-                <Column headerStyle="width: 4rem">
-                    <template #body="{ index }">
-                        <Button icon="pi pi-trash" class="p-button-danger p-button-text" @click="removeLimit('aft', index)" />
+                <Column headerStyle="width: 2rem">
+                    <template #body="{ data }">
+                        <Button icon="pi pi-trash" class="p-button-danger p-button-text" @click="removeStation(data)" />
                     </template>
                 </Column>
             </DataTable>
-            <Button label="Add Limit" icon="pi pi-plus" class="p-button-text mt-2" @click="addLimit('aft')" />
+            <Button label="Add Cargo Area" icon="pi pi-plus" class="p-button-text mt-2" @click="addStation('central')" />
+        </div>
+
+
+
+        <div class="col-12">
+            <CgEnvelopeEditor :fwdLimits="aircraft.data.fwdCgLimits" :aftLimits="aircraft.data.aftCgLimits" />
         </div>
       </div>
     </div>
@@ -244,10 +240,12 @@ import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
+
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Separator from '../shared/Separator.vue'
 import IconSelector from './IconSelector.vue'
+import CgEnvelopeEditor from './CgEnvelopeEditor.vue'
 import { AIRCRAFT_ICONS, AircraftIcon, getIcon } from '../../utils/aircraftIcons'
 import { AircraftService } from '../../services/AircraftService'
 import { Aircraft } from '@gak/shared'
@@ -258,6 +256,8 @@ const props = defineProps<{
 }>()
 
 const emits = defineEmits(['update:visible', 'saved', 'deleted'])
+
+
 
 const saving = ref(false)
 const showIconList = ref(false)
@@ -281,7 +281,7 @@ const aircraft = reactive<Partial<Aircraft> & { data: any }>({
     stations: [],
     fwdCgLimits: [],
     aftCgLimits: [],
-    speed: {
+    speeds: {
       vs0: 0,
       vs1: 0,
       vfe: 0,
@@ -293,12 +293,29 @@ const aircraft = reactive<Partial<Aircraft> & { data: any }>({
 })
 
 const selectedIcon = computed(() => getIcon(aircraft.data.icon))
+const seatStations = computed(() => aircraft.data.stations.filter((s: any) => s.type === 'twin'))
+const cargoStations = computed(() => aircraft.data.stations.filter((s: any) => s.type === 'central'))
+const fuelStation = computed(() => aircraft.data.stations.find((s: any) => s.type === 'fuel'))
 
 watch(() => props.visible, (newVal) => {
   if (newVal) {
     showIconList.value = false
     if (props.initialAircraft) {
-      Object.assign(aircraft, JSON.parse(JSON.stringify(props.initialAircraft)))
+      const cloned = JSON.parse(JSON.stringify(props.initialAircraft))
+      if (cloned.data?.stations) {
+        cloned.data.stations.forEach((s: any) => {
+          if (!s.type) {
+            const lower = (s.name || '').toLowerCase()
+            if (lower.includes('fuel')) {
+              s.type = 'fuel'
+            } else {
+              const isSeat = lower.includes('pilot') || lower.includes('passenger') || lower.includes('seat')
+              s.type = isSeat ? 'twin' : 'central'
+            }
+          }
+        })
+      }
+      Object.assign(aircraft, cloned)
     } else {
       resetAircraft()
     }
@@ -324,10 +341,10 @@ function resetAircraft() {
     maxLandingWeight: 2550,
     maxUsableFuel: 53,
     stations: [
-        { name: 'Pilot/Co-Pilot', posInch: 37 },
-        { name: 'Rear Passengers', posInch: 73 },
-        { name: 'Baggage', posInch: 95 },
-        { name: 'Fuel', posInch: 48 }
+        { name: 'Pilot/Co-Pilot', posInch: 37, type: 'twin' },
+        { name: 'Rear Passengers', posInch: 73, type: 'twin' },
+        { name: 'Baggage', posInch: 95, type: 'central' },
+        { name: 'Fuel', posInch: 48, type: 'fuel' }
     ],
     fwdCgLimits: [
         { posInch: 35, weightLbs: 1900 },
@@ -337,7 +354,7 @@ function resetAircraft() {
         { posInch: 47, weightLbs: 1900 },
         { posInch: 47, weightLbs: 2550 }
     ],
-    speed: {
+    speeds: {
         vs0: 40,
         vs1: 48,
         vfe: 103,
@@ -348,23 +365,19 @@ function resetAircraft() {
   }
 }
 
-function addStation() {
-  aircraft.data.stations.push({ name: '', posInch: 0 })
+function addStation(type: 'twin' | 'central' | 'fuel') {
+  const name = type === 'fuel' ? 'Fuel' : ''
+  aircraft.data.stations.push({ name, posInch: 0, type })
 }
 
-function removeStation(index: number) {
-  aircraft.data.stations.splice(index, 1)
+function removeStation(station: any) {
+  const index = aircraft.data.stations.indexOf(station)
+  if (index !== -1) {
+    aircraft.data.stations.splice(index, 1)
+  }
 }
 
-function addLimit(type: 'fwd' | 'aft') {
-  const limits = type === 'fwd' ? aircraft.data.fwdCgLimits : aircraft.data.aftCgLimits
-  limits.push({ posInch: 0, weightLbs: 0 })
-}
 
-function removeLimit(type: 'fwd' | 'aft', index: number) {
-  const limits = type === 'fwd' ? aircraft.data.fwdCgLimits : aircraft.data.aftCgLimits
-  limits.splice(index, 1)
-}
 
 async function onSave() {
   if (!aircraft.tailNumber) return;
@@ -406,6 +419,7 @@ async function onDelete() {
 
 .aircraft-editor .col-2,
 .aircraft-editor .col-4,
+.aircraft-editor .col-5,
 .aircraft-editor .col-6,
 .aircraft-editor .col-12 {
   grid-column: span 12;
@@ -420,6 +434,9 @@ async function onDelete() {
   }
   .aircraft-editor .col-4 {
     grid-column: span 4;
+  }
+  .aircraft-editor .col-5 {
+    grid-column: span 5;
   }
   .aircraft-editor .col-6 {
     grid-column: span 6;

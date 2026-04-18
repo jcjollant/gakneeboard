@@ -309,7 +309,16 @@ function onAircraftFuelWorksheet(aircraft: Aircraft) {
     templateData.name = aircraft.tailNumber + ' Fuel Worksheet';
     templateData.desc = 'Fuel Worksheet for ' + aircraft.tailNumber;
     templateData.format = TemplateFormat.Kneeboard;
-    templateData.data = [new TemplatePage(PageType.fuelWorksheet, 'Fuel Worksheet', {})];
+    templateData.data = [new TemplatePage(PageType.fuelWorksheet, 'Fuel Worksheet', {
+        aircraftTailNumber: aircraft.tailNumber,
+        tarmacItems: [],
+        aircraftItems: [],
+        flightRules: 'VFR',
+        ifrAlternateMinutes: 0,
+        personalBufferMinutes: 45,
+        taxiFuelGallons: 0,
+        legs: []
+    })];
     
     // Save template data to localstore and navigate to template editor
     routeToLocalTemplate(router, templateData);
@@ -434,14 +443,14 @@ function onAircraftDeleted(id: number) {
     flex-flow: column;
     justify-content: center;
     cursor: pointer;
-    width: calc(var(--page-width) / 5);
+    width: calc(var(--page-width) / 5 + 6px);
 }
 
 .aircraftSection .preview.temporary {
     background-color: white;
     border: 3px dashed lightgrey;
     border-radius: 5px;
-    height: calc(var(--page-width) / 5);
+    height: calc(var(--page-width) / 5 + 6px);
     display: flex;
     justify-content: center;
     align-items: center;

@@ -27,13 +27,13 @@ defineEmits(['selection'])
   flex-flow: column;
   justify-content: center;
   cursor: pointer;
-  width: calc(var(--page-width) / 5);
+  width: calc(var(--page-width) / 5 + 6px);
 }
 .preview {
   background-color: #e0f2fe;
   border-radius: 5px;
   border: 3px solid #0369a1;
-  height: calc(var(--page-width) / 5);
+  height: calc(var(--page-width) / 5 + 6px);
   display: flex;
   flex-direction: column;
   justify-content: center;

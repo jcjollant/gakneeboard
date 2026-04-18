@@ -14,8 +14,8 @@
         @replace="onReplace(PageType.selection)" />
     <NotesPage v-else-if="type==PageType.notes" 
         @replace="onReplace(PageType.selection)" />
-    <FuelWorksheetPage v-else-if="type==PageType.fuelWorksheet" 
-        @replace="onReplace(PageType.selection)" />
+    <FuelWorksheetPage v-else-if="type==PageType.fuelWorksheet" :data="pageData"
+        @replace="onReplace(PageType.selection)" @update="onUpdate" />
     <ApproachPage v-else-if="type==PageType.approach" :data="pageData" :route="route"
         @replace="onReplace" @update="onUpdate" />
     <DiagramPage v-else-if="type==PageType.diagram" :data="pageData"

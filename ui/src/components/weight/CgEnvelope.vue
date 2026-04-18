@@ -1,0 +1,230 @@
+<template>
+    <div class="cg-envelope">
+        <div class="header">
+            <h3>CG Envelope</h3>
+        </div>
+        <div class="svg-container">
+            <svg v-if="isValidEnvelope" width="100%" height="100%" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet">
+                 
+                 <!-- Grid Lines (Optional) -->
+                 <line x1="40" y1="260" x2="360" y2="260" stroke="#ced4da" stroke-width="1" />
+                 <line x1="40" y1="40" x2="40" y2="260" stroke="#ced4da" stroke-width="1" />
+
+                 <!-- Envelope Polygon -->
+                 <polygon :points="envelopePointsStr" fill="rgba(3, 105, 161, 0.2)" stroke="#0369a1" stroke-width="2" stroke-linejoin="round" />
+                 
+                 <!-- Zero Fuel CG -->
+                 <circle :cx="mapX(zeroFuel.arm)" :cy="mapY(zeroFuel.weight)" r="5" fill="#f59e0b" />
+                 <text :x="mapX(zeroFuel.arm) + 8" :y="mapY(zeroFuel.weight) + 4" class="plot-label">Zero Fuel</text>
+                 
+                 <!-- Takeoff CG -->
+                 <circle :cx="mapX(takeoff.arm)" :cy="mapY(takeoff.weight)" r="5" fill="#10b981" />
+                 <text :x="mapX(takeoff.arm) + 8" :y="mapY(takeoff.weight) + 4" class="plot-label">Take Off</text>
+                 
+                 <!-- Landing CG -->
+                 <circle :cx="mapX(landing.arm)" :cy="mapY(landing.weight)" r="5" fill="#ef4444" />
+                 <text :x="mapX(landing.arm) + 8" :y="mapY(landing.weight) + 4" class="plot-label">Landing</text>
+
+            </svg>
+            <div v-else class="invalid-envelope">
+                Not enough CG limits defined in aircraft data to draw envelope.
+            </div>
+        </div>
+        <div class="plot-legend">
+            <div class="legend-item"><span class="swatch zero"></span> Zero Fuel</div>
+            <div class="legend-item"><span class="swatch takeoff"></span> Take Off</div>
+            <div class="legend-item"><span class="swatch landing"></span> Landing</div>
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import { FuelWorksheetData } from '../../models/FuelWorksheetTypes'
+import { Aircraft } from '@gak/shared'
+
+const props = defineProps<{
+    data: FuelWorksheetData
+    aircraft: Aircraft
+}>()
+
+// SVG Constants
+const SVG_WIDTH = 400
+const SVG_HEIGHT = 300
+const PADDING = 40
+
+const isValidEnvelope = computed(() => {
+    return props.aircraft.data.fwdCgLimits.length > 0 && props.aircraft.data.aftCgLimits.length > 0
+})
+
+// Boundings for scaling
+const minX = computed(() => {
+    const limits = [...props.aircraft.data.fwdCgLimits, ...props.aircraft.data.aftCgLimits]
+    const minArm = Math.min(...limits.map(l => l.posInch))
+    // we want a slight margin, ensure zeroFuel.arm doesn't clip
+    return Math.min(minArm - 2, zeroFuel.value.arm - 2)
+})
+const maxX = computed(() => {
+    const limits = [...props.aircraft.data.fwdCgLimits, ...props.aircraft.data.aftCgLimits]
+    const maxArm = Math.max(...limits.map(l => l.posInch))
+    return Math.max(maxArm + 2, zeroFuel.value.arm + 2)
+})
+const minY = computed(() => {
+    const limits = [...props.aircraft.data.fwdCgLimits, ...props.aircraft.data.aftCgLimits]
+    const minW = Math.min(...limits.map(l => l.weightLbs))
+    return Math.min(minW - 200, zeroFuel.value.weight - 200)
+})
+const maxY = computed(() => {
+    // Usually max takeoff weight bounds it
+    return (props.aircraft.data.maxTakeoffWeight || Math.max(...props.aircraft.data.aftCgLimits.map(l=>l.weightLbs))) + 100
+})
+
+function mapX(arm: number) {
+    const range = (maxX.value - minX.value) || 1
+    return PADDING + ((arm - minX.value) / range) * (SVG_WIDTH - 2 * PADDING)
+}
+
+function mapY(weight: number) {
+    const range = (maxY.value - minY.value) || 1
+    return SVG_HEIGHT - PADDING - ((weight - minY.value) / range) * (SVG_HEIGHT - 2 * PADDING)
+}
+
+const envelopePointsStr = computed(() => {
+    if (!isValidEnvelope.value) return ''
+    
+    // Sort fwds bottom to top
+    const fwds = [...props.aircraft.data.fwdCgLimits].sort((a,b) => a.weightLbs - b.weightLbs)
+    // Sort afts top to bottom
+    const afts = [...props.aircraft.data.aftCgLimits].sort((a,b) => b.weightLbs - a.weightLbs)
+    
+    const combined = [...fwds, ...afts]
+    return combined.map(pt => `${mapX(pt.posInch)},${mapY(pt.weightLbs)}`).join(' ')
+})
+
+// --- Physics Calculations ---
+const payloadWeight = computed(() => {
+    return props.data.aircraftItems.reduce((sum, item) => sum + item.weightLbs, 0)
+})
+const payloadMoment = computed(() => {
+    return props.data.aircraftItems.reduce((sum, item) => {
+        const station = props.aircraft.data.stations[item.stationIndex]
+        return sum + (item.weightLbs * (station?.posInch || 0))
+    }, 0)
+})
+
+const zeroFuelWeight = computed(() => props.aircraft.data.basicEmptyWeight + payloadWeight.value)
+const zeroFuelMoment = computed(() => (props.aircraft.data.basicEmptyWeight * props.aircraft.data.basicEmptyCg) + payloadMoment.value)
+const zeroFuelArm = computed(() => zeroFuelMoment.value / (zeroFuelWeight.value || 1))
+
+const fuelArm = computed(() => {
+    const station = props.aircraft.data.stations.find(s => s.type === 'fuel' || s.name.toLowerCase().includes('fuel'))
+    return station ? station.posInch : props.aircraft.data.basicEmptyCg // Safe fallback
+})
+
+const flightLegsFuelGal = computed(() => {
+    return props.data.legs.reduce((sum, leg) => {
+        const rate = leg.type === 'climb' ? props.aircraft.data.climbFuel 
+                   : leg.type === 'descent' ? props.aircraft.data.descentFuel
+                   : props.aircraft.data.cruiseFuel;
+        return sum + (rate * (leg.durationMinutes / 60));
+    }, 0);
+})
+
+const alternateFuelGal = computed(() => (props.data.ifrAlternateMinutes / 60) * props.aircraft.data.cruiseFuel)
+const bufferFuelGal = computed(() => (props.data.personalBufferMinutes / 60) * props.aircraft.data.cruiseFuel)
+
+const fuelAtTakeoffGal = computed(() => flightLegsFuelGal.value + alternateFuelGal.value + bufferFuelGal.value)
+const fuelAtTakeoffWeight = computed(() => fuelAtTakeoffGal.value * 6)
+const fuelAtTakeoffMoment = computed(() => fuelAtTakeoffWeight.value * fuelArm.value)
+
+const flightLegsFuelWeight = computed(() => flightLegsFuelGal.value * 6)
+const flightLegsFuelMoment = computed(() => flightLegsFuelWeight.value * fuelArm.value)
+
+// Export Points
+const zeroFuel = computed(() => ({
+    weight: zeroFuelWeight.value,
+    arm: zeroFuelArm.value
+}))
+
+const takeoff = computed(() => ({
+    weight: zeroFuelWeight.value + fuelAtTakeoffWeight.value,
+    arm: (zeroFuelMoment.value + fuelAtTakeoffMoment.value) / ((zeroFuelWeight.value + fuelAtTakeoffWeight.value) || 1)
+}))
+
+const landing = computed(() => ({
+    weight: takeoff.value.weight - flightLegsFuelWeight.value,
+    arm: ((takeoff.value.weight * takeoff.value.arm) - flightLegsFuelMoment.value) / ((takeoff.value.weight - flightLegsFuelWeight.value) || 1)
+}))
+</script>
+
+<style scoped>
+.cg-envelope {
+    border: 3px solid #dee2e6;
+    border-radius: 8px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.header {
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    border-radius: 6px 6px 0 0;
+}
+
+.header h3 {
+    margin: 0;
+    color: #495057;
+}
+
+.svg-container {
+    flex: 1;
+    min-height: 250px;
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.invalid-envelope {
+    color: #adb5bd;
+    font-style: italic;
+    text-align: center;
+}
+
+.plot-label {
+    font-size: 10px;
+    fill: #495057;
+    font-weight: bold;
+}
+
+.plot-legend {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 1rem;
+    border-top: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    border-radius: 0 0 6px 6px;
+    font-size: 0.85rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.swatch.zero { background-color: #f59e0b; }
+.swatch.takeoff { background-color: #10b981; }
+.swatch.landing { background-color: #ef4444; }
+</style>

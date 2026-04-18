@@ -126,7 +126,7 @@ function onSelection() {
 }
 
 .templateSelector:has(.default) {
-    width: calc(var(--page-width) / 5);
+    width: calc(var(--page-width) / 5 + 6px);
 }
 .page {
     width: calc(var(--page-width) / 5);
