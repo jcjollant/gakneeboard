@@ -8,8 +8,6 @@
             <div class="templateList">
                 <TemplateSelector :template="newTemplate" :temporary="true" :clipped="true" src="/thumbnails/new.png" class="templateNew"
                     @selection="onNewTemplate"/>
-                <!-- <TemplateSelector :template="localTemplate" :temporary="true" src="local"
-                    @selection="onTemplateSelection('local')"/> -->
                 <TemplateSelector v-if="userKneeboards.length > 0" v-for="(template,index) in userKneeboards" 
                     :template="template" :clipped="true"
                     @selection="onTemplateSelection(template.id)" />
@@ -64,10 +62,6 @@
             </div>
         </div>
         <PricingPlans v-if="showPlans" :visible="showPlans" :user="currentUser" @close="showPlans=false" />
-        <LibraryChecklistDialog :visible="showChecklistDialog" :checklist="currentLibraryChecklist" 
-            @close="showChecklistDialog=false" 
-            @apply="onChecklistApply"
-            @delete="onChecklistDelete" />
         <AircraftEditor v-model:visible="showAircraftEditor" :initialAircraft="currentAircraft" @saved="onAircraftSaved" @deleted="onAircraftDeleted" />
 
         <ExistingAircraftActionDialog 
@@ -88,14 +82,11 @@ import { useRouter } from 'vue-router';
 import { currentUser, routeToLocalTemplate } from '../assets/data';
 import { getTemplateBlank, SheetName, ThumbnailImage } from '../assets/sheetData';
 import { TemplateService } from '../services/TemplateService';
-import { ChecklistService } from '../services/ChecklistService';
 import { useToaster } from '../assets/Toaster';
 import { UserUrl } from '../lib/UserUrl';
 
 import Menu from '../components/menu/Menu.vue';
 import TemplateSelector from '../components/templates/TemplateSelector.vue';
-import ChecklistSelector from '../components/checklist/ChecklistSelector.vue';
-import LibraryChecklistDialog from '../components/checklist/LibraryChecklistDialog.vue';
 import PricingPlans from './PricingPlans.vue';
 import { AircraftService } from '../services/AircraftService';
 import AircraftCard from '../components/aircraft/AircraftCard.vue';
@@ -103,7 +94,6 @@ import AircraftEditor from '../components/aircraft/AircraftEditor.vue';
 import NewAircraftSelectionDialog from '../components/aircraft/NewAircraftSelectionDialog.vue';
 import ExistingAircraftActionDialog from '../components/aircraft/ExistingAircraftActionDialog.vue';
 import { TemplateFormat, Aircraft } from '@gak/shared';
-import { LibraryChecklist } from '../models/LibraryChecklist';
 import { Template, TemplatePage } from '../models/Template';
 import { PageType } from '../assets/PageType';
 import { LocalStoreService } from '../services/LocalStoreService';
@@ -144,12 +134,9 @@ const poh = ref<Poh[]>([
     {code: 'AB', src: 'C182TGFC700.png', template: new Template('C182T GFC700', 'CESSNA MODEL 182T NAV III GFC 700 AFCS', false, [])},
     {code: 'AC', src: 'PA-28-161-CHEROKEE-WARRIOR-II.png', template: new Template('PA-28 CHEROKEE WII', 'PA-28 161 CHEROKEE WARRIOR II', false, [])},
 ])
-//const localTemplate = ref({name:'Local',desc:'Resume your last session'})
 const newTemplate = ref(new Template('New','Create a new kneeboard'))
-const newChecklist = ref(new Template('New','Create a new checklist'))
 const router = useRouter()
 const templates = ref<Template[]>([])
-const checklists = ref<LibraryChecklist[]>([])
 const kneeboards = computed(() => templates.value.filter(t => t.format === TemplateFormat.Kneeboard))
 const userKneeboards = computed(() => kneeboards.value.filter(t => !t.system))
 const systemKneeboards = computed(() => kneeboards.value.filter(t => t.system))
@@ -160,7 +147,6 @@ const toaster = useToaster(toast)
 
 onMounted( () => {
     templates.value = currentUser.templates
-    checklists.value = currentUser.checklists
     if (currentUser.loggedIn) {
         loadAircrafts()
     }
@@ -188,10 +174,8 @@ function onDemoSelection(name:string) {
     router.push(`/demo/${name}`)
 }
 
-// Checklist Library Handlers
+
 const showPlans = ref(false)
-const showChecklistDialog = ref(false)
-const currentLibraryChecklist = ref<LibraryChecklist | undefined>(undefined)
 
 function onNewTemplate() {
     const templateData = getTemplateBlank();
@@ -202,22 +186,6 @@ function onNewTemplate() {
     routeToLocalTemplate(router, templateData);
 }
 
-function onNewChecklist() {
-    currentLibraryChecklist.value = undefined // New
-    showChecklistDialog.value = true
-}
-
-function onChecklistDelete(checklist: LibraryChecklist) {
-    if (checklist && checklist.id) {
-        ChecklistService.delete(checklist, toaster)
-    }
-    showChecklistDialog.value = false
-}
-
-function onChecklistSelection(checklist: LibraryChecklist) {
-    currentLibraryChecklist.value = checklist
-    showChecklistDialog.value = true
-}
 
 function onPohSelection(poh:Poh) {
     const code = poh.code
@@ -238,10 +206,6 @@ function onPohSelection(poh:Poh) {
     }) 
 }
 
-function onChecklistApply(checklist: LibraryChecklist) {
-    // save to user checklists or refresh existing
-    ChecklistService.save(checklist, toaster)
-}
 
 function onTemplateSelection(index:number) {
     router.push(`/template/${index}`)
@@ -252,7 +216,6 @@ function onTemplateSelection(index:number) {
 function userUpdate() {
     // console.log('[Home.userUpdate]')
     templates.value = [...currentUser.templates]
-    checklists.value = [...currentUser.checklists]
     if (currentUser.loggedIn && aircrafts.value.length === 0) {
         loadAircrafts()
     }
