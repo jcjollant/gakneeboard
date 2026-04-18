@@ -14,4 +14,5 @@ export class PageType {
   static selection = 'selection';
   static strips = 'strips';
   static tiles = 'tiles';
+  static fuelWorksheet = 'fuelworksheet';
 }

@@ -14,6 +14,8 @@
         @replace="onReplace(PageType.selection)" />
     <NotesPage v-else-if="type==PageType.notes" 
         @replace="onReplace(PageType.selection)" />
+    <FuelWorksheetPage v-else-if="type==PageType.fuelWorksheet" 
+        @replace="onReplace(PageType.selection)" />
     <ApproachPage v-else-if="type==PageType.approach" :data="pageData" :route="route"
         @replace="onReplace" @update="onUpdate" />
     <DiagramPage v-else-if="type==PageType.diagram" :data="pageData"
@@ -60,6 +62,7 @@ const NotesPage = defineAsyncComponent(() => import('../notes/NotesPage.vue'))
 const PaperNavlogPage = defineAsyncComponent(() => import('../navlog/PaperNavlogPage.vue'))
 const PersonalMinimumsPage = defineAsyncComponent(() => import('./PersonalMinimumsPage.vue'))
 const StripPage = defineAsyncComponent(() => import('../strips/StripPage.vue'))
+const FuelWorksheetPage = defineAsyncComponent(() => import('../weight/FuelWorksheetPage.vue'))
 
 import { Route } from '@gak/shared'
 import { DemoData } from '../../assets/DemoData'
