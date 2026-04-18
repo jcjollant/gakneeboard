@@ -2,11 +2,10 @@
   <div class="aircraftCard" @click="$emit('selection', aircraft)">
     <div class="preview">
       <div class="icon">
-        <font-awesome-icon icon="fa-plane" />
+        <font-awesome-icon :icon="aircraft.data.icon || 'fa-plane'" />
       </div>
-      <div class="tailNumber">{{ aircraft.tailNumber }}</div>
     </div>
-    <div class="name">{{ aircraft.make }} {{ aircraft.model }}</div>
+    <div class="name">{{ aircraft.tailNumber || (aircraft.data.make + ' ' + aircraft.data.model) }}</div>
   </div>
 </template>
 
@@ -46,13 +45,6 @@ defineEmits(['selection'])
 .icon {
   font-size: 2.5rem;
   color: #0c4a6e;
-}
-.tailNumber {
-  position: absolute;
-  bottom: 5px;
-  font-weight: bold;
-  color: #0c4a6e;
-  font-size: 0.8rem;
 }
 .name {
   text-align: center;

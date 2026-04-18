@@ -3,22 +3,28 @@
     <div class="aircraft-editor">
       <div class="grid p-fluid">
         <!-- Basic Info -->
-        <div class="col-4">
+        <div class="col-3">
           <div class="field">
             <label for="tailNumber">Tail Number</label>
             <InputText id="tailNumber" v-model="aircraft.tailNumber" maxLength="8" placeholder="e.g. N12345" />
           </div>
         </div>
-        <div class="col-4">
+        <div class="col-3">
           <div class="field">
             <label for="make">Make</label>
-            <InputText id="make" v-model="aircraft.make" maxLength="32" placeholder="e.g. Cessna" />
+            <InputText id="make" v-model="aircraft.data.make" maxLength="32" placeholder="e.g. Cessna" />
           </div>
         </div>
-        <div class="col-4">
+        <div class="col-3">
           <div class="field">
             <label for="model">Model</label>
-            <InputText id="model" v-model="aircraft.model" maxLength="32" placeholder="e.g. 172S" />
+            <InputText id="model" v-model="aircraft.data.model" maxLength="32" placeholder="e.g. 172S" />
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="field">
+            <label for="icon">Icon (FA)</label>
+            <InputText id="icon" v-model="aircraft.data.icon" placeholder="e.g. fa-plane" />
           </div>
         </div>
 
@@ -235,9 +241,10 @@ const emits = defineEmits(['update:visible', 'saved', 'deleted'])
 const saving = ref(false)
 const aircraft = reactive<Partial<Aircraft> & { data: any }>({
   tailNumber: '',
-  make: '',
-  model: '',
   data: {
+    make: '',
+    model: '',
+    icon: 'fa-plane',
     climbFuel: 0,
     cruiseFuel: 0,
     descentFuel: 0,
@@ -275,9 +282,10 @@ watch(() => props.visible, (newVal) => {
 function resetAircraft() {
   aircraft.id = undefined
   aircraft.tailNumber = ''
-  aircraft.make = ''
-  aircraft.model = ''
   aircraft.data = {
+    make: '',
+    model: '',
+    icon: 'fa-plane',
     climbFuel: 15,
     cruiseFuel: 10,
     descentFuel: 8,
@@ -379,6 +387,9 @@ async function onDelete() {
 @media (min-width: 769px) {
   .aircraft-editor .col-2 {
     grid-column: span 2;
+  }
+  .aircraft-editor .col-3 {
+    grid-column: span 3;
   }
   .aircraft-editor .col-4 {
     grid-column: span 4;

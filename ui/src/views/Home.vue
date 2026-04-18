@@ -276,6 +276,7 @@ function onAircraftSelection(aircraft: Aircraft) {
 }
 
 function onAircraftSaved(saved: Aircraft) {
+    toaster.success('Aircraft Saved', saved.tailNumber);
     const index = aircrafts.value.findIndex((a: Aircraft) => a.id === saved.id);
     if (index > -1) {
         aircrafts.value[index] = saved;
@@ -286,6 +287,7 @@ function onAircraftSaved(saved: Aircraft) {
 }
 
 function onAircraftDeleted(id: number) {
+    toaster.success('Aircraft Deleted', 'The aircraft has been removed');
     aircrafts.value = aircrafts.value.filter((a: Aircraft) => a.id !== id);
 }
 </script>

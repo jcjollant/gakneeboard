@@ -4,19 +4,17 @@ import { Dao } from './Dao';
 export class AircraftDao extends Dao<Aircraft> {
     protected tableName: string = 'aircrafts';
 
-    public async save(aircraft: Partial<Aircraft> & { userId: number, tailNumber: string, make: string, model: string, data: any }): Promise<Aircraft> {
+    public async save(aircraft: Partial<Aircraft> & { userId: number, tailNumber: string, data: any }): Promise<Aircraft> {
         if (aircraft.id) {
             // Update
             const query = `
                 UPDATE ${this.tableName}
-                SET tail_number = $1, make = $2, model = $3, data = $4, updated_at = CURRENT_TIMESTAMP
-                WHERE id = $5 AND user_id = $6
+                SET tail_number = $1, data = $2, updated_at = CURRENT_TIMESTAMP
+                WHERE id = $3 AND user_id = $4
                 RETURNING *
             `;
             const res = await this.db.query(query, [
                 aircraft.tailNumber,
-                aircraft.make,
-                aircraft.model,
                 JSON.stringify(aircraft.data),
                 aircraft.id,
                 aircraft.userId
@@ -26,15 +24,13 @@ export class AircraftDao extends Dao<Aircraft> {
         } else {
             // Insert
             const query = `
-                INSERT INTO ${this.tableName} (user_id, tail_number, make, model, data)
-                VALUES ($1, $2, $3, $4, $5)
+                INSERT INTO ${this.tableName} (user_id, tail_number, data)
+                VALUES ($1, $2, $3)
                 RETURNING *
             `;
             const res = await this.db.query(query, [
                 aircraft.userId,
                 aircraft.tailNumber,
-                aircraft.make,
-                aircraft.model,
                 JSON.stringify(aircraft.data)
             ]);
             return this.parseRow(res.rows[0]);
@@ -71,8 +67,6 @@ export class AircraftDao extends Dao<Aircraft> {
             id: row.id,
             userId: row.user_id,
             tailNumber: row.tail_number,
-            make: row.make,
-            model: row.model,
             data: row.data 
         };
     }

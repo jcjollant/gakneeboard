@@ -18,6 +18,9 @@ export interface Speeds {
 }
 
 export interface AircraftData {
+    make: string;
+    model: string;
+    icon?: string;
     climbFuel: number;
     cruiseFuel: number;
     descentFuel: number;
@@ -38,7 +41,5 @@ export interface Aircraft {
     id: number;
     userId: number;
     tailNumber: string;
-    make: string;
-    model: string;
     data: AircraftData;
 }
