@@ -121,35 +121,41 @@
           <Separator name="Weight and Balance" :leftAligned="true" />
         </div>
 
-        <div class="col-6">
+        <div class="col-2">
             <div class="field">
                 <label>Basic Empty Weight (lbs)</label>
                 <InputNumber v-model="aircraft.data.basicEmptyWeight" />
             </div>
         </div>
-        <div class="col-6">
+        <div class="col-2">
             <div class="field">
                 <label>Basic Empty Arm (in)</label>
                 <InputNumber v-model="aircraft.data.basicEmptyCg" :minFractionDigits="2" />
             </div>
         </div>
 
-        <div class="col-4">
+        <div class="col-2">
             <div class="field">
                 <label>Max Ramp Weight (lbs)</label>
                 <InputNumber v-model="aircraft.data.maxRampWeight" />
             </div>
         </div>
-        <div class="col-4">
+        <div class="col-2">
             <div class="field">
                 <label>Max Takeoff Weight (lbs)</label>
                 <InputNumber v-model="aircraft.data.maxTakeoffWeight" />
             </div>
         </div>
-        <div class="col-4">
+        <div class="col-2">
             <div class="field">
                 <label>Max Landing Weight (lbs)</label>
                 <InputNumber v-model="aircraft.data.maxLandingWeight" />
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="field">
+                <label>Max Usable Fuel (gal)</label>
+                <InputNumber v-model="aircraft.data.maxUsableFuel" />
             </div>
         </div>
 
@@ -271,6 +277,7 @@ const aircraft = reactive<Partial<Aircraft> & { data: any }>({
     maxRampWeight: 0,
     maxTakeoffWeight: 0,
     maxLandingWeight: 0,
+    maxUsableFuel: 0,
     stations: [],
     fwdCgLimits: [],
     aftCgLimits: [],
@@ -315,6 +322,7 @@ function resetAircraft() {
     maxRampWeight: 2558,
     maxTakeoffWeight: 2550,
     maxLandingWeight: 2550,
+    maxUsableFuel: 53,
     stations: [
         { name: 'Pilot/Co-Pilot', posInch: 37 },
         { name: 'Rear Passengers', posInch: 73 },

@@ -31,6 +31,7 @@ export interface AircraftData {
     maxRampWeight: number;
     maxTakeoffWeight: number;
     maxLandingWeight: number;
+    maxUsableFuel: number;
     stations: Station[];
     fwdCgLimits: CgLimit[];
     aftCgLimits: CgLimit[];
