@@ -17,9 +17,9 @@
           :activeScroll="showScroll"
           :hasVersion="activeTemplate.ver > 0"
           :showDelete="activeTemplate.id > 0"
-          :showEditor="activeTemplate.format === TemplateFormat.Kneeboard"
+          :showEditor="activeTemplate.format === TemplateFormat.Kneeboard || !templateContainsPaperNavlog"
           :showExport="templateContainsChecklist"
-          :showSave="activeTemplate.format === TemplateFormat.Kneeboard"
+          :showSave="activeTemplate.format === TemplateFormat.Kneeboard || !templateContainsPaperNavlog"
           :showScroll="templateContainsTiles"
           :isModified="templateModified"
           :hasId="activeTemplate.id > 0"
@@ -849,6 +849,13 @@ const templateContainsChecklist = computed(() => {
  */
 const templateContainsTiles = computed(() => {
   return activeTemplate.value?.data.some((page: TemplatePage) => page.type === PageType.tiles) || false
+})
+
+/**
+ * Computed property to check if the template contains at least one paper navlog page.
+ */
+const templateContainsPaperNavlog = computed(() => {
+  return activeTemplate.value?.data.some((page: TemplatePage) => page.type === PageType.paperNavlog) || false
 })
 
 function onScrollUpdate(pageIndex: number, tileIndex: number, newTile: TileData) {
