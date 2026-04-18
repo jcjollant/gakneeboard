@@ -1,7 +1,7 @@
 <template>
-    <div class="templateSelector" :class="{clipped:clipped}" :title="template?.desc"
+    <div class="templateSelector" :class="{clipped:clipped && !isWide, wide:isWide}" :title="template?.desc"
         @click="onSelection">
-        <img v-if="clipped" src="/assets/clip.png" class="clip" />
+        <img v-if="clipped && !isWide" src="/assets/clip.png" class="clip" />
         <div class="preview" :class="{temporary:temporary,demo:demo,public:template?.publish}">
             <div v-if="thumbnails.length > 0" class="pages">
                 <img v-for="thumb in thumbnails" :key="thumb" :src="thumb" class="page" />
@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { TemplateFormat } from '@gak/shared';
 import { Template } from '../../models/Template';
 
 const emits = defineEmits(['selection'])
@@ -29,6 +30,7 @@ const props = defineProps({
 })
 
 const parsedTemplate = computed(() => Template.parse(props.template))
+const isWide = computed(() => parsedTemplate.value.format === TemplateFormat.FullPage)
 
 const thumbnails = computed(() => {
     let rawThumbs: string[] = []
@@ -132,6 +134,20 @@ function onSelection() {
     width: calc(var(--page-width) / 5);
     height: calc(var(--page-height) / 5);
     object-fit: cover;
+}
+
+/* Wide format styles */
+.templateSelector.wide {
+    width: calc(var(--page-width) / 2.5 + 6px);
+}
+.templateSelector.wide .preview {
+    width: calc(var(--page-width) / 2.5);
+}
+.templateSelector.wide .page {
+    width: calc(var(--page-width) / 2.5);
+}
+.templateSelector.wide .default {
+    width: calc(var(--page-width) / 2.5);
 }
 
 .templateSelector:hover {

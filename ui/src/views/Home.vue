@@ -11,11 +11,19 @@
                 <TemplateSelector v-if="userKneeboards.length > 0" v-for="(template,index) in userKneeboards" 
                     :template="template" :clipped="true"
                     @selection="onTemplateSelection(template.id)" />
-                <div v-else class="startHere">
+                <div v-if="userKneeboards.length === 0 && userWorksheets.length === 0" class="startHere">
                     <h2>⬅️ Start Here</h2>
                     <div>Your saved kneeboards will be listed here</div>
                 </div>
             </div>
+            <template v-if="userWorksheets.length > 0">
+                <div class="header divider">Worksheets</div>
+                <div class="templateList">
+                    <TemplateSelector v-for="(template,index) in userWorksheets" 
+                        :template="template" :clipped="false"
+                        @selection="onTemplateSelection(template.id)" />
+                </div>
+            </template>
         </div>
         <div class="section templateSection aircraftSection" v-if="currentUser.loggedIn">
             <div class="header">Aircrafts</div>
@@ -137,9 +145,10 @@ const poh = ref<Poh[]>([
 const newTemplate = ref(new Template('New','Create a new kneeboard'))
 const router = useRouter()
 const templates = ref<Template[]>([])
-const kneeboards = computed(() => templates.value.filter(t => t.format === TemplateFormat.Kneeboard))
-const userKneeboards = computed(() => kneeboards.value.filter(t => !t.system))
-const systemKneeboards = computed(() => kneeboards.value.filter(t => t.system))
+const kneeboards = computed(() => templates.value)
+const userKneeboards = computed(() => templates.value.filter(t => !t.system && t.format === TemplateFormat.Kneeboard))
+const userWorksheets = computed(() => templates.value.filter(t => !t.system && t.format === TemplateFormat.FullPage))
+const systemKneeboards = computed(() => templates.value.filter(t => t.system))
 
 const toast = useToast()
 const toaster = useToaster(toast)
@@ -332,6 +341,10 @@ function onAircraftDeleted(id: number) {
     display: flex;
     flex-flow: column;
     gap: 10px;
+}
+.header.divider {
+    border-top: 1px dashed #57422a;
+    margin-top: 10px;
 }
 .section {
     border: 3px solid lightgrey;
