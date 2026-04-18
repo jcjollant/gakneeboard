@@ -9,6 +9,10 @@ export class UrlService {
         return UrlService.root.indexOf('localhost') > -1
     }
 
+    static isProd(): boolean {
+        return UrlService.root.includes('api.kneeboard.ga')
+    }
+
     static publications(): string {
         return UrlService.root + 'publications'
     }

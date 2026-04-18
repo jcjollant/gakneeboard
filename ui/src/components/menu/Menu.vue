@@ -8,7 +8,7 @@
                 <font-awesome-icon v-if="name" class="icon" icon="fa-chevron-right" />
                 <div v-if="name" title="Active Template Name" class="templateName">{{name}}</div>
                 <div v-if="isModified" class="unsaved-badge">unsaved</div>
-                <div v-if="test" class="test">Test Backend</div>
+                <div v-if="test" class="env-tag env-test">TEST DB</div>
             </div>
             <div v-if="showSession" class="right">
                 <div v-if="!currentUser.loggedIn">
@@ -139,13 +139,17 @@ function onSignOut() {
     text-overflow: ellipsis;
     max-width: 300px;
 }
-.test {
-    border-radius: 5px;;
+.env-tag {
     font-size: 0.8rem;
-    font-weight: 500;
-    padding: 2px 5px;
-    color: white;
-    background-color: red;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-weight: 700;
+    vertical-align: middle;
+}
+.env-test {
+    background-color: #dcfce7;
+    color: #15803d;
+    border: 1px solid #86efac;
 }
 .unsaved-badge {
     background-color: rgba(255, 240, 138, 0.5);

@@ -6,6 +6,9 @@
     <div v-if="isAuthenticated && $route.path !== '/login'" class="auth-header">
       <div class="auth-info">
         <span class="user-email">{{ userEmail }}</span>
+        <span :class="['env-tag', isTestEnv ? 'env-test' : isProdEnv ? 'env-prod' : '']">
+          {{ isTestEnv ? 'TEST DB' : isProdEnv ? 'PROD DB' : '???' }}
+        </span>
         <button @click="handleLogout" class="logout-button">
           <i class="pi pi-sign-out"></i> Logout
         </button>
@@ -25,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useSupabaseClient } from '~/utils/supabase'
 import { useRuntimeConfig } from '#app'
@@ -42,6 +45,9 @@ const supabase = useSupabaseClient()
 
 const isAuthenticated = ref(false)
 const userEmail = ref('')
+
+const isTestEnv = computed(() => UrlService.isTestDB)
+const isProdEnv = computed(() => UrlService.isProdDB)
 
 onMounted(async () => {
   // Check initial auth state
@@ -130,6 +136,26 @@ const handleLogout = async () => {
   border-radius: 4px;
   pointer-events: none;
   z-index: 9999;
+}
+
+.env-tag {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.env-test {
+  background-color: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.env-prod {
+  background-color: #fce7f3;
+  color: #db2777;
+  border: 1px solid #fbcfe8;
 }
 
 .server-badge {

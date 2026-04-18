@@ -3,9 +3,6 @@
         <div class="api-selector">
             <h1>
                 Admin API Dashboard
-                <span :class="['env-tag', isTestEnv ? 'env-test' : 'env-prod']">
-                    {{ isTestEnv ? 'TEST DB' : isProdEnv ? 'PROD DB' : '???' }}
-                </span>
             </h1>
             <div class="api-cards">
                 <div class="api-card" :class="{ active: selectedApi === 'profile' }" @click="selectApi('profile')">
@@ -166,12 +163,6 @@ const activeUsersRaw = ref({})
 const loadingActive = ref(false)
 const daysValue = ref(1)
 
-const isTestEnv = computed(() => {
-    return UrlService.isTestDB
-})
-const isProdEnv = computed(() => {
-    return UrlService.isProdDB
-})
 
 function selectApi(api: string) {
     selectedApi.value = api
@@ -264,25 +255,6 @@ onMounted(() => {
     font-weight: 700;
 }
 
-.env-tag {
-    font-size: 0.8rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 999px;
-    font-weight: 700;
-    vertical-align: middle;
-}
-
-.env-test {
-    background-color: #dcfce7;
-    color: #15803d;
-    border: 1px solid #86efac;
-}
-
-.env-prod {
-    background-color: #fce7f3;
-    color: #db2777;
-    border: 1px solid #fbcfe8;
-}
 
 .api-cards {
     display: grid;
