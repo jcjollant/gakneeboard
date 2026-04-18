@@ -5,8 +5,9 @@
         </div>
         <div class="gauge-content">
             <div class="gauge-info">
-                <div><strong>Max Usable:</strong> {{ maxUsable }} gal</div>
-                <div><strong>Required:</strong> {{ totalRequired.toFixed(1) }} gal</div>
+                <div><strong>Max Usable:</strong> {{ maxUsable.toFixed(1) }} gal</div>
+                <div><strong>Legal Reserve:</strong> {{ legalReserveFuel.toFixed(1) }} gal</div>
+                <div><strong>Total Required:</strong> {{ totalRequired.toFixed(1) }} gal</div>
                 <div v-if="fuelLimitedByWeight < maxUsable" class="text-danger">
                     <strong>Weight Limited Max:</strong> {{ fuelLimitedByWeight.toFixed(1) }} gal 
                     ({{ limitingFactor }})
@@ -24,10 +25,10 @@
 
                 <!-- Main Gauge Bar -->
                 <div class="gauge-bar">
-                    <div class="segment taxi" :style="{ width: percent(taxiFuel) }" title="Taxi Fuel"></div>
+                    <div class="segment reserve" :style="{ width: percent(legalReserveFuel) }" title="Legal Reserve"></div>
+                    <div class="segment buffer" :style="{ width: percent(bufferFuel) }" title="Personal Buffer"></div>
                     <div class="segment flight" :style="{ width: percent(flightFuel) }" title="Flight Fuel"></div>
-                    <div class="segment alternate" :style="{ width: percent(alternateFuel) }" title="Alternate Fuel"></div>
-                    <div class="segment buffer" :style="{ width: percent(bufferFuel) }" title="Buffer Fuel"></div>
+                    <div class="segment taxi" :style="{ width: percent(taxiFuel) }" title="Taxi Fuel"></div>
                 </div>
 
                 <!-- Ticks -->
@@ -39,10 +40,10 @@
             </div>
 
             <div class="gauge-legend">
-                <div class="legend-item"><span class="swatch taxi"></span> Taxi ({{ taxiFuel.toFixed(1) }})</div>
+                <div class="legend-item"><span class="swatch reserve"></span> Reserve ({{ legalReserveFuel.toFixed(1) }})</div>
+                <div class="legend-item"><span class="swatch buffer"></span> Personal Buffer ({{ bufferFuel.toFixed(1) }})</div>
                 <div class="legend-item"><span class="swatch flight"></span> Flight ({{ flightFuel.toFixed(1) }})</div>
-                <div class="legend-item"><span class="swatch alternate"></span> Alternate ({{ alternateFuel.toFixed(1) }})</div>
-                <div class="legend-item"><span class="swatch buffer"></span> Buffer ({{ bufferFuel.toFixed(1) }})</div>
+                <div class="legend-item"><span class="swatch taxi"></span> Taxi ({{ taxiFuel.toFixed(1) }})</div>
             </div>
             
             <div v-if="totalRequired > fuelLimitedByWeight" class="p-message p-component p-message-error mt-3">
@@ -86,7 +87,19 @@ const flightFuel = computed(() => {
 const alternateFuel = computed(() => (props.data.ifrAlternateMinutes / 60) * props.aircraft.data.cruiseFuel)
 const bufferFuel = computed(() => (props.data.personalBufferMinutes / 60) * props.aircraft.data.cruiseFuel)
 
-const totalRequired = computed(() => taxiFuel.value + flightFuel.value + alternateFuel.value + bufferFuel.value)
+const legalReserveFuel = computed(() => {
+    const cruiseRate = props.aircraft.data.cruiseFuel;
+    if (props.data.flightRules === 'IFR') {
+        // IFR: 45min cruise + Alternate Time
+        return (45 / 60) * cruiseRate + alternateFuel.value;
+    } else {
+        // VFR: Day 30min, Night 45min
+        const mins = props.data.vfrTime === 'Night' ? 45 : 30;
+        return (mins / 60) * cruiseRate;
+    }
+})
+
+const totalRequired = computed(() => taxiFuel.value + flightFuel.value + legalReserveFuel.value + bufferFuel.value)
 
 // Weight calculations for finding limits
 const payloadWeight = computed(() => {
@@ -171,10 +184,10 @@ function percent(amount: number) {
 .segment {
     height: 100%;
 }
-.segment.taxi { background-color: #f59e0b; }
+.segment.taxi { background-color: #4b5563; } /* Dark Grey for Taxi */
 .segment.flight { background-color: #0ea5e9; }
-.segment.alternate { background-color: #8b5cf6; }
-.segment.buffer { background-color: #10b981; }
+.segment.reserve { background-color: #f43f5e; } /* Rose/Red for Legal Reserve */
+.segment.buffer { background-color: #fbbf24; } /* Amber for Personal Buffer */
 
 .limit-marker {
     position: absolute;
@@ -225,10 +238,10 @@ function percent(amount: number) {
     display: inline-block;
 }
 
-.swatch.taxi { background-color: #f59e0b; }
+.swatch.taxi { background-color: #4b5563; }
 .swatch.flight { background-color: #0ea5e9; }
-.swatch.alternate { background-color: #8b5cf6; }
-.swatch.buffer { background-color: #10b981; }
+.swatch.reserve { background-color: #f43f5e; }
+.swatch.buffer { background-color: #fbbf24; }
 
 .p-message {
     padding: 1rem;

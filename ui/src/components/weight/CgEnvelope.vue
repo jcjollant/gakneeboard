@@ -14,17 +14,17 @@
                  <polygon :points="envelopePointsStr" fill="rgba(3, 105, 161, 0.2)" stroke="#0369a1" stroke-width="2" stroke-linejoin="round" />
                  
                  <template v-if="props.data">
+                    <!-- Path line between Zero Fuel and Takeoff -->
+                    <line :x1="mapX(zeroFuel.arm)" :y1="mapY(zeroFuel.weight)" :x2="mapX(takeoff.arm)" :y2="mapY(takeoff.weight)" 
+                        stroke="#6c757d" stroke-width="1.5" stroke-dasharray="5,5" />
                     <!-- Zero Fuel CG -->
                     <circle :cx="mapX(zeroFuel.arm)" :cy="mapY(zeroFuel.weight)" r="5" fill="#f59e0b" />
-                    <text :x="mapX(zeroFuel.arm) + 8" :y="mapY(zeroFuel.weight) + 4" class="plot-label">Zero Fuel</text>
                     
                     <!-- Takeoff CG -->
                     <circle :cx="mapX(takeoff.arm)" :cy="mapY(takeoff.weight)" r="5" fill="#10b981" />
-                    <text :x="mapX(takeoff.arm) + 8" :y="mapY(takeoff.weight) + 4" class="plot-label">Take Off</text>
                     
                     <!-- Landing CG -->
                     <circle :cx="mapX(landing.arm)" :cy="mapY(landing.weight)" r="5" fill="#ef4444" />
-                    <text :x="mapX(landing.arm) + 8" :y="mapY(landing.weight) + 4" class="plot-label">Landing</text>
                  </template>
 
             </svg>
@@ -155,7 +155,20 @@ const bufferFuelGal = computed(() => {
     return (props.data.personalBufferMinutes / 60) * props.aircraft.data.cruiseFuel
 })
 
-const fuelAtTakeoffGal = computed(() => flightLegsFuelGal.value + alternateFuelGal.value + bufferFuelGal.value)
+const legalReserveFuelGal = computed(() => {
+    const cruiseRate = props.aircraft.data.cruiseFuel;
+    if (props.data) {
+        if (props.data.flightRules === 'IFR') {
+            return (45 / 60) * cruiseRate + alternateFuelGal.value;
+        } else {
+            const mins = props.data.vfrTime === 'Night' ? 45 : 30;
+            return (mins / 60) * cruiseRate;
+        }
+    }
+    return 0
+})
+
+const fuelAtTakeoffGal = computed(() => flightLegsFuelGal.value + legalReserveFuelGal.value + bufferFuelGal.value)
 const fuelAtTakeoffWeight = computed(() => fuelAtTakeoffGal.value * 6)
 const fuelAtTakeoffMoment = computed(() => fuelAtTakeoffWeight.value * fuelArm.value)
 

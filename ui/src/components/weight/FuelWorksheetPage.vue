@@ -16,7 +16,7 @@
                 <TarmacComponent :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
             </div>
 
-            <!-- Col 2: Mission -->
+            <!-- Col 2: Flight -->
             <div class="right-col br">
                 <FlightSection :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
             </div>

@@ -1,7 +1,7 @@
 <template>
     <div class="flight-section">
         <div class="header">
-            <h3>Flight Plan</h3>
+            <h3>Flight</h3>
         </div>
         <div class="flight-content">
             
@@ -17,17 +17,17 @@
                 </div>
                 
                 <div v-if="data.flightRules === 'IFR'" class="setting">
-                    <label>Alt (min)</label>
+                    <label>Alternate (min)</label>
                     <InputNumber v-model="data.ifrAlternateMinutes" @value-change="emitUpdate" :min="0" class="p-inputtext-sm" />
                 </div>
                 
                 <div class="setting">
-                    <label>Buffer</label>
+                    <label>Personal Buffer (min)</label>
                     <InputNumber v-model="data.personalBufferMinutes" @value-change="emitUpdate" :min="0" class="p-inputtext-sm" />
                 </div>
 
                 <div class="setting">
-                    <label>Taxi (g)</label>
+                    <label>Taxi Fuel (gal)</label>
                     <InputNumber v-model="data.taxiFuelGallons" @value-change="emitUpdate" :min="0" class="p-inputtext-sm" />
                 </div>
             </div>
@@ -211,9 +211,9 @@ function legIcon(type: string) {
 .col-burn { width: 80px; text-align: right; font-weight: bold; }
 .col-actions { width: 40px; text-align: right; }
 
-.col-type.climb { color: #f59e0b; }
-.col-type.cruise { color: #0ea5e9; }
-.col-type.descent { color: #10b981; }
+.col-type.climb { color: #991b1b; } /* Dark Red */
+.col-type.cruise { color: #1e40af; } /* Dark Blue */
+.col-type.descent { color: #166534; } /* Dark Green */
 
 .unit {
     font-size: 0.75rem;
