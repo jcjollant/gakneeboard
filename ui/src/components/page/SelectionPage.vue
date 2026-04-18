@@ -124,7 +124,7 @@ const allPages = ref([
     new PageItem('Instrument Approach', PageType.approach, 'plane-arrival', 'Instrument Approach Plates (FAA)', Section.charts, true, false),
     new PageItem('Personal Minimums', PageType.minimums, 'shield', 'Personal Minimums', Section.debrief, true, false),
     new PageItem('Flight Debrief', PageType.flightDebrief, 'pen-to-square', 'Debrief your flights per topic', Section.debrief, true, false),
-    new PageItem('Fuel Worksheet', PageType.fuelWorksheet, 'gas-pump', 'Aircraft fuel and weight calculations', Section.debrief, true, false),
+    new PageItem('Notes Page', PageType.notes, 'note-sticky', 'A full page for scribbling notes', Section.debrief, true, true),
     new PageItem('Cover', PageType.cover, 'image', 'A cover page for your stylish templates', Section.cosmetics, true, false),
     new PageItem('Blank', PageType.none, '', 'A blank page', Section.cosmetics, true, false)
 ])

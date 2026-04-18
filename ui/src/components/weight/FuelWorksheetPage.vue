@@ -1,5 +1,5 @@
 <template>
-    <div class="contentPage fuelPage">
+    <div class="contentPage fuelPage" :class="{ fullpage: format === TemplateFormat.FullPage, landscape: format === TemplateFormat.FullPage }">
         <Header title="Fuel Worksheet" :page="true" :displayMode="false" leftButton=""
             @replace="emits('replace')"></Header>
             
@@ -8,10 +8,28 @@
             <br/><br/>
             Please create a new Fuel Worksheet from the Home Screen Aircraft list.
         </div>
-        <div v-else class="fuel-content">
-            <LoadSection :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
-            <FlightSection :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
-            <FuelGauge :data="pageData" :aircraft="aircraft" />
+        <div v-else class="worksheet-main">
+            <!-- Col 1: Loading -->
+            <div class="left-col br">
+                <AircraftFuselage :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
+                <Separator name="Tarmac" />
+                <TarmacComponent :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
+            </div>
+
+            <!-- Col 2: Mission -->
+            <div class="right-col br">
+                <FlightSection :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
+            </div>
+
+            <!-- Col 3: Balance & Summary -->
+            <div class="stats-col">
+                <div class="envelope-summary">
+                    <CgEnvelope :data="pageData" :aircraft="aircraft" :showTitle="true" />
+                </div>
+                <div class="gauge-summary bt">
+                    <FuelGauge :data="pageData" :aircraft="aircraft" />
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -19,15 +37,19 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import Header from '../shared/Header.vue'
-import LoadSection from './LoadSection.vue'
+import AircraftFuselage from './AircraftFuselage.vue'
+import TarmacComponent from './TarmacComponent.vue'
 import FlightSection from './FlightSection.vue'
+import CgEnvelope from './CgEnvelope.vue'
 import FuelGauge from './FuelGauge.vue'
+import Separator from '../shared/Separator.vue'
 import { LocalStoreService } from '../../services/LocalStoreService'
-import { Aircraft } from '@gak/shared'
+import { Aircraft, TemplateFormat } from '@gak/shared'
 import { FuelWorksheetData } from '../../models/FuelWorksheetTypes'
 
 const props = defineProps({
-    data: { type: Object, default: () => ({}) }
+    data: { type: Object, default: () => ({}) },
+    format: { type: String, default: TemplateFormat.Kneeboard }
 })
 
 const emits = defineEmits(['replace', 'update'])
@@ -59,10 +81,46 @@ function onDataUpdate(newData: Partial<FuelWorksheetData>) {
 </script>
 
 <style scoped>
-.fuel-content {
+.fuelPage {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    padding: 1rem;
+}
+
+.worksheet-main {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    flex: 1;
+    overflow: hidden;
+}
+
+.fullpage.landscape .worksheet-main {
+    grid-template-columns: 250px 1fr 350px;
+}
+
+.left-col {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.right-col {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.stats-col {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background-color: white;
+}
+
+.envelope-summary {
+    padding: 0;
+}
+
+.gauge-summary {
+    flex: 1;
 }
 </style>

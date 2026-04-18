@@ -121,27 +121,26 @@ function percent(amount: number) {
 
 <style scoped>
 .fuel-gauge-container {
-    border: 3px solid #dee2e6;
-    border-radius: 8px;
     background-color: white;
     display: flex;
     flex-direction: column;
 }
 
 .header {
-    padding: 0.5rem 1rem;
+    padding: 0.25rem 0.5rem;
     border-bottom: 1px solid #dee2e6;
-    background-color: #f8f9fa;
-    border-radius: 6px 6px 0 0;
 }
 
 .header h3 {
     margin: 0;
-    color: #495057;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #adb5bd;
+    text-transform: uppercase;
 }
 
 .gauge-content {
-    padding: 1.5rem;
+    padding: 1rem;
 }
 
 .gauge-info {

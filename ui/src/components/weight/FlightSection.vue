@@ -6,58 +6,64 @@
         <div class="flight-content">
             
             <div class="flight-settings">
-                <div class="setting-group">
-                    <label>Flight Rules</label>
-                    <SelectButton v-model="data.flightRules" :options="['VFR', 'IFR']" @change="emitUpdate" />
+                <div class="setting">
+                    <label>Rules</label>
+                    <SelectButton v-model="data.flightRules" :options="['VFR', 'IFR']" @change="emitUpdate" class="p-button-sm" />
                 </div>
                 
-                <div v-if="data.flightRules === 'VFR'" class="setting-group">
-                    <label>Time of Day</label>
-                    <SelectButton v-model="vfrTimeComputed" :options="['Day', 'Night']" @change="emitUpdate" />
+                <div v-if="data.flightRules === 'VFR'" class="setting">
+                    <label>Time</label>
+                    <SelectButton v-model="vfrTimeComputed" :options="['Day', 'Night']" @change="emitUpdate" class="p-button-sm" />
                 </div>
                 
-                <div v-if="data.flightRules === 'IFR'" class="setting-group">
-                    <label>Alternate (min)</label>
-                    <InputNumber v-model="data.ifrAlternateMinutes" @value-change="emitUpdate" :min="0" />
+                <div v-if="data.flightRules === 'IFR'" class="setting">
+                    <label>Alt (min)</label>
+                    <InputNumber v-model="data.ifrAlternateMinutes" @value-change="emitUpdate" :min="0" class="p-inputtext-sm" />
                 </div>
                 
-                <div class="setting-group">
-                    <label>Buffer (min)</label>
-                    <InputNumber v-model="data.personalBufferMinutes" @value-change="emitUpdate" :min="0" />
+                <div class="setting">
+                    <label>Buffer</label>
+                    <InputNumber v-model="data.personalBufferMinutes" @value-change="emitUpdate" :min="0" class="p-inputtext-sm" />
                 </div>
 
-                <div class="setting-group">
-                    <label>Taxi Fuel (gal)</label>
-                    <InputNumber v-model="data.taxiFuelGallons" @value-change="emitUpdate" :min="0" />
+                <div class="setting">
+                    <label>Taxi (g)</label>
+                    <InputNumber v-model="data.taxiFuelGallons" @value-change="emitUpdate" :min="0" class="p-inputtext-sm" />
                 </div>
             </div>
 
-            <Separator name="Flight Legs" />
-
-            <div class="legs-list">
-                <div v-for="(leg, index) in data.legs" :key="leg.id" class="leg-card">
-                    <div class="leg-header">
-                        <span class="leg-type" :class="leg.type">
-                            <i class="pi" :class="legIcon(leg.type)"></i> {{ leg.type.toUpperCase() }}
-                        </span>
-                        <Button icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger p-button-sm" @click="removeLeg(index)" />
+            <div class="legs-table">
+                <div class="legs-header bb">
+                    <div class="col-type">Leg</div>
+                    <div class="col-dur">Time</div>
+                    <div class="col-flow">Flow</div>
+                    <div class="col-burn">Burn</div>
+                    <div class="col-actions"></div>
+                </div>
+                <div v-for="(leg, index) in data.legs" :key="leg.id" class="leg-row bb">
+                    <div class="col-type" :class="leg.type">
+                        <i class="pi" :class="legIcon(leg.type)"></i>
                     </div>
-                    <div class="leg-details">
-                        <div class="leg-field">
-                            <label>Duration (min)</label>
-                            <InputNumber v-model="leg.durationMinutes" @value-change="emitUpdate" :min="0" class="p-inputtext-sm" />
-                        </div>
-                        <div class="leg-fuel-calc">
-                            Est. Burn: <strong>{{ calcLegFuel(leg).toFixed(1) }} gal</strong>
-                        </div>
+                    <div class="col-dur">
+                        <InputNumber v-model="leg.durationMinutes" @value-change="emitUpdate" :min="0" class="p-inputtext-sm compact-input" />
+                        <span class="unit">min</span>
+                    </div>
+                    <div class="col-flow">
+                        {{ getFuelRate(leg).toFixed(1) }} <span class="unit">gph</span>
+                    </div>
+                    <div class="col-burn">
+                        {{ calcLegFuel(leg).toFixed(1) }} <span class="unit">g</span>
+                    </div>
+                    <div class="col-actions">
+                        <Button icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger p-button-sm" @click="removeLeg(index)" />
                     </div>
                 </div>
             </div>
 
             <div class="add-leg mt-2">
-                <Button label="Climb" icon="pi pi-arrow-up-right" class="p-button-outlined p-button-sm mr-2" @click="addLeg('climb')" />
-                <Button label="Cruise" icon="pi pi-arrow-right" class="p-button-outlined p-button-sm mr-2" @click="addLeg('cruise')" />
-                <Button label="Descent" icon="pi pi-arrow-down-right" class="p-button-outlined p-button-sm" @click="addLeg('descent')" />
+                <Button label="Climb" icon="pi pi-arrow-up-right" class="p-button-text p-button-sm" @click="addLeg('climb')" />
+                <Button label="Cruise" icon="pi pi-arrow-right" class="p-button-text p-button-sm" @click="addLeg('cruise')" />
+                <Button label="Descent" icon="pi pi-arrow-down-right" class="p-button-text p-button-sm" @click="addLeg('descent')" />
             </div>
 
         </div>
@@ -114,10 +120,14 @@ function removeLeg(index: number) {
     emitUpdate()
 }
 
+function getFuelRate(leg: FlightLeg) {
+    return leg.type === 'climb' ? props.aircraft.data.climbFuel 
+         : leg.type === 'descent' ? props.aircraft.data.descentFuel
+         : props.aircraft.data.cruiseFuel;
+}
+
 function calcLegFuel(leg: FlightLeg) {
-    const rate = leg.type === 'climb' ? props.aircraft.data.climbFuel 
-               : leg.type === 'descent' ? props.aircraft.data.descentFuel
-               : props.aircraft.data.cruiseFuel;
+    const rate = getFuelRate(leg);
     return rate * (leg.durationMinutes / 60)
 }
 
@@ -150,89 +160,69 @@ function legIcon(type: string) {
 }
 
 .flight-content {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.flight-settings {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-}
-
-.setting-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.setting-group label {
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: #495057;
-}
-
-.legs-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.leg-card {
-    border: 1px solid #ced4da;
-    border-radius: 6px;
-    background-color: #f8f9fa;
-    width: 200px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.leg-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.25rem 0.5rem 0.25rem 1rem;
-    border-bottom: 1px solid #ced4da;
-    background-color: white;
-}
-
-.leg-type {
-    font-weight: bold;
-    font-size: 0.85rem;
-}
-
-.leg-type.climb { color: #f59e0b; }
-.leg-type.cruise { color: #0ea5e9; }
-.leg-type.descent { color: #10b981; }
-
-.leg-details {
     padding: 1rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-.leg-field {
+.flight-settings {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed #ced4da;
+}
+
+.setting {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
 }
 
-.leg-field label {
-    font-size: 0.8rem;
+.setting label {
+    font-size: 0.75rem;
+    font-weight: bold;
     color: #6c757d;
 }
 
-.leg-fuel-calc {
-    font-size: 0.9rem;
-    background-color: rgba(3, 105, 161, 0.1);
-    color: #0369a1;
-    padding: 0.5rem;
-    border-radius: 4px;
-    text-align: center;
+.legs-table {
+    display: flex;
+    flex-direction: column;
+}
+
+.legs-header {
+    display: flex;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #adb5bd;
+    padding-bottom: 0.25rem;
+}
+
+.leg-row {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+}
+
+.col-type { width: 30px; text-align: center; }
+.col-dur { flex: 1; display: flex; align-items: center; gap: 0.25rem; }
+.col-flow { width: 80px; text-align: right; }
+.col-burn { width: 80px; text-align: right; font-weight: bold; }
+.col-actions { width: 40px; text-align: right; }
+
+.col-type.climb { color: #f59e0b; }
+.col-type.cruise { color: #0ea5e9; }
+.col-type.descent { color: #10b981; }
+
+.unit {
+    font-size: 0.75rem;
+    color: #adb5bd;
+    font-weight: normal;
+}
+
+.compact-input :deep(.p-inputtext) {
+    width: 60px;
 }
 </style>
 

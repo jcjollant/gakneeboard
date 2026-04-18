@@ -132,7 +132,7 @@ const zeroFuelMoment = computed(() => (props.aircraft.data.basicEmptyWeight * pr
 const zeroFuelArm = computed(() => zeroFuelMoment.value / (zeroFuelWeight.value || 1))
 
 const fuelArm = computed(() => {
-    const station = props.aircraft.data.stations.find(s => s.type === 'fuel' || s.name.toLowerCase().includes('fuel'))
+    const station = props.aircraft.data.stations.find(s => (s.type as string) === 'fuel' || s.name.toLowerCase().includes('fuel'))
     return station ? station.posInch : props.aircraft.data.basicEmptyCg // Safe fallback
 })
 
@@ -190,12 +190,9 @@ const landing = computed(() => {
 
 <style scoped>
 .cg-envelope {
-    border: 3px solid #dee2e6;
-    border-radius: 8px;
     background-color: white;
     display: flex;
     flex-direction: column;
-    height: 100%;
 }
 
 .cg-envelope.no-border {
@@ -238,12 +235,11 @@ const landing = computed(() => {
 .plot-legend {
     display: flex;
     justify-content: center;
-    gap: 1.5rem;
-    padding: 1rem;
+    gap: 1rem;
+    padding: 0.5rem;
     border-top: 1px solid #dee2e6;
     background-color: #f8f9fa;
-    border-radius: 0 0 6px 6px;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
 }
 
 .legend-item {

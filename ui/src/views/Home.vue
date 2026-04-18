@@ -308,7 +308,7 @@ function onAircraftFuelWorksheet(aircraft: Aircraft) {
     const templateData = getTemplateBlank();
     templateData.name = aircraft.tailNumber + ' Fuel Worksheet';
     templateData.desc = 'Fuel Worksheet for ' + aircraft.tailNumber;
-    templateData.format = TemplateFormat.Kneeboard;
+    templateData.format = TemplateFormat.FullPage;
     templateData.data = [new TemplatePage(PageType.fuelWorksheet, 'Fuel Worksheet', {
         aircraftTailNumber: aircraft.tailNumber,
         tarmacItems: [],

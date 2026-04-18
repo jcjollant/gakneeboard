@@ -29,9 +29,7 @@
                     <InputText v-model="item.name" class="p-inputtext-sm item-name" placeholder="Name" @change="emitUpdate" />
                     <InputNumber v-model="item.weightLbs" class="p-inputtext-sm item-weight" suffix=" lbs" placeholder="Weight" @value-change="emitUpdate" />
                 </div>
-                <div class="actions">
-                     <Button icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger p-button-sm" @click="removeItem(item.id)" />
-                </div>
+                <Button icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger p-button-sm delete-btn" @click="removeItem(item.id)" />
             </div>
         </div>
     </div>
@@ -122,9 +120,7 @@ function onDrop(event: DragEvent) {
 
 <style scoped>
 .tarmac {
-    border: 3px solid #dee2e6;
-    border-radius: 8px;
-    background-color: #f8f9fa;
+    background-color: white;
     display: flex;
     flex-direction: column;
 }
@@ -133,24 +129,25 @@ function onDrop(event: DragEvent) {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 1rem;
+    padding: 0.25rem 0.5rem;
     border-bottom: 1px solid #dee2e6;
-    background-color: white;
-    border-radius: 6px 6px 0 0;
 }
 
 .header h3 {
     margin: 0;
-    color: #495057;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #adb5bd;
+    text-transform: uppercase;
 }
 
 .tarmac-dropzone {
     flex: 1;
-    min-height: 150px;
-    padding: 1rem;
+    min-height: 100px;
+    padding: 0.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.25rem;
 }
 
 .empty-state {
@@ -162,44 +159,40 @@ function onDrop(event: DragEvent) {
 
 .tarmac-item {
     display: flex;
-    align-items: center;
-    gap: 1rem;
+    flex-direction: column;
     background-color: white;
-    padding: 0.5rem 1rem;
+    padding: 0.25rem;
     border: 1px solid #ced4da;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: grab;
-    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
 }
 
-.tarmac-item:active {
-    cursor: grabbing;
+.tarmac-item .icon {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    font-size: 0.8rem;
+    opacity: 0.3;
 }
 
-.tarmac-item:hover {
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
-}
-
-.icon {
-    font-size: 1.2rem;
-    color: #6c757d;
-    width: 20px;
-    text-align: center;
-}
-
-.details {
+.tarmac-item .details {
     display: flex;
-    gap: 0.5rem;
-    flex: 1;
+    flex-direction: column;
+}
+
+.tarmac-item .delete-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 .item-name {
-    flex: 2;
+    width: 100%;
+    margin-bottom: 2px;
 }
 
 .item-weight {
-    flex: 1;
-    max-width: 100px;
+    width: 100%;
 }
 </style>

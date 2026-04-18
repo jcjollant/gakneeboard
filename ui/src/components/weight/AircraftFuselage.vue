@@ -1,7 +1,7 @@
 <template>
-    <div class="fuselage">
+    <div class="fuselage bt">
         <div class="header">
-            <h3>Aircraft Fuselage</h3>
+            <h3>Aircraft Loading</h3>
         </div>
         <div class="fuselage-interior">
             <div v-for="(station, index) in filteredStations" :key="index" class="station-row">
@@ -94,7 +94,7 @@ const emits = defineEmits(['update'])
 
 const filteredStations = computed(() => {
     return props.aircraft.data.stations.map((s, index) => ({ ...s, originalIndex: index }))
-        .filter(s => s.type !== 'fuel')
+        .filter(s => (s.type as string) !== 'fuel')
 })
 
 function emitUpdate() {
@@ -164,33 +164,30 @@ function onDrop(event: DragEvent, targetStationIndex: number) {
 
 <style scoped>
 .fuselage {
-    border: 3px solid #dee2e6;
-    border-radius: 8px;
-    background-color: #f8f9fa;
+    background-color: white;
     display: flex;
     flex-direction: column;
 }
 
 .header {
-    padding: 0.5rem 1rem;
+    padding: 0.25rem 0.5rem;
     border-bottom: 1px solid #dee2e6;
-    background-color: white;
-    border-radius: 6px 6px 0 0;
 }
 
 .header h3 {
     margin: 0;
-    color: #495057;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #adb5bd;
+    text-transform: uppercase;
 }
 
 .fuselage-interior {
-    padding: 1.5rem;
+    padding: 0.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    background-color: #e9ecef; /* slightly darker to look like inside */
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+    gap: 0.75rem;
+    background-color: white;
 }
 
 .station-row {
@@ -214,8 +211,8 @@ function onDrop(event: DragEvent, targetStationIndex: number) {
 
 .station-dropzones {
     display: flex;
-    gap: 1rem;
-    min-height: 60px;
+    gap: 0.5rem;
+    min-height: 48px;
 }
 
 .station-dropzones.single {
