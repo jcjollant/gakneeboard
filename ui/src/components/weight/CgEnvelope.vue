@@ -1,6 +1,6 @@
 <template>
-    <div class="cg-envelope">
-        <div class="header">
+    <div class="cg-envelope" :class="{ 'no-border': !showTitle }">
+        <div v-if="showTitle" class="header">
             <h3>CG Envelope</h3>
         </div>
         <div class="svg-container">
@@ -13,24 +13,26 @@
                  <!-- Envelope Polygon -->
                  <polygon :points="envelopePointsStr" fill="rgba(3, 105, 161, 0.2)" stroke="#0369a1" stroke-width="2" stroke-linejoin="round" />
                  
-                 <!-- Zero Fuel CG -->
-                 <circle :cx="mapX(zeroFuel.arm)" :cy="mapY(zeroFuel.weight)" r="5" fill="#f59e0b" />
-                 <text :x="mapX(zeroFuel.arm) + 8" :y="mapY(zeroFuel.weight) + 4" class="plot-label">Zero Fuel</text>
-                 
-                 <!-- Takeoff CG -->
-                 <circle :cx="mapX(takeoff.arm)" :cy="mapY(takeoff.weight)" r="5" fill="#10b981" />
-                 <text :x="mapX(takeoff.arm) + 8" :y="mapY(takeoff.weight) + 4" class="plot-label">Take Off</text>
-                 
-                 <!-- Landing CG -->
-                 <circle :cx="mapX(landing.arm)" :cy="mapY(landing.weight)" r="5" fill="#ef4444" />
-                 <text :x="mapX(landing.arm) + 8" :y="mapY(landing.weight) + 4" class="plot-label">Landing</text>
+                 <template v-if="props.data">
+                    <!-- Zero Fuel CG -->
+                    <circle :cx="mapX(zeroFuel.arm)" :cy="mapY(zeroFuel.weight)" r="5" fill="#f59e0b" />
+                    <text :x="mapX(zeroFuel.arm) + 8" :y="mapY(zeroFuel.weight) + 4" class="plot-label">Zero Fuel</text>
+                    
+                    <!-- Takeoff CG -->
+                    <circle :cx="mapX(takeoff.arm)" :cy="mapY(takeoff.weight)" r="5" fill="#10b981" />
+                    <text :x="mapX(takeoff.arm) + 8" :y="mapY(takeoff.weight) + 4" class="plot-label">Take Off</text>
+                    
+                    <!-- Landing CG -->
+                    <circle :cx="mapX(landing.arm)" :cy="mapY(landing.weight)" r="5" fill="#ef4444" />
+                    <text :x="mapX(landing.arm) + 8" :y="mapY(landing.weight) + 4" class="plot-label">Landing</text>
+                 </template>
 
             </svg>
             <div v-else class="invalid-envelope">
                 Not enough CG limits defined in aircraft data to draw envelope.
             </div>
         </div>
-        <div class="plot-legend">
+        <div v-if="props.data" class="plot-legend">
             <div class="legend-item"><span class="swatch zero"></span> Zero Fuel</div>
             <div class="legend-item"><span class="swatch takeoff"></span> Take Off</div>
             <div class="legend-item"><span class="swatch landing"></span> Landing</div>
@@ -43,10 +45,13 @@ import { computed } from 'vue'
 import { FuelWorksheetData } from '../../models/FuelWorksheetTypes'
 import { Aircraft } from '@gak/shared'
 
-const props = defineProps<{
-    data: FuelWorksheetData
+const props = withDefaults(defineProps<{
+    data?: FuelWorksheetData
     aircraft: Aircraft
-}>()
+    showTitle?: boolean
+}>(), {
+    showTitle: true
+})
 
 // SVG Constants
 const SVG_WIDTH = 400
@@ -61,22 +66,30 @@ const isValidEnvelope = computed(() => {
 const minX = computed(() => {
     const limits = [...props.aircraft.data.fwdCgLimits, ...props.aircraft.data.aftCgLimits]
     const minArm = Math.min(...limits.map(l => l.posInch))
-    // we want a slight margin, ensure zeroFuel.arm doesn't clip
-    return Math.min(minArm - 2, zeroFuel.value.arm - 2)
+    if (props.data) {
+        return Math.min(minArm - 2, zeroFuel.value.arm - 2)
+    }
+    return minArm - 2
 })
 const maxX = computed(() => {
     const limits = [...props.aircraft.data.fwdCgLimits, ...props.aircraft.data.aftCgLimits]
     const maxArm = Math.max(...limits.map(l => l.posInch))
-    return Math.max(maxArm + 2, zeroFuel.value.arm + 2)
+    if (props.data) {
+        return Math.max(maxArm + 2, zeroFuel.value.arm + 2)
+    }
+    return maxArm + 2
 })
 const minY = computed(() => {
     const limits = [...props.aircraft.data.fwdCgLimits, ...props.aircraft.data.aftCgLimits]
     const minW = Math.min(...limits.map(l => l.weightLbs))
-    return Math.min(minW - 200, zeroFuel.value.weight - 200)
+    if (props.data) {
+        return Math.min(minW - 200, zeroFuel.value.weight - 200)
+    }
+    return minW - 200
 })
 const maxY = computed(() => {
-    // Usually max takeoff weight bounds it
-    return (props.aircraft.data.maxTakeoffWeight || Math.max(...props.aircraft.data.aftCgLimits.map(l=>l.weightLbs))) + 100
+    const maxLimitWeight = Math.max(...props.aircraft.data.aftCgLimits.map(l=>l.weightLbs), ...props.aircraft.data.fwdCgLimits.map(l=>l.weightLbs))
+    return (props.aircraft.data.maxTakeoffWeight || maxLimitWeight) + 100
 })
 
 function mapX(arm: number) {
@@ -103,9 +116,11 @@ const envelopePointsStr = computed(() => {
 
 // --- Physics Calculations ---
 const payloadWeight = computed(() => {
+    if (!props.data) return 0
     return props.data.aircraftItems.reduce((sum, item) => sum + item.weightLbs, 0)
 })
 const payloadMoment = computed(() => {
+    if (!props.data) return 0
     return props.data.aircraftItems.reduce((sum, item) => {
         const station = props.aircraft.data.stations[item.stationIndex]
         return sum + (item.weightLbs * (station?.posInch || 0))
@@ -122,6 +137,7 @@ const fuelArm = computed(() => {
 })
 
 const flightLegsFuelGal = computed(() => {
+    if (!props.data) return 0
     return props.data.legs.reduce((sum, leg) => {
         const rate = leg.type === 'climb' ? props.aircraft.data.climbFuel 
                    : leg.type === 'descent' ? props.aircraft.data.descentFuel
@@ -130,8 +146,14 @@ const flightLegsFuelGal = computed(() => {
     }, 0);
 })
 
-const alternateFuelGal = computed(() => (props.data.ifrAlternateMinutes / 60) * props.aircraft.data.cruiseFuel)
-const bufferFuelGal = computed(() => (props.data.personalBufferMinutes / 60) * props.aircraft.data.cruiseFuel)
+const alternateFuelGal = computed(() => {
+    if (!props.data) return 0
+    return (props.data.ifrAlternateMinutes / 60) * props.aircraft.data.cruiseFuel
+})
+const bufferFuelGal = computed(() => {
+    if (!props.data) return 0
+    return (props.data.personalBufferMinutes / 60) * props.aircraft.data.cruiseFuel
+})
 
 const fuelAtTakeoffGal = computed(() => flightLegsFuelGal.value + alternateFuelGal.value + bufferFuelGal.value)
 const fuelAtTakeoffWeight = computed(() => fuelAtTakeoffGal.value * 6)
@@ -141,20 +163,29 @@ const flightLegsFuelWeight = computed(() => flightLegsFuelGal.value * 6)
 const flightLegsFuelMoment = computed(() => flightLegsFuelWeight.value * fuelArm.value)
 
 // Export Points
-const zeroFuel = computed(() => ({
-    weight: zeroFuelWeight.value,
-    arm: zeroFuelArm.value
-}))
+const zeroFuel = computed(() => {
+    if (!props.data) return { weight: 0, arm: 0 }
+    return {
+        weight: zeroFuelWeight.value,
+        arm: zeroFuelArm.value
+    }
+})
 
-const takeoff = computed(() => ({
-    weight: zeroFuelWeight.value + fuelAtTakeoffWeight.value,
-    arm: (zeroFuelMoment.value + fuelAtTakeoffMoment.value) / ((zeroFuelWeight.value + fuelAtTakeoffWeight.value) || 1)
-}))
+const takeoff = computed(() => {
+    if (!props.data) return { weight: 0, arm: 0 }
+    return {
+        weight: zeroFuelWeight.value + fuelAtTakeoffWeight.value,
+        arm: (zeroFuelMoment.value + fuelAtTakeoffMoment.value) / ((zeroFuelWeight.value + fuelAtTakeoffWeight.value) || 1)
+    }
+})
 
-const landing = computed(() => ({
-    weight: takeoff.value.weight - flightLegsFuelWeight.value,
-    arm: ((takeoff.value.weight * takeoff.value.arm) - flightLegsFuelMoment.value) / ((takeoff.value.weight - flightLegsFuelWeight.value) || 1)
-}))
+const landing = computed(() => {
+    if (!props.data) return { weight: 0, arm: 0 }
+    return {
+        weight: takeoff.value.weight - flightLegsFuelWeight.value,
+        arm: ((takeoff.value.weight * takeoff.value.arm) - flightLegsFuelMoment.value) / ((takeoff.value.weight - flightLegsFuelWeight.value) || 1)
+    }
+})
 </script>
 
 <style scoped>
@@ -165,6 +196,10 @@ const landing = computed(() => ({
     display: flex;
     flex-direction: column;
     height: 100%;
+}
+
+.cg-envelope.no-border {
+    border: none;
 }
 
 .header {

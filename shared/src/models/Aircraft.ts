@@ -29,6 +29,7 @@ export interface AircraftData {
     descentFuel: number;
     cruiseTas: number;
     climbTas: number;
+    descentTas: number;
     basicEmptyCg: number;
     basicEmptyWeight: number;
     maxRampWeight: number;

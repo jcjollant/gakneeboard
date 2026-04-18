@@ -15,20 +15,23 @@
             <InputText id="make" v-model="aircraft.data.make" maxLength="32" placeholder="e.g. Cessna" />
           </div>
         </div>
-        <div class="col-6">
+        <div class="col-3">
           <div class="field">
             <label for="model">Model</label>
-            <div class="model-row">
-                <InputText id="model" v-model="aircraft.data.model" maxLength="32" placeholder="e.g. 172S" />
-                <div class="icon-trigger" @click="showIconList = !showIconList" :class="{ active: showIconList }" title="Change aircraft icon">
-                    <template v-if="selectedIcon.type === 'image'">
-                        <img :src="selectedIcon.path" :alt="selectedIcon.label" />
-                    </template>
-                    <template v-else>
-                        <font-awesome-icon :icon="selectedIcon.faIcon" />
-                    </template>
-                    <div class="edit-hint"><font-awesome-icon :icon="showIconList ? 'fa-chevron-up' : 'fa-pencil'" /></div>
-                </div>
+            <InputText id="model" v-model="aircraft.data.model" maxLength="32" placeholder="e.g. 172S" />
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="field">
+            <label>Aircraft Icon</label>
+            <div class="icon-trigger solo" @click="showIconList = !showIconList" :class="{ active: showIconList }" title="Change aircraft icon">
+                <template v-if="selectedIcon.type === 'image'">
+                    <img :src="selectedIcon.path" :alt="selectedIcon.label" />
+                </template>
+                <template v-else>
+                    <font-awesome-icon :icon="selectedIcon.faIcon" />
+                </template>
+                <div class="edit-hint"><font-awesome-icon :icon="showIconList ? 'fa-chevron-up' : 'fa-pencil'" /></div>
             </div>
           </div>
         </div>
@@ -64,16 +67,22 @@
           </div>
         </div>
 
-        <div class="col-3">
+        <div class="col-2">
           <div class="field">
             <label>Climb TAS (kt)</label>
             <InputNumber v-model="aircraft.data.climbTas" />
           </div>
         </div>
-        <div class="col-3">
+        <div class="col-2">
           <div class="field">
             <label>Cruise TAS (kt)</label>
             <InputNumber v-model="aircraft.data.cruiseTas" />
+          </div>
+        </div>
+        <div class="col-2">
+          <div class="field">
+            <label>Descent TAS (kt)</label>
+            <InputNumber v-model="aircraft.data.descentTas" />
           </div>
         </div>
         <div class="col-12">
@@ -217,10 +226,16 @@
             <Button label="Add Cargo Area" icon="pi pi-plus" class="p-button-text mt-2" @click="addStation('central')" />
         </div>
 
-
+        <div class="col-12">
+            <Separator name="CG Envelope" :leftAligned="true" />
+        </div>
 
         <div class="col-12">
-            <CgEnvelopeEditor :fwdLimits="aircraft.data.fwdCgLimits" :aftLimits="aircraft.data.aftCgLimits" />
+            <CgEnvelopeEditor 
+                :fwdLimits="aircraft.data.fwdCgLimits" 
+                :aftLimits="aircraft.data.aftCgLimits" 
+                :aircraft="aircraft" 
+            />
         </div>
       </div>
     </div>
@@ -272,6 +287,7 @@ const aircraft = reactive<Partial<Aircraft> & { data: any }>({
     descentFuel: 0,
     climbTas: 0,
     cruiseTas: 0,
+    descentTas: 0,
     basicEmptyWeight: 0,
     basicEmptyCg: 0,
     maxRampWeight: 0,
@@ -315,6 +331,9 @@ watch(() => props.visible, (newVal) => {
           }
         })
       }
+      if (cloned.data && cloned.data.descentTas === undefined) {
+        cloned.data.descentTas = cloned.data.cruiseTas || 115
+      }
       Object.assign(aircraft, cloned)
     } else {
       resetAircraft()
@@ -334,6 +353,7 @@ function resetAircraft() {
     descentFuel: 8,
     climbTas: 80,
     cruiseTas: 110,
+    descentTas: 115,
     basicEmptyWeight: 1600,
     basicEmptyCg: 40,
     maxRampWeight: 2558,
@@ -464,6 +484,9 @@ async function onDelete() {
   transition: all 0.2s;
   font-size: 1.25rem;
   color: #0369a1;
+}
+.icon-trigger.solo {
+    width: 100%;
 }
 .icon-trigger:hover, .icon-trigger.active {
   border-color: #0ea5e9;
