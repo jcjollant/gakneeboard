@@ -18,6 +18,7 @@
             <div class="mid-col sr">
                 <div class="column-header"><h3>FLIGHT</h3></div>
                 <FlightSection class="flight-section-comp" :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
+                <div class="experimental-watermark">EXPERIMENTAL</div>
             </div>
 
             <!-- Col 3: Balance & Summary -->
@@ -95,6 +96,9 @@ function onDataUpdate(newData: Partial<FuelWorksheetData>) {
 .fuelPage {
     display: flex;
     flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    background-color: white; /* The "paper" background */
 }
 
 .worksheet-main {
@@ -134,6 +138,7 @@ function onDataUpdate(newData: Partial<FuelWorksheetData>) {
     flex-direction: column;
     height: 100%;
     overflow: hidden;
+    position: relative;
 }
 
 .flight-section-comp {
@@ -153,5 +158,21 @@ function onDataUpdate(newData: Partial<FuelWorksheetData>) {
     height: 100%;
     overflow-y: auto;
     background-color: white;
+}
+
+.experimental-watermark {
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(0, 0, 0, 0.15); /* Slightly darker since it's smaller */
+    font-size: 2.1rem;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 100;
+    white-space: nowrap;
+    letter-spacing: 0.3em;
+    user-select: none;
+    text-transform: uppercase;
 }
 </style>
