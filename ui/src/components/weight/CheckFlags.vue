@@ -51,6 +51,22 @@
                     <span class="check-value">{{ (data.taxiFuelGallons || 0).toFixed(1) }} gal</span>
                 </div>
             </div>
+
+            <!-- Front Seat -->
+            <div class="check-item" :class="statusClass(isFrontSeatOccupied)">
+                <div class="check-info">
+                    <span class="check-label">Front Seat</span>
+                    <span class="check-value">{{ isFrontSeatOccupied ? 'Occupied' : 'Empty' }}</span>
+                </div>
+            </div>
+
+            <!-- Flight Legs -->
+            <div class="check-item" :class="statusClass(data.legs.length > 0)">
+                <div class="check-info">
+                    <span class="check-label">Flight Legs</span>
+                    <span class="check-value">{{ data.legs.length }} Leg{{ data.legs.length === 1 ? '' : 's' }}</span>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -142,6 +158,36 @@ function checkPoint(pt: { weight: number, arm: number }) {
     return pt.arm >= fwdLimit && pt.arm <= aftLimit
 }
 
+// --- Occupancy Validation ---
+const isFrontSeatOccupied = computed(() => {
+    if (!props.aircraft.data.stations.length) return true
+    
+    // Find all seat-like stations (exclude fuel and cargo)
+    const seats = props.aircraft.data.stations
+        .map((s, index) => ({ ...s, index }))
+        .filter(s => {
+            const lower = (s.name || '').toLowerCase()
+            const isFuel = lower.includes('fuel') || (s.type as string) === 'fuel'
+            const isCargo = lower.includes('cargo') || lower.includes('baggage')
+            return !isFuel && !isCargo
+        })
+    
+    if (seats.length === 0) return true
+
+    // Find the minimum arm among seats (the front-most seats)
+    const minArm = Math.min(...seats.map(s => s.posInch))
+    
+    // Find indices of all front seats
+    const frontSeatIndices = seats
+        .filter(s => Math.abs(s.posInch - minArm) < 0.1)
+        .map(s => s.index)
+        
+    // Check if any item is assigned to these stations with weight > 0
+    return props.data.aircraftItems.some(item => 
+        frontSeatIndices.includes(item.stationIndex) && item.weightLbs > 0
+    )
+})
+
 function interpolateLimit(weight: number, limits: { weightLbs: number, posInch: number }[]) {
     // Exact match or outer bounds
     const sorted = [...limits].sort((a, b) => a.weightLbs - b.weightLbs)
@@ -202,19 +248,23 @@ function statusClass(pass: boolean) {
 }
 
 .check-label {
-    font-size: 0.65rem;
+    font-size: 0.8rem;
     font-weight: 700;
-    color: #94a3b8;
+    color: #334155;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.1rem;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.05rem;
 }
 
 .check-value {
-    font-size: 0.8rem;
-    color: #1e293b;
-    font-weight: 600;
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: 500;
     font-feature-settings: "tnum";
+}
+
+.status-pass .check-label {
+    color: #059669;
 }
 
 .status-pass {
@@ -222,12 +272,26 @@ function statusClass(pass: boolean) {
     background-color: #f0fdf4;
 }
 
+.status-fail .check-label {
+    color: #dc2626;
+}
+
 .status-fail {
     background-color: #fef2f2;
     border-left: 3px solid #ef4444;
+    animation: shake-red 0.4s ease-in-out;
+}
+
+@keyframes shake-red {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-4px); background-color: #fee2e2; }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
 }
 
 .status-fail .check-value {
-    color: #b91c1c;
+    color: #ef4444;
+    font-weight: 500;
 }
 </style>

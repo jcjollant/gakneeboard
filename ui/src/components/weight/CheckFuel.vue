@@ -18,6 +18,7 @@
                     <div class="segment buffer" :style="{ width: percent(bufferFuel) }" title="Personal Buffer"></div>
                     <div class="segment flight" :style="{ width: percent(flightFuel) }" title="Flight Fuel"></div>
                     <div class="segment taxi" :style="{ width: percent(taxiFuel) }" title="Taxi Fuel"></div>
+                    <div v-if="extraFuel > 0" class="segment extra" :style="{ width: percent(extraFuel) }" title="Extra Fuel"></div>
                 </div>
 
                 <!-- Ticks -->
@@ -33,6 +34,7 @@
                 <div class="legend-item"><span class="swatch buffer"></span> Personal Res. ({{ bufferFuel.toFixed(1) }})</div>
                 <div class="legend-item"><span class="swatch flight"></span> Flight ({{ flightFuel.toFixed(1) }})</div>
                 <div class="legend-item"><span class="swatch taxi"></span> Taxi ({{ taxiFuel.toFixed(1) }})</div>
+                <div v-if="extraFuel > 0" class="legend-item"><span class="swatch extra"></span> Extra Fuel ({{ extraFuel.toFixed(1) }})</div>
             </div>
             
 
@@ -82,6 +84,10 @@ const legalReserveFuel = computed(() => {
 })
 
 const totalRequired = computed(() => taxiFuel.value + flightFuel.value + legalReserveFuel.value + bufferFuel.value)
+const extraFuel = computed(() => {
+    const onboard = props.data.fuelGallons || 0;
+    return Math.max(0, onboard - totalRequired.value);
+})
 
 // Weight calculations for finding limits
 const payloadWeight = computed(() => {
@@ -160,6 +166,7 @@ function percent(amount: number) {
     display: flex;
     overflow: hidden;
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    border: 1px solid #cbd5e1;
 }
 
 .segment {
@@ -169,6 +176,7 @@ function percent(amount: number) {
 .segment.flight { background-color: #0ea5e9; }
 .segment.reserve { background-color: #f43f5e; } /* Rose/Red for Legal Reserve */
 .segment.buffer { background-color: #fbbf24; } /* Amber for Personal Buffer */
+.segment.extra { background-color: #ffffff; border-right: 1px solid #94a3b8; border-left: 1px solid #94a3b8; }
 
 .limit-marker {
     position: absolute;
@@ -234,6 +242,7 @@ function percent(amount: number) {
 .swatch.flight { background-color: #0ea5e9; }
 .swatch.reserve { background-color: #f43f5e; }
 .swatch.buffer { background-color: #fbbf24; }
+.swatch.extra { background-color: #ffffff; border: 1px solid #94a3b8; }
 
 .p-message {
     padding: 1rem;

@@ -10,8 +10,8 @@
             <CheckFlags :data="data" :aircraft="aircraft" />
         </div>
         
-        <Separator name="Fuel Usage" />
-        <div class="fuel-usage bt">
+        <Separator name="Fuel Allocation" />
+        <div class="fuel-allocation bt">
             <CheckFuel :data="data" :aircraft="aircraft" @update="onUpdate" />
         </div>
     </div>
@@ -49,7 +49,7 @@ function onUpdate(newData: Partial<FuelWorksheetData>) {
     padding: 0.25rem;
 }
 
-.fuel-usage, .checks {
+.fuel-allocation, .checks {
     flex: 1;
 }
 
