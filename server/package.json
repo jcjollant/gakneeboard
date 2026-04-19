@@ -1,6 +1,6 @@
 {
   "name": "gak-server",
-  "version": "6.16.6",
+  "version": "6.17.0",
   "description": "run `vercel dev` to run the local service",
   "main": "index.js",
   "scripts": {
