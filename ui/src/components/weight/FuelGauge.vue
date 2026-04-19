@@ -5,16 +5,10 @@
 
             
             <div class="gauge-wrapper">
-                <!-- Limit Markers -->
-                <div v-if="mtowLimitGal < maxUsable" class="limit-marker mtow" :style="{ left: percent(mtowLimitGal) }">
-                    <span>MTOW</span>
-                </div>
-                <div v-if="mldwLimitGal < maxUsable" class="limit-marker mldw" :style="{ left: percent(mldwLimitGal) }">
-                    <span>MLDW</span>
-                </div>
+
                 <!-- Manual Fuel Marker -->
                 <div v-if="data.fuelGallons !== undefined" class="limit-marker actual" :style="{ left: percent(data.fuelGallons) }">
-                    <span>ACTUAL</span>
+                    <span>TANK</span>
                 </div>
 
 
@@ -201,8 +195,6 @@ function percent(amount: number) {
 
 .limit-marker.actual span {
     color: #0ea5e9;
-    top: auto;
-    bottom: -15px;
 }
 
 

@@ -4,11 +4,12 @@
 
         <Menu></Menu>
         <div class="section templateSection kneeboardSection">
-            <div class="header">Kneeboards</div>
+            <div class="header">Kneeboards &amp; Worksheets</div>
+            <!-- Kneeboards row -->
             <div class="templateList">
                 <TemplateSelector :template="newTemplate" :temporary="true" :clipped="true" src="/thumbnails/new.png" class="templateNew"
                     @selection="onNewTemplate"/>
-                <TemplateSelector v-if="userKneeboards.length > 0" v-for="(template,index) in userKneeboards" 
+                <TemplateSelector v-for="(template,index) in userKneeboards" :key="template.id"
                     :template="template" :clipped="true"
                     @selection="onTemplateSelection(template.id)" />
                 <div v-if="userKneeboards.length === 0 && userWorksheets.length === 0" class="startHere">
@@ -16,14 +17,12 @@
                     <div>Your saved kneeboards will be listed here</div>
                 </div>
             </div>
-            <template v-if="userWorksheets.length > 0">
-                <div class="header divider">Worksheets</div>
-                <div class="templateList">
-                    <TemplateSelector v-for="(template,index) in userWorksheets" 
-                        :template="template" :clipped="false"
-                        @selection="onTemplateSelection(template.id)" />
-                </div>
-            </template>
+            <!-- Worksheets row -->
+            <div v-if="userWorksheets.length > 0" class="templateList worksheetList">
+                <WorksheetSelector v-for="(template,index) in userWorksheets" :key="template.id"
+                    :template="template"
+                    @selection="onTemplateSelection(template.id)" />
+            </div>
         </div>
         <div class="section templateSection aircraftSection" v-if="currentUser.loggedIn">
             <div class="header">Aircrafts</div>
@@ -95,6 +94,7 @@ import { UserUrl } from '../lib/UserUrl';
 
 import Menu from '../components/menu/Menu.vue';
 import TemplateSelector from '../components/templates/TemplateSelector.vue';
+import WorksheetSelector from '../components/templates/WorksheetSelector.vue';
 import PricingPlans from './PricingPlans.vue';
 import { AircraftService } from '../services/AircraftService';
 import AircraftCard from '../components/aircraft/AircraftCard.vue';
@@ -342,10 +342,6 @@ function onAircraftDeleted(id: number) {
     flex-flow: column;
     gap: 10px;
 }
-.header.divider {
-    border-top: 1px dashed #57422a;
-    margin-top: 10px;
-}
 .section {
     border: 3px solid lightgrey;
     border-radius: 10px;
@@ -357,6 +353,12 @@ function onAircraftDeleted(id: number) {
     flex-wrap: wrap;
     gap: 10px;
     padding: 10px;
+}
+
+.worksheetList {
+    border-top: 1px dashed #57422a;
+    margin-top: 0;
+    align-items: flex-start;
 }
 
 .inlineButton {
