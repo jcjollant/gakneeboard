@@ -47,7 +47,10 @@
                     </div>
                     <div class="col-dur">
                         <InputNumber v-model="leg.durationMinutes" @value-change="emitUpdate" :min="0" class="p-inputtext-sm compact-input" />
-                        <span class="unit">min</span>
+                        <div class="duration-unit-wrapper">
+                            <span class="unit">min</span>
+                            <Button icon="pi pi-calculator" class="p-button-rounded p-button-text p-button-info p-button-sm calculator-btn" @click="openCalculator(index)" title="Calculate Time" />
+                        </div>
                     </div>
                     <div class="col-flow">
                         {{ getFuelRate(leg).toFixed(1) }}
@@ -56,7 +59,7 @@
                         {{ calcLegFuel(leg).toFixed(1) }}
                     </div>
                     <div class="col-actions">
-                        <Button icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger p-button-sm" @click="removeLeg(index)" />
+                        <Button icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger p-button-sm action-btn" @click="removeLeg(index)" title="Remove Leg" />
                     </div>
                 </div>
             </div>
@@ -68,11 +71,13 @@
             </div>
 
         </div>
+
+        <TimeCalculatorDialog v-model:visible="isCalculatorOpen" :initial-speed="calculatorSpeed" @apply="handleCalculatorApply" />
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { FuelWorksheetData, FlightLeg } from '../../models/FuelWorksheetTypes'
 import { Aircraft } from '@gak/shared'
 import Button from 'primevue/button'
@@ -80,6 +85,7 @@ import SelectButton from 'primevue/selectbutton'
 import InputNumber from 'primevue/inputnumber'
 import Separator from '../shared/Separator.vue'
 import EitherOr from '../shared/EitherOr.vue'
+import TimeCalculatorDialog from './TimeCalculatorDialog.vue'
 
 const props = defineProps<{
     data: FuelWorksheetData
@@ -87,6 +93,10 @@ const props = defineProps<{
 }>()
 
 const emits = defineEmits(['update'])
+
+const isCalculatorOpen = ref(false)
+const calculatorSpeed = ref(100)
+const activeLegIndex = ref<number | null>(null)
 
 const isVfr = computed({
     get: () => props.data.flightRules === 'VFR',
@@ -148,6 +158,25 @@ function legIcon(type: string) {
     if (type === 'climb') return 'pi-arrow-up-right'
     if (type === 'descent') return 'pi-arrow-down-right'
     return 'pi-arrow-right'
+}
+
+function openCalculator(index: number) {
+    const leg = props.data.legs[index]
+    activeLegIndex.value = index
+    
+    // Suggested speed based on leg type from aircraft performance data
+    calculatorSpeed.value = leg.type === 'climb' ? (props.aircraft.data.climbTas || 100) 
+                         : (leg.type === 'descent' ? ((props.aircraft.data as any).descentTas || 110) 
+                         : (props.aircraft.data.cruiseTas || 120))
+                         
+    isCalculatorOpen.value = true
+}
+
+function handleCalculatorApply(minutes: number) {
+    if (activeLegIndex.value !== null) {
+        props.data.legs[activeLegIndex.value].durationMinutes = minutes
+        emitUpdate()
+    }
 }
 </script>
 
@@ -214,7 +243,16 @@ function legIcon(type: string) {
 .col-dur { flex: 1; display: flex; align-items: center; gap: 0.25rem; }
 .col-flow { width: 80px; text-align: right; }
 .col-burn { width: 80px; text-align: right; font-weight: bold; }
-.col-actions { width: 40px; text-align: right; }
+.col-actions { width: 40px; text-align: right; display: flex; justify-content: flex-end; gap: 2px; }
+
+.action-btn {
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.leg-row:hover .action-btn {
+    opacity: 1;
+}
 
 .col-type.climb { color: #991b1b; } /* Dark Red */
 .col-type.cruise { color: #1e40af; } /* Dark Blue */
@@ -224,6 +262,25 @@ function legIcon(type: string) {
     font-size: 0.75rem;
     color: #adb5bd;
     font-weight: normal;
+}
+
+.duration-unit-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+}
+
+.calculator-btn {
+    display: none;
+}
+
+.leg-row:hover .unit {
+    display: none;
+}
+
+.leg-row:hover .calculator-btn {
+    display: inline-flex;
 }
 
 .compact-input :deep(.p-inputtext),
