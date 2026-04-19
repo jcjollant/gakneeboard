@@ -1,10 +1,8 @@
 <template>
-    <div class="left-col">
-        <div class="column-header"><h3>LOAD</h3></div>
-        
+    <div class="load-section-content">
         <Separator name="Hangar" />
         <HangarLoad class="hangar-section" :data="data" :aircraft="aircraft" @update="emitUpdate" />
-
+        
         <Separator name="Aircraft" />
         <AircraftLoad class="aircraft-section" :data="data" :aircraft="aircraft" @update="emitUpdate" />
         
@@ -40,7 +38,7 @@ function emitUpdate(newData: any) {
 </script>
 
 <style scoped>
-.left-col {
+.load-section-content {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -56,27 +54,10 @@ function emitUpdate(newData: any) {
     min-height: 0;
 }
 
-.column-header {
-    padding: 0.25rem 0.5rem;
-    background-color: #f8f9fa;
-    border-bottom: 2px solid #dee2e6;
-    text-align: left;
-    flex: 0 0 auto;
-}
-
-.column-header h3 {
-    margin: 0;
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: #495057;
-    letter-spacing: 0.05em;
-}
-
 :deep(.separator) {
     background-color: #f8f9fa;
     padding: 2px 0;
     margin: 0;
     flex: 0 0 auto;
 }
-
 </style>
