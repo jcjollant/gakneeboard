@@ -48,6 +48,7 @@ const emits = defineEmits(['replace', 'update'])
 
 const pageData = ref<FuelWorksheetData>(props.data as FuelWorksheetData)
 const aircraft = ref<Aircraft | null>(null)
+const isHangarInitialized = ref(false)
 
 watch(() => props.data, (newVal) => {
     pageData.value = newVal as FuelWorksheetData
@@ -66,12 +67,16 @@ function loadAircraft() {
         }
 
         // Initialize hangar items if this is a brand new worksheet
-        if (pageData.value.hangarItems.length === 0 && pageData.value.aircraftItems.length === 0) {
+        if (!isHangarInitialized.value && pageData.value.hangarItems.length === 0 && pageData.value.aircraftItems.length === 0) {
             const cachedItems = LocalStoreService.getHangarItems()
             if (cachedItems && cachedItems.length > 0) {
                 // Deep copy to avoid reference issues
                 pageData.value.hangarItems = JSON.parse(JSON.stringify(cachedItems))
             }
+            isHangarInitialized.value = true
+        } else if (pageData.value.hangarItems.length > 0 || pageData.value.aircraftItems.length > 0) {
+            // Mark as initialized if we already have items (e.g. from existing worksheet)
+            isHangarInitialized.value = true
         }
     }
 }

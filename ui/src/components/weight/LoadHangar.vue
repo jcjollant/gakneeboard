@@ -122,6 +122,10 @@ function removeItem(id: string) {
     const index = props.data.hangarItems.findIndex(i => i.id === id)
     if (index !== -1) {
         props.data.hangarItems.splice(index, 1)
+        
+        // Fix for race condition: update local store immediately
+        LocalStoreService.saveHangarItems(props.data.hangarItems)
+        
         emitUpdate()
     }
 }
@@ -242,7 +246,7 @@ function onDrop(event: DragEvent) {
     color: #3b82f6;
     background-color: #f0f9ff;
     border-style: solid;
-    animation: bounce 2s infinite;
+    animation: bounce 2s 3;
     order: -1; /* Show first when empty */
 }
 
