@@ -9,10 +9,10 @@
         </div>
         <div v-else class="worksheet-main">
             <!-- Col 1: Loading -->
-            <LoadSection :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
+            <LoadSection :data="pageData" :aircraft="aircraft" class="sr" @update="onDataUpdate" />
 
             <!-- Col 2: Flight -->
-            <div class="right-col br">
+            <div class="right-col sr">
                 <div class="column-header"><h3>FLIGHT</h3></div>
                 <FlightSection :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
             </div>
@@ -91,8 +91,7 @@ function onDataUpdate(newData: Partial<FuelWorksheetData>) {
     grid-template-columns: 180px 1fr;
     flex: 1;
     overflow: hidden;
-    background-color: #dee2e6;
-    gap: 1px;
+    background-color: white;
 }
 
 .column-header {
@@ -112,6 +111,10 @@ function onDataUpdate(newData: Partial<FuelWorksheetData>) {
 
 .fullpage.landscape .worksheet-main {
     grid-template-columns: 250px 1fr 350px;
+}
+
+.sr {
+    border-right: 1px solid #dee2e6;
 }
 
 .right-col {

@@ -30,7 +30,7 @@
                 </div>
                 <div class="p-field mb-3">
                     <label for="weight" class="block text-sm font-bold mb-1">Weight (lbs)</label>
-                    <InputNumber id="weight" v-model="newItem.weightLbs" suffix=" lbs" :min="0" @keyup.enter="confirmAdd" />
+                    <InputNumber id="weight" v-model="newItem.weightLbs" suffix=" lbs" :min="0" :maxFractionDigits="0" @keyup.enter="confirmAdd" />
                 </div>
             </div>
             <template #footer>

@@ -13,7 +13,7 @@
         
         <Separator name="Weight" />
         <div class="weight-summary-box">
-            <div class="weight-value">{{ totalWeight.toFixed(1) }} <span class="unit">lbs</span></div>
+            <div class="weight-value">{{ totalWeight.toFixed(0) }} <span class="unit">lbs</span></div>
         </div>
     </div>
 </template>
@@ -43,7 +43,7 @@ const totalWeight = computed(() => {
     const emptyWeight = props.aircraft.data.basicEmptyWeight || 0
     const payload = props.data.aircraftItems.reduce((sum, item) => sum + item.weightLbs, 0)
     const fuel = (props.data.fuelGallons || 0) * 6
-    return emptyWeight + payload + fuel
+    return Math.round(emptyWeight + payload + fuel)
 })
 </script>
 

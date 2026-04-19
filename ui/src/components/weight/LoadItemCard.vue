@@ -5,9 +5,11 @@
         </div>
         <div class="details">
             <span class="name">{{ item.name }}</span>
-            <span class="weight">{{ item.weightLbs }} lbs</span>
+            <span class="weight">{{ (item.weightLbs || 0).toFixed(0) }} lbs</span>
         </div>
-        <div class="action-overlay" :class="inHangar ? 'delete' : 'eject'" @click.stop="emits('action', item)">
+        <div class="action-overlay" :class="inHangar ? 'delete' : 'eject'" 
+             :title="inHangar ? 'Remove from Hangar' : 'Eject from Aircraft'"
+             @click.stop="emits('action', item)">
             <font-awesome-icon :icon="inHangar ? 'trash' : 'eject'" class="action-icon" />
         </div>
     </div>
