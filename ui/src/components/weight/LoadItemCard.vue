@@ -1,11 +1,11 @@
 <template>
     <div class="load-card" :class="{ 'in-hangar': inHangar }" draggable="true" @dragstart="onDragStart">
-        <div class="icon">
-            <font-awesome-icon :icon="item.isPerson ? 'user' : 'box'" />
-        </div>
         <div class="details">
             <span class="name">{{ item.name }}</span>
-            <span class="weight">{{ (item.weightLbs || 0).toFixed(0) }} lbs</span>
+            <div class="info-row">
+                <font-awesome-icon :icon="item.isPerson ? 'user' : 'box'" class="item-icon" />
+                <span class="weight">{{ (item.weightLbs || 0).toFixed(0) }} lbs</span>
+            </div>
         </div>
         <div class="action-overlay" :class="inHangar ? 'delete' : 'eject'" 
              :title="inHangar ? 'Remove from Hangar' : 'Eject from Aircraft'"
@@ -33,10 +33,10 @@ function onDragStart(event: DragEvent) {
 <style scoped>
 .load-card {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    flex-direction: column;
+    justify-content: center;
     background-color: white;
-    padding: 0.5rem;
+    padding: 0.4rem 0.5rem;
     border: 1px solid #ced4da;
     border-radius: 4px;
     cursor: grab;
@@ -46,7 +46,6 @@ function onDragStart(event: DragEvent) {
     transition: transform 0.1s, border-color 0.2s;
     position: relative;
     box-sizing: border-box;
-    /* overflow: visible to allow action icon to pop out */
 }
 
 .load-card:active {
@@ -58,21 +57,26 @@ function onDragStart(event: DragEvent) {
     border-color: #0ea5e9;
 }
 
-.icon {
-    color: #6c757d;
-    width: 20px;
-    height: 20px;
+.item-icon {
+    color: #94a3b8;
+    font-size: 0.65rem;
+}
+
+.info-row {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.9rem;
+    gap: 4px;
 }
 
 .details {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    width: 100%;
     flex: 1;
     overflow: hidden;
+    gap: 2px;
 }
 
 .name {
