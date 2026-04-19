@@ -16,3 +16,4 @@ export * from './models/UsagePayload';
 export * from './models/Route';
 export * from './models/Aircraft';
 export * from './services';
+export { NavMath } from './services/NavMath';
