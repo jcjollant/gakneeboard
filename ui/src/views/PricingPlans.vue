@@ -47,7 +47,7 @@
 
         <div class="plan-content">
           <ul class="features-list">
-            <li v-for="(value) in [{name:'Prints per Month', quota: plan.quotas.prints}, {name:'Pages', quota: plan.quotas.pages}, {name:'Kneeboards', quota: plan.quotas.templates}]" key="name">
+            <li v-for="(value) in [{name:'Prints per Month', quota: plan.quotas.prints}, {name:'Pages', quota: plan.quotas.pages}, {name:'Kneeboards', quota: plan.quotas.templates}, {name:'Aircrafts', quota: plan.quotas.aircrafts}]" key="name">
               <span>                
                 <svg class="icon check" viewBox="0 0 24 24">
                   <path d="M20 6L9 17L4 12"></path>

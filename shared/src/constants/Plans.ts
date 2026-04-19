@@ -158,7 +158,7 @@ export const PLANS: PlanDescription[] = [
             prints: -1,
             pages: 50,
             templates: 10,
-            aircrafts: 10
+            aircrafts: 2
         },
         features: {
             advancedPrinting: true,

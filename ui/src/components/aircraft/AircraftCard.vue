@@ -7,7 +7,11 @@
         <font-awesome-icon v-else :icon="aircraft.data.icon || 'fa-plane'" />
       </div>
     </div>
-    <div class="name">{{ aircraft.tailNumber || (aircraft.data.make + ' ' + aircraft.data.model) }}</div>
+    <div v-if="templateMode" class="name multiline">
+       <div class="make">{{ aircraft.data.make }}</div>
+       <div class="model">{{ aircraft.data.model }}</div>
+    </div>
+    <div v-else class="name">{{ aircraft.tailNumber || (aircraft.data.make + ' ' + aircraft.data.model) }}</div>
   </div>
 </template>
 
@@ -16,6 +20,7 @@ import { Aircraft } from '@gak/shared'
 
 defineProps<{
   aircraft: Aircraft
+  templateMode?: boolean
 }>()
 
 defineEmits(['selection'])
@@ -30,7 +35,7 @@ defineEmits(['selection'])
   width: calc(var(--page-width) / 5 + 6px);
 }
 .preview {
-  background-color: #e0f2fe;
+  background-color: white;
   border-radius: 5px;
   border: 3px solid #0369a1;
   height: calc(var(--page-width) / 5 + 6px);
@@ -66,5 +71,18 @@ defineEmits(['selection'])
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.name.multiline {
+  white-space: normal;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.name.multiline .make {
+  font-weight: bold;
+}
+.name.multiline .model {
+  font-size: 0.85em;
+  color: #6c757d;
 }
 </style>

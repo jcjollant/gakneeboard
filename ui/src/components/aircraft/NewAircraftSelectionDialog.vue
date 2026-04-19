@@ -31,8 +31,11 @@
         <Dialog v-model:visible="showTemplateSelection" modal header="Select Template" :style="{ width: '80vw', maxWidth: '800px' }">
             <div class="templateList selectionList">
                 <div v-for="template in aircraftTemplates" :key="template.id" class="selection-item" @click="selectSourceAircraft(template)">
-                    <AircraftCard :aircraft="template" />
+                    <AircraftCard :aircraft="template" :templateMode="true" />
                 </div>
+            </div>
+            <div class="feedback-invite">
+                Don't see your aircraft? Send us feedback at <a href="mailto:support@kneeboard.ga">support@kneeboard.ga</a> with templates you'd like to see!
             </div>
         </Dialog>
 
@@ -53,6 +56,8 @@ import Dialog from 'primevue/dialog'
 import AircraftCard from './AircraftCard.vue'
 import { AircraftService } from '../../services/AircraftService'
 import { Aircraft } from '@gak/shared'
+import { useToast } from 'primevue/usetoast'
+import { useToaster } from '../../assets/Toaster'
 
 const props = defineProps<{
     visible: boolean
@@ -60,6 +65,9 @@ const props = defineProps<{
 }>()
 
 const emits = defineEmits(['update:visible', 'selected'])
+
+const toast = useToast()
+const toaster = useToaster(toast)
 
 const aircraftTemplates = ref<Aircraft[]>([])
 const showTemplateSelection = ref(false)
@@ -72,7 +80,9 @@ function onFromScratch() {
 
 async function onFromTemplate() {
     emits('update:visible', false)
+    toaster.info('Fetching Templates', 'Opening hangar doors...', 10000)
     aircraftTemplates.value = await AircraftService.listTemplates()
+    toast.removeAllGroups()
     showTemplateSelection.value = true
 }
 
@@ -148,5 +158,23 @@ function selectSourceAircraft(source: Aircraft) {
 
 .selection-item {
     cursor: pointer;
+}
+
+.feedback-invite {
+    text-align: center;
+    margin-top: 1rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+    padding-bottom: 0.5rem;
+}
+
+.feedback-invite a {
+    color: var(--bg, #0369a1);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.feedback-invite a:hover {
+    text-decoration: underline;
 }
 </style>

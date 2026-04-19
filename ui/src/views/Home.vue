@@ -423,7 +423,7 @@ function onAircraftDeleted(id: number) {
 }
 
 .aircraftSection .preview.temporary {
-    background-color: white;
+    background-color: transparent;
     border: 3px dashed lightgrey;
     border-radius: 5px;
     height: calc(var(--page-width) / 5 + 6px);
