@@ -177,6 +177,7 @@ function onDrop(event: DragEvent) {
     flex-wrap: wrap;
     gap: 0.5rem;
     align-content: flex-start;
+    justify-content: center;
 }
 
 .start-here {
