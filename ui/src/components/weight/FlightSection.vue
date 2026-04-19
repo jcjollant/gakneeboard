@@ -24,18 +24,21 @@
                     <InputNumber v-model="data.taxiFuelGallons" @value-change="emitUpdate" :min="0" class="p-inputtext-sm settings-input" />
                 </div>
                 
-                <div class="setting">
-                    <label>Personal Buffer (min)</label>
+                <div class="setting horizontal">
+                    <label>Personal Fuel Reserve</label>
                     <InputNumber v-model="data.personalBufferMinutes" @value-change="emitUpdate" :min="0" class="p-inputtext-sm settings-input" />
+                    <span class="unit ml-1">min</span>
                 </div>
             </div>
-
+            
+            <Separator name="Legs" />
+            
             <div class="legs-table">
                 <div class="legs-header bb">
                     <div class="col-type">Leg</div>
                     <div class="col-dur">Time</div>
-                    <div class="col-flow">Flow</div>
-                    <div class="col-burn">Burn</div>
+                    <div class="col-flow">Flow (gph)</div>
+                    <div class="col-burn">Burn (gal)</div>
                     <div class="col-actions"></div>
                 </div>
                 <div v-for="(leg, index) in data.legs" :key="leg.id" class="leg-row bb">
@@ -47,10 +50,10 @@
                         <span class="unit">min</span>
                     </div>
                     <div class="col-flow">
-                        {{ getFuelRate(leg).toFixed(1) }} <span class="unit">gph</span>
+                        {{ getFuelRate(leg).toFixed(1) }}
                     </div>
                     <div class="col-burn">
-                        {{ calcLegFuel(leg).toFixed(1) }} <span class="unit">g</span>
+                        {{ calcLegFuel(leg).toFixed(1) }}
                     </div>
                     <div class="col-actions">
                         <Button icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger p-button-sm" @click="removeLeg(index)" />
@@ -160,7 +163,7 @@ function legIcon(type: string) {
     padding: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.5rem;
     overflow-y: auto;
     flex: 1;
 }
@@ -170,13 +173,16 @@ function legIcon(type: string) {
     flex-wrap: wrap;
     gap: 1rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px dashed #ced4da;
 }
 
 .setting {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+}
+.setting.horizontal {
+    flex-direction: row;
+    align-items: center;
 }
 
 .setting label {
@@ -201,7 +207,7 @@ function legIcon(type: string) {
 .leg-row {
     display: flex;
     align-items: center;
-    padding: 0.5rem 0;
+    padding: 0.2rem 0;
 }
 
 .col-type { width: 30px; text-align: center; }
@@ -223,6 +229,8 @@ function legIcon(type: string) {
 .compact-input :deep(.p-inputtext),
 .settings-input :deep(.p-inputtext) {
     width: 60px;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
 }
 </style>
 
