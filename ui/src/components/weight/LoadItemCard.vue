@@ -40,7 +40,7 @@ function onDragStart(event: DragEvent) {
     justify-content: center;
     background-color: white;
     padding: 0.4rem 0.5rem;
-    border: 2px solid #f59e0b; /* Yellow/Amber for items - matches WeightLoad */
+    border: 2px solid #f59e0b; /* Yellow/Amber for items - matches LoadWeight */
     border-radius: 4px;
     cursor: grab;
     width: 95px;
