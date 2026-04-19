@@ -57,7 +57,7 @@ function emitUpdate(newData: any) {
 }
 
 .column-header {
-    padding: 0.5rem 1rem;
+    padding: 0.25rem 0.5rem;
     background-color: #f8f9fa;
     border-bottom: 2px solid #dee2e6;
     text-align: left;
@@ -74,7 +74,7 @@ function emitUpdate(newData: any) {
 
 :deep(.separator) {
     background-color: #f8f9fa;
-    padding: 4px 0;
+    padding: 2px 0;
     margin: 0;
     flex: 0 0 auto;
 }

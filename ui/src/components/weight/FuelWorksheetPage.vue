@@ -20,11 +20,15 @@
             <!-- Col 3: Balance & Summary -->
             <div class="stats-col">
                 <div class="column-header"><h3>ENVELOPPE</h3></div>
-                <div class="envelope-summary">
+                <div class="envelope">
                     <CgEnvelope :data="pageData" :aircraft="aircraft" :showTitle="false" />
                 </div>
+                <div class="column-header"><h3>CHECKS</h3></div>
+                <div class="checks bt">
+                    <WorksheetChecks :data="pageData" :aircraft="aircraft" />
+                </div>
                 <div class="column-header"><h3>FUEL USAGE</h3></div>
-                <div class="gauge-summary bt">
+                <div class="fuel-usage bt">
                     <FuelGauge :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
                 </div>
             </div>
@@ -39,6 +43,7 @@ import LoadSection from './LoadSection.vue'
 import FlightSection from './FlightSection.vue'
 import CgEnvelope from './CgEnvelope.vue'
 import FuelGauge from './FuelGauge.vue'
+import WorksheetChecks from './WorksheetChecks.vue'
 import { LocalStoreService } from '../../services/LocalStoreService'
 import { Aircraft, TemplateFormat } from '@gak/shared'
 import { FuelWorksheetData } from '../../models/FuelWorksheetTypes'
@@ -96,7 +101,7 @@ function onDataUpdate(newData: Partial<FuelWorksheetData>) {
 }
 
 .column-header {
-    padding: 0.5rem 1rem;
+    padding: 0.25rem 0.5rem;
     background-color: #f8f9fa;
     border-bottom: 2px solid #dee2e6;
     text-align: left;
@@ -139,11 +144,11 @@ function onDataUpdate(newData: Partial<FuelWorksheetData>) {
     background-color: white;
 }
 
-.envelope-summary {
-    padding: 0;
+.envelope {
+    padding: 0.25rem;
 }
 
-.gauge-summary {
+.fuel-usage, .checks {
     flex: 1;
 }
 </style>

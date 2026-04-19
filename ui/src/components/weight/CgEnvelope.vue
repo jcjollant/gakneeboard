@@ -231,8 +231,8 @@ const landing = computed(() => {
 
 .svg-container {
     flex: 1;
-    min-height: 250px;
-    padding: 1rem;
+    min-height: 180px;
+    padding: 0.25rem 0.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -253,11 +253,11 @@ const landing = computed(() => {
 .plot-legend {
     display: flex;
     justify-content: center;
-    gap: 1rem;
-    padding: 0.5rem;
+    gap: 0.75rem;
+    padding: 0.25rem;
     border-top: 1px solid #dee2e6;
     background-color: #f8f9fa;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
 }
 
 .legend-item {

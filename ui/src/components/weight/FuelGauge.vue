@@ -2,19 +2,8 @@
     <div class="fuel-gauge-container">
 
         <div class="gauge-content">
-            <div class="gauge-info">
-                 <div class="required-fuel-row">
-                    <label>Required Fuel</label>
-                    <button class="required-fuel-btn" @click="applyRequiredFuel" title="Set actual fuel to required amount">
-                        {{ totalRequired.toFixed(1) }} gal
-                    </button>
-                </div>
-                <div v-if="fuelLimitedByWeight < maxUsable" class="text-danger weight-limit-info">
-                    <strong>Weight Limited Max:</strong> {{ fuelLimitedByWeight.toFixed(1) }} gal 
-                    ({{ limitingFactor }})
-                </div>
-            </div>
 
+            
             <div class="gauge-wrapper">
                 <!-- Limit Markers -->
                 <div v-if="mtowLimitGal < maxUsable" class="limit-marker mtow" :style="{ left: percent(mtowLimitGal) }">
@@ -52,18 +41,7 @@
                 <div class="legend-item"><span class="swatch taxi"></span> Taxi ({{ taxiFuel.toFixed(1) }})</div>
             </div>
             
-            <div v-if="totalRequired > fuelLimitedByWeight" class="p-message p-component p-message-error mt-3">
-                <div class="p-message-wrapper">
-                    <span class="p-message-icon pi pi-exclamation-triangle"></span>
-                    <div class="p-message-text">Required fuel exceeds weight limitations. Reduce payload or planned fuel.</div>
-                </div>
-            </div>
-            <div v-else-if="totalRequired > maxUsable" class="p-message p-component p-message-error mt-3">
-                <div class="p-message-wrapper">
-                    <span class="p-message-icon pi pi-exclamation-triangle"></span>
-                    <div class="p-message-text">Required fuel exceeds maximum usable fuel capacity.</div>
-                </div>
-            </div>
+
 
         </div>
     </div>
@@ -81,9 +59,7 @@ const props = defineProps<{
 
 const emits = defineEmits(['update'])
 
-function applyRequiredFuel() {
-    emits('update', { fuelGallons: Number(totalRequired.value.toFixed(1)) })
-}
+
 
 const maxUsable = computed(() => props.aircraft.data.maxUsableFuel || 1)
 
@@ -165,51 +141,10 @@ function percent(amount: number) {
 }
 
 .gauge-content {
-    padding: 1rem;
+    padding: 0.5rem;
 }
 
-.gauge-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
 
-.required-fuel-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding-bottom: 0.25rem;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.required-fuel-row label {
-    font-size: 0.7rem;
-    font-weight: bold;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-}
-
-.required-fuel-btn {
-    font-size: 0.9rem;
-    color: #0ea5e9;
-    background-color: transparent;
-    border: 1px solid #e2e8f0;
-    border-radius: 4px;
-    padding: 0.25rem 0.4rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-weight: bold;
-    width: fit-content;
-}
-
-.required-fuel-btn:hover {
-    background-color: #f0f9ff;
-    border-color: #0ea5e9;
-}
 
 .weight-limit-info {
     font-size: 0.85rem;
@@ -225,9 +160,9 @@ function percent(amount: number) {
 }
 
 .gauge-bar {
-    height: 18px;
+    height: 14px;
     background-color: #e9ecef;
-    border-radius: 9px;
+    border-radius: 7px;
     display: flex;
     overflow: hidden;
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
@@ -284,12 +219,10 @@ function percent(amount: number) {
 .gauge-legend {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem 1.5rem;
-    margin-top: 1.5rem;
-    font-size: 0.85rem;
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
+    gap: 0.5rem 1rem;
+    justify-items: start;
+    margin-top: 0.75rem;
+    font-size: 0.75rem;
 }
 
 .legend-item {

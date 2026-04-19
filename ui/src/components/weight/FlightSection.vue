@@ -70,6 +70,15 @@
                 <Button label="Descent" icon="pi pi-arrow-down-right" class="p-button-text p-button-sm" @click="addLeg('descent')" />
             </div>
 
+            <div class="summary-row mt-4">
+                <div class="required-fuel">
+                    <label>Required Fuel</label>
+                    <button class="action-value-btn" @click="applyRequiredFuel" title="Set to Required Fuel">
+                        {{ totalRequiredFuel.toFixed(1) }} gal
+                    </button>
+                </div>
+            </div>
+
         </div>
 
         <TimeCalculatorDialog v-model:visible="isCalculatorOpen" :initial-speed="calculatorSpeed" @apply="handleCalculatorApply" />
@@ -172,6 +181,33 @@ function openCalculator(index: number) {
     isCalculatorOpen.value = true
 }
 
+const totalRequiredFuel = computed(() => {
+    const taxi = props.data.taxiFuelGallons || 0;
+    
+    const legs = props.data.legs.reduce((sum, leg) => {
+        const rate = getFuelRate(leg);
+        return sum + (rate * (leg.durationMinutes / 60));
+    }, 0);
+
+    const cruiseRate = props.aircraft.data.cruiseFuel;
+    let legal = 0;
+    if (props.data.flightRules === 'IFR') {
+        const alt = (props.data.ifrAlternateMinutes / 60) * cruiseRate;
+        legal = (45 / 60) * cruiseRate + alt;
+    } else {
+        const mins = props.data.vfrTime === 'Night' ? 45 : 30;
+        legal = (mins / 60) * cruiseRate;
+    }
+
+    const personal = (props.data.personalBufferMinutes / 60) * cruiseRate;
+
+    return taxi + legs + legal + personal;
+})
+
+function applyRequiredFuel() {
+    emits('update', { fuelGallons: Number(totalRequiredFuel.value.toFixed(1)) })
+}
+
 function handleCalculatorApply(minutes: number) {
     if (activeLegIndex.value !== null) {
         props.data.legs[activeLegIndex.value].durationMinutes = minutes
@@ -189,10 +225,10 @@ function handleCalculatorApply(minutes: number) {
 }
 
 .flight-content {
-    padding: 1rem;
+    padding: 0.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.25rem;
     overflow-y: auto;
     flex: 1;
 }
@@ -281,6 +317,50 @@ function handleCalculatorApply(minutes: number) {
 
 .leg-row:hover .calculator-btn {
     display: inline-flex;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 0.5rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+.required-fuel {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.required-fuel label {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.action-value-btn {
+    font-size: 0.9rem;
+    color: #0ea5e9;
+    background-color: transparent;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 0.25rem 0.4rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: bold;
+    width: fit-content;
+}
+
+.action-value-btn:hover {
+    background-color: #f0f9ff;
+    border-color: #0ea5e9;
+}
+
+.action-value-btn:active {
+    background-color: #e0f2fe;
 }
 
 .compact-input :deep(.p-inputtext),
