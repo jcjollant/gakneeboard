@@ -37,8 +37,8 @@ body {
   --bg-store: #ea580c;
   --bg-strip: #eef;
   --button-height: 38px;
-  --min-width: 750px;
-  --editor-min-width: 750px;
+  --min-width: 800px;
+  --editor-min-width: 800px;
   --editor-btn-half: 19px;
   --header-height: 23px;
   --logo-font-size: 1.5rem;
@@ -52,7 +52,7 @@ body {
   --page-height: 800px;
 
   /* Full page format (8.5x11) */
-  --fullpage-width: 750px;
+  --fullpage-width: 800px;
   --fullpage-height: 1050px;
 
   --page-content: calc(var(--page-height) - var(--header-height) - 1px);

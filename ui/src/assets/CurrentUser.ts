@@ -17,6 +17,8 @@ export class CurrentUser {
   checklists: LibraryChecklist[];
   maxPageCount: number;
   maxTemplateCount: number;
+  maxAircraftCount: number;
+  aircraftCount: number;
   listeners: { (user: CurrentUser): void }[];
   accountType: AccountType;
   printCredits: number;
@@ -40,6 +42,8 @@ export class CurrentUser {
     this.pageCount = 0;
     this.maxPageCount = 0;
     this.maxTemplateCount = 0;
+    this.maxAircraftCount = 0;
+    this.aircraftCount = 0;
     this.accountType = AccountType.unknown
     this.printCredits = 0;
     this.eulaCurrent = false;
@@ -98,6 +102,8 @@ export class CurrentUser {
     this.pageCount = 0;
     this.maxPageCount = 0;
     this.maxTemplateCount = 0;
+    this.maxAircraftCount = 0;
+    this.aircraftCount = 0;
     this.accountType = AccountType.unknown;
     this.printCredits = 0;
     this.eulaCurrent = false;
@@ -191,6 +197,8 @@ export class CurrentUser {
       this.pageCount = this.templates.reduce((a, t) => a + t.pages, 0)
       this.maxPageCount = Number(data.maxPages || 0);
       this.maxTemplateCount = Number(data.maxTemp || 0);
+      this.maxAircraftCount = Number(data.maxAircraftCount || 0);
+      this.aircraftCount = LocalStoreService.getAircrafts().length;
       this.printCredits = Number(data.printCredits || 0)
       this.eulaCurrent = data.eulaCurrent || false
       if (data.homeAirport) {

@@ -27,7 +27,8 @@ export const PLANS: PlanDescription[] = [
         quotas: {
             prints: PRINT_CREDIT_SIMMER,
             pages: 2,
-            templates: 1
+            templates: 1,
+            aircrafts: 1
         },
         features: {
             advancedPrinting: false,
@@ -52,7 +53,8 @@ export const PLANS: PlanDescription[] = [
         quotas: {
             prints: 8,
             pages: 8,
-            templates: 2
+            templates: 2,
+            aircrafts: 2
         },
         features: {
             advancedPrinting: true,
@@ -77,7 +79,8 @@ export const PLANS: PlanDescription[] = [
         quotas: {
             prints: 8,
             pages: 8,
-            templates: 2
+            templates: 2,
+            aircrafts: 2
         },
         features: {
             advancedPrinting: true,
@@ -102,7 +105,8 @@ export const PLANS: PlanDescription[] = [
         quotas: {
             prints: 24,
             pages: 20,
-            templates: 5
+            templates: 5,
+            aircrafts: 5
         },
         features: {
             advancedPrinting: true,
@@ -126,7 +130,8 @@ export const PLANS: PlanDescription[] = [
         quotas: {
             prints: -1,
             pages: -1,
-            templates: -1
+            templates: -1,
+            aircrafts: -1
         },
         features: {
             advancedPrinting: true,
@@ -152,7 +157,8 @@ export const PLANS: PlanDescription[] = [
         quotas: {
             prints: -1,
             pages: 50,
-            templates: 10
+            templates: 10,
+            aircrafts: 10
         },
         features: {
             advancedPrinting: true,
@@ -178,7 +184,8 @@ export const PLANS: PlanDescription[] = [
         quotas: {
             prints: 16,
             pages: 20,
-            templates: 5
+            templates: 5,
+            aircrafts: 2
         },
         features: {
             advancedPrinting: true,
@@ -203,7 +210,8 @@ export const PLANS: PlanDescription[] = [
         quotas: {
             prints: 16,
             pages: 20,
-            templates: 5
+            templates: 5,
+            aircrafts: 2
         },
         features: {
             advancedPrinting: true,

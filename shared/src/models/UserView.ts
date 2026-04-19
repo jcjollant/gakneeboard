@@ -5,6 +5,7 @@ export interface UserView {
     name: string;
     maxPages: number; // max pages across all templates
     maxTemp: number; // max templates
+    maxAircraftCount: number; // max aircrafts
     templates: any[];
     accountType: AccountType;
     printCredits: number;

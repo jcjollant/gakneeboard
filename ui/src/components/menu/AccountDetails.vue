@@ -24,6 +24,11 @@
               <div v-if="user.maxPageCount == -1" class="unlimited">Unlimited</div>
               <div v-else class="pagesCount" :class="{'maxedOut':user.pageCount > user.maxPageCount }">{{ user.pageCount }} / {{ user.maxPageCount }}</div>
             </div>
+            <div class="key">Aircrafts</div>
+            <div class="value">
+              <div v-if="user.maxAircraftCount == -1" class="unlimited">Unlimited</div>
+              <div v-else class="aircraftCount" :class="{'maxedOut':user.aircraftCount > user.maxAircraftCount }">{{ user.aircraftCount }} / {{ user.maxAircraftCount }}</div>
+            </div>
             <div class="key">Print Credit</div>
             <div v-if="user.printCredits == -1" class="value">
               <div class="unlimited">Unlimited</div>

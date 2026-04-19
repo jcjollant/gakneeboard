@@ -103,6 +103,7 @@ export class Business {
         user.printCredits = quotas.prints
         user.maxTemplates = quotas.templates
         user.maxPages = quotas.pages
+        user.maxAircrafts = quotas.aircrafts
     }
 
     /**
@@ -220,6 +221,7 @@ export class Business {
         const quotas = this.getQuotas(user)
         user.maxTemplates = quotas.templates
         user.maxPages = quotas.pages
+        user.maxAircrafts = quotas.aircrafts
         user.printCredits = quotas.prints
 
         await userDao.updateType(user)

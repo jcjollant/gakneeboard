@@ -87,6 +87,7 @@ export class UserDao extends Dao<User> {
         user.setCustomerId(row.customer_id)
         user.setMaxPages(row.max_pages || 0)
         user.setMaxTemplates(row.max_templates || 0)
+        user.setMaxAircrafts(row.max_aircrafts || 0)
         user.setPrintCredits(row.print_credit || 0)
         user.setCreateDate(row.create_time)
         user.setCustomerId(row.customer_id)
@@ -146,8 +147,8 @@ export class UserDao extends Dao<User> {
                     // const insert = await this.db.query(`INSERT INTO ${this.tableName} (sha256, data,version,account_type,max_pages,max_templates,print_credit) VALUES ('${user.sha256}','${stringifiedData}',${this.modelVersion},'${user.accountType}',${user.maxPages},${user.maxTemplates}, ${user.printCredits}) RETURNING id`)
                     const insert = await this.db.query(
                         `INSERT INTO ${this.tableName} 
-                            (sha256, data, version, account_type, max_pages, max_templates, print_credit, plan_id, home_airport) 
-                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+                            (sha256, data, version, account_type, max_pages, max_templates, max_aircrafts, print_credit, plan_id, home_airport) 
+                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
                             RETURNING id`,
                         [
                             user.sha256,
@@ -156,6 +157,7 @@ export class UserDao extends Dao<User> {
                             user.accountType,
                             user.maxPages,
                             user.maxTemplates,
+                            user.maxAircrafts,
                             user.printCredits,
                             user.planId,
                             user.homeAirport
@@ -167,7 +169,7 @@ export class UserDao extends Dao<User> {
                 } else if (overwrite) { // this user is known but we can override
                     // console.log( '[UserDao.save] known user ' + user.sha256)
                     user.id = result.rows[0].id
-                    await this.db.query(`UPDATE ${this.tableName} SET data = $1, version=$2, account_type=$3, plan_id=$4, home_airport=$5, print_credits_override=$6 WHERE id = $7`,
+                    await this.db.query(`UPDATE ${this.tableName} SET data = $1, version=$2, account_type=$3, plan_id=$4, home_airport=$5, print_credits_override=$6, max_pages=$7, max_templates=$8, max_aircrafts=$9 WHERE id = $10`,
                         [
                             stringifiedData,
                             this.modelVersion,
@@ -175,6 +177,9 @@ export class UserDao extends Dao<User> {
                             user.planId,
                             user.homeAirport,
                             user.printRefillOverride ?? null,
+                            user.maxPages,
+                            user.maxTemplates,
+                            user.maxAircrafts,
                             user.id
                         ]
                     )
@@ -262,7 +267,7 @@ export class UserDao extends Dao<User> {
     public updateType(user: User): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
-                const result = await sql`UPDATE users SET account_type=${user.accountType},max_templates=${user.maxTemplates},max_pages=${user.maxPages},plan_id=${user.planId} WHERE id=${user.id}`
+                const result = await sql`UPDATE users SET account_type=${user.accountType},max_templates=${user.maxTemplates},max_pages=${user.maxPages},max_aircrafts=${user.maxAircrafts},plan_id=${user.planId} WHERE id=${user.id}`
                 if (result.rowCount == 1) {
                     resolve()
                 } else {

@@ -10,6 +10,7 @@ export class User {
     email: string;
     maxPages: number;
     maxTemplates: number;
+    maxAircrafts: number;
     accountType: AccountType;
     customerId: string | undefined;
     printCredits: number
@@ -30,6 +31,7 @@ export class User {
         this.email = '';
         this.maxPages = 0;
         this.maxTemplates = 0;
+        this.maxAircrafts = 0;
         this.accountType = AccountType.unknown;
         this.customerId = undefined;
         this.printCredits = 0;
@@ -63,6 +65,10 @@ export class User {
 
     public setMaxTemplates(newMax: number) {
         this.maxTemplates = newMax;
+    }
+
+    public setMaxAircrafts(newMax: number) {
+        this.maxAircrafts = newMax;
     }
 
     public setName(newName: string) {

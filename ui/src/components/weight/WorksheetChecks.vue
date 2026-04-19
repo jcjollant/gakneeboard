@@ -2,7 +2,8 @@
     <div class="worksheet-checks">
         <div class="checks-list">
             <!-- Ramp Weight -->
-            <div class="check-item" :class="statusClass(rampWeight <= (aircraft.data.maxRampWeight || 99999))">
+            <!-- Ramp Weight -->
+            <div class="check-item" :class="statusClass(Number(rampWeight.toFixed(0)) <= (aircraft.data.maxRampWeight ? Number(aircraft.data.maxRampWeight.toFixed(0)) : 999999))">
                 <div class="check-info">
                     <span class="check-label">Ramp Weight</span>
                     <span class="check-value">{{ rampWeight.toFixed(0) }} / {{ (aircraft.data.maxRampWeight || 0).toFixed(0) }} lbs</span>
@@ -10,7 +11,8 @@
             </div>
 
             <!-- Takeoff Weight -->
-            <div class="check-item" :class="statusClass(takeoffWeight <= (aircraft.data.maxTakeoffWeight || 99999))">
+            <!-- Takeoff Weight -->
+            <div class="check-item" :class="statusClass(Number(takeoffWeight.toFixed(0)) <= (aircraft.data.maxTakeoffWeight ? Number(aircraft.data.maxTakeoffWeight.toFixed(0)) : 999999))">
                 <div class="check-info">
                     <span class="check-label">Takeoff Weight</span>
                     <span class="check-value">{{ takeoffWeight.toFixed(0) }} / {{ (aircraft.data.maxTakeoffWeight || 0).toFixed(0) }} lbs</span>
@@ -18,7 +20,8 @@
             </div>
 
             <!-- Landing Weight -->
-            <div class="check-item" :class="statusClass(landingWeight <= (aircraft.data.maxLandingWeight || 99999))">
+            <!-- Landing Weight -->
+            <div class="check-item" :class="statusClass(Number(landingWeight.toFixed(0)) <= (aircraft.data.maxLandingWeight ? Number(aircraft.data.maxLandingWeight.toFixed(0)) : 999999))">
                 <div class="check-info">
                     <span class="check-label">Landing Weight</span>
                     <span class="check-value">{{ landingWeight.toFixed(0) }} / {{ (aircraft.data.maxLandingWeight || 0).toFixed(0) }} lbs</span>

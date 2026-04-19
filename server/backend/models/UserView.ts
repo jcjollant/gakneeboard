@@ -10,6 +10,7 @@ export class UserView implements IUserView {
     name: string;
     maxPages: number; // max pages across all templates
     maxTemp: number; // max templates
+    maxAircraftCount: number; // max aircrafts
     templates: TemplateKneeboardView[];
     accountType: AccountType;
     printCredits: number;
@@ -22,6 +23,7 @@ export class UserView implements IUserView {
         this.name = user.name;
         this.maxPages = user.maxPages
         this.maxTemp = user.maxTemplates;
+        this.maxAircraftCount = user.maxAircrafts;
         this.templates = templates;
         this.accountType = user.accountType;
         this.printCredits = Business.calculatePrintCredits(user);

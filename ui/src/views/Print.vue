@@ -87,9 +87,17 @@ const printing = ref(false)
 function getStylePage(flipped: boolean) {
   if (printClipMargin.value === 0 && !flipped) return {};
   
-  const baseHeight = printFullpage.value ? 1050 : 800; // Matches CSS variables
+  // For FullPage, the baseHeight depends on orientation. 
+  // Currently FullPage is forced to landscape paper, so content height is fullpage-width (800)
+  const baseHeight = printFullpage.value ? 800 : 800; 
+  // Wait, if it was portrait fullpage, it would be 1050. 
+  // But for now, both kneeboard (800 high) and landscape fullpage (800 high) are 800.
+  // Actually, let's make it explicit.
+  const isLandscape = template.value?.format === TemplateFormat.FullPage; // Currently true for all fullpage
+  const h = isLandscape ? 800 : (printFullpage.value ? 1050 : 800);
+
   
-  const scale = (baseHeight - printClipMargin.value - 1) / baseHeight;
+  const scale = (h - printClipMargin.value - 1) / h;
   const transformString = flipped ? `scale(${-scale}, ${-scale})` : `scale(${scale})`;
 
   const marginTop = flipped ? 0 : printClipMargin.value / 2
@@ -398,6 +406,9 @@ function redirectToPlansPage() {
 }
 #printTemplate.single.fullpage {
   width: var(--fullpage-width);
+}
+#printTemplate.single.fullpage:has(.landscape) {
+  width: var(--fullpage-height);
 }
 
 #printTemplate:has(.contentPage.fullpage) {
