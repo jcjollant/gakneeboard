@@ -14,7 +14,7 @@
             <!-- Col 2: Flight -->
             <div class="right-col sr">
                 <div class="column-header"><h3>FLIGHT</h3></div>
-                <FlightSection :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
+                <FlightSection class="flight-section-comp" :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
             </div>
 
             <!-- Col 3: Balance & Summary -->
@@ -99,6 +99,7 @@ function onDataUpdate(newData: Partial<FuelWorksheetData>) {
     background-color: #f8f9fa;
     border-bottom: 2px solid #dee2e6;
     text-align: left;
+    flex: 0 0 auto;
 }
 
 .column-header h3 {
@@ -120,12 +121,19 @@ function onDataUpdate(newData: Partial<FuelWorksheetData>) {
 .right-col {
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
+    height: 100%;
+    overflow: hidden;
+}
+
+.flight-section-comp {
+    flex: 1;
+    min-height: 0;
 }
 
 .stats-col {
     display: flex;
     flex-direction: column;
+    height: 100%;
     overflow-y: auto;
     background-color: white;
 }

@@ -6,27 +6,27 @@
             <div class="flight-settings">
                 <div class="setting">
                     <label>Rules</label>
-                    <SelectButton v-model="data.flightRules" :options="['VFR', 'IFR']" @change="emitUpdate" class="p-button-sm" />
+                    <EitherOr v-model="isVfr" either="VFR" or="IFR" :small="true" :embedded="true" />
                 </div>
                 
                 <div v-if="data.flightRules === 'VFR'" class="setting">
                     <label>Time</label>
-                    <SelectButton v-model="vfrTimeComputed" :options="['Day', 'Night']" @change="emitUpdate" class="p-button-sm" />
+                    <EitherOr v-model="isDay" either="Day" or="Night" :small="true" :embedded="true" />
                 </div>
                 
                 <div v-if="data.flightRules === 'IFR'" class="setting">
                     <label>Alternate (min)</label>
-                    <InputNumber v-model="data.ifrAlternateMinutes" @value-change="emitUpdate" :min="0" class="p-inputtext-sm" />
+                    <InputNumber v-model="data.ifrAlternateMinutes" @value-change="emitUpdate" :min="0" class="p-inputtext-sm settings-input" />
+                </div>
+                
+                <div class="setting">
+                    <label>Taxi Fuel (gal)</label>
+                    <InputNumber v-model="data.taxiFuelGallons" @value-change="emitUpdate" :min="0" class="p-inputtext-sm settings-input" />
                 </div>
                 
                 <div class="setting">
                     <label>Personal Buffer (min)</label>
-                    <InputNumber v-model="data.personalBufferMinutes" @value-change="emitUpdate" :min="0" class="p-inputtext-sm" />
-                </div>
-
-                <div class="setting">
-                    <label>Taxi Fuel (gal)</label>
-                    <InputNumber v-model="data.taxiFuelGallons" @value-change="emitUpdate" :min="0" class="p-inputtext-sm" />
+                    <InputNumber v-model="data.personalBufferMinutes" @value-change="emitUpdate" :min="0" class="p-inputtext-sm settings-input" />
                 </div>
             </div>
 
@@ -76,6 +76,7 @@ import Button from 'primevue/button'
 import SelectButton from 'primevue/selectbutton'
 import InputNumber from 'primevue/inputnumber'
 import Separator from '../shared/Separator.vue'
+import EitherOr from '../shared/EitherOr.vue'
 
 const props = defineProps<{
     data: FuelWorksheetData
@@ -84,9 +85,20 @@ const props = defineProps<{
 
 const emits = defineEmits(['update'])
 
-const vfrTimeComputed = computed({
-    get: () => props.data.vfrTime || 'Day',
-    set: (val: 'Day' | 'Night') => { props.data.vfrTime = val }
+const isVfr = computed({
+    get: () => props.data.flightRules === 'VFR',
+    set: (val: boolean) => { 
+        props.data.flightRules = val ? 'VFR' : 'IFR'
+        emitUpdate()
+    }
+})
+
+const isDay = computed({
+    get: () => (props.data.vfrTime || 'Day') === 'Day',
+    set: (val: boolean) => { 
+        props.data.vfrTime = val ? 'Day' : 'Night'
+        emitUpdate()
+    }
 })
 
 function emitUpdate() {
@@ -138,23 +150,10 @@ function legIcon(type: string) {
 
 <style scoped>
 .flight-section {
-    border: 3px solid #dee2e6;
-    border-radius: 8px;
     background-color: white;
     display: flex;
     flex-direction: column;
-}
-
-.header {
-    padding: 0.5rem 1rem;
-    border-bottom: 1px solid #dee2e6;
-    background-color: #f8f9fa;
-    border-radius: 6px 6px 0 0;
-}
-
-.header h3 {
-    margin: 0;
-    color: #495057;
+    height: 100%;
 }
 
 .flight-content {
@@ -162,6 +161,8 @@ function legIcon(type: string) {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    overflow-y: auto;
+    flex: 1;
 }
 
 .flight-settings {
@@ -219,7 +220,8 @@ function legIcon(type: string) {
     font-weight: normal;
 }
 
-.compact-input :deep(.p-inputtext) {
+.compact-input :deep(.p-inputtext),
+.settings-input :deep(.p-inputtext) {
     width: 60px;
 }
 </style>

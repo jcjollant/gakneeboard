@@ -18,13 +18,13 @@
                     <line :x1="mapX(zeroFuel.arm)" :y1="mapY(zeroFuel.weight)" :x2="mapX(takeoff.arm)" :y2="mapY(takeoff.weight)" 
                         stroke="#6c757d" stroke-width="1.5" stroke-dasharray="5,5" />
                     <!-- Zero Fuel CG -->
-                    <circle :cx="mapX(zeroFuel.arm)" :cy="mapY(zeroFuel.weight)" r="5" fill="#f59e0b" />
+                    <circle :cx="mapX(zeroFuel.arm)" :cy="mapY(zeroFuel.weight)" r="5" fill="#ef4444" />
                     
                     <!-- Takeoff CG -->
                     <circle :cx="mapX(takeoff.arm)" :cy="mapY(takeoff.weight)" r="5" fill="#10b981" />
                     
                     <!-- Landing CG -->
-                    <circle :cx="mapX(landing.arm)" :cy="mapY(landing.weight)" r="5" fill="#ef4444" />
+                    <circle :cx="mapX(landing.arm)" :cy="mapY(landing.weight)" r="5" fill="#3b82f6" />
                  </template>
 
             </svg>
@@ -273,7 +273,7 @@ const landing = computed(() => {
     display: inline-block;
 }
 
-.swatch.zero { background-color: #f59e0b; }
+.swatch.zero { background-color: #ef4444; }
 .swatch.takeoff { background-color: #10b981; }
-.swatch.landing { background-color: #ef4444; }
+.swatch.landing { background-color: #3b82f6; }
 </style>
