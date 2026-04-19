@@ -9,19 +9,20 @@
             
             <div class="input-row">
                 <div class="input-group">
-                    <div class="label-with-summary">
-                        <label>Fuel Load</label>
-                        <div class="fuel-summary">
-                            <span class="value">{{ data.fuelGallons.toFixed(1) }}</span>
-                            <span class="unit">gal</span>
-                        </div>
-                    </div>
-                    <InputNumber v-model="fuelValue" :min="0" :max="maxUsable" :minFractionDigits="1" :maxFractionDigits="1" 
-                                suffix=" gal" class="p-inputtext-sm" @value-change="onFuelChange" />
+                    <label>Fuel Load</label>
+                    <button v-if="!isEditing" class="fuel-value-btn" @click="startEdit">
+                        {{ fuelValue.toFixed(1) }} gal
+                    </button>
+                    <InputNumber v-else ref="inputRef" v-model="fuelValue" :min="0" :max="maxUsable" 
+                                :minFractionDigits="1" :maxFractionDigits="1" 
+                                suffix=" gal" class="p-inputtext-sm" 
+                                @value-change="onFuelChange" @blur="isEditing = false" @keydown.enter="isEditing = false" />
                 </div>
                 <div class="info-group">
-                    <label>Max Usable</label>
-                    <div class="static-val">{{ maxUsable.toFixed(1) }} gal</div>
+                    <label>Max Ramp</label>
+                    <button class="max-ramp-btn" @click="applySuggestedFuel" title="Set to Max Ramp Weight limit">
+                        {{ suggestedFuel.toFixed(1) }} gal
+                    </button>
                 </div>
             </div>
         </div>
@@ -29,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, nextTick } from 'vue'
 import Slider from 'primevue/slider'
 import InputNumber from 'primevue/inputnumber'
 import { FuelWorksheetData } from '../../models/FuelWorksheetTypes'
@@ -43,7 +44,30 @@ const props = defineProps<{
 const emits = defineEmits(['update'])
 
 const maxUsable = computed(() => props.aircraft.data.maxUsableFuel || 0)
+const payloadWeight = computed(() => props.data.aircraftItems.reduce((sum, item) => sum + (item.weightLbs || 0), 0))
+const emptyWeight = computed(() => props.aircraft.data.basicEmptyWeight || 0)
+const maxRampWeight = computed(() => props.aircraft.data.maxRampWeight || props.aircraft.data.maxTakeoffWeight || 0)
+
+const maxFuelByWeight = computed(() => {
+    const remaining = maxRampWeight.value - emptyWeight.value - payloadWeight.value
+    return Math.max(0, remaining / 6)
+})
+
+const suggestedFuel = computed(() => Math.min(maxUsable.value, maxFuelByWeight.value))
+
 const fuelValue = ref(props.data.fuelGallons || 0)
+const isEditing = ref(false)
+const inputRef = ref<any>(null)
+
+function startEdit() {
+    isEditing.value = true
+    nextTick(() => {
+        if (inputRef.value) {
+            const el = inputRef.value.$el.querySelector('input')
+            if (el) el.focus()
+        }
+    })
+}
 
 watch(() => props.data.fuelGallons, (newVal) => {
     fuelValue.value = newVal
@@ -51,6 +75,11 @@ watch(() => props.data.fuelGallons, (newVal) => {
 
 function onFuelChange() {
     emits('update', { fuelGallons: fuelValue.value })
+}
+
+function applySuggestedFuel() {
+    fuelValue.value = Number(suggestedFuel.value.toFixed(1))
+    onFuelChange()
 }
 </script>
 
@@ -61,44 +90,15 @@ function onFuelChange() {
     flex-direction: column;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.25rem 0.5rem;
-    border-bottom: 1px solid #dee2e6;
-}
 
-.header h3 {
-    margin: 0;
-    font-size: 0.85rem;
-    font-weight: bold;
-    color: #adb5bd;
-    text-transform: uppercase;
-}
 
-.fuel-summary {
-    display: flex;
-    align-items: baseline;
-    gap: 2px;
-}
 
-.fuel-summary .value {
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: #0ea5e9;
-}
-
-.fuel-summary .unit {
-    font-size: 0.7rem;
-    color: #adb5bd;
-}
 
 .fuel-controls {
-    padding: 1rem 0.75rem;
+    padding: 0.5rem 0.75rem 0.75rem 0.75rem;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 0.75rem;
 }
 
 .slider-row {
@@ -125,13 +125,10 @@ function onFuelChange() {
     flex-direction: column;
     gap: 0.25rem;
     flex: 1;
-}
-
-.label-with-summary {
-    display: flex;
-    justify-content: space-between;
     align-items: center;
 }
+
+
 
 .input-group label, .info-group label {
     font-size: 0.7rem;
@@ -140,10 +137,27 @@ function onFuelChange() {
     text-transform: uppercase;
 }
 
-.static-val {
+.max-ramp-btn, .fuel-value-btn {
     font-size: 0.9rem;
-    color: #495057;
-    padding: 0.4rem 0;
+    color: #0ea5e9;
+    background-color: transparent;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 0.25rem 0.4rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: bold;
+    width: fit-content;
+}
+
+.max-ramp-btn:hover, .fuel-value-btn:hover {
+    background-color: #f0f9ff;
+    border-color: #0ea5e9;
+}
+
+.max-ramp-btn:active, .fuel-value-btn:active {
+    background-color: #e0f2fe;
 }
 
 :deep(.p-inputnumber-input) {

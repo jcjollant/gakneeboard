@@ -236,7 +236,7 @@ function onDrop(event: DragEvent, targetStationIndex: number, slotIndex: number 
     padding: 0.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.4rem;
     background-color: white;
 }
 

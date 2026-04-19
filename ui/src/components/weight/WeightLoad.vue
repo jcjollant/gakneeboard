@@ -6,9 +6,16 @@
                 {{ totalWeight.toFixed(0) }} 
                 <span class="unit">lbs</span>
             </div>
-            <div class="weight-label" v-if="!isOverWeight">TOTAL WEIGHT</div>
+            <div class="weight-label" v-if="!isOverWeight">
+                <template v-if="aircraft.data.maxRampWeight">
+                    {{ weightRemaining.toFixed(0) }} lbs REMAINING
+                </template>
+                <template v-else>
+                    TOTAL WEIGHT
+                </template>
+            </div>
             <div class="weight-label warning" v-else>
-                {{ weightOverLimit.toFixed(0) }} lbs OVER ({{ fuelOverLimitGal }} gal fuel)
+                {{ weightOverLimit.toFixed(0) }} lbs OVER
             </div>
         </div>
 
@@ -87,7 +94,11 @@ const weightOverLimit = computed(() => {
     return Math.max(0, totalWeight.value - max)
 })
 
-const fuelOverLimitGal = computed(() => (weightOverLimit.value / 6).toFixed(1))
+const weightRemaining = computed(() => {
+    const max = props.aircraft?.data.maxRampWeight || 0
+    return Math.max(0, max - totalWeight.value)
+})
+
 </script>
 
 <style scoped>
