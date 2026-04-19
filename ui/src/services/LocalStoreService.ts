@@ -30,6 +30,7 @@ export class LocalStoreService {
     static lastKnownAirportCode = 'last-known-airport-code'
     static printOptions = 'print-options'
     static aircrafts = 'aircrafts'
+    static hangarItems = 'hangar-items'
     static MAX_AIRPORTS = 30
     static MAX_APPROACHES = 5
     static LEAN_AIRPORTS = 24
@@ -518,6 +519,16 @@ export class LocalStoreService {
 
     static getAircrafts(): any[] {
         const data = localStorage.getItem(LocalStoreService.aircrafts)
+        if (data) return JSON.parse(data)
+        return []
+    }
+
+    static saveHangarItems(items: any[]) {
+        localStorage.setItem(LocalStoreService.hangarItems, JSON.stringify(items))
+    }
+
+    static getHangarItems(): any[] {
+        const data = localStorage.getItem(LocalStoreService.hangarItems)
         if (data) return JSON.parse(data)
         return []
     }

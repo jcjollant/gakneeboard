@@ -60,6 +60,7 @@ import InputNumber from 'primevue/inputnumber'
 import EitherOr from '../shared/EitherOr.vue'
 import Dialog from 'primevue/dialog'
 import LoadItemCard from './LoadItemCard.vue'
+import { LocalStoreService } from '../../services/LocalStoreService'
 
 const props = defineProps<{
     data: FuelWorksheetData
@@ -67,6 +68,10 @@ const props = defineProps<{
 }>()
 
 const isCompletelyEmpty = computed(() => props.data.hangarItems.length === 0 && props.data.aircraftItems.length === 0)
+
+watch(() => props.data.hangarItems, (newItems) => {
+    LocalStoreService.saveHangarItems(newItems)
+}, { deep: true })
 
 const emits = defineEmits(['update'])
 

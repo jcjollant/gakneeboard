@@ -73,6 +73,15 @@ function loadAircraft() {
         if (aircraft.value && (pageData.value.fuelGallons === undefined || pageData.value.fuelGallons === null)) {
             pageData.value.fuelGallons = 0
         }
+
+        // Initialize hangar items if this is a brand new worksheet
+        if (pageData.value.hangarItems.length === 0 && pageData.value.aircraftItems.length === 0) {
+            const cachedItems = LocalStoreService.getHangarItems()
+            if (cachedItems && cachedItems.length > 0) {
+                // Deep copy to avoid reference issues
+                pageData.value.hangarItems = JSON.parse(JSON.stringify(cachedItems))
+            }
+        }
     }
 }
 
