@@ -19,12 +19,13 @@
 
             <!-- Col 3: Balance & Summary -->
             <div class="stats-col">
-                <div class="column-header"><h3>BALANCE & SUMMARY</h3></div>
+                <div class="column-header"><h3>ENVELOPPE</h3></div>
                 <div class="envelope-summary">
                     <CgEnvelope :data="pageData" :aircraft="aircraft" :showTitle="false" />
                 </div>
+                <div class="column-header"><h3>FUEL USAGE</h3></div>
                 <div class="gauge-summary bt">
-                    <FuelGauge :data="pageData" :aircraft="aircraft" />
+                    <FuelGauge :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
                 </div>
             </div>
         </div>

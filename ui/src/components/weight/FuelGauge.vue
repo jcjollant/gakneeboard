@@ -3,10 +3,13 @@
 
         <div class="gauge-content">
             <div class="gauge-info">
-                <div><strong>Max Usable:</strong> {{ maxUsable.toFixed(1) }} gal</div>
-                <div><strong>Actual Load:</strong> <span :class="{ 'text-danger': data.fuelGallons > fuelLimitedByWeight }">{{ (data.fuelGallons || 0).toFixed(1) }}</span> gal</div>
-                <div><strong>Total Required:</strong> {{ totalRequired.toFixed(1) }} gal</div>
-                <div v-if="fuelLimitedByWeight < maxUsable" class="text-danger">
+                 <div class="required-fuel-row">
+                    <label>Required Fuel</label>
+                    <button class="required-fuel-btn" @click="applyRequiredFuel" title="Set actual fuel to required amount">
+                        {{ totalRequired.toFixed(1) }} gal
+                    </button>
+                </div>
+                <div v-if="fuelLimitedByWeight < maxUsable" class="text-danger weight-limit-info">
                     <strong>Weight Limited Max:</strong> {{ fuelLimitedByWeight.toFixed(1) }} gal 
                     ({{ limitingFactor }})
                 </div>
@@ -25,6 +28,7 @@
                     <span>ACTUAL</span>
                 </div>
 
+
                 <!-- Main Gauge Bar -->
                 <div class="gauge-bar">
                     <div class="segment reserve" :style="{ width: percent(legalReserveFuel) }" title="Legal Reserve"></div>
@@ -42,8 +46,8 @@
             </div>
 
             <div class="gauge-legend">
-                <div class="legend-item"><span class="swatch reserve"></span> Reserve ({{ legalReserveFuel.toFixed(1) }})</div>
-                <div class="legend-item"><span class="swatch buffer"></span> Personal Buffer ({{ bufferFuel.toFixed(1) }})</div>
+                <div class="legend-item"><span class="swatch reserve"></span> Legal Res. ({{ legalReserveFuel.toFixed(1) }})</div>
+                <div class="legend-item"><span class="swatch buffer"></span> Personal Res. ({{ bufferFuel.toFixed(1) }})</div>
                 <div class="legend-item"><span class="swatch flight"></span> Flight ({{ flightFuel.toFixed(1) }})</div>
                 <div class="legend-item"><span class="swatch taxi"></span> Taxi ({{ taxiFuel.toFixed(1) }})</div>
             </div>
@@ -74,6 +78,12 @@ const props = defineProps<{
     data: FuelWorksheetData
     aircraft: Aircraft
 }>()
+
+const emits = defineEmits(['update'])
+
+function applyRequiredFuel() {
+    emits('update', { fuelGallons: Number(totalRequired.value.toFixed(1)) })
+}
 
 const maxUsable = computed(() => props.aircraft.data.maxUsableFuel || 1)
 
@@ -160,9 +170,49 @@ function percent(amount: number) {
 
 .gauge-info {
     display: flex;
-    gap: 2rem;
-    margin-bottom: 1.5rem;
-    font-size: 0.95rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.required-fuel-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.required-fuel-row label {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.required-fuel-btn {
+    font-size: 0.9rem;
+    color: #0ea5e9;
+    background-color: transparent;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 0.25rem 0.4rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: bold;
+    width: fit-content;
+}
+
+.required-fuel-btn:hover {
+    background-color: #f0f9ff;
+    border-color: #0ea5e9;
+}
+
+.weight-limit-info {
+    font-size: 0.85rem;
 }
 
 .text-danger {
@@ -175,9 +225,9 @@ function percent(amount: number) {
 }
 
 .gauge-bar {
-    height: 30px;
+    height: 18px;
     background-color: #e9ecef;
-    border-radius: 15px;
+    border-radius: 9px;
     display: flex;
     overflow: hidden;
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
@@ -195,7 +245,7 @@ function percent(amount: number) {
     position: absolute;
     top: -25px;
     width: 2px;
-    height: 55px;
+    height: 43px;
     background-color: #ef4444;
     z-index: 10;
 }
@@ -220,6 +270,8 @@ function percent(amount: number) {
     bottom: -15px;
 }
 
+
+
 .gauge-ticks {
     display: flex;
     justify-content: space-between;
@@ -230,11 +282,14 @@ function percent(amount: number) {
 }
 
 .gauge-legend {
-    display: flex;
-    gap: 1.5rem;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem 1.5rem;
     margin-top: 1.5rem;
     font-size: 0.85rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .legend-item {
