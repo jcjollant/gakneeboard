@@ -3,18 +3,16 @@
         <div class="column-header"><h3>LOAD</h3></div>
         
         <Separator name="Aircraft" />
-        <AircraftFuselage :data="data" :aircraft="aircraft" @update="emitUpdate" />
+        <AircraftLoad :data="data" :aircraft="aircraft" @update="emitUpdate" />
         
         <Separator name="Hangar" />
-        <HangarComponent :data="data" :aircraft="aircraft" @update="emitUpdate" />
+        <HangarLoad :data="data" :aircraft="aircraft" @update="emitUpdate" />
         
         <Separator name="Fuel" />
-        <FuelSection :data="data" :aircraft="aircraft" @update="emitUpdate" />
+        <FuelLoad :data="data" :aircraft="aircraft" @update="emitUpdate" />
         
         <Separator name="Weight" />
-        <div class="weight-summary-box">
-            <div class="weight-value">{{ totalWeight.toFixed(0) }} <span class="unit">lbs</span></div>
-        </div>
+        <WeightLoad :weight="totalWeight" />
     </div>
 </template>
 
@@ -22,9 +20,10 @@
 import { computed } from 'vue'
 import { FuelWorksheetData } from '../../models/FuelWorksheetTypes'
 import { Aircraft } from '@gak/shared'
-import AircraftFuselage from './AircraftFuselage.vue'
-import HangarComponent from './HangarComponent.vue'
-import FuelSection from './FuelSection.vue'
+import AircraftLoad from './AircraftLoad.vue'
+import HangarLoad from './HangarLoad.vue'
+import FuelLoad from './FuelLoad.vue'
+import WeightLoad from './WeightLoad.vue'
 import Separator from '../shared/Separator.vue'
 
 const props = defineProps<{
@@ -76,22 +75,4 @@ const totalWeight = computed(() => {
     margin: 0;
 }
 
-.weight-summary-box {
-    padding: 1.5rem 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.weight-value {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #495057;
-}
-
-.weight-value .unit {
-    font-size: 0.9rem;
-    color: #adb5bd;
-    font-weight: normal;
-}
 </style>
