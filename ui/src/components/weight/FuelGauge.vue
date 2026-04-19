@@ -1,8 +1,6 @@
 <template>
     <div class="fuel-gauge-container">
-        <div class="header">
-            <h3>Fuel Gauge</h3>
-        </div>
+
         <div class="gauge-content">
             <div class="gauge-info">
                 <div><strong>Max Usable:</strong> {{ maxUsable.toFixed(1) }} gal</div>

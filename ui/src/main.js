@@ -2,7 +2,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faGoogle, faWordpress, faYoutube } from '@fortawesome/free-brands-svg-icons';
 import {
     faArrowDown, faArrowsDownToLine, faArrowsLeftRight, faArrowsUpToLine, faArrowUp,
-    faBan, faBars, faBookOpen, faBorderAll, faBuilding,
+    faBan, faBars, faBookOpen, faBorderAll, faBox, faBuilding,
     faCamera, faCheck, faCheckDouble, faChevronRight, faCircleInfo, faClock, faClone, faCloud, faCloudSunRain, faComments,
     faDisplay,
     faEject, faEllipsis, faExclamationCircle, faExclamationTriangle, faExternalLinkAlt, faEye,
@@ -40,7 +40,7 @@ import { showSplash } from './consoleSplash';
 
 library.add(
     faArrowDown, faArrowsDownToLine, faArrowsLeftRight, faArrowsUpToLine, faArrowUp,
-    faBan, faBars, faBookOpen, faBorderAll, faBuilding,
+    faBan, faBars, faBookOpen, faBorderAll, faBox, faBuilding,
     faCamera, faCheck, faCheckDouble, faChevronRight, faCircleInfo, faClock, faClone, faCloud, faCloudSunRain, faComments,
     faDisplay,
     faEject, faEllipsis, faExclamationCircle, faExclamationTriangle, faExternalLinkAlt, faEye,

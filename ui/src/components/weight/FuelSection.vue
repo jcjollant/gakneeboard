@@ -1,12 +1,6 @@
 <template>
-    <div class="fuel-section bt">
-        <div class="header">
-            <h3>Fuel</h3>
-            <div class="fuel-summary">
-                <span class="value">{{ data.fuelGallons.toFixed(1) }}</span>
-                <span class="unit">gal</span>
-            </div>
-        </div>
+    <div class="fuel-section">
+
         
         <div class="fuel-controls">
             <div class="slider-row">
@@ -15,7 +9,13 @@
             
             <div class="input-row">
                 <div class="input-group">
-                    <label>Fuel Load</label>
+                    <div class="label-with-summary">
+                        <label>Fuel Load</label>
+                        <div class="fuel-summary">
+                            <span class="value">{{ data.fuelGallons.toFixed(1) }}</span>
+                            <span class="unit">gal</span>
+                        </div>
+                    </div>
                     <InputNumber v-model="fuelValue" :min="0" :max="maxUsable" :minFractionDigits="1" :maxFractionDigits="1" 
                                 suffix=" gal" class="p-inputtext-sm" @value-change="onFuelChange" />
                 </div>
@@ -125,6 +125,12 @@ function onFuelChange() {
     flex-direction: column;
     gap: 0.25rem;
     flex: 1;
+}
+
+.label-with-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .input-group label, .info-group label {

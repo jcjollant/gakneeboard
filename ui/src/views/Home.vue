@@ -283,7 +283,7 @@ function onAircraftFuelWorksheet(aircraft: Aircraft) {
     templateData.format = TemplateFormat.FullPage;
     templateData.data = [new TemplatePage(PageType.fuelWorksheet, 'Fuel Worksheet', {
         aircraftTailNumber: aircraft.tailNumber,
-        tarmacItems: [],
+        hangarItems: [],
         aircraftItems: [],
         flightRules: 'VFR',
         ifrAlternateMinutes: 0,

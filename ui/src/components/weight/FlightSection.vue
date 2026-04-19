@@ -1,8 +1,6 @@
 <template>
     <div class="flight-section">
-        <div class="header">
-            <h3>Flight</h3>
-        </div>
+
         <div class="flight-content">
             
             <div class="flight-settings">

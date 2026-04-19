@@ -18,7 +18,7 @@ export interface FlightLeg {
 
 export interface FuelWorksheetData {
     aircraftTailNumber: string;
-    tarmacItems: LoadItem[];
+    hangarItems: LoadItem[];
     aircraftItems: AssignedLoadItem[];
     flightRules: 'VFR' | 'IFR';
     vfrTime?: 'Day' | 'Night';

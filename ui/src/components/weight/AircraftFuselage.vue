@@ -1,12 +1,11 @@
 <template>
-    <div class="fuselage bt">
-        <div class="header">
-            <h3>Aircraft Load</h3>
-        </div>
+    <div class="fuselage">
+
         <div class="fuselage-interior">
             <div v-for="(station, index) in filteredStations" :key="index" class="station-row">
                 <!-- Cargo (Center) -->
                 <div v-if="!isSideBySide(station)" class="station-dropzones single"
+                     :class="{ filled: getItemsForStation(station.originalIndex).length > 0 }"
                      @dragover.prevent 
                      @dragenter.prevent
                      @drop="onDrop($event, station.originalIndex, 0)">
@@ -15,56 +14,37 @@
                         {{ station.name }} ({{ station.posInch }}")
                     </div>
                     
-                    <div v-for="item in getItemsForStation(station.originalIndex)" :key="item.id"
-                         class="fuselage-item"
-                         draggable="true"
-                         @dragstart="onDragStart($event, item)">
-                        <div class="icon"><font-awesome-icon :icon="item.isPerson ? 'fa-user' : 'fa-box'" /></div>
-                        <div class="details">
-                            <span class="name">{{ item.name }}</span>
-                            <span class="weight">{{ item.weightLbs }} lbs</span>
-                        </div>
+                    <div v-for="item in getItemsForStation(station.originalIndex)" :key="item.id">
+                        <LoadItemCard :item="item" @dragstart="onDragStart($event, item)" @action="ejectItem" />
                     </div>
                 </div>
 
                 <div v-else class="station-dropzones side-by-side">
                     <!-- Left Slot -->
                     <div class="dropzone-slot"
+                         :class="{ filled: !!getItemInSlot(station.originalIndex, 0) }"
                          @dragover.prevent 
                          @dragenter.prevent
                          @drop="onDrop($event, station.originalIndex, 0)">
                         <div v-if="!getItemInSlot(station.originalIndex, 0)" class="empty-slot">
                             {{ station.name }} (L) {{ station.posInch }}"
                         </div>
-                        <div v-if="getItemInSlot(station.originalIndex, 0)" 
-                             class="fuselage-item"
-                             draggable="true"
-                             @dragstart="onDragStart($event, getItemInSlot(station.originalIndex, 0)!)">
-                            <div class="icon"><font-awesome-icon :icon="getItemInSlot(station.originalIndex, 0)!.isPerson ? 'fa-user' : 'fa-box'" /></div>
-                            <div class="details">
-                                <span class="name">{{ getItemInSlot(station.originalIndex, 0)!.name }}</span>
-                                <span class="weight">{{ getItemInSlot(station.originalIndex, 0)!.weightLbs }} lbs</span>
-                            </div>
+                        <div v-if="getItemInSlot(station.originalIndex, 0)">
+                             <LoadItemCard :item="getItemInSlot(station.originalIndex, 0)!" @dragstart="onDragStart($event, getItemInSlot(station.originalIndex, 0)!)" @action="ejectItem" />
                         </div>
                     </div>
                     
                     <!-- Right Slot -->
                     <div class="dropzone-slot"
+                         :class="{ filled: !!getItemInSlot(station.originalIndex, 1) }"
                          @dragover.prevent 
                          @dragenter.prevent
                          @drop="onDrop($event, station.originalIndex, 1)">
                         <div v-if="!getItemInSlot(station.originalIndex, 1)" class="empty-slot">
                             {{ station.name }} (R) {{ station.posInch }}"
                         </div>
-                        <div v-if="getItemInSlot(station.originalIndex, 1)" 
-                             class="fuselage-item"
-                             draggable="true"
-                             @dragstart="onDragStart($event, getItemInSlot(station.originalIndex, 1)!)">
-                            <div class="icon"><font-awesome-icon :icon="getItemInSlot(station.originalIndex, 1)!.isPerson ? 'fa-user' : 'fa-box'" /></div>
-                            <div class="details">
-                                <span class="name">{{ getItemInSlot(station.originalIndex, 1)!.name }}</span>
-                                <span class="weight">{{ getItemInSlot(station.originalIndex, 1)!.weightLbs }} lbs</span>
-                            </div>
+                        <div v-if="getItemInSlot(station.originalIndex, 1)">
+                             <LoadItemCard :item="getItemInSlot(station.originalIndex, 1)!" @dragstart="onDragStart($event, getItemInSlot(station.originalIndex, 1)!)" @action="ejectItem" />
                         </div>
                     </div>
                 </div>
@@ -78,6 +58,7 @@
 import { computed } from 'vue'
 import { FuelWorksheetData, LoadItem, AssignedLoadItem } from '../../models/FuelWorksheetTypes'
 import { Aircraft } from '@gak/shared'
+import LoadItemCard from './LoadItemCard.vue'
 
 const props = defineProps<{
     data: FuelWorksheetData
@@ -93,7 +74,7 @@ const filteredStations = computed(() => {
 })
 
 function emitUpdate() {
-    emits('update', { tarmacItems: props.data.tarmacItems, aircraftItems: props.data.aircraftItems })
+    emits('update', { hangarItems: props.data.hangarItems, aircraftItems: props.data.aircraftItems })
 }
 
 function isSideBySide(station: any): boolean {
@@ -111,6 +92,16 @@ function getItemsForStation(stationIndex: number) {
 
 function getItemInSlot(stationIndex: number, slotIndex: number) {
     return props.data.aircraftItems.find(i => i.stationIndex === stationIndex && i.slotIndex === slotIndex)
+}
+
+function ejectItem(item: AssignedLoadItem) {
+    const aIndex = props.data.aircraftItems.findIndex(i => i.id === item.id)
+    if (aIndex !== -1) {
+        props.data.aircraftItems.splice(aIndex, 1)
+        const { stationIndex, slotIndex, ...loadItem } = item
+        props.data.hangarItems.push(loadItem as LoadItem)
+        emitUpdate()
+    }
 }
 
 function onDragStart(event: DragEvent, item: AssignedLoadItem) {
@@ -136,11 +127,11 @@ function onDrop(event: DragEvent, targetStationIndex: number, slotIndex: number 
                 }
             }
 
-            if (source === 'tarmac') {
-                // Move from tarmac to aircraft
-                const tIndex = props.data.tarmacItems.findIndex((i: LoadItem) => i.id === item.id)
+            if (source === 'hangar') {
+                // Move from hangar to aircraft
+                const tIndex = props.data.hangarItems.findIndex((i: LoadItem) => i.id === item.id)
                 if (tIndex !== -1) {
-                    props.data.tarmacItems.splice(tIndex, 1)
+                    props.data.hangarItems.splice(tIndex, 1)
                     const assignedItem: AssignedLoadItem = { ...item, stationIndex: targetStationIndex, slotIndex }
                     props.data.aircraftItems.push(assignedItem)
                 }
@@ -170,8 +161,8 @@ function onDrop(event: DragEvent, targetStationIndex: number, slotIndex: number 
 }
 
 .header {
-    padding: 0.25rem 0.5rem;
-    border-bottom: 1px solid #dee2e6;
+    /* padding: 0.25rem 0.5rem; */
+    /* border-bottom: 1px solid #dee2e6; */
 }
 
 .header h3 {
@@ -200,18 +191,20 @@ function onDrop(event: DragEvent, targetStationIndex: number, slotIndex: number 
 .station-dropzones {
     display: flex;
     gap: 0.5rem;
-    min-height: 48px;
+    justify-content: center;
 }
 
 .station-dropzones.single {
-    width: 65%;
-    background-color: rgba(255, 255, 255, 0.5);
+    width: 95px;
+    height: 50px;
+    background-color: rgba(248, 250, 252, 0.8);
     border: 2px dashed #ced4da;
     border-radius: 6px;
-    padding: 0.5rem;
+    padding: 0;
     flex-direction: column;
     justify-content: center;
-    align-items: stretch;
+    align-items: center;
+    box-sizing: border-box;
 }
 
 .station-dropzones.side-by-side {
@@ -219,68 +212,37 @@ function onDrop(event: DragEvent, targetStationIndex: number, slotIndex: number 
 }
 
 .dropzone-slot {
-    flex: 1;
-    background-color: rgba(255, 255, 255, 0.5);
+    width: 95px;
+    height: 50px;
+    background-color: rgba(248, 250, 252, 0.8);
     border: 2px dashed #ced4da;
     border-radius: 6px;
     display: flex;
-    padding: 0.5rem;
+    padding: 0;
     justify-content: center;
     align-items: center;
+    box-sizing: border-box;
+    transition: all 0.2s;
+}
+
+.station-dropzones.filled, .dropzone-slot.filled {
+    border-color: transparent;
+    background-color: transparent;
+    height: auto;
+    min-height: 50px;
 }
 
 .empty-slot {
     color: #adb5bd;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     width: 100%;
     text-align: center;
     line-height: 1.2;
+    padding: 0 4px;
+    box-sizing: border-box;
 }
 
 .empty-slot.placeholder {
     padding: 0.75rem 0;
-}
-
-.fuselage-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: white;
-    padding: 0.5rem;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    cursor: grab;
-    width: 100%;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    transition: transform 0.1s;
-}
-
-.fuselage-item:active {
-    cursor: grabbing;
-}
-
-.fuselage-item:hover {
-    transform: translateY(-2px);
-}
-
-.icon {
-    color: #6c757d;
-    width: 20px;
-    text-align: center;
-}
-
-.details {
-    display: flex;
-    flex-direction: column;
-}
-
-.name {
-    font-size: 0.85rem;
-    font-weight: bold;
-}
-
-.weight {
-    font-size: 0.75rem;
-    color: #6c757d;
 }
 </style>

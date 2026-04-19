@@ -1,46 +1,57 @@
 <template>
-    <div class="tarmac">
+    <div class="hangar">
         <div class="header">
-            <h3>Tarmac</h3>
+            <h3>Hangar</h3>
             <div class="actions">
                 <Button icon="pi pi-user-plus" class="p-button-sm p-button-outlined" title="Add Person" @click="addPerson" />
                 <Button icon="pi pi-box" class="p-button-sm p-button-outlined ml-2" title="Add Item" @click="addItem" />
             </div>
         </div>
         
-        <div class="tarmac-dropzone" 
+        <div class="hangar-dropzone" 
              @dragover.prevent 
              @dragenter.prevent
              @drop="onDrop">
              
-            <div v-if="data.tarmacItems.length === 0" class="empty-state">
-                No items on tarmac. Click + to add.
+            <div v-if="data.hangarItems.length === 0" class="empty-state">
+                No items in hangar. Click + to add.
             </div>
             
-            <div v-for="item in data.tarmacItems" :key="item.id" 
-                 class="tarmac-item" 
-                 draggable="true" 
-                 @dragstart="onDragStart($event, item)">
-                 
-                <div class="icon">
-                    <font-awesome-icon :icon="item.isPerson ? 'fa-user' : 'fa-box'" />
-                </div>
-                <div class="details">
-                    <InputText v-model="item.name" class="p-inputtext-sm item-name" placeholder="Name" @change="emitUpdate" />
-                    <InputNumber v-model="item.weightLbs" class="p-inputtext-sm item-weight" suffix=" lbs" placeholder="Weight" @value-change="emitUpdate" />
-                </div>
-                <Button icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger p-button-sm delete-btn" @click="removeItem(item.id)" />
+            <div v-for="item in data.hangarItems" :key="item.id">
+                <LoadItemCard :item="item" inHangar @dragstart="onDragStart($event, item)" @action="removeItem(item.id)" />
             </div>
         </div>
+
+        <Dialog v-model:visible="showDialog" :header="newItem.isPerson ? 'Add Person' : 'Add Item'" modal :style="{ width: '350px' }">
+            <div class="p-fluid">
+                <div class="p-field mb-3">
+                    <label for="name" class="block text-sm font-bold mb-1">Name</label>
+                    <InputText id="name" v-model="newItem.name" autofocus @keyup.enter="confirmAdd" />
+                </div>
+                <div class="p-field mb-3">
+                    <label for="weight" class="block text-sm font-bold mb-1">Weight (lbs)</label>
+                    <InputNumber id="weight" v-model="newItem.weightLbs" suffix=" lbs" :min="0" @keyup.enter="confirmAdd" />
+                </div>
+            </div>
+            <template #footer>
+                <div class="flex justify-content-end gap-2 mt-2">
+                    <Button label="Cancel" icon="pi pi-times" class="p-button-text p-button-secondary" @click="showDialog = false" />
+                    <Button label="Add to Hangar" icon="pi pi-check" class="p-button-primary" @click="confirmAdd" />
+                </div>
+            </template>
+        </Dialog>
     </div>
 </template>
 
 <script setup lang="ts">
+import { ref, reactive } from 'vue'
 import { FuelWorksheetData, LoadItem, AssignedLoadItem } from '../../models/FuelWorksheetTypes'
 import { Aircraft } from '@gak/shared'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
+import Dialog from 'primevue/dialog'
+import LoadItemCard from './LoadItemCard.vue'
 
 const props = defineProps<{
     data: FuelWorksheetData
@@ -50,44 +61,56 @@ const props = defineProps<{
 const emits = defineEmits(['update'])
 
 function emitUpdate() {
-    emits('update', { tarmacItems: props.data.tarmacItems, aircraftItems: props.data.aircraftItems })
+    emits('update', { hangarItems: props.data.hangarItems, aircraftItems: props.data.aircraftItems })
 }
 
 function generateId() {
     return Math.random().toString(36).substring(2, 9)
 }
 
+const showDialog = ref(false)
+const newItem = reactive({
+    name: '',
+    weightLbs: 0,
+    isPerson: false
+})
+
 function addPerson() {
-    props.data.tarmacItems.push({
-        id: generateId(),
-        name: 'Passenger',
-        weightLbs: 170, // Standard FAA average weight
-        isPerson: true
-    })
-    emitUpdate()
+    newItem.isPerson = true
+    newItem.name = 'Passenger'
+    newItem.weightLbs = 170
+    showDialog.value = true
 }
 
 function addItem() {
-    props.data.tarmacItems.push({
+    newItem.isPerson = false
+    newItem.name = 'Baggage'
+    newItem.weightLbs = 50
+    showDialog.value = true
+}
+
+function confirmAdd() {
+    props.data.hangarItems.push({
         id: generateId(),
-        name: 'Baggage',
-        weightLbs: 50,
-        isPerson: false
+        name: newItem.name,
+        weightLbs: newItem.weightLbs,
+        isPerson: newItem.isPerson
     })
+    showDialog.value = false
     emitUpdate()
 }
 
 function removeItem(id: string) {
-    const index = props.data.tarmacItems.findIndex(i => i.id === id)
+    const index = props.data.hangarItems.findIndex(i => i.id === id)
     if (index !== -1) {
-        props.data.tarmacItems.splice(index, 1)
+        props.data.hangarItems.splice(index, 1)
         emitUpdate()
     }
 }
 
 function onDragStart(event: DragEvent, item: LoadItem) {
     if (event.dataTransfer) {
-        event.dataTransfer.setData('application/json', JSON.stringify({ item, source: 'tarmac' }))
+        event.dataTransfer.setData('application/json', JSON.stringify({ item, source: 'hangar' }))
         event.dataTransfer.effectAllowed = 'move'
     }
 }
@@ -98,7 +121,7 @@ function onDrop(event: DragEvent) {
         try {
             const { item, source } = JSON.parse(dataStr)
             
-            // If it came from the aircraft, we move it back to tarmac
+            // If it came from the aircraft, we move it back to hangar
             if (source === 'aircraft') {
                 const acIndex = props.data.aircraftItems.findIndex((i: AssignedLoadItem) => i.id === item.id)
                 if (acIndex !== -1) {
@@ -106,7 +129,7 @@ function onDrop(event: DragEvent) {
                     
                     // Convert back to regular LoadItem by stripping station assignment info
                     const { stationIndex, slotIndex, ...loadItem } = item
-                    props.data.tarmacItems.push(loadItem as LoadItem)
+                    props.data.hangarItems.push(loadItem as LoadItem)
                     
                     emitUpdate()
                 }
@@ -119,7 +142,7 @@ function onDrop(event: DragEvent) {
 </script>
 
 <style scoped>
-.tarmac {
+.hangar {
     background-color: white;
     display: flex;
     flex-direction: column;
@@ -141,13 +164,15 @@ function onDrop(event: DragEvent) {
     text-transform: uppercase;
 }
 
-.tarmac-dropzone {
+.hangar-dropzone {
     flex: 1;
     min-height: 100px;
     padding: 0.5rem;
     display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-content: flex-start;
 }
 
 .empty-state {
@@ -155,44 +180,5 @@ function onDrop(event: DragEvent) {
     font-style: italic;
     text-align: center;
     padding-top: 2rem;
-}
-
-.tarmac-item {
-    display: flex;
-    flex-direction: column;
-    background-color: white;
-    padding: 0.25rem;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    cursor: grab;
-    position: relative;
-}
-
-.tarmac-item .icon {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    font-size: 0.8rem;
-    opacity: 0.3;
-}
-
-.tarmac-item .details {
-    display: flex;
-    flex-direction: column;
-}
-
-.tarmac-item .delete-btn {
-    position: absolute;
-    top: 0;
-    right: 0;
-}
-
-.item-name {
-    width: 100%;
-    margin-bottom: 2px;
-}
-
-.item-weight {
-    width: 100%;
 }
 </style>
