@@ -12,7 +12,7 @@
         <FuelLoad :data="data" :aircraft="aircraft" @update="emitUpdate" />
         
         <Separator name="Weight" />
-        <WeightLoad :weight="totalWeight" />
+        <WeightLoad :data="data" :aircraft="aircraft" />
     </div>
 </template>
 
@@ -37,13 +37,6 @@ function emitUpdate(newData: any) {
     emits('update', newData)
 }
 
-const totalWeight = computed(() => {
-    if (!props.aircraft) return 0
-    const emptyWeight = props.aircraft.data.basicEmptyWeight || 0
-    const payload = props.data.aircraftItems.reduce((sum, item) => sum + item.weightLbs, 0)
-    const fuel = (props.data.fuelGallons || 0) * 6
-    return Math.round(emptyWeight + payload + fuel)
-})
 </script>
 
 <style scoped>

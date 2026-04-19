@@ -1,6 +1,5 @@
 <template>
     <div class="fuselage">
-
         <div class="fuselage-interior">
             <div v-for="(station, index) in filteredStations" :key="index" class="station-row">
                 <!-- Cargo (Center) -->
@@ -51,6 +50,15 @@
 
             </div>
         </div>
+
+        <button 
+            v-if="data.aircraftItems.length > 0"
+            class="eject-all-btn" 
+            @click="ejectAll"
+            title="Send everything back to hangar"
+        >
+            <font-awesome-icon icon="eject" />
+        </button>
     </div>
 </template>
 
@@ -102,6 +110,20 @@ function ejectItem(item: AssignedLoadItem) {
         props.data.hangarItems.push(loadItem as LoadItem)
         emitUpdate()
     }
+}
+
+function ejectAll() {
+    // Collect all items to move
+    const itemsToMove = props.data.aircraftItems.map(item => {
+        const { stationIndex, slotIndex, ...loadItem } = item
+        return loadItem as LoadItem
+    })
+    
+    // Clear aircraft items and add to hangar
+    props.data.aircraftItems.splice(0, props.data.aircraftItems.length)
+    props.data.hangarItems.push(...itemsToMove)
+    
+    emitUpdate()
 }
 
 function onDragStart(event: DragEvent, item: AssignedLoadItem) {
@@ -158,19 +180,56 @@ function onDrop(event: DragEvent, targetStationIndex: number, slotIndex: number 
     background-color: white;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
-.header {
-    /* padding: 0.25rem 0.5rem; */
-    /* border-bottom: 1px solid #dee2e6; */
+.aircraft-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    background-color: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
 }
 
-.header h3 {
-    margin: 0;
-    font-size: 0.85rem;
-    font-weight: bold;
-    color: #adb5bd;
+.aircraft-header .label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
+}
+
+.eject-all-btn {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 20;
+    opacity: 0.6;
+}
+
+.eject-all-btn:hover {
+    background-color: #2563eb;
+    opacity: 1;
+    transform: scale(1.1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.eject-all-btn:active {
+    transform: scale(0.95);
 }
 
 .fuselage-interior {
