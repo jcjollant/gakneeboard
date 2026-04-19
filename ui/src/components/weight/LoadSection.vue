@@ -4,7 +4,7 @@
         <HangarLoad class="hangar-section" :data="data" :aircraft="aircraft" @update="emitUpdate" />
         
         <Separator name="Aircraft" />
-        <AircraftLoad class="aircraft-section" :data="data" :aircraft="aircraft" @update="emitUpdate" />
+        <LoadAircraft class="aircraft-section" :data="data" :aircraft="aircraft" @update="emitUpdate" />
         
         <Separator name="Fuel" />
         <LoadFuel class="fuel-section" :data="data" :aircraft="aircraft" @update="emitUpdate" />
@@ -18,7 +18,7 @@
 import { computed } from 'vue'
 import { FuelWorksheetData } from '../../models/FuelWorksheetTypes'
 import { Aircraft } from '@gak/shared'
-import AircraftLoad from './AircraftLoad.vue'
+import LoadAircraft from './LoadAircraft.vue'
 import HangarLoad from './HangarLoad.vue'
 import LoadFuel from './LoadFuel.vue'
 import LoadWeight from './LoadWeight.vue'
