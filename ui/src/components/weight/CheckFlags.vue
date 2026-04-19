@@ -1,5 +1,5 @@
 <template>
-    <div class="checks-flags">
+    <div class="check-flags">
         <div class="checks-list">
             <!-- Ramp Weight -->
             <!-- Ramp Weight -->
@@ -167,7 +167,7 @@ function statusClass(pass: boolean) {
 </script>
 
 <style scoped>
-.checks-flags {
+.check-flags {
     padding: 0.4rem;
 }
 
