@@ -155,11 +155,13 @@ function onDrop(event: DragEvent) {
     background-color: white;
     display: flex;
     flex-direction: column;
+    height: 100%;
+    overflow: hidden;
 }
 
 .hangar-dropzone {
     flex: 1;
-    min-height: 100px;
+    overflow-y: auto;
     padding: 0.5rem;
     display: flex;
     flex-direction: row;

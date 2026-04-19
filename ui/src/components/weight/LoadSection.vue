@@ -3,16 +3,16 @@
         <div class="column-header"><h3>LOAD</h3></div>
         
         <Separator name="Aircraft" />
-        <AircraftLoad :data="data" :aircraft="aircraft" @update="emitUpdate" />
+        <AircraftLoad class="aircraft-section" :data="data" :aircraft="aircraft" @update="emitUpdate" />
         
         <Separator name="Hangar" />
-        <HangarLoad :data="data" :aircraft="aircraft" @update="emitUpdate" />
+        <HangarLoad class="hangar-section" :data="data" :aircraft="aircraft" @update="emitUpdate" />
         
         <Separator name="Fuel" />
-        <FuelLoad :data="data" :aircraft="aircraft" @update="emitUpdate" />
+        <FuelLoad class="fuel-section" :data="data" :aircraft="aircraft" @update="emitUpdate" />
         
         <Separator name="Weight" />
-        <WeightLoad :data="data" :aircraft="aircraft" />
+        <WeightLoad class="weight-section" :data="data" :aircraft="aircraft" />
     </div>
 </template>
 
@@ -43,7 +43,17 @@ function emitUpdate(newData: any) {
 .left-col {
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
+    height: 100%;
+    overflow: hidden;
+}
+
+.aircraft-section, .fuel-section, .weight-section {
+    flex: 0 0 auto;
+}
+
+.hangar-section {
+    flex: 1;
+    min-height: 0;
 }
 
 .column-header {
@@ -51,6 +61,7 @@ function emitUpdate(newData: any) {
     background-color: #f8f9fa;
     border-bottom: 2px solid #dee2e6;
     text-align: left;
+    flex: 0 0 auto;
 }
 
 .column-header h3 {
@@ -63,9 +74,9 @@ function emitUpdate(newData: any) {
 
 :deep(.separator) {
     background-color: #f8f9fa;
-
     padding: 4px 0;
     margin: 0;
+    flex: 0 0 auto;
 }
 
 </style>
