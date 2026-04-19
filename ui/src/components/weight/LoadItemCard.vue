@@ -1,5 +1,8 @@
 <template>
-    <div class="load-card" :class="{ 'in-hangar': inHangar }" draggable="true" @dragstart="onDragStart">
+    <div class="load-card" 
+         :class="{ 'in-hangar': inHangar, 'is-person': item.isPerson }" 
+         draggable="true" 
+         @dragstart="onDragStart">
         <div class="details">
             <span class="name">{{ item.name }}</span>
             <div class="info-row">
@@ -37,7 +40,7 @@ function onDragStart(event: DragEvent) {
     justify-content: center;
     background-color: white;
     padding: 0.4rem 0.5rem;
-    border: 1px solid #ced4da;
+    border: 2px solid #f59e0b; /* Yellow/Amber for items - matches WeightLoad */
     border-radius: 4px;
     cursor: grab;
     width: 95px;
@@ -54,7 +57,15 @@ function onDragStart(event: DragEvent) {
 
 .load-card:hover {
     transform: translateY(-2px);
-    border-color: #0ea5e9;
+    border-color: #d97706; /* Darker amber on hover */
+}
+
+.load-card.is-person:not(.in-hangar) {
+    border-color: #166534; /* Dark green for people in aircraft */
+}
+
+.load-card.is-person:not(.in-hangar):hover {
+    border-color: #15803d;
 }
 
 .item-icon {
@@ -82,7 +93,7 @@ function onDragStart(event: DragEvent) {
 .name {
     font-size: 0.85rem;
     font-weight: bold;
-    color: #2c3e50;
+    color: #1e293b;
     line-height: 1.2;
     white-space: nowrap;
     overflow: hidden;
@@ -129,5 +140,11 @@ function onDragStart(event: DragEvent) {
 
 .in-hangar {
     background: linear-gradient(to bottom, #ffffff, #f8fafc);
+    border: 1px dashed #94a3b8; /* Darker grey for hangar items */
+}
+
+.in-hangar:hover {
+    border-color: #64748b;
+    border-style: solid;
 }
 </style>

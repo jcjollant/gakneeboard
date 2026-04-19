@@ -75,7 +75,7 @@ onMounted(() => {
 })
 
 function onDataUpdate(newData: Partial<FuelWorksheetData>) {
-    Object.assign(pageData.value, newData)
+    pageData.value = { ...pageData.value, ...newData }
     emits('update', pageData.value)
 }
 </script>

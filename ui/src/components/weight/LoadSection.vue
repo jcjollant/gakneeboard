@@ -2,11 +2,11 @@
     <div class="left-col">
         <div class="column-header"><h3>LOAD</h3></div>
         
-        <Separator name="Aircraft" />
-        <AircraftLoad class="aircraft-section" :data="data" :aircraft="aircraft" @update="emitUpdate" />
-        
         <Separator name="Hangar" />
         <HangarLoad class="hangar-section" :data="data" :aircraft="aircraft" @update="emitUpdate" />
+
+        <Separator name="Aircraft" />
+        <AircraftLoad class="aircraft-section" :data="data" :aircraft="aircraft" @update="emitUpdate" />
         
         <Separator name="Fuel" />
         <FuelLoad class="fuel-section" :data="data" :aircraft="aircraft" @update="emitUpdate" />

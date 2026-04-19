@@ -1,11 +1,21 @@
 <template>
     <div class="weight-summary-box" @click="showDetails = true">
         <div class="weight-display" :class="{ 'over-weight': isOverWeight }">
+            <div class="load-bar-container" v-if="maxWeight > 0">
+                <div class="load-bar-track">
+                    <div class="bar-segment people" :style="{ width: barPeopleWidth + '%' }" title="People"></div>
+                    <div class="bar-segment items" :style="{ width: barItemsWidth + '%' }" title="Cargo/Items"></div>
+                    <div class="bar-segment fuel" :style="{ width: barFuelWidth + '%' }" title="Fuel"></div>
+                    <div class="max-marker"></div>
+                </div>
+            </div>
+
             <div class="weight-value">
                 <i class="pi pi-search magnifier"></i>
                 {{ totalWeight.toFixed(0) }} 
                 <span class="unit">lbs</span>
             </div>
+            
             <div class="weight-label" v-if="!isOverWeight">
                 <template v-if="aircraft.data.maxRampWeight">
                     {{ weightRemaining.toFixed(0) }} lbs REMAINING
@@ -99,6 +109,15 @@ const weightRemaining = computed(() => {
     return Math.max(0, max - totalWeight.value)
 })
 
+const peopleWeight = computed(() => props.data.aircraftItems.filter(i => i.isPerson).reduce((sum, item) => sum + item.weightLbs, 0))
+const itemsWeight = computed(() => props.data.aircraftItems.filter(i => !i.isPerson).reduce((sum, item) => sum + item.weightLbs, 0))
+const maxWeight = computed(() => props.aircraft?.data.maxRampWeight || 0)
+const usefulLoadCapacity = computed(() => Math.max(0, maxWeight.value - emptyWeight.value))
+
+const barPeopleWidth = computed(() => usefulLoadCapacity.value ? (peopleWeight.value / usefulLoadCapacity.value) * 100 : 0)
+const barItemsWidth = computed(() => usefulLoadCapacity.value ? (itemsWeight.value / usefulLoadCapacity.value) * 100 : 0)
+const barFuelWidth = computed(() => usefulLoadCapacity.value ? (fuelWeight.value / usefulLoadCapacity.value) * 100 : 0)
+
 </script>
 
 <style scoped>
@@ -118,6 +137,43 @@ const weightRemaining = computed(() => {
     flex-direction: column;
     align-items: center;
     gap: 0.25rem;
+    width: 100%;
+}
+
+.load-bar-container {
+    width: 100%;
+    padding: 0 10px;
+    box-sizing: border-box;
+    margin-bottom: 6px;
+}
+
+.load-bar-track {
+    height: 4px;
+    background-color: #f1f5f9;
+    display: flex;
+    position: relative;
+    border-radius: 2px;
+    width: 100%; /* 100% of track = Max Weight */
+}
+
+.bar-segment {
+    height: 100%;
+    flex-shrink: 0;
+    transition: width 0.3s ease;
+}
+
+.bar-segment.people { background-color: #166534; }
+.bar-segment.items { background-color: #f59e0b; }
+.bar-segment.fuel { background-color: #0ea5e9; }
+
+.max-marker {
+    position: absolute;
+    top: -3px;
+    bottom: -3px;
+    left: 100%;
+    width: 2px;
+    background-color: #dc3545;
+    z-index: 10;
 }
 
 .weight-value {
@@ -129,6 +185,7 @@ const weightRemaining = computed(() => {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    white-space: nowrap;
 }
 
 .magnifier {
@@ -151,9 +208,10 @@ const weightRemaining = computed(() => {
 .weight-label {
     font-size: 0.7rem;
     font-weight: bold;
-    color: #adb5bd;
+    color: #94a3b8;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    text-align: center;
 }
 
 .weight-label.warning {
