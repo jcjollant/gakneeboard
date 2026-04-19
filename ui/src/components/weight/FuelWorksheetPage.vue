@@ -29,7 +29,7 @@
                 </div>
                 <div class="column-header"><h3>FUEL USAGE</h3></div>
                 <div class="fuel-usage bt">
-                    <FuelGauge :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
+                    <CheckFuel :data="pageData" :aircraft="aircraft" @update="onDataUpdate" />
                 </div>
             </div>
         </div>
@@ -42,7 +42,7 @@ import { ref, onMounted, watch } from 'vue'
 import LoadSection from './LoadSection.vue'
 import FlightSection from './FlightSection.vue'
 import CgEnvelope from './CgEnvelope.vue'
-import FuelGauge from './FuelGauge.vue'
+import CheckFuel from './CheckFuel.vue'
 import ChecksFlags from './ChecksFlags.vue'
 import { LocalStoreService } from '../../services/LocalStoreService'
 import { Aircraft, TemplateFormat } from '@gak/shared'
