@@ -4,7 +4,7 @@
         
         <div class="fuel-controls">
             <div class="slider-row">
-                <Slider v-model="fuelValue" :min="0" :max="maxUsable" :step="0.1" class="fuel-slider" @change="onFuelChange" />
+                <Slider v-model="fuelValue" :min="0" :max="maxUsable" :step="0.5" class="fuel-slider" @change="onFuelChange" />
             </div>
             
             <div class="input-row">

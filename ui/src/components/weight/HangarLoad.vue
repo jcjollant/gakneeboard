@@ -1,17 +1,13 @@
 <template>
     <div class="hangar">
-        <div class="header">
-            <h3>Hangar</h3>
-            <div class="actions">
-                <Button icon="pi pi-user-plus" class="p-button-sm p-button-outlined" title="Add Person" @click="addPerson" />
-                <Button icon="pi pi-box" class="p-button-sm p-button-outlined ml-2" title="Add Item" @click="addItem" />
-            </div>
-        </div>
-        
         <div class="hangar-dropzone" 
              @dragover.prevent 
              @dragenter.prevent
              @drop="onDrop">
+             
+            <button class="add-button" @click="openAddDialog" title="Add Item">
+                <i class="pi pi-plus"></i>
+            </button>
              
             <div v-if="data.hangarItems.length === 0" class="empty-state">
                 No items in hangar. Click + to add.
@@ -22,8 +18,12 @@
             </div>
         </div>
 
-        <Dialog v-model:visible="showDialog" :header="newItem.isPerson ? 'Add Person' : 'Add Item'" modal :style="{ width: '350px' }">
+        <Dialog v-model:visible="showDialog" header="Add to Hangar" modal :style="{ width: '350px' }">
             <div class="p-fluid">
+                <div class="flex justify-content-center mb-4">
+                    <SelectButton v-model="newItem.isPerson" :options="typeOptions" optionLabel="label" optionValue="value" class="p-button-sm" />
+                </div>
+                
                 <div class="p-field mb-3">
                     <label for="name" class="block text-sm font-bold mb-1">Name</label>
                     <InputText id="name" v-model="newItem.name" autofocus @keyup.enter="confirmAdd" />
@@ -44,12 +44,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { FuelWorksheetData, LoadItem, AssignedLoadItem } from '../../models/FuelWorksheetTypes'
 import { Aircraft } from '@gak/shared'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
+import SelectButton from 'primevue/selectbutton'
 import Dialog from 'primevue/dialog'
 import LoadItemCard from './LoadItemCard.vue'
 
@@ -75,19 +76,27 @@ const newItem = reactive({
     isPerson: false
 })
 
-function addPerson() {
+const typeOptions = ref([
+    { label: 'Passenger', value: true },
+    { label: 'Cargo', value: false }
+])
+
+function openAddDialog() {
     newItem.isPerson = true
     newItem.name = 'Passenger'
     newItem.weightLbs = 170
     showDialog.value = true
 }
 
-function addItem() {
-    newItem.isPerson = false
-    newItem.name = 'Baggage'
-    newItem.weightLbs = 50
-    showDialog.value = true
-}
+watch(() => newItem.isPerson, (isPerson) => {
+    if (isPerson) {
+        newItem.name = 'Passenger'
+        newItem.weightLbs = 170
+    } else {
+        newItem.name = 'Baggage'
+        newItem.weightLbs = 50
+    }
+})
 
 function confirmAdd() {
     props.data.hangarItems.push({
@@ -148,22 +157,6 @@ function onDrop(event: DragEvent) {
     flex-direction: column;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.25rem 0.5rem;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.header h3 {
-    margin: 0;
-    font-size: 0.85rem;
-    font-weight: bold;
-    color: #adb5bd;
-    text-transform: uppercase;
-}
-
 .hangar-dropzone {
     flex: 1;
     min-height: 100px;
@@ -179,6 +172,28 @@ function onDrop(event: DragEvent) {
     color: #adb5bd;
     font-style: italic;
     text-align: center;
-    padding-top: 2rem;
+    width: 100%;
+    padding-top: 1rem;
+}
+
+.add-button {
+    width: 95px;
+    height: 50px;
+    border: 2px dashed #cbd5e1;
+    border-radius: 4px;
+    background: transparent;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    order: 999; /* Always show after items */
+}
+
+.add-button:hover {
+    border-color: #0ea5e9;
+    color: #0ea5e9;
+    background-color: #f0f9ff;
 }
 </style>
