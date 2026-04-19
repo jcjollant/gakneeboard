@@ -15,11 +15,13 @@
         <div class="pageOptions">
           <div class="pageOptionLabel">Pages to Print</div>
           <PageSelection v-model="pageSelection" @change="onNewOptions" />
-          <div class="pageOptionLabel">Back Page Orientation</div>
-          <ChoiceList v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" :emitObject="true" />
-          <div class="pageOptionLabel">Page Sequence</div>
-          <ChoiceList v-model="backToBackSelected" :choices="backToBackOptions" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" :emitObject="true" />
-      </div>
+          <template v-if="!isFullPageFormat">
+            <div class="pageOptionLabel">Back Page Orientation</div>
+            <ChoiceList v-model="flipBackPage" :choices="[normalOrientation, flippedOrientation]" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" :emitObject="true" />
+            <div class="pageOptionLabel">Page Sequence</div>
+            <ChoiceList v-model="backToBackSelected" :choices="backToBackOptions" @change="onNewOptions" :disabled="!currentUser.canUseAdvancedPrinting" :emitObject="true" />
+          </template>
+        </div>
       </FieldSet>
       <FieldSet legend="Margins" v-if="!isFullPageFormat">
         <div class="vibContainer">
@@ -53,7 +55,7 @@
           <li>If Print Preview doesn't show, check your browser is not blocking popups</li>
         </ul>
         <ul class="note" v-else>
-          <li>Full page templates print one page per sheet in portrait mode</li>
+          <li>Full page templates print one page per sheet in landscape mode</li>
           <li>The number of printed pages will match the template page count</li>
         </ul>
       </FieldSet>
@@ -241,7 +243,11 @@ function onNewOptions() {
       // Check if VIB options are modified from default (All 4 items active)
       const isVibDefault = options.vibItems.length >= 3; // Basic check, refining might be needed
       
-      upgrade.value = options.flipBackPage || !isVibDefault || (unselected === false) || (options.clipMargin > 0) || options.showCenterGuide
+      if (isFullPageFormat.value) {
+        upgrade.value = !isVibDefault || (unselected === false) || options.showCenterGuide
+      } else {
+        upgrade.value = options.flipBackPage || !isVibDefault || (unselected === false) || (options.clipMargin > 0) || options.showCenterGuide
+      }
     }
     emits('options', options)
   } 

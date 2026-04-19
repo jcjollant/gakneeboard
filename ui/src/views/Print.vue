@@ -195,7 +195,8 @@ async function onExportPdf(options: PrintOptions | undefined) {
       const elements = document.querySelectorAll('.onePager')
       console.debug('[Print.onExportPdf] Creating PDF from elements:', elements)
       const paperNavlog = template.value && template.value.data.length > 0 && template.value.data[0].type === PageType.paperNavlog
-      const landscape = paperNavlog || false
+      const isFullPage = template.value?.format === TemplateFormat.FullPage
+      const landscape = paperNavlog || isFullPage
       if(elements) await exportToPDF(elements, landscape, template.value ? template.value.name : 'kneeboard')
       router.back()
     } catch (error) {
@@ -219,7 +220,8 @@ async function onLaminate(options: PrintOptions | undefined) {
 
   const elements = printFullpage.value ? document.querySelectorAll('.printOnePage') : document.querySelectorAll('.printTwoPages')
   const paperNavlog = template.value && template.value.data.length > 0 && template.value.data[0].type === PageType.paperNavlog
-  const landscape:boolean = paperNavlog || !printFullpage.value
+  const isFullPage = template.value?.format === TemplateFormat.FullPage
+  const landscape:boolean = paperNavlog || !printFullpage.value || isFullPage
 
   try {
       const blob = await createPDF(elements, landscape);
@@ -268,7 +270,8 @@ async function onPrint(options:PrintOptions|undefined) {
   const element = document.getElementById('printTemplate')
   const elements = printFullpage.value ? document.querySelectorAll('.printOnePage') : document.querySelectorAll('.printTwoPages')
   const paperNavlog = template.value && template.value.data.length > 0 && template.value.data[0].type === PageType.paperNavlog
-  const landscape:boolean = paperNavlog || !printFullpage.value
+  const isFullPage = template.value?.format === TemplateFormat.FullPage
+  const landscape:boolean = paperNavlog || !printFullpage.value || isFullPage
   if(element) await exportToPDF(elements, landscape)
   router.back()
 }

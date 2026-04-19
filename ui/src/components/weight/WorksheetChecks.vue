@@ -40,6 +40,14 @@
                     <span class="check-value">{{ isCgValid ? 'Within Limits' : 'Out of Limits' }}</span>
                 </div>
             </div>
+
+            <!-- Taxi Fuel -->
+            <div class="check-item" :class="statusClass((data.taxiFuelGallons || 0) > 0)">
+                <div class="check-info">
+                    <span class="check-label">Taxi Fuel</span>
+                    <span class="check-value">{{ (data.taxiFuelGallons || 0).toFixed(1) }} gal</span>
+                </div>
+            </div>
         </div>
     </div>
 </template>
