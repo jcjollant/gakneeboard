@@ -140,7 +140,8 @@ interface Poh {
 const poh = ref<Poh[]>([
     {code: 'AA', src: 'C172SGFC700.png', template: new Template('C172S GFC700', 'CESSNA MODEL 172S NAV III GFC 700 AFCS', false, [])},
     {code: 'AB', src: 'C182TGFC700.png', template: new Template('C182T GFC700', 'CESSNA MODEL 182T NAV III GFC 700 AFCS', false, [])},
-    {code: 'AC', src: 'PA-28-161-CHEROKEE-WARRIOR-II.png', template: new Template('PA-28 CHEROKEE WII', 'PA-28 161 CHEROKEE WARRIOR II', false, [])},
+    {code: 'AC', src: 'PA-28-161-CHEROKEE-WARRIOR-II.png', template: new Template('WARRIOR II', 'PA-28-161 WARRIOR II', false, [])},
+    {code: 'AD', src: 'PA-28-181-CHEROKEE-ARCHER-II.png', template: new Template('ARCHER II', 'PA-28-181 ARCHER II', false, [])},
 ])
 const newTemplate = ref(new Template('New','Create a new kneeboard'))
 const router = useRouter()
