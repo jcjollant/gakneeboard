@@ -666,6 +666,7 @@ async function onSave(clone:boolean=false) {
     newTemplate.id = 0
     newTemplate.name = 'Copy of ' + activeTemplate.value.name
     newTemplate.ver = 0
+    newTemplate.system = false
     settingsTemplate.value = newTemplate;
     showSettings.value = true;
   } else { // this is a normal save
@@ -702,10 +703,12 @@ function onNewSettings(settings:TemplateSettings) {
   // Hide settings
   showSettings.value = false;
 
+  // We only skip if this is NOT a clone (same ID) AND the settings haven't actually changed.
   if( activeTemplate.value.id > 0 
-    && settingsTemplate.value.name == settings.name 
-    && settingsTemplate.value.desc == settings.desc 
-    && settingsTemplate.value.publish == settings.publish) {
+    && activeTemplate.value.id === settingsTemplate.value.id
+    && activeTemplate.value.name == settings.name 
+    && activeTemplate.value.desc == settings.desc 
+    && activeTemplate.value.publish == settings.publish) {
     toaster.warning('Repeat Last Transmission','Nothing to save, settings unchanged')
     return;
   }
@@ -714,6 +717,11 @@ function onNewSettings(settings:TemplateSettings) {
   activeTemplate.value.name = settings.name
   activeTemplate.value.desc = settings.desc
   activeTemplate.value.publish = settings.publish
+  
+  // Identity update (critical for cloning/duplication)
+  activeTemplate.value.id = settingsTemplate.value.id
+  activeTemplate.value.ver = settingsTemplate.value.ver
+  activeTemplate.value.system = settingsTemplate.value.system
 
   // We consider the template as modified if it's a cloud template
   templateModified.value = activeTemplate.value.id > 0
