@@ -63,7 +63,7 @@ export class Business {
 
     public static getQuotas(user: User): Quotas {
         const plan = PlanService.getPlan(user.planId)
-        return plan?.quotas || { prints: 0, pages: 0, templates: 0 }
+        return plan?.quotas || { prints: 0, pages: 0, templates: 0, aircrafts: 0 }
     }
 
     static isActiveCustomer(user: User): boolean {

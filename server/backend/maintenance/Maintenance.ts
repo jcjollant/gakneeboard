@@ -76,6 +76,7 @@ export class Maintenance {
             const emailString = [
                 'u=' + data[MetricKey.users],
                 't=' + data[MetricKey.templates],
+                'air=' + data[MetricKey.aircrafts],
                 'pg=' + data[MetricKey.pagesTotal],
                 'ac=' + data[MetricKey.customersActive],
                 'p7=' + data[MetricKey.print7],

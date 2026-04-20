@@ -62,6 +62,12 @@ export class AircraftDao extends Dao<Aircraft> {
         return res.rowCount === 1;
     }
 
+    public async countUserOwned(): Promise<number> {
+        const query = `SELECT COUNT(*) FROM ${this.tableName} WHERE user_id IS NOT NULL`;
+        const res = await this.db.query(query);
+        return Number(res.rows[0]?.count || 0);
+    }
+
     public parseRow(row: any): Aircraft {
         return {
             id: row.id,

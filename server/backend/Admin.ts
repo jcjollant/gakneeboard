@@ -4,6 +4,8 @@ import { UserDao } from "./dao/UserDao";
 import { UserProfile } from "./models/UserProfile";
 import { TemplateDao } from "./TemplateDao";
 import { GApiError } from "./GApiError";
+import { User } from "./models/User";
+import { UsageCount } from "./models/UsageCount";
 
 export class Admin {
     static async getUserProfile(userId: number): Promise<UserProfile> {
@@ -18,7 +20,7 @@ export class Admin {
         const templateDao = new TemplateDao()
 
         try {
-            const [user, usage, lastSession, templateCount] = await Promise.all([
+            const [user, usage, lastSession, templateCount]: [User | undefined, UsageCount[], Date | null, number] = await Promise.all([
                 userDao.get(userId),
                 usageDao.userUsageCountSince(userId, 90),
                 usageDao.lastUsageDate(userId, UsageType.Session),

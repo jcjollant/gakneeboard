@@ -1,5 +1,6 @@
 import { AdipService } from "../services/AdipService";
 import { ApiCallDao, ApiName } from "../dao/ApiCallDao";
+import { AircraftDao } from "../dao/AircraftDao";
 import { AirportDao } from "../AirportDao";
 import { Email, EmailType } from "../Email";
 import { FeedbackDao } from "../FeedbackDao"
@@ -33,6 +34,7 @@ export class Metric {
 export enum MetricKey {
     adip = 'adip',
     adip28 = 'adip-28d',
+    aircrafts = 'aircrafts',
     skyvector = 'skyvector',
     skyvector28 = 'skyvector-28d',
     airportsTotal = 'airports-total',
@@ -219,6 +221,14 @@ export class Metrics {
         return [new Metric(MetricKey.templates, templateCount)]
     }
 
+    static async aircrafts(): Promise<Metric[]> {
+        const aircraftDao = new AircraftDao();
+        const userOwned = await aircraftDao.countUserOwned()
+        return [
+            new Metric(MetricKey.aircrafts, userOwned)
+        ]
+    }
+
     static async business(): Promise<Metric[]> {
         const subscriptionDao = new SubscriptionDao();
         const businessMetrics: Metric[] = []
@@ -371,6 +381,7 @@ export class Metrics {
             Metrics.usersPerAccountCategory(),
             Metrics.publicationsCheck(),
             Metrics.templates(),
+            Metrics.aircrafts(),
             Metrics.airports(),
             Metrics.apiCalls()
         ])).reduce((all, one) => {
