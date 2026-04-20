@@ -13,7 +13,8 @@
     "summon": "tsx cli/summon.ts",
     "prepare": "husky",
     "postinstall": "cd ../shared && npm install && npm run build",
-    "version": "tsx cli/updateVersion.ts"
+    "version": "tsx cli/updateVersion.ts",
+    "copy-aircraft-template": "tsx cli/copyAircraftTemplateToProd.ts"
   },
   "keywords": [],
   "author": "",
