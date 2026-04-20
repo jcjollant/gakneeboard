@@ -342,6 +342,7 @@ function onAircraftDeleted(id: number) {
     display: flex;
     flex-flow: column;
     gap: 10px;
+    padding-bottom: 60px;
 }
 .section {
     border: 3px solid lightgrey;

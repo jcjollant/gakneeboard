@@ -215,6 +215,7 @@ function goToPlans() {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     line-height: 1.6;
     color: #1e3a8a;
+    padding-bottom: 60px;
 }
 
 /* Common Styles */

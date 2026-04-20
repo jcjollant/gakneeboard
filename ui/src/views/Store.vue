@@ -220,6 +220,7 @@ const onPlan = async (plan: PlanDescription) => {
     background: #f8fafc;
     min-height: 100vh;
     padding: 2rem;
+    padding-bottom: 60px;
     max-width: 1200px;
     margin: 0 auto;
 }

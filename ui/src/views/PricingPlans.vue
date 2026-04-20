@@ -226,6 +226,7 @@ function onAuthentication(newUser: any) {
     background: #f8fafc;
     min-height: 100vh;
     padding: 2rem 0;
+    padding-bottom: 60px;
 }
 
 .pricing-header {

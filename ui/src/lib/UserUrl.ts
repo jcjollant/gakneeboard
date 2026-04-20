@@ -18,7 +18,7 @@ export class UserUrl {
     static printGuide: string = 'https://blog.kneeboard.ga/print-guide/'
     static radioTileGuide: string = 'https://blog.kneeboard.ga/radio-tile-guide/'
     static sunlightTileGuide: string = 'https://blog.kneeboard.ga/blog/2024/08/10/sunlight-tile-guide/'
-    static checklistDigestPage: string = 'https://blog.kneeboard.ga/checklists-digest/'
+    static checklistDigestPage: string = 'https://blog.kneeboard.ga/checklist-from-poh/'
     static ambassador: string = 'https://blog.kneeboard.ga/ambassador-program/'
     static userGuides: string = 'https://blog.kneeboard.ga/guides/'
 
