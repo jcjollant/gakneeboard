@@ -122,10 +122,7 @@ const payloadWeight = computed(() => {
 })
 const payloadMoment = computed(() => {
     if (!props.data) return 0
-    return props.data.aircraftItems.reduce((sum, item) => {
-        const station = props.aircraft.data.stations[item.stationIndex]
-        return sum + (item.weightLbs * (station?.posInch || 0))
-    }, 0)
+    return FuelWorksheetMath.computePayloadMoment(props.data, props.aircraft)
 })
 
 const zeroFuelWeight = computed(() => props.aircraft.data.basicEmptyWeight + payloadWeight.value)
