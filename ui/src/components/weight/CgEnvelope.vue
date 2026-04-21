@@ -44,6 +44,7 @@
 import { computed } from 'vue'
 import { FuelWorksheetData } from '../../models/FuelWorksheetTypes'
 import { Aircraft } from '@gak/shared'
+import { FuelWorksheetMath } from '../../services/FuelWorksheetMath'
 
 const props = withDefaults(defineProps<{
     data?: FuelWorksheetData
@@ -117,7 +118,7 @@ const envelopePointsStr = computed(() => {
 // --- Physics Calculations ---
 const payloadWeight = computed(() => {
     if (!props.data) return 0
-    return props.data.aircraftItems.reduce((sum, item) => sum + item.weightLbs, 0)
+    return FuelWorksheetMath.computePayloadWeight(props.data)
 })
 const payloadMoment = computed(() => {
     if (!props.data) return 0

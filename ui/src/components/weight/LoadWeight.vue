@@ -80,6 +80,7 @@
 import { ref, computed } from 'vue'
 import { FuelWorksheetData } from '../../models/FuelWorksheetTypes'
 import { Aircraft } from '@gak/shared'
+import { FuelWorksheetMath } from '../../services/FuelWorksheetMath'
 import Dialog from 'primevue/dialog'
 
 const props = defineProps<{
@@ -90,7 +91,7 @@ const props = defineProps<{
 const showDetails = ref(false)
 
 const emptyWeight = computed(() => props.aircraft?.data.basicEmptyWeight || 0)
-const payloadWeight = computed(() => props.data.aircraftItems.reduce((sum, item) => sum + item.weightLbs, 0))
+const payloadWeight = computed(() => FuelWorksheetMath.computePayloadWeight(props.data))
 const fuelWeight = computed(() => (props.data.fuelGallons || 0) * 6)
 const totalWeight = computed(() => Math.round(emptyWeight.value + payloadWeight.value + fuelWeight.value))
 
