@@ -63,33 +63,23 @@ const isValidEnvelope = computed(() => {
     return props.aircraft.data.fwdCgLimits.length > 0 && props.aircraft.data.aftCgLimits.length > 0
 })
 
-// Boundings for scaling
+// Boundings for scaling — delegated to FuelWorksheetMath for testability
+const envelopeBounds = computed(() => FuelWorksheetMath.computeEnvelopeBounds(props.aircraft))
+
 const minX = computed(() => {
-    const limits = [...props.aircraft.data.fwdCgLimits, ...props.aircraft.data.aftCgLimits]
-    const minArm = Math.min(...limits.map(l => l.posInch))
-    if (props.data) {
-        return Math.min(minArm - 2, zeroFuel.value.arm - 2)
-    }
-    return minArm - 2
+    const base = envelopeBounds.value.minArm - 2
+    return props.data ? Math.min(base, zeroFuel.value.arm - 2) : base
 })
 const maxX = computed(() => {
-    const limits = [...props.aircraft.data.fwdCgLimits, ...props.aircraft.data.aftCgLimits]
-    const maxArm = Math.max(...limits.map(l => l.posInch))
-    if (props.data) {
-        return Math.max(maxArm + 2, zeroFuel.value.arm + 2)
-    }
-    return maxArm + 2
+    const base = envelopeBounds.value.maxArm + 2
+    return props.data ? Math.max(base, zeroFuel.value.arm + 2) : base
 })
 const minY = computed(() => {
-    const limits = [...props.aircraft.data.fwdCgLimits, ...props.aircraft.data.aftCgLimits]
-    const minW = Math.min(...limits.map(l => l.weightLbs))
-    if (props.data) {
-        return Math.min(minW - 200, zeroFuel.value.weight - 200)
-    }
-    return minW - 200
+    const base = envelopeBounds.value.minW - 200
+    return props.data ? Math.min(base, zeroFuel.value.weight - 200) : base
 })
 const maxY = computed(() => {
-    const maxLimitWeight = Math.max(...props.aircraft.data.aftCgLimits.map(l=>l.weightLbs), ...props.aircraft.data.fwdCgLimits.map(l=>l.weightLbs))
+    const maxLimitWeight = envelopeBounds.value.maxW
     return (props.aircraft.data.maxTakeoffWeight || maxLimitWeight) + 100
 })
 

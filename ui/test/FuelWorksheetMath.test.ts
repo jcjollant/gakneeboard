@@ -150,4 +150,90 @@ describe('FuelWorksheetMath', () => {
             expect(FuelWorksheetMath.computePayloadMoment(data, aircraft)).toBe(200 * 37);
         });
     });
+
+    describe('computeEnvelopeBounds', () => {
+        test('returns zero bounds when no limits are defined', () => {
+            const aircraft = makeAircraft(); // fwdCgLimits: [], aftCgLimits: []
+            expect(FuelWorksheetMath.computeEnvelopeBounds(aircraft)).toEqual({
+                minArm: 0, maxArm: 0, minW: 0, maxW: 0,
+            });
+        });
+
+        test('handles only fwdCgLimits', () => {
+            const aircraft = makeAircraft({
+                data: {
+                    fwdCgLimits: [
+                        { posInch: 35, weightLbs: 1500 },
+                        { posInch: 38, weightLbs: 2300 },
+                    ],
+                    aftCgLimits: [],
+                },
+            });
+            expect(FuelWorksheetMath.computeEnvelopeBounds(aircraft)).toEqual({
+                minArm: 35, maxArm: 38, minW: 1500, maxW: 2300,
+            });
+        });
+
+        test('handles only aftCgLimits', () => {
+            const aircraft = makeAircraft({
+                data: {
+                    fwdCgLimits: [],
+                    aftCgLimits: [
+                        { posInch: 40, weightLbs: 1600 },
+                        { posInch: 47, weightLbs: 2400 },
+                    ],
+                },
+            });
+            expect(FuelWorksheetMath.computeEnvelopeBounds(aircraft)).toEqual({
+                minArm: 40, maxArm: 47, minW: 1600, maxW: 2400,
+            });
+        });
+
+        test('combines fwdCgLimits and aftCgLimits correctly', () => {
+            const aircraft = makeAircraft({
+                data: {
+                    fwdCgLimits: [
+                        { posInch: 35, weightLbs: 1500 },
+                        { posInch: 37, weightLbs: 2300 },
+                    ],
+                    aftCgLimits: [
+                        { posInch: 44, weightLbs: 1500 },
+                        { posInch: 47, weightLbs: 2300 },
+                    ],
+                },
+            });
+            expect(FuelWorksheetMath.computeEnvelopeBounds(aircraft)).toEqual({
+                minArm: 35, maxArm: 47, minW: 1500, maxW: 2300,
+            });
+        });
+
+        test('extremes come from different limit arrays', () => {
+            // minArm from fwd, maxArm from aft; minW from aft, maxW from fwd
+            const aircraft = makeAircraft({
+                data: {
+                    fwdCgLimits: [
+                        { posInch: 33, weightLbs: 2400 }, // min arm, max weight
+                    ],
+                    aftCgLimits: [
+                        { posInch: 48, weightLbs: 1400 }, // max arm, min weight
+                    ],
+                },
+            });
+            expect(FuelWorksheetMath.computeEnvelopeBounds(aircraft)).toEqual({
+                minArm: 33, maxArm: 48, minW: 1400, maxW: 2400,
+            });
+        });
+
+        test('handles a single limit point', () => {
+            const aircraft = makeAircraft({
+                data: {
+                    fwdCgLimits: [{ posInch: 39, weightLbs: 2000 }],
+                    aftCgLimits: [],
+                },
+            });
+            expect(FuelWorksheetMath.computeEnvelopeBounds(aircraft)).toEqual({
+                minArm: 39, maxArm: 39, minW: 2000, maxW: 2000,
+            });
+        });
+    });
 });
