@@ -22,6 +22,15 @@
             </div>
         </div>
 
+        <div class="hangar-footer-links">
+            <Button link class="footer-link-btn" @click="UserUrl.open(UserUrl.fuelWorksheetVideo)" title="Watch Introduction Video">
+                <font-awesome-icon :icon="['fab', 'youtube']" />
+            </Button>
+            <Button link class="footer-link-btn" @click="UserUrl.open(UserUrl.fuelWorksheetGuide)" title="Open Guide">
+                <font-awesome-icon :icon="['fas', 'question']" />
+            </Button>
+        </div>
+
         <Dialog v-model:visible="showDialog" header="Add to Hangar" modal :style="{ width: '400px' }">
             <div class="p-fluid" style="padding: 0.75rem 0.5rem">
                 <div class="flex justify-content-center" style="margin-bottom: 2rem">
@@ -54,6 +63,7 @@
 import { ref, reactive, watch, computed } from 'vue'
 import { FuelWorksheetData, LoadItem, AssignedLoadItem } from '../../models/FuelWorksheetTypes'
 import { Aircraft } from '@gak/shared'
+import { UserUrl } from '../../lib/UserUrl'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
@@ -69,9 +79,6 @@ const props = defineProps<{
 
 const isCompletelyEmpty = computed(() => props.data.hangarItems.length === 0 && props.data.aircraftItems.length === 0)
 
-watch(() => props.data.hangarItems, (newItems) => {
-    LocalStoreService.saveHangarItems(newItems)
-}, { deep: true })
 
 const emits = defineEmits(['update'])
 
@@ -108,12 +115,15 @@ watch(() => newItem.isPerson, (isPerson) => {
 })
 
 function confirmAdd() {
-    props.data.hangarItems.push({
+    const addedItem = {
         id: generateId(),
         name: newItem.name,
         weightLbs: newItem.weightLbs,
         isPerson: newItem.isPerson
-    })
+    }
+    props.data.hangarItems.push(addedItem)
+    // Persist the new item to localstore so it's remembered across worksheets
+    LocalStoreService.saveHangarItems([...props.data.hangarItems, ...props.data.aircraftItems])
     showDialog.value = false
     emitUpdate()
 }
@@ -123,8 +133,9 @@ function removeItem(id: string) {
     if (index !== -1) {
         props.data.hangarItems.splice(index, 1)
         
-        // Fix for race condition: update local store immediately
-        LocalStoreService.saveHangarItems(props.data.hangarItems)
+        // Remove from localstore: item is gone from both hangar and memory
+        // Keep aircraftItems in the persisted list so they remain memorized
+        LocalStoreService.saveHangarItems([...props.data.hangarItems, ...props.data.aircraftItems])
         
         emitUpdate()
     }
@@ -170,6 +181,7 @@ function onDrop(event: DragEvent) {
     flex-direction: column;
     height: 100%;
     overflow: hidden;
+    position: relative;
 }
 
 .hangar-dropzone {
@@ -281,5 +293,28 @@ function onDrop(event: DragEvent) {
 
 :deep(.p-field label) {
     color: #475569;
+}
+
+.hangar-footer-links {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    z-index: 10;
+    pointer-events: auto;
+}
+
+.footer-link-btn {
+    font-size: 1.1rem;
+    padding: 0.3rem 0.4rem;
+    height: auto;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.footer-link-btn:hover {
+    opacity: 1;
 }
 </style>

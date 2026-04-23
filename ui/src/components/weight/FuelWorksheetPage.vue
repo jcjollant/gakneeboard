@@ -67,16 +67,18 @@ function loadAircraft() {
             pageData.value.fuelGallons = 0
         }
 
-        // Initialize hangar items if this is a brand new worksheet
-        if (!isHangarInitialized.value && pageData.value.hangarItems.length === 0 && pageData.value.aircraftItems.length === 0) {
+        // Initialize hangar items from localstore if the hangar is empty
+        if (!isHangarInitialized.value && pageData.value.hangarItems.length === 0) {
             const cachedItems = LocalStoreService.getHangarItems()
             if (cachedItems && cachedItems.length > 0) {
-                // Deep copy to avoid reference issues
-                pageData.value.hangarItems = JSON.parse(JSON.stringify(cachedItems))
+                // Filter out any items already assigned to the aircraft to avoid duplicates
+                const aircraftIds = new Set(pageData.value.aircraftItems.map((i: any) => i.id))
+                const hangarOnly = cachedItems.filter((i: any) => !aircraftIds.has(i.id))
+                pageData.value.hangarItems = JSON.parse(JSON.stringify(hangarOnly))
             }
             isHangarInitialized.value = true
-        } else if (pageData.value.hangarItems.length > 0 || pageData.value.aircraftItems.length > 0) {
-            // Mark as initialized if we already have items (e.g. from existing worksheet)
+        } else if (pageData.value.hangarItems.length > 0) {
+            // Mark as initialized if we already have hangar items (e.g. from existing worksheet)
             isHangarInitialized.value = true
         }
     }
@@ -175,4 +177,6 @@ function onDataUpdate(newData: Partial<FuelWorksheetData>) {
     user-select: none;
     text-transform: uppercase;
 }
+
+
 </style>

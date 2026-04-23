@@ -21,6 +21,7 @@ export class UserUrl {
     static checklistDigestPage: string = 'https://blog.kneeboard.ga/checklist-from-poh/'
     static ambassador: string = 'https://blog.kneeboard.ga/ambassador-program/'
     static userGuides: string = 'https://blog.kneeboard.ga/guides/'
+    static fuelWorksheetGuide: string = 'https://blog.kneeboard.ga/fuel-worksheet-guide/'
 
     // Youtube
     static youTubeChannel: string = 'https://www.youtube.com/@GAKneeboard/videos'
@@ -33,6 +34,7 @@ export class UserUrl {
     static stripPageVideo: string = 'https://youtu.be/So5kDcN-vKc'
     static customKneeboardIn40s: string = 'https://youtu.be/yJpIyj0z5lQ'
     static routeFeature: string = 'https://youtu.be/RTNNAzt7WVw'
+    static fuelWorksheetVideo: string = 'https://youtu.be/-dVyp2Rq7XU'
 
     // other external link
     static dtpp: string = 'https://aeronav.faa.gov/d-tpp/'
