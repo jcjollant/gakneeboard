@@ -19,6 +19,7 @@ const AuthCallback = () => import('../views/AuthCallback.vue');
 const ResetPassword = () => import('../views/ResetPassword.vue');
 const Store = () => import('../views/Store.vue');
 const FuelWorksheetEntry = () => import('../views/FuelWorksheetEntry.vue');
+const NavlogEntry = () => import('../views/NavlogEntry.vue');
 
 export const RouterNames = {
     Admin: 'Admin',
@@ -37,6 +38,7 @@ export const RouterNames = {
     ProductReferenceCard: 'Product Reference Card',
     Store: 'Store',
     FuelWorksheetEntry: 'Fuel Worksheet',
+    NavlogEntry: 'Paper NavLog',
 }
 
 const routes = [
@@ -60,6 +62,7 @@ const routes = [
     { path: '/product/reference-card', name: RouterNames.ProductReferenceCard, component: ProductReferenceCard },
     { path: '/store', name: RouterNames.Store, component: Store },
     { path: '/fuel', name: RouterNames.FuelWorksheetEntry, component: FuelWorksheetEntry },
+    { path: '/navlog', name: RouterNames.NavlogEntry, component: NavlogEntry },
     {
         path: '/cfi',
         component: {
