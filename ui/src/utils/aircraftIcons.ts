@@ -15,6 +15,7 @@ export const AIRCRAFT_ICONS: AircraftIcon[] = [
     { id: 'da42', label: 'Diamond DA42', type: 'image', path: '/aircrafts/da42.png' },
     { id: 'pa28', label: 'Piper PA28', type: 'image', path: '/aircrafts/pa28.png' },
     { id: 'sling-lw', label: 'Sling (Low Wing)', type: 'image', path: '/aircrafts/sling-lw.png' },
+    { id: 'sling-4-hw', label: 'Sling 4 HW', type: 'image', path: '/aircrafts/sling-4-hw.png' },
 ];
 
 export function getIcon(iconId: string | undefined): AircraftIcon {
