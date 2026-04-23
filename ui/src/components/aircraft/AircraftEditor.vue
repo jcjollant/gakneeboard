@@ -164,7 +164,7 @@
         <div class="col-2">
             <div class="field">
                 <label>Max Usable Fuel (gal)</label>
-                <InputNumber v-model="aircraft.data.maxUsableFuel" />
+                <InputNumber v-model="aircraft.data.maxUsableFuel" :minFractionDigits="1" />
             </div>
         </div>
 

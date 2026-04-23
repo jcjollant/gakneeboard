@@ -56,9 +56,9 @@ function sanityCheck() {
 <template>
     <div class="content settings">
         <div class="editItem">Usable Fuel</div>
-        <InputNumber v-model="usable" @input="sanityCheck" suffix=" gal" :min="1"></InputNumber>
+        <InputNumber v-model="usable" @input="sanityCheck" suffix=" gal" :min="1" :minFractionDigits="1"></InputNumber>
         <div class="editItem">Fuel Flow</div>
-        <InputNumber v-model="fuelFlow" @input="sanityCheck" suffix=" gph" :min="1"></InputNumber>
+        <InputNumber v-model="fuelFlow" @input="sanityCheck" suffix=" gph" :min="1" :minFractionDigits="1"></InputNumber>
         <div class="editItem">Reserve</div>
         <InputNumber v-model="reserve" @input="sanityCheck" :suffix="reserve > 1 ? ' hours' : ' hour'" 
             :min="0" :step="0.25" :minFractionDigits="0" :maxFractionDigits="2"></InputNumber>

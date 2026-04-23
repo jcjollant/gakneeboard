@@ -1,28 +1,5 @@
 <template>
     <div class="grid">
-        <!-- Aft -->
-        <div class="col-4">
-            <h3>Aft CG Limits</h3>
-            <DataTable :value="aftLimits" responsiveLayout="scroll">
-                <Column field="posInch" header="Arm (in)">
-                    <template #body="{ index }">
-                        <InputNumber v-model="aftLimits[index].posInch" :minFractionDigits="2" />
-                    </template>
-                </Column>
-                <Column field="weightLbs" header="Weight (lbs)">
-                    <template #body="{ index }">
-                        <InputNumber v-model="aftLimits[index].weightLbs" />
-                    </template>
-                </Column>
-                <Column headerStyle="width: 4rem">
-                    <template #body="{ index }">
-                        <Button icon="pi pi-trash" class="p-button-danger p-button-text" @click="removeLimit('aft', index)" />
-                    </template>
-                </Column>
-            </DataTable>
-            <Button label="Add Limit" icon="pi pi-plus" class="p-button-text mt-2" @click="addLimit('aft')" />
-        </div>
-
         <!-- Forward -->
         <div class="col-4">
             <h3>Forward CG Limits</h3>
@@ -44,6 +21,29 @@
                 </Column>
             </DataTable>
             <Button label="Add Limit" icon="pi pi-plus" class="p-button-text mt-2" @click="addLimit('fwd')" />
+        </div>
+
+        <!-- Aft -->
+        <div class="col-4">
+            <h3>Aft CG Limits</h3>
+            <DataTable :value="aftLimits" responsiveLayout="scroll">
+                <Column field="posInch" header="Arm (in)">
+                    <template #body="{ index }">
+                        <InputNumber v-model="aftLimits[index].posInch" :minFractionDigits="2" />
+                    </template>
+                </Column>
+                <Column field="weightLbs" header="Weight (lbs)">
+                    <template #body="{ index }">
+                        <InputNumber v-model="aftLimits[index].weightLbs" />
+                    </template>
+                </Column>
+                <Column headerStyle="width: 4rem">
+                    <template #body="{ index }">
+                        <Button icon="pi pi-trash" class="p-button-danger p-button-text" @click="removeLimit('aft', index)" />
+                    </template>
+                </Column>
+            </DataTable>
+            <Button label="Add Limit" icon="pi pi-plus" class="p-button-text mt-2" @click="addLimit('aft')" />
         </div>
 
         <!-- Visualizer -->
