@@ -21,7 +21,7 @@
                 
                 <div class="setting">
                     <label>Taxi Fuel (gal)</label>
-                    <InputNumber v-model="data.taxiFuelGallons" @value-change="emitUpdate" :min="0" class="p-inputtext-sm settings-input" />
+                    <InputNumber v-model="data.taxiFuelGallons" @value-change="emitUpdate" :min="0" :minFractionDigits="1" class="p-inputtext-sm settings-input" />
                 </div>
                 
                 <div class="setting horizontal">
