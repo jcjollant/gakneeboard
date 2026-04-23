@@ -14,11 +14,22 @@
         <div class="editors-container" :class="'cols-'+columnsCount">
             <div v-for="index in columnsCount" :key="index" class="editor-wrapper">
                 <ChecklistEditor 
+                    ref="editorRefs"
                     v-model="checklistData[index-1]"
                     :mode="checklistEditorMode"
                     @update:modelValue="onEditorUpdate(index-1, $event)"
+                    @active="activeEditorIndex = index - 1"
                     :class="['editList', 'editor']" />
             </div>
+        </div>
+
+        <div class="action-buttons">
+            <Button icon="pi pi-plus" class="p-button-secondary action-btn" label="Section" @click="doAction('addSection')" title="Add Section Header" />
+            <Button icon="pi pi-plus" class="p-button-secondary action-btn" label="Item" @click="doAction('addItem')" title="Add Challenge/Response Item" />
+            <Button icon="pi pi-plus" class="p-button-secondary action-btn" label="VSpeeds" @click="doAction('onAddVSpeeds')" title="Add Aircraft V-Speeds" />
+            <Button icon="pi pi-plus" class="p-button-secondary action-btn" label="Weights" @click="doAction('onAddWeights')" title="Add Aircraft Weights" />
+            <div class="spacer"></div>
+            <Button icon="pi pi-trash" class="p-button-danger p-button-text" label="Clear" @click="doAction('clear')" title="Clear Checklist" />
         </div>
 
         <div class="theme">
@@ -59,6 +70,7 @@ import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputText from 'primevue/inputtext'
 import OneChoice from '../shared/OneChoice.vue'
 import EitherOr from '../shared/EitherOr.vue'
+import Button from 'primevue/button'
 
 // Helper Classes for Choices (Copied from ChecklistPage)
 class ChoiceColumnCount {
@@ -87,6 +99,16 @@ const theme = ref(ChecklistTheme.yellow)
 const font = ref(ChecklistFont.medium)
 const displayMode = ref(DisplayModeChecklist.Full)
 const checklistData = ref<Checklist[]>([new Checklist(), new Checklist(), new Checklist()])
+
+const editorRefs = ref<any[]>([])
+const activeEditorIndex = ref(0)
+
+function doAction(methodName: string) {
+    const editor = editorRefs.value[activeEditorIndex.value];
+    if (editor && typeof editor[methodName] === 'function') {
+        editor[methodName]();
+    }
+}
 
 // Display choices
 const choiceDisplayFullObj = new OneChoiceValue('Full', DisplayModeChecklist.Full, 'Full view')
@@ -239,7 +261,33 @@ const tileSettingsUpdate = inject('tileSettingsUpdate', null) as ((data: any) =>
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    align-items: center;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    padding: 8px 5px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    align-items: center;
+}
+
+.action-btn {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.action-buttons .spacer {
+    flex-grow: 1;
+}
+
+.action-buttons :deep(.p-button) {
+    font-size: 0.75rem;
+    padding: 4px 8px;
 }
 
 .theme, .font, .displayMode {

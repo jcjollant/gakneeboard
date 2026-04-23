@@ -75,15 +75,7 @@
                 </div>
             </div>
             <div v-else class="empty-state">
-                <button class="btn-start" @click="addSection" title="Start with Section">
-                    <font-awesome-icon icon="fa-solid fa-plus" /> Section
-                </button>
-                <button class="btn-start" @click="addItem" title="Start with Challenge/Response">
-                    <font-awesome-icon icon="fa-solid fa-plus" /> Item
-                </button>
-                <button class="btn-start" @click="onAddVSpeeds" title="Add Aircraft V-Speeds">
-                    <font-awesome-icon icon="fa-solid fa-plus" /> VSpeeds
-                </button>
+                <p>This is the <b>visual editor</b>, you can add checklist items with the buttons below or switch to the <b>text mode</b> (<font-awesome-icon icon="fa-solid fa-file-code" />) in the upper right corner.</p>
             </div>
 
 
@@ -136,6 +128,7 @@ const showAircraftSelection = ref(false);
 const showTemplateSelection = ref(false);
 const selectionAircrafts = ref<Aircraft[]>([]);
 const selectionHeader = ref('');
+const pendingAircraftAction = ref<'speeds' | 'weights' | null>(null);
 
 // Text mode handling with debounce
 const localText = ref('');
@@ -232,7 +225,12 @@ function cancelEditing() {
     stopEditing();
 }
 
-defineExpose({ stopEditing });
+function clear() {
+    items.value = [];
+    emitUpdate();
+}
+
+defineExpose({ stopEditing, addSection, addItem, onAddVSpeeds, onAddWeights, clear });
 
 function addItem() {
     // Adds new item at end
@@ -264,9 +262,27 @@ function addSection() {
 }
 
 async function onAddVSpeeds() {
+    pendingAircraftAction.value = 'speeds';
     const userAircrafts = await AircraftService.list();
     if (userAircrafts.length === 1) {
         addSpeedsFromAircraft(userAircrafts[0]);
+    } else if (userAircrafts.length === 0) {
+        const templates = await AircraftService.listTemplates();
+        selectionAircrafts.value = templates;
+        selectionHeader.value = 'Select Aircraft Template';
+        showTemplateSelection.value = true;
+    } else {
+        selectionAircrafts.value = userAircrafts;
+        selectionHeader.value = 'Select Your Aircraft';
+        showAircraftSelection.value = true;
+    }
+}
+
+async function onAddWeights() {
+    pendingAircraftAction.value = 'weights';
+    const userAircrafts = await AircraftService.list();
+    if (userAircrafts.length === 1) {
+        addWeightsFromAircraft(userAircrafts[0]);
     } else if (userAircrafts.length === 0) {
         const templates = await AircraftService.listTemplates();
         selectionAircrafts.value = templates;
@@ -305,10 +321,39 @@ function addSpeedsFromAircraft(aircraft: Aircraft) {
     emitUpdate();
 }
 
+function addWeightsFromAircraft(aircraft: Aircraft) {
+    if (!aircraft.data) return;
+    
+    // Add WEIGHTS section
+    items.value.push(ChecklistItem.section('WEIGHTS', ChecklistItemType.strong));
+    
+    const data = aircraft.data;
+    const weightLabels: Record<string, string> = {
+        maxRampWeight: 'Max Ramp Weight',
+        maxTakeoffWeight: 'Max Takeoff Weight',
+        maxLandingWeight: 'Max Landing Weight'
+    };
+
+    for (const [key, label] of Object.entries(weightLabels)) {
+        const value = (data as any)[key];
+        if (value && value > 0) {
+            items.value.push(new ChecklistItem(label, `${value} lbs`));
+        }
+    }
+    
+    emitUpdate();
+}
+
 function onAircraftSelected(aircraft: Aircraft) {
     showAircraftSelection.value = false;
     showTemplateSelection.value = false;
-    addSpeedsFromAircraft(aircraft);
+    
+    if (pendingAircraftAction.value === 'speeds') {
+        addSpeedsFromAircraft(aircraft);
+    } else if (pendingAircraftAction.value === 'weights') {
+        addWeightsFromAircraft(aircraft);
+    }
+    pendingAircraftAction.value = null;
 }
 
 
@@ -642,27 +687,31 @@ function getItemClass(item: ChecklistItem, index: number) {
 
 .empty-state {
     display: flex;
+    flex-direction: column;
     justify-content: center;
-    /* align-items: center; */
-    /* flex-grow: 1; */
-    gap: 10px;
-    padding: 20px;
+    align-items: center;
+    padding: 40px;
+    text-align: center;
+    color: #666;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    min-height: 200px;
 }
 
-.btn-start {
-    padding: 10px 20px;
-    cursor: pointer;
-    background: var(--bg-secondary);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1rem;
+.empty-state p {
+    width: 100%;
+    margin: 0;
+    white-space: normal;
+    word-break: break-word;
 }
-.btn-start:hover {
-    background: #0056b3;
+
+.empty-state b {
+    color: #333;
+}
+
+.empty-state :deep(.svg-inline--fa) {
+    margin: 0 2px;
+    color: black;
 }
 
 </style>

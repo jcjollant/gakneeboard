@@ -79,6 +79,7 @@
 <script setup lang="ts">
 
 import { onMounted, onUnmounted, ref, computed, watch, nextTick, defineAsyncComponent } from 'vue'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 
 import { currentUser } from '../assets/data.js'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -96,7 +97,6 @@ import { TemplateSettings } from '../components/templates/TemplateSettings.ts'
 import { TileData } from '../models/TileData'
 import { readPageFromClipboard, readTileFromClipboard } from '../assets/sheetData'
 import { useConfirm } from 'primevue/useconfirm'
-import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import { useToaster } from '../assets/Toaster.ts'
 import html2canvas from 'html2canvas-pro'
@@ -246,11 +246,42 @@ onMounted(() =>{
       // console.log('[TemplateViewer.onBeforePrint]')
     }
   }
+
+  window.addEventListener('beforeunload', handleBeforeUnload)
 })
 
 onUnmounted(() => {
   // remove event listeners
   window.removeEventListener('resize', updateOffsets)
+  window.removeEventListener('beforeunload', handleBeforeUnload)
+})
+
+const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+  if (templateModified.value) {
+    e.preventDefault()
+    e.returnValue = ''
+  }
+}
+
+onBeforeRouteLeave(async (to, from) => {
+  if (templateModified.value && to.name !== RouterNames.Print) {
+    return new Promise((resolve) => {
+      confirm.require({
+        message: 'You have unsaved changes, do you still want to leave the page?',
+        header: 'Unsaved Changes',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Leave',
+        rejectLabel: 'Stay',
+        accept: () => {
+          resolve(true)
+        },
+        reject: () => {
+          resolve(false)
+        }
+      })
+    })
+  }
+  return true
 })
 
 function getTemplateName() {
@@ -397,11 +428,13 @@ function onDelete() {
       accept: async () => {
         toaster.info( 'Calling Tower', 'Requesting deletion of ' + name)
         await TemplateService.delete(activeTemplate.value).then( () => {
-          // go back to home page
-          router.push('/')
           // and give visual feedback
           toast.removeAllGroups()
           toaster.success( 'Clear', 'Template "' + name + '" deleted')
+          // mark as not modified to avoid prompt on navigation
+          templateModified.value = false
+          // go back to home page
+          router.push('/')
         })
       }
     })
