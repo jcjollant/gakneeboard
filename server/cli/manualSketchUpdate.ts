@@ -84,8 +84,8 @@ async function doIt() {
             console.log('airport', airport.code, 'before', before, 'after', airport.iap[0].pdf)
             await AirportSketch.resolve(airport)
             updated++;
-            // wait random time between 1 and 5 seconds
-            const time = Math.floor(Math.random() * 4000) + 3000
+            // wait random time between 1 and 3 seconds
+            const time = Math.floor(Math.random() * 2000) + 1000
             console.log('updated', updated, 'out of', airports.length)
             console.log('Waiting', time, 'ms')
             await new Promise(resolve => setTimeout(resolve, time))
