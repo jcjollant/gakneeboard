@@ -245,6 +245,11 @@ function showSettings() {
     height: var(--page-content);
 }
 
+.settings-embedded {
+    height: calc(var(--page-content) - 30px);
+    overflow: hidden;
+}
+
 .twoLists {
     display: grid;
     grid-template-columns: repeat(2, 1fr);

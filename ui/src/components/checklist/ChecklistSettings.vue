@@ -274,9 +274,7 @@ const tileSettingsUpdate = inject('tileSettingsUpdate', null) as ((data: any) =>
 }
 
 .action-btn {
-    flex: 1;
-    display: flex;
-    justify-content: center;
+    width: auto;
     font-weight: 600;
     white-space: nowrap;
 }
@@ -287,7 +285,7 @@ const tileSettingsUpdate = inject('tileSettingsUpdate', null) as ((data: any) =>
 
 .action-buttons :deep(.p-button) {
     font-size: 0.75rem;
-    padding: 4px 8px;
+    padding: 4px 10px;
 }
 
 .theme, .font, .displayMode {
