@@ -81,6 +81,9 @@
                 <button class="btn-start" @click="addItem" title="Start with Challenge/Response">
                     <font-awesome-icon icon="fa-solid fa-plus" /> Item
                 </button>
+                <button class="btn-start" @click="onAddVSpeeds" title="Add Aircraft V-Speeds">
+                    <font-awesome-icon icon="fa-solid fa-plus" /> VSpeeds
+                </button>
             </div>
 
 
@@ -90,6 +93,21 @@
         <div v-else class="editor-text">
             <textarea v-model="localText" @input="onTextInput" @blur="saveTextToModel" placeholder="Paste checklist text here..."></textarea>
         </div>
+
+        <!-- Aircraft Selection Dialogs -->
+        <AircraftSelectionDialog 
+            v-model:visible="showAircraftSelection" 
+            :aircrafts="selectionAircrafts" 
+            :header="selectionHeader" 
+            @selected="onAircraftSelected"
+        />
+        <AircraftSelectionDialog 
+            v-model:visible="showTemplateSelection" 
+            :aircrafts="selectionAircrafts" 
+            :header="selectionHeader" 
+            :templateMode="true"
+            @selected="onAircraftSelected"
+        />
     </div>
 </template>
 
@@ -97,6 +115,9 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import { Checklist, ChecklistItem, ChecklistItemType } from '../../models/Checklist';
 import { ChecklistService } from '../../services/ChecklistService';
+import { AircraftService } from '../../services/AircraftService';
+import { Aircraft } from '@gak/shared';
+import AircraftSelectionDialog from '../aircraft/AircraftSelectionDialog.vue';
 
 const props = defineProps({
     modelValue: { type: Checklist, required: true },
@@ -109,6 +130,12 @@ const emit = defineEmits(['update:modelValue', 'active']);
 const items = ref<ChecklistItem[]>([]);
 const editingIndex = ref<number>(-1);
 const editingAsSection = ref(false);
+
+// Aircraft selection state
+const showAircraftSelection = ref(false);
+const showTemplateSelection = ref(false);
+const selectionAircrafts = ref<Aircraft[]>([]);
+const selectionHeader = ref('');
 
 // Text mode handling with debounce
 const localText = ref('');
@@ -234,6 +261,54 @@ function addSection() {
     takeSnapshot(editingIndex.value);
     emit('active');
     emitUpdate();
+}
+
+async function onAddVSpeeds() {
+    const userAircrafts = await AircraftService.list();
+    if (userAircrafts.length === 1) {
+        addSpeedsFromAircraft(userAircrafts[0]);
+    } else if (userAircrafts.length === 0) {
+        const templates = await AircraftService.listTemplates();
+        selectionAircrafts.value = templates;
+        selectionHeader.value = 'Select Aircraft Template';
+        showTemplateSelection.value = true;
+    } else {
+        selectionAircrafts.value = userAircrafts;
+        selectionHeader.value = 'Select Your Aircraft';
+        showAircraftSelection.value = true;
+    }
+}
+
+function addSpeedsFromAircraft(aircraft: Aircraft) {
+    if (!aircraft.data?.speeds) return;
+    
+    // Add V-SPEEDS section
+    items.value.push(ChecklistItem.section('V-SPEEDS', ChecklistItemType.strong));
+    
+    const speeds = aircraft.data.speeds;
+    const speedLabels: Record<string, string> = {
+        vs0: 'Vs0',
+        vs1: 'Vs1',
+        vfe: 'Vfe',
+        va: 'Va',
+        vno: 'Vno',
+        vne: 'Vne'
+    };
+
+    for (const [key, label] of Object.entries(speedLabels)) {
+        const value = (speeds as any)[key];
+        if (value && value > 0) {
+            items.value.push(new ChecklistItem(label, `${value} kt`));
+        }
+    }
+    
+    emitUpdate();
+}
+
+function onAircraftSelected(aircraft: Aircraft) {
+    showAircraftSelection.value = false;
+    showTemplateSelection.value = false;
+    addSpeedsFromAircraft(aircraft);
 }
 
 

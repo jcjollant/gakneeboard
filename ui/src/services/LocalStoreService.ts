@@ -30,6 +30,7 @@ export class LocalStoreService {
     static lastKnownAirportCode = 'last-known-airport-code'
     static printOptions = 'print-options'
     static aircrafts = 'aircrafts'
+    static aircraftTemplates = 'aircraft-templates'
     static hangarItems = 'hangar-items'
     static MAX_AIRPORTS = 30
     static MAX_APPROACHES = 5
@@ -531,5 +532,23 @@ export class LocalStoreService {
         const data = localStorage.getItem(LocalStoreService.hangarItems)
         if (data) return JSON.parse(data)
         return []
+    }
+
+    static saveAircraftTemplates(templates: any[]) {
+        localStorage.setItem(LocalStoreService.aircraftTemplates, JSON.stringify(templates))
+    }
+
+    static getAircraftTemplates(): any[] {
+        const data = localStorage.getItem(LocalStoreService.aircraftTemplates)
+        if (data) return JSON.parse(data)
+        return []
+    }
+
+    static clearAircraftCache() {
+        localStorage.removeItem(LocalStoreService.aircrafts)
+    }
+
+    static clearTemplateCache() {
+        localStorage.removeItem(LocalStoreService.aircraftTemplates)
     }
 }
