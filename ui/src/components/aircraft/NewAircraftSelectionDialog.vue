@@ -27,33 +27,28 @@
             </div>
         </Dialog>
 
-        <!-- Aircraft Template Selection Dialog -->
-        <Dialog v-model:visible="showTemplateSelection" modal header="Select Template" :style="{ width: '80vw', maxWidth: '800px' }">
-            <div class="templateList selectionList">
-                <div v-for="template in aircraftTemplates" :key="template.id" class="selection-item" @click="selectSourceAircraft(template)">
-                    <AircraftCard :aircraft="template" :templateMode="true" />
-                </div>
-            </div>
-            <div class="feedback-invite">
-                Don't see your aircraft? Send us feedback at <a href="mailto:support@kneeboard.ga">support@kneeboard.ga</a> with templates you'd like to see!
-            </div>
-        </Dialog>
+        <!-- Source Selection Dialogs -->
+        <AircraftSelectionDialog 
+            v-model:visible="showTemplateSelection" 
+            :aircrafts="aircraftTemplates" 
+            header="Select Template" 
+            :templateMode="true" 
+            @selected="selectSourceAircraft"
+        />
 
-        <!-- Aircraft Copy Selection Dialog -->
-        <Dialog v-model:visible="showCopySelection" modal header="Copy Existing Aircraft" :style="{ width: '80vw', maxWidth: '800px' }">
-            <div class="templateList selectionList">
-                <div v-for="a in userAircrafts" :key="a.id" class="selection-item" @click="selectSourceAircraft(a)">
-                    <AircraftCard :aircraft="a" />
-                </div>
-            </div>
-        </Dialog>
+        <AircraftSelectionDialog 
+            v-model:visible="showCopySelection" 
+            :aircrafts="userAircrafts" 
+            header="Copy Existing Aircraft" 
+            @selected="selectSourceAircraft"
+        />
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import Dialog from 'primevue/dialog'
-import AircraftCard from './AircraftCard.vue'
+import AircraftSelectionDialog from './AircraftSelectionDialog.vue'
 import { AircraftService } from '../../services/AircraftService'
 import { Aircraft } from '@gak/shared'
 import { useToast } from 'primevue/usetoast'
@@ -104,13 +99,6 @@ function selectSourceAircraft(source: Aircraft) {
 </script>
 
 <style scoped>
-.templateList {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 10px;
-}
-
 .choice-container {
     display: flex;
     flex-direction: column;
@@ -149,32 +137,5 @@ function selectSourceAircraft(source: Aircraft) {
 .choice-desc {
     font-size: 0.9rem;
     color: #6c757d;
-}
-
-.selectionList {
-    max-height: 60vh;
-    overflow-y: auto;
-}
-
-.selection-item {
-    cursor: pointer;
-}
-
-.feedback-invite {
-    text-align: center;
-    margin-top: 1rem;
-    color: #6c757d;
-    font-size: 0.9rem;
-    padding-bottom: 0.5rem;
-}
-
-.feedback-invite a {
-    color: var(--bg, #0369a1);
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.feedback-invite a:hover {
-    text-decoration: underline;
 }
 </style>
