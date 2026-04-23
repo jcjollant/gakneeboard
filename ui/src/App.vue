@@ -70,10 +70,7 @@ onBeforeMount( () => {
       if(currentUser.loggedIn && !currentUser.eulaCurrent) {
         showEula.value = true
       }
-      // show a toast if unlimited prints
-      if(currentUser.printCredits === -1) {
-        toaster.success( 'CAVU',  'Enjoy your unlimited prints!')
-      }
+
     })
 })
 
