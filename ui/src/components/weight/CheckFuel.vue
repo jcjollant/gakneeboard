@@ -142,6 +142,7 @@ function percent(amount: number) {
 
 .gauge-content {
     padding: 0.5rem;
+    overflow-y: clip;
 }
 
 
