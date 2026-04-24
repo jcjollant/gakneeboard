@@ -604,7 +604,7 @@ async function onEditorAction(ea:EditorAction) {
 }
 
 function onExport() {
-  if (currentUser.canExportPdf) {
+  if (!currentUser.canExportPdf) {
     toaster.upgrade()
     return
   }
