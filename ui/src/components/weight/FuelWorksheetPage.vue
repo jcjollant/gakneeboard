@@ -39,6 +39,7 @@ import ChecksSection from './ChecksSection.vue'
 import { LocalStoreService } from '../../services/LocalStoreService'
 import { Aircraft, TemplateFormat } from '@gak/shared'
 import { FuelWorksheetData } from '../../models/FuelWorksheetTypes'
+import { AnalyticsService } from '../../services/AnalyticsService'
 
 const props = defineProps({
     data: { type: Object, default: () => ({}) },
@@ -86,6 +87,7 @@ function loadAircraft() {
 
 onMounted(() => {
     loadAircraft()
+    AnalyticsService.viewFuelWorksheet('template_view')
 })
 
 function onDataUpdate(newData: Partial<FuelWorksheetData>) {

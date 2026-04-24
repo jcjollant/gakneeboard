@@ -34,6 +34,7 @@ import { getTemplateBlank } from '../assets/sheetData.js'
 import { PageType } from '../assets/PageType'
 import { TemplatePage } from '../models/Template'
 import AircraftSelectionDialog from '../components/aircraft/AircraftSelectionDialog.vue'
+import { AnalyticsService } from '../services/AnalyticsService'
 
 const router = useRouter()
 
@@ -71,6 +72,7 @@ onMounted(async () => {
 })
 
 function createWorksheet(aircraft: Aircraft) {
+    AnalyticsService.viewFuelWorksheet('direct')
     const templateData = getTemplateBlank()
     templateData.name = aircraft.tailNumber + ' Fuel Worksheet'
     templateData.desc = 'Fuel Worksheet for ' + aircraft.tailNumber

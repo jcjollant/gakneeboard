@@ -23,10 +23,10 @@
         </div>
 
         <div class="hangar-footer-links">
-            <Button link class="footer-link-btn" @click="UserUrl.open(UserUrl.fuelWorksheetVideo)" title="Watch Introduction Video">
+            <Button link class="footer-link-btn" @click="onVideoClick" title="Watch Introduction Video">
                 <font-awesome-icon :icon="['fab', 'youtube']" />
             </Button>
-            <Button link class="footer-link-btn" @click="UserUrl.open(UserUrl.fuelWorksheetGuide)" title="Open Guide">
+            <Button link class="footer-link-btn" @click="onGuideClick" title="Open Guide">
                 <font-awesome-icon :icon="['fas', 'question']" />
             </Button>
         </div>
@@ -71,6 +71,7 @@ import EitherOr from '../shared/EitherOr.vue'
 import Dialog from 'primevue/dialog'
 import LoadItemCard from './LoadItemCard.vue'
 import { LocalStoreService } from '../../services/LocalStoreService'
+import { AnalyticsService } from '../../services/AnalyticsService'
 
 const props = defineProps<{
     data: FuelWorksheetData
@@ -171,6 +172,16 @@ function onDrop(event: DragEvent) {
             console.error('Drop parsing error', e)
         }
     }
+}
+
+function onVideoClick() {
+    AnalyticsService.fuelWorksheetInteraction('click_tutorial_video')
+    UserUrl.open(UserUrl.fuelWorksheetVideo)
+}
+
+function onGuideClick() {
+    AnalyticsService.fuelWorksheetInteraction('click_guide')
+    UserUrl.open(UserUrl.fuelWorksheetGuide)
 }
 </script>
 

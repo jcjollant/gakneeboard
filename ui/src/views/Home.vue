@@ -105,6 +105,7 @@ import { TemplateFormat, Aircraft } from '@gak/shared';
 import { Template, TemplatePage } from '../models/Template';
 import { PageType } from '../assets/PageType';
 import { LocalStoreService } from '../services/LocalStoreService';
+import { AnalyticsService } from '../services/AnalyticsService';
 
 class DemoSelector {
     name: string
@@ -278,6 +279,7 @@ function onAircraftEdit(aircraft: Aircraft) {
 }
 
 function onAircraftFuelWorksheet(aircraft: Aircraft) {
+    AnalyticsService.viewFuelWorksheet('aircraft_card');
     const templateData = getTemplateBlank();
     templateData.name = aircraft.tailNumber + ' Fuel Worksheet';
     templateData.desc = 'Fuel Worksheet for ' + aircraft.tailNumber;

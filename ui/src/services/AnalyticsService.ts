@@ -54,4 +54,16 @@ export class AnalyticsService {
     static authError(method: string, error: string) {
         this.event('auth_error', { method, error });
     }
+
+    static viewFuelWorksheet(source: string) {
+        this.event('view_fuel_worksheet', { source });
+    }
+
+    static viewPaperNavlog(source: string) {
+        this.event('view_paper_navlog', { source });
+    }
+
+    static fuelWorksheetInteraction(action: string, label?: string) {
+        this.event('fuel_worksheet_interaction', { action, label });
+    }
 }

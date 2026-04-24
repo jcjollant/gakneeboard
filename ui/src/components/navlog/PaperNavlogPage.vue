@@ -82,6 +82,7 @@ import { onMounted, ref, watch } from 'vue'
 import { TemplateFormat } from '@gak/shared'
 import { useToaster } from '../../assets/Toaster';
 import { useToast } from 'primevue/usetoast';
+import { AnalyticsService } from '../../services/AnalyticsService'
 
 import ActionBar from '../shared/ActionBar.vue'
 import Header from '../shared/Header.vue'
@@ -107,6 +108,7 @@ const toaster = useToaster( useToast())
 
 onMounted(() => {
   loadProps(props)
+  AnalyticsService.viewPaperNavlog('template_view')
 })
 
 watch(props, (newVal) => {

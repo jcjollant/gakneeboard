@@ -15,11 +15,13 @@ import { routeToLocalTemplate } from '../assets/data.js'
 import { getTemplateBlank } from '../assets/sheetData.js'
 import { PageType } from '../assets/PageType'
 import { TemplatePage } from '../models/Template'
+import { AnalyticsService } from '../services/AnalyticsService'
 
 const router = useRouter()
 
 onMounted(() => {
     try {
+        AnalyticsService.viewPaperNavlog('direct')
         const templateData = getTemplateBlank()
         templateData.name = 'Paper NavLog'
         templateData.desc = 'Printable Paper Navlog Template'
