@@ -55,7 +55,7 @@
             <!-- Front Seat -->
             <div class="check-item" :class="statusClass(isFrontSeatOccupied)">
                 <div class="check-info">
-                    <span class="check-label">Front Seat</span>
+                    <span class="check-label">Front Seat(s)</span>
                     <span class="check-value">{{ isFrontSeatOccupied ? 'Occupied' : 'Empty' }}</span>
                 </div>
             </div>

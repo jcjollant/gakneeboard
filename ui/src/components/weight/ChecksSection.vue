@@ -46,11 +46,20 @@ function onUpdate(newData: Partial<FuelWorksheetData>) {
 }
 
 .envelope {
-    padding: 0.25rem;
+    padding: 0 0.25rem;
+    height: 280px;
+    flex-shrink: 0;
 }
 
-.fuel-allocation, .checks {
+.fuel-allocation {
+    height: 150px;
+    flex-shrink: 0;
+}
+
+.checks {
     flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .bt {

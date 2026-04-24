@@ -6,9 +6,6 @@
         <div class="svg-container">
             <svg v-if="isValidEnvelope" width="100%" height="100%" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet">
                  
-                 <!-- Grid Lines (Optional) -->
-                 <line x1="40" y1="260" x2="360" y2="260" stroke="#ced4da" stroke-width="1" />
-                 <line x1="40" y1="40" x2="40" y2="260" stroke="#ced4da" stroke-width="1" />
 
                  <!-- Envelope Polygon -->
                  <polygon :points="envelopePointsStr" fill="rgba(3, 105, 161, 0.2)" stroke="#0369a1" stroke-width="2" stroke-linejoin="round" />
@@ -57,7 +54,7 @@ const props = withDefaults(defineProps<{
 // SVG Constants
 const SVG_WIDTH = 400
 const SVG_HEIGHT = 300
-const PADDING = 40
+const PADDING = 20
 
 const isValidEnvelope = computed(() => {
     return props.aircraft.data.fwdCgLimits.length > 0 && props.aircraft.data.aftCgLimits.length > 0
@@ -219,8 +216,8 @@ const landing = computed(() => {
 
 .svg-container {
     flex: 1;
-    min-height: 180px;
-    padding: 0.25rem 0.5rem;
+    min-height: 0;
+    padding: 0 0.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -242,7 +239,7 @@ const landing = computed(() => {
     display: flex;
     justify-content: center;
     gap: 0.75rem;
-    padding: 0.25rem;
+    padding: 0.15rem;
     border-top: 1px solid #dee2e6;
     background-color: #f8f9fa;
     font-size: 0.7rem;

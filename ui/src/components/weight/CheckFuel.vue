@@ -157,7 +157,7 @@ function percent(amount: number) {
 
 .gauge-wrapper {
     position: relative;
-    margin: 2rem 0 1rem 0;
+    margin: 1rem 0;
 }
 
 .gauge-bar {
@@ -181,18 +181,18 @@ function percent(amount: number) {
 
 .limit-marker {
     position: absolute;
-    top: -25px;
-    width: 2px;
-    height: 43px;
+    top: -4px;
+    width: 1px;
+    height: 22px;
     background-color: #ef4444;
     z-index: 10;
 }
 
 .limit-marker span {
     position: absolute;
-    top: -15px;
+    top: -18px;
     left: -15px;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: bold;
     color: #ef4444;
     white-space: nowrap;

@@ -102,13 +102,20 @@ function onDataUpdate(newData: Partial<FuelWorksheetData>) {
     flex-direction: column;
     position: relative;
     overflow: hidden;
+    height: 100%;
     background-color: white; /* The "paper" background */
+    box-sizing: border-box;
+}
+
+.fuelPage * {
+    box-sizing: border-box;
 }
 
 .worksheet-main {
     display: grid;
     grid-template-columns: 180px 1fr;
     flex: 1;
+    min-height: 0;
     overflow: hidden;
     background-color: white;
 }
@@ -160,7 +167,6 @@ function onDataUpdate(newData: Partial<FuelWorksheetData>) {
     display: flex;
     flex-direction: column;
     height: 100%;
-    overflow-y: auto;
     background-color: white;
 }
 
