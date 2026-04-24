@@ -67,6 +67,14 @@
                     <span class="check-value">{{ data.legs.length }} Leg{{ data.legs.length === 1 ? '' : 's' }}</span>
                 </div>
             </div>
+
+            <!-- Station Weights -->
+            <div v-for="s in stationWeightStatus" :key="s.name" class="check-item" :class="statusClass(s.ok)">
+                <div class="check-info">
+                    <span class="check-label">{{ s.name }}</span>
+                    <span class="check-value">{{ s.weight.toFixed(0) }} / {{ s.max.toFixed(0) }} lbs</span>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -186,6 +194,38 @@ const isFrontSeatOccupied = computed(() => {
     return props.data.aircraftItems.some(item => 
         frontSeatIndices.includes(item.stationIndex) && item.weightLbs > 0
     )
+})
+
+const stationWeightStatus = computed(() => {
+    return props.aircraft.data.stations.map((station, index) => {
+        if (station.maxWeightLbs === undefined || station.maxWeightLbs <= 0) return { name: station.name, ok: true, max: 0, weight: 0 };
+        
+        let weight = 0;
+        let isOk = true;
+        let displayWeight = 0;
+
+        if (station.type === 'fuel') {
+            return { name: station.name, ok: true, weight: 0, max: 0 };
+        } else if (station.type === 'twin') {
+            const leftWeight = props.data.aircraftItems
+                .filter(i => i.stationIndex === index && i.slotIndex === 0)
+                .reduce((sum, i) => sum + i.weightLbs, 0);
+            const rightWeight = props.data.aircraftItems
+                .filter(i => i.stationIndex === index && i.slotIndex === 1)
+                .reduce((sum, i) => sum + i.weightLbs, 0);
+            
+            isOk = leftWeight <= station.maxWeightLbs && rightWeight <= station.maxWeightLbs;
+            displayWeight = Math.max(leftWeight, rightWeight);
+        } else {
+            weight = props.data.aircraftItems
+                .filter(i => i.stationIndex === index)
+                .reduce((sum, i) => sum + i.weightLbs, 0);
+            isOk = weight <= station.maxWeightLbs;
+            displayWeight = weight;
+        }
+
+        return { name: station.name, ok: isOk, weight: displayWeight, max: station.maxWeightLbs };
+    }).filter(s => s.max > 0);
 })
 
 function interpolateLimit(weight: number, limits: { weightLbs: number, posInch: number }[]) {

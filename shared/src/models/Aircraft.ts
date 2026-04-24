@@ -4,6 +4,7 @@ export interface Station {
     name: string;
     posInch: number;
     type?: StationType;
+    maxWeightLbs?: number;
 }
 
 export interface CgLimit {

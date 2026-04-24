@@ -11,6 +11,7 @@
                      
                     <div v-if="getItemsForStation(station.originalIndex).length === 0" class="empty-slot placeholder">
                         {{ station.name }} ({{ station.posInch }}")
+                        <div v-if="station.maxWeightLbs" class="limit-hint">Max {{ station.maxWeightLbs }} lbs</div>
                     </div>
                     
                     <div v-for="item in getItemsForStation(station.originalIndex)" :key="item.id">
@@ -27,6 +28,7 @@
                          @drop="onDrop($event, station.originalIndex, 0)">
                         <div v-if="!getItemInSlot(station.originalIndex, 0)" class="empty-slot">
                             {{ station.name }} (L) {{ station.posInch }}"
+                            <div v-if="station.maxWeightLbs" class="limit-hint">Max {{ station.maxWeightLbs }} lbs</div>
                         </div>
                         <div v-if="getItemInSlot(station.originalIndex, 0)">
                              <LoadItemCard :item="getItemInSlot(station.originalIndex, 0)!" @dragstart="onDragStart($event, getItemInSlot(station.originalIndex, 0)!)" @action="ejectItem" />
@@ -41,6 +43,7 @@
                          @drop="onDrop($event, station.originalIndex, 1)">
                         <div v-if="!getItemInSlot(station.originalIndex, 1)" class="empty-slot">
                             {{ station.name }} (R) {{ station.posInch }}"
+                            <div v-if="station.maxWeightLbs" class="limit-hint">Max {{ station.maxWeightLbs }} lbs</div>
                         </div>
                         <div v-if="getItemInSlot(station.originalIndex, 1)">
                              <LoadItemCard :item="getItemInSlot(station.originalIndex, 1)!" @dragstart="onDragStart($event, getItemInSlot(station.originalIndex, 1)!)" @action="ejectItem" />
@@ -303,5 +306,11 @@ function onDrop(event: DragEvent, targetStationIndex: number, slotIndex: number 
 
 .empty-slot.placeholder {
     padding: 0.75rem 0;
+}
+
+.limit-hint {
+    font-size: 0.6rem;
+    color: #94a3b8;
+    margin-top: 2px;
 }
 </style>

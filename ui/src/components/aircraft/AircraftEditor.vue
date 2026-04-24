@@ -195,6 +195,11 @@
                         <InputNumber v-model="data.posInch" :minFractionDigits="2" />
                     </template>
                 </Column>
+                <Column field="maxWeightLbs" header="Max Weight (lbs)">
+                    <template #body="{ data }">
+                        <InputNumber v-model="data.maxWeightLbs" :min="0" />
+                    </template>
+                </Column>
                 <Column headerStyle="width: 2rem">
                     <template #body="{ data }">
                         <Button icon="pi pi-trash" class="p-button-danger p-button-text" @click="removeStation(data)" />
@@ -215,6 +220,11 @@
                 <Column field="posInch" header="Arm (in)">
                     <template #body="{ data }">
                         <InputNumber v-model="data.posInch" :minFractionDigits="2" />
+                    </template>
+                </Column>
+                <Column field="maxWeightLbs" header="Max Weight (lbs)">
+                    <template #body="{ data }">
+                        <InputNumber v-model="data.maxWeightLbs" :min="0" />
                     </template>
                 </Column>
                 <Column headerStyle="width: 2rem">
@@ -361,9 +371,9 @@ function resetAircraft() {
     maxLandingWeight: 2550,
     maxUsableFuel: 53,
     stations: [
-        { name: 'Pilot/Co-Pilot', posInch: 37, type: 'twin' },
-        { name: 'Rear Passengers', posInch: 73, type: 'twin' },
-        { name: 'Baggage', posInch: 95, type: 'central' },
+        { name: 'Pilot/Co-Pilot', posInch: 37, type: 'twin', maxWeightLbs: 200 },
+        { name: 'Rear Passengers', posInch: 73, type: 'twin', maxWeightLbs: 200 },
+        { name: 'Baggage', posInch: 95, type: 'central', maxWeightLbs: 50 },
         { name: 'Fuel', posInch: 48, type: 'fuel' }
     ],
     fwdCgLimits: [
