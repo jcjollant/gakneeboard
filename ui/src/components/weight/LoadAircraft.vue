@@ -295,7 +295,7 @@ function onDrop(event: DragEvent, targetStationIndex: number, slotIndex: number 
 }
 
 .empty-slot {
-    color: #adb5bd;
+    color: #475569;
     font-size: 0.7rem;
     width: 100%;
     text-align: center;
@@ -310,7 +310,7 @@ function onDrop(event: DragEvent, targetStationIndex: number, slotIndex: number 
 
 .limit-hint {
     font-size: 0.6rem;
-    color: #94a3b8;
+    color: #64748b;
     margin-top: 2px;
 }
 </style>
