@@ -183,4 +183,30 @@ describe('Formatter', () => {
       expect(Formatter.feet('invalid')).toBe('?');
     });
   });
+
+  describe('weightStatus', () => {
+    it('should format weight with no limit', () => {
+      expect(Formatter.weightStatus(2400, 0)).toBe('2400 lbs');
+    });
+
+    it('should format zero weight with limit', () => {
+      expect(Formatter.weightStatus(0, 2500)).toBe('0 / 2500 lbs');
+    });
+
+    it('should format weight over limit', () => {
+      expect(Formatter.weightStatus(2550, 2500)).toBe('50 lbs over');
+    });
+
+    it('should format weight under limit', () => {
+      expect(Formatter.weightStatus(2400, 2500)).toBe('100 lbs under');
+    });
+
+    it('should format weight exactly at limit', () => {
+      expect(Formatter.weightStatus(2500, 2500)).toBe('at 2500 lbs');
+    });
+
+    it('should round values', () => {
+      expect(Formatter.weightStatus(2400.4, 2500.6)).toBe('101 lbs under');
+    });
+  });
 });

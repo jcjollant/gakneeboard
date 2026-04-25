@@ -143,5 +143,20 @@ export class Formatter {
         return value.toLocaleString('en-US') + "'";
     }
 
+    /**
+     * Formats a weight value relative to a maximum limit
+     * @param val The current weight
+     * @param max The maximum weight limit
+     * @returns A status string like "100 lbs under", "50 lbs over", or "at 2500 lbs"
+     */
+    static weightStatus(val: number, max: number): string {
+        const v = Math.round(val);
+        const m = Math.round(max);
+        if (m === 0) return `${v} lbs`;
+        if (v === 0) return `0 / ${m} lbs`;
+        if (v > m) return `${v - m} lbs over`;
+        if (v < m) return `${m - v} lbs under`;
+        return `at ${v} lbs`;
+    }
 
 }

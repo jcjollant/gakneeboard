@@ -2,34 +2,35 @@
     <div class="check-flags">
         <div class="checks-list">
             <!-- Ramp Weight -->
-            <!-- Ramp Weight -->
-            <div class="check-item" :class="statusClass(Number(rampWeight.toFixed(0)) <= (aircraft.data.maxRampWeight ? Number(aircraft.data.maxRampWeight.toFixed(0)) : 999999))">
+            <div class="check-item" :class="statusClass(Number(rampWeight.toFixed(0)) <= (aircraft.data.maxRampWeight ? Number(aircraft.data.maxRampWeight.toFixed(0)) : 999999))"
+                @click="openDetails('ramp', 'Ramp Weight Details')">
                 <div class="check-info">
                     <span class="check-label">Ramp Weight</span>
-                    <span class="check-value">{{ rampWeight.toFixed(0) }} / {{ (aircraft.data.maxRampWeight || 0).toFixed(0) }} lbs</span>
+                    <span class="check-value">{{ Formatter.weightStatus(rampWeight, aircraft.data.maxRampWeight || 0) }}</span>
                 </div>
             </div>
 
             <!-- Takeoff Weight -->
-            <!-- Takeoff Weight -->
-            <div class="check-item" :class="statusClass(Number(takeoffWeight.toFixed(0)) <= (aircraft.data.maxTakeoffWeight ? Number(aircraft.data.maxTakeoffWeight.toFixed(0)) : 999999))">
+            <div class="check-item" :class="statusClass(Number(takeoffWeight.toFixed(0)) <= (aircraft.data.maxTakeoffWeight ? Number(aircraft.data.maxTakeoffWeight.toFixed(0)) : 999999))"
+                @click="openDetails('takeoff', 'Takeoff Weight Details')">
                 <div class="check-info">
                     <span class="check-label">Takeoff Weight</span>
-                    <span class="check-value">{{ takeoffWeight.toFixed(0) }} / {{ (aircraft.data.maxTakeoffWeight || 0).toFixed(0) }} lbs</span>
+                    <span class="check-value">{{ Formatter.weightStatus(takeoffWeight, aircraft.data.maxTakeoffWeight || 0) }}</span>
                 </div>
             </div>
 
             <!-- Landing Weight -->
-            <!-- Landing Weight -->
-            <div class="check-item" :class="statusClass(Number(landingWeight.toFixed(0)) <= (aircraft.data.maxLandingWeight ? Number(aircraft.data.maxLandingWeight.toFixed(0)) : 999999))">
+            <div class="check-item" :class="statusClass(Number(landingWeight.toFixed(0)) <= (aircraft.data.maxLandingWeight ? Number(aircraft.data.maxLandingWeight.toFixed(0)) : 999999))"
+                @click="openDetails('landing', 'Landing Weight Details')">
                 <div class="check-info">
                     <span class="check-label">Landing Weight</span>
-                    <span class="check-value">{{ landingWeight.toFixed(0) }} / {{ (aircraft.data.maxLandingWeight || 0).toFixed(0) }} lbs</span>
+                    <span class="check-value">{{ Formatter.weightStatus(landingWeight, aircraft.data.maxLandingWeight || 0) }}</span>
                 </div>
             </div>
 
             <!-- Required Fuel -->
-            <div class="check-item" :class="statusClass(Number(fuelOnBoard.toFixed(1)) >= Number(totalRequiredFuel.toFixed(1)))">
+            <div class="check-item" :class="statusClass(Number(fuelOnBoard.toFixed(1)) >= Number(totalRequiredFuel.toFixed(1)))"
+                @click="openDetails('fuel', 'Required Fuel Details')">
                 <div class="check-info">
                     <span class="check-label">Required Fuel</span>
                     <span class="check-value">{{ fuelOnBoard.toFixed(1) }} / {{ totalRequiredFuel.toFixed(1) }} gal</span>
@@ -37,7 +38,8 @@
             </div>
 
             <!-- CG Envelope -->
-            <div class="check-item" :class="statusClass(isCgValid)">
+            <div class="check-item" :class="statusClass(isCgValid)"
+                @click="openDetails('cg', 'CG Envelope Details')">
                 <div class="check-info">
                     <span class="check-label">CG Envelope</span>
                     <span class="check-value">{{ isCgValid ? 'Within Limits' : 'Out of Limits' }}</span>
@@ -45,7 +47,8 @@
             </div>
 
             <!-- Taxi Fuel -->
-            <div class="check-item" :class="statusClass((data.taxiFuelGallons || 0) > 0)">
+            <div class="check-item" :class="statusClass((data.taxiFuelGallons || 0) > 0)"
+                @click="openDetails('taxi', 'Taxi Fuel Details')">
                 <div class="check-info">
                     <span class="check-label">Taxi Fuel</span>
                     <span class="check-value">{{ (data.taxiFuelGallons || 0).toFixed(1) }} gal</span>
@@ -53,7 +56,8 @@
             </div>
 
             <!-- Front Seat -->
-            <div class="check-item" :class="statusClass(isFrontSeatOccupied)">
+            <div class="check-item" :class="statusClass(isFrontSeatOccupied)"
+                @click="openDetails('seats', 'Front Seat Validation')">
                 <div class="check-info">
                     <span class="check-label">Front Seat(s)</span>
                     <span class="check-value">{{ isFrontSeatOccupied ? 'Occupied' : 'Empty' }}</span>
@@ -61,7 +65,8 @@
             </div>
 
             <!-- Flight Legs -->
-            <div class="check-item" :class="statusClass(data.legs.length > 0)">
+            <div class="check-item" :class="statusClass(data.legs.length > 0)"
+                @click="openDetails('legs', 'Flight Legs Details')">
                 <div class="check-info">
                     <span class="check-label">Flight Legs</span>
                     <span class="check-value">{{ data.legs.length }} Leg{{ data.legs.length === 1 ? '' : 's' }}</span>
@@ -69,25 +74,38 @@
             </div>
 
             <!-- Station Weights -->
-            <div v-for="s in stationWeightStatus" :key="s.name" class="check-item" :class="statusClass(s.ok)">
+            <div v-for="s in stationWeightStatus" :key="s.name" class="check-item" :class="statusClass(s.ok)"
+                @click="openDetails('station', s.name + ' Details', { station: s })">
                 <div class="check-info">
                     <span class="check-label">{{ s.name }}</span>
-                    <span class="check-value">{{ s.weight.toFixed(0) }} / {{ s.max.toFixed(0) }} lbs</span>
+                    <span class="check-value">{{ Formatter.weightStatus(s.weight, s.max) }}</span>
                 </div>
             </div>
         </div>
+
+        <CheckDetailsDialog v-model:visible="showDetails" :selectedCheck="selectedCheck" :data="data" :aircraft="aircraft" />
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { FuelWorksheetData } from '../../models/FuelWorksheetTypes'
 import { Aircraft } from '@gak/shared'
+import CheckDetailsDialog from './CheckDetailsDialog.vue'
+import { Formatter } from '../../lib/Formatter'
 
 const props = defineProps<{
     data: FuelWorksheetData
     aircraft: Aircraft
 }>()
+
+const showDetails = ref(false)
+const selectedCheck = ref<any>(null)
+
+function openDetails(type: string, title: string, extra: any = {}) {
+    selectedCheck.value = { type, title, ...extra }
+    showDetails.value = true
+}
 
 // --- Weights ---
 const payloadWeight = computed(() => props.data.aircraftItems.reduce((sum, item) => sum + item.weightLbs, 0))
@@ -273,7 +291,7 @@ function statusClass(pass: boolean) {
     border: 1px solid #e2e8f0;
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-    cursor: default;
+    cursor: pointer;
 }
 
 .check-item:hover {
@@ -301,6 +319,7 @@ function statusClass(pass: boolean) {
     color: #64748b;
     font-weight: 500;
     font-feature-settings: "tnum";
+    text-align: left;
 }
 
 .status-pass .check-label {
