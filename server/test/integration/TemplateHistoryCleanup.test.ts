@@ -1,6 +1,7 @@
 import { describe, expect, it, afterAll, beforeAll } from '@jest/globals';
 import { sql } from '@vercel/postgres';
 import { TemplateHistoryDao, TemplateOperation } from '../../backend/dao/TemplateHistoryDao';
+import { ensureTestEnvironment } from '../common';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -13,11 +14,13 @@ describe('TemplateHistoryCleanup Integration', () => {
 
     beforeAll(async () => {
         // Clean up any existing test data
+        ensureTestEnvironment();
         await sql`DELETE FROM template_history WHERE template_id = ${testTemplateId}`;
     });
 
     afterAll(async () => {
         // Cleanup
+        ensureTestEnvironment();
         await sql`DELETE FROM template_history WHERE template_id = ${testTemplateId}`;
         await sql.end();
     });

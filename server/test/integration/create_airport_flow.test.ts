@@ -4,7 +4,10 @@ import { AirportService } from '../../backend/services/AirportService';
 import { AirportDao } from '../../backend/AirportDao';
 import { AirportCreationRequest } from '../../backend/models/AirportCreationRequest';
 import { AirportSource } from '../../backend/models/Airport';
+import { ensureTestEnvironment } from '../common';
 require('dotenv').config();
+// Force test DB
+process.env.POSTGRES_URL = process.env.POSTGRES_TEST_URL;
 
 const RUN_INTEGRATION_TESTS = process.env.RUN_INTEGRATION_TESTS === 'true';
 
@@ -25,14 +28,16 @@ describe('Airport Creation Integration Flow', () => {
 
     beforeAll(async () => {
         // Cleanup incase previous run failed
+        ensureTestEnvironment();
         const { sql } = require('@vercel/postgres');
-        await sql`DELETE FROM airports WHERE code = ${testCode}`;
+        await sql`DELETE FROM airports WHERE icao_id = ${testCode}`;
     });
 
     afterAll(async () => {
         // Clean up
+        ensureTestEnvironment();
         const { sql } = require('@vercel/postgres');
-        await sql`DELETE FROM airports WHERE code = ${testCode}`;
+        await sql`DELETE FROM airports WHERE icao_id = ${testCode}`;
     });
 
     test('Should create an airport and persist it with source=user', async () => {

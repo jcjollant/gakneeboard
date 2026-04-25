@@ -79,3 +79,9 @@ export function brandNewUser() {
     return user
 
 }
+
+export function ensureTestEnvironment() {
+    if (process.env.POSTGRES_URL?.includes('verceldb')) {
+        throw new Error('CRITICAL: Attempted to run a destructive operation against the production database (verceldb).');
+    }
+}

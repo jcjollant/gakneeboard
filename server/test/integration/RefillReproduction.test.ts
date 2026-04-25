@@ -3,7 +3,7 @@
 import { describe, expect, it, beforeAll, afterAll, xdescribe } from '@jest/globals';
 import { UserDao } from '../../backend/dao/UserDao';
 import { Business } from '../../backend/business/Business';
-import { newTestUser } from '../common';
+import { newTestUser, ensureTestEnvironment } from '../common';
 import { AccountType, PLAN_ID_SIM } from '@gak/shared';
 import { sql } from '@vercel/postgres';
 
@@ -25,6 +25,7 @@ describe('Refill Reproduction', () => {
         userDao = new UserDao();
 
         // Ensure users don't exist and create them in parallel where possible
+        ensureTestEnvironment();
         await sql`DELETE FROM users WHERE sha256 IN (${studentUser.sha256}, ${simmerUser.sha256})`;
 
         await Promise.all([
@@ -35,6 +36,7 @@ describe('Refill Reproduction', () => {
 
     afterAll(async () => {
         // Cleanup usage records first (created by refill)
+        ensureTestEnvironment();
         await sql`DELETE FROM usage WHERE user_id IN (SELECT id FROM users WHERE sha256 IN (${studentUser.sha256}, ${simmerUser.sha256}))`;
         // Cleanup users
         await sql`DELETE FROM users WHERE sha256 IN (${studentUser.sha256}, ${simmerUser.sha256})`;

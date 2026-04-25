@@ -2,7 +2,7 @@ import { describe, expect, it, afterAll, xdescribe } from '@jest/globals';
 import { TemplateDao } from '../../backend/TemplateDao'
 import { jcUserId, jcTestTemplateName, jcTestTemplateData } from '../constants';
 import { sql } from '@vercel/postgres';
-import { newTestUser } from '../common';
+import { newTestUser, ensureTestEnvironment } from '../common';
 import { TemplateKneeboardView } from '../../backend/models/TemplateKneeboardView';
 import { UserDao } from '../../backend/dao/UserDao';
 import { PublicationDao } from '../../backend/PublicationDao';
@@ -136,6 +136,7 @@ describe('Custom Templates', () => {
                 expect(saved?.name).toBe("System Tpl Updated")
 
                 // Cleanup
+                ensureTestEnvironment();
                 await sql`DELETE FROM sheets WHERE id=${sysId}`
             })
 
@@ -149,6 +150,7 @@ describe('Custom Templates', () => {
                 await expect(templateDao.createOrUpdate(tv, jcUserId, false)).rejects.toThrow("Non Admin user can't update system template")
 
                 // Cleanup
+                ensureTestEnvironment();
                 await sql`DELETE FROM sheets WHERE id=${sysId}`
             })
         })

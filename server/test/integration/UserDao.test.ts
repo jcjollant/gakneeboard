@@ -4,7 +4,7 @@ import { afterAll, beforeAll, describe, expect, it, xdescribe } from '@jest/glob
 import { db, sql } from '@vercel/postgres';
 import { UserDao } from '../../backend/dao/UserDao';
 import { User } from '../../backend/models/User';
-import { newTestUser } from '../common';
+import { newTestUser, ensureTestEnvironment } from '../common';
 import { jcCustomerId, jcEmail, jcHash, jcName, jcSource, jcUserId } from '../constants';
 
 require('dotenv').config();
@@ -118,6 +118,7 @@ describe('UserDao', () => {
             expect(updatedUser.name).toBe(newName)
         } finally {
             if (createdUserId > 0) {
+                ensureTestEnvironment();
                 await sql`DELETE FROM users WHERE id=${createdUserId}`
             }
         }
@@ -130,6 +131,7 @@ describe('UserDao', () => {
         const testType2 = `t2-${uniqueId}`;
 
         // clean up (just in case)
+        ensureTestEnvironment();
         await sql`delete from users where account_type = ${testType1} OR account_type=${testType2}`
 
         // create two groups of users in parallel
@@ -158,6 +160,7 @@ describe('UserDao', () => {
             expect(r.newCount).toBe(count2)
         }
 
+        ensureTestEnvironment();
         await sql`delete from users where account_type = ${testType1} OR account_type=${testType2}`
     })
 
