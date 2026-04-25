@@ -18,7 +18,7 @@
                     <circle :cx="mapX(zeroFuel.arm)" :cy="mapY(zeroFuel.weight)" r="5" fill="#ef4444" />
                     
                     <!-- Takeoff CG -->
-                    <circle :cx="mapX(takeoff.arm)" :cy="mapY(takeoff.weight)" r="5" fill="#10b981" />
+                    <circle :cx="mapX(takeoff.arm)" :cy="mapY(takeoff.weight)" r="5" fill="#047857" />
                     
                     <!-- Landing CG -->
                     <circle :cx="mapX(landing.arm)" :cy="mapY(landing.weight)" r="5" fill="#3b82f6" />
@@ -259,6 +259,6 @@ const landing = computed(() => {
 }
 
 .swatch.zero { background-color: #ef4444; }
-.swatch.takeoff { background-color: #10b981; }
+.swatch.takeoff { background-color: #047857; }
 .swatch.landing { background-color: #3b82f6; }
 </style>

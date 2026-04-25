@@ -8,7 +8,11 @@
 
                 <!-- Manual Fuel Marker -->
                 <div v-if="data.fuelGallons !== undefined" class="limit-marker actual" :style="{ left: percent(data.fuelGallons) }">
-                    <span>TANK</span>
+                    <span>T/O</span>
+                </div>
+                <!-- Landing Fuel Marker -->
+                <div v-if="data.fuelGallons !== undefined" class="limit-marker landing" :style="{ left: percent(landingFuel) }">
+                    <span>LAND</span>
                 </div>
 
 
@@ -18,7 +22,7 @@
                     <div class="segment buffer" :style="{ width: percent(bufferFuel) }" title="Personal Buffer"></div>
                     <div class="segment flight" :style="{ width: percent(flightFuel) }" title="Flight Fuel"></div>
                     <div class="segment taxi" :style="{ width: percent(taxiFuel) }" title="Taxi Fuel"></div>
-                    <div v-if="extraFuel > 0" class="segment extra" :style="{ width: percent(extraFuel) }" title="Extra Fuel"></div>
+                    <div v-if="extraFuel > 0" class="segment extra" :style="{ width: percent(extraFuel) }" title="Extra"></div>
                 </div>
 
                 <!-- Ticks -->
@@ -34,7 +38,8 @@
                 <div class="legend-item"><span class="swatch buffer"></span> Personal Res. ({{ bufferFuel.toFixed(1) }})</div>
                 <div class="legend-item"><span class="swatch flight"></span> Flight ({{ flightFuel.toFixed(1) }})</div>
                 <div class="legend-item"><span class="swatch taxi"></span> Taxi ({{ taxiFuel.toFixed(1) }})</div>
-                <div v-if="extraFuel > 0" class="legend-item"><span class="swatch extra"></span> Extra Fuel ({{ extraFuel.toFixed(1) }})</div>
+                <div v-if="extraFuel > 0" class="legend-item"><span class="swatch extra"></span> Extra ({{ extraFuel.toFixed(1) }})</div>
+                <div class="legend-item">Landing Fuel ({{ landingFuel.toFixed(1) }})</div>
             </div>
             
 
@@ -87,6 +92,10 @@ const totalRequired = computed(() => taxiFuel.value + flightFuel.value + legalRe
 const extraFuel = computed(() => {
     const onboard = props.data.fuelGallons || 0;
     return Math.max(0, onboard - totalRequired.value);
+})
+const landingFuel = computed(() => {
+    const onboard = props.data.fuelGallons || 0;
+    return Math.max(0, onboard - taxiFuel.value - flightFuel.value);
 })
 
 // Weight calculations for finding limits
@@ -191,7 +200,8 @@ function percent(amount: number) {
 .limit-marker span {
     position: absolute;
     top: -18px;
-    left: -15px;
+    left: 50%;
+    transform: translateX(-50%);
     font-size: 0.7rem;
     font-weight: bold;
     color: #ef4444;
@@ -199,12 +209,21 @@ function percent(amount: number) {
 }
 
 .limit-marker.actual {
-    background-color: #0ea5e9;
+    background-color: #047857;
 }
 
 .limit-marker.actual span {
-    color: #0ea5e9;
+    color: #047857;
 }
+
+.limit-marker.landing {
+    background-color: #3b82f6;
+}
+
+.limit-marker.landing span {
+    color: #3b82f6;
+}
+
 
 
 

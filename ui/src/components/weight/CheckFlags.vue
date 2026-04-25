@@ -304,11 +304,11 @@ function statusClass(pass: boolean) {
 }
 
 .status-pass .check-label {
-    color: #059669;
+    color: #047857;
 }
 
 .status-pass {
-    border-left: 3px solid #10b981;
+    border-left: 3px solid #047857;
     background-color: #f0fdf4;
 }
 
