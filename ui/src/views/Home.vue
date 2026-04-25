@@ -121,12 +121,13 @@ class DemoSelector {
 const demos = ref<DemoSelector[]>([
     new DemoSelector(SheetName.vfrFlight, ['vfrflight.png','vfrflight-1.png'], 'VFR Flight', 'VFR Flight Demo Template'),
     new DemoSelector(SheetName.ifrFlight, ['ifrflight.png','ifrflight-1.png'], 'IFR Flight','IFR Flight Demo Template'),
-    new DemoSelector(SheetName.checklist, ['checklist-1.png','checklist-2.png'], 'Checklist','Checklists syntax Showcase'),
+    // new DemoSelector(SheetName.checklist, ['checklist-1.png','checklist-2.png'], 'C172 Checklist','A standard C172 Checklist'),
+    new DemoSelector(SheetName.checklistShowcase, ['checklist-showcase-1.png','checklist-showcase-2.png'], 'Checklist Showcase','All Checklist Possibilities'),
     new DemoSelector(SheetName.navlog, ['navlog.png','navlog-1.png'], 'NavLog', 'Navlog page and companion tiles'),
     new DemoSelector(SheetName.charts, ['charts.png','charts-1.png'], 'Charts','Airport Diagram and Instrument Approach'),
     // new DemoSelector(SheetName.seattle, ['seattle.png'], 'Seattle Airports', '24 GA Airports in the Seattle Area'),
 ])
-const clickAndPrint = ref<DemoSelector[]>([
+const clickAndPrint = ref<DemoSelector[]>([ 
     new DemoSelector(SheetName.reference, [ThumbnailImage.reference0, ThumbnailImage.reference1], 'Reference Card', 'Handy Reference Visuals'),
     new DemoSelector(SheetName.acronyms, [ThumbnailImage.acronyms0, ThumbnailImage.acronyms1], 'Acronyms', 'Popular VFR and IFR acronyms'),
     new DemoSelector(SheetName.ifrStrips, [ThumbnailImage.ifrTraining, ThumbnailImage.ifrTraining1], 'IFR Training','Typical IFR Training Flight'),

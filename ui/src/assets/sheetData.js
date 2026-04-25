@@ -6,6 +6,7 @@ import { TileData } from '../models/TileData'
 export class SheetName {
   static default = 'gak-default'
   static checklist = 'gak-checklist'
+  static checklistShowcase = 'gak-checklist-showcase'
   static navlog = 'gak-navlog'
   static tiles = 'gak-tiles'
   static new = 'gak-new'
@@ -37,7 +38,7 @@ import { duplicate } from './data'
 import { TemplateFormat } from '@gak/shared'
 
 // used to check if a sheet name is already taken by defaults
-const defaultNames = [SheetName.default, SheetName.tiles, SheetName.checklist, SheetName.reset]
+const defaultNames = [SheetName.default, SheetName.tiles, SheetName.checklist, SheetName.checklistShowcase, SheetName.reset]
 
 // blank pages
 const pageDataBlankTiles = {

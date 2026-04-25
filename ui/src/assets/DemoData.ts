@@ -277,6 +277,72 @@ export class DemoData {
 
     static pageDemoAirportDiagram = new TemplatePage(PageType.diagram, 'Airport Diagram', { airport: "KBFI" })
 
+    static page0ChecklistShowcase = new TemplatePage(PageType.tiles, 'Themes', [
+        { name: TileType.checklist, data: { name: "Blue Theme", items: [{ s: "Blue", t: "strong" }, { c: "Item", r: "Check" }, {s:"Emergent", t:"emer"}, {c:"Fire", r:"Out", t:"emer"}], theme: ChecklistTheme.blue } },
+        { name: TileType.checklist, data: { name: "Green Theme", items: [{ s: "Green", t: "strong" }, { c: "Item", r: "Check" }], theme: ChecklistTheme.green } },
+        { name: TileType.checklist, data: { name: "Grey Theme", items: [{ s: "Grey", t: "strong" }, { c: "Item", r: "Check" }], theme: ChecklistTheme.grey } },
+        { name: TileType.checklist, data: { name: "Purple Theme", items: [{ s: "Purple", t: "strong" }, { c: "Item", r: "Check" }], theme: ChecklistTheme.purple } },
+        { name: TileType.checklist, data: { name: "Red Theme", items: [{ s: "Red", t: "strong" }, { c: "Item", r: "Check" }], theme: ChecklistTheme.red } },
+        { name: TileType.checklist, data: { name: "Yellow Theme", items: [{ s: "Yellow", t: "strong" }, { c: "Item", r: "Check" }], theme: ChecklistTheme.yellow } }
+    ])
+
+    static page1ChecklistShowcase = new TemplatePage(PageType.checklist, 'Syntax', {
+        name: 'Checklist Syntax (Large Font)',
+        items: [
+            { s: 'Sections', t: 'strong' },
+            { c: 'Normal Item', r: 'Check' },
+            { s: 'Normal Section' },
+            { c: 'Item under section', r: 'Check' },
+            { s: 'Strong Section', t: 'strong' },
+            { c: 'Item under strong', r: 'Check' },
+            { s: 'Emergent Section', t: 'emer' },
+            { c: 'Item under emer', r: 'Check' },
+            { s: 'Blank section below', t: 'strong' },
+            { s: '', t: 'blank' },
+            { c: 'Spanned challenge without response' }
+        ],
+        items2: [
+            { s: 'Special Items', t: 'strong' },
+            { c: 'Emergent Item', r: 'Red Text', t: 'emer' },
+            { c: 'Alternate Item', r: 'Alt Text', t: 'alt' },
+            { s: 'Formatting', t: 'strong' },
+            { c: 'Long challenges will wrap to multiple lines automatically' },
+            { c: 'Responses', r: 'Stay right' }
+        ],
+        theme: ChecklistTheme.blue,
+        font: ChecklistFont.large,
+    })
+
+    static page2ChecklistShowcase = new TemplatePage(PageType.checklist, 'Columns', {
+        name: 'Three Columns (Small Font)',
+        items: [
+            { s: 'Column 1', t: 'strong' },
+            { c: 'Item 1.1', r: 'Check' },
+            { c: 'Item 1.2', r: 'Check' },
+            { c: 'Item 1.3', r: 'Check' },
+            { c: 'Item 1.4', r: 'Check' },
+            { c: 'Item 1.5', r: 'Check' }
+        ],
+        items2: [
+            { s: 'Column 2', t: 'strong' },
+            { c: 'Item 2.1', r: 'Check' },
+            { c: 'Item 2.2', r: 'Check' },
+            { c: 'Item 2.3', r: 'Check' },
+            { c: 'Item 2.4', r: 'Check' },
+            { c: 'Item 2.5', r: 'Check' }
+        ],
+        items3: [
+            { s: 'Column 3', t: 'strong' },
+            { c: 'Item 3.1', r: 'Check' },
+            { c: 'Item 3.2', r: 'Check' },
+            { c: 'Item 3.3', r: 'Check' },
+            { c: 'Item 3.4', r: 'Check' },
+            { c: 'Item 3.5', r: 'Check' }
+        ],
+        theme: ChecklistTheme.purple,
+        font: ChecklistFont.small,
+    })
+
     static acronyms(): Template {
         return new Template('Acronyms', 'Popular Acronyms', false, [DemoData.page0Acronyms, DemoData.page1Acronyms, DemoData.page2Acronyms])
     }
@@ -295,6 +361,10 @@ export class DemoData {
         return new Template('Checklists', 'A C172 preflight Checklist', false, [DemoData.page0DemoChecklist, DemoData.page1DemoChecklist, DemoData.page2DemoChecklist])
     }
 
+    static checklistShowcase(): Template {
+        return new Template('Checklist Showcase', 'Showcase of all Checklist Possibilities', false, [DemoData.page0ChecklistShowcase, DemoData.page1ChecklistShowcase, DemoData.page2ChecklistShowcase])
+    }
+
     static default(): Template {
         return new Template('Default Demo', 'Six Tiles and a Flight Checklist', false, [DemoData.page0DemoDefault, DemoData.page1DemoDefault])
     }
@@ -308,6 +378,8 @@ export class DemoData {
             return DemoData.tiles()
         } else if (name == SheetName.checklist) {
             return DemoData.checklist()
+        } else if (name == SheetName.checklistShowcase) {
+            return DemoData.checklistShowcase()
         } else if (name == SheetName.navlog) {
             return DemoData.navlog()
         } else if (name == SheetName.new) {
